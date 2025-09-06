@@ -14,8 +14,6 @@ During first set-up, there will not be a solution file. (Do not panic)
 ## --------------------------
 
 Project/
-├── .git/
-├── .gitignore
 └── NightSnack Engine/
     │
     ├── src/ 			# Engine source files (.cpp .h)
