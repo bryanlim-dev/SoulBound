@@ -13,6 +13,7 @@ int main()
 	ResourceManager* rm = ResourceManager::GetInstance();
 	rm->LoadImage("assets/Banana.jpg");
 	rm->LoadImage("assets/image_UI_target.png");
+	rm->LoadImage("assets/image_UI_target.png");
 
 	rm->DeleteRM();
 

@@ -24,9 +24,17 @@ ResourceManager::~ResourceManager()
 
 void ResourceManager::LoadImage(std::string filePath)
 {
+	std::cout << "RM: ";
+
+	//Check if resource alr exists
+	if (resourceMap.find(filePath) != resourceMap.end())
+	{
+		std::cout << filePath << " already exists" << std::endl;
+		return;
+	}
+
 	ResourceImage* newResource = new ResourceImage(filePath);
 
-	std::cout << "RM: ";
 
 	if (!newResource->Loaded())
 	{
@@ -34,7 +42,7 @@ void ResourceManager::LoadImage(std::string filePath)
 	}
 	else
 	{
-		std::cout << "Loaded image: " << newResource->Path() << std::endl;
+		std::cout << "Loaded image " << newResource->Path() << std::endl;
 	}
 
 	resourceMap.insert({filePath, newResource});
