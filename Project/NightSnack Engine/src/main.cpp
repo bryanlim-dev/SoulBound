@@ -1,10 +1,18 @@
 #include <Window.h>
 
+#include "ResourceManager/ResourceManager.h"
+
+
 int main()
 {
 	// Create window (width, height, title);
 	Window window(1600, 900, "NightSnack Engine");
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+
+	ResourceManager rm;
+	rm.LoadImage("assets/Banana.jpg");
+	
 
 	// Game loop;
 	while (!window.ShouldClose()) {
