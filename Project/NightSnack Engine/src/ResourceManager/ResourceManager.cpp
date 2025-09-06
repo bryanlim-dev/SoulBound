@@ -1,6 +1,26 @@
 #include "ResourceManager.h"
 
 
+ResourceManager::ResourceManager()
+{
+}
+
+ResourceManager::~ResourceManager()
+{
+
+	//Delete all resource
+
+
+	//Loop through entire map AND DELETE IT MUHAHA
+	std::map<std::string, Resource*>::iterator it;
+	for (it = resourceMap.begin(); it != resourceMap.end(); it++)
+	{
+		delete it->second;
+	}
+	resourceMap.clear();
+}
+
+
 
 void ResourceManager::LoadImage(std::string filePath)
 {
@@ -20,18 +40,8 @@ void ResourceManager::LoadImage(std::string filePath)
 	resourceMap.insert({filePath, newResource});
 }
 
-ResourceManager::~ResourceManager()
+void ResourceManager::DeleteRM()
 {
-
-	//Delete all resource
-	
-
-	//Loop through entire map AND DELETE IT MUHAHA
-	std::map<std::string, Resource*>::iterator it;
-	for (it = resourceMap.begin(); it != resourceMap.end(); it++)
-	{
-		delete it->second;
-	}
-	resourceMap.clear();
+	delete this;
 }
 

@@ -10,11 +10,11 @@ int main()
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 
-	ResourceManager* rm = new ResourceManager();
+	ResourceManager* rm = ResourceManager::GetInstance();
 	rm->LoadImage("assets/Banana.jpg");
 	rm->LoadImage("assets/image_UI_target.png");
 
-	delete rm;
+	rm->DeleteRM();
 
 	// Game loop;
 	while (!window.ShouldClose()) {
