@@ -16,8 +16,6 @@ class Resource
 protected:
 	//Path of the file
 	std::string path = "";
-	//Data ptr of the obj
-	unsigned char* data = NULL;
 
 	bool resourceLoaded = false;
 
@@ -30,8 +28,6 @@ public:
 
 	\param input
 	The input string of the file path
-
-	\return
 	*/
 	/************************************************************************/
 	Resource(std::string filePath) {};
@@ -48,12 +44,16 @@ private:
 class ResourceImage : public Resource
 {
 protected:
-	//Image data
+	//Data ptr of the obj
+	unsigned char* imageData = NULL;
+	//Image imageData
 	int width = 0, height = 0, channels = 0;
 
 public:
 	ResourceImage(std::string filePath);
 	~ResourceImage();
+
+	unsigned char* Image() const;
 
 private:
 	//Default constructor is deleted

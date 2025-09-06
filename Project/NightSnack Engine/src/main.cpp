@@ -9,13 +9,13 @@ int main()
 	Window window(1600, 900, "NightSnack Engine");
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
-
 	ResourceManager* rm = ResourceManager::GetInstance();
-	rm->LoadImage("assets/Banana.jpg");
-	rm->LoadImage("assets/image_UI_target.png");
-	rm->LoadImage("assets/image_UI_target.png");
 
-	rm->DeleteRM();
+	//Resource Manager test
+	//rm->LoadImage("assets/Banana.jpg");
+	//rm->LoadImage("assets/image_UI_target.png");
+	//rm->LoadImage("assets/image_UI_target.png");
+	////std::cout << "Image loaded: " << rm->GetImage("assets/Banana.jpg") << std::endl;
 
 	// Game loop;
 	while (!window.ShouldClose()) {
@@ -26,5 +26,7 @@ int main()
 	}
 
 	// Clean termination;
+
+	rm->DeleteRM();
   return 0;
 }

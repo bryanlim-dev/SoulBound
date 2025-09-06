@@ -7,17 +7,7 @@
 
 Resource::~Resource()
 {
-	//Check if the data exists (incase deleted in derived class)
-	if (data)
-	{
-		delete data;
-		data = NULL;
-
-		resourceLoaded = false;
-	}
-
 	std::cout << path << " is deleted!" << std::endl;
-
 }
 
 bool Resource::Loaded() const
@@ -39,10 +29,10 @@ ResourceImage::ResourceImage(std::string filePath) : Resource(filePath)
 	path = filePath;
 
 	//Load file
-	unsigned char* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+	imageData = stbi_load(path.c_str(), &width, &height, &channels, 0);
 
 
-	if (data)
+	if (imageData)
 		resourceLoaded = true;
 	else
 		resourceLoaded = false;
@@ -51,5 +41,17 @@ ResourceImage::ResourceImage(std::string filePath) : Resource(filePath)
 
 ResourceImage::~ResourceImage()
 {
+	//Check if the imageData exists incase
+	if (imageData)
+	{
+		delete imageData;
+		imageData = NULL;
 
+		resourceLoaded = false;
+	}
+}
+
+unsigned char* ResourceImage::Image() const
+{
+	return imageData;
 }
