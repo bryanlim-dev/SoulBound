@@ -36,11 +36,15 @@ add_subdirectory(extern/glfw EXCLUDE_FROM_ALL)
 add_library(glad extern/glad/src/glad.c)
 target_include_directories(glad PUBLIC extern/glad/include)
 
+add_library(stb_image INTERFACE)
+target_include_directories(stb_image INTERFACE extern/stb_image/include)
+
 # Link Libraries
 target_link_libraries(${PROJECT_NAME}
   PRIVATE
     glfw
     glad
+    stb_image
 )
 
 # Include directories
@@ -51,8 +55,13 @@ target_include_directories(${PROJECT_NAME}
     extern/glad/include
     extern/glfw/include
     extern/glm
+    extern/stb_image/include
 )
 
 # Organize external libraries in Visual Studio
-source_group("External/GLFW" FILES ${GLFW_SOURCES})
-source_group("External/GLAD" FILES ${GLAD_SOURCES})
+source_group("extern/glfw" FILES ${GLFW_SOURCES})
+source_group("extern/glad" FILES ${GLAD_SOURCES})
+
+set(STB_IMAGE_HEADERS extern/stb_image/include/stb_image.h)
+source_group("extern/stb_image" FILES ${STB_IMAGE_HEADERS})
+target_sources(${PROJECT_NAME} PRIVATE ${STB_IMAGE_HEADERS})
