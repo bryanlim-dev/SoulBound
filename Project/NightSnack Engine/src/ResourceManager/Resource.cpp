@@ -16,7 +16,7 @@ Resource::~Resource()
 		resourceLoaded = false;
 	}
 
-	std::cout << "Delete stuff" << std::endl;
+	std::cout << path << " is deleted!" << std::endl;
 
 }
 

@@ -6,7 +6,9 @@ void ResourceManager::LoadImage(std::string filePath)
 {
 	ResourceImage* newResource = new ResourceImage(filePath);
 
-	if (newResource->Loaded())
+	std::cout << "RM: ";
+
+	if (!newResource->Loaded())
 	{
 		std::cout << "Failed to load image" << std::endl;
 	}
@@ -15,6 +17,21 @@ void ResourceManager::LoadImage(std::string filePath)
 		std::cout << "Loaded image: " << newResource->Path() << std::endl;
 	}
 
-	delete newResource;
+	resourceMap.insert({filePath, newResource});
+}
+
+ResourceManager::~ResourceManager()
+{
+
+	//Delete all resource
+	
+
+	//Loop through entire map AND DELETE IT MUHAHA
+	std::map<std::string, Resource*>::iterator it;
+	for (it = resourceMap.begin(); it != resourceMap.end(); it++)
+	{
+		delete it->second;
+	}
+	resourceMap.clear();
 }
 

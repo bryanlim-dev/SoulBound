@@ -1,9 +1,8 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <map>
 
-#include <filesystem>
-#include <fstream>
 
 #include "ResourceManager/Resource.h"
 
@@ -30,8 +29,13 @@
 
 class ResourceManager
 {
-public:
-	std::string path = "assets/Banana.jpg";
+private:
 
+	//Key, Value
+	std::map<std::string, Resource*> resourceMap;
+
+public:
 	void LoadImage(std::string filePath);
+
+	~ResourceManager();
 };
