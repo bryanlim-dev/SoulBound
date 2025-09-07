@@ -18,6 +18,8 @@ int main()
 
 	rm->LoadImage("assets/image_UI_target.png");
 	rm->LoadImage("assets/image_UI_target.png");
+	rm->UpdatePostRender();
+
 	//std::cout << "Image loaded: " << rm->GetImage("assets/Banana.jpg") << std::endl;
 
 	// Game loop;
@@ -28,6 +30,7 @@ int main()
 		window.PollEvents();
 
 		rm->Update();
+		rm->UpdatePostRender();
 	}
 
 	// Clean termination;

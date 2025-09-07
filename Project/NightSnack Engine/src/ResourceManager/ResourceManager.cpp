@@ -7,9 +7,7 @@ ResourceManager::ResourceManager()
 
 ResourceManager::~ResourceManager()
 {
-
-	//Delete all resource
-
+	//Delete all resources
 
 	//Loop through entire image map AND DELETE IT MUHAHA
 	std::map<std::string, ResourceImage*>::iterator it;
@@ -22,6 +20,22 @@ ResourceManager::~ResourceManager()
 
 void ResourceManager::Update()
 {
+}
+
+void ResourceManager::UpdatePostRender()
+{
+	for (Resource* resource : deletionVec)
+	{
+		switch (resource->FileType())
+		{
+		case RESOURCE_IMAGE:
+			resourceImageMap.erase(resource->Path());
+			break;
+		}
+		delete resource;
+	}
+
+	deletionVec.clear();
 }
 
 
@@ -40,18 +54,23 @@ bool ResourceManager::LoadImage(std::string filePath)
 	//This loads the image via the ResourceImage class
 	ResourceImage* newResource = new ResourceImage(filePath);
 
-	//Insert the loaded image into the map
-	resourceImageMap.insert({filePath, newResource});
 
 	//This checks if it is loaded or now
 	if (!newResource->Loaded())
 	{
 		std::cout << "Failed to load image" << std::endl;
+
+		if (newResource)
+			delete newResource;
+
 		return false;
 	}
 	else
 	{
 		std::cout << "Loaded image " << newResource->Path() << std::endl;
+
+		//Insert the loaded image into the map only if managed to load
+		resourceImageMap.insert({filePath, newResource});
 		return true;
 	}
 
@@ -66,10 +85,13 @@ void ResourceManager::UnloadImage(std::string filePath)
 		return;
 	}
 
+	resourceImageMap[filePath]->FlaggedForDeletion() = true;
+
 	//Change this to a queue system
-	delete resourceImageMap[filePath];
-	resourceImageMap[filePath] = nullptr;
-	resourceImageMap.erase(filePath);
+	deletionVec.push_back(resourceImageMap[filePath]);
+	//delete resourceImageMap[filePath];
+	//resourceImageMap[filePath] = nullptr;
+	//resourceImageMap.erase(filePath);
 }
 
 unsigned char* ResourceManager::GetImage(const std::string filePath)

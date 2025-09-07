@@ -13,7 +13,7 @@
 //Someone else trying to read PNG files (the compression format is really complicated apprently???)
 //https://stackoverflow.com/questions/31079947/how-can-i-manually-read-png-files-in-c
 
-
+#include <vector>
 
 //std::filesystem
 //loading file paths
@@ -29,7 +29,11 @@ class ResourceManager : public Singleton<ResourceManager>
 {
 private:
 	//Key, Value
+	//Maps of resources
 	std::map<std::string, ResourceImage*> resourceImageMap;
+
+	//List of resources to track to delete
+	std::vector<Resource*> deletionVec;
 
 	ResourceManager();
 	~ResourceManager();
@@ -38,6 +42,14 @@ private:
 public:
 
 	void Update();
+
+	/************************************************************************/
+	/*!
+	\brief
+	Update function for post render logic (i.e deletion)
+	*/
+	/************************************************************************/
+	void UpdatePostRender();
 
 	/************************************************************************/
 	/*!

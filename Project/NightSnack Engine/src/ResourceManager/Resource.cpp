@@ -10,6 +10,7 @@ Resource::~Resource()
 	std::cout << path << " is deleted!" << std::endl;
 }
 
+
 bool Resource::Loaded() const
 {
 	return resourceLoaded;
@@ -25,6 +26,10 @@ RESOURCE_TYPE Resource::FileType() const
 	return fileType;
 }
 
+bool& Resource::FlaggedForDeletion()
+{
+	return flaggedForDeletion;
+}
 
 
 
@@ -32,7 +37,7 @@ ResourceImage::ResourceImage(std::string filePath) : Resource(filePath)
 {
 	//Set file path
 	path = filePath;
-	filePath = RESOURCE_IMAGE;
+	fileType = RESOURCE_IMAGE;
 
 	//Load file
 	imageData = stbi_load(path.c_str(), &width, &height, &channels, 0);

@@ -22,6 +22,7 @@ protected:
 
 	bool resourceLoaded = false;
 
+	bool flaggedForDeletion = false;
 
 public:
 	/************************************************************************/
@@ -36,8 +37,11 @@ public:
 	Resource(std::string filePath) {};
 	virtual ~Resource();
 
+
 	bool Loaded() const;
 	std::string Path() const;
+
+	bool& FlaggedForDeletion();
 
 	RESOURCE_TYPE FileType() const;
 
