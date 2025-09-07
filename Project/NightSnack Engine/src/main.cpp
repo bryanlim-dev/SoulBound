@@ -12,10 +12,13 @@ int main()
 	ResourceManager* rm = ResourceManager::GetInstance();
 
 	//Resource Manager test
-	//rm->LoadImage("assets/Banana.jpg");
-	//rm->LoadImage("assets/image_UI_target.png");
-	//rm->LoadImage("assets/image_UI_target.png");
-	////std::cout << "Image loaded: " << rm->GetImage("assets/Banana.jpg") << std::endl;
+	rm->LoadImage("assets/Banana.jpg");
+	rm->LoadImage("assets/image_UI_target.png");
+	rm->UnloadImage("assets/image_UI_target.png");
+
+	rm->LoadImage("assets/image_UI_target.png");
+	rm->LoadImage("assets/image_UI_target.png");
+	//std::cout << "Image loaded: " << rm->GetImage("assets/Banana.jpg") << std::endl;
 
 	// Game loop;
 	while (!window.ShouldClose()) {
@@ -23,6 +26,8 @@ int main()
 
 		window.SwapBuffers();
 		window.PollEvents();
+
+		rm->Update();
 	}
 
 	// Clean termination;

@@ -20,6 +20,11 @@ std::string Resource::Path() const
 	return path;
 }
 
+RESOURCE_TYPE Resource::FileType() const
+{
+	return fileType;
+}
+
 
 
 
@@ -27,6 +32,7 @@ ResourceImage::ResourceImage(std::string filePath) : Resource(filePath)
 {
 	//Set file path
 	path = filePath;
+	filePath = RESOURCE_IMAGE;
 
 	//Load file
 	imageData = stbi_load(path.c_str(), &width, &height, &channels, 0);

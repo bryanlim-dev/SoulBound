@@ -20,6 +20,10 @@ ResourceManager::~ResourceManager()
 	resourceImageMap.clear();
 }
 
+void ResourceManager::Update()
+{
+}
+
 
 
 bool ResourceManager::LoadImage(std::string filePath)
@@ -51,6 +55,21 @@ bool ResourceManager::LoadImage(std::string filePath)
 		return true;
 	}
 
+}
+
+void ResourceManager::UnloadImage(std::string filePath)
+{
+	//Check if resource alr exists
+	if (resourceImageMap.find(filePath) == resourceImageMap.end())
+	{
+		std::cout << filePath << " does not exist" << std::endl;
+		return;
+	}
+
+	//Change this to a queue system
+	delete resourceImageMap[filePath];
+	resourceImageMap[filePath] = nullptr;
+	resourceImageMap.erase(filePath);
 }
 
 unsigned char* ResourceManager::GetImage(const std::string filePath)

@@ -36,6 +36,9 @@ private:
 	friend class Singleton<ResourceManager>;
 
 public:
+
+	void Update();
+
 	/************************************************************************/
 	/*!
 	\brief
@@ -50,6 +53,8 @@ public:
 	*/
 	/************************************************************************/
 	bool LoadImage(std::string filePath);
+
+	void UnloadImage(std::string filePath);
 
 	/************************************************************************/
 	/*!

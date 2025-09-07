@@ -7,6 +7,7 @@
 //Unused for now (might not uise cause i used derived classes instead)
 enum RESOURCE_TYPE
 {
+	RESOURCE_NONE,
 	RESOURCE_IMAGE,
 	RESOURCE_SOUND,
 };
@@ -16,6 +17,8 @@ class Resource
 protected:
 	//Path of the file
 	std::string path = "";
+
+	RESOURCE_TYPE fileType = RESOURCE_NONE;
 
 	bool resourceLoaded = false;
 
@@ -36,6 +39,8 @@ public:
 	bool Loaded() const;
 	std::string Path() const;
 
+	RESOURCE_TYPE FileType() const;
+
 private:
 	//Default constructor is deleted
 	Resource() = delete;
@@ -53,7 +58,9 @@ public:
 	ResourceImage(std::string filePath);
 	~ResourceImage();
 
+
 	unsigned char* Image() const;
+
 
 private:
 	//Default constructor is deleted
