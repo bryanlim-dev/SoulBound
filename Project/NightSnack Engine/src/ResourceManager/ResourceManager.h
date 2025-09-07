@@ -46,7 +46,7 @@ public:
 	/************************************************************************/
 	/*!
 	\brief
-	Update function for post render logic (i.e deletion)
+	Update function for post render logic (i.e calling flagged deletion)
 	*/
 	/************************************************************************/
 	void UpdatePostRender();
@@ -99,5 +99,16 @@ public:
 
 	//Delete the Resource Manager
 	void DeleteRM();
+
+private:
+
+	/************************************************************************/
+	/*!
+	\brief
+	Deletes all resources in the deletion vec that are also flagged for deletion
+	If their flag is not set it will skip them
+	*/
+	/************************************************************************/
+	void DeleteFlaggedResources();
 
 };

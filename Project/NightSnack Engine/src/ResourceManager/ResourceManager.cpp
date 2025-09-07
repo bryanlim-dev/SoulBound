@@ -16,6 +16,7 @@ ResourceManager::~ResourceManager()
 		delete it->second;
 	}
 	resourceImageMap.clear();
+	deletionVec.clear();
 }
 
 void ResourceManager::Update()
@@ -24,18 +25,7 @@ void ResourceManager::Update()
 
 void ResourceManager::UpdatePostRender()
 {
-	for (Resource* resource : deletionVec)
-	{
-		switch (resource->FileType())
-		{
-		case RESOURCE_IMAGE:
-			resourceImageMap.erase(resource->Path());
-			break;
-		}
-		delete resource;
-	}
-
-	deletionVec.clear();
+	DeleteFlaggedResources();
 }
 
 
@@ -48,6 +38,15 @@ bool ResourceManager::LoadImage(std::string filePath)
 	if (resourceImageMap.find(filePath) != resourceImageMap.end())
 	{
 		std::cout << filePath << " already exists" << std::endl;
+
+		//Check if it was flagged for deletion
+		if (resourceImageMap[filePath]->FlaggedForDeletion())
+		{
+			//Remove the flag if it was flagged for deletion
+			//(This will cause it to not delete in post render)
+			resourceImageMap[filePath]->FlaggedForDeletion() = false;
+		}
+
 		return true;
 	}
 
@@ -120,5 +119,25 @@ ResourceImage* ResourceManager::GetImageResource(std::string filePath)
 void ResourceManager::DeleteRM()
 {
 	delete this;
+}
+
+void ResourceManager::DeleteFlaggedResources()
+{
+	for (Resource* resource : deletionVec)
+	{
+		//If it was unflagged somewhere inbetween
+		if (!resource->FlaggedForDeletion())
+			continue;
+
+		switch (resource->FileType())
+		{
+		case RESOURCE_IMAGE:
+			resourceImageMap.erase(resource->Path());
+			break;
+		}
+		delete resource;
+	}
+
+	deletionVec.clear();
 }
 
