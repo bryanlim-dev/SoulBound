@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "shader.h"
+#include "Shader.h"
 
 class Material {
 
