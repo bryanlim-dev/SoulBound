@@ -63,6 +63,16 @@ target_include_directories(glad PUBLIC extern/glad/include)
 add_library(stb_image INTERFACE)
 target_include_directories(stb_image INTERFACE extern/stb_image/include)
 
+# fmod
+add_library(fmod INTERFACE)
+target_include_directories(fmod INTERFACE extern/fmod/inc)
+#copy fmod dll
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>/extern/fmod/lib
+)
+
 # ------------------------------------------------------------
 # Linking
 # ------------------------------------------------------------
@@ -71,6 +81,7 @@ target_link_libraries(${PROJECT_NAME}
     glfw
     glad
     stb_image
+    fmod
 )
 
 # ------------------------------------------------------------
@@ -84,4 +95,5 @@ target_include_directories(${PROJECT_NAME}
     extern/glfw/include
     extern/glm
     extern/stb_image/include
+    extern/fmod
 )

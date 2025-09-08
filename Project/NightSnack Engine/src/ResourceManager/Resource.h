@@ -70,3 +70,8 @@ private:
 	//Default constructor is deleted
 	ResourceImage() = delete;
 };
+
+class ResourceSound : public Resource
+{
+
+};

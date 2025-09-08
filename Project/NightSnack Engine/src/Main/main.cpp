@@ -35,6 +35,8 @@ int main()
 		window.PollEvents();
 
 		rm->Update();
+
+		
 		rm->UpdatePostRender();
 	}
 
