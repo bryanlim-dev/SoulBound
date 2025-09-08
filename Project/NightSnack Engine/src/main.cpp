@@ -12,16 +12,18 @@ int main()
 	ResourceManager* rm = ResourceManager::GetInstance();
 
 	//Resource Manager test
-	rm->LoadImage("assets/Banana.jpg"); //Testing a loading jpg
-	rm->LoadImage("assets/image_UI_target.png"); //Testing loading png
-	rm->UnloadImage("assets/image_UI_target.png"); 
+	{
+		rm->LoadImage("assets/Banana.jpg"); //Testing a loading jpg
+		rm->LoadImage("assets/image_UI_target.png"); //Testing loading png
+		rm->UnloadImage("assets/image_UI_target.png");
 
-	rm->LoadImage("assets/image_UI_target.png"); //Testing loading a loaded image with deletion flagged
-	rm->LoadImage("assets/image_UI_target.png"); //Testing loading same image
-	rm->UpdatePostRender(); //Run unload code
-	rm->UnloadImage("assets/image_UI_target.png"); //Actual unloading test
-	rm->UpdatePostRender(); //Run unload code
-	rm->LoadImage("assets/image_UI_target.png"); //Reloading a unloaded image test
+		rm->LoadImage("assets/image_UI_target.png"); //Testing loading a loaded image with deletion flagged
+		rm->LoadImage("assets/image_UI_target.png"); //Testing loading same image
+		rm->UpdatePostRender(); //Run unload code
+		rm->UnloadImage("assets/image_UI_target.png"); //Actual unloading test
+		rm->UpdatePostRender(); //Run unload code
+		rm->LoadImage("assets/image_UI_target.png"); //Reloading a unloaded image test
+	}
 
 	//std::cout << "Image loaded: " << rm->GetImage("assets/Banana.jpg") << std::endl;
 
