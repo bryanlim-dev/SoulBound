@@ -4,7 +4,10 @@
 #include "ECS/Entity.h"
 #include <unordered_map>
 #include <string>
+#include <array>
 
+// Component Array class to store components of type T
+// in a densely packed array for efficient access and iteration.
 template <typename T>
 class ComponentArray {
 
