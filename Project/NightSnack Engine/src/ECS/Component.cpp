@@ -59,6 +59,16 @@ T& ComponentArray<T>::Get(Entity e) {
 
 }
 
+template <typename T>
+void ComponentArray<T>::EntityDestroyed(Entity e) {
+
+	// If destroyed Entity e is found inside the Array, remove it;
+	if (entityToIndex.find(e) != entityToIndex.end()) {
+		remove(e);
+	}
+
+}
+
 // ------------------------------------------------------------------------------------------------
 // COMPONENT MANAGER
 // ------------------------------------------------------------------------------------------------
@@ -95,6 +105,15 @@ T& ComponentManager::GetComponent(Entity e) {
 	
 	// Call member function to obtain a reference to an Entity's Component of type T;
 	return GetComponentArray<T>()->Get(e);
+
+}
+
+void ComponentManager::EntityDestroyed(Entity e) {
+	
+	// Remove Entity from all Component Arrays;
+	for (auto& pair : ComponentArrays) {
+		pair.second->EntityDestroyed(e);
+	}
 
 }
 

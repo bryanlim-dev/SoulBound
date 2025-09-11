@@ -3,15 +3,23 @@
 
 #include "ECS/Types.h"
 
+// ComponentArray interface to allow storage of multiple different ComponentArrays in ComponentManager;
+class IComponentArray {
+public:
+	virtual ~IComponentArray() = default;
+	virtual void EntityDestroyed(Entity entity) = 0; // allows cleanup
+};
+
 // Component Array class to store components of type T
 // in a densely packed array for efficient access and iteration.
 template <typename T>
-class ComponentArray {
+class ComponentArray : IComponentArray {
 
 public:
   void Insert(Entity e, T component);
   void Remove(Entity e);
   T& Get(Entity e);
+  void EntityDestroyed(Entity e) override;
 
 private:
   std::array<T, MAX_ENTITIES> components;
@@ -58,9 +66,11 @@ public:
 	template <typename T>
 	T& GetComponent(Entity e);
 
+	void EntityDestroyed(Entity e);
+
 private:
 	// Mapping of all Component Arrays of any type;
-	std::unordered_map<std::type_index, std::shared_ptr<void>> ComponentArrays;
+	std::unordered_map<std::type_index, std::shared_ptr<IComponentArray>> ComponentArrays;
 
 	template <typename T>
 	std::shared_ptr<ComponentArray<T>> GetComponentArray();
@@ -72,11 +82,11 @@ private:
 // Add new Components here if necessary;
 
 struct Position {
-  float x, y;
+  double x, y;
 };
 
 struct Velocity {
-  float dx, dy;
+  double dx, dy;
 };
 
 struct Sprite {

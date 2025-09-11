@@ -33,7 +33,7 @@ void SystemManager::EntityDestroyed(Entity e) {
 
 	// Iterate through unordered Map of Systems, remove Entity e from set of 
 	// Entities that the Systems can access, so they do not work on destroyed Entities;
-	for (auto const& pair : Systems) {
+	for (auto& pair : Systems) {
 		pair.second->Entities.erase(e);
 	}
 
