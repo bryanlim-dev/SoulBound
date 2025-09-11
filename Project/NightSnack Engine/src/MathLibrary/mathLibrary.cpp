@@ -74,7 +74,8 @@ double Vec2::operator*(const Vec2& other) const { return this->dot(other); }
 double Vec2::operator^(const Vec2& other) const { return this->cross(other); }
 
 // Overload << operator for easy printing of Vec2
-std::ostream& operator<<(std::ostream& os, const Vec2& v) {
+std::ostream& operator<<(std::ostream& os, const Vec2& v) 
+{
     os << "(" << v.x << ", " << v.y << ")";
     return os;
 }
