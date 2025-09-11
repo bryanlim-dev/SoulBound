@@ -1,5 +1,9 @@
 #include "ECS/Component.h"
 
+// ------------------------------------------------------------------------------------------------
+// COMPONENT ARRAY
+// ------------------------------------------------------------------------------------------------
+
 // Size starts at 0;
 // When inserting Components,
 // Map the location(size) of the Component to the Entity ID;
@@ -38,15 +42,68 @@ void ComponentArray<T>::Remove(Entity e) {
 	entityToIndex[lastEntity] = index;
 	indexToEntity[index] = lastEntity;
 
+	// Erase mapping of removed Components;
+	entityToIndex.erase(e);
+	indexToEntity.erase(lastIndex);
+
 	// Update size;
 	--size;
 
 }
 
 // Find the index of an Entity's Component and return a reference to it.
-template<typename T>
+template <typename T>
 T& ComponentArray<T>::Get(Entity e) {
 
 	return components[entityToIndex[e]];
+
+}
+
+// ------------------------------------------------------------------------------------------------
+// COMPONENT MANAGER
+// ------------------------------------------------------------------------------------------------
+
+
+template <typename T>
+void ComponentManager::RegisterComponent() {
+
+	// Obtain type index for mapping;
+	std::type_index typeIdx(typeid(T));
+	// Map type index to ComponentArray of type T;
+	ComponentArrays[typeIdx] = std::make_shared<ComponentArray<T>>();
+
+}
+
+template <typename T>
+void ComponentManager::AddComponent(Entity e, T component) {
+	
+	// Call member function of ComponentArray to insert Component;
+	GetComponentArray<T>()->Insert(e, component);
+
+}
+
+template <typename T>
+void ComponentManager::RemoveComponent(Entity e) {
+
+	// Call member function of ComponentArray to remove Component;
+	GetComponentArray<T>()->Remove(e);
+
+}
+
+template <typename T>
+T& ComponentManager::GetComponent(Entity e) {
+	
+	// Call member function to obtain a reference to an Entity's Component of type T;
+	return GetComponentArray<T>()->Get(e);
+
+}
+
+template <typename T>
+std::shared_ptr<ComponentArray<T>> ComponentManager::GetComponentArray() {
+
+	// Obtain type index to locate specific ComponentArray of type T;
+	std::type_index typeIdx(typeid(T));
+	// Return a pointer to requested ComponentArray using smart pointer;
+	return std::static_pointer_cast<ComponentArray<T>>(ComponentArrays[typeIdx]);
 
 }

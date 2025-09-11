@@ -38,6 +38,9 @@ void EntityManager::DestroyEntity(Entity e) {
 		return;
 	}
 
+	// Clear Component signatures for destroyed Entity ID;
+	Signatures[e].reset();
+
 	// Return the Entity ID to the pool of available entities;
 	availableEntities.push(e);
 	--livingEntityCount;

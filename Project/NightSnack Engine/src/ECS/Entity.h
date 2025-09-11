@@ -3,12 +3,8 @@
 
 #include <cstdint>
 #include <queue>
+#include "ECS/Types.h"
 
-// Maximum number of entities in the system.
-constexpr size_t MAX_ENTITIES = 5000;
-
-// Entities are essentially just unique IDs.
-using Entity = std::uint32_t;
 
 // Entity Manager class to handle creation and destruction of entities.
 class EntityManager {
@@ -19,9 +15,13 @@ public:
   Entity CreateEntity();
   void DestroyEntity(Entity e);
 
+  void SetSignature(Entity e, Signature sig) { Signatures.at(e) = sig; }
+  Signature GetSignature(Entity e) { return Signatures.at(e); }
+
 private:
   std::queue<Entity> availableEntities;
-	size_t livingEntityCount = 0;
+  size_t livingEntityCount = 0;
+  std::array<Signature, MAX_ENTITIES> Signatures;
 
 };
 
