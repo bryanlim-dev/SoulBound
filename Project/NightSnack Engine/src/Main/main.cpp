@@ -9,7 +9,7 @@ int main()
 	// Game loop;
 	while (!window.ShouldClose()) {
 		glClear(GL_COLOR_BUFFER_BIT);
-
+		// CoreEngine.Update();
 		window.SwapBuffers();
 		window.PollEvents();
 	}

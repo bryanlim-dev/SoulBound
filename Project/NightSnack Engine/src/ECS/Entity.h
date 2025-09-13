@@ -2,27 +2,24 @@
 #define ENTITY_HPP
 
 #include <cstdint>
-#include <queue>
-#include "ECS/Types.h"
+#include <bitset>
 
+// Maximum number of entities in the system;
+constexpr size_t MAX_ENTITIES = 6000;
+// Maximum number of components;
+constexpr size_t MAX_COMPONENTS = 32;
 
-// Entity Manager class to handle creation and destruction of entities.
-class EntityManager {
+// Unique IDs;
+using Entity = std::uint32_t;
+using SystemID = std::uint8_t;
+using ComponentType = std::uint8_t;
 
-public:
-  EntityManager();
+// Signatures for Systems to recognize which Entities to work on;
+// It is a set of bits from 0 to MAX_COMPONENTS,
+// Whenever a new component is registered, it will have an ID from 0 to MAX_COMPONENTS;
+// Entity Manager, Coordinator and System Manager will each maintain and compare Signatures;
+using Signature = std::bitset<MAX_COMPONENTS>;
 
-  Entity CreateEntity();
-  void DestroyEntity(Entity e);
-
-  void SetSignature(Entity e, Signature sig) { Signatures.at(e) = sig; }
-  Signature GetSignature(Entity e) { return Signatures.at(e); }
-
-private:
-  std::queue<Entity> availableEntities;
-  size_t livingEntityCount = 0;
-  std::array<Signature, MAX_ENTITIES> Signatures;
-
-};
+constexpr Entity INVALID_ENTITY = UINT32_MAX;
 
 #endif // ENTITY_HPP

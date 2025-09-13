@@ -1,11 +1,12 @@
 #ifndef MOVEMENT_HPP
 #define MOVEMENT_HPP
 
-#include "ECS/Types.h"
+#include <iostream>
+
+#include "ECS/Entity.h"
 #include "Systems/ISystem.h"
 #include "ECS/Coordinator.h"
 #include "ECS/Component.h"
-#include <iostream>
 
 class MovementSystem : public ISystem {
 

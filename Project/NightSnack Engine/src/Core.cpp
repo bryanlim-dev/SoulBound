@@ -1,5 +1,10 @@
 #include "Core.h"
 #include "Systems/Movement.h"
+#include "ECS/Component.h"
+#include "ECS/ComponentManager.h"
+#include "ECS/EntityManager.h"
+#include "Systems/ISystem.h"
+
 
 // ------------------------------------------------------------------------------------------------
 // CORE
@@ -18,8 +23,8 @@ void CoreEngine::Initialize() {
 	// Register all Systems;
 	Coord.RegisterSystem<MovementSystem>();
 	Signature Sig{};								// Create a Signature for System to know what Components it needs;
-	Sig.set(Coord.GetComponentType<Position>());	// Set Position to true in signature;
-	Sig.set(Coord.GetComponentType<Velocity>());	// Set Velocity to true in signature;
+	Sig.set(GetComponentTypeID<Position>());	// Set Position to true in signature;
+	Sig.set(GetComponentTypeID<Velocity>());	// Set Velocity to true in signature;
 	Coord.SetSystemSignature<MovementSystem>(Sig);	// Set actual System Signature;
 	
 	// Add more Systems here...
