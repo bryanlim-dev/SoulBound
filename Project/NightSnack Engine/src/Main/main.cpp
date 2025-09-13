@@ -27,8 +27,8 @@ int main()
 	}
 
 	//Replace this with actual sound manager later
-	FMOD::System* system = nullptr;
-	FMOD::System_Create(&system);
+	FMOD::System* fmodSystem = nullptr;
+	FMOD::System_Create(&fmodSystem);
 
 
 
@@ -50,5 +50,7 @@ int main()
 	// Clean termination;
 
 	rm->DeleteRM();
+	fmodSystem->close();
+	delete fmodSystem;
   return 0;
 }
