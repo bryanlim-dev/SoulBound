@@ -47,7 +47,24 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/assets
     $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
+
+#copy to build/assets
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+    "${CMAKE_BINARY_DIR}/assets"
+
+#copy fmod dll to config
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib
+    $<TARGET_FILE_DIR:${PROJECT_NAME}>/extern/fmod/lib
+
+#copy fmod dll to build/extern
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib"
+    "${CMAKE_BINARY_DIR}/extern/fmod/lib"
 )
+
+
 
 # ------------------------------------------------------------
 # External Dependencies
@@ -66,12 +83,7 @@ target_include_directories(stb_image INTERFACE extern/stb_image/include)
 # fmod
 add_library(fmod INTERFACE)
 target_include_directories(fmod INTERFACE extern/fmod/inc)
-#copy fmod dll
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib
-    $<TARGET_FILE_DIR:${PROJECT_NAME}>/extern/fmod/lib
-)
+
 
 # ------------------------------------------------------------
 # Linking
