@@ -53,15 +53,15 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     "${CMAKE_CURRENT_SOURCE_DIR}/assets"
     "${CMAKE_BINARY_DIR}/assets"
 
-#copy fmod dll to config
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib
-    $<TARGET_FILE_DIR:${PROJECT_NAME}>/extern/fmod/lib
+#fmod debug ver dll
+   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+     "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmodL.dll"
+     "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
 
-#copy fmod dll to build/extern
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-    "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib"
-    "${CMAKE_BINARY_DIR}/extern/fmod/lib"
+#fmod release ver dll
+   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+     "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmod.dll"
+     "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
 )
 
 
@@ -83,6 +83,11 @@ target_include_directories(stb_image INTERFACE extern/stb_image/include)
 # fmod
 add_library(fmod INTERFACE)
 target_include_directories(fmod INTERFACE extern/fmod/inc)
+# diff fmod links based on config
+target_link_libraries(fmod INTERFACE
+    debug "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmodL_vc.lib"
+    optimized "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmod_vc.lib"
+)
 
 
 # ------------------------------------------------------------

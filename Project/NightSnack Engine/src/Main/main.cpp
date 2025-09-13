@@ -1,6 +1,7 @@
 #include "AppWindow/Window.h"
 
 #include "ResourceManager/ResourceManager.h"
+#include <fmod.hpp>
 
 
 int main()
@@ -24,6 +25,12 @@ int main()
 		rm->UpdatePostRender(); //Run unload code
 		rm->LoadImage("assets/image_UI_target.png"); //Reloading a unloaded image test
 	}
+
+	//Replace this with actual sound manager later
+	FMOD::System* system = nullptr;
+	FMOD::System_Create(&system);
+
+
 
 	//std::cout << "Image loaded: " << rm->GetImage("assets/Banana.jpg") << std::endl;
 
