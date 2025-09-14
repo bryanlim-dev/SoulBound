@@ -60,6 +60,7 @@ public:
 	/************************************************************************/
 	void UpdatePostRender();
 
+#pragma region Image Functions
 	/************************************************************************/
 	/*!
 	\brief
@@ -111,6 +112,11 @@ public:
 	*/
 	/************************************************************************/
 	ResourceImage* GetImageResource(const std::type_index imageKey);
+#pragma endregion
+
+#pragma region Txt File Functions
+
+#pragma endregion
 
 	//Delete the Resource Manager
 	void DeleteRM();

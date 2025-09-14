@@ -29,8 +29,7 @@ void ResourceManager::UpdatePostRender()
 	DeleteFlaggedResources();
 }
 
-
-
+#pragma region Image Functions
 LOAD_RESULT ResourceManager::LoadImage(std::string filePath, std::type_index &imageKey)
 {
 	std::cout << "RM: ";
@@ -123,6 +122,11 @@ ResourceImage* ResourceManager::GetImageResource(const std::type_index imageKey)
 	//Return nullptr if failed to load
 	return nullptr;
 }
+
+#pragma endregion
+
+#pragma region Txt File Functions
+#pragma endregion
 
 void ResourceManager::DeleteRM()
 {
