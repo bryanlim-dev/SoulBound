@@ -98,6 +98,13 @@ void Shader::SetMat4(const std::string& name, const glm::mat4& mat) const {
 	glUniformMatrix4fv(location, 1, GL_FALSE, &mat[0][0]);
 }
 
+// Helper function to upload a 3x3 Matrix uniform to the shader program ---------------------------
+// ------------------------------------------------------------------------------------------------
+void Shader::SetMat3(const std::string& name, const glm::mat3& mat) const {
+	GLint location = glGetUniformLocation(programID, name.c_str());
+	glUniformMatrix3fv(location, 1, GL_FALSE, &mat[0][0]);
+}
+
 // Helper function to upload a vec3 uniform to the shader program ---------------------------------
 // ------------------------------------------------------------------------------------------------
 void Shader::SetVec3(const std::string& name, const glm::vec3& value) const {

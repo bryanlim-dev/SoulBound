@@ -2,24 +2,18 @@
 
 #include <glm/glm.hpp>
 #include <vector>
-#include "Mesh.h"
-#include "Material.h"
-
-struct Renderable {
-	//Transform transform;
-	Mesh* mesh;
-	Material* material;
-	bool wireframe = true; // Default is true, for debugging purposes
-};
+#include "../GameObject.h"
+#include "Graphics/Camera.h"
 
 class Renderer {
 
 public:
 
 	// Add a renderable object when spawning entities
-	void AddRenderable(const Renderable& renderable);
+	//void AddRenderable(const Renderable& renderable);
+	void AddGameObject(GameObject* obj);
 
-	// Remove all objects (e.g. per-frame rebuild if ECS is driving it)
+	// Remove all objects 
 	void Clear();
 
 	// Main render loop
@@ -27,6 +21,7 @@ public:
 	
 private:
 
-	std::vector<Renderable> objects;
-
+	//std::vector<Renderable> objects;
+	std::vector<GameObject*> objects;
+	Camera camera;
 };

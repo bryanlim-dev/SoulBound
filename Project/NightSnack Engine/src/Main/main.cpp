@@ -15,10 +15,10 @@ int main()
 	// Create the different meshes
 	// NOTE: Positions for the meshs are in NDC coordinates currently
 	// It will be changed according to our window resolution soon ...
-	Mesh point = Mesh::CreatePoint({ 0.f,0.f });
-	Mesh line = Mesh::CreateLine({ 0.f, 0.5f}, { 0.5f, 0.f });
-	Mesh rectangle = Mesh::CreateRectangle({ -0.25f, 0.f }, 0.5f, 0.3f);
-	Mesh circle = Mesh::CreateCircle({ 0.f, 0.f }, 0.3f);
+	Mesh point = Mesh::CreatePoint();
+	Mesh line = Mesh::CreateLine();
+	Mesh rectangle = Mesh::CreateSquare();
+	Mesh circle = Mesh::CreateCircle();
 
 	// Create the different materials
 	Material red(&shader, glm::vec3(1, 0, 0));
@@ -28,14 +28,34 @@ int main()
 	// Create the renderables with customisable mesh and material
 	Renderable redPoint{ &point, &red };
 	Renderable greenLine{ &line, &green };
-	Renderable blueQuad{ &rectangle, &blue };
+	Renderable redQuad{ &rectangle, &red };
 	Renderable greenCircle{ &circle, &green };
 
 	// Add the renderables to the pool of objects
-	renderer.AddRenderable(greenCircle);
-	renderer.AddRenderable(blueQuad);
-	renderer.AddRenderable(redPoint);
-	renderer.AddRenderable(greenLine);
+	//renderer.AddRenderable(greenCircle);
+	//renderer.AddRenderable(blueQuad);
+	//renderer.AddRenderable(redPoint);
+	//renderer.AddRenderable(greenLine);
+
+	Transform transform{
+		glm::vec2(200.f,-300.f),
+		0.f,
+		glm::vec2(500.f, 500.f)
+	};
+	GameObject obj1(transform, redQuad);
+	renderer.AddGameObject(&obj1);
+
+	Transform transformCircle{
+		glm::vec2(0.f, 0.f),
+		0.f,
+		glm::vec2(300.f, 300.f)
+	};
+	GameObject obj2(transformCircle, greenCircle);
+	renderer.AddGameObject(&obj2);
+
+
+
+
 #pragma endregion
 
 	// Game loop;

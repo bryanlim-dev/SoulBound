@@ -15,10 +15,11 @@ public:
 
 	void Draw() const;
 
-	static Mesh CreatePoint(const glm::vec2& pos);
-	static Mesh CreateLine(const glm::vec2& startPos, const glm::vec2& endPos);
-	static Mesh CreateRectangle(const glm::vec2& centerPos, const float width, const float height);
-	static Mesh CreateCircle(const glm::vec2& centerPos, const float radius);
+	// Helper functions to create basic debug shapes of unit length
+	static Mesh CreatePoint();
+	static Mesh CreateLine();
+	static Mesh CreateSquare();
+	static Mesh CreateCircle();
 
 	GLsizei indexCount{ 0 }, vertexCount{ 0 };
 private:

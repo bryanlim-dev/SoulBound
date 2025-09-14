@@ -78,27 +78,32 @@ void Mesh::Draw() const {
 	glBindVertexArray(0);
 }
 
-// Helper function to create a mesh representing a point ------------------------------------------
+// Helper function to create a mesh representing a point at the center of the screen --------------
 // ------------------------------------------------------------------------------------------------
-Mesh Mesh::CreatePoint(const glm::vec2& pos) {
-	std::vector<glm::vec2> positions{ pos };
+Mesh Mesh::CreatePoint() {
+	// Default position is at the center of the screen
+	std::vector<glm::vec2> positions{ glm::vec2(0.f, 0.f) };
 
 	// No indices since we will be using glDrawArrays for points
 	return Mesh(GL_POINTS, positions, {});
 }
 
-// Helper function to create a mesh representing a line -------------------------------------------
+// Helper function to create a mesh representing a horizontal line at the center of the screen ----
 // ------------------------------------------------------------------------------------------------
-Mesh Mesh::CreateLine(const glm::vec2& startPos, const glm::vec2& endPos) {
-	std::vector<glm::vec2> positions{ startPos, endPos };
+Mesh Mesh::CreateLine() {
+	std::vector<glm::vec2> positions{ glm::vec2(0.f, 0.f), glm::vec2(1.f, 0.f) };
 	
 	// No indices since we will be using glDrawArrays for lines
 	return Mesh(GL_LINES, positions, {});
 }
 
-// Helper function to create a mesh representing a rectangle --------------------------------------
+// Helper function to create a mesh representing a rectangle at the center of the screen ----------
 // ------------------------------------------------------------------------------------------------
-Mesh Mesh::CreateRectangle(const glm::vec2& centerPos, const float width, const float height) {
+Mesh Mesh::CreateSquare() {
+	const glm::vec2 centerPos{ 0.f, 0.f };
+	const float width = 1.f;
+	const float height = 1.f;
+
 	std::vector<glm::vec2> positions{
 		glm::vec2(centerPos.x + width * 0.5f, centerPos.y + height * 0.5f), // Top right
 		glm::vec2(centerPos.x - width * 0.5f, centerPos.y + height * 0.5f), // Top left
@@ -110,9 +115,12 @@ Mesh Mesh::CreateRectangle(const glm::vec2& centerPos, const float width, const 
 	return Mesh(GL_TRIANGLES, positions, indices);
 }
 
-// Helper function to create a mesh representing a circle -----------------------------------------
+// Helper function to create a mesh representing a circle at the center of the screen -------------
 // ------------------------------------------------------------------------------------------------
-Mesh Mesh::CreateCircle(const glm::vec2& centerPos, const float radius) {
+Mesh Mesh::CreateCircle() {
+	glm::vec2 centerPos{ 0.f, 0.f };
+	const float radius{ 1.f };
+
 	std::vector<glm::vec2> positions{
 		centerPos // Starting position is the center of the circle
 	};
