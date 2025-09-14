@@ -38,24 +38,18 @@ void CoreEngine::Update() {
 	// Obtain dt; TEMP, WILL BE REPLACED WITH TIMER CLASS;
 	double deltaTime = 0.2;
 
-	// FPS Calculation
-	using clock = std::chrono::high_resolution_clock;
-	static auto startTime = clock::now();
-	static double lastTime = 0.0;
-	static int frameCount = 0;
+	// FPS calculation
+	double currentTime = glfwGetTime();
+	frameCount_++;
 
-	auto now = clock::now();
-	double currentTime = std::chrono::duration<double>(now - startTime).count();
-	frameCount++;
-
-	if (currentTime - lastTime >= 1.0) 
+	if (currentTime - lastTime_ >= 1.0) 
 	{
-		double fps = frameCount / (currentTime - lastTime);
-		lastTime = currentTime;
-		frameCount = 0;
+		FPS_ = frameCount_ / (currentTime - lastTime_);
+		lastTime_ = currentTime;
+		frameCount_ = 0;
 
 		// Update window title
-		std::string title = "NightSnack Engine - FPS: " + std::to_string(static_cast<int>(fps));
+		std::string title = "NightSnack Engine - FPS: " + std::to_string(static_cast<int>(FPS_));
 		CoreWindow->SetTitle(title);
 	}
 
