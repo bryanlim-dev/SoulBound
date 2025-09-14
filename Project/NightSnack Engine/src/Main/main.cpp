@@ -1,11 +1,16 @@
-#include "Graphics/Renderer.h"
+#define _CRTDBG_MAP_ALLOC
+#include <cstdlib>
+#include <crtdbg.h>
+
 #include "AppWindow/Window.h"
+#include "Core.h"
+#include "Systems/AllSystems.h"		// Include your system header in this file;
+#include "Graphics/Renderer.h"
 
 int main()
 {
-	// Create window (width, height, title);
-	Window window(1600, 900, "NightSnack Engine");
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+	// Enable memory leak checking at program exit
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 #pragma region Temporary test code for rendering basic debugging shapes
 	// Load shader
@@ -59,15 +64,32 @@ int main()
 #pragma endregion
 
 	// Game loop;
-	while (!window.ShouldClose()) {
-		glClear(GL_COLOR_BUFFER_BIT);
+	//while (!window.ShouldClose()) {
+	//	glClear(GL_COLOR_BUFFER_BIT);
 
-		renderer.DrawAll();
+	//	renderer.DrawAll();
 
 		// CoreEngine.Update();
 
-		window.SwapBuffers();
-		window.PollEvents();
+	//	window.SwapBuffers();
+	//	window.PollEvents();
+
+	// Create Core engine, passing window parameters;
+	CoreEngine Core(1600, 900, "NightSnack Engine");
+
+	// Will register all components;
+	// If you create new components, please register them in this function defined in Core.cpp;
+	Core.Initialize();
+
+	// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
+	// i.e: Input-> Movement -> Collision -> Graphics;
+	Core.AddSystem<MovementSystem>();
+
+	// Add more systems here...
+
+	// Core Application Loop;
+	while (!Core.ShouldClose()) {
+		Core.Update();
 	}
 
 	// Clean termination;

@@ -189,7 +189,8 @@ T& ComponentManager::GetComponent(Entity e) {
 
 }
 
-void ComponentManager::EntityDestroyed(Entity e) {
+// Inline to prevent multiple definition error;
+inline void ComponentManager::EntityDestroyed(Entity e) {
 
 	// Remove Entity from all Component Arrays;
 	for (auto& pair : ComponentArrays) {
