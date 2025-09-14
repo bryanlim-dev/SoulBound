@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <typeindex>
+#include <vector>
 
 
 //Unused for now (might not uise cause i used derived classes instead)
@@ -10,6 +11,7 @@ enum RESOURCE_TYPE
 {
 	RESOURCE_NONE,
 	RESOURCE_IMAGE,
+	RESOURCE_TXTFILE,
 	RESOURCE_SOUND,
 };
 
@@ -22,7 +24,7 @@ protected:
 	//Path of the file
 	std::string path = "";
 
-	RESOURCE_TYPE fileType = RESOURCE_NONE;
+	RESOURCE_TYPE resourceType = RESOURCE_NONE;
 
 	bool resourceLoaded = false;
 
@@ -78,6 +80,21 @@ private:
 	//Default constructor is deleted
 	ResourceImage() = delete;
 };
+
+
+class ResourceTxtFile : public Resource
+{
+protected:
+	//vector of strings of the txt file
+	std::vector<std::string> txtStringVec;
+
+public:
+	ResourceTxtFile(const std::string& inFilePath, const std::type_index& inMapKey);
+	~ResourceTxtFile();
+
+	const std::vector<const std::string> TextStringVec() const;
+};
+
 
 class ResourceSound : public Resource
 {
