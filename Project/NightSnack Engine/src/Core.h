@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <string>
+#include <chrono>
 
 #include "ECS/Coordinator.h"
 #include "AppWindow/Window.h"	
@@ -36,6 +37,11 @@ private:
 	Coordinator Coord;
 	// Application Window;
 	std::unique_ptr<Window> CoreWindow;
+
+	// Frame timers
+	int		FrameCount_ = 0;
+	double	LastTime_ = 0.0;
+	double	FPS_ = 0.0;
 };
 
 template <typename T>
