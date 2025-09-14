@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <map>
-
+#include <typeindex>
 
 #include "ResourceManager/Resource.h"
 #include "../Singleton.h"
@@ -24,13 +24,22 @@
 //loadidng images
 //https://solarianprogrammer.com/2019/06/10/c-programming-reading-writing-images-stb_image-libraries/
 
+enum LOAD_RESULT
+{
+	LOAD_SUCCESS,		//Resource loaded in
+	LOAD_SUCCESS_STOPPED_UNLOAD, //Resource already exists but was going to be unloaded soon, so it was stopped from being unloaded
+	LOAD_FAIL_PREEXIST, //Resource already exists
+	LOAD_FAIL_BADPATH,	//Resource fails to load due to bad file bath
+};
 
 class ResourceManager : public Singleton<ResourceManager>
 {
 private:
+	unsigned int totalResourcesLoaded = 0;
+
 	//Key, Value
 	//Maps of resources
-	std::map<std::string, ResourceImage*> resourceImageMap;
+	std::map<std::type_index, ResourceImage*> resourceImageMap;
 
 	//List of resources to track to delete
 	std::vector<Resource*> deletionVec;
@@ -56,17 +65,22 @@ public:
 	\brief
 	Load an image based on the file path.
 	
-	\param input
+	\param[in] filePath
 	The input string of the file path.
+
+	\param[out] imageKey
+	The return of key to pass in to reobtain the resource (image).
 	
 	\return
 	True if managed to load image successfully or if it already exists.
 	False if failed to load.
 	*/
 	/************************************************************************/
-	bool LoadImage(std::string filePath);
+	LOAD_RESULT LoadImage(std::string filePath, std::type_index& imageKey);
 
-	void UnloadImage(std::string filePath);
+	void UnloadImage(std::type_index imageKey);
+
+	std::type_index ConstructImageMapKey(std::string filePath);
 
 	/************************************************************************/
 	/*!
@@ -81,7 +95,7 @@ public:
 	Pointer of unsigned char of image.
 	*/
 	/************************************************************************/
-	unsigned char* GetImage(std::string filePath);
+	unsigned char* GetImage(const std::type_index imageKey);
 
 	/************************************************************************/
 	/*!
@@ -95,7 +109,7 @@ public:
 	Pointer of image resource
 	*/
 	/************************************************************************/
-	ResourceImage* GetImageResource(std::string filePath);
+	ResourceImage* GetImageResource(const std::type_index imageKey);
 
 	//Delete the Resource Manager
 	void DeleteRM();

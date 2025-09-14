@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <typeindex>
 
 
 //Unused for now (might not uise cause i used derived classes instead)
@@ -15,6 +16,9 @@ enum RESOURCE_TYPE
 class Resource
 {
 protected:
+
+	std::type_index mapKey;
+
 	//Path of the file
 	std::string path = "";
 
@@ -34,12 +38,16 @@ public:
 	The input string of the file path
 	*/
 	/************************************************************************/
-	Resource(std::string filePath) {};
+	Resource(const std::string &inFilePath, const std::type_index &inMapKey) : path(inFilePath), mapKey(inMapKey)
+	{
+	};
 	virtual ~Resource();
 
 
 	bool Loaded() const;
 	std::string Path() const;
+
+	std::type_index MapKey() const;
 
 	bool& FlaggedForDeletion();
 
@@ -59,7 +67,7 @@ protected:
 	int width = 0, height = 0, channels = 0;
 
 public:
-	ResourceImage(std::string filePath);
+	ResourceImage(const std::string& inFilePath, const std::type_index& inMapKey);
 	~ResourceImage();
 
 

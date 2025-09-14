@@ -14,16 +14,33 @@ int main()
 
 	//Resource Manager test
 	{
-		rm->LoadImage("assets/Banana.jpg"); //Testing a loading jpg
-		rm->LoadImage("assets/image_UI_target.png"); //Testing loading png
-		rm->UnloadImage("assets/image_UI_target.png");
+		std::type_index bananaKey = typeid(void);
+		std::type_index targetKey = typeid(void);
+		rm->LoadImage("assets/Banana.jpg", bananaKey); //Testing a loading jpg
+		rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading png
+		rm->UnloadImage(targetKey);
+		rm->UpdatePostRender();
+		if (rm->GetImage(targetKey) == nullptr)
+		{
+			std::cout << "Get Image did not find resource" << std::endl;
+		}
 
-		rm->LoadImage("assets/image_UI_target.png"); //Testing loading a loaded image with deletion flagged
-		rm->LoadImage("assets/image_UI_target.png"); //Testing loading same image
+		rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading a loaded image with deletion flagged
+		rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading same image
 		rm->UpdatePostRender(); //Run unload code
-		rm->UnloadImage("assets/image_UI_target.png"); //Actual unloading test
+		rm->UnloadImage(targetKey); //Actual unloading test
 		rm->UpdatePostRender(); //Run unload code
-		rm->LoadImage("assets/image_UI_target.png"); //Reloading a unloaded image test
+		rm->LoadImage("assets/image_UI_target.png", targetKey); //Reloading a unloaded image test
+		rm->GetImage(targetKey);
+		rm->GetImage(bananaKey);
+		if (rm->GetImage(targetKey) != nullptr)
+		{
+			std::cout << "Get Image found target resource" << std::endl;
+		}
+		if (rm->GetImage(bananaKey) != nullptr)
+		{
+			std::cout << "Get Image found banana resource" << std::endl;
+		}
 	}
 
 	//Replace this with actual sound manager later
@@ -51,6 +68,5 @@ int main()
 
 	rm->DeleteRM();
 	fmodSystem->close();
-	delete fmodSystem;
   return 0;
 }

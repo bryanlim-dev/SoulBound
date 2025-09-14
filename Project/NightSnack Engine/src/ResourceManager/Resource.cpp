@@ -22,6 +22,11 @@ std::string Resource::Path() const
 	return path;
 }
 
+std::type_index Resource::MapKey() const
+{
+	return mapKey;
+}
+
 RESOURCE_TYPE Resource::FileType() const
 {
 	return fileType;
@@ -34,10 +39,10 @@ bool& Resource::FlaggedForDeletion()
 
 
 
-ResourceImage::ResourceImage(std::string filePath) : Resource(filePath)
+ResourceImage::ResourceImage(const std::string& inFilePath, const std::type_index& inMapKey) 
+	: Resource(inFilePath, inMapKey)
 {
 	//Set file path
-	path = filePath;
 	fileType = RESOURCE_IMAGE;
 
 	//Load file
