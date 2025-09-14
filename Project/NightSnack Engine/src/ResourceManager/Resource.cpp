@@ -105,7 +105,7 @@ ResourceTxtFile::~ResourceTxtFile()
 {
 }
 
-const std::vector<const std::string> ResourceTxtFile::TextStringVec() const
+std::vector<std::string> ResourceTxtFile::TextStringVec() const
 {
-	return std::vector<const std::string>();
+	return txtStringVec;
 }

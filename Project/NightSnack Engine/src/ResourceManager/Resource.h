@@ -92,7 +92,7 @@ public:
 	ResourceTxtFile(const std::string& inFilePath, const std::type_index& inMapKey);
 	~ResourceTxtFile();
 
-	const std::vector<const std::string> TextStringVec() const;
+	std::vector<std::string> TextStringVec() const;
 };
 
 

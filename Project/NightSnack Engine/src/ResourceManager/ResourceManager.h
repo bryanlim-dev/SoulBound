@@ -40,6 +40,7 @@ private:
 	//Key, Value
 	//Maps of resources
 	std::map<std::type_index, ResourceImage*> resourceImageMap;
+	std::map<std::type_index, ResourceTxtFile*> resourceTxtFileMap;
 
 	//List of resources to track to delete
 	std::vector<Resource*> deletionVec;
@@ -115,7 +116,55 @@ public:
 #pragma endregion
 
 #pragma region Txt File Functions
+		/************************************************************************/
+	/*!
+	\brief
+	Load an txt file based on the file path.
+	
+	\param[in] filePath
+	The input string of the file path.
 
+	\param[out] imageKey
+	The return of key to pass in to reobtain the resource (txt file).
+	Use typeid(void) to make a empty std::type_index varianble to pass in
+	
+	\return
+	True if managed to load image successfully or if it already exists.
+	False if failed to load.
+	*/
+	/************************************************************************/
+	LOAD_RESULT LoadTxtFile(std::string filePath, std::type_index& txtKey);
+
+	void UnloadTxtFile(std::type_index txtKey);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Get an image based on the file path.
+	Uses GetImageResource to find class containing it.
+	
+	\param input
+	The input string of the file path.
+	
+	\return
+	Pointer of unsigned char of image.
+	*/
+	/************************************************************************/
+	std::vector<std::string> GetTxtFile(const std::type_index txtKey);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Get an image resource class pointer based on the file path
+	
+	\param input
+	The input string of the file path
+	
+	\return
+	Pointer of image resource
+	*/
+	/************************************************************************/
+	ResourceTxtFile* GetTxtFileResource(const std::type_index txtKey);
 #pragma endregion
 
 	//Delete the Resource Manager

@@ -11,12 +11,21 @@ ResourceManager::~ResourceManager()
 	//Delete all resources
 
 	//Loop through entire image map AND DELETE IT MUHAHA
-	std::map<std::type_index, ResourceImage*>::iterator it;
-	for (it = resourceImageMap.begin(); it != resourceImageMap.end(); it++)
+	std::map<std::type_index, ResourceImage*>::iterator itImg;
+	for (itImg = resourceImageMap.begin(); itImg != resourceImageMap.end(); itImg++)
 	{
-		delete it->second;
+		delete itImg->second;
 	}
 	resourceImageMap.clear();
+
+	//Delete txt map
+	std::map<std::type_index, ResourceTxtFile*>::iterator itTxt;
+	for (itTxt = resourceTxtFileMap.begin(); itTxt != resourceTxtFileMap.end(); itTxt++)
+	{
+		delete itTxt->second;
+	}
+	resourceTxtFileMap.clear();
+
 	deletionVec.clear();
 }
 
@@ -46,7 +55,7 @@ LOAD_RESULT ResourceManager::LoadImage(std::string filePath, std::type_index &im
 		if (resourceImageMap[imageKey]->FlaggedForDeletion())
 		{
 			//Remove the flag if it was flagged for deletion
-			//(This will cause it to not delete in post render)
+			//(This will cause it to not delete in update)
 			resourceImageMap[imageKey]->FlaggedForDeletion() = false;
 			return LOAD_SUCCESS_STOPPED_UNLOAD;
 		}
@@ -126,6 +135,89 @@ ResourceImage* ResourceManager::GetImageResource(const std::type_index imageKey)
 #pragma endregion
 
 #pragma region Txt File Functions
+
+
+
+LOAD_RESULT ResourceManager::LoadTxtFile(std::string filePath, std::type_index& txtKey)
+{
+	std::cout << "RM: ";
+
+	txtKey = ConstructMapKey(filePath);
+
+	//Check if resource alr exists
+	if (resourceTxtFileMap.find(txtKey) != resourceTxtFileMap.end())
+	{
+		std::cout << filePath << " already exists" << std::endl;
+
+		//Check if it was flagged for deletion
+		if (resourceTxtFileMap[txtKey]->FlaggedForDeletion())
+		{
+			//Remove the flag if it was flagged for deletion
+			//(This will cause it to not delete in update)
+			resourceTxtFileMap[txtKey]->FlaggedForDeletion() = false;
+			return LOAD_SUCCESS_STOPPED_UNLOAD;
+		}
+		else
+			return LOAD_FAIL_PREEXIST;
+	}
+
+	//This loads the image via the ResourceImage class
+	ResourceTxtFile* newResource = new ResourceTxtFile(filePath, txtKey);
+
+	//This checks if it is loaded or now
+	if (!newResource->Loaded())
+	{
+		std::cout << "Failed to load image" << std::endl;
+
+		if (newResource)
+			delete newResource;
+
+		return LOAD_FAIL_BADPATH;
+	}
+	else
+	{
+		std::cout << "Loaded image " << newResource->Path() << std::endl;
+
+		//Insert the loaded image into the map only if managed to load
+		resourceTxtFileMap.insert({ txtKey, newResource });
+		totalResourcesLoaded++;
+		return LOAD_SUCCESS;
+	}
+
+	return LOAD_RESULT();
+}
+
+void ResourceManager::UnloadTxtFile(std::type_index txtKey)
+{
+	//Check if resource alr exists
+	if (resourceTxtFileMap.find(txtKey) == resourceTxtFileMap.end())
+	{
+		std::cout << "Resource does not exist, cannot unload" << std::endl;
+		return;
+	}
+
+	resourceTxtFileMap[txtKey]->FlaggedForDeletion() = true;
+
+	//Change this to a queue system
+	deletionVec.push_back(resourceTxtFileMap[txtKey]);
+}
+
+std::vector<std::string> ResourceManager::GetTxtFile(const std::type_index txtKey)
+{
+	ResourceTxtFile* txt = GetTxtFileResource(txtKey);
+	return (txt != nullptr) ? txt->TextStringVec() : std::vector<std::string>();
+}
+
+ResourceTxtFile* ResourceManager::GetTxtFileResource(const std::type_index txtKey)
+{
+	//Does the resource exist?
+	if (resourceImageMap.find(txtKey) != resourceImageMap.end())
+	{
+		return resourceTxtFileMap[txtKey];
+	}
+
+	return nullptr;
+}
 #pragma endregion
 
 void ResourceManager::DeleteRM()

@@ -16,6 +16,7 @@ int main()
 	{
 		std::type_index bananaKey = typeid(void);
 		std::type_index targetKey = typeid(void);
+		std::cout << "Test Load Images" << std::endl;
 		rm->LoadImage("assets/Banana.jpg", bananaKey); //Testing a loading jpg
 		rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading png
 		rm->UnloadImage(targetKey);
@@ -41,6 +42,22 @@ int main()
 		{
 			std::cout << "Get Image found banana resource" << std::endl;
 		}
+
+		std::cout << std::endl;
+
+		std::cout << "Test Load Txt File" << std::endl;
+
+		std::type_index txtKey = typeid(void);
+		rm->LoadTxtFile("assets/data/TestTxt.txt", txtKey);
+		std::vector<std::string> txtVec = rm->GetTxtFile(txtKey);
+		for (std::string strTest : txtVec)
+		{
+			std::cout << strTest << std::endl;
+		}
+		std::cout << std::endl;
+		rm->UnloadTxtFile(txtKey); //Actual unloading test
+		rm->UpdatePostRender(); //Run unload code
+
 	}
 
 	//Replace this with actual sound manager later
