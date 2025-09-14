@@ -36,7 +36,7 @@ LOAD_RESULT ResourceManager::LoadImage(std::string filePath, std::type_index &im
 	std::cout << "RM: ";
 
 	
-	imageKey = ConstructImageMapKey(filePath);
+	imageKey = ConstructMapKey(filePath);
 
 	//Check if resource alr exists
 	if (resourceImageMap.find(imageKey) != resourceImageMap.end())
@@ -99,24 +99,6 @@ void ResourceManager::UnloadImage(std::type_index imageKey)
 	//resourceImageMap.erase(filePath);
 }
 
-std::type_index ResourceManager::ConstructImageMapKey(std::string filePath)
-{
-	size_t lastSlashPos = filePath.find_last_of('/');
-	if (lastSlashPos == filePath.npos)
-	{
-		lastSlashPos = filePath.find_last_of('\\');
-		if (lastSlashPos == filePath.npos)
-		{
-			lastSlashPos = 0;
-		}
-	}
-
-	filePath = filePath.substr(lastSlashPos, filePath.size() - lastSlashPos);
-
-
-
-	return typeid(filePath);
-}
 
 unsigned char* ResourceManager::GetImage(const std::type_index imageKey)
 {
@@ -167,3 +149,22 @@ void ResourceManager::DeleteFlaggedResources()
 	deletionVec.clear();
 }
 
+
+std::type_index ResourceManager::ConstructMapKey(std::string filePath)
+{
+	size_t lastSlashPos = filePath.find_last_of('/');
+	if (lastSlashPos == filePath.npos)
+	{
+		lastSlashPos = filePath.find_last_of('\\');
+		if (lastSlashPos == filePath.npos)
+		{
+			lastSlashPos = 0;
+		}
+	}
+
+	filePath = filePath.substr(lastSlashPos, filePath.size() - lastSlashPos);
+
+
+
+	return typeid(filePath);
+}

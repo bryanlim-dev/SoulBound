@@ -70,6 +70,7 @@ public:
 
 	\param[out] imageKey
 	The return of key to pass in to reobtain the resource (image).
+	Use typeid(void) to make a empty std::type_index varianble to pass in
 	
 	\return
 	True if managed to load image successfully or if it already exists.
@@ -80,7 +81,7 @@ public:
 
 	void UnloadImage(std::type_index imageKey);
 
-	std::type_index ConstructImageMapKey(std::string filePath);
+	
 
 	/************************************************************************/
 	/*!
@@ -124,5 +125,13 @@ private:
 	*/
 	/************************************************************************/
 	void DeleteFlaggedResources();
+
+	/************************************************************************/
+	/*!
+	\brief
+	Constructs a key from a string to use in a map
+	*/
+	/************************************************************************/
+	std::type_index ConstructMapKey(std::string filePath);
 
 };
