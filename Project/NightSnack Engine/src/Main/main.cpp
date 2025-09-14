@@ -12,6 +12,19 @@ int main()
 	// Enable memory leak checking at program exit
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
+	// Create Core engine, passing window parameters;
+	CoreEngine Core(1600, 900, "NightSnack Engine");
+
+	// Will register all components;
+	// If you create new components, please register them in this function defined in Core.cpp;
+	Core.Initialize();
+
+	// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
+	// i.e: Input-> Movement -> Collision -> Graphics;
+	Core.AddSystem<MovementSystem>();
+
+	// Add more systems here...
+
 #pragma region Temporary test code for rendering basic debugging shapes
 	// Load shader
 	Shader shader("../shaders/vertex_shader.vert", "../shaders/fragment_shader.frag");
@@ -62,30 +75,6 @@ int main()
 
 
 #pragma endregion
-
-	// Game loop;
-	//while (!window.ShouldClose()) {
-	//	glClear(GL_COLOR_BUFFER_BIT);
-
-	//	renderer.DrawAll();
-
-		// CoreEngine.Update();
-
-	//	window.SwapBuffers();
-	//	window.PollEvents();
-
-	// Create Core engine, passing window parameters;
-	CoreEngine Core(1600, 900, "NightSnack Engine");
-
-	// Will register all components;
-	// If you create new components, please register them in this function defined in Core.cpp;
-	Core.Initialize();
-
-	// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
-	// i.e: Input-> Movement -> Collision -> Graphics;
-	Core.AddSystem<MovementSystem>();
-
-	// Add more systems here...
 
 	// Core Application Loop;
 	while (!Core.ShouldClose()) {
