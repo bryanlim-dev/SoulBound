@@ -4,7 +4,6 @@
 // ================================================================================================
 // COMPONENTS
 // ================================================================================================
-// Add new Components here if necessary;
 
 struct Position {
   double x, y;
@@ -18,5 +17,10 @@ struct Sprite {
   std::string TextureName;
 };
 
+struct Color {
+	float r, g, b, a;
+};
+
+// Add more Components here if necessary...
 
 #endif // COMPONENT_HPP

@@ -18,6 +18,8 @@ public:
 	std::set<Entity> Entities;
 	// Every system must define an Update function;
 	virtual void Update(double dt, Coordinator& Coord) = 0;
+	// Every system must expose its signature;
+	virtual Signature GetSignature() const = 0;
 
 };
 
@@ -78,6 +80,9 @@ std::shared_ptr<T> SystemManager::RegisterSystem() {
 	// Insert system into Map of systems;
 	Systems[typeIdx] = system;
 
+	// SetUp System Signature in Signatures map;
+	Signatures[typeIdx] = system->GetSignature();
+
 	// Return a smart pointer to system registered;
 	return system;
 
@@ -96,7 +101,7 @@ void SystemManager::SetSignature(Signature sig) {
 
 // If an Entity is destroy, this function's purpose is to remove the destroyed Entity
 // from all Systems;
-void SystemManager::EntityDestroyed(Entity e) {
+inline void SystemManager::EntityDestroyed(Entity e) {
 
 	// Iterate through unordered Map of Systems, remove Entity e from set of 
 	// Entities that the Systems can access, so they do not work on destroyed Entities;
@@ -108,7 +113,7 @@ void SystemManager::EntityDestroyed(Entity e) {
 
 // In the event of an Entity's System Signature being changed, update every
 // Systems' set of Entities, adding and removing where necessary;
-void SystemManager::EntitySignatureChanged(Entity e, Signature EntitySig) {
+inline void SystemManager::EntitySignatureChanged(Entity e, Signature EntitySig) {
 
 	// Iterate through unordered Map of Systems;
 	for (auto const& pair : Systems) {
