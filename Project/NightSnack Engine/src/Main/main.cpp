@@ -64,6 +64,8 @@ int main()
 
 		renderer.DrawAll();
 
+		// CoreEngine.Update();
+
 		window.SwapBuffers();
 		window.PollEvents();
 	}
