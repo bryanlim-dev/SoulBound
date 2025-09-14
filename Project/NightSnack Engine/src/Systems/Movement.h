@@ -27,7 +27,7 @@ public:
 
 			// First obtain references to components of interest;
       auto& transform = Coord.GetComponent<Position>(e);
-      auto& velocity = Coord.GetComponent<Velocity>(e);\
+      auto& velocity = Coord.GetComponent<Velocity>(e);
 
 			// Get more components here if necessary...
 
