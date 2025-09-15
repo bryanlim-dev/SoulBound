@@ -15,6 +15,7 @@ void CoreEngine::Initialize() {
 
 	// Register all Components;
 	Coord.RegisterComponent<Position>();
+	Coord.RegisterComponent<Color>();
 	Coord.RegisterComponent<Velocity>();
 
 	// Add more Components here...
@@ -36,7 +37,7 @@ void CoreEngine::Update() {
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// Obtain dt; TEMP, WILL BE REPLACED WITH TIMER CLASS;
-	double deltaTime = 0.2;
+	double deltaTime = 0.02;
 
 	// Iterate through Systems and Update them through Coordinator;
 	for (auto& System : Systems) {

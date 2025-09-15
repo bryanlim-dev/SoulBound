@@ -29,6 +29,8 @@ public:
 	template <typename T>
 	T& GetComponent(Entity e);
 
+	Signature& GetEntitySignature(Entity e) { return Entity_M->GetSignature(e); }
+
 	template<typename T>
 	std::shared_ptr<T> RegisterSystem();
 
@@ -63,7 +65,7 @@ void Coordinator::AddComponent(Entity e, T component) {
 	Component_M->AddComponent(e, component);
 
 	// Obtain the Entity's component Signature;
-	Signature Sig = Entity_M->GetSignature();
+	Signature Sig = Entity_M->GetSignature(e);
 	// Modify the Signature to contain specified Component of type T;
 	Sig.set(GetComponentTypeID<T>(), true);
 

@@ -17,31 +17,28 @@ public:
     SystemSignature.set(GetComponentTypeID<Position>());
     SystemSignature.set(GetComponentTypeID<Velocity>());
 
-		// Add more Components here if necessary...
+	// Add more Components here if necessary...
   }
 
-	void Update(double dt, Coordinator& Coord) override {
+  void Update(double dt, Coordinator& Coord) override {
 
-		// Iterate through all Entities this system can access;
+    // Iterate through all Entities this system can access;
     for (auto const& e : Entities) {
 
-			// First obtain references to components of interest;
-      auto& transform = Coord.GetComponent<Position>(e);
-      auto& velocity = Coord.GetComponent<Velocity>(e);
+	// First obtain references to components of interest;
+    auto& transform = Coord.GetComponent<Position>(e);
+    auto& velocity = Coord.GetComponent<Velocity>(e);
 
-			// Get more components here if necessary...
+	// Get more components here if necessary...
 
-			// Do stuff that you want to do with the components;
-      transform.x += velocity.dx * dt;
-      transform.y += velocity.dy * dt;
+	// Do stuff that you want to do with the components;
+    transform.x += velocity.dx * dt;
+    transform.y += velocity.dy * dt;
 
-      std::cout << "Entity " << e
-          << " position: (" << transform.x << ", " << transform.y << ")\n";
-
-			// Do more stuff here if necessary...
-    }
-	}
-	Signature GetSignature() const override { return SystemSignature; }
+	// Do more stuff here if necessary...
+  }
+}
+Signature GetSignature() const override { return SystemSignature; }
 
 private:
   Signature SystemSignature{};

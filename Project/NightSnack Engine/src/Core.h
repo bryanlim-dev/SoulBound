@@ -26,6 +26,8 @@ public:
 	template <typename T>
 	void RemoveSystem(std::shared_ptr<T> System);
 
+	Coordinator& GetCoord() { return Coord; }
+
 	bool ShouldClose() const { return CoreWindow->ShouldClose(); }
 
 private:
