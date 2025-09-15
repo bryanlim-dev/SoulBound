@@ -18,6 +18,8 @@ public:
 	void SetSignature(Entity e, Signature sig);
 	Signature& GetSignature(Entity e);
 
+	size_t GetEntityCount() const { return livingEntityCount; }
+
 private:
 	std::queue<Entity> availableEntities;
 	size_t livingEntityCount = 0;

@@ -37,6 +37,8 @@ public:
 	template<typename T>
 	void SetSystemSignature(Signature sig);
 
+	size_t GetEntityCount() const { return Entity_M->GetEntityCount(); }
+
 private:
 	// ECS Managers;
 	std::unique_ptr<EntityManager> Entity_M;

@@ -17,6 +17,9 @@ void CoreEngine::Initialize() {
 	Coord.RegisterComponent<Position>();
 	Coord.RegisterComponent<Color>();
 	Coord.RegisterComponent<Velocity>();
+	Coord.RegisterComponent<Transform>();
+	Coord.RegisterComponent<Renderable>();
+	Coord.RegisterComponent<Camera>();
 
 	// Add more Components here...
 

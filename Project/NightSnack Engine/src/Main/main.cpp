@@ -7,7 +7,6 @@
 
 #include "Core.h"
 #include "Systems/AllSystems.h"		// Include your system header in this file;
-#include "Graphics/Renderer.h"
 
 int main()
 {
@@ -24,17 +23,15 @@ int main()
   // Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
   // i.e: Input-> Movement -> Collision -> Graphics;
   Core.AddSystem<MovementSystem>();
+  Core.AddSystem<GraphicsSystem>();
 
   // Add more systems here...
 
 #pragma region Temporary test code for rendering basic debugging shapes
 	// Load shader
 	Shader shader("../shaders/vertex_shader.vert", "../shaders/fragment_shader.frag");
-	Renderer renderer;
-
+	
 	// Create the different meshes
-	// NOTE: Positions for the meshs are in NDC coordinates currently
-	// It will be changed according to our window resolution soon ...
 	Mesh point = Mesh::CreatePoint();
 	Mesh line = Mesh::CreateLine();
 	Mesh rectangle = Mesh::CreateSquare();
@@ -45,36 +42,54 @@ int main()
 	Material blue(&shader, glm::vec3(0, 0, 1));
 	Material green(&shader, glm::vec3(0, 1, 0));
 
-	// Create the renderables with customisable mesh and material
-	Renderable redPoint{ &point, &red };
-	Renderable greenLine{ &line, &green };
-	Renderable redQuad{ &rectangle, &red };
-	Renderable greenCircle{ &circle, &green };
+	// Test graphics system with ECS
+	Coordinator& Coord = Core.GetCoord();
 
-	// Add the renderables to the pool of objects
-	//renderer.AddRenderable(greenCircle);
-	//renderer.AddRenderable(blueQuad);
-	//renderer.AddRenderable(redPoint);
-	//renderer.AddRenderable(greenLine);
-
-	Transform transform{
-		glm::vec2(200.f,-300.f),
+	// Square object
+	Entity square = Coord.CreateEntity();
+	Transform xform{
+		glm::vec2(200.f, -300.f),
 		0.f,
-		glm::vec2(500.f, 500.f)
+		glm::vec2(800.f, 450.f)
 	};
-	GameObject obj1(transform, redQuad);
-	renderer.AddGameObject(&obj1);
+	Coord.AddComponent<Transform>(square, xform);
+	Renderable renderable{
+		&rectangle,
+		&red,
+		true
+	};
+	Coord.AddComponent<Renderable>(square, renderable);
 
-	Transform transformCircle{
+	// Sphere object
+	Entity sphere = Coord.CreateEntity();
+	Transform xform3{
 		glm::vec2(0.f, 0.f),
 		0.f,
-		glm::vec2(300.f, 300.f)
+		glm::vec2(800.f, 450.f)
 	};
-	GameObject obj2(transformCircle, greenCircle);
-	renderer.AddGameObject(&obj2);
+	Coord.AddComponent<Transform>(sphere, xform3);
+	Renderable renderable3{
+		&circle,
+		&green,
+		true
+	};
+	Coord.AddComponent<Renderable>(sphere, renderable3);
 
-
-
+	// Camera object
+	Entity camera = Coord.CreateEntity();
+	Transform xform2{
+		glm::vec2(200.f, -300.f),
+		90.f,
+		glm::vec2(200.f, 200.f)
+	};
+	Coord.AddComponent<Transform>(camera, xform2);
+	Camera isCamera{
+		true,
+		1.f,
+		1600.f,
+		900.f
+	};
+	Coord.AddComponent<Camera>(camera, isCamera);
 
 #pragma endregion
 

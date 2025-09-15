@@ -24,6 +24,13 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
 	glDeleteShader(fs);
 }
 
+// Destructor -------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+Shader::~Shader() {
+	if (programID)
+		glDeleteProgram(programID);
+}
+
 // Use or make this shader program active for draw calls ------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void Shader::Use() const {
@@ -86,7 +93,7 @@ void Shader::LinkProgram(GLuint vs, GLuint fs) {
 	glGetProgramiv(programID, GL_LINK_STATUS, &success);
 	if (!success) {
 		char log[512];
-		glGetShaderInfoLog(programID, 512, nullptr, log);
+		glGetProgramInfoLog(programID, 512, nullptr, log);
 		std::cerr << "Program link error: " << log << std::endl;
 	}
 }
