@@ -14,16 +14,16 @@ int main()
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
   // Create Core engine, passing window parameters;
-  CoreEngine Core(1600, 900, "NightSnack Engine");
+  CoreEngine core(1600, 900, "NightSnack Engine");
 
   // Will register all components;
   // If you create new components, please register them in this function defined in Core.cpp;
-  Core.Initialize();
+  core.Initialize();
 
   // Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
   // i.e: Input-> Movement -> Collision -> Graphics;
-  Core.AddSystem<MovementSystem>();
-  Core.AddSystem<GraphicsSystem>();
+  core.AddSystem<MovementSystem>();
+  core.AddSystem<GraphicsSystem>();
 
   // Add more systems here...
 
@@ -43,59 +43,59 @@ int main()
 	Material green(&shader, glm::vec3(0, 1, 0));
 
 	// Test graphics system with ECS
-	Coordinator& Coord = Core.GetCoord();
+	Coordinator& coord = core.GetCoord();
 
 	// Square object
-	Entity square = Coord.CreateEntity();
+	Entity square = coord.CreateEntity();
 	Transform xform{
 		glm::vec2(200.f, -300.f),
 		0.f,
 		glm::vec2(800.f, 450.f)
 	};
-	Coord.AddComponent<Transform>(square, xform);
+	coord.AddComponent<Transform>(square, xform);
 	Renderable renderable{
 		&rectangle,
 		&red,
 		true
 	};
-	Coord.AddComponent<Renderable>(square, renderable);
+	coord.AddComponent<Renderable>(square, renderable);
 
 	// Sphere object
-	Entity sphere = Coord.CreateEntity();
+	Entity sphere = coord.CreateEntity();
 	Transform xform3{
 		glm::vec2(0.f, 0.f),
 		0.f,
 		glm::vec2(800.f, 450.f)
 	};
-	Coord.AddComponent<Transform>(sphere, xform3);
+	coord.AddComponent<Transform>(sphere, xform3);
 	Renderable renderable3{
 		&circle,
 		&green,
 		true
 	};
-	Coord.AddComponent<Renderable>(sphere, renderable3);
+	coord.AddComponent<Renderable>(sphere, renderable3);
 
 	// Camera object
-	Entity camera = Coord.CreateEntity();
+	Entity camera = coord.CreateEntity();
 	Transform xform2{
 		glm::vec2(200.f, -300.f),
 		90.f,
 		glm::vec2(200.f, 200.f)
 	};
-	Coord.AddComponent<Transform>(camera, xform2);
+	coord.AddComponent<Transform>(camera, xform2);
 	Camera isCamera{
 		true,
 		1.f,
 		1600.f,
 		900.f
 	};
-	Coord.AddComponent<Camera>(camera, isCamera);
+	coord.AddComponent<Camera>(camera, isCamera);
 
 #pragma endregion
 
   // Core Application Loop;
-  while (!Core.ShouldClose()) {
-  	Core.Update();
+  while (!core.ShouldClose()) {
+  	core.Update();
   }
 
 

@@ -4,74 +4,74 @@
 // Sets up the VAO, VBO, and EBO for rendering ----------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 Mesh::Mesh(GLenum primitiveType, const std::vector<glm::vec2>& positions, const std::vector<unsigned int>& indices)
-	: primitiveType{ primitiveType } {
+	: m_primitiveType{ primitiveType } {
 	
 	// The number of indices, so we can use it for glDrawElements()
-	indexCount = static_cast<GLsizei>(indices.size());
+	m_indexCount = static_cast<GLsizei>(indices.size());
 	// Vertex count used for glDrawArrays()
-	vertexCount = static_cast<GLsizei>(positions.size());
+	m_vertexCount = static_cast<GLsizei>(positions.size());
 
 	// Create storage buffers
 	// Position buffer
-	glCreateBuffers(1, &vboPos);
-	glNamedBufferStorage(vboPos, positions.size() * sizeof(glm::vec2), positions.data(), 0);
+	glCreateBuffers(1, &m_vboPos);
+	glNamedBufferStorage(m_vboPos, positions.size() * sizeof(glm::vec2), positions.data(), 0);
 	
 	// Index buffer
 	if (!indices.empty()) { // Since not all meshes will use indices
-		glCreateBuffers(1, &ebo);
-		glNamedBufferStorage(ebo, indices.size() * sizeof(unsigned int), indices.data(), 0);
+		glCreateBuffers(1, &m_ebo);
+		glNamedBufferStorage(m_ebo, indices.size() * sizeof(unsigned int), indices.data(), 0);
 	}
 
 	// Create a VAO
-	glCreateVertexArrays(1, &vao);
+	glCreateVertexArrays(1, &m_vao);
 
 	// Bind position buffer (binding index 0)
-	glVertexArrayVertexBuffer(vao, 0, vboPos, 0, sizeof(glm::vec2));
-	glEnableVertexArrayAttrib(vao, 0);
-	glVertexArrayAttribFormat(vao, 0, 2, GL_FLOAT, GL_FALSE, 0);
-	glVertexArrayAttribBinding(vao, 0, 0); // Link attribute 0 to binding index 0
+	glVertexArrayVertexBuffer(m_vao, 0, m_vboPos, 0, sizeof(glm::vec2));
+	glEnableVertexArrayAttrib(m_vao, 0);
+	glVertexArrayAttribFormat(m_vao, 0, 2, GL_FLOAT, GL_FALSE, 0);
+	glVertexArrayAttribBinding(m_vao, 0, 0); // Link attribute 0 to binding index 0
 
 	// Attach EBO to VAO
-	if (ebo) {
-		glVertexArrayElementBuffer(vao, ebo);
+	if (m_ebo) {
+		glVertexArrayElementBuffer(m_vao, m_ebo);
 	}
 }
 
 // Destructor -------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 Mesh::~Mesh() {
-	if (vao)
-		glDeleteVertexArrays(1, &vao);
-	if (vboPos)
-		glDeleteBuffers(1, &vboPos);
-	if (ebo)
-		glDeleteBuffers(1, &ebo);
+	if (m_vao)
+		glDeleteVertexArrays(1, &m_vao);
+	if (m_vboPos)
+		glDeleteBuffers(1, &m_vboPos);
+	if (m_ebo)
+		glDeleteBuffers(1, &m_ebo);
 }
 
 // Render the mesh according to its primitive type ------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void Mesh::Draw() const {
-	glBindVertexArray(vao);
+	glBindVertexArray(m_vao);
 
-	switch (primitiveType) {
+	switch (m_primitiveType) {
 	case GL_POINTS:
 		glPointSize(10.f);
-		glDrawArrays(GL_POINTS, 0, vertexCount);
+		glDrawArrays(GL_POINTS, 0, m_vertexCount);
 		glPointSize(1.f);
 		break;
 
 	case GL_LINES:
 		glLineWidth(3.f);
-		glDrawArrays(GL_LINES, 0, vertexCount);
+		glDrawArrays(GL_LINES, 0, m_vertexCount);
 		glLineWidth(1.f);
 		break;
 
 	case GL_TRIANGLES:
-		glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0);
 		break;
 
 	case GL_TRIANGLE_FAN:
-		glDrawArrays(GL_TRIANGLE_FAN, 0, vertexCount);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, m_vertexCount);
 		break;
 	}
 

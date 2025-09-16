@@ -19,14 +19,14 @@ public:
 	void SetSignature(Entity e, Signature sig);
 	Signature& GetSignature(Entity e);
 
-	std::set<Entity> const& GetLivingEntities() const { return livingEntities; }
+	std::set<Entity> const& GetLivingEntities() const { return m_livingEntities; }
 
 private:
-	std::queue<Entity> availableEntities;
-	std::set<Entity> livingEntities;
+	std::queue<Entity> m_availableEntities;
+	std::set<Entity> m_livingEntities;
 
-	size_t livingEntityCount = 0;
-	std::array<Signature, MAX_ENTITIES> Signatures;
+	size_t m_livingEntityCount = 0;
+	std::array<Signature, MAX_ENTITIES> m_signatures;
 
 };
 

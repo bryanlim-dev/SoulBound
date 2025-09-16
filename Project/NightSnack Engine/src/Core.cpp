@@ -11,15 +11,15 @@ void CoreEngine::Initialize() {
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 	// Initialize ECS Coordinator and Managers;
-	Coord.Initialize();
+	m_coord.Initialize();
 
 	// Register all Components;
-	Coord.RegisterComponent<Position>();
-	Coord.RegisterComponent<Color>();
-	Coord.RegisterComponent<Velocity>();
-	Coord.RegisterComponent<Transform>();
-	Coord.RegisterComponent<Renderable>();
-	Coord.RegisterComponent<Camera>();
+	m_coord.RegisterComponent<Position>();
+	m_coord.RegisterComponent<Color>();
+	m_coord.RegisterComponent<Velocity>();
+	m_coord.RegisterComponent<Transform>();
+	m_coord.RegisterComponent<Renderable>();
+	m_coord.RegisterComponent<Camera>();
 
 	// Add more Components here...
 
@@ -43,13 +43,13 @@ void CoreEngine::Update() {
 	double deltaTime = 0.02;
 
 	// Iterate through Systems and Update them through Coordinator;
-	for (auto& System : Systems) {
-		System->Update(deltaTime, Coord);
+	for (auto& System : m_systems) {
+		System->Update(deltaTime, m_coord);
 	}
 
 	// Application Window	Update;
-	CoreWindow->PollEvents();
-	CoreWindow->SwapBuffers();
+	m_coreWindow->PollEvents();
+	m_coreWindow->SwapBuffers();
 
 }
 

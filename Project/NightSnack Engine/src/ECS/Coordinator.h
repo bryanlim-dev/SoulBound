@@ -29,9 +29,9 @@ public:
 	template <typename T>
 	T& GetComponent(Entity e);
 
-	Signature& GetEntitySignature(Entity e) { return Entity_M->GetSignature(e); }
+	Signature& GetEntitySignature(Entity e) { return m_entityManager->GetSignature(e); }
 
-	std::set<Entity> const& GetLivingEntities() const { return Entity_M->GetLivingEntities(); }
+	std::set<Entity> const& GetLivingEntities() const { return m_entityManager->GetLivingEntities(); }
 
 	template<typename T>
 	std::shared_ptr<T> RegisterSystem();
@@ -41,9 +41,9 @@ public:
 
 private:
 	// ECS Managers;
-	std::unique_ptr<EntityManager> Entity_M;
-	std::unique_ptr<ComponentManager> Component_M;
-	std::unique_ptr<SystemManager> System_M;
+	std::unique_ptr<EntityManager> m_entityManager;
+	std::unique_ptr<ComponentManager> m_componentManager;
+	std::unique_ptr<SystemManager> m_systemManager;
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ template <typename T>
 void Coordinator::RegisterComponent() {
 	// Call ComponentManager's member function to register a component
 	// of type T into its unordered Map of ComponentArrays; Keys are type_index;
-	Component_M->RegisterComponent<T>();
+	m_componentManager->RegisterComponent<T>();
 }
 
 // Add a Component of type T to and Entity, updates the Entity's signature,
@@ -64,49 +64,49 @@ void Coordinator::RegisterComponent() {
 template <typename T>
 void Coordinator::AddComponent(Entity e, T component) {
 	// Add component
-	Component_M->AddComponent(e, component);
+	m_componentManager->AddComponent(e, component);
 
 	// Obtain the Entity's component Signature;
-	Signature Sig = Entity_M->GetSignature(e);
+	Signature sig = m_entityManager->GetSignature(e);
 	// Modify the Signature to contain specified Component of type T;
-	Sig.set(GetComponentTypeID<T>(), true);
+	sig.set(GetComponentTypeID<T>(), true);
 
 	// Update the actual Signature of Entity e;
-	Entity_M->SetSignature(e, Sig);
+	m_entityManager->SetSignature(e, sig);
 	// Inform the SystemManager that Entity e's Signature has changed;
-	System_M->EntitySignatureChanged(e, Sig);
+	m_systemManager->EntitySignatureChanged(e, sig);
 
 }
 
 template <typename T>
 void Coordinator::RemoveComponent(Entity e) {
 	// Remove component;
-	Component_M->RemoveComponent(e);
+	m_componentManager->RemoveComponent(e);
 
 	// Obtain the Entity's component Signature;
-	Signature Sig = Entity_M->GetSignature();
+	Signature sig = m_entityManager->GetSignature();
 	// Modify the Signature to remove specified Component of type T;
-	Sig.set(GetComponentTypeID<T>(), false);
+	sig.set(GetComponentTypeID<T>(), false);
 
 	// Update the actual Signature of Entity e;
-	Entity_M->SetSignature(e, Sig);
+	m_entityManager->SetSignature(e, sig);
 	// Inform the SystemManager that Entity e's Signature has changed;
-	System_M->EntitySignatureChanged(e, Sig);
+	m_systemManager->EntitySignatureChanged(e, sig);
 }
 
 template <typename T>
 T& Coordinator::GetComponent(Entity e) {
-	return Component_M->GetComponent<T>(e);
+	return m_componentManager->GetComponent<T>(e);
 }
 
 template <typename T>
 std::shared_ptr<T> Coordinator::RegisterSystem() {
-	return System_M->RegisterSystem<T>();
+	return m_systemManager->RegisterSystem<T>();
 }
 
 template <typename T>
-void Coordinator::SetSystemSignature(Signature Sig) {
-	System_M->SetSignature<T>(Sig);
+void Coordinator::SetSystemSignature(Signature sig) {
+	m_systemManager->SetSignature<T>(sig);
 }
 
 #endif // COORD_HPP

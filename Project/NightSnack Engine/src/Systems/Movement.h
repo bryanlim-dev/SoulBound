@@ -1,8 +1,6 @@
 #ifndef MOVEMENT_HPP
 #define MOVEMENT_HPP
 
-#include <iostream>
-
 #include "ECS/Entity.h"
 #include "ECS/ISystem.h"
 #include "ECS/Coordinator.h"
@@ -14,20 +12,20 @@ public:
 	// Default constructor to set up SystemSignature;
   MovementSystem() {
     // Input all components you want access to...
-    SystemSignature.set(GetComponentTypeID<Position>());
-    SystemSignature.set(GetComponentTypeID<Velocity>());
+    m_systemSignature.set(GetComponentTypeID<Position>());
+    m_systemSignature.set(GetComponentTypeID<Velocity>());
 
 	// Add more Components here if necessary...
   }
 
-  void Update(double dt, Coordinator& Coord) override {
+  void Update(double dt, Coordinator& coord) override {
 
     // Iterate through all Entities this system can access;
-    for (auto const& e : Entities) {
+    for (auto const& e : m_entities) {
 
 	// First obtain references to components of interest;
-    auto& transform = Coord.GetComponent<Position>(e);
-    auto& velocity = Coord.GetComponent<Velocity>(e);
+    auto& transform = coord.GetComponent<Position>(e);
+    auto& velocity = coord.GetComponent<Velocity>(e);
 
 	// Get more components here if necessary...
 
@@ -38,10 +36,10 @@ public:
 	// Do more stuff here if necessary...
   }
 }
-Signature GetSignature() const override { return SystemSignature; }
+Signature GetSignature() const override { return m_systemSignature; }
 
 private:
-  Signature SystemSignature{};
+  Signature m_systemSignature{};
 };
 
 // Declare and define more functions that will help you do stuff...

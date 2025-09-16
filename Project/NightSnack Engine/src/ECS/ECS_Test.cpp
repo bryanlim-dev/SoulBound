@@ -14,50 +14,50 @@ int main_ECStest()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	// Create Core engine, passing window parameters;
-	CoreEngine Core(1600, 900, "NightSnack Engine");
+	CoreEngine core(1600, 900, "NightSnack Engine");
 
 	// Will register all components;
 	// If you create new components, please register them in this function defined in Core.cpp;
-	Core.Initialize();
+	core.Initialize();
 
 	// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
 	// i.e: Input-> Movement -> Collision -> Graphics;
-	Core.AddSystem<MovementSystem>();
+	core.AddSystem<MovementSystem>();
 
 	// Add more systems here...
 
 
 	// ECS test;
-	Coordinator& Coord = Core.GetCoord();
-	Entity P1 = Coord.CreateEntity();
-	std::cout << "Created entity with ID: " << P1 << "\n";
-	Entity P2 = Coord.CreateEntity();
-	std::cout << "Created entity with ID: " << P2 << "\n";
+	Coordinator& coord = core.GetCoord();
+	Entity p1 = coord.CreateEntity();
+	std::cout << "Created entity with ID: " << p1 << "\n";
+	Entity p2 = coord.CreateEntity();
+	std::cout << "Created entity with ID: " << p2 << "\n";
 
 	std::cout << "Entities currently alive: ";
-	for (Entity const& e : Coord.GetLivingEntities()) {
+	for (Entity const& e : coord.GetLivingEntities()) {
 		std::cout << e << ", ";
 	}
 	std::cout << "\n";
 
 	Position pos1{ 0.0, 0.0 };
-	Coord.AddComponent<Position>(P1, pos1);
-	std::cout << "Added Position: " << Coord.GetComponent<Position>(P1).x << ", " << Coord.GetComponent<Position>(P1).y << " to Entity : " << P1 << "\n";
+	coord.AddComponent<Position>(p1, pos1);
+	std::cout << "Added Position: " << coord.GetComponent<Position>(p1).x << ", " << coord.GetComponent<Position>(p1).y << " to Entity : " << p1 << "\n";
 	Velocity vel1{ 1.0, 1.0 };
-	Coord.AddComponent<Velocity>(P1, vel1);
-	std::cout << "Added Velocity:" << Coord.GetComponent<Velocity>(P1).dx << ", " << Coord.GetComponent<Velocity>(P1).dy << " to Entity : " << P1 << "\n";
+	coord.AddComponent<Velocity>(p1, vel1);
+	std::cout << "Added Velocity:" << coord.GetComponent<Velocity>(p1).dx << ", " << coord.GetComponent<Velocity>(p1).dy << " to Entity : " << p1 << "\n";
 
-	std::cout << "Entity " << P1 << "'s Signature: " << Coord.GetEntitySignature(P1) << "\n";
+	std::cout << "Entity " << p1 << "'s Signature: " << coord.GetEntitySignature(p1) << "\n";
 
 	Position pos2{ 1.5, 3.2 };
-	Coord.AddComponent<Position>(P2, pos2);
-	std::cout << "Added Position: " << Coord.GetComponent<Position>(P2).x << ", " << Coord.GetComponent<Position>(P2).y << " to Entity : " << P2 << "\n";
+	coord.AddComponent<Position>(p2, pos2);
+	std::cout << "Added Position: " << coord.GetComponent<Position>(p2).x << ", " << coord.GetComponent<Position>(p2).y << " to Entity : " << p2 << "\n";
 
-	std::cout << "Entity " << P2 << "'s Signature: " << Coord.GetEntitySignature(P2) << "\n";
+	std::cout << "Entity " << p2 << "'s Signature: " << coord.GetEntitySignature(p2) << "\n";
 
 	// Core Application Loop;
-	while (!Core.ShouldClose()) {
-		Core.Update();
+	while (!core.ShouldClose()) {
+		core.Update();
 
 		static double currTime = glfwGetTime();
 		static double prevTime = currTime;
@@ -69,21 +69,21 @@ int main_ECStest()
 		static int counter = 0;
 
 		if (deltaTime > 2.5) {
-			std::cout << "Entity: " << P1 << " Position = {" << Coord.GetComponent<Position>(P1).x << ", " << Coord.GetComponent<Position>(P1).y << "}\n";
-			std::cout << "Entity: " << P2 << " Position = {" << Coord.GetComponent<Position>(P2).x << ", " << Coord.GetComponent<Position>(P2).y << "}\n";
+			std::cout << "Entity: " << p1 << " Position = {" << coord.GetComponent<Position>(p1).x << ", " << coord.GetComponent<Position>(p1).y << "}\n";
+			std::cout << "Entity: " << p2 << " Position = {" << coord.GetComponent<Position>(p2).x << ", " << coord.GetComponent<Position>(p2).y << "}\n";
 
-			Entity P4 = Coord.CreateEntity();
-			Coord.CreateEntity();
+			Entity p4 = coord.CreateEntity();
+			coord.CreateEntity();
 
 
 			std::cout << "Entities currently alive: ";
-			for (Entity const& e : Coord.GetLivingEntities()) {
+			for (Entity const& e : coord.GetLivingEntities()) {
 				std::cout << e << ", ";
 			}
 			std::cout << "\n";
 
 			deltaTime = 0;
-			Coord.DestroyEntity(P4);
+			coord.DestroyEntity(p4);
 
 		}
 		counter++;

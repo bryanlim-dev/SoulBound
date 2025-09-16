@@ -21,10 +21,10 @@ public:
 	static Mesh CreateSquare();
 	static Mesh CreateCircle();
 
-	GLsizei indexCount{ 0 }, vertexCount{ 0 };
+	GLsizei m_indexCount{ 0 }, m_vertexCount{ 0 };
 private:
 
-	GLenum primitiveType = GL_TRIANGLES;
-	GLuint vao{ 0 }, vboPos{ 0 }, vboColor{ 0 }, ebo{ 0 };
+	GLenum m_primitiveType = GL_TRIANGLES;
+	GLuint m_vao{ 0 }, m_vboPos{ 0 }, m_vboColor{ 0 }, m_ebo{ 0 };
 
 };

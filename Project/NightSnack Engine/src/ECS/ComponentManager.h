@@ -26,10 +26,10 @@ public:
 	void EntityDestroyed(Entity e) override;
 
 private:
-	std::array<T, MAX_ENTITIES> components;
-	std::unordered_map<Entity, size_t> entityToIndex;
-	std::unordered_map<size_t, Entity> indexToEntity;
-	size_t size = 0;
+	std::array<T, MAX_ENTITIES> m_components;
+	std::unordered_map<Entity, size_t> m_entityToIndex;
+	std::unordered_map<size_t, Entity> m_indexToEntity;
+	size_t m_size = 0;
 
 };
 
@@ -79,7 +79,7 @@ public:
 
 private:
 	// Mapping of all Component Arrays of any type;
-	std::unordered_map<ComponentType, std::shared_ptr<IComponentArray>> ComponentArrays;
+	std::unordered_map<ComponentType, std::shared_ptr<IComponentArray>> m_componentArrays;
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -94,14 +94,14 @@ template <typename T>
 void ComponentArray<T>::Insert(Entity e, T component) {
 
 	// Mapping Entity ID to Component index -> Last index currently;
-	entityToIndex[e] = size;
-	indexToEntity[size] = e;
+	m_entityToIndex[e] = m_size;
+	m_indexToEntity[m_size] = e;
 
 	// Insert specified Component Data at the end of the array;
-	components[size] = component;
+	m_components[m_size] = component;
 
 	// Update size;
-	++size;
+	++m_size;
 
 }
 
@@ -113,23 +113,23 @@ template<typename T>
 void ComponentArray<T>::Remove(Entity e) {
 
 	// Find indices of Component to be removed and last Component in array;
-	size_t index = entityToIndex[e];
-	size_t lastIndex = size - 1;
+	size_t index = m_entityToIndex[e];
+	size_t lastIndex = m_size - 1;
 
 	// Move the last component into the removed component's slot;
-	components[index] = components[lastIndex];
+	m_components[index] = m_components[lastIndex];
 
 	// Update mapping of moved components to new indices;
-	Entity lastEntity = indexToEntity[lastIndex];
-	entityToIndex[lastEntity] = index;
-	indexToEntity[index] = lastEntity;
+	Entity lastEntity = m_indexToEntity[lastIndex];
+	m_entityToIndex[lastEntity] = index;
+	m_indexToEntity[index] = lastEntity;
 
 	// Erase mapping of removed Components;
-	entityToIndex.erase(e);
-	indexToEntity.erase(lastIndex);
+	m_entityToIndex.erase(e);
+	m_indexToEntity.erase(lastIndex);
 
 	// Update size;
-	--size;
+	--m_size;
 
 }
 
@@ -137,7 +137,7 @@ void ComponentArray<T>::Remove(Entity e) {
 template <typename T>
 T& ComponentArray<T>::Get(Entity e) {
 
-	return components[entityToIndex[e]];
+	return m_components[m_entityToIndex[e]];
 
 }
 
@@ -145,7 +145,7 @@ template <typename T>
 void ComponentArray<T>::EntityDestroyed(Entity e) {
 
 	// If destroyed Entity e is found inside the Array, remove it;
-	if (entityToIndex.find(e) != entityToIndex.end()) {
+	if (m_entityToIndex.find(e) != m_entityToIndex.end()) {
 		Remove(e);
 	}
 
@@ -161,7 +161,7 @@ void ComponentManager::RegisterComponent() {
 	// Obtain Component TypeID for mapping;
 	ComponentType typeIdx = GetComponentTypeID<T>();
 	// Map now contains -> ComponentType -8- Shared_ptr to ComponentArray;
-	ComponentArrays[typeIdx] = std::make_shared<ComponentArray<T>>();
+	m_componentArrays[typeIdx] = std::make_shared<ComponentArray<T>>();
 
 }
 
@@ -193,7 +193,7 @@ T& ComponentManager::GetComponent(Entity e) {
 inline void ComponentManager::EntityDestroyed(Entity e) {
 
 	// Remove Entity from all Component Arrays;
-	for (auto& pair : ComponentArrays) {
+	for (auto& pair : m_componentArrays) {
 		pair.second->EntityDestroyed(e);
 	}
 
@@ -205,7 +205,7 @@ std::shared_ptr<ComponentArray<T>> ComponentManager::GetComponentArray() {
 	// Obtain Component TypeID to locate pointer to ComponentArray in Map;
 	ComponentType typeIdx = GetComponentTypeID<T>();
 	// Return a pointer to requested ComponentArray using smart pointer;
-	return std::static_pointer_cast<ComponentArray<T>>(ComponentArrays[typeIdx]);
+	return std::static_pointer_cast<ComponentArray<T>>(m_componentArrays[typeIdx]);
 
 }
 

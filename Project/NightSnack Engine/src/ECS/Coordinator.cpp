@@ -2,9 +2,9 @@
 
 void Coordinator::Initialize() {
 	// Create ECS Managers;
-	Entity_M = std::make_unique<EntityManager>();
-	System_M = std::make_unique<SystemManager>();
-	Component_M = std::make_unique<ComponentManager>();
+	m_entityManager = std::make_unique<EntityManager>();
+	m_systemManager = std::make_unique<SystemManager>();
+	m_componentManager = std::make_unique<ComponentManager>();
 }
 
 //void Coordinator::Update(double deltaTime) {
@@ -20,15 +20,15 @@ void Coordinator::Initialize() {
 
 Entity Coordinator::CreateEntity() {
 	// Returns the ID of created Entity;
-	return Entity_M->CreateEntity();
+	return m_entityManager->CreateEntity();
 }
 
 // Destroy an Entity, remove it from all Systems and ComponentArrays;
 void Coordinator::DestroyEntity(Entity e) {
 	// Remove from Live Entites;
-	Entity_M->DestroyEntity(e);
+	m_entityManager->DestroyEntity(e);
 	// Remove Entity from Components;
-	Component_M->EntityDestroyed(e);
+	m_componentManager->EntityDestroyed(e);
 	// Remove Entity from all Systems;
-	System_M->EntityDestroyed(e);
+	m_systemManager->EntityDestroyed(e);
 }

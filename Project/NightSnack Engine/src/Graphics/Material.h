@@ -15,7 +15,7 @@ public:
 
 private:
 
-	Shader* shader = nullptr;
-	glm::vec3 baseColor;
+	Shader* m_shader = nullptr;
+	glm::vec3 m_baseColor;
 
 };

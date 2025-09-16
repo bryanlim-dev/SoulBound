@@ -15,7 +15,7 @@ public:
 	virtual ~ISystem() = default;
 	
 	// Entities that the system can access;
-	std::set<Entity> Entities;
+	std::set<Entity> m_entities;
 	// Every system must define an Update function;
 	virtual void Update(double dt, Coordinator& Coord) = 0;
 	// Every system must expose its signature;
@@ -56,15 +56,15 @@ public:
 
 	void EntityDestroyed(Entity e);
 
-	void EntitySignatureChanged(Entity e, Signature EntitySig);
+	void EntitySignatureChanged(Entity e, Signature entitySig);
 
 	template <typename T>
 	Signature GetSystemSignature();
 	template <typename T>
 	std::shared_ptr<T> GetSystem();
 
-	std::unordered_map<SystemID, Signature> Signatures;
-	std::unordered_map<SystemID, std::shared_ptr<ISystem>> Systems;
+	std::unordered_map<SystemID, Signature> m_signatures;
+	std::unordered_map<SystemID, std::shared_ptr<ISystem>> m_systems;
 
 };
 
@@ -78,10 +78,10 @@ std::shared_ptr<T> SystemManager::RegisterSystem() {
 	// Shared pointer of type System;
 	auto system = std::make_shared<T>();
 	// Insert system into Map of systems;
-	Systems[typeIdx] = system;
+	m_systems[typeIdx] = system;
 
 	// SetUp System Signature in Signatures map;
-	Signatures[typeIdx] = system->GetSignature();
+	m_signatures[typeIdx] = system->GetSignature();
 
 	// Return a smart pointer to system registered;
 	return system;
@@ -95,7 +95,7 @@ void SystemManager::SetSignature(Signature sig) {
 	// Obtain type index for mapping;
 	SystemID typeIdx = GetSystemID<T>();
 	// Now sig is linked with typeIdx and System<T> pointer stored in Systems unordered map;
-	Signatures[typeIdx] = sig;
+	m_signatures[typeIdx] = sig;
 
 }
 
@@ -105,31 +105,31 @@ inline void SystemManager::EntityDestroyed(Entity e) {
 
 	// Iterate through unordered Map of Systems, remove Entity e from set of 
 	// Entities that the Systems can access, so they do not work on destroyed Entities;
-	for (auto& pair : Systems) {
-		pair.second->Entities.erase(e);
+	for (auto& pair : m_systems) {
+		pair.second->m_entities.erase(e);
 	}
 
 }
 
 // In the event of an Entity's System Signature being changed, update every
 // Systems' set of Entities, adding and removing where necessary;
-inline void SystemManager::EntitySignatureChanged(Entity e, Signature EntitySig) {
+inline void SystemManager::EntitySignatureChanged(Entity e, Signature entitySig) {
 
 	// Iterate through unordered Map of Systems;
-	for (auto const& pair : Systems) {
+	for (auto const& pair : m_systems) {
 		// Signature of System in current iteration;
-		auto const& SystemSig = Signatures[pair.first];
+		auto const& systemSig = m_signatures[pair.first];
 		// Pointer to System stored in unordered map, of current iteration;
-		auto System = pair.second;
+		auto& system = pair.second;
 
 		// If Entity contains all components matching with current System;
-		if ((EntitySig & SystemSig) == SystemSig) {
+		if ((entitySig & systemSig) == systemSig) {
 			// Insert Entity into System set of Entities;
-			System->Entities.insert(e);
+			system->m_entities.insert(e);
 		}
 		else {
 			// Else remove Entity from set of Entities;
-			System->Entities.erase(e);
+			system->m_entities.erase(e);
 		}
 	}
 
@@ -141,7 +141,7 @@ Signature SystemManager::GetSystemSignature() {
 	// Obtain type index for mapping;
 	SystemID typeIdx = GetSystemID<T>();
 	// Obtain Signature of System of type T in map;
-	return Signatures[typeIdx];
+	return m_signatures[typeIdx];
 }
 
 template <typename T>
@@ -150,7 +150,7 @@ std::shared_ptr<T> SystemManager::GetSystem() {
 	// Obtain type index for mapping;
 	SystemID typeIdx = GetSystemID<T>();
 	// Find pointer to desired System in map;
-	return std::static_pointer_cast<T>(Systems[typeIdx]);
+	return std::static_pointer_cast<T>(m_systems[typeIdx]);
 }
 
 #endif // ISYSTEM_HPP

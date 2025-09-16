@@ -7,7 +7,7 @@ EntityManager::EntityManager() {
 
 	// Initialize the queue with all possible entity IDs;
 	for (Entity e = 0; e < MAX_ENTITIES; ++e) {
-		availableEntities.push(e);
+		m_availableEntities.push(e);
 	}
 
 }
@@ -16,21 +16,21 @@ EntityManager::EntityManager() {
 Entity EntityManager::CreateEntity() {
 
 	// Ensure there are available entities to create;
-	if (livingEntityCount >= MAX_ENTITIES) {
+	if (m_livingEntityCount >= MAX_ENTITIES) {
 		std::cerr << "Too many entities in existence, unable to create Entity.\n";
 		return INVALID_ENTITY;
 	}
 	
 	// Obtain an available Entity ID;
-	Entity id = availableEntities.front();
-	availableEntities.pop();
-	livingEntities.insert(id);
+	Entity id = m_availableEntities.front();
+	m_availableEntities.pop();
+	m_livingEntities.insert(id);
 
 	// Initialize Signature (No Componenets);
-	Signatures[id] = 0;
+	m_signatures[id] = 0;
 	
 	// Update number of living entities;
-	++livingEntityCount;
+	++m_livingEntityCount;
 
 	return id;
 }
@@ -45,12 +45,12 @@ void EntityManager::DestroyEntity(Entity e) {
 	}
 
 	// Clear Component signatures for destroyed Entity ID;
-	Signatures[e] = 0;
+	m_signatures[e] = 0;
 
 	// Return the Entity ID to the pool of available entities;
-	availableEntities.push(e);
-	livingEntities.erase(e);
-	--livingEntityCount;
+	m_availableEntities.push(e);
+	m_livingEntities.erase(e);
+	--m_livingEntityCount;
 
 }
 
@@ -60,13 +60,17 @@ void EntityManager::SetSignature(Entity e, Signature sig) {
 		std::cerr << "Entity ID out of range, unable to set Signature.\n";
 		return;
 	}
-	Signatures[e] = sig;
+	m_signatures[e] = sig;
 }
 
 // Get signature for an entity with bounds checking;
 Signature& EntityManager::GetSignature(Entity e) {
 	if (e >= MAX_ENTITIES) {
 		std::cerr << "Entity ID out of range, unable to get Signature.\n";
+
+		// Return empty signature on error
+		Signature sig{};
+		return sig;
 	}
-	return Signatures[e];
+	return m_signatures[e];
 }

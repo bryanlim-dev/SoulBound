@@ -17,7 +17,7 @@ struct Velocity {
 };
 
 struct Sprite {
-  std::string TextureName;
+  std::string textureName;
 };
 
 struct Color {

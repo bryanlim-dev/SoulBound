@@ -17,22 +17,22 @@ public:
 		// The Graphics System only cares about entities with these components
 		// - Transform (position, rotation, scale)
 		// - Renderable (mesh, material)
-		SystemSignature.set(GetComponentTypeID<Transform>());
-		SystemSignature.set(GetComponentTypeID<Renderable>());
+		m_systemSignature.set(GetComponentTypeID<Transform>());
+		m_systemSignature.set(GetComponentTypeID<Renderable>());
 	}
 
 	// Find the Main Camera in the scene --------------------------------------------------------------
 	// ------------------------------------------------------------------------------------------------
 	Entity FindCamera(Coordinator& Coord) {
 		// Camera Signature (only have components IsCamera and Transform)
-		Signature CameraSig;
-		CameraSig.set(GetComponentTypeID<Camera>());
-		CameraSig.set(GetComponentTypeID<Transform>());
+		Signature cameraSig;
+		cameraSig.set(GetComponentTypeID<Camera>());
+		cameraSig.set(GetComponentTypeID<Transform>());
 
 		// Iterate through all living Entities in the COORDINATOR instead
 		// Since the GraphicsSystem will not have a Camera Entity
 		for (const Entity e : Coord.GetLivingEntities()) {
-			if ((Coord.GetEntitySignature(e) & CameraSig) == CameraSig &&
+			if ((Coord.GetEntitySignature(e) & cameraSig) == cameraSig &&
 				Coord.GetComponent<Camera>(e).isMainCam) { // This camera Entity is the main camera
 				return e;
 			}
@@ -63,29 +63,29 @@ public:
 
 	// Core update loop -------------------------------------------------------------------------------
 	// ------------------------------------------------------------------------------------------------
-	void Update(double dt, Coordinator& Coord) override {
+	void Update(double dt, Coordinator& coord) override {
 		(void)dt;
 
 		Shader* currentShader = nullptr;
 
 		// Get the main camera first, for matrix transformations
-		Entity mainCam = FindCamera(Coord);
+		Entity mainCam = FindCamera(coord);
 		if (mainCam == INVALID_ENTITY)
 			return;
 
 		// Get camera components
-		auto& camTransform = Coord.GetComponent<Transform>(mainCam);
-		auto& camInfo = Coord.GetComponent<Camera>(mainCam);
+		auto& camTransform = coord.GetComponent<Transform>(mainCam);
+		auto& camInfo = coord.GetComponent<Camera>(mainCam);
 		
 		// camera to clip coords
 		glm::mat4 projMatrix = GetCameraProjectionMatrix(camInfo.width, camInfo.height);
 
 		// Iterate through all Entities this system can access;
-		for (auto const& e : Entities) {
+		for (auto const& e : m_entities) {
 
 			// First obtain references to components of interest;
-			auto& transform = Coord.GetComponent<Transform>(e);
-			auto& renderable = Coord.GetComponent<Renderable>(e);
+			auto& transform = coord.GetComponent<Transform>(e);
+			auto& renderable = coord.GetComponent<Renderable>(e);
 
 			if (!renderable.mesh || !renderable.material)
 				continue;
@@ -123,10 +123,10 @@ public:
 		}
 	}
 
-	Signature GetSignature() const override { return SystemSignature; }
+	Signature GetSignature() const override { return m_systemSignature; }
 
 private:
-	Signature SystemSignature{};
+	Signature m_systemSignature{};
 };
 
 // Declare and define more functions that will help you do stuff...
