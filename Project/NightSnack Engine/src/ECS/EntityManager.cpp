@@ -24,6 +24,7 @@ Entity EntityManager::CreateEntity() {
 	// Obtain an available Entity ID;
 	Entity id = availableEntities.front();
 	availableEntities.pop();
+	livingEntities.insert(id);
 
 	// Initialize Signature (No Componenets);
 	Signatures[id] = 0;
@@ -48,6 +49,7 @@ void EntityManager::DestroyEntity(Entity e) {
 
 	// Return the Entity ID to the pool of available entities;
 	availableEntities.push(e);
+	livingEntities.erase(e);
 	--livingEntityCount;
 
 }

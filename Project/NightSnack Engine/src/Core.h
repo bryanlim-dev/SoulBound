@@ -13,7 +13,7 @@ class CoreEngine {
 
 public:
 	CoreEngine() = delete;
-	CoreEngine(int WindowWidth, int WindowHeight, std::string WindowTitle)
+	CoreEngine(int WindowWidth, int WindowHeight, std::string&& WindowTitle)
 		: CoreWindow(std::make_unique<Window>(WindowWidth, WindowHeight, WindowTitle)) {}
 
 	void Initialize();
