@@ -8,7 +8,7 @@
 #include "Core.h"
 #include "Systems/AllSystems.h"		// Include your system header in this file;
 
-int main_testECS()
+int main_ECStest()
 {
 	// Enable memory leak checking at program exit
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -33,6 +33,12 @@ int main_testECS()
 	std::cout << "Created entity with ID: " << P1 << "\n";
 	Entity P2 = Coord.CreateEntity();
 	std::cout << "Created entity with ID: " << P2 << "\n";
+
+	std::cout << "Entities currently alive: ";
+	for (Entity const& e : Coord.GetLivingEntities()) {
+		std::cout << e << ", ";
+	}
+	std::cout << "\n";
 
 	Position pos1{ 0.0, 0.0 };
 	Coord.AddComponent<Position>(P1, pos1);
@@ -60,12 +66,27 @@ int main_testECS()
 		currTime = glfwGetTime();
 		deltaTime += currTime - prevTime;
 
+		static int counter = 0;
+
 		if (deltaTime > 2.5) {
 			std::cout << "Entity: " << P1 << " Position = {" << Coord.GetComponent<Position>(P1).x << ", " << Coord.GetComponent<Position>(P1).y << "}\n";
 			std::cout << "Entity: " << P2 << " Position = {" << Coord.GetComponent<Position>(P2).x << ", " << Coord.GetComponent<Position>(P2).y << "}\n";
 
+			Entity P4 = Coord.CreateEntity();
+			Coord.CreateEntity();
+
+
+			std::cout << "Entities currently alive: ";
+			for (Entity const& e : Coord.GetLivingEntities()) {
+				std::cout << e << ", ";
+			}
+			std::cout << "\n";
+
 			deltaTime = 0;
+			Coord.DestroyEntity(P4);
+
 		}
+		counter++;
 
 		prevTime = currTime;
 	}

@@ -2,6 +2,7 @@
 #define ENTMAN_HPP
 
 #include <queue>
+#include <set>
 #include <array>
 
 #include "Entity.h"
@@ -18,8 +19,12 @@ public:
 	void SetSignature(Entity e, Signature sig);
 	Signature& GetSignature(Entity e);
 
+	std::set<Entity> const& GetLivingEntities() const { return livingEntities; }
+
 private:
 	std::queue<Entity> availableEntities;
+	std::set<Entity> livingEntities;
+
 	size_t livingEntityCount = 0;
 	std::array<Signature, MAX_ENTITIES> Signatures;
 

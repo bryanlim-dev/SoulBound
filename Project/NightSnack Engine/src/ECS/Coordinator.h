@@ -31,6 +31,8 @@ public:
 
 	Signature& GetEntitySignature(Entity e) { return Entity_M->GetSignature(e); }
 
+	std::set<Entity> const& GetLivingEntities() const { return Entity_M->GetLivingEntities(); }
+
 	template<typename T>
 	std::shared_ptr<T> RegisterSystem();
 
