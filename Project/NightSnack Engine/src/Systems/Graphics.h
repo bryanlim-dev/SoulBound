@@ -29,9 +29,9 @@ public:
 		CameraSig.set(GetComponentTypeID<Camera>());
 		CameraSig.set(GetComponentTypeID<Transform>());
 
-		// Iterate through all Entities in the COORDINATOR instead
+		// Iterate through all living Entities in the COORDINATOR instead
 		// Since the GraphicsSystem will not have a Camera Entity
-		for (Entity e = 0; e < Coord.GetEntityCount(); ++e) {
+		for (const Entity e : Coord.GetLivingEntities()) {
 			if ((Coord.GetEntitySignature(e) & CameraSig) == CameraSig &&
 				Coord.GetComponent<Camera>(e).isMainCam) { // This camera Entity is the main camera
 				return e;
