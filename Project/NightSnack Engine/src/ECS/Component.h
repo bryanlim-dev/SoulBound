@@ -12,6 +12,14 @@ struct Position {
   double x, y;
 };
 
+struct Rotation {
+	float degrees;
+};
+
+struct Scale {
+	double x, y;
+};
+
 struct Velocity {
   double dx, dy;
 };
@@ -27,12 +35,6 @@ struct Color {
 // ================================================================================================
 // GRAPHICS COMPONENTS
 // ================================================================================================
-
-struct Transform {
-	glm::vec2 position{ 0.f,0.f };
-	float rotation{ 0.f };
-	glm::vec2 scale{ 1.f, 1.f };
-};
 
 struct Renderable {
 	Mesh* mesh{ nullptr }; // Stores a pointer to a GPU mesh

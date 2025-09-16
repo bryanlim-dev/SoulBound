@@ -47,12 +47,12 @@ int main()
 
 	// Square object
 	Entity square = coord.CreateEntity();
-	Transform xform{
-		glm::vec2(200.f, -300.f),
-		0.f,
-		glm::vec2(800.f, 450.f)
-	};
-	coord.AddComponent<Transform>(square, xform);
+	Position posSquare{ 200.0, -300.0 };
+	Rotation rotSquare{ 0.f };
+	Scale scaleSquare{ 800.0, 450.0 };
+	coord.AddComponent<Position>(square, posSquare);
+	coord.AddComponent<Rotation>(square, rotSquare);
+	coord.AddComponent<Scale>(square, scaleSquare);
 	Renderable renderable{
 		&rectangle,
 		&red,
@@ -62,12 +62,12 @@ int main()
 
 	// Sphere object
 	Entity sphere = coord.CreateEntity();
-	Transform xform3{
-		glm::vec2(0.f, 0.f),
-		0.f,
-		glm::vec2(800.f, 450.f)
-	};
-	coord.AddComponent<Transform>(sphere, xform3);
+	Position posSphere{ 0.0,0.0 };
+	Rotation rotSphere{ 0.f };
+	Scale scaleSphere{ 800.0, 450.0 };
+	coord.AddComponent<Position>(sphere, posSphere);
+	coord.AddComponent<Rotation>(sphere, rotSphere);
+	coord.AddComponent<Scale>(sphere, scaleSphere);
 	Renderable renderable3{
 		&circle,
 		&green,
@@ -77,12 +77,12 @@ int main()
 
 	// Camera object
 	Entity camera = coord.CreateEntity();
-	Transform xform2{
-		glm::vec2(200.f, -300.f),
-		90.f,
-		glm::vec2(200.f, 200.f)
-	};
-	coord.AddComponent<Transform>(camera, xform2);
+	Position posCam{ 200.0, -300.0 };
+	Rotation rotCam{ 0.f };
+	Scale scaleCam{ 200.0,200.0 };
+	coord.AddComponent<Position>(camera, posCam);
+	coord.AddComponent<Rotation>(camera, rotCam);
+	coord.AddComponent<Scale>(camera, scaleCam);
 	Camera isCamera{
 		true,
 		1.f,
