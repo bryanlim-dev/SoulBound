@@ -6,7 +6,8 @@
 #include <string>
 
 #include "ECS/Coordinator.h"
-#include "AppWindow/Window.h"	
+#include "AppWindow/Window.h"
+#include "AppWindow/Timer.h"
 #include "ECS/ISystem.h"
 
 class CoreEngine {
@@ -37,10 +38,8 @@ private:
 	// Application Window;
 	std::unique_ptr<Window> CoreWindow;
 
-	// Frame timers
-	int		frameCount_ = 0;
-	double	lastTime_ = 0.0;
-	double	FPS_ = 0.0;
+	// Timers
+	Timer timer_;
 };
 
 template <typename T>

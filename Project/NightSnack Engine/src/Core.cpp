@@ -31,36 +31,29 @@ int CoreEngine::Terminate() {
 }
 
 void CoreEngine::Update() {
+	// Start frame timing;
+	timer_.StartFrame();
 
 	// Clear the screen; By right this will be handled by Graphics system and will be removed;
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	// Obtain dt; TEMP, WILL BE REPLACED WITH TIMER CLASS;
-	double deltaTime = 0.2;
-
-	// FPS calculation
-	double currentTime = glfwGetTime();
-	frameCount_++;
-
-	if (currentTime - lastTime_ >= 1.0) 
-	{
-		FPS_ = frameCount_ / (currentTime - lastTime_);
-		lastTime_ = currentTime;
-		frameCount_ = 0;
-
-		// Update window title
-		std::string title = "NightSnack Engine - FPS: " + std::to_string(static_cast<int>(FPS_));
-		CoreWindow->SetTitle(title);
-	}
+	// Obtain dt from Timer;
+	double deltaTime = timer_.GetDT();
 
 	// Iterate through Systems and Update them through Coordinator;
 	for (auto& System : Systems) {
 		System->Update(deltaTime, Coord);
 	}
 
+	// Update window title with FPS from Timer;
+	std::string title = "NightSnack Engine - FPS: " + std::to_string(static_cast<int>(timer_.GetFPS()));
+	CoreWindow->SetTitle(title);
+
 	// Application Window	Update;
 	CoreWindow->PollEvents();
 	CoreWindow->SwapBuffers();
 
+	// End frame timing (reserved for future use);
+	timer_.EndFrame();
 }
 
