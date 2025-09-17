@@ -2,30 +2,34 @@
 #define ENTITYFACTORY_H
 
 #include <string>
-#include <fstream>
+#include <any>
 #include <unordered_map>
 
-#include "./ECS/Coordinator.h"
+#include "ECS/Entity.h"
+#include "ECS/ISystem.h"
+#include "ECS/Coordinator.h"
+#include "ECS/Component.h"
 
 struct Archetype {
-	std::unordered_map<std::string, std::vector<double>> components;
+	ComponentType componentID;
+	std::vector<std::any> Data;
 };
 
-class EntityFactory {
+class EntityFactory : public ISystem {
 
 public:
 	// Factory cannot be default constructed;
 	EntityFactory() = delete;
 
 	// Factory needs to obtain a reference to the Coordinator and a map of archetypes (parsed from a file by resource manager);
-	EntityFactory(Coordinator& coord, std::unordered_map<std::vector<std::string>, Archetype>&& archetypes)
-		: m_coord(coord), m_archetypes(std::move(archetypes)) {}
+	EntityFactory(Coordinator& coord, std::unordered_map<std::vector<std::string>, Archetype> const& archetypes)
+		: m_coord(coord){}
 
 	Entity Create(std::string const& type);
 
 private:
-  Coordinator& m_coord;
-	std::unordered_map<std::vector<std::string>, Archetype> m_archetypes;
+	Coordinator& m_coord;
+	std::unordered_map<std::string, Archetype> m_archetypes;
 };
 
 #endif // ENTITYFACTORY_H

@@ -4,9 +4,11 @@
 #include <unordered_map>
 #include <memory>
 #include <cassert>
+#include <string>
 
 #include "ECS/Entity.h"
 
+// ------------------------------------------------------------------------------------------------
 // ComponentArray interface to allow storage of multiple different ComponentArrays in ComponentManager;
 class IComponentArray {
 public:
@@ -33,28 +35,8 @@ private:
 
 };
 
-// Get Unique ID for Component Type upon creation of ComponentArray;
-// Inline is to prevent multiple definition error, as this function is defined
-// in a header file;
-inline ComponentType GetUniqueComponentTypeID() {
-
-	// Static counter that lasts for the entire program lifetime;
-	static ComponentType lastID = 0u;
-	// Return ID then increment for next call;
-	return lastID++;
-
-}
-
-// Obtain Component Type ID for a specific Component Type T;
-template <typename T>
-inline ComponentType GetComponentTypeID() noexcept {
-
-	// static: typeID is only created once, so T component will maintain the same ID
-	// for the program lifetime;
-	static ComponentType typeID = GetUniqueComponentTypeID();
-	return typeID;
-}
-
+// ------------------------------------------------------------------------------------------------
+// Manager for all Component Arrays;
 class ComponentManager {
 
 public:
@@ -81,6 +63,33 @@ private:
 	// Mapping of all Component Arrays of any type;
 	std::unordered_map<ComponentType, std::shared_ptr<IComponentArray>> m_componentArrays;
 };
+
+
+// ------------------------------------------------------------------------------------------------
+// HELPER FUNCTIONS
+// ------------------------------------------------------------------------------------------------
+
+// Get Unique ID for Component Type upon creation of ComponentArray;
+// Inline is to prevent multiple definition error, as this function is defined
+// in a header file;
+inline ComponentType GetUniqueComponentTypeID() {
+
+	// Static counter that lasts for the entire program lifetime;
+	static ComponentType lastID = 0u;
+	// Return ID then increment for next call;
+	return lastID++;
+
+}
+
+// Obtain Component Type ID for a specific Component Type T;
+template <typename T>
+inline ComponentType GetComponentTypeID() noexcept {
+
+	// static: typeID is only created once, so T component will maintain the same ID
+	// for the program lifetime;
+	static ComponentType typeID = GetUniqueComponentTypeID();
+	return typeID;
+}
 
 // ------------------------------------------------------------------------------------------------
 // COMPONENT ARRAY
