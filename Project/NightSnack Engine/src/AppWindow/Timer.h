@@ -27,17 +27,17 @@ public:
 
 private:
     // Frame timing
-    int     frameCount_;
-	double  currentFrameTime_;
-    double  lastFrameTime_;
-	double  endFrameTime_;
+    int     m_frameCount;
+	double  m_currentFrameTime;
+    double  m_lastFrameTime;
+	double  m_endFrameTime;
 
-    double  deltaTime_;
-    double  fps_;
-    double  lastFpsUpdateTime_;
+    double  m_deltaTime;
+    double  m_fps;
+    double  m_lastFpsUpdateTime;
 
     // System timing
-    std::unordered_map<std::string, double> systemsTimes_;
-    std::unordered_map<std::string, double> systemStartTimes_;
-    double  totalSystemTime_;
+    std::unordered_map<std::string, double> m_systemsTimes;
+    std::unordered_map<std::string, double> m_systemStartTimes;
+    double  m_totalSystemTime;
 };

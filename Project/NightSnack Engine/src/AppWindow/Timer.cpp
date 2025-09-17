@@ -2,70 +2,70 @@
 #include <GLFW/glfw3.h>
 
 Timer::Timer()
-    : lastFrameTime_(glfwGetTime()), currentFrameTime_(0.0), endFrameTime_(0.0), deltaTime_(0.0), 
-    fps_(0.0), frameCount_(0), lastFpsUpdateTime_(glfwGetTime()), totalSystemTime_(0.0) {}
+    : m_lastFrameTime(glfwGetTime()), m_currentFrameTime(0.0), m_endFrameTime(0.0), m_deltaTime(0.0), 
+    m_fps(0.0), m_frameCount(0), m_lastFpsUpdateTime(glfwGetTime()), m_totalSystemTime(0.0) {}
 
 void Timer::StartFrame() 
 {
     // Delta time calculation
-    currentFrameTime_ = glfwGetTime();
-    deltaTime_ = currentFrameTime_ - lastFrameTime_;
-    lastFrameTime_ = currentFrameTime_;
-    frameCount_++;
+    m_currentFrameTime = glfwGetTime();
+    m_deltaTime = m_currentFrameTime - m_lastFrameTime;
+    m_lastFrameTime = m_currentFrameTime;
+    m_frameCount++;
 
 	// FPS updated every second
-    if (currentFrameTime_ - lastFpsUpdateTime_ >= 1.0)
+    if (m_currentFrameTime - m_lastFpsUpdateTime >= 1.0)
     {
-        fps_ = frameCount_ / (currentFrameTime_ - lastFpsUpdateTime_);
-        lastFpsUpdateTime_ = currentFrameTime_;
-        frameCount_ = 0;
+        m_fps = m_frameCount / (m_currentFrameTime - m_lastFpsUpdateTime);
+        m_lastFpsUpdateTime = m_currentFrameTime;
+        m_frameCount = 0;
     }
 }
 
 void Timer::EndFrame() 
 {
-	endFrameTime_ = glfwGetTime();
-	totalSystemTime_ += (endFrameTime_ - currentFrameTime_);
+	m_endFrameTime = glfwGetTime();
+	m_totalSystemTime += (m_endFrameTime - m_currentFrameTime);
 }
 
 double Timer::GetDT() const 
 { 
-    return deltaTime_; 
+    return m_deltaTime; 
 }
 
 double Timer::GetFPS() const
 {
-    return fps_;
+    return m_fps;
 }
 
 double Timer::GetTotalSystemTime() const
 {
-    return totalSystemTime_;
+    return m_totalSystemTime;
 }
 
 void Timer::StartSystemTimer(const std::string& name)
 {
-    systemStartTimes_[name] = glfwGetTime();
+    m_systemStartTimes[name] = glfwGetTime();
 }
 
 void Timer::EndSystemTimer(const std::string& name)
 {
     double end = glfwGetTime();
-    double elapsed = end - systemStartTimes_[name];
-    systemsTimes_[name] += elapsed;
-    totalSystemTime_ += elapsed;
+    double elapsed = end - m_systemStartTimes[name];
+    m_systemsTimes[name] += elapsed;
+    m_totalSystemTime += elapsed;
 }
 
 void Timer::DisplaySystemTimers() const
 {
-    if (systemsTimes_.empty() || totalSystemTime_ == 0.0)
+    if (m_systemsTimes.empty() || m_totalSystemTime == 0.0)
     {
         return;
     }
 
-    for (const auto& [name, time] : systemsTimes_)
+    for (const auto& [name, time] : m_systemsTimes)
     {
-        double percent = (time / totalSystemTime_) * 100.0;
+        double percent = (time / m_totalSystemTime) * 100.0;
         std::cout << name << ": " << std::fixed << std::setprecision(4)
             << percent << "% of game loop | ";
     }
@@ -74,7 +74,7 @@ void Timer::DisplaySystemTimers() const
 
 void Timer::ResetSystemsTimers()
 {
-    systemsTimes_.clear();
-	systemStartTimes_.clear();
-    totalSystemTime_ = 0.0;
+    m_systemsTimes.clear();
+	m_systemStartTimes.clear();
+    m_totalSystemTime = 0.0;
 }
