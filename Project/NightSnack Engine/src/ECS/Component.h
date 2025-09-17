@@ -16,12 +16,31 @@ struct Velocity {
   double dx, dy;
 };
 
+struct Acceleration {
+	double ax, ay;
+};
+
+struct Force {
+	double fx{ 0.0 };
+	double fy{ 0.0 };
+};
+
+struct Mass {
+	double val = 1.0;
+};
+
 struct Sprite {
   std::string textureName;
 };
 
 struct Color {
 	float r, g, b, a;
+};
+
+struct Collider {
+	double width, height;
+	bool isStatic{ false };
+	bool isGrounded{ false };
 };
 
 // ================================================================================================

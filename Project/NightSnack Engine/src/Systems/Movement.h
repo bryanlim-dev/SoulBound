@@ -23,19 +23,19 @@ public:
     // Iterate through all Entities this system can access;
     for (auto const& e : m_entities) {
 
-	// First obtain references to components of interest;
+	  // First obtain references to components of interest;
     auto& transform = coord.GetComponent<Position>(e);
     auto& velocity = coord.GetComponent<Velocity>(e);
 
-	// Get more components here if necessary...
+	  // Get more components here if necessary...
 
-	// Do stuff that you want to do with the components;
+	  // Do stuff that you want to do with the components;
     transform.x += velocity.dx * dt;
     transform.y += velocity.dy * dt;
 
-	// Do more stuff here if necessary...
+	  // Do more stuff here if necessary...
+    }
   }
-}
 Signature GetSignature() const override { return m_systemSignature; }
 
 private:
