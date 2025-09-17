@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "InputManager.h"
 #include <iostream>
 
 // Required OpenGL version;
@@ -51,6 +52,9 @@ Window::Window(int width, int height, std::string const& title)
 	// Set viewport and callback;
 	glViewport(0, 0, width, height);
 	glfwSetFramebufferSizeCallback(Handle_, FramebufferSizeCallback);
+
+	// Initialise the Input Manager
+	InputManager::Init(Handle_);
 }
 
 // Destructor -------------------------------------------------------------------------------------

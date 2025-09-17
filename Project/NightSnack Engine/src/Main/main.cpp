@@ -7,6 +7,7 @@
 
 #include "Core.h"
 #include "Systems/AllSystems.h"		// Include your system header in this file;
+#include "InputManager.h"
 
 int main()
 {
@@ -96,6 +97,43 @@ int main()
   // Core Application Loop;
   while (!core.ShouldClose()) {
   	core.Update();
+
+	// Update mouse positions
+	InputManager::Update();
+
+#pragma region Temporary test code for key and mouse inputs
+	/*
+	// Test key pressed
+	if (InputManager::IsKeyPressed(GLFW_KEY_W) || InputManager::IsKeyPressed(GLFW_KEY_E))
+		std::cout << "key pressed!!!\n";
+	// Test key down
+	if (InputManager::IsKeyDown(GLFW_KEY_W) || InputManager::IsKeyDown(GLFW_KEY_E))
+		std::cout << "key down!!!\n";
+	// Test key released
+	if (InputManager::IsKeyReleased(GLFW_KEY_W) || InputManager::IsKeyReleased(GLFW_KEY_E))
+		std::cout << "key released!!!\n";
+	
+	// Test modifier keys 
+	if (InputManager::IsKeyPressed(GLFW_KEY_S) && InputManager::IsCtrlDown())
+		std::cout << "CTRL+S pressed!!!\n";
+
+	// Test mouse position
+	//std::cout << "Mouse pos: ( " << InputManager::GetMousePosX() << ", " << InputManager::GetMousePosY() << " )\n";
+
+	// Test mouse pressed
+	if (InputManager::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT) || InputManager::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
+		std::cout << "Mouse pressed!!!\n";
+	// Test mouse down
+	if (InputManager::IsMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) || InputManager::IsMouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT))
+		std::cout << "Mouse down!!!\n";
+	// Test mouse released
+	if (InputManager::IsMouseButtonReleased(GLFW_MOUSE_BUTTON_LEFT) || InputManager::IsMouseButtonReleased(GLFW_MOUSE_BUTTON_RIGHT))
+		std::cout << "Mouse released!!!\n";
+	*/
+#pragma endregion
+
+	// Reset key and mouse states, call this at the end of the frame
+	InputManager::LateUpdate();
   }
 
 
