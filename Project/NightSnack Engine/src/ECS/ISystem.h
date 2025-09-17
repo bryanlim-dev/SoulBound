@@ -20,6 +20,8 @@ public:
 	virtual void Update(double dt, Coordinator& Coord) = 0;
 	// Every system must expose its signature;
 	virtual Signature GetSignature() const = 0;
+	// Retrieve name of system
+	virtual std::string GetName() const = 0;
 
 };
 

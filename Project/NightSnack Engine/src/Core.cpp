@@ -42,18 +42,24 @@ void CoreEngine::Update() {
 
 	// Iterate through Systems and Update them through Coordinator;
 	for (auto& System : Systems) {
+		timer_.StartSystemTimer(System->GetName());
 		System->Update(deltaTime, Coord);
+		timer_.EndSystemTimer(System->GetName());
 	}
 
 	// Update window title with FPS from Timer;
-	std::string title = "NightSnack Engine - FPS: " + std::to_string(static_cast<int>(timer_.GetFPS()));
+	std::string title = "NightSnack Engine | FPS: " + std::to_string(static_cast<int>(timer_.GetFPS())) 
+		+ " | Game Time: " + std::to_string(static_cast<int>(timer_.GetTotalSystemTime()));
 	CoreWindow->SetTitle(title);
+
+	// Displaying active system timers into Console (temp.);
+	//timer_.DisplaySystemTimers();
 
 	// Application Window	Update;
 	CoreWindow->PollEvents();
 	CoreWindow->SwapBuffers();
 
-	// End frame timing (reserved for future use);
+	// End frame timing;
 	timer_.EndFrame();
 }
 
