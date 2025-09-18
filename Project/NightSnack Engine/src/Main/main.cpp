@@ -62,7 +62,7 @@ int main()
 	coord.AddComponent<Position>(p2, Position{ 500, 0. });
 	coord.AddComponent<Position>(p3, Position{ -750., 0. });
 
-	coord.AddComponent<Velocity>(p1, Velocity{ 7.5, 0. });
+	coord.AddComponent<Velocity>(p1, Velocity{ 80., 0. });
 	coord.AddComponent<Velocity>(p2, Velocity{ 0.0, 0. });
 	coord.AddComponent<Velocity>(p3, Velocity{ 0.0, 0. });
 
