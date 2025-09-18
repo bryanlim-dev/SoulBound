@@ -10,11 +10,6 @@
 #include "ECS/Coordinator.h"
 #include "ECS/Component.h"
 
-struct Archetype {
-	// e.g: <"Position", static_pointer_cast<IComponent>(Position{ 1.f, 2.5f })>; components["Position"] = 1.f, 2.5f;
-	std::unordered_map<std::string, IComponent> components;
-};
-
 class EntityFactory : public ISystem {
 
 public:
