@@ -37,15 +37,11 @@ private:
 
 	// ECS Coordinator;
 	Coordinator m_coord;
-	// Application Window;
-<<<<<<< HEAD
+	// Application Window
 	std::unique_ptr<Window> m_coreWindow;
-=======
-	std::unique_ptr<Window> CoreWindow;
-
 	// Timers
 	Timer timer_;
->>>>>>> SystemTimers
+
 };
 
 template <typename T>

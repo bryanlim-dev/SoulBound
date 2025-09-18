@@ -27,7 +27,6 @@ int main()
 
   // Add more systems here...
 
-<<<<<<< HEAD
 #pragma region Temporary test code for rendering basic debugging shapes
 	// Load shader
 	Shader shader("../shaders/vertex_shader.vert", "../shaders/fragment_shader.frag");
@@ -101,7 +100,6 @@ int main()
 
 
   // Clean termination;
-=======
 	// Create Core engine, passing window parameters;
 	CoreEngine Core(1600, 900, "NightSnack Engine");
 
@@ -121,6 +119,5 @@ int main()
 	}
 
 	// Clean termination;
->>>>>>> SystemTimers
   return 0;
 }
