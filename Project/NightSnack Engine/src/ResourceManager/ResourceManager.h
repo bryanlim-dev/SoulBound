@@ -170,7 +170,7 @@ public:
 	//Delete the Resource Manager
 	void DeleteRM();
 
-	void DebugEverything();
+	void DebugTestEverything();
 
 private:
 
