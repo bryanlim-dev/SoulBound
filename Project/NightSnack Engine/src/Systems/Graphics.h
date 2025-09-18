@@ -131,6 +131,8 @@ public:
 
 	Signature GetSignature() const override { return m_systemSignature; }
 
+	std::string GetName() const { return "GraphicsSystem"; }
+
 private:
 	Signature m_systemSignature{};
 };
