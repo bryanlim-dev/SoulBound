@@ -15,29 +15,33 @@ public:
     // Frame timing
     void    StartFrame();
     void    EndFrame();
-    double  GetDT() const;
-    double  GetFPS() const;
-    double  GetTotalSystemTime() const;
+	void    FrameCap(float targetFPS);
 
     // System timing
     void    StartSystemTimer(const std::string& name);
     void    EndSystemTimer(const std::string& name);
-	void    DisplaySystemTimers() const;
+    void    DisplaySystemTimers() const;
     void    ResetSystemsTimers();
+
+    // Getters
+    float  GetDT() const;
+    float  GetFPS() const;
+    float  GetTotalSystemTime() const;
+
 
 private:
     // Frame timing
     int     m_frameCount;
-	double  m_currentFrameTime;
-    double  m_lastFrameTime;
-	double  m_endFrameTime;
+    float  m_currentFrameTime;
+    float  m_lastFrameTime;
+    float  m_endFrameTime;
 
-    double  m_deltaTime;
-    double  m_fps;
-    double  m_lastFpsUpdateTime;
+    float  m_deltaTime;
+    float  m_fps;
+    float  m_lastFpsUpdateTime;
 
     // System timing
-    std::unordered_map<std::string, double> m_systemsTimes;
-    std::unordered_map<std::string, double> m_systemStartTimes;
-    double  m_totalSystemTime;
+    std::unordered_map<std::string, float> m_systemsTimes;
+    std::unordered_map<std::string, float> m_systemStartTimes;
+    float  m_totalSystemTime;
 };

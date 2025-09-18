@@ -66,5 +66,6 @@ void CoreEngine::Update() {
 
 	// End frame timing;
 	timer_.EndFrame();
+	//timer_.FrameCap(60.f); // Cap frame rate to 60 FPS (optional);
 }
 
