@@ -223,7 +223,7 @@ void ResourceManager::DeleteRM()
 	delete this;
 }
 
-void ResourceManager::DebugEverything()
+void ResourceManager::DebugTestEverything()
 {
 	ResourceManager* rm = this;
 

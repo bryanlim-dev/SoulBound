@@ -14,7 +14,7 @@ int main()
 
 	//Resource Manager test
 	{
-		
+		rm->DebugTestEverything();
 	}
 
 	//Replace this with actual sound manager later
