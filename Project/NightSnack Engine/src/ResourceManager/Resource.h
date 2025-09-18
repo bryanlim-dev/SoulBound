@@ -14,6 +14,7 @@ enum RESOURCE_TYPE
 	RESOURCE_NONE,
 	RESOURCE_IMAGE,
 	RESOURCE_TXTFILE,
+	RESOURCE_JSON,
 	RESOURCE_SOUND,
 };
 
@@ -83,7 +84,6 @@ private:
 	ResourceImage() = delete;
 };
 
-
 class ResourceTxtFile : public Resource
 {
 protected:
@@ -95,6 +95,20 @@ public:
 	~ResourceTxtFile();
 
 	std::vector<std::string> TextStringVec() const;
+};
+
+class ResourceJson : public Resource
+{
+private:
+	nlohmann::json jsonData;
+	//struct Archtype
+	// {std::unordered_map<std::string, IComponent> componentMap}
+	// 
+	//std::unordered_map<std::string, Archtype> archetype
+
+public: 
+	ResourceJson(const std::string& inFilePath, const std::type_index& inMapKey);
+	~ResourceJson();
 };
 
 

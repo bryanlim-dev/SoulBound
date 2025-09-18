@@ -40,6 +40,7 @@ bool& Resource::FlaggedForDeletion()
 }
 #pragma endregion
 
+
 #pragma region Image
 ResourceImage::ResourceImage(const std::string& inFilePath, const std::type_index& inMapKey) 
 	: Resource(inFilePath, inMapKey)
@@ -76,6 +77,8 @@ unsigned char* ResourceImage::Image() const
 }
 #pragma endregion
 
+
+#pragma region TxtFile
 ResourceTxtFile::ResourceTxtFile(const std::string& inFilePath, const std::type_index& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
@@ -109,3 +112,18 @@ std::vector<std::string> ResourceTxtFile::TextStringVec() const
 {
 	return txtStringVec;
 }
+
+#pragma endregion
+
+#pragma region TxtFile
+ResourceJson::ResourceJson(const std::string& inFilePath, const std::type_index& inMapKey)
+	: Resource(inFilePath, inMapKey)
+{
+
+}
+
+ResourceJson::~ResourceJson()
+{
+}
+#pragma endregion
+
