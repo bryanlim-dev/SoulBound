@@ -287,7 +287,7 @@ void ResourceManager::DeleteFlaggedResources()
 			resourceImageMap.erase(resource->MapKey());
 			break;
 		case RESOURCE_TXTFILE:
-			resourceImageMap.erase(resource->MapKey());
+			resourceTxtFileMap.erase(resource->MapKey());
 			break;
 		}
 		delete resource;
