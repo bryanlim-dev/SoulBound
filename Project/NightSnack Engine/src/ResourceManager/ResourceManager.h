@@ -51,15 +51,15 @@ private:
 
 public:
 
-	void Update();
-
 	/************************************************************************/
 	/*!
 	\brief
-	Update function for post render logic (i.e calling flagged deletion)
+	Update function for logic (i.e calling flagged deletion)
 	*/
 	/************************************************************************/
-	void UpdatePostRender();
+
+	void Update(double dt);
+
 
 #pragma region Image Functions
 	/************************************************************************/
@@ -169,6 +169,8 @@ public:
 
 	//Delete the Resource Manager
 	void DeleteRM();
+
+	void DebugEverything();
 
 private:
 
