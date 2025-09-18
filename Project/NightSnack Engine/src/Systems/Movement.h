@@ -38,6 +38,8 @@ public:
 }
 Signature GetSignature() const override { return m_systemSignature; }
 
+std::string GetName() const override { return "Movement"; }
+
 private:
   Signature m_systemSignature{};
 };

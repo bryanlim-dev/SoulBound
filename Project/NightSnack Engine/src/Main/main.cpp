@@ -14,13 +14,29 @@
 #include "ECS/ISystem.h"
 #include "Systems/AllSystems.h"
 
+#include "ResourceManager/ResourceManager.h"
+#include <fmod.hpp>
+
+
 int main()
 {
 	// Enable memory leak checking at program exit
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	// Create Core engine, passing window parameters;
-	CoreEngine core(1600, 900, "NightSnack Engine");
+	ResourceManager* rm = ResourceManager::GetInstance();
+
+	//Resource Manager test
+	{
+		rm->DebugTestEverything();
+	}
+
+	//Replace this with actual sound manager later
+	FMOD::System* fmodSystem = nullptr;
+	FMOD::System_Create(&fmodSystem);
+
+  // Create Core engine, passing window parameters;
+  CoreEngine core(1600, 900, "NightSnack Engine");
+
 
 	core.Initialize();
 
@@ -94,9 +110,14 @@ int main()
 	};
 	coord.AddComponent<Camera>(camera, isCamera);
 
-	while (!core.ShouldClose()) {
-		core.Update();
+  // Core Application Loop;
+  while (!core.ShouldClose()) {
+  	core.Update();
+  }
 
-	}
-	return 0;
+	// Clean termination;
+	rm->DeleteRM();
+	fmodSystem->close();
+  return 0;
+
 }
