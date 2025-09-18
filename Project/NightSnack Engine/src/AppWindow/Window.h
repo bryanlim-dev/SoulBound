@@ -1,4 +1,5 @@
-#pragma once
+#ifndef WINDOW_HPP
+#define WINDOW_HPP
 
 #include <string>
 #include <glad/glad.h>
@@ -7,9 +8,11 @@
 class Window
 {
 public:
+	Window() = delete;
 	Window(int width, int height, std::string const& title);
 	~Window();
 
+	void SetTitle(const std::string& title);
 	void PollEvents();
 	void SwapBuffers();
 	bool ShouldClose() const;
@@ -25,3 +28,5 @@ private:
 	int Height_;
 	std::string Title_;
 };
+
+#endif // WINDOW_HPP

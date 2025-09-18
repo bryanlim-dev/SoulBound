@@ -27,6 +27,13 @@ file(GLOB_RECURSE ENGINE_HEADERS CONFIGURE_DEPENDS src/*.h)
 
 add_executable(${PROJECT_NAME} ${ENGINE_SOURCES} ${ENGINE_HEADERS})
 
+# Set warning level for project
+if (MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /permissive-)
+else()
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
 # ------------------------------------------------------------
 # Organize files in Visual Studio Solution Explorer
 # ------------------------------------------------------------
