@@ -5,7 +5,7 @@
 
 struct Mat3 {
     // 3x3 matrix stored as a 2D array
-    std::array<std::array<double, 3>, 3> m;
+    std::array<std::array<double, 3>, 3> Matrix3x3;
 
     // Constructors
     Mat3();  // Default

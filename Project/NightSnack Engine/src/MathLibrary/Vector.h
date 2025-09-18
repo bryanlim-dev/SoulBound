@@ -3,7 +3,9 @@
 #include <cmath>
 #include <stdexcept>
 
+// ============================
 // Vec2
+// ============================
 struct Vec2 {
     double x, y;
 
@@ -28,13 +30,19 @@ struct Vec2 {
 
     // Magnitude (length)
     double magnitude() const;
+
+    //  Normalization
+    Vec2 normalized() const;  // returns a unit vector
+    void normalize();         // modifies this vector in-place
 };
 
 // Output stream operator for Vec2
 std::ostream& operator<<(std::ostream& os, const Vec2& v);
 
 
+// ============================
 // Vec3
+// ============================
 struct Vec3 {
     double x, y, z;
 
@@ -60,8 +68,10 @@ struct Vec3 {
     // Magnitude (length)
     double magnitude() const;
 
+    // Normalization
+    Vec3 normalized() const;  // returns a unit vector
+    void normalize();         // modifies this vector in-place
 };
 
 // Output stream operator for Vec3
 std::ostream& operator<<(std::ostream& os, const Vec3& v);
-

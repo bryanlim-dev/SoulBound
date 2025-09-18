@@ -15,7 +15,7 @@ inline double subtract(double a, double b) { return a - b; }
 // Multiply two scalars
 inline double multiply(double a, double b) { return a * b; }
 
-// Divide two scalars (throws on divide by zero)
+// Divide two scalars
 inline double divide(double a, double b) {
     if (b == 0) throw std::runtime_error("Divide by zero");
     return a / b;

@@ -17,10 +17,14 @@ void CoreEngine::Initialize() {
 	m_coord.RegisterComponent<Position>();
 	m_coord.RegisterComponent<Rotation>();
 	m_coord.RegisterComponent<Scale>();
-	m_coord.RegisterComponent<Color>();
+
 	m_coord.RegisterComponent<Velocity>();
+	m_coord.RegisterComponent<Collider>();
+
 	m_coord.RegisterComponent<Renderable>();
+	m_coord.RegisterComponent<Color>();
 	m_coord.RegisterComponent<Camera>();
+
 
 	// Add more Components here...
 

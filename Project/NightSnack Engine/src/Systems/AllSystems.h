@@ -3,6 +3,7 @@
 
 #include "Movement.h"
 #include "Graphics.h"
+#include "Collision.h"
 
 // Add System header files here...
 
