@@ -12,6 +12,7 @@ public:
 	Window(int width, int height, std::string const& title);
 	~Window();
 
+	void SetTitle(const std::string& title);
 	void PollEvents();
 	void SwapBuffers();
 	bool ShouldClose() const;

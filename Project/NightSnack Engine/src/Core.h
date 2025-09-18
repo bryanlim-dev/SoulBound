@@ -6,7 +6,8 @@
 #include <string>
 
 #include "ECS/Coordinator.h"
-#include "AppWindow/Window.h"	
+#include "AppWindow/Window.h"
+#include "AppWindow/Timer.h"
 #include "ECS/ISystem.h"
 
 class CoreEngine {
@@ -37,7 +38,14 @@ private:
 	// ECS Coordinator;
 	Coordinator m_coord;
 	// Application Window;
+<<<<<<< HEAD
 	std::unique_ptr<Window> m_coreWindow;
+=======
+	std::unique_ptr<Window> CoreWindow;
+
+	// Timers
+	Timer timer_;
+>>>>>>> SystemTimers
 };
 
 template <typename T>
