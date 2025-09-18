@@ -11,8 +11,8 @@
 #include "ECS/Component.h"
 
 struct Archetype {
-	ComponentType componentID;
-	std::vector<std::any> Data;
+	// e.g: <"Position", static_pointer_cast<IComponent>(Position{ 1.f, 2.5f })>; components["Position"] = 1.f, 2.5f;
+	std::unordered_map<std::string, IComponent> components;
 };
 
 class EntityFactory : public ISystem {
@@ -29,6 +29,7 @@ public:
 
 private:
 	Coordinator& m_coord;
+	// e.g: <"Player", Archetype p1>; <- player archetype;
 	std::unordered_map<std::string, Archetype> m_archetypes;
 };
 

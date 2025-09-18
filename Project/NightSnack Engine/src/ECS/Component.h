@@ -4,31 +4,32 @@
 #include "Graphics/Mesh.h"
 #include "Graphics/Material.h"
 
+struct IComponent{};
+
 // ================================================================================================
 // COMPONENTS
 // ================================================================================================
-
-struct Position {
+struct Position : public IComponent {
   double x, y;
 };
 
-struct Rotation {
+struct Rotation : public IComponent {
 	float degrees;
 };
 
-struct Scale {
+struct Scale : public IComponent {
 	double x, y;
 };
 
-struct Velocity {
+struct Velocity : public IComponent {
   double dx, dy;
 };
 
-struct Sprite {
+struct Sprite : public IComponent {
   std::string textureName;
 };
 
-struct Color {
+struct Color : public IComponent {
 	float r, g, b, a;
 };
 

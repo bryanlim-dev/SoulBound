@@ -33,10 +33,12 @@ public:
 
 	std::set<Entity> const& GetLivingEntities() const { return m_entityManager->GetLivingEntities(); }
 
-	template<typename T>
+	template <typename T>
 	std::shared_ptr<T> RegisterSystem();
+	template <typename T>
+	std::shared_ptr<T> GetSystem() { return m_systemManager->GetSystem<T>(); }
 
-	template<typename T>
+	template <typename T>
 	void SetSystemSignature(Signature sig);
 
 private:
