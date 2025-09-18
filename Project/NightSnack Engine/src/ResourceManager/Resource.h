@@ -5,6 +5,8 @@
 #include <typeindex>
 #include <vector>
 
+#include <json.hpp>
+
 
 //Unused for now (might not uise cause i used derived classes instead)
 enum RESOURCE_TYPE

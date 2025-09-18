@@ -96,6 +96,10 @@ target_link_libraries(fmod INTERFACE
     optimized "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmod_vc.lib"
 )
 
+#nlohmann_json
+add_library(nlohmann_json INTERFACE)
+target_include_directories(nlohmann_json INTERFACE extern/nlohmann)
+
 
 # ------------------------------------------------------------
 # Linking
@@ -106,6 +110,7 @@ target_link_libraries(${PROJECT_NAME}
     glad
     stb_image
     fmod
+    nlohmann_json
 )
 
 # ------------------------------------------------------------
