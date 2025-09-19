@@ -6,7 +6,6 @@
 //#include <thread>
 //#include <chrono>
 
-#include "AppWindow/Window.h"
 #include "MathLibrary/Math.h"
 #include "Systems/Collision.h"
 
@@ -40,10 +39,6 @@ int main()
   	// Will register all components;
   	// If you create new components, please register them in this function defined in Core.cpp;
   	core.Initialize(1600, 900, "NightSnack Engine");
-
-	core.AddSystem<CollisionSystem>();
-	core.AddSystem<MovementSystem>();
-	core.AddSystem<GraphicsSystem>();
 
 	// ECS test;
 	Coordinator& coord = core.GetCoord();

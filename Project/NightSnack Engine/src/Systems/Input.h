@@ -29,6 +29,7 @@ public:
 	void Init(GLFWwindow* window);
 
 	void Update(double dt, Coordinator& coord) override;
+	std::string GetName() const { return "InputSystem"; }
 	void ResetInputStates();
 
 	// Keyboard queries

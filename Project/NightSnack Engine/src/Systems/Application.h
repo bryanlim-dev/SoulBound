@@ -14,11 +14,13 @@ public:
 
 	void Init(int width, int height, std::string const& title);
 	void Update(double dt, Coordinator& coord) override;
+	std::string GetName() const { return "ApplicationSystem"; }
 
 	void PollEvents();
 	void SwapBuffers();
 	bool ShouldClose() const;
 
+	void SetWindowTitle(GLFWwindow* window, const char* title);
 	int GetWidth() const { return m_appWidth; }
 	int GetHeight() const { return m_appHeight; }
 

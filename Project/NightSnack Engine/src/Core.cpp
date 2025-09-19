@@ -27,6 +27,7 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	AddSystem<ApplicationSystem>();
 	AddSystem<InputSystem>();
 	AddSystem<MovementSystem>();
+	AddSystem<CollisionSystem>();
 	AddSystem<GraphicsSystem>();
 
 	// Add more Components here...
@@ -85,14 +86,13 @@ void CoreEngine::Update() {
 	// Update window title with FPS from Timer;
 	std::string title = "NightSnack Engine | FPS: " + std::to_string(static_cast<int>(timer_.GetFPS())) 
 		+ " | Game Time: " + std::to_string(static_cast<int>(timer_.GetTotalSystemTime()));
-	//m_coreWindow->SetTitle(title);
+	
+	m_coord.GetSystem<ApplicationSystem>().get()->SetWindowTitle(
+		m_coord.GetSystem<ApplicationSystem>().get()->GetNativeHandle(), title.c_str()
+	);
 
 	// Displaying active system timers into Console (temp.);
 	//timer_.DisplaySystemTimers();
-
-	// Application Window	Update;
-	//m_coreWindow->PollEvents();
-	//m_coreWindow->SwapBuffers();
 
 	// End frame timing;
 	timer_.EndFrame();

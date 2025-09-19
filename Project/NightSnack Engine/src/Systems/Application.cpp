@@ -24,7 +24,7 @@ void ApplicationSystem::Init(int width, int height, std::string const& title) {
 	glfwWindowHint(GLFW_DEPTH_BITS, 24);
 	glfwWindowHint(GLFW_RED_BITS, 8); glfwWindowHint(GLFW_GREEN_BITS, 8);
 	glfwWindowHint(GLFW_BLUE_BITS, 8); glfwWindowHint(GLFW_ALPHA_BITS, 8);
-
+	
 	// Create window;
 	m_appWidth = width;
 	m_appHeight = height;
@@ -79,29 +79,31 @@ void ApplicationSystem::Update(double dt, Coordinator& coord) {
 
 // Poll for and process events --------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void ApplicationSystem::PollEvents()
-{
+void ApplicationSystem::PollEvents() {
 	glfwPollEvents();
 }
 
 // Swap front and back buffers --------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void ApplicationSystem::SwapBuffers()
-{
+void ApplicationSystem::SwapBuffers() {
 	glfwSwapBuffers(m_windowHandle);
+}
+
+// Update the window title ------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+void ApplicationSystem::SetWindowTitle(GLFWwindow* window, const char* title) {
+	glfwSetWindowTitle(window, title);
 }
 
 // Check if window should close -------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-bool ApplicationSystem::ShouldClose() const
-{
+bool ApplicationSystem::ShouldClose() const {
 	return glfwWindowShouldClose(m_windowHandle);
 }
 
 // Changes the viewport when the window is resized ------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void ApplicationSystem::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
-{
+void ApplicationSystem::FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
 	(void)window;
 	glViewport(0, 0, width, height);
 }
