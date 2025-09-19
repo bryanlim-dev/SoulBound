@@ -5,6 +5,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "ECS/Coordinator.h"
+#include "Systems/Timer.h"
 
 class ApplicationSystem : public ISystem
 {
@@ -26,6 +27,8 @@ public:
 
 	GLFWwindow* GetNativeHandle() const { return m_windowHandle; }
 
+	Timer& GetTimer() { return m_timer; }
+
 	Signature GetSignature() const override { return m_systemSignature; }
 
 private:
@@ -35,6 +38,9 @@ private:
 	int m_appWidth { 1600 };
 	int m_appHeight { 900 };
 	std::string m_appTitle;
+
+	// Tick Tocker
+	Timer m_timer;
 
 	Signature m_systemSignature{};
 };

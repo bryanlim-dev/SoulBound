@@ -55,13 +55,13 @@ int CoreEngine::Terminate() {
 
 void CoreEngine::Update() {
 	// Start frame timing;
-	timer_.StartFrame();
+	m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartFrame();
 
 	// Reset input states at the start of the frame
 	m_coord.GetSystem<InputSystem>()->ResetInputStates();
 
 	// Obtain dt from Timer;
-	double deltaTime = timer_.GetDT();
+	double deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
 
 	// glfw callbacks are triggered here
 	m_coord.GetSystem<ApplicationSystem>().get()->PollEvents();
@@ -75,27 +75,26 @@ void CoreEngine::Update() {
 			std::cout << "deltaTime: " << deltaTime << "\n";
 			dt = 0;
 		}
-
-		timer_.StartSystemTimer(System->GetName());
+		m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(System->GetName());
 		System->Update(deltaTime, m_coord);
-		timer_.EndSystemTimer(System->GetName());
+		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(System->GetName());
 	}
 
 	m_coord.GetSystem<ApplicationSystem>().get()->SwapBuffers();
 
 	// Update window title with FPS from Timer;
-	std::string title = "NightSnack Engine | FPS: " + std::to_string(static_cast<int>(timer_.GetFPS())) 
-		+ " | Game Time: " + std::to_string(static_cast<int>(timer_.GetTotalSystemTime()));
+	std::string title = "NightSnack Engine | FPS: " + std::to_string(static_cast<int>(m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetFPS()))
+		+ " | Game Time: " + std::to_string(static_cast<int>(m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetTotalSystemTime()));
 	
 	m_coord.GetSystem<ApplicationSystem>().get()->SetWindowTitle(
 		m_coord.GetSystem<ApplicationSystem>().get()->GetNativeHandle(), title.c_str()
 	);
 
 	// Displaying active system timers into Console (temp.);
-	//timer_.DisplaySystemTimers();
+	//m_coord.GetSystem<ApplicationSystem>()->GetTimer().DisplaySystemTimers();
 
 	// End frame timing;
-	timer_.EndFrame();
+	m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndFrame();
 	//timer_.FrameCap(60.f); // Cap frame rate to 60 FPS (optional);
 }
 

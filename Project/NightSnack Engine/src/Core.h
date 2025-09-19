@@ -6,7 +6,6 @@
 #include <string>
 
 #include "ECS/Coordinator.h"
-#include "Systems/Timer.h"
 #include "ECS/ISystem.h"
 #include "Systems/Application.h"
 
@@ -36,8 +35,6 @@ private:
 
 	// ECS Coordinator;
 	Coordinator m_coord;
-	// Timers
-	Timer timer_;
 
 };
 
