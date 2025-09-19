@@ -11,7 +11,7 @@ ResourceManager::~ResourceManager()
 	//Delete all resources
 
 	//Loop through entire image map AND DELETE IT MUHAHA
-	std::map<std::type_index, ResourceImage*>::iterator itImg;
+	std::map<std::size_t, ResourceImage*>::iterator itImg;
 	for (itImg = resourceImageMap.begin(); itImg != resourceImageMap.end(); itImg++)
 	{
 		delete itImg->second;
@@ -19,7 +19,7 @@ ResourceManager::~ResourceManager()
 	resourceImageMap.clear();
 
 	//Delete txt map
-	std::map<std::type_index, ResourceTxtFile*>::iterator itTxt;
+	std::map<std::size_t, ResourceTxtFile*>::iterator itTxt;
 	for (itTxt = resourceTxtFileMap.begin(); itTxt != resourceTxtFileMap.end(); itTxt++)
 	{
 		delete itTxt->second;
@@ -37,7 +37,7 @@ void ResourceManager::Update(double dt)
 
 
 #pragma region Image Functions
-LOAD_RESULT ResourceManager::LoadImage(std::string filePath, std::type_index &imageKey)
+LOAD_RESULT ResourceManager::LoadImage(std::string filePath, std::size_t&imageKey)
 {
 	std::cout << "RM: ";
 
@@ -63,7 +63,7 @@ LOAD_RESULT ResourceManager::LoadImage(std::string filePath, std::type_index &im
 
 	//This loads the image via the ResourceImage class
 	ResourceImage* newResource = new ResourceImage(filePath, imageKey);
-
+	newResource->LoadFile();
 
 	//This checks if it is loaded or now
 	if (!newResource->Loaded())
@@ -87,7 +87,7 @@ LOAD_RESULT ResourceManager::LoadImage(std::string filePath, std::type_index &im
 
 }
 
-void ResourceManager::UnloadImage(std::type_index imageKey)
+void ResourceManager::UnloadImage(std::size_t imageKey)
 {
 	//Check if resource alr exists
 	if (resourceImageMap.find(imageKey) == resourceImageMap.end())
@@ -99,21 +99,25 @@ void ResourceManager::UnloadImage(std::type_index imageKey)
 	resourceImageMap[imageKey]->FlaggedForDeletion() = true;
 
 	//Change this to a queue system
-	deletionVec.push_back(resourceImageMap[imageKey]);
+	//Check if it exists witin the vec alr tho
+	auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceImageMap[imageKey]);
+	if (it == deletionVec.end())
+		deletionVec.push_back(resourceImageMap[imageKey]);
+
 	//delete resourceImageMap[filePath];
 	//resourceImageMap[filePath] = nullptr;
 	//resourceImageMap.erase(filePath);
 }
 
 
-unsigned char* ResourceManager::GetImage(const std::type_index imageKey)
+unsigned char* ResourceManager::GetImage(const std::size_t imageKey)
 {
 	//Same logic as func get image resource so just reuse it
 	ResourceImage* image = GetImageResource(imageKey);
 	return (image != nullptr) ? GetImageResource(imageKey)->Image(): nullptr;
 }
 
-ResourceImage* ResourceManager::GetImageResource(const std::type_index imageKey)
+ResourceImage* ResourceManager::GetImageResource(const std::size_t imageKey)
 {
 	//Does the resource exist?
 	if (resourceImageMap.find(imageKey) != resourceImageMap.end())
@@ -136,7 +140,7 @@ ResourceImage* ResourceManager::GetImageResource(const std::type_index imageKey)
 
 
 
-LOAD_RESULT ResourceManager::LoadTxtFile(std::string filePath, std::type_index& txtKey)
+LOAD_RESULT ResourceManager::LoadTxtFile(std::string filePath, std::size_t& txtKey)
 {
 	std::cout << "RM: ";
 
@@ -161,11 +165,12 @@ LOAD_RESULT ResourceManager::LoadTxtFile(std::string filePath, std::type_index& 
 
 	//This loads the image via the ResourceImage class
 	ResourceTxtFile* newResource = new ResourceTxtFile(filePath, txtKey);
+	newResource->LoadFile();
 
 	//This checks if it is loaded or now
 	if (!newResource->Loaded())
 	{
-		std::cout << "Failed to load image" << std::endl;
+		std::cout << "Failed to load txt" << std::endl;
 
 		if (newResource)
 			delete newResource;
@@ -174,7 +179,7 @@ LOAD_RESULT ResourceManager::LoadTxtFile(std::string filePath, std::type_index& 
 	}
 	else
 	{
-		std::cout << "Loaded image " << newResource->Path() << std::endl;
+		std::cout << "Loaded txt " << newResource->Path() << std::endl;
 
 		//Insert the loaded image into the map only if managed to load
 		resourceTxtFileMap.insert({ txtKey, newResource });
@@ -185,7 +190,7 @@ LOAD_RESULT ResourceManager::LoadTxtFile(std::string filePath, std::type_index& 
 	return LOAD_RESULT();
 }
 
-void ResourceManager::UnloadTxtFile(std::type_index txtKey)
+void ResourceManager::UnloadTxtFile(std::size_t txtKey)
 {
 	//Check if resource alr exists
 	if (resourceTxtFileMap.find(txtKey) == resourceTxtFileMap.end())
@@ -197,19 +202,23 @@ void ResourceManager::UnloadTxtFile(std::type_index txtKey)
 	resourceTxtFileMap[txtKey]->FlaggedForDeletion() = true;
 
 	//Change this to a queue system
-	deletionVec.push_back(resourceTxtFileMap[txtKey]);
+	//Check if it exists witin the vec alr tho
+	auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceTxtFileMap[txtKey]);
+	if (it == deletionVec.end())
+		deletionVec.push_back(resourceTxtFileMap[txtKey]);
+	//deletionVec.push_back(resourceTxtFileMap[txtKey]);
 }
 
-std::vector<std::string> ResourceManager::GetTxtFile(const std::type_index txtKey)
+std::vector<std::string> ResourceManager::GetTxtFile(const std::size_t txtKey)
 {
 	ResourceTxtFile* txt = GetTxtFileResource(txtKey);
 	return (txt != nullptr) ? txt->TextStringVec() : std::vector<std::string>();
 }
 
-ResourceTxtFile* ResourceManager::GetTxtFileResource(const std::type_index txtKey)
+ResourceTxtFile* ResourceManager::GetTxtFileResource(const std::size_t txtKey)
 {
 	//Does the resource exist?
-	if (resourceImageMap.find(txtKey) != resourceImageMap.end())
+	if (resourceTxtFileMap.find(txtKey) != resourceTxtFileMap.end())
 	{
 		return resourceTxtFileMap[txtKey];
 	}
@@ -217,6 +226,91 @@ ResourceTxtFile* ResourceManager::GetTxtFileResource(const std::type_index txtKe
 	return nullptr;
 }
 #pragma endregion
+
+#pragma region Json
+LOAD_RESULT ResourceManager::LoadJson(std::string filePath, std::size_t& jsonKey)
+{
+	std::cout << "RM: ";
+
+	jsonKey = ConstructMapKey(filePath);
+
+	//Check if resource alr exists
+	if (resourceJsonMap.find(jsonKey) != resourceJsonMap.end())
+	{
+		std::cout << filePath << " already exists" << std::endl;
+
+		//Check if it was flagged for deletion
+		if (resourceJsonMap[jsonKey]->FlaggedForDeletion())
+		{
+			//Remove the flag if it was flagged for deletion
+			//(This will cause it to not delete in update)
+			resourceJsonMap[jsonKey]->FlaggedForDeletion() = false;
+			return LOAD_SUCCESS_STOPPED_UNLOAD;
+		}
+		else
+			return LOAD_FAIL_PREEXIST;
+	}
+
+	//This loads the image via the ResourceImage class
+	ResourceJson* newResource = new ResourceJson(filePath, jsonKey);
+	newResource->LoadFile();
+
+	//This checks if it is loaded or now
+	if (!newResource->Loaded())
+	{
+		std::cout << "Failed to load json" << std::endl;
+
+		if (newResource)
+			delete newResource;
+
+		return LOAD_FAIL_BADPATH;
+	}
+	else
+	{
+		std::cout << "Loaded json " << newResource->Path() << std::endl;
+
+		//Insert the loaded image into the map only if managed to load
+		resourceJsonMap.insert({ jsonKey, newResource });
+		totalResourcesLoaded++;
+		return LOAD_SUCCESS;
+	}
+
+	return LOAD_RESULT();
+}
+void ResourceManager::UnloadJson(std::size_t jsonKey)
+{
+	//Check if resource alr exists
+	if (resourceJsonMap.find(jsonKey) == resourceJsonMap.end())
+	{
+		std::cout << "Resource does not exist, cannot unload" << std::endl;
+		return;
+	}
+
+	resourceJsonMap[jsonKey]->FlaggedForDeletion() = true;
+
+	//Change this to a queue system
+	//Check if it exists witin the vec alr tho
+	auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceJsonMap[jsonKey]);
+	if (it == deletionVec.end())
+		deletionVec.push_back(resourceJsonMap[jsonKey]);
+}
+const nlohmann::json& ResourceManager::GetJson(const std::size_t jsonKey)
+{
+	ResourceJson* jsn = GetJsonResource(jsonKey);
+	return jsn->GetJson();
+}
+#pragma endregion
+
+ResourceJson* ResourceManager::GetJsonResource(const std::size_t jsonKey)
+{
+	//Does the resource exist?
+	if (resourceJsonMap.find(jsonKey) != resourceJsonMap.end())
+	{
+		return resourceJsonMap[jsonKey];
+	}
+
+	return nullptr;
+}
 
 void ResourceManager::DeleteRM()
 {
@@ -227,17 +321,50 @@ void ResourceManager::DebugTestEverything()
 {
 	ResourceManager* rm = this;
 
-	std::type_index bananaKey = typeid(void);
-	std::type_index targetKey = typeid(void);
-	std::cout << "Test Load Images" << std::endl;
-	rm->LoadImage("assets/Banana.jpg", bananaKey); //Testing a loading jpg
-	rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading png
+	//Testing a loading jpg
+	std::size_t bananaKey = 0;
+	std::cout << "Test Load Images (Png/JPG)" << std::endl;
+	rm->LoadImage("assets/Banana.jpg", bananaKey); 
+
+	if (rm->GetImage(bananaKey) != nullptr)
+		std::cout << "Load Image(JPG) test: SUCCESS" << std::endl;
+	else
+		std::cout << "Load Image(JPG) test: FAIL" << std::endl;
+
+	//Testing loading png
+	std::size_t targetKey = 0;
+	rm->LoadImage("assets/image_UI_target.png", targetKey);
+	if (rm->GetImage(targetKey) != nullptr)
+		std::cout << "Load Image(PNG) test: SUCCESS" << std::endl;
+	else
+		std::cout << "Load Image(PNG) test: FAIL" << std::endl;
+
+	rm->UnloadImage(targetKey);
+	switch (rm->LoadImage("assets/image_UI_target.png", targetKey))
+	{
+	case LOAD_SUCCESS_STOPPED_UNLOAD:
+		std::cout << "Stop unload Image(PNG) test: SUCCESS" << std::endl;
+		break;
+	case LOAD_SUCCESS:
+		std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_SUCCESS" << std::endl;
+		break;
+	case LOAD_FAIL_BADPATH:
+		std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_FAIL_BADPATH" << std::endl;
+		break;
+	case LOAD_FAIL_PREEXIST:
+		std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_FAIL_PREEXIST" << std::endl;
+		break;
+	default:
+		std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: UNKOWN (Swicth case default check)" << std::endl;
+		break;
+	}
+
 	rm->UnloadImage(targetKey);
 	rm->Update(0);
 	if (rm->GetImage(targetKey) == nullptr)
-	{
-		std::cout << "Get Image did not find resource" << std::endl;
-	}
+		std::cout << "Unload Image(PNG): SUCCESS" << std::endl;
+	else
+		std::cout << "Unload Image(PNG): FAIL" << std::endl;
 
 	rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading a loaded image with deletion flagged
 	rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading same image
@@ -257,10 +384,11 @@ void ResourceManager::DebugTestEverything()
 	}
 
 	std::cout << std::endl;
+	std::cout << std::endl;
 
 	std::cout << "Test Load Txt File" << std::endl;
 
-	std::type_index txtKey = typeid(void);
+	std::size_t txtKey = 0;
 	rm->LoadTxtFile("assets/data/TestTxt.txt", txtKey);
 	std::vector<std::string> txtVec = rm->GetTxtFile(txtKey);
 	for (std::string strTest : txtVec)
@@ -268,8 +396,35 @@ void ResourceManager::DebugTestEverything()
 		std::cout << strTest << std::endl;
 	}
 	std::cout << std::endl;
+	std::cout << std::endl;
+
 	rm->UnloadTxtFile(txtKey); //Actual unloading test
 	rm->Update(0); //Run unload code
+
+	std::cout << "Test Load Json File" << std::endl;
+	std::size_t jsonKey = 0;
+	rm->LoadJson("assets/data/jsonTestFile.json", jsonKey);
+
+	//Riskier is there is a typo or something, it WILL crash if cannot find
+	// std::cout << "boolean: " << (rm->GetJson(jsonKey)["testJson"]["boolean"]? "true" : "false") << std::endl;
+	std::cout << "boolean: " << (rm->GetJson(jsonKey).at("testJson").at("boolean") ? "true" : "false") << std::endl;
+	std::cout << "interger: " << rm->GetJson(jsonKey).at("testJson").at("interger") << std::endl;
+	for (auto& [key, value] : rm->GetJson(jsonKey).items()) {
+		std::cout << key << " : " << value << std::endl;
+	}
+	rm->UnloadJson(jsonKey);
+	rm->Update(0); //Run unload code
+	std::cout << std::endl;
+
+	rm->LoadJson("assets/data/jsonTestFile2.json", jsonKey);
+	for (auto& [key, value] : rm->GetJson(jsonKey).items()) {
+		std::cout << key << " : " << value << std::endl;
+	}
+
+	rm->UnloadJson(jsonKey);
+	rm->Update(0); //Run unload code
+	std::cout << std::endl;
+	std::cout << std::endl;
 
 }
 
@@ -289,6 +444,9 @@ void ResourceManager::DeleteFlaggedResources()
 		case RESOURCE_TXTFILE:
 			resourceTxtFileMap.erase(resource->MapKey());
 			break;
+		case RESOURCE_JSON:
+			resourceJsonMap.erase(resource->MapKey());
+			break;
 		}
 		delete resource;
 	}
@@ -297,21 +455,21 @@ void ResourceManager::DeleteFlaggedResources()
 }
 
 
-std::type_index ResourceManager::ConstructMapKey(std::string filePath)
+std::size_t ResourceManager::ConstructMapKey(std::string filePath)
 {
-	size_t lastSlashPos = filePath.find_last_of('/');
-	if (lastSlashPos == filePath.npos)
-	{
-		lastSlashPos = filePath.find_last_of('\\');
-		if (lastSlashPos == filePath.npos)
-		{
-			lastSlashPos = 0;
-		}
-	}
+	//Ignore this, no point to use just the file name, it dosnt matter so just use the entire path
+	//size_t lastSlashPos = filePath.find_last_of('/');
+	//if (lastSlashPos == filePath.npos)
+	//{
+	//	lastSlashPos = filePath.find_last_of('\\');
+	//	if (lastSlashPos == filePath.npos)
+	//	{
+	//		lastSlashPos = 0;
+	//	}
+	//}
 
-	filePath = filePath.substr(lastSlashPos, filePath.size() - lastSlashPos);
+	//filePath = filePath.substr(lastSlashPos, filePath.size() - lastSlashPos);
 
-
-
-	return typeid(filePath);
+	//Using hash to make a map key using the file path
+	return std::hash<std::string>{}(filePath);
 }

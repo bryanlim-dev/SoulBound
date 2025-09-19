@@ -7,6 +7,8 @@
 
 #include <json.hpp>
 
+#define RESOURCE_DEBUG_MODE 1
+
 
 //Unused for now (might not uise cause i used derived classes instead)
 enum RESOURCE_TYPE
@@ -14,6 +16,7 @@ enum RESOURCE_TYPE
 	RESOURCE_NONE,
 	RESOURCE_IMAGE,
 	RESOURCE_TXTFILE,
+	RESOURCE_JSON,
 	RESOURCE_SOUND,
 };
 
@@ -21,7 +24,7 @@ class Resource
 {
 protected:
 
-	std::type_index mapKey;
+	std::size_t mapKey = 0 ;
 
 	//Path of the file
 	std::string path = "";
@@ -33,6 +36,8 @@ protected:
 	bool flaggedForDeletion = false;
 
 public:
+	//Default constructor
+	Resource();
 	/************************************************************************/
 	/*!
 	\brief
@@ -42,7 +47,7 @@ public:
 	The input string of the file path
 	*/
 	/************************************************************************/
-	Resource(const std::string &inFilePath, const std::type_index &inMapKey) : path(inFilePath), mapKey(inMapKey)
+	Resource(const std::string &inFilePath, const std::size_t &inMapKey) : path(inFilePath), mapKey(inMapKey)
 	{
 	};
 	virtual ~Resource();
@@ -51,15 +56,16 @@ public:
 	bool Loaded() const;
 	std::string Path() const;
 
-	std::type_index MapKey() const;
+	std::size_t MapKey() const;
 
 	bool& FlaggedForDeletion();
 
 	RESOURCE_TYPE FileType() const;
 
+	virtual void LoadFile() {};
+
 private:
-	//Default constructor is deleted
-	Resource() = delete;
+
 };
 
 class ResourceImage : public Resource
@@ -71,9 +77,10 @@ protected:
 	int width = 0, height = 0, channels = 0;
 
 public:
-	ResourceImage(const std::string& inFilePath, const std::type_index& inMapKey);
+	ResourceImage(const std::string& inFilePath, const std::size_t& inMapKey);
 	~ResourceImage();
 
+	void LoadFile() override;
 
 	unsigned char* Image() const;
 
@@ -83,7 +90,6 @@ private:
 	ResourceImage() = delete;
 };
 
-
 class ResourceTxtFile : public Resource
 {
 protected:
@@ -91,10 +97,74 @@ protected:
 	std::vector<std::string> txtStringVec;
 
 public:
-	ResourceTxtFile(const std::string& inFilePath, const std::type_index& inMapKey);
+	/************************************************************************/
+	/*!
+	\brief
+	Default Constructor of txt resource class
+	Creates a class with no no txt data
+	*/
+	/************************************************************************/
+	ResourceTxtFile();
+
+	/************************************************************************/
+	/*!
+	\brief
+	Constructor of txt resource class
+	Creates a class that stores filepath and mapKey
+	Does NOT open file, call LoadFile for that
+	*/
+	/************************************************************************/
+	ResourceTxtFile(const std::string& inFilePath, const std::size_t& inMapKey);
 	~ResourceTxtFile();
 
+	void LoadFile() override;
+
 	std::vector<std::string> TextStringVec() const;
+
+private:
+
+};
+
+struct Archtype
+{
+	std::unordered_map<std::string, std::string> componentMap;
+	std::unordered_map<std::string, Archtype> subArchtype;
+};
+
+class ResourceJson : public Resource
+{
+private:
+	nlohmann::json jsonData;
+	std::unordered_map<std::string, Archtype> archetypeMap;
+
+public: 
+	ResourceJson();
+	ResourceJson(const std::string& inFilePath, const std::size_t& jsonKey);
+	~ResourceJson();
+
+	void LoadFile() override;
+
+	nlohmann::json& GetJson();
+
+private:
+
+	void ConvertJsonToArchtypeMap();
+
+	//Splits data in json into a archtype map
+	//May be called recurrsivly if htere is nested data
+	Archtype SplitJsonSectionData(const nlohmann::json &sectionData);
+
+
+	//A function to print all data within the map
+	//Calls PrintMapSubArchtypeData as a recurssive function if there is nested data;
+	//This may not print data out as same format as json as all nested data is printed at end
+	void PrintJsonMapData();
+
+
+	//Prints the contents within a Archtype
+	//Is a recurrsive function to print nested archtypes
+	//This may not print data out as same format as json as all nested data is printed at end
+	void PrintMapSubArchtypeData(const Archtype& arch, int indents);
 };
 
 
