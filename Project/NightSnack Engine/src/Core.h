@@ -6,17 +6,14 @@
 #include <string>
 
 #include "ECS/Coordinator.h"
-#include "AppWindow/Window.h"	
 #include "ECS/ISystem.h"
+#include "Systems/Application.h"
 
 class CoreEngine {
 
 public:
-	CoreEngine() = delete;
-	CoreEngine(int windowWidth, int windowHeight, std::string&& windowTitle)
-		: m_coreWindow(std::make_unique<Window>(windowWidth, windowHeight, windowTitle)) {}
 
-	void Initialize();
+	void Initialize(int windowWidth, int windowHeight, std::string&& windowTitle);
 	int Terminate();
 
 	void Update();
@@ -28,7 +25,9 @@ public:
 
 	Coordinator& GetCoord() { return m_coord; }
 
-	bool ShouldClose() const { return m_coreWindow->ShouldClose(); }
+	bool ShouldClose() {  
+		return m_coord.GetSystem<ApplicationSystem>().get()->ShouldClose();
+	}
 
 private:
 	// To store all Systems;
@@ -36,8 +35,8 @@ private:
 
 	// ECS Coordinator;
 	Coordinator m_coord;
-	// Application Window;
-	std::unique_ptr<Window> m_coreWindow;
+	int m_windowWidth{ 1600 }, m_windowHeight{ 900 };
+	std::string m_windowTitle;
 };
 
 template <typename T>

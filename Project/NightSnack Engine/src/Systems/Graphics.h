@@ -8,6 +8,7 @@
 #include "ECS/Coordinator.h"
 #include "ECS/Component.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include "Systems/Input.h"
 
 class GraphicsSystem : public ISystem {
 
@@ -59,9 +60,9 @@ public:
 	// ------------------------------------------------------------------------------------------------
 	glm::mat4 GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale) const {
 		glm::mat4 model(1.f);
-		model = glm::translate(model, glm::vec3(static_cast<float>(position.x), static_cast<float>(position.y), 0.f));
+		model = glm::translate(model, glm::vec3(position.x, position.y, 0.f));
 		model = glm::rotate(model, glm::radians(rotation.degrees), glm::vec3(0.f, 0.f, 1.f)); // Rotate about z-axis
-		model = glm::scale(model, glm::vec3(static_cast<float>(scale.x), static_cast<float>(scale.y), 1.f));
+		model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.f));
 		return model;
 	}
 
@@ -69,6 +70,13 @@ public:
 	// ------------------------------------------------------------------------------------------------
 	void Update(double dt, Coordinator& coord) override {
 		(void)dt;
+
+		// Clear the screen
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Test key pressed
+		if (coord.GetSystem<InputSystem>().get()->IsKeyPressed(InputSystem::W))
+			std::cout << "w key pressed!!!\n";
 
 		Shader* currentShader = nullptr;
 
@@ -101,7 +109,7 @@ public:
 
 			// Translate by negative camera position instead
 			// world to camera coords
-			glm::mat4 viewMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-static_cast<float>(camPosition.x), -static_cast<float>(camPosition.y), 0.f));
+			glm::mat4 viewMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-camPosition.x, -camPosition.y, 0.f));
 
 			glm::mat4 mvpMatrix = projMatrix * viewMatrix * modelMatrix;
 

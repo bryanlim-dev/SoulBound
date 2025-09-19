@@ -1,16 +1,11 @@
-#include "Window.h"
-#include "InputManager.h"
+#include "Application.h"
 #include <iostream>
 
 // Required OpenGL version;
 static constexpr int REQUIRED_GL_MAJOR = 4;
 static constexpr int REQUIRED_GL_MINOR = 5;
 
-// Constructor ------------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
-Window::Window(int width, int height, std::string const& title)
-	: Width_(width), Height_(height), Title_(title)
-{
+void ApplicationSystem::Init(int width, int height, std::string const& title) {
 	// Initialize GLFW;
 	if (!glfwInit())
 	{
@@ -31,8 +26,11 @@ Window::Window(int width, int height, std::string const& title)
 	glfwWindowHint(GLFW_BLUE_BITS, 8); glfwWindowHint(GLFW_ALPHA_BITS, 8);
 
 	// Create window;
-	Handle_ = glfwCreateWindow(Width_, Height_, Title_.c_str(), nullptr, nullptr);
-	if(!Handle_)
+	m_appWidth = width;
+	m_appHeight = height;
+	m_appTitle = title;
+	m_windowHandle = glfwCreateWindow(m_appWidth, m_appHeight, m_appTitle.c_str(), nullptr, nullptr);
+	if (!m_windowHandle)
 	{
 		std::cerr << "Failed to create GLFW window\n";
 		glfwTerminate();
@@ -40,7 +38,7 @@ Window::Window(int width, int height, std::string const& title)
 	}
 
 	// Make context current;
-	glfwMakeContextCurrent(Handle_);
+	glfwMakeContextCurrent(m_windowHandle);
 
 	// Load OpenGL functions using GLAD;
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -50,46 +48,52 @@ Window::Window(int width, int height, std::string const& title)
 	}
 
 	// Set viewport and callback;
-	glViewport(0, 0, width, height);
-	glfwSetFramebufferSizeCallback(Handle_, FramebufferSizeCallback);
+	glViewport(0, 0, m_appWidth, m_appHeight);
+	glfwSetFramebufferSizeCallback(m_windowHandle, FramebufferSizeCallback);
 
-	// Initialise the Input Manager
-	InputManager::Init(Handle_);
 }
 
 // Destructor -------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-Window::~Window() {
+ApplicationSystem::~ApplicationSystem() {
 	// Check if window exists;
-	if (Handle_) { glfwDestroyWindow(Handle_); }
+	if (m_windowHandle) { glfwDestroyWindow(m_windowHandle); }
 	// Terminate program;
 	glfwTerminate();
 }
 
+// Update -----------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+void ApplicationSystem::Update(double dt, Coordinator& coord) {
+	(void)dt;
+	(void)coord;
+}
+
 // Poll for and process events --------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void Window::PollEvents()
+void ApplicationSystem::PollEvents()
 {
 	glfwPollEvents();
 }
 
 // Swap front and back buffers --------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void Window::SwapBuffers()
+void ApplicationSystem::SwapBuffers()
 {
-	glfwSwapBuffers(Handle_);
+	glfwSwapBuffers(m_windowHandle);
 }
 
 // Check if window should close -------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-bool Window::ShouldClose() const
+bool ApplicationSystem::ShouldClose() const
 {
-	return glfwWindowShouldClose(Handle_);
+	return glfwWindowShouldClose(m_windowHandle);
 }
 
 // Changes the viewport when the window is resized ------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void Window::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
+void ApplicationSystem::FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
+	(void)window;
 	glViewport(0, 0, width, height);
 }

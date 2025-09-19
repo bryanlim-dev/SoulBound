@@ -14,7 +14,7 @@ public:
     // Input all components you want access to...
     m_systemSignature.set(GetComponentTypeID<Position>());
     m_systemSignature.set(GetComponentTypeID<Velocity>());
-
+    
 	// Add more Components here if necessary...
   }
 

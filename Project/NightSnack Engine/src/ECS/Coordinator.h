@@ -38,6 +38,8 @@ public:
 
 	template<typename T>
 	void SetSystemSignature(Signature sig);
+	template <typename T>
+	std::shared_ptr<T> GetSystem();
 
 private:
 	// ECS Managers;
@@ -109,4 +111,8 @@ void Coordinator::SetSystemSignature(Signature sig) {
 	m_systemManager->SetSignature<T>(sig);
 }
 
+template <typename T>
+std::shared_ptr<T> Coordinator::GetSystem(){
+	return m_systemManager->GetSystem<T>();
+}
 #endif // COORD_HPP

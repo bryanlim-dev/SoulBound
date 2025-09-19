@@ -9,7 +9,7 @@
 // ================================================================================================
 
 struct Position {
-  double x, y;
+  float x, y;
 };
 
 struct Rotation {
@@ -17,11 +17,11 @@ struct Rotation {
 };
 
 struct Scale {
-	double x, y;
+	float x, y;
 };
 
 struct Velocity {
-  double dx, dy;
+  float dx, dy;
 };
 
 struct Sprite {

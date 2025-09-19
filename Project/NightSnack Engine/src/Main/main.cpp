@@ -2,31 +2,22 @@
 #include <cstdlib>
 #include <crtdbg.h>
 
-#include "AppWindow/Window.h"
 #include <iostream>
 
 #include "Core.h"
 #include "Systems/AllSystems.h"		// Include your system header in this file;
-#include "InputManager.h"
 
 int main()
 {
   // Enable memory leak checking at program exit
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-  // Create Core engine, passing window parameters;
-  CoreEngine core(1600, 900, "NightSnack Engine");
+  // Create Core engine
+  CoreEngine core;
 
   // Will register all components;
   // If you create new components, please register them in this function defined in Core.cpp;
-  core.Initialize();
-
-  // Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
-  // i.e: Input-> Movement -> Collision -> Graphics;
-  core.AddSystem<MovementSystem>();
-  core.AddSystem<GraphicsSystem>();
-
-  // Add more systems here...
+  core.Initialize(1600, 900, "NightSnack Engine");
 
 #pragma region Temporary test code for rendering basic debugging shapes
 	// Load shader
@@ -98,42 +89,6 @@ int main()
   while (!core.ShouldClose()) {
   	core.Update();
 
-	// Update mouse positions
-	InputManager::Update();
-
-#pragma region Temporary test code for key and mouse inputs
-	/*
-	// Test key pressed
-	if (InputManager::IsKeyPressed(GLFW_KEY_W) || InputManager::IsKeyPressed(GLFW_KEY_E))
-		std::cout << "key pressed!!!\n";
-	// Test key down
-	if (InputManager::IsKeyDown(GLFW_KEY_W) || InputManager::IsKeyDown(GLFW_KEY_E))
-		std::cout << "key down!!!\n";
-	// Test key released
-	if (InputManager::IsKeyReleased(GLFW_KEY_W) || InputManager::IsKeyReleased(GLFW_KEY_E))
-		std::cout << "key released!!!\n";
-	
-	// Test modifier keys 
-	if (InputManager::IsKeyPressed(GLFW_KEY_S) && InputManager::IsCtrlDown())
-		std::cout << "CTRL+S pressed!!!\n";
-
-	// Test mouse position
-	//std::cout << "Mouse pos: ( " << InputManager::GetMousePosX() << ", " << InputManager::GetMousePosY() << " )\n";
-
-	// Test mouse pressed
-	if (InputManager::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT) || InputManager::IsMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT))
-		std::cout << "Mouse pressed!!!\n";
-	// Test mouse down
-	if (InputManager::IsMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT) || InputManager::IsMouseButtonDown(GLFW_MOUSE_BUTTON_RIGHT))
-		std::cout << "Mouse down!!!\n";
-	// Test mouse released
-	if (InputManager::IsMouseButtonReleased(GLFW_MOUSE_BUTTON_LEFT) || InputManager::IsMouseButtonReleased(GLFW_MOUSE_BUTTON_RIGHT))
-		std::cout << "Mouse released!!!\n";
-	*/
-#pragma endregion
-
-	// Reset key and mouse states, call this at the end of the frame
-	InputManager::LateUpdate();
   }
 
 
