@@ -165,7 +165,7 @@ LOAD_RESULT ResourceManager::LoadTxtFile(std::string filePath, std::type_index& 
 	//This checks if it is loaded or now
 	if (!newResource->Loaded())
 	{
-		std::cout << "Failed to load image" << std::endl;
+		std::cout << "Failed to load txt" << std::endl;
 
 		if (newResource)
 			delete newResource;
@@ -174,7 +174,7 @@ LOAD_RESULT ResourceManager::LoadTxtFile(std::string filePath, std::type_index& 
 	}
 	else
 	{
-		std::cout << "Loaded image " << newResource->Path() << std::endl;
+		std::cout << "Loaded txt " << newResource->Path() << std::endl;
 
 		//Insert the loaded image into the map only if managed to load
 		resourceTxtFileMap.insert({ txtKey, newResource });
@@ -218,6 +218,87 @@ ResourceTxtFile* ResourceManager::GetTxtFileResource(const std::type_index txtKe
 }
 #pragma endregion
 
+#pragma region Json
+LOAD_RESULT ResourceManager::LoadJson(std::string filePath, std::type_index& jsonKey)
+{
+	std::cout << "RM: ";
+
+	jsonKey = ConstructMapKey(filePath);
+
+	//Check if resource alr exists
+	if (resourceJsonMap.find(jsonKey) != resourceJsonMap.end())
+	{
+		std::cout << filePath << " already exists" << std::endl;
+
+		//Check if it was flagged for deletion
+		if (resourceJsonMap[jsonKey]->FlaggedForDeletion())
+		{
+			//Remove the flag if it was flagged for deletion
+			//(This will cause it to not delete in update)
+			resourceJsonMap[jsonKey]->FlaggedForDeletion() = false;
+			return LOAD_SUCCESS_STOPPED_UNLOAD;
+		}
+		else
+			return LOAD_FAIL_PREEXIST;
+	}
+
+	//This loads the image via the ResourceImage class
+	ResourceJson* newResource = new ResourceJson(filePath, jsonKey);
+
+	//This checks if it is loaded or now
+	if (!newResource->Loaded())
+	{
+		std::cout << "Failed to load json" << std::endl;
+
+		if (newResource)
+			delete newResource;
+
+		return LOAD_FAIL_BADPATH;
+	}
+	else
+	{
+		std::cout << "Loaded json " << newResource->Path() << std::endl;
+
+		//Insert the loaded image into the map only if managed to load
+		resourceJsonMap.insert({ jsonKey, newResource });
+		totalResourcesLoaded++;
+		return LOAD_SUCCESS;
+	}
+
+	return LOAD_RESULT();
+}
+void ResourceManager::UnloadJson(std::type_index jsonKey)
+{
+	//Check if resource alr exists
+	if (resourceJsonMap.find(jsonKey) == resourceJsonMap.end())
+	{
+		std::cout << "Resource does not exist, cannot unload" << std::endl;
+		return;
+	}
+
+	resourceJsonMap[jsonKey]->FlaggedForDeletion() = true;
+
+	//Change this to a queue system
+	deletionVec.push_back(resourceJsonMap[jsonKey]);
+}
+const nlohmann::json& ResourceManager::GetJson(const std::type_index jsonKey)
+{
+	ResourceJson* jsn = GetJsonResource(jsonKey);
+	return jsn->GetJson();
+}
+#pragma endregion
+
+ResourceJson* ResourceManager::GetJsonResource(const std::type_index jsonKey)
+{
+	//Does the resource exist?
+	if (resourceJsonMap.find(jsonKey) != resourceJsonMap.end())
+	{
+		return resourceJsonMap[jsonKey];
+	}
+
+	return nullptr;
+}
+
 void ResourceManager::DeleteRM()
 {
 	delete this;
@@ -229,7 +310,7 @@ void ResourceManager::DebugTestEverything()
 
 	std::type_index bananaKey = typeid(void);
 	std::type_index targetKey = typeid(void);
-	std::cout << "Test Load Images" << std::endl;
+	std::cout << "Test Load Images (Png/JPG)" << std::endl;
 	rm->LoadImage("assets/Banana.jpg", bananaKey); //Testing a loading jpg
 	rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading png
 	rm->UnloadImage(targetKey);
@@ -257,6 +338,7 @@ void ResourceManager::DebugTestEverything()
 	}
 
 	std::cout << std::endl;
+	std::cout << std::endl;
 
 	std::cout << "Test Load Txt File" << std::endl;
 
@@ -268,8 +350,35 @@ void ResourceManager::DebugTestEverything()
 		std::cout << strTest << std::endl;
 	}
 	std::cout << std::endl;
+	std::cout << std::endl;
+
 	rm->UnloadTxtFile(txtKey); //Actual unloading test
 	rm->Update(0); //Run unload code
+
+	std::cout << "Test Load Json File" << std::endl;
+	std::type_index jsonKey = typeid(void);
+	rm->LoadJson("assets/data/jsonTestFile.json", jsonKey);
+
+	//Riskier is there is a typo or something, it WILL crash if cannot find
+	// std::cout << "boolean: " << (rm->GetJson(jsonKey)["testJson"]["boolean"]? "true" : "false") << std::endl;
+	std::cout << "boolean: " << (rm->GetJson(jsonKey).at("testJson").at("boolean") ? "true" : "false") << std::endl;
+	std::cout << "interger: " << rm->GetJson(jsonKey).at("testJson").at("interger") << std::endl;
+	for (auto& [key, value] : rm->GetJson(jsonKey).items()) {
+		std::cout << key << " : " << value << std::endl;
+	}
+	rm->UnloadJson(jsonKey);
+	rm->Update(0); //Run unload code
+	std::cout << std::endl;
+
+	rm->LoadJson("assets/data/jsonTestFile2.json", jsonKey);
+	for (auto& [key, value] : rm->GetJson(jsonKey).items()) {
+		std::cout << key << " : " << value << std::endl;
+	}
+
+	rm->UnloadJson(jsonKey);
+	rm->Update(0); //Run unload code
+	std::cout << std::endl;
+	std::cout << std::endl;
 
 }
 
@@ -288,6 +397,9 @@ void ResourceManager::DeleteFlaggedResources()
 			break;
 		case RESOURCE_TXTFILE:
 			resourceTxtFileMap.erase(resource->MapKey());
+			break;
+		case RESOURCE_JSON:
+			resourceJsonMap.erase(resource->MapKey());
 			break;
 		}
 		delete resource;

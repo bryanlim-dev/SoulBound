@@ -1,5 +1,5 @@
 #include <iostream>
-#include <fstream>;
+#include <fstream>
 #include "Resource.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -119,11 +119,114 @@ std::vector<std::string> ResourceTxtFile::TextStringVec() const
 ResourceJson::ResourceJson(const std::string& inFilePath, const std::type_index& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
+	resourceType = RESOURCE_JSON;
 
-}
+	std::ifstream inFile(inFilePath);
+
+	if (!inFile.is_open())
+	{
+		resourceLoaded = false;
+		return;
+	}
+
+	inFile >> jsonData;
+
+	ConvertJsonToArchtypeMap();
+
+	resourceLoaded = true;
+
+#if RESOURCE_DEBUG_MODE 1
+
+	PrintJsonMapData();
+
+#endif
+}                                                              
 
 ResourceJson::~ResourceJson()
 {
 }
-#pragma endregion
+nlohmann::json& ResourceJson::GetJson()
+{
+	return jsonData;
+}
+void ResourceJson::ConvertJsonToArchtypeMap()
+{
+	//Get header
+	//structured bindings :D. declare multiple variables from a tuple/struct (in this case the json)
+	//woah this is cool i didnt know this existed
+	//check nlohmann::json github doccumentation for more stuff like this
 
+	//This loop is for the section heading/names 
+	for (auto& [sectionName, sectionData] : jsonData.items()) {
+		
+		Archtype archTypeData = SplitJsonSectionData(sectionData);
+		archetypeMap.insert(std::pair(sectionName, archTypeData));
+
+	}
+}
+Archtype ResourceJson::SplitJsonSectionData(const nlohmann::json& sectionData)
+{
+	Archtype archTypeData;
+
+	//Split the data into componenets
+	for (auto& [keyInput, value] : sectionData.items())
+	{
+		//Key is a string
+		//Value is data
+
+		//CHeck if is a simple type - int, bool, char, string, etc.
+		if (value.is_primitive())
+		{
+			//For now it saves as a string, split this later
+			archTypeData.componentMap.insert(std::pair(keyInput, value.dump()));
+		}
+		else if (value.is_array())
+		{
+			//Yeet the entire value array as a string
+			archTypeData.componentMap[keyInput] = value.dump();
+		}
+		//It's a nested section
+		else if (value.is_object())
+		{
+			//This loop is for the section heading/names 
+			//Insert it into sub map
+			Archtype subArchTypeData = SplitJsonSectionData(value);
+			archTypeData.subArchtype.insert(std::pair(keyInput, std::move(subArchTypeData)));
+		}
+	}
+
+
+	return archTypeData;
+}
+
+void ResourceJson::PrintJsonMapData()
+{
+	std::cout << "Printing JSON MAP DATA" << std::endl;
+	//Loops through all top level sections
+	//Then calls function to print data stored within
+	for (const auto& kv : archetypeMap) {
+		std::cout << "Section: " << kv.first << std::endl << " {" << std::endl;
+		PrintMapSubArchtypeData(kv.second, 2);
+		std::cout << "}" << std::endl << std::endl;
+	}
+}
+
+void ResourceJson::PrintMapSubArchtypeData(const Archtype& arch, int indents = 0)
+{
+	//Add ' '/indentation acording to how many its stated
+	std::string strIndents(indents, ' ');
+
+	//Print all components frst
+	for (const auto& data : arch.componentMap) {
+		std::cout << strIndents << data.first << " : " << data.second << std::endl;
+	}
+
+	//Then print all nested data "D
+	for (const auto& subData : arch.subArchtype) {
+		std::cout << strIndents << subData.first << " : " << std::endl;
+		std::cout << strIndents << "{" << std::endl;
+		PrintMapSubArchtypeData(subData.second, indents + 2);
+		std::cout << strIndents << "}" << std::endl;
+	}
+}
+#pragma endregion

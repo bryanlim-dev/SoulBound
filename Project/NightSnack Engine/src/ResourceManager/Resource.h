@@ -7,6 +7,8 @@
 
 #include <json.hpp>
 
+#define RESOURCE_DEBUG_MODE 1
+
 
 //Unused for now (might not uise cause i used derived classes instead)
 enum RESOURCE_TYPE
@@ -97,18 +99,42 @@ public:
 	std::vector<std::string> TextStringVec() const;
 };
 
+struct Archtype
+{
+	std::unordered_map<std::string, std::string> componentMap;
+	std::unordered_map<std::string, Archtype> subArchtype;
+};
+
 class ResourceJson : public Resource
 {
 private:
 	nlohmann::json jsonData;
-	//struct Archtype
-	// {std::unordered_map<std::string, IComponent> componentMap}
-	// 
-	//std::unordered_map<std::string, Archtype> archetype
+	std::unordered_map<std::string, Archtype> archetypeMap;
 
 public: 
-	ResourceJson(const std::string& inFilePath, const std::type_index& inMapKey);
+	ResourceJson(const std::string& inFilePath, const std::type_index& jsonKey);
 	~ResourceJson();
+
+	nlohmann::json& GetJson();
+
+private:
+	void ConvertJsonToArchtypeMap();
+
+	//Splits data in json into a archtype map
+	//May be called recurrsivly if htere is nested data
+	Archtype SplitJsonSectionData(const nlohmann::json &sectionData);
+
+
+	//A function to print all data within the map
+	//Calls PrintMapSubArchtypeData as a recurssive function if there is nested data;
+	//This may not print data out as same format as json as all nested data is printed at end
+	void PrintJsonMapData();
+
+
+	//Prints the contents within a Archtype
+	//Is a recurrsive function to print nested archtypes
+	//This may not print data out as same format as json as all nested data is printed at end
+	void PrintMapSubArchtypeData(const Archtype& arch, int indents);
 };
 
 
