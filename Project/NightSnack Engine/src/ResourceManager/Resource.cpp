@@ -9,7 +9,7 @@
 
 #pragma region Base Resource
 Resource::Resource()
-	: mapKey(typeid(void))
+	: mapKey(0)
 {
 }
 
@@ -29,7 +29,7 @@ std::string Resource::Path() const
 	return path;
 }
 
-std::type_index Resource::MapKey() const
+std::size_t Resource::MapKey() const
 {
 	return mapKey;
 }
@@ -47,12 +47,11 @@ bool& Resource::FlaggedForDeletion()
 
 
 #pragma region Image
-ResourceImage::ResourceImage(const std::string& inFilePath, const std::type_index& inMapKey) 
+ResourceImage::ResourceImage(const std::string& inFilePath, const std::size_t& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
 	//Set file path
 	resourceType = RESOURCE_IMAGE;
-
 }
 
 
@@ -92,7 +91,7 @@ ResourceTxtFile::ResourceTxtFile()
 {
 }
 
-ResourceTxtFile::ResourceTxtFile(const std::string& inFilePath, const std::type_index& inMapKey)
+ResourceTxtFile::ResourceTxtFile(const std::string& inFilePath, const std::size_t& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
 
@@ -137,7 +136,7 @@ std::vector<std::string> ResourceTxtFile::TextStringVec() const
 ResourceJson::ResourceJson()
 {
 }
-ResourceJson::ResourceJson(const std::string& inFilePath, const std::type_index& inMapKey)
+ResourceJson::ResourceJson(const std::string& inFilePath, const std::size_t& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
 	resourceType = RESOURCE_JSON;

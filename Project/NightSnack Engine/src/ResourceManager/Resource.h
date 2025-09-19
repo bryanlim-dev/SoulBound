@@ -24,7 +24,7 @@ class Resource
 {
 protected:
 
-	std::type_index mapKey ;
+	std::size_t mapKey = 0 ;
 
 	//Path of the file
 	std::string path = "";
@@ -47,7 +47,7 @@ public:
 	The input string of the file path
 	*/
 	/************************************************************************/
-	Resource(const std::string &inFilePath, const std::type_index &inMapKey) : path(inFilePath), mapKey(inMapKey)
+	Resource(const std::string &inFilePath, const std::size_t &inMapKey) : path(inFilePath), mapKey(inMapKey)
 	{
 	};
 	virtual ~Resource();
@@ -56,7 +56,7 @@ public:
 	bool Loaded() const;
 	std::string Path() const;
 
-	std::type_index MapKey() const;
+	std::size_t MapKey() const;
 
 	bool& FlaggedForDeletion();
 
@@ -77,7 +77,7 @@ protected:
 	int width = 0, height = 0, channels = 0;
 
 public:
-	ResourceImage(const std::string& inFilePath, const std::type_index& inMapKey);
+	ResourceImage(const std::string& inFilePath, const std::size_t& inMapKey);
 	~ResourceImage();
 
 	void LoadFile() override;
@@ -114,7 +114,7 @@ public:
 	Does NOT open file, call LoadFile for that
 	*/
 	/************************************************************************/
-	ResourceTxtFile(const std::string& inFilePath, const std::type_index& inMapKey);
+	ResourceTxtFile(const std::string& inFilePath, const std::size_t& inMapKey);
 	~ResourceTxtFile();
 
 	void LoadFile() override;
@@ -139,7 +139,7 @@ private:
 
 public: 
 	ResourceJson();
-	ResourceJson(const std::string& inFilePath, const std::type_index& jsonKey);
+	ResourceJson(const std::string& inFilePath, const std::size_t& jsonKey);
 	~ResourceJson();
 
 	void LoadFile() override;

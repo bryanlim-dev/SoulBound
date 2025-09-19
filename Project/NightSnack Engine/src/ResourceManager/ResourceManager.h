@@ -39,9 +39,9 @@ private:
 
 	//Key, Value
 	//Maps of resources
-	std::map<std::type_index, ResourceImage*> resourceImageMap;
-	std::map<std::type_index, ResourceTxtFile*> resourceTxtFileMap;
-	std::map<std::type_index, ResourceJson*> resourceJsonMap;
+	std::map<std::size_t, ResourceImage*> resourceImageMap;
+	std::map<std::size_t, ResourceTxtFile*> resourceTxtFileMap;
+	std::map<std::size_t, ResourceJson*> resourceJsonMap;
 
 	//List of resources to track to delete
 	std::vector<Resource*> deletionVec;
@@ -73,16 +73,15 @@ public:
 
 	\param[out] imageKey
 	The return of key to pass in to reobtain the resource (image).
-	Use typeid(void) to make a empty std::type_index varianble to pass in
 	
 	\return
 	True if managed to load image successfully or if it already exists.
 	False if failed to load.
 	*/
 	/************************************************************************/
-	LOAD_RESULT LoadImage(std::string filePath, std::type_index& imageKey);
+	LOAD_RESULT LoadImage(std::string filePath, std::size_t& imageKey);
 
-	void UnloadImage(std::type_index imageKey);
+	void UnloadImage(std::size_t imageKey);
 
 	
 
@@ -99,7 +98,7 @@ public:
 	Pointer of unsigned char of image.
 	*/
 	/************************************************************************/
-	unsigned char* GetImage(const std::type_index imageKey);
+	unsigned char* GetImage(const std::size_t imageKey);
 
 	/************************************************************************/
 	/*!
@@ -113,7 +112,7 @@ public:
 	Pointer of image resource
 	*/
 	/************************************************************************/
-	ResourceImage* GetImageResource(const std::type_index imageKey);
+	ResourceImage* GetImageResource(const std::size_t imageKey);
 #pragma endregion
 
 #pragma region Txt File Functions
@@ -127,16 +126,15 @@ public:
 
 	\param[out] imageKey
 	The return of key to pass in to reobtain the resource (txt file).
-	Use typeid(void) to make a empty std::type_index varianble to pass in
 	
 	\return
 	True if managed to load image successfully or if it already exists.
 	False if failed to load.
 	*/
 	/************************************************************************/
-	LOAD_RESULT LoadTxtFile(std::string filePath, std::type_index& txtKey);
+	LOAD_RESULT LoadTxtFile(std::string filePath, std::size_t& txtKey);
 
-	void UnloadTxtFile(std::type_index txtKey);
+	void UnloadTxtFile(std::size_t txtKey);
 
 	/************************************************************************/
 	/*!
@@ -151,7 +149,7 @@ public:
 	Pointer of unsigned char of image.
 	*/
 	/************************************************************************/
-	std::vector<std::string> GetTxtFile(const std::type_index txtKey);
+	std::vector<std::string> GetTxtFile(const std::size_t txtKey);
 
 	/************************************************************************/
 	/*!
@@ -165,7 +163,7 @@ public:
 	Pointer of image resource
 	*/
 	/************************************************************************/
-	ResourceTxtFile* GetTxtFileResource(const std::type_index txtKey);
+	ResourceTxtFile* GetTxtFileResource(const std::size_t txtKey);
 #pragma endregion
 
 #pragma region Json Functions
@@ -179,16 +177,15 @@ public:
 
 	\param[out] imageKey
 	The return of key to pass in to reobtain the resource (image).
-	Use typeid(void) to make a empty std::type_index varianble to pass in
 
 	\return
 	True if managed to load image successfully or if it already exists.
 	False if failed to load.
 	*/
 	/************************************************************************/
-	LOAD_RESULT LoadJson(std::string filePath, std::type_index& imageKey);
+	LOAD_RESULT LoadJson(std::string filePath, std::size_t& imageKey);
 
-	void UnloadJson(std::type_index jsonKey);
+	void UnloadJson(std::size_t jsonKey);
 
 
 
@@ -205,7 +202,7 @@ public:
 	Pointer of unsigned char of image.
 	*/
 	/************************************************************************/
-	const nlohmann::json& GetJson(const std::type_index jsonKey);
+	const nlohmann::json& GetJson(const std::size_t jsonKey);
 
 	/************************************************************************/
 	/*!
@@ -219,7 +216,7 @@ public:
 	Pointer of image resource
 	*/
 	/************************************************************************/
-	ResourceJson* GetJsonResource(const std::type_index jsonKey);
+	ResourceJson* GetJsonResource(const std::size_t jsonKey);
 #pragma endregion
 
 	//Delete the Resource Manager
@@ -244,6 +241,6 @@ private:
 	Constructs a key from a string to use in a map
 	*/
 	/************************************************************************/
-	std::type_index ConstructMapKey(std::string filePath);
+	std::size_t ConstructMapKey(std::string filePath);
 
 };
