@@ -24,7 +24,7 @@ class Resource
 {
 protected:
 
-	std::type_index mapKey;
+	std::type_index mapKey ;
 
 	//Path of the file
 	std::string path = "";
@@ -36,6 +36,8 @@ protected:
 	bool flaggedForDeletion = false;
 
 public:
+	//Default constructor
+	Resource();
 	/************************************************************************/
 	/*!
 	\brief
@@ -60,9 +62,10 @@ public:
 
 	RESOURCE_TYPE FileType() const;
 
+	virtual void LoadFile() {};
+
 private:
-	//Default constructor is deleted
-	Resource() = delete;
+
 };
 
 class ResourceImage : public Resource
@@ -77,6 +80,7 @@ public:
 	ResourceImage(const std::string& inFilePath, const std::type_index& inMapKey);
 	~ResourceImage();
 
+	void LoadFile() override;
 
 	unsigned char* Image() const;
 
@@ -93,14 +97,32 @@ protected:
 	std::vector<std::string> txtStringVec;
 
 public:
+	/************************************************************************/
+	/*!
+	\brief
+	Default Constructor of txt resource class
+	Creates a class with no no txt data
+	*/
+	/************************************************************************/
+	ResourceTxtFile();
+
+	/************************************************************************/
+	/*!
+	\brief
+	Constructor of txt resource class
+	Creates a class that stores filepath and mapKey
+	Does NOT open file, call LoadFile for that
+	*/
+	/************************************************************************/
 	ResourceTxtFile(const std::string& inFilePath, const std::type_index& inMapKey);
 	~ResourceTxtFile();
+
+	void LoadFile() override;
 
 	std::vector<std::string> TextStringVec() const;
 
 private:
-	//Default constructor is deleted
-	ResourceTxtFile() = delete;
+
 };
 
 struct Archtype
@@ -116,13 +138,15 @@ private:
 	std::unordered_map<std::string, Archtype> archetypeMap;
 
 public: 
+	ResourceJson();
 	ResourceJson(const std::string& inFilePath, const std::type_index& jsonKey);
 	~ResourceJson();
+
+	void LoadFile() override;
 
 	nlohmann::json& GetJson();
 
 private:
-	ResourceJson() = delete;
 
 	void ConvertJsonToArchtypeMap();
 

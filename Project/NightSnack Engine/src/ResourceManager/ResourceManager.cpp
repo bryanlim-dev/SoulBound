@@ -63,7 +63,7 @@ LOAD_RESULT ResourceManager::LoadImage(std::string filePath, std::type_index &im
 
 	//This loads the image via the ResourceImage class
 	ResourceImage* newResource = new ResourceImage(filePath, imageKey);
-
+	newResource->LoadFile();
 
 	//This checks if it is loaded or now
 	if (!newResource->Loaded())
@@ -161,6 +161,7 @@ LOAD_RESULT ResourceManager::LoadTxtFile(std::string filePath, std::type_index& 
 
 	//This loads the image via the ResourceImage class
 	ResourceTxtFile* newResource = new ResourceTxtFile(filePath, txtKey);
+	newResource->LoadFile();
 
 	//This checks if it is loaded or now
 	if (!newResource->Loaded())
@@ -244,6 +245,7 @@ LOAD_RESULT ResourceManager::LoadJson(std::string filePath, std::type_index& jso
 
 	//This loads the image via the ResourceImage class
 	ResourceJson* newResource = new ResourceJson(filePath, jsonKey);
+	newResource->LoadFile();
 
 	//This checks if it is loaded or now
 	if (!newResource->Loaded())

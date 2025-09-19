@@ -8,6 +8,11 @@
 #include "fmod.hpp"
 
 #pragma region Base Resource
+Resource::Resource()
+	: mapKey(typeid(void))
+{
+}
+
 Resource::~Resource()
 {
 	std::cout << path << " is deleted!" << std::endl;
@@ -48,14 +53,6 @@ ResourceImage::ResourceImage(const std::string& inFilePath, const std::type_inde
 	//Set file path
 	resourceType = RESOURCE_IMAGE;
 
-	//Load file
-	imageData = stbi_load(path.c_str(), &width, &height, &channels, 0);
-
-
-	if (imageData)
-		resourceLoaded = true;
-	else
-		resourceLoaded = false;
 }
 
 
@@ -71,6 +68,18 @@ ResourceImage::~ResourceImage()
 	}
 }
 
+void ResourceImage::LoadFile()
+{
+	//Load file
+	imageData = stbi_load(path.c_str(), &width, &height, &channels, 0);
+
+
+	if (imageData)
+		resourceLoaded = true;
+	else
+		resourceLoaded = false;
+}
+
 unsigned char* ResourceImage::Image() const
 {
 	return imageData;
@@ -79,14 +88,27 @@ unsigned char* ResourceImage::Image() const
 
 
 #pragma region TxtFile
+ResourceTxtFile::ResourceTxtFile()
+{
+}
+
 ResourceTxtFile::ResourceTxtFile(const std::string& inFilePath, const std::type_index& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
 
 	resourceType = RESOURCE_TXTFILE;
 
+	
+}
+
+ResourceTxtFile::~ResourceTxtFile()
+{
+}
+
+void ResourceTxtFile::LoadFile()
+{
 	//Open filepath
-	std::fstream inFile(inFilePath.c_str());
+	std::fstream inFile(path.c_str());
 	if (!inFile.is_open())
 	{
 		resourceLoaded = false;
@@ -104,10 +126,6 @@ ResourceTxtFile::ResourceTxtFile(const std::string& inFilePath, const std::type_
 	resourceLoaded = true;
 }
 
-ResourceTxtFile::~ResourceTxtFile()
-{
-}
-
 std::vector<std::string> ResourceTxtFile::TextStringVec() const
 {
 	return txtStringVec;
@@ -115,13 +133,23 @@ std::vector<std::string> ResourceTxtFile::TextStringVec() const
 
 #pragma endregion
 
-#pragma region TxtFile
+#pragma region JsonFile
+ResourceJson::ResourceJson()
+{
+}
 ResourceJson::ResourceJson(const std::string& inFilePath, const std::type_index& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
 	resourceType = RESOURCE_JSON;
+}                                                              
 
-	std::ifstream inFile(inFilePath);
+ResourceJson::~ResourceJson()
+{
+}
+
+void ResourceJson::LoadFile()
+{
+	std::ifstream inFile(path);
 
 	if (!inFile.is_open())
 	{
@@ -140,11 +168,9 @@ ResourceJson::ResourceJson(const std::string& inFilePath, const std::type_index&
 	PrintJsonMapData();
 
 #endif
-}                                                              
-
-ResourceJson::~ResourceJson()
-{
 }
+
+
 nlohmann::json& ResourceJson::GetJson()
 {
 	return jsonData;
