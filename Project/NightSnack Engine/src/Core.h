@@ -6,6 +6,8 @@
 #include <string>
 
 #include "ECS/Coordinator.h"
+#include "AppWindow/Window.h"
+#include "AppWindow/Timer.h"
 #include "ECS/ISystem.h"
 #include "Systems/Application.h"
 
@@ -37,6 +39,11 @@ private:
 	Coordinator m_coord;
 	int m_windowWidth{ 1600 }, m_windowHeight{ 900 };
 	std::string m_windowTitle;
+	// Application Window
+	//std::unique_ptr<Window> m_coreWindow;
+	// Timers
+	Timer timer_;
+
 };
 
 template <typename T>

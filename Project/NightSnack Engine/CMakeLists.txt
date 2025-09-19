@@ -54,7 +54,24 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_directory
     ${CMAKE_CURRENT_SOURCE_DIR}/assets
     $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
+
+#copy to build/assets
+  COMMAND ${CMAKE_COMMAND} -E copy_directory
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+    "${CMAKE_BINARY_DIR}/assets"
+
+#fmod debug ver dll
+   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+     "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmodL.dll"
+     "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+
+#fmod release ver dll
+   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+     "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmod.dll"
+     "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
 )
+
+
 
 # ------------------------------------------------------------
 # External Dependencies
@@ -70,6 +87,20 @@ target_include_directories(glad PUBLIC extern/glad/include)
 add_library(stb_image INTERFACE)
 target_include_directories(stb_image INTERFACE extern/stb_image/include)
 
+# fmod
+add_library(fmod INTERFACE)
+target_include_directories(fmod INTERFACE extern/fmod/inc)
+# diff fmod links based on config
+target_link_libraries(fmod INTERFACE
+    debug "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmodL_vc.lib"
+    optimized "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmod_vc.lib"
+)
+
+#nlohmann_json
+add_library(nlohmann_json INTERFACE)
+target_include_directories(nlohmann_json INTERFACE extern/nlohmann)
+
+
 # ------------------------------------------------------------
 # Linking
 # ------------------------------------------------------------
@@ -78,6 +109,8 @@ target_link_libraries(${PROJECT_NAME}
     glfw
     glad
     stb_image
+    fmod
+    nlohmann_json
 )
 
 # ------------------------------------------------------------
@@ -91,4 +124,5 @@ target_include_directories(${PROJECT_NAME}
     extern/glfw/include
     extern/glm
     extern/stb_image/include
+    extern/fmod
 )

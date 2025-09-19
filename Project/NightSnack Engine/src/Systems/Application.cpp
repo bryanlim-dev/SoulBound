@@ -69,6 +69,14 @@ void ApplicationSystem::Update(double dt, Coordinator& coord) {
 	(void)coord;
 }
 
+// Set Window Title -------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+//void Window::SetTitle(const std::string& title)
+//{
+//	Title_ = title;
+//	glfwSetWindowTitle(Handle_, Title_.c_str());
+//}
+
 // Poll for and process events --------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void ApplicationSystem::PollEvents()

@@ -3,73 +3,101 @@
 #include <crtdbg.h>
 
 #include <iostream>
+//#include <thread>
+//#include <chrono>
+
+#include "AppWindow/Window.h"
+#include "MathLibrary/Math.h"
+#include "Systems/Collision.h"
 
 #include "Core.h"
-#include "Systems/AllSystems.h"		// Include your system header in this file;
+#include "ECS/ISystem.h"
+#include "Systems/AllSystems.h"
+
+#include "ResourceManager/ResourceManager.h"
+#include <fmod.hpp>
+
 
 int main()
 {
-  // Enable memory leak checking at program exit
-  _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	// Enable memory leak checking at program exit
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-  // Create Core engine
-  CoreEngine core;
+	ResourceManager* rm = ResourceManager::GetInstance();
 
-  // Will register all components;
-  // If you create new components, please register them in this function defined in Core.cpp;
-  core.Initialize(1600, 900, "NightSnack Engine");
+	//Resource Manager test
+	{
+		rm->DebugTestEverything();
+	}
 
-#pragma region Temporary test code for rendering basic debugging shapes
-	// Load shader
-	Shader shader("../shaders/vertex_shader.vert", "../shaders/fragment_shader.frag");
-	
-	// Create the different meshes
-	Mesh point = Mesh::CreatePoint();
-	Mesh line = Mesh::CreateLine();
+	//Replace this with actual sound manager later
+	FMOD::System* fmodSystem = nullptr;
+	FMOD::System_Create(&fmodSystem);
+
+  	// Create Core engine
+  	CoreEngine core;
+
+  	// Will register all components;
+  	// If you create new components, please register them in this function defined in Core.cpp;
+  	core.Initialize(1600, 900, "NightSnack Engine");
+
+	core.AddSystem<CollisionSystem>();
+	core.AddSystem<MovementSystem>();
+	core.AddSystem<GraphicsSystem>();
+
+	// ECS test;
+	Coordinator& coord = core.GetCoord();
+	Entity p1 = coord.CreateEntity();
+	Entity p2 = coord.CreateEntity();
+	Entity p3 = coord.CreateEntity();
+	Entity control = coord.CreateEntity();
+
+	Collider c1{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 100.f };
+	coord.AddComponent<Collider>(p1, c1);
+	Collider c2{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 100.f };
+	coord.AddComponent<Collider>(p2, c2);
+	Collider c3{ ShapeType::AABB, ColliderType::Solid, true, 100.f, 400.f, 0.f };
+	coord.AddComponent<Collider>(p3, c3);
+
+	coord.AddComponent<Position>(p1, Position{ 0., 0. });
+	coord.AddComponent<Position>(p2, Position{ 500, 0. });
+	coord.AddComponent<Position>(p3, Position{ -750., 0. });
+
+	coord.AddComponent<Velocity>(p1, Velocity{ 80., 0. });
+	coord.AddComponent<Velocity>(p2, Velocity{ 0.0, 0. });
+	coord.AddComponent<Velocity>(p3, Velocity{ 0.0, 0. });
+
+	coord.AddComponent<Scale>(p1, Scale{ 100.0, 100.0 });
+	coord.AddComponent<Scale>(p2, Scale{ 100.0, 100.0 });
+	coord.AddComponent<Scale>(p3, Scale{ 100.0, 400.0 });
+
+	coord.AddComponent<Rotation>(p1, Rotation{});
+	coord.AddComponent<Rotation>(p2, Rotation{});
+	coord.AddComponent<Rotation>(p3, Rotation{});
+
+
 	Mesh rectangle = Mesh::CreateSquare();
 	Mesh circle = Mesh::CreateCircle();
+
+	// Load shader
+	Shader shader("../shaders/vertex_shader.vert", "../shaders/fragment_shader.frag");
 
 	// Create the different materials
 	Material red(&shader, glm::vec3(1, 0, 0));
 	Material blue(&shader, glm::vec3(0, 0, 1));
 	Material green(&shader, glm::vec3(0, 1, 0));
 
-	// Test graphics system with ECS
-	Coordinator& coord = core.GetCoord();
+	Renderable r1{ &circle, &green, false };
+	Renderable r2{ &circle, &blue, false };
+	Renderable r3{ &rectangle, &red, false };
 
-	// Square object
-	Entity square = coord.CreateEntity();
-	Position posSquare{ 200.0, -300.0 };
-	Rotation rotSquare{ 0.f };
-	Scale scaleSquare{ 800.0, 450.0 };
-	coord.AddComponent<Position>(square, posSquare);
-	coord.AddComponent<Rotation>(square, rotSquare);
-	coord.AddComponent<Scale>(square, scaleSquare);
-	Renderable renderable{
-		&rectangle,
-		&red,
-		true
-	};
-	coord.AddComponent<Renderable>(square, renderable);
-
-	// Sphere object
-	Entity sphere = coord.CreateEntity();
-	Position posSphere{ 0.0,0.0 };
-	Rotation rotSphere{ 0.f };
-	Scale scaleSphere{ 800.0, 450.0 };
-	coord.AddComponent<Position>(sphere, posSphere);
-	coord.AddComponent<Rotation>(sphere, rotSphere);
-	coord.AddComponent<Scale>(sphere, scaleSphere);
-	Renderable renderable3{
-		&circle,
-		&green,
-		true
-	};
-	coord.AddComponent<Renderable>(sphere, renderable3);
+	coord.AddComponent<Renderable>(p1, r1);
+	coord.AddComponent<Renderable>(p2, r2);
+	coord.AddComponent<Renderable>(p3, r3);
 
 	// Camera object
 	Entity camera = coord.CreateEntity();
-	Position posCam{ 200.0, -300.0 };
+	Position posCam{ 0.0, 0.0 };
 	Rotation rotCam{ 0.f };
 	Scale scaleCam{ 200.0,200.0 };
 	coord.AddComponent<Position>(camera, posCam);
@@ -83,15 +111,15 @@ int main()
 	};
 	coord.AddComponent<Camera>(camera, isCamera);
 
-#pragma endregion
-
   // Core Application Loop;
   while (!core.ShouldClose()) {
   	core.Update();
 
   }
 
-
-  // Clean termination;
+	// Clean termination;
+	rm->DeleteRM();
+	fmodSystem->close();
   return 0;
+
 }
