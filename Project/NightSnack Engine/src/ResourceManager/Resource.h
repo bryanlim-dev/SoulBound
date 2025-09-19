@@ -97,6 +97,10 @@ public:
 	~ResourceTxtFile();
 
 	std::vector<std::string> TextStringVec() const;
+
+private:
+	//Default constructor is deleted
+	ResourceTxtFile() = delete;
 };
 
 struct Archtype
@@ -118,6 +122,8 @@ public:
 	nlohmann::json& GetJson();
 
 private:
+	ResourceJson() = delete;
+
 	void ConvertJsonToArchtypeMap();
 
 	//Splits data in json into a archtype map

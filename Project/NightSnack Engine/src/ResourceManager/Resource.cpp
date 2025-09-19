@@ -157,6 +157,7 @@ void ResourceJson::ConvertJsonToArchtypeMap()
 	//check nlohmann::json github doccumentation for more stuff like this
 
 	//This loop is for the section heading/names 
+	 //structured bindings again whoo 
 	for (auto& [sectionName, sectionData] : jsonData.items()) {
 		
 		Archtype archTypeData = SplitJsonSectionData(sectionData);
@@ -204,6 +205,7 @@ void ResourceJson::PrintJsonMapData()
 	std::cout << "Printing JSON MAP DATA" << std::endl;
 	//Loops through all top level sections
 	//Then calls function to print data stored within
+	//Auto resolves to whatever map type is being used, it might change in the future so auto type 
 	for (const auto& kv : archetypeMap) {
 		std::cout << "Section: " << kv.first << std::endl << " {" << std::endl;
 		PrintMapSubArchtypeData(kv.second, 2);
@@ -217,6 +219,7 @@ void ResourceJson::PrintMapSubArchtypeData(const Archtype& arch, int indents = 0
 	std::string strIndents(indents, ' ');
 
 	//Print all components frst
+	//Auto resolves to whatever map type is being used, it might change in the future so auto type 
 	for (const auto& data : arch.componentMap) {
 		std::cout << strIndents << data.first << " : " << data.second << std::endl;
 	}
