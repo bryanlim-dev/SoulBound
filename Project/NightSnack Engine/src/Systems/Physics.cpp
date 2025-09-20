@@ -13,11 +13,13 @@ void PhysicsSystem::Update(double dt, Coordinator& coord) {
 		auto& mass = coord.GetComponent<Mass>(e);
 
 		// Calculate acceleration from force and mass;
-		accel.ax = force.fx / mass.val;
-		accel.ay = force.fy / mass.val;
+		accel.ax = force.fx * 1000.f / mass.val;
+		accel.ay = force.fy * 1000.f / mass.val;
 
 		// Apply gravity;
-		accel.ay += gravity;
+		if (coord.GetComponent<Collider>(e).isGrounded == false) {
+			accel.ay += gravity;
+		}
 
 		// Update velocity based on acceleration;
 		vel.dx += accel.ax * dt;

@@ -30,8 +30,9 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	// i.e: Input-> Movement -> Collision -> Graphics;
 	AddSystem<ApplicationSystem>();
 	AddSystem<InputSystem>();
-	AddSystem<MovementSystem>();
+	AddSystem<PhysicsSystem>();
 	AddSystem<CollisionSystem>();
+	AddSystem<MovementSystem>();
 	AddSystem<GraphicsSystem>();
 
 	// Add more Components here...

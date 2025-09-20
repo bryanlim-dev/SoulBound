@@ -45,12 +45,6 @@ struct Color {
 	float r, g, b, a;
 };
 
-struct Collider {
-	double width, height;
-	bool isStatic{ false };
-	bool isGrounded{ false };
-};
-
 // ================================================================================================
 // GRAPHICS COMPONENTS
 // ================================================================================================
@@ -81,17 +75,18 @@ enum class ColliderType {
 };
 
 struct Collider {
-    ShapeType shape;     // AABB or Circle
-    ColliderType type;   // Solid or Trigger
-    bool isStatic;       // true = immovable (walls), false = dynamic (player)
+	ShapeType shape;     // AABB or Circle
+	ColliderType type;   // Solid or Trigger
+	bool isStatic;       // true = immovable (walls), false = dynamic (player)
 
-    // Shape data
-    float width{ 1.0f };   // AABB width
-    float height{ 1.0f };  // AABB height
-    float radius{ 0.5f };  // Circle radius
+	// Shape data
+	float width{ 1.0f };   // AABB width
+	float height{ 1.0f };  // AABB height
+	float radius{ 0.5f };  // Circle radius
 
-    // Collision state
-    bool colliding{ false };
+	// Collision state
+	bool isGrounded{ false };
+	bool colliding{ false };
 };
 
 // Add more Components here if necessary...

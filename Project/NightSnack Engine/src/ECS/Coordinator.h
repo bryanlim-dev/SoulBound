@@ -41,11 +41,6 @@ public:
 	template <typename T>
 	std::shared_ptr<T> GetSystem();
 
-	template<typename T>
-	std::shared_ptr<T> GetSystem() {
-		return m_systemManager->GetSystem<T>();
-	}
-
 private:
 	// ECS Managers;
 	std::unique_ptr<EntityManager> m_entityManager;
