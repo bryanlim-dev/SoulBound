@@ -502,6 +502,22 @@ void ResourceManager::DebugTestEverything()
 		std::cout << strTest << std::endl;
 	}
 	std::cout << std::endl;
+
+	std::cout << "Save Txt File" << std::endl;
+	ResourceTxtFile newTxtFile;
+	std::vector<std::string> newTxt = {
+		"This is a new txt file",
+		"Newwww file",
+		"THIS is line 4",
+		"I lied it was 3",
+		"This is 5 tho"
+	};
+	newTxtFile.EditResource(newTxt, "assets/data/newTxt.txt");
+	newTxtFile.SaveFile();
+	std::cout << "Attempted save to Txt File" << std::endl;
+
+
+	std::cout << std::endl;
 	std::cout << std::endl;
 
 	rm->UnloadTxtFile(txtKey); //Actual unloading test

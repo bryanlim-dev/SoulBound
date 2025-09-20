@@ -64,6 +64,7 @@ public:
 	RESOURCE_TYPE FileType() const;
 
 	virtual void LoadFile() {};
+	virtual void SaveFile() {};
 
 private:
 
@@ -83,6 +84,8 @@ public:
 	~ResourceImage();
 
 	void LoadFile() override;
+	//UNUSED FOR NOW DO NOT USE
+	void SaveFile() override;
 
 	unsigned char* Image() const;
 
@@ -118,6 +121,9 @@ public:
 	~ResourceTxtFile();
 
 	void LoadFile() override;
+	void SaveFile() override;
+
+	void EditResource(std::vector<std::string> &txtVec, std::string newPath);
 
 	std::vector<std::string> TextStringVec() const;
 

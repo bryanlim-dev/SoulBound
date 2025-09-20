@@ -85,6 +85,10 @@ void ResourceImage::LoadFile()
 		resourceLoaded = false;
 }
 
+void ResourceImage::SaveFile() {
+	//Empty for now
+}
+
 unsigned char* ResourceImage::Image() const
 {
 	return imageData;
@@ -127,6 +131,29 @@ void ResourceTxtFile::LoadFile()
 	inFile.close();
 
 	resourceLoaded = true;
+}
+
+void ResourceTxtFile::SaveFile()
+{
+	std::ofstream outFile(path.c_str());
+	
+	if (outFile.is_open())
+	{
+		for (std::string str : txtStringVec)
+		{
+			outFile << str << std::endl;
+		}
+
+		outFile.close();
+	}
+
+
+}
+
+void ResourceTxtFile::EditResource(std::vector<std::string>& txtVec, std::string newPath)
+{
+	txtStringVec = txtVec;
+	path = newPath;
 }
 
 std::vector<std::string> ResourceTxtFile::TextStringVec() const
