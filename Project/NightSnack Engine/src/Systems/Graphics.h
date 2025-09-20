@@ -8,6 +8,7 @@
 #include "ECS/Coordinator.h"
 #include "ECS/Component.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include "Systems/Input.h"
 
 class GraphicsSystem : public ISystem {
 
@@ -15,19 +16,23 @@ public:
 	// Default constructor to set up SystemSignature;
 	GraphicsSystem() {
 		// The Graphics System only cares about entities with these components
-		// - Transform (position, rotation, scale)
+		// - Position, Rotation, Scale
 		// - Renderable (mesh, material)
-		m_systemSignature.set(GetComponentTypeID<Transform>());
+		m_systemSignature.set(GetComponentTypeID<Position>());
+		m_systemSignature.set(GetComponentTypeID<Rotation>());
+		m_systemSignature.set(GetComponentTypeID<Scale>());
 		m_systemSignature.set(GetComponentTypeID<Renderable>());
 	}
 
 	// Find the Main Camera in the scene --------------------------------------------------------------
 	// ------------------------------------------------------------------------------------------------
 	Entity FindCamera(Coordinator& Coord) {
-		// Camera Signature (only have components IsCamera and Transform)
+		// Camera Signature (only have components Camera and Tranform)
 		Signature cameraSig;
 		cameraSig.set(GetComponentTypeID<Camera>());
-		cameraSig.set(GetComponentTypeID<Transform>());
+		cameraSig.set(GetComponentTypeID<Position>());
+		cameraSig.set(GetComponentTypeID<Rotation>());
+		cameraSig.set(GetComponentTypeID<Scale>());
 
 		// Iterate through all living Entities in the COORDINATOR instead
 		// Since the GraphicsSystem will not have a Camera Entity
@@ -53,11 +58,11 @@ public:
 
 	// Compute the ModelToWorld matrix ----------------------------------------------------------------
 	// ------------------------------------------------------------------------------------------------
-	glm::mat4 GetModelToWorldMatrix(Transform transform) const {
+	glm::mat4 GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale) const {
 		glm::mat4 model(1.f);
-		model = glm::translate(model, glm::vec3(transform.position, 0.f));
-		model = glm::rotate(model, transform.rotation, glm::vec3(0.f, 0.f, 1.f)); // Rotate about z-axis
-		model = glm::scale(model, glm::vec3(transform.scale, 1.f));
+		model = glm::translate(model, glm::vec3(position.x, position.y, 0.f));
+		model = glm::rotate(model, glm::radians(rotation.degrees), glm::vec3(0.f, 0.f, 1.f)); // Rotate about z-axis
+		model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.f));
 		return model;
 	}
 
@@ -65,6 +70,13 @@ public:
 	// ------------------------------------------------------------------------------------------------
 	void Update(double dt, Coordinator& coord) override {
 		(void)dt;
+
+		// Clear the screen
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Test key pressed
+		if (coord.GetSystem<InputSystem>().get()->IsKeyPressed(InputSystem::W))
+			std::cout << "w key pressed!!!\n";
 
 		Shader* currentShader = nullptr;
 
@@ -74,7 +86,7 @@ public:
 			return;
 
 		// Get camera components
-		auto& camTransform = coord.GetComponent<Transform>(mainCam);
+		auto& camPosition = coord.GetComponent<Position>(mainCam);
 		auto& camInfo = coord.GetComponent<Camera>(mainCam);
 		
 		// camera to clip coords
@@ -84,18 +96,20 @@ public:
 		for (auto const& e : m_entities) {
 
 			// First obtain references to components of interest;
-			auto& transform = coord.GetComponent<Transform>(e);
+			auto& position = coord.GetComponent<Position>(e);
+			auto& rotation = coord.GetComponent<Rotation>(e);
+			auto& scale = coord.GetComponent<Scale>(e);
 			auto& renderable = coord.GetComponent<Renderable>(e);
 
 			if (!renderable.mesh || !renderable.material)
 				continue;
 
 			// model to world coords
-			glm::mat4 modelMatrix = GetModelToWorldMatrix(transform); 
+			glm::mat4 modelMatrix = GetModelToWorldMatrix(position, rotation, scale); 
 
 			// Translate by negative camera position instead
 			// world to camera coords
-			glm::mat4 viewMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-camTransform.position, 0.f)); 
+			glm::mat4 viewMatrix = glm::translate(glm::mat4(1.f), glm::vec3(-camPosition.x, -camPosition.y, 0.f));
 
 			glm::mat4 mvpMatrix = projMatrix * viewMatrix * modelMatrix;
 
@@ -124,6 +138,8 @@ public:
 	}
 
 	Signature GetSignature() const override { return m_systemSignature; }
+
+	std::string GetName() const { return "GraphicsSystem"; }
 
 private:
 	Signature m_systemSignature{};

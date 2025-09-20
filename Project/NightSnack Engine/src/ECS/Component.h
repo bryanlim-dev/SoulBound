@@ -9,11 +9,19 @@
 // ================================================================================================
 
 struct Position {
-  double x, y;
+  float x, y;
+};
+
+struct Rotation {
+	float degrees;
+};
+
+struct Scale {
+	float x, y;
 };
 
 struct Velocity {
-  double dx, dy;
+  float dx, dy;
 };
 
 struct Acceleration {
@@ -47,12 +55,6 @@ struct Collider {
 // GRAPHICS COMPONENTS
 // ================================================================================================
 
-struct Transform {
-	glm::vec2 position{ 0.f,0.f };
-	float rotation{ 0.f };
-	glm::vec2 scale{ 1.f, 1.f };
-};
-
 struct Renderable {
 	Mesh* mesh{ nullptr }; // Stores a pointer to a GPU mesh
 	Material* material{ nullptr }; // Stores shader + color/texture information
@@ -64,6 +66,32 @@ struct Camera {
 	float zoom{ 1.f };
 	float width{ 1600.f };
 	float height{ 900.f };
+};
+
+// COLLISION COMPONENTS;
+
+enum class ShapeType {
+    AABB,
+    Circle
+};
+
+enum class ColliderType {
+    Solid,   // Blocks movement
+    Trigger  // Detects overlaps only
+};
+
+struct Collider {
+    ShapeType shape;     // AABB or Circle
+    ColliderType type;   // Solid or Trigger
+    bool isStatic;       // true = immovable (walls), false = dynamic (player)
+
+    // Shape data
+    float width{ 1.0f };   // AABB width
+    float height{ 1.0f };  // AABB height
+    float radius{ 0.5f };  // Circle radius
+
+    // Collision state
+    bool colliding{ false };
 };
 
 // Add more Components here if necessary...
