@@ -26,10 +26,26 @@ ResourceManager::~ResourceManager()
 	}
 	resourceTxtFileMap.clear();
 
+	//Delete json map
+	std::map<std::size_t, ResourceJson*>::iterator itJson;
+	for (itJson = resourceJsonMap.begin(); itJson != resourceJsonMap.end(); itJson++)
+	{
+		delete itJson->second;
+	}
+	resourceJsonMap.clear();
+
+	//Delete Sound map
+	std::map<std::size_t, ResourceSound*>::iterator itSound;
+	for (itSound = resourceSoundMap.begin(); itSound != resourceSoundMap.end(); itSound++)
+	{
+		delete itSound->second;
+	}
+	resourceSoundMap.clear();
+
 	deletionVec.clear();
 }
 
-void ResourceManager::Update(double dt)
+void ResourceManager::Update(double /*dt*/)
 {
 	DeleteFlaggedResources();
 }
@@ -299,7 +315,6 @@ const nlohmann::json& ResourceManager::GetJson(const std::size_t jsonKey)
 	ResourceJson* jsn = GetJsonResource(jsonKey);
 	return jsn->GetJson();
 }
-#pragma endregion
 
 ResourceJson* ResourceManager::GetJsonResource(const std::size_t jsonKey)
 {
@@ -311,6 +326,97 @@ ResourceJson* ResourceManager::GetJsonResource(const std::size_t jsonKey)
 
 	return nullptr;
 }
+#pragma endregion
+
+#pragma region Sound File Functions
+
+LOAD_RESULT ResourceManager::LoadSound(std::string filePath, std::size_t& soundKey, FMOD::System* system)
+{
+	std::cout << "RM: ";
+
+	soundKey = ConstructMapKey(filePath);
+
+	//Check if resource alr exists
+	if (resourceSoundMap.find(soundKey) != resourceSoundMap.end())
+	{
+		std::cout << filePath << " already exists" << std::endl;
+
+		//Check if it was flagged for deletion
+		if (resourceSoundMap[soundKey]->FlaggedForDeletion())
+		{
+			//Remove the flag if it was flagged for deletion
+			//(This will cause it to not delete in update)
+			resourceSoundMap[soundKey]->FlaggedForDeletion() = false;
+			return LOAD_SUCCESS_STOPPED_UNLOAD;
+		}
+		else
+			return LOAD_FAIL_PREEXIST;
+	}
+
+	//This loads the image via the ResourceImage class
+	ResourceSound* newResource = new ResourceSound(filePath, soundKey);
+	newResource->LoadFile(system);
+
+	//This checks if it is loaded or now
+	if (!newResource->Loaded())
+	{
+		std::cout << "Failed to load sound" << std::endl;
+
+		if (newResource)
+			delete newResource;
+
+		return LOAD_FAIL_BADPATH;
+	}
+	else
+	{
+		std::cout << "Loaded sound " << newResource->Path() << std::endl;
+
+		//Insert the loaded image into the map only if managed to load
+		resourceSoundMap.insert({ soundKey, newResource });
+		totalResourcesLoaded++;
+		return LOAD_SUCCESS;
+	}
+
+	return LOAD_RESULT();
+}
+
+void ResourceManager::UnloadSound(std::size_t soundKey)
+{
+	//Check if resource alr exists
+	if (resourceSoundMap.find(soundKey) == resourceSoundMap.end())
+	{
+		std::cout << "Resource does not exist, cannot unload" << std::endl;
+		return;
+	}
+
+	resourceSoundMap[soundKey]->FlaggedForDeletion() = true;
+
+	//Change this to a queue system
+	//Check if it exists witin the vec alr tho
+	auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceSoundMap[soundKey]);
+	if (it == deletionVec.end())
+		deletionVec.push_back(resourceSoundMap[soundKey]);
+	//deletionVec.push_back(resourceSoundMap[txtKey]);
+}
+
+FMOD::Sound* ResourceManager::GetSound(const std::size_t soundKey)
+{
+	ResourceSound* txt = GetSoundResource(soundKey);
+	return (txt != nullptr) ? txt->Sound() : nullptr;
+}
+
+ResourceSound* ResourceManager::GetSoundResource(const std::size_t soundKey)
+{
+	//Does the resource exist?
+	if (resourceSoundMap.find(soundKey) != resourceSoundMap.end())
+	{
+		return resourceSoundMap[soundKey];
+	}
+
+	return nullptr;
+}
+#pragma endregion
+
 
 void ResourceManager::DeleteRM()
 {
@@ -426,6 +532,36 @@ void ResourceManager::DebugTestEverything()
 	std::cout << std::endl;
 	std::cout << std::endl;
 
+	FMOD::System* fSys = nullptr;
+	FMOD::Channel* channel = nullptr;
+	size_t soundKey = 0;
+	FMOD_RESULT fResult = FMOD::System_Create(&fSys);
+	if (fResult != FMOD_OK)
+		std::cout << "FMOD SYSTEM create: FAILED" << std::endl;
+	else
+	{
+		fSys->init(512, FMOD_INIT_NORMAL, nullptr);
+		std::cout << "FMOD SYSTEM create: SUCCESS" << std::endl;
+		if (rm->LoadSound("assets/Sound/SFX/sound_button_temp.wav", soundKey, fSys) == LOAD_SUCCESS)
+		{
+			std::cout << "Load Sound test: SUCCESS" << std::endl;
+			fResult = fSys->playSound(rm->GetSound(soundKey), nullptr, false, &channel);
+			fSys->update();
+			bool isPlaying = true;
+			do {
+				channel->isPlaying(&isPlaying);
+				fSys->update(); 
+			} while (isPlaying);
+		}
+		else
+			std::cout << "Load Sound test: FAIL" << std::endl;
+	}
+
+	if (fSys)
+		fSys->release();
+
+	rm->UnloadSound(soundKey);
+
 }
 
 void ResourceManager::DeleteFlaggedResources()
@@ -446,6 +582,9 @@ void ResourceManager::DeleteFlaggedResources()
 			break;
 		case RESOURCE_JSON:
 			resourceJsonMap.erase(resource->MapKey());
+			break;
+		case RESOURCE_SOUND:
+			resourceSoundMap.erase(resource->MapKey());
 			break;
 		}
 		delete resource;
