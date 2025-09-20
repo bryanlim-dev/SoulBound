@@ -15,7 +15,9 @@ Resource::Resource()
 
 Resource::~Resource()
 {
+#if RESOURCE_DEBUG_MODE 1
 	std::cout << path << " is deleted!" << std::endl;
+#endif
 }
 
 
@@ -260,4 +262,42 @@ void ResourceJson::PrintMapSubArchtypeData(const Archtype& arch, int indents = 0
 		std::cout << strIndents << "}" << std::endl;
 	}
 }
+#pragma endregion
+
+#pragma region Sound
+ResourceSound::ResourceSound()
+{
+	resourceType = RESOURCE_SOUND;
+}
+ResourceSound::ResourceSound(const std::string& inFilePath, const std::size_t& inMapKey)
+	: Resource (inFilePath, inMapKey)
+{
+	resourceType = RESOURCE_SOUND;
+}
+ResourceSound::~ResourceSound()
+{
+	if (soundData)
+		soundData->release();
+
+	soundData = nullptr;
+}
+
+void ResourceSound::LoadFile(FMOD::System* system)
+{
+	FMOD_RESULT result = system->createSound(path.c_str(), FMOD_DEFAULT, nullptr, &soundData);
+
+	if (result != FMOD_OK)
+	{
+		resourceLoaded = false;
+		return;
+	}
+
+	resourceLoaded = true;
+}	
+
+FMOD::Sound* ResourceSound::Sound() const
+{
+	return soundData;
+}
+
 #pragma endregion

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include <json.hpp>
+#include <fmod.hpp>
 
 #define RESOURCE_DEBUG_MODE 1
 
@@ -169,5 +170,19 @@ private:
 
 class ResourceSound : public Resource
 {
+private:
+	FMOD::Sound* soundData = nullptr;
+
+public:
+	ResourceSound();
+	ResourceSound(const std::string& inFilePath, const std::size_t& inMapKey);
+	~ResourceSound();
+
+	void LoadFile(FMOD::System* system);
+
+	FMOD::Sound* Sound() const;
+
+private:
+	void LoadFile() override {};
 
 };
