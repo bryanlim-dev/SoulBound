@@ -18,7 +18,7 @@ public:
 	// Add more Components here if necessary...
   }
 
-  void Update(double dt, Coordinator& coord) override {
+  void Update(float dt, Coordinator& coord) override {
 
     // Iterate through all Entities this system can access;
     for (auto const& e : m_entities) {

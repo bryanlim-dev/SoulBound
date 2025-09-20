@@ -66,7 +66,7 @@ void CoreEngine::Update() {
 	m_coord.GetSystem<InputSystem>()->ResetInputStates();
 
 	// Obtain dt from Timer;
-	double deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
+	float deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
 
 	// glfw callbacks are triggered here
 	m_coord.GetSystem<ApplicationSystem>().get()->PollEvents();
@@ -74,7 +74,7 @@ void CoreEngine::Update() {
 	// Iterate through Systems and Update them through Coordinator;
 	for (auto& System : m_systems) {
 
-		static double dt = 0;
+		static float dt = 0;
 		dt += deltaTime;
 		if (dt > 2.0) {
 			std::cout << "deltaTime: " << deltaTime << "\n";

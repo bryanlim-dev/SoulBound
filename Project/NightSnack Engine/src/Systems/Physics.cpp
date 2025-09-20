@@ -1,7 +1,7 @@
 #include "Systems/Physics.h"
 
 // Main update function;
-void PhysicsSystem::Update(double dt, Coordinator& coord) {
+void PhysicsSystem::Update(float dt, Coordinator& coord) {
 
 	// Iterate through all Entities this system can access;
 	for (auto const& e : m_entities) {
@@ -27,26 +27,26 @@ void PhysicsSystem::Update(double dt, Coordinator& coord) {
 
 		// Apply horizontal drag, a force opposite to the direction of motion
 		// when mid-air;
-		vel.dx *= 1.0 - drag * dt;
+		vel.dx *= 1.f - drag * dt;
 
 		// Apply friction if on the ground;
 		if (coord.GetComponent<Collider>(e).isGrounded) {
 
-			vel.dx *= 1.0 - friction * dt;
+			vel.dx *= 1.f - friction * dt;
 
 			// Small threshold to stop sliding;
 			if (std::abs(vel.dx) < velocityCutoff) vel.dx = 0.0;
 		}
 
 		// Clear forces for next frame;
-		force.fx = 0.0;
-		force.fy = 0.0;
+		force.fx = 0.f;
+		force.fy = 0.f;
 
 	}
 }
 
 // Apply a force to an entity by modifying its Force component;
-void PhysicsSystem::ApplyForce(Coordinator& coord, Entity e, double fx, double fy) {
+void PhysicsSystem::ApplyForce(Coordinator& coord, Entity e, float fx, float fy) {
 	auto& force = coord.GetComponent<Force>(e);
 	force.fx += fx;
 	force.fy += fy;

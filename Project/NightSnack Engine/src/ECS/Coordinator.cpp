@@ -7,7 +7,7 @@ void Coordinator::Initialize() {
 	m_componentManager = std::make_unique<ComponentManager>();
 }
 
-//void Coordinator::Update(double deltaTime) {
+//void Coordinator::Update(float deltaTime) {
 //	// Update all Systems through System Manager;
 //	for (auto& pair : System_M->Systems) {
 //		pair.second->Update(deltaTime);

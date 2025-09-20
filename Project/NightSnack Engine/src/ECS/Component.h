@@ -21,24 +21,24 @@ struct Scale {
 };
 
 struct Velocity {
-  float dx, dy;
+	float dx, dy;
 };
 
 struct Acceleration {
-	double ax, ay;
+	float ax, ay;
 };
 
 struct Force {
-	double fx{ 0.0 };
-	double fy{ 0.0 };
+	float fx{ 0.0 };
+	float fy{ 0.0 };
 };
 
 struct Mass {
-	double val = 1.0;
+	float val = 1.0;
 };
 
 struct Sprite {
-  std::string textureName;
+	std::string textureName;
 };
 
 struct Color {

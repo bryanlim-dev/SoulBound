@@ -6,7 +6,7 @@
 #include "ECS/Component.h"
 
 // Minimum velocity threshold to consider an object at rest;
-constexpr double velocityCutoff = 0.1;
+constexpr float velocityCutoff = 0.2f;
 
 class PhysicsSystem : public ISystem {
 
@@ -22,18 +22,18 @@ public:
     
     }
 
-    void Update(double dt, Coordinator& coord) override;
+    void Update(float dt, Coordinator& coord) override;
 	Signature GetSignature() const override { return m_systemSignature; }
     std::string GetName() const { return "PhysicsSystem"; }
 
-    void ApplyForce(Coordinator& coord, Entity e, double fx, double fy);
+    void ApplyForce(Coordinator& coord, Entity e, float fx, float fy);
 
 private:
     Signature m_systemSignature{};
 
 	// Physics parameters;
-    double gravity = -980; 
-	double drag = 0.2;
-	double friction = 0.8;
+    float gravity = -980.f;
+    float drag = 0.2f;
+    float friction = 0.8f;
 
 };

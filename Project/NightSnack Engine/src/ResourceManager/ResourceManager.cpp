@@ -45,7 +45,7 @@ ResourceManager::~ResourceManager()
 	deletionVec.clear();
 }
 
-void ResourceManager::Update(double /*dt*/)
+void ResourceManager::Update(float /*dt*/)
 {
 	DeleteFlaggedResources();
 }
