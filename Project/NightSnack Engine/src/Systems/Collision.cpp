@@ -115,7 +115,7 @@ void CollisionSystem::Update(double dt, Coordinator& coord)
                     velB.dy = -velB.dy * 0.7;
                 }
 
-                // Debug: Check velocities after collision response
+                // Check velocities after collision response
                 if (*itA == 0) {
                     //std::cout << "P1 velocity after response: (" << velA.dx << ", " << velA.dy << ")" << std::endl;
                 }
