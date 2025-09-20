@@ -55,6 +55,32 @@ struct Camera {
 	float height{ 900.f };
 };
 
+// COLLISION COMPONENTS;
+
+enum class ShapeType {
+    AABB,
+    Circle
+};
+
+enum class ColliderType {
+    Solid,   // Blocks movement
+    Trigger  // Detects overlaps only
+};
+
+struct Collider {
+    ShapeType shape;     // AABB or Circle
+    ColliderType type;   // Solid or Trigger
+    bool isStatic;       // true = immovable (walls), false = dynamic (player)
+
+    // Shape data
+    float width{ 1.0f };   // AABB width
+    float height{ 1.0f };  // AABB height
+    float radius{ 0.5f };  // Circle radius
+
+    // Collision state
+    bool colliding{ false };
+};
+
 // Add more Components here if necessary...
 
 #endif // COMPONENT_HPP
