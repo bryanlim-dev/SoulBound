@@ -299,7 +299,6 @@ const nlohmann::json& ResourceManager::GetJson(const std::size_t jsonKey)
 	ResourceJson* jsn = GetJsonResource(jsonKey);
 	return jsn->GetJson();
 }
-#pragma endregion
 
 ResourceJson* ResourceManager::GetJsonResource(const std::size_t jsonKey)
 {
@@ -311,6 +310,8 @@ ResourceJson* ResourceManager::GetJsonResource(const std::size_t jsonKey)
 
 	return nullptr;
 }
+#pragma endregion
+
 
 void ResourceManager::DeleteRM()
 {

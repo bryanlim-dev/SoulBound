@@ -10,7 +10,7 @@
 #define RESOURCE_DEBUG_MODE 1
 
 
-//Unused for now (might not uise cause i used derived classes instead)
+//Type of resource loaded
 enum RESOURCE_TYPE
 {
 	RESOURCE_NONE,
@@ -77,6 +77,7 @@ protected:
 	int width = 0, height = 0, channels = 0;
 
 public:
+	ResourceImage();
 	ResourceImage(const std::string& inFilePath, const std::size_t& inMapKey);
 	~ResourceImage();
 
@@ -86,8 +87,6 @@ public:
 
 
 private:
-	//Default constructor is deleted
-	ResourceImage() = delete;
 };
 
 class ResourceTxtFile : public Resource

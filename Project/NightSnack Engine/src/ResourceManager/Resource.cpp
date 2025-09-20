@@ -47,6 +47,10 @@ bool& Resource::FlaggedForDeletion()
 
 
 #pragma region Image
+ResourceImage::ResourceImage()
+{
+	resourceType = RESOURCE_IMAGE;
+}
 ResourceImage::ResourceImage(const std::string& inFilePath, const std::size_t& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
@@ -89,15 +93,13 @@ unsigned char* ResourceImage::Image() const
 #pragma region TxtFile
 ResourceTxtFile::ResourceTxtFile()
 {
+	resourceType = RESOURCE_TXTFILE;
 }
 
 ResourceTxtFile::ResourceTxtFile(const std::string& inFilePath, const std::size_t& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
-
 	resourceType = RESOURCE_TXTFILE;
-
-	
 }
 
 ResourceTxtFile::~ResourceTxtFile()
@@ -135,6 +137,7 @@ std::vector<std::string> ResourceTxtFile::TextStringVec() const
 #pragma region JsonFile
 ResourceJson::ResourceJson()
 {
+	resourceType = RESOURCE_JSON;
 }
 ResourceJson::ResourceJson(const std::string& inFilePath, const std::size_t& inMapKey)
 	: Resource(inFilePath, inMapKey)
