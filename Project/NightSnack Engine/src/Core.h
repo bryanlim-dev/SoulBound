@@ -8,6 +8,7 @@
 #include "ECS/Coordinator.h"
 #include "ECS/ISystem.h"
 #include "Systems/Application.h"
+#include "Systems/IEvent.h"
 
 class CoreEngine {
 
@@ -25,6 +26,8 @@ public:
 
 	Coordinator& GetCoord() { return m_coord; }
 
+	EventDispatcher& GetEventDispatcher() { return m_dispatcher; }
+
 	bool ShouldClose() {  
 		return m_coord.GetSystem<ApplicationSystem>().get()->ShouldClose();
 	}
@@ -35,6 +38,9 @@ private:
 
 	// ECS Coordinator;
 	Coordinator m_coord;
+
+	// Event Dispatcher;
+	EventDispatcher m_dispatcher;
 
 };
 
