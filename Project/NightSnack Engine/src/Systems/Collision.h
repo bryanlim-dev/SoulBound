@@ -10,7 +10,7 @@ class CollisionSystem : public ISystem {
 public:
     CollisionSystem();
     // to change to float after TK push changes for ISystem
-    void Update(double dt, Coordinator& coord) override;
+    void Update(float dt, Coordinator& coord) override;
     std::string GetName() const { return "CollisionSystem"; }
     Signature GetSignature() const override { return m_systemSignature; }
 

@@ -13,7 +13,7 @@ CollisionSystem::CollisionSystem()
 }
 
 // Update loop (runs each frame)
-void CollisionSystem::Update(double dt, Coordinator& coord)
+void CollisionSystem::Update(float dt, Coordinator& coord)
 {
     // Step 1: Reset collision flags
     for (auto const& e : m_entities) 

@@ -1,34 +1,34 @@
 #include "Angle.h"
 
 // Constructor
-Angle::Angle(double rad) : radians(rad) {}
+Angle::Angle(float rad) : radians(rad) {}
 
 // Create an Angle from degrees
-Angle Angle::fromDegrees(double deg)
+Angle Angle::fromDegrees(float deg)
 {
     return Angle(deg2rad(deg));
 }
 
 // Convert radians back to degrees
-double Angle::toDegrees() const
+float Angle::toDegrees() const
 {
     return rad2deg(radians);
 }
 
 // Sine
-double Angle::sin() const 
+float Angle::sin() const
 { 
     return std::sin(radians); 
 }
 
 // Cosine
-double Angle::cos() const 
+float Angle::cos() const
 { 
     return std::cos(radians); 
 }
 
 // Tangent
-double Angle::tan() const 
+float Angle::tan() const
 { 
     return std::tan(radians); 
 }

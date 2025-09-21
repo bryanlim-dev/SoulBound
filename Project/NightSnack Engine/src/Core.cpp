@@ -13,21 +13,26 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	// Register all Components;
 	m_coord.RegisterComponent<Position>();
 	m_coord.RegisterComponent<Rotation>();
-	m_coord.RegisterComponent<Scale>();
-
 	m_coord.RegisterComponent<Velocity>();
-	m_coord.RegisterComponent<Collider>();
+	
+	m_coord.RegisterComponent<Acceleration>();	// Physics;
+	m_coord.RegisterComponent<Force>();
+	m_coord.RegisterComponent<Mass>();
 
-	m_coord.RegisterComponent<Renderable>();
+	m_coord.RegisterComponent<Collider>();		// Collision;
+
+	m_coord.RegisterComponent<Renderable>();	// Graphics;
 	m_coord.RegisterComponent<Color>();
+	m_coord.RegisterComponent<Scale>();
 	m_coord.RegisterComponent<Camera>();
 
 	// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
 	// i.e: Input-> Movement -> Collision -> Graphics;
 	AddSystem<ApplicationSystem>();
 	AddSystem<InputSystem>();
-	AddSystem<MovementSystem>();
+	AddSystem<PhysicsSystem>();
 	AddSystem<CollisionSystem>();
+	AddSystem<MovementSystem>();
 	AddSystem<GraphicsSystem>();
 
 	// Add more Components here...
@@ -61,7 +66,7 @@ void CoreEngine::Update() {
 	m_coord.GetSystem<InputSystem>()->ResetInputStates();
 
 	// Obtain dt from Timer;
-	double deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
+	float deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
 
 	// glfw callbacks are triggered here
 	m_coord.GetSystem<ApplicationSystem>().get()->PollEvents();
@@ -69,7 +74,7 @@ void CoreEngine::Update() {
 	// Iterate through Systems and Update them through Coordinator;
 	for (auto& System : m_systems) {
 
-		static double dt = 0;
+		static float dt = 0;
 		dt += deltaTime;
 		if (dt > 2.0) {
 			std::cout << "deltaTime: " << deltaTime << "\n";

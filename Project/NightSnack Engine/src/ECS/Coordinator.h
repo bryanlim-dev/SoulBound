@@ -12,8 +12,7 @@ class Coordinator {
 
 public:
 	void Initialize();
-	//void Update(double deltaTime);
-	
+
 	// ECS Interface;
 	Entity CreateEntity();
 	void DestroyEntity(Entity e);

@@ -68,7 +68,7 @@ public:
 
 	// Core update loop -------------------------------------------------------------------------------
 	// ------------------------------------------------------------------------------------------------
-	void Update(double dt, Coordinator& coord) override {
+	void Update(float dt, Coordinator& coord) override {
 		(void)dt;
 
 		// Clear the screen

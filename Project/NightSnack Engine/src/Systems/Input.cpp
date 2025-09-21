@@ -25,7 +25,7 @@ void InputSystem::Init(GLFWwindow* window) {
 
 // Update the mouse positions every update loop / frame -------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void InputSystem::Update(double dt, Coordinator& coord) {
+void InputSystem::Update(float dt, Coordinator& coord) {
 	(void)dt;
 	(void)coord;
 
