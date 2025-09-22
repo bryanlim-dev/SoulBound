@@ -15,6 +15,7 @@ CollisionSystem::CollisionSystem()
 // Update loop (runs each frame)
 void CollisionSystem::Update(float dt, Coordinator& coord)
 {
+
     // Step 1: Reset collision flags
     for (auto const& e : m_entities) 
     {
@@ -22,31 +23,13 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
         col.colliding = false;
     }
 
-    // Step 2: Move all dynamic entities first
-    for (auto const& e : m_entities) 
-    {
-        auto& pos = coord.GetComponent<Position>(e);
-        auto& vel = coord.GetComponent<Velocity>(e);
-        auto& col = coord.GetComponent<Collider>(e);
-
-        // Skip static entities
-        if (col.isStatic) continue;
-
-        // Move the entity
-        pos.x += vel.dx * dt;
-        pos.y += vel.dy * dt;
-
-        // Debug output for p1
-        if (e == 0) {
-            //std::cout << "P1 Position: (" << pos.x << ", " << pos.y << "), Velocity: (" << vel.dx << ", " << vel.dy << ")" << std::endl;
-        }
-    }
-
     // Step 3: Check for collisions and resolve them
     for (auto itA = m_entities.begin(); itA != m_entities.end(); ++itA)
     {
-        for (auto itB = std::next(itA); itB != m_entities.end(); ++itB)
+        for (auto itB = m_entities.begin(); itB != m_entities.end(); ++itB)
         {
+            if (itB == itA) continue;
+
             auto& posA = coord.GetComponent<Position>(*itA);
             auto& velA = coord.GetComponent<Velocity>(*itA);
             auto& colA = coord.GetComponent<Collider>(*itA);
@@ -59,23 +42,24 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
             if (colA.isStatic) continue;
 
             bool collision = false;
+            Position nextPosA{ posA.x + velA.dx * dt, posA.y + velA.dy * dt};
 
             // Check collision
             if (colA.shape == ShapeType::AABB && colB.shape == ShapeType::AABB)
             {
-                collision = CheckAABBvsAABB(posA, colA, posB, colB);
+                collision = CheckAABBvsAABB(nextPosA, colA, posB, colB);
             }
             else if (colA.shape == ShapeType::Circle && colB.shape == ShapeType::Circle)
             {
-                collision = CheckCirclevsCircle(posA, colA, posB, colB);
+                collision = CheckCirclevsCircle(nextPosA, colA, posB, colB);
             }
             else if (colA.shape == ShapeType::Circle && colB.shape == ShapeType::AABB)
             {
-                collision = CheckCirclevsAABB(posA, colA, posB, colB);
+                collision = CheckCirclevsAABB(nextPosA, colA, posB, colB);
             }
             else if (colA.shape == ShapeType::AABB && colB.shape == ShapeType::Circle)
             {
-                collision = CheckCirclevsAABB(posB, colB, posA, colA);
+                collision = CheckCirclevsAABB(posB, colB, nextPosA, colA);
             }
 
             if (collision)
@@ -112,9 +96,16 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
                 }
                 else if (!colA.isStatic && colB.isStatic)
                 {
-                    // A is dynamic, B is static - A bounces with 30% energy loss
-                    velA.dx = flipVel ? -velA.dx * 0.7 : velA.dx;
-                    velA.dy = flipVel ? -velA.dy * 0.7 : velA.dy;
+                    if (colB.type == ColliderType::Ground) { 
+                        //std::cout << "Collide ground\n";
+                        //colA.isGrounded = true; 
+                        velA.dy = -velA.dy * 0.7f;
+                    }
+                    else {
+                        // A is dynamic, B is static - A bounces with 30% energy loss
+                        velA.dx = flipVel ? -velA.dx * 0.7f : velA.dx;
+                        velA.dy = flipVel ? -velA.dy * 0.7f : velA.dy;
+                    }
                 }
                 //else if (colA.isStatic && !colB.isStatic)             // <- technically not necessary;
                 //{
@@ -195,16 +186,6 @@ bool CollisionSystem::CheckCirclevsAABB(const Position& circlePos, const Collide
 
     // Add some debug output for AABB collisions
     bool collision = distanceSquared <= radiusSquared;
-
-    /*
-    if (collision) {
-        std::cout << "Circle-AABB collision: Circle at (" << circlePos.x << ", " << circlePos.y
-            << ") radius " << circle.radius << ", AABB at (" << aabbPos.x << ", " << aabbPos.y
-            << ") size " << aabb.width << "x" << aabb.height << std::endl;
-        std::cout << "Closest point: (" << closestX << ", " << closestY << "), distance: "
-            << std::sqrt(distanceSquared) << std::endl;
-    }
-    */
 
     return collision;
 }
