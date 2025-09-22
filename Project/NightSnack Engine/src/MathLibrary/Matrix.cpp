@@ -7,7 +7,7 @@ Mat3::Mat3()
 }
 
 // Construct from a 2D array of values
-Mat3::Mat3(const std::array<std::array<double, 3>, 3>& values)
+Mat3::Mat3(const std::array<std::array<float, 3>, 3>& values)
     : Matrix3x3(values) {}
 
 // Matrix addition
@@ -39,7 +39,7 @@ Mat3 Mat3::operator-(const Mat3& other) const
 }
 
 // Scalar multiplication
-Mat3 Mat3::operator*(double scalar) const 
+Mat3 Mat3::operator*(float scalar) const
 {
     Mat3 result;
     for (int i = 0; i < 3; i++) 
@@ -53,7 +53,7 @@ Mat3 Mat3::operator*(double scalar) const
 }
 
 // Scalar division
-Mat3 Mat3::operator/(double scalar) const 
+Mat3 Mat3::operator/(float scalar) const
 {
     if (scalar == 0.0)
         throw std::runtime_error("Divide by zero");
@@ -88,7 +88,7 @@ Mat3 Mat3::operator*(const Mat3& other) const
 }
 
 // Determinant of 3x3 matrix
-double Mat3::det() const 
+float Mat3::det() const
 {
     return
         Matrix3x3[0][0] * (Matrix3x3[1][1] * Matrix3x3[2][2] - Matrix3x3[1][2] * Matrix3x3[2][1]) -

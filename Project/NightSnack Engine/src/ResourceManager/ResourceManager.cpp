@@ -1,9 +1,11 @@
 #include "ResourceManager.h"
+#include <stb_image.h>
 
 
 ResourceManager::ResourceManager()
 {
 	totalResourcesLoaded = 0;
+	stbi_set_flip_vertically_on_load(true); // Flip the y-axis of the images loaded
 }
 
 ResourceManager::~ResourceManager()
@@ -45,7 +47,7 @@ ResourceManager::~ResourceManager()
 	deletionVec.clear();
 }
 
-void ResourceManager::Update(double /*dt*/)
+void ResourceManager::Update(float /*dt*/)
 {
 	DeleteFlaggedResources();
 }

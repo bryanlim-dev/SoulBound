@@ -60,7 +60,7 @@ public:
 	*/
 	/************************************************************************/
 
-	void Update(double dt);
+	void Update(float dt);
 
 
 #pragma region Image Functions

@@ -70,7 +70,7 @@ ApplicationSystem::~ApplicationSystem() {
 
 // Update -----------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void ApplicationSystem::Update(double dt, Coordinator& coord) {
+void ApplicationSystem::Update(float dt, Coordinator& coord) {
 	(void)dt;
 	(void)coord;
 }

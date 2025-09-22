@@ -15,7 +15,7 @@ public:
 	~ApplicationSystem();
 
 	void Init(int width, int height, std::string const& title, EventDispatcher& dispatcher);
-	void Update(double dt, Coordinator& coord) override;
+	void Update(float dt, Coordinator& coord) override;
 	std::string GetName() const { return "ApplicationSystem"; }
 
 	void PollEvents();

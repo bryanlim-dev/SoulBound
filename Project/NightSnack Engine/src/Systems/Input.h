@@ -28,7 +28,7 @@ public:
 
 	void Init(GLFWwindow* window);
 
-	void Update(double dt, Coordinator& coord) override;
+	void Update(float dt, Coordinator& coord) override;
 	std::string GetName() const { return "InputSystem"; }
 	void ResetInputStates();
 
