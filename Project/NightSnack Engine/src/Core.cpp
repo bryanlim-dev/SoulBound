@@ -74,12 +74,6 @@ void CoreEngine::Update() {
 	// Iterate through Systems and Update them through Coordinator;
 	for (auto& System : m_systems) {
 
-		static float dt = 0;
-		dt += deltaTime;
-		if (dt > 2.0) {
-			std::cout << "deltaTime: " << deltaTime << "\n";
-			dt = 0;
-		}
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(System->GetName());
 		System->Update(deltaTime, m_coord);
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(System->GetName());

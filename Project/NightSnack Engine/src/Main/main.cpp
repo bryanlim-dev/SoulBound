@@ -81,10 +81,8 @@ int main()
 	coord.AddComponent<Force>(p3, Force{ 0.f,0.f });
 	coord.AddComponent<Force>(p4, Force{ 0.f,0.f });
 
-	// Using Physics System interface to make entity move;
+	// Using Physics System interface to make entity move instead;
 	coord.AddComponent<Velocity>(p1, Velocity{ 0.f, 0.f });
-	coord.GetSystem<PhysicsSystem>()->ApplyForce(coord, p1, 9.f, 0.f);
-
 	coord.AddComponent<Velocity>(p2, Velocity{ 0.f, 0.f });
 	coord.AddComponent<Velocity>(p3, Velocity{ 0.f, 0.f });
 	coord.AddComponent<Velocity>(p4, Velocity{ 0.f, 0.f });
