@@ -125,7 +125,7 @@ public:
 				shader->SetMat4("uMVP", mvpMatrix);
 			}
 
-			renderable.material->ApplyUniforms(); // baseColor, textures etc
+			renderable.material->ApplyUniforms(renderable.isWireframe); // baseColor, textures etc
 
 			if (renderable.isWireframe) // Change the polygon mode to wireframe
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

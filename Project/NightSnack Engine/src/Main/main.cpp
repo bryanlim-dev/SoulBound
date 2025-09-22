@@ -26,7 +26,7 @@ int main()
 
 	//Resource Manager test
 	{
-		rm->DebugTestEverything();
+		//rm->DebugTestEverything();
 	}
 
 	//Replace this with actual sound manager later
@@ -100,19 +100,40 @@ int main()
 	coord.AddComponent<Rotation>(p4, Rotation{});
 
 
-	Mesh rectangle = Mesh::CreateSquare();
-	Mesh circle = Mesh::CreateCircle();
-
 	// Load shader
 	Shader shader("../shaders/vertex_shader.vert", "../shaders/fragment_shader.frag");
 
-	// Create the different materials
+	// Load textures
+	std::size_t bananaKey = 0;
+	std::size_t targetKey = 0;
+	rm->LoadImage("assets/Banana.jpg", bananaKey);
+	rm->LoadImage("assets/image_UI_target.png", targetKey);
+	ResourceImage* imgBanana = rm->GetImageResource(bananaKey);
+	ResourceImage* imgTarget = rm->GetImageResource(targetKey);
+	unsigned char* pixelsBanana = rm->GetImage(bananaKey);
+	unsigned char* pixelsTarget = rm->GetImage(targetKey);
+	Texture bananaTex(pixelsBanana, imgBanana->Width(), imgBanana->Height(), imgBanana->Channels());
+	Texture targetTex(pixelsTarget, imgTarget->Width(), imgTarget->Height(), imgTarget->Channels());
+
+	// Create materials with texture
+	Material bananaMat(&shader, &bananaTex);
+	Material targetMat(&shader, &targetTex);
+
+	// Create materials with color
 	Material red(&shader, glm::vec3(1.f, 0.f, 0.f));
 	Material blue(&shader, glm::vec3(0.f, 0.f, 1.f));
 	Material green(&shader, glm::vec3(0.f, 1.f, 0.f));
+	Mesh rectangle = Mesh::CreateSquare();
 
-	Renderable r1{ &circle, &green, false };
-	Renderable r2{ &circle, &blue, false };
+	// Create different mesh shapes
+	Mesh point = Mesh::CreatePoint();
+	Mesh line = Mesh::CreateLine({ 0.f, 0.f }, { 100.f, 0.f });
+	Mesh square = Mesh::CreateSquare();
+	Mesh circle = Mesh::CreateCircle();
+
+	// Create renderables
+	Renderable r1{ &circle, &targetMat, false };
+	Renderable r2{ &circle, &bananaMat, false };
 	Renderable r3{ &rectangle, &red, true };
 	Renderable r4{ &circle, &red, false };
 

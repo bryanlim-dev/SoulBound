@@ -86,6 +86,9 @@ public:
 
 	unsigned char* Image() const;
 
+	int Width() const { return width; }
+	int Height() const { return height; }
+	int Channels() const { return channels; }
 
 private:
 };
