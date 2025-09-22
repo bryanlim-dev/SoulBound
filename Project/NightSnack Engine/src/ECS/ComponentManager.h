@@ -22,7 +22,7 @@ template <typename T>
 class ComponentArray : public IComponentArray {
 
 public:
-	void Insert(Entity e, T component);
+	void Insert(Entity e, T const& component);
 	void Remove(Entity e);
 	T& Get(Entity e);
 	void EntityDestroyed(Entity e) override;
@@ -44,7 +44,7 @@ public:
 	void RegisterComponent();
 
 	template <typename T>
-	void AddComponent(Entity e, T component);
+	void AddComponent(Entity e, T const& component);
 
 	template <typename T>
 	void RemoveComponent(Entity e);
@@ -100,7 +100,7 @@ inline ComponentType GetComponentTypeID() noexcept {
 // Map the location(size) of the Component to the Entity ID;
 // Update size of the Array;
 template <typename T>
-void ComponentArray<T>::Insert(Entity e, T component) {
+void ComponentArray<T>::Insert(Entity e, T const& component) {
 
 	// Mapping Entity ID to Component index -> Last index currently;
 	m_entityToIndex[e] = m_size;
@@ -175,7 +175,7 @@ void ComponentManager::RegisterComponent() {
 }
 
 template <typename T>
-void ComponentManager::AddComponent(Entity e, T component) {
+void ComponentManager::AddComponent(Entity e, T const& component) {
 
 	// Call member function of ComponentArray to insert Component;
 	GetComponentArray<T>()->Insert(e, component);

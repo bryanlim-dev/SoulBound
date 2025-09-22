@@ -18,8 +18,8 @@ public:
 
 	void Update();
 
-	template <typename T>
-	void AddSystem();
+	template <typename T, typename... Args>
+	void AddSystem(Args&&... args);
 	template <typename T>
 	void RemoveSystem(std::shared_ptr<T> system);
 
@@ -38,13 +38,13 @@ private:
 
 };
 
-template <typename T>
-void CoreEngine::AddSystem() {
+template <typename T, typename... Args>
+void CoreEngine::AddSystem(Args&&... args) {
 	// Ensure T derives from ISystem;
 	static_assert(std::is_base_of<ISystem, T>::value, "T must derive from ISystem");
 
 	// Register the system in Coordinator (returns a shared_ptr<T>);
-	auto systemPtr = m_coord.RegisterSystem<T>();
+	auto systemPtr = m_coord.RegisterSystem<T>(std::forward<Args>(args)...);
 
 	// Add to CoreEngine's vector of systems as ISystem;
 	m_systems.push_back(std::static_pointer_cast<ISystem>(systemPtr));

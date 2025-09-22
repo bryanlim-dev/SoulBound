@@ -32,15 +32,13 @@ public:
 
 	std::set<Entity> const& GetLivingEntities() const { return m_entityManager->GetLivingEntities(); }
 
-	template <typename T>
-	std::shared_ptr<T> RegisterSystem();
+	template <typename T, typename... Args>
+	std::shared_ptr<T> RegisterSystem(Args&&... args);
 	template <typename T>
 	std::shared_ptr<T> GetSystem() { return m_systemManager->GetSystem<T>(); }
 
 	template <typename T>
 	void SetSystemSignature(Signature sig);
-	template <typename T>
-	std::shared_ptr<T> GetSystem();
 
 private:
 	// ECS Managers;
@@ -102,9 +100,9 @@ T& Coordinator::GetComponent(Entity e) {
 	return m_componentManager->GetComponent<T>(e);
 }
 
-template <typename T>
-std::shared_ptr<T> Coordinator::RegisterSystem() {
-	return m_systemManager->RegisterSystem<T>();
+template <typename T, typename... Args>
+std::shared_ptr<T> Coordinator::RegisterSystem(Args&&... args) {
+	return m_systemManager->RegisterSystem<T>(std::forward<Args>(args)...);
 }
 
 template <typename T>
@@ -112,8 +110,4 @@ void Coordinator::SetSystemSignature(Signature sig) {
 	m_systemManager->SetSignature<T>(sig);
 }
 
-template <typename T>
-std::shared_ptr<T> Coordinator::GetSystem(){
-	return m_systemManager->GetSystem<T>();
-}
 #endif // COORD_HPP

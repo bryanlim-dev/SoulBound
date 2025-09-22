@@ -30,6 +30,7 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	// i.e: Input-> Movement -> Collision -> Graphics;
 	AddSystem<ApplicationSystem>();
 	AddSystem<InputSystem>();
+	AddSystem<EntityFactory>(m_coord, "assets/GameData/Archetypes/Archetypes.json");
 	AddSystem<PhysicsSystem>();
 	AddSystem<CollisionSystem>();
 	AddSystem<MovementSystem>();
@@ -43,6 +44,8 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	// Initialise InputSystem
 	m_coord.GetSystem<InputSystem>().get()->Init(
 		m_coord.GetSystem<ApplicationSystem>().get()->GetNativeHandle()); // GLFWwindow* handle
+
+	
 
 	// Call this only after the OpenGL context has been created, which is after ApplicationSystem::Init()
 	// TEMP; By right this will be handled by Graphics system and will be removed;

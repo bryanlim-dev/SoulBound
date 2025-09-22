@@ -4,26 +4,28 @@
 #include "Graphics/Mesh.h"
 #include "Graphics/Material.h"
 
-struct IComponent{};
-
-struct Archetype {
-	// e.g: <"Position", static_pointer_cast<IComponent>(Position{ 1.f, 2.5f })>; components["Position"] = 1.f, 2.5f;
-	std::unordered_map<std::string, IComponent> components;
-};
+#include <json.hpp>
+using json = nlohmann::json;
 
 // ================================================================================================
 // COMPONENTS
 // ================================================================================================
-struct Position : public IComponent {
-  double x, y;
+struct Position {
+	float x, y;
 };
 
-struct Rotation : public IComponent {
+struct Rotation {
 	float degrees;
 };
 
-struct Scale : public IComponent {
-	double x, y;
+struct Scale {
+	float x, y;
+};
+
+struct Transform {
+	Position pos;
+	Rotation rot;
+	Scale scale;
 };
 
 struct Velocity {
@@ -47,7 +49,7 @@ struct Sprite {
 	std::string textureName;
 };
 
-struct Color : public IComponent {
+struct Color {
 	float r, g, b, a;
 };
 
@@ -96,5 +98,109 @@ struct Collider {
 };
 
 // Add more Components here if necessary...
+// Ensure to add a Json overload below for your component to allow for Archetype Loading...
+
+// ================================================================================================
+// COMPONENT JSON OVERLOADS
+// ================================================================================================
+// POSITION / ROTATION / SCALE / TRANSFORM ====================
+inline void from_json(const json& j, Position& p) {
+    j.at("x").get_to(p.x);
+    j.at("y").get_to(p.y);
+}
+
+inline void from_json(const json& j, Rotation& r) {
+    j.at("degrees").get_to(r.degrees);
+}
+
+inline void from_json(const json& j, Scale& s) {
+    j.at("x").get_to(s.x);
+    j.at("y").get_to(s.y);
+}
+
+inline void from_json(const json& j, Transform& t) {
+    t.pos = j.at("Position").get<Position>();
+    t.rot = j.at("Rotation").get<Rotation>();
+    t.scale = j.at("Scale").get<Scale>();
+}
+
+// PHYSICS ====================================================
+inline void from_json(const json& j, Velocity& v) {
+    j.at("dx").get_to(v.dx);
+    j.at("dy").get_to(v.dy);
+}
+
+inline void from_json(const json& j, Acceleration& a) {
+    j.at("ax").get_to(a.ax);
+    j.at("ay").get_to(a.ay);
+}
+
+inline void from_json(const json& j, Force& f) {
+    j.value("fx", 0.0f); // optional default
+    j.value("fy", 0.0f);
+    j.at("fx").get_to(f.fx);
+    j.at("fy").get_to(f.fy);
+}
+
+inline void from_json(const json& j, Mass& m) {
+    j.at("val").get_to(m.val);
+}
+
+// GRAPHICS ===================================================
+inline void from_json(const json& j, Sprite& s) {
+    j.at("textureName").get_to(s.textureName);
+}
+
+inline void from_json(const json& j, Color& c) {
+    j.at("r").get_to(c.r);
+    j.at("g").get_to(c.g);
+    j.at("b").get_to(c.b);
+    j.at("a").get_to(c.a);
+}
+
+// Renderable is tricky since Mesh* and Material* are runtime resources.
+// Might instead serialize names/ids and resolve them later; Store meshes in an unorderedmap with std::string keys;
+inline void from_json(const json& j, Renderable& r) {
+    // Just a stub: actual loading must be handled by resource manager
+    bool wf = false;
+    j.at("isWireframe").get_to(wf);
+    r.isWireframe = wf;
+    // Could also read "meshName" / "materialName"
+}
+
+// Camera =====================================================
+inline void from_json(const json& j, Camera& c) {
+    j.at("isMainCam").get_to(c.isMainCam);
+    j.at("zoom").get_to(c.zoom);
+    j.at("width").get_to(c.width);
+    j.at("height").get_to(c.height);
+}
+
+// COLLISION ==================================================
+inline void from_json(const json& j, Collider& c) {
+    std::string shapeStr, typeStr;
+    j.at("shape").get_to(shapeStr);
+    j.at("type").get_to(typeStr);
+
+    if (shapeStr == "AABB") c.shape = ShapeType::AABB;
+    else if (shapeStr == "Circle") c.shape = ShapeType::Circle;
+
+    if (typeStr == "Solid") c.type = ColliderType::Solid;
+    else if (typeStr == "Trigger") c.type = ColliderType::Trigger;
+
+    j.at("isStatic").get_to(c.isStatic);
+
+    if (c.shape == ShapeType::AABB) {
+        j.at("width").get_to(c.width);
+        j.at("height").get_to(c.height);
+    }
+    else if (c.shape == ShapeType::Circle) {
+        j.at("radius").get_to(c.radius);
+    }
+
+    // Optional runtime-only flags (not usually in prefab JSON)
+    c.isGrounded = j.value("isGrounded", false);
+    c.colliding = j.value("colliding", false);
+}
 
 #endif // COMPONENT_HPP

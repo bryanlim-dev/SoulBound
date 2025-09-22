@@ -11,6 +11,7 @@
 
 #include "Core.h"
 #include "ECS/ISystem.h"
+#include "Factory/EntityFactory.h"
 #include "Systems/AllSystems.h"
 
 #include "ResourceManager/ResourceManager.h"
@@ -141,6 +142,7 @@ int main()
   // Core Application Loop;
   while (!core.ShouldClose()) {
   	core.Update();
+
 
   }
 

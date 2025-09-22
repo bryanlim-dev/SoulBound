@@ -1,31 +1,64 @@
 #ifndef ENTITYFACTORY_H
 #define ENTITYFACTORY_H
 
-#include <string>
-#include <any>
 #include <unordered_map>
+#include <string>
+#include <json.hpp>
+#include <fstream>
 
 #include "ECS/Entity.h"
 #include "ECS/ISystem.h"
 #include "ECS/Coordinator.h"
 #include "ECS/Component.h"
+#include "Factory/PrefabManager.h"
+#include "Systems/Input.h"
+
+using json = nlohmann::json;
 
 class EntityFactory : public ISystem {
 
 public:
-	// Factory cannot be default constructed;
-	EntityFactory() = delete;
+	// Right now factory parses the json file by itself, but eventually, to support multiple levels;
+	// m_archetypes should be owned by ResourceManager and passed in;
+	EntityFactory(Coordinator& coord, std::string const& archetypes_filename)
+		: m_coord(coord), m_prefabManager(coord) {
 
-	// Factory needs to obtain a reference to the Coordinator and a map of archetypes (parsed from a file by resource manager);
-	EntityFactory(Coordinator& coord, std::unordered_map<std::vector<std::string>, Archetype> const& archetypes)
-		: m_coord(coord){}
+		m_prefabManager.Initialize();
+		LoadJsonFile(archetypes_filename);
+	}
 
-	Entity Create(std::string const& type);
+	void LoadJsonFile(std::string const& filename) {
+		std::ifstream file(filename);
+		if (!file.is_open()) {
+			throw std::runtime_error("Failed to open archetypes file: " + filename);
+		}
+
+		try {
+			file >> m_archetypes;
+		}
+		catch (json::parse_error& e) {
+			throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
+		}
+	}
+
+	void Update(float dt, Coordinator& coord) override;
+	
+	Signature GetSignature() const override { return Signature{}; }
+	std::string GetName() const override { return "EntityFactory"; }
+
+	Entity Create(std::string const& name);
+	Entity Create(std::string const& name, Transform trans, Renderable r1);
 
 private:
 	Coordinator& m_coord;
-	// e.g: <"Player", Archetype p1>; <- player archetype;
-	std::unordered_map<std::string, Archetype> m_archetypes;
+	PrefabManager m_prefabManager;
+	json m_archetypes;
 };
+
+// First obtains all archetypes through initialization;
+
+// LoadLevel() -> SetComponents to create entities with specified transforms and components;
+
+
 
 #endif // ENTITYFACTORY_H

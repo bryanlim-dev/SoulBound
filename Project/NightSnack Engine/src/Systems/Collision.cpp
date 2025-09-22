@@ -113,8 +113,8 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
                 else if (!colA.isStatic && colB.isStatic)
                 {
                     // A is dynamic, B is static - A bounces with 30% energy loss
-                    velA.dx = flipVel ? -velA.dx * 0.7 : velA.dx;
-                    velA.dy = flipVel ? -velA.dy * 0.7 : velA.dy;
+                    velA.dx = flipVel ? -velA.dx * 0.7f : velA.dx;
+                    velA.dy = flipVel ? -velA.dy * 0.7f : velA.dy;
                 }
                 //else if (colA.isStatic && !colB.isStatic)             // <- technically not necessary;
                 //{
