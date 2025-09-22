@@ -56,7 +56,7 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
             auto& colB = coord.GetComponent<Collider>(*itB);
 
             // Skip if both are static
-            if (colA.isStatic && colB.isStatic) continue;
+            if (colA.isStatic) continue;
 
             bool collision = false;
 
@@ -86,34 +86,42 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
                 std::cout << "Collision detected between Entity " << *itA << " and Entity " << *itB << std::endl;
 
                 // Separate objects first
-                SeparateObjects(posA, colA, posB, colB, velA, velB);
+                // SeparateObjects(posA, colA, posB, colB, velA, velB);
 
                 // Debug: Check velocities before collision response
                 if (*itA == 0) {
                     //std::cout << "P1 velocity before response: (" << velA.dx << ", " << velA.dy << ")" << std::endl;
                 }
 
+                bool flipVel = ShouldFlipVelocity(posA.x, posB.x, velA.dx, dt);
+
                 // Handle collision response
                 if (!colA.isStatic && !colB.isStatic)
                 {
                     // Dynamic vs Dynamic - both bounce with 30% energy loss
-                    velA.dx = -velA.dx * 0.7;
+                   
+                    velA.dx = flipVel ? -velA.dx * 0.7f : velA.dx;
+                    velA.dy = flipVel ? -velA.dy * 0.7f : velA.dy;
+                    velB.dx = -velA.dx * 0.7f;
+                    velB.dy = -velB.dy * 0.7f;
+
+                    /*velA.dx = -velA.dx * 0.7;
                     velA.dy = -velA.dy * 0.7;
                     velB.dx = -velB.dx * 0.7;
-                    velB.dy = -velB.dy * 0.7;
+                    velB.dy = -velB.dy * 0.7;*/
                 }
                 else if (!colA.isStatic && colB.isStatic)
                 {
                     // A is dynamic, B is static - A bounces with 30% energy loss
-                    velA.dx = -velA.dx * 0.7;
-                    velA.dy = -velA.dy * 0.7;
+                    velA.dx = flipVel ? -velA.dx * 0.7 : velA.dx;
+                    velA.dy = flipVel ? -velA.dy * 0.7 : velA.dy;
                 }
-                else if (colA.isStatic && !colB.isStatic)
-                {
-                    // A is static, B is dynamic - B bounces with 30% energy loss
-                    velB.dx = -velB.dx * 0.7;
-                    velB.dy = -velB.dy * 0.7;
-                }
+                //else if (colA.isStatic && !colB.isStatic)             // <- technically not necessary;
+                //{
+                //    // A is static, B is dynamic - B bounces with 30% energy loss
+                //    velB.dx = -velB.dx * 0.7;
+                //    velB.dy = -velB.dy * 0.7;
+                //}
 
                 // Check velocities after collision response
                 if (*itA == 0) {
@@ -124,161 +132,19 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
     }
 }
 
-// Helper function to check if an object is moving away from another object
-bool CollisionSystem::IsMovingAway(const Position& pos1, const Position& pos2, const Velocity& vel1)
-{
-    // Calculate vector from pos1 to pos2
-    float dx = pos2.x - pos1.x;
-    float dy = pos2.y - pos1.y;
+// Checks if velocity needs to be flipped;
+bool CollisionSystem::ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt) {
+    float newpos = pos1 + vel1 * dt;
+    float distsq = (pos2 - pos1) * (pos2 - pos1);
+    float newdistsq = (pos2 - newpos) * (pos2 - newpos);
 
-    // Calculate dot product of direction vector and velocity vector
-    float dotProduct = dx * vel1.dx + dy * vel1.dy;
-
-    // If dot product is negative, we're moving away from the other object
-    return dotProduct < 0;
-}
-
-// Helper function to separate overlapping objects
-void CollisionSystem::SeparateObjects(Position& posA, const Collider& colA,
-    Position& posB, const Collider& colB,
-    const Velocity& velA, const Velocity& velB)
-{
-    if (colA.shape == ShapeType::Circle && colB.shape == ShapeType::Circle)
-    {
-        SeparateCircles(posA, colA, posB, colB, velA, velB);
-    }
-    else if (colA.shape == ShapeType::Circle && colB.shape == ShapeType::AABB)
-    {
-        SeparateCircleAABB(posA, colA, posB, colB, true);
-    }
-    else if (colA.shape == ShapeType::AABB && colB.shape == ShapeType::Circle)
-    {
-        SeparateCircleAABB(posB, colB, posA, colA, false);
-    }
-}
-
-// Separate two overlapping circles
-void CollisionSystem::SeparateCircles(Position& posA, const Collider& colA,
-    Position& posB, const Collider& colB,
-    const Velocity& velA, const Velocity& velB)
-{
-    float dx = posA.x - posB.x;
-    float dy = posA.y - posB.y;
-    float distance = std::sqrt(dx * dx + dy * dy);
-
-    // Handle case where circles are exactly on top of each other
-    if (distance < 0.001f) {
-        dx = 1.0f;
-        dy = 0.0f;
-        distance = 1.0f;
-    }
-
-    float totalRadius = colA.radius + colB.radius;
-    float overlap = totalRadius - distance;
-
-    if (overlap > 0) {
-        // Normalize direction vector
-        dx /= distance;
-        dy /= distance;
-
-        // Calculate how much to move each object
-        if (!colA.isStatic && !colB.isStatic) 
-        {
-            // Both dynamic - move both
-            float moveA = overlap * 0.51f;
-            float moveB = overlap * 0.51f;
-
-            posA.x += dx * moveA;
-            posA.y += dy * moveA;
-            posB.x -= dx * moveB;
-            posB.y -= dy * moveB;
-        }
-        else if (!colA.isStatic && colB.isStatic) 
-        {
-            // Only A is dynamic
-            posA.x += dx * (overlap + 2.0f);
-            posA.y += dy * (overlap + 2.0f);
-        }
-        else if (colA.isStatic && !colB.isStatic) 
-        {
-            // Only B is dynamic
-            posB.x -= dx * (overlap + 2.0f);
-            posB.y -= dy * (overlap + 2.0f);
-        }
-    }
-}
-
-// Separate circle from AABB
-void CollisionSystem::SeparateCircleAABB(Position& circlePos, const Collider& circle,
-    Position& aabbPos, const Collider& aabb, bool circleIsA)
-{
-    float halfW = aabb.width / 2.0f;
-    float halfH = aabb.height / 2.0f;
-
-    // AABB bounds
-    float left = aabbPos.x - halfW;
-    float right = aabbPos.x + halfW;
-    float top = aabbPos.y + halfH;
-    float bottom = aabbPos.y - halfH;
-
-    // Find closest point on AABB to circle center
-    float closestX = Clamp(circlePos.x, left, right);
-    float closestY = Clamp(circlePos.y, bottom, top);
-
-    // Vector from closest point to circle center
-    float dx = circlePos.x - closestX;
-    float dy = circlePos.y - closestY;
-    float distance = std::sqrt(dx * dx + dy * dy);
-
-    //std::cout << "SeparateCircleAABB: Circle at (" << circlePos.x << ", " << circlePos.y << "), distance: " << distance << std::endl;
-
-    if (distance < 0.001f) {
-        // Circle center is inside AABB, push it out in the direction of least penetration
-        float penetrationLeft = circlePos.x - left;
-        float penetrationRight = right - circlePos.x;
-        float penetrationTop = top - circlePos.y;
-        float penetrationBottom = circlePos.y - bottom;
-
-        float minPenetration = std::min({ penetrationLeft, penetrationRight, penetrationTop, penetrationBottom });
-
-        //std::cout << "Circle inside AABB, min penetration: " << minPenetration << std::endl;
-
-        if (minPenetration == penetrationLeft) 
-        {
-            circlePos.x = left - circle.radius - 5.0f;
-            //std::cout << "Pushed left to x = " << circlePos.x << std::endl;
-        }
-        else if (minPenetration == penetrationRight) 
-        {
-            circlePos.x = right + circle.radius + 5.0f;
-            //std::cout << "Pushed right to x = " << circlePos.x << std::endl;
-        }
-        else if (minPenetration == penetrationTop) 
-        {
-            circlePos.y = top + circle.radius + 5.0f;
-            //std::cout << "Pushed up to y = " << circlePos.y << std::endl;
-        }
-        else {
-            circlePos.y = bottom - circle.radius - 5.0f;
-            //std::cout << "Pushed down to y = " << circlePos.y << std::endl;
-        }
+    // If the current velocity will bring the two objects closer;
+    if (newdistsq < distsq) {
+        // Should flip the velocity;
+        return true;
     }
     else {
-        // Normal case - push circle away from closest point
-        float overlap = circle.radius - distance;
-        if (overlap > 0) 
-        {
-            dx /= distance; // Normalize
-            dy /= distance;
-
-            //std::cout << "Normal separation, overlap: " << overlap << std::endl;
-
-            // Only move the circle (AABB is static in your case)
-            circlePos.x += dx * (overlap + 5.0f); // Increased buffer
-            circlePos.y += dy * (overlap + 5.0f);
-
-            //std::cout << "Moved circle to (" << circlePos.x << ", " << circlePos.y << ")" << std::endl;
-        }
+        return false;
     }
 }
 

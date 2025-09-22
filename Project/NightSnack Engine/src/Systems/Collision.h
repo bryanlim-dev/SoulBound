@@ -36,6 +36,8 @@ public:
     void SeparateCircleAABB(Position& circlePos, const Collider& circle,
         Position& aabbPos, const Collider& aabb, bool circleIsA);
 
+    bool ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt);
+
 private:
     Signature m_systemSignature{};
 };
