@@ -71,7 +71,8 @@ enum class ShapeType {
 
 enum class ColliderType {
     Solid,   // Blocks movement
-    Trigger  // Detects overlaps only
+    Trigger,  // Detects overlaps only
+	Ground
 };
 
 struct Collider {
