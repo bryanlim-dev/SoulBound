@@ -5,7 +5,7 @@
 static constexpr int REQUIRED_GL_MAJOR = 4;
 static constexpr int REQUIRED_GL_MINOR = 5;
 
-void ApplicationSystem::Init(int width, int height, std::string const& title) {
+void ApplicationSystem::Init(int width, int height, std::string const& title, EventDispatcher& dispatcher) {
 	// Initialize GLFW;
 	if (!glfwInit())
 	{
@@ -51,6 +51,12 @@ void ApplicationSystem::Init(int width, int height, std::string const& title) {
 	glViewport(0, 0, m_appWidth, m_appHeight);
 	glfwSetFramebufferSizeCallback(m_windowHandle, FramebufferSizeCallback);
 
+	// Subscribe to window start event
+	m_dispatcher = &dispatcher;
+	if (m_dispatcher)
+	{
+		m_dispatcher->Dispatch(AppWindowEvent(AppWindowEvent::Action::Start));
+	}
 }
 
 // Destructor -------------------------------------------------------------------------------------

@@ -1,5 +1,4 @@
 #pragma once
-#include <Systems/IEvent.h>
 
 enum class EventType
 {
@@ -17,13 +16,11 @@ public:
     enum class Action 
     {
         // Application actions
-        Start, Quit, Pause, Resume,
-        // Window actions
-        Resize, Close, Focus
+        Start, Quit, Resize, Pause, Resume
     };
     Action action;
 
-    // Only used for window actions
+    // Only used for resize action
     int width = 0;
     int height = 0;
 

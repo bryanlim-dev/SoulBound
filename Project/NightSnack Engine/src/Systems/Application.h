@@ -6,6 +6,7 @@
 #include <GLFW/glfw3.h>
 #include "ECS/Coordinator.h"
 #include "Systems/Timer.h"
+#include "Systems/IEvent.h"
 
 class ApplicationSystem : public ISystem
 {
@@ -13,7 +14,7 @@ public:
 	ApplicationSystem() {};
 	~ApplicationSystem();
 
-	void Init(int width, int height, std::string const& title);
+	void Init(int width, int height, std::string const& title, EventDispatcher& dispatcher);
 	void Update(double dt, Coordinator& coord) override;
 	std::string GetName() const { return "ApplicationSystem"; }
 
@@ -43,6 +44,9 @@ private:
 	Timer m_timer;
 
 	Signature m_systemSignature{};
+
+	// System event dispatcher
+	EventDispatcher* m_dispatcher = nullptr;
 };
 
 #endif // APPLICATION_HPP

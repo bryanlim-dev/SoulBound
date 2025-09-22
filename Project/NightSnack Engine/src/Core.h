@@ -26,7 +26,7 @@ public:
 
 	Coordinator& GetCoord() { return m_coord; }
 
-	EventDispatcher& GetEventDispatcher() { return m_dispatcher; }
+	EventDispatcher& GetEventDispatcher() { return core_dispatcher; }
 
 	bool ShouldClose() {  
 		return m_coord.GetSystem<ApplicationSystem>().get()->ShouldClose();
@@ -40,7 +40,7 @@ private:
 	Coordinator m_coord;
 
 	// Event Dispatcher;
-	EventDispatcher m_dispatcher;
+	EventDispatcher core_dispatcher;
 
 };
 

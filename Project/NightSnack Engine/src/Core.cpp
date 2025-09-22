@@ -33,7 +33,7 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	// Add more Components here...
 
 	// Initialise ApplicationSystem
-	m_coord.GetSystem<ApplicationSystem>().get()->Init(windowWidth, windowHeight, std::move(windowTitle));
+	m_coord.GetSystem<ApplicationSystem>().get()->Init(windowWidth, windowHeight, std::move(windowTitle), core_dispatcher);
 
 	// Initialise InputSystem
 	m_coord.GetSystem<InputSystem>().get()->Init(
