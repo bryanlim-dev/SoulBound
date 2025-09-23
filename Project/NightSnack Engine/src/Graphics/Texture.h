@@ -7,9 +7,15 @@ class Texture {
 
 public:
 
+	//Texture() {}
 	// Constructor to create an OpenGL texture
 	Texture(const unsigned char* data, const int width, const int height, const int channels);
 	~Texture();
+
+	//Texture(const Texture&) = delete; // no copy
+	//Texture& operator=(const Texture&) = delete; // no copy
+	//Texture(Texture&& other) noexcept; // move
+	//Texture& operator=(Texture&& other) noexcept; // move
 
 	// Binds the texture to the specified texture unit
 	void Bind(GLuint unit) const;

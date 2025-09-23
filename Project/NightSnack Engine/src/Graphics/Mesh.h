@@ -14,6 +14,7 @@ public:
 		glm::vec2 texCoord;
 	};
 
+	Mesh() {}
 	// Constructs mesh and sets up vertex array and buffer objects for rendering
 	Mesh(GLenum primitiveType, 
 		std::vector<Vertex> const& vertices,

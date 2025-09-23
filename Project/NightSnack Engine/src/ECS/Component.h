@@ -52,7 +52,15 @@ struct Color {
 struct Renderable {
 	Mesh* mesh{ nullptr }; // Stores a pointer to a GPU mesh
 	Material* material{ nullptr }; // Stores shader + color/texture information
+	//std::string meshName;
+	//std::string materialName;
 	bool isWireframe{ true }; // default is wireframe mode
+
+	//Renderable() = default;
+
+	//Renderable(Mesh* m, Material* mat, bool wire = false)
+	//	: mesh(m), material(mat), isWireframe(wire) {
+	//}
 };
 
 struct Camera {

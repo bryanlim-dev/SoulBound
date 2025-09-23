@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include <iostream>
 
 // Construct a Mesh with the actual geometry data -------------------------------------------------
 // Sets up the VAO, VBO, and EBO for rendering ----------------------------------------------------

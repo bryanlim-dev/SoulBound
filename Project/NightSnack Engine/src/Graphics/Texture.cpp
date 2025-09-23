@@ -40,6 +40,23 @@ Texture::~Texture() {
 		glDeleteTextures(1, &m_texID);
 }
 
+//Texture::Texture(Texture&& other) noexcept
+//	: m_texID(other.m_texID), m_hasAlphaComponent(other.m_hasAlphaComponent) {
+//	other.m_texID = 0; // take ownership
+//}
+//
+//Texture& Texture::operator=(Texture&& other) noexcept {
+//	if (this != &other) {
+//		if (m_texID != 0) {
+//			glDeleteTextures(1, &m_texID);
+//		}
+//		m_texID = other.m_texID;
+//		m_hasAlphaComponent = other.m_hasAlphaComponent;
+//		other.m_texID = 0;
+//	}
+//	return *this;
+//}
+
 // Binds the texture to the specified texture unit ------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void Texture::Bind(GLuint unit) const {

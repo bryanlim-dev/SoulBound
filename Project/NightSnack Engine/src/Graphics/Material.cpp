@@ -15,6 +15,9 @@ Material::Material(Shader* shader, Texture* texture, const glm::vec3& baseColor)
 
 	// Only if the texture is a png format too
 	m_EnableAlphaBlending = m_texture && texture->HasAlpha();
+	//m_EnableAlphaBlending = false;
+	//if (textureName.find(".png") != std::string::npos)
+	//	m_EnableAlphaBlending = true;
 }
 
 // Get the shader of this particular Material object ----------------------------------------------
@@ -28,6 +31,14 @@ Shader* Material::GetShader() const {
 Texture* Material::GetTexture() const {
 	return m_texture;
 }
+
+//std::string Material::GetShaderName() const {
+//	return m_shaderName;
+//}
+//
+//std::string Material::GetTextureName() const {
+//	return m_textureName;
+//}
 
 // Pass the uniform variables to the shader programs-----------------------------------------------
 // ------------------------------------------------------------------------------------------------
@@ -54,4 +65,6 @@ void Material::ApplyUniforms(bool isWireFrameMode) const {
 	} else {
 		glDisable(GL_BLEND);
 	}
+
+	
 }

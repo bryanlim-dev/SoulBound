@@ -107,52 +107,55 @@ int main()
 	coord.AddComponent<Rotation>(p3, Rotation{});
 	coord.AddComponent<Rotation>(p4ground, Rotation{});
 
+	//coord.AddComponent<Renderable>(control, r4);
+
+
+	
+
 
 	// Load shader
-	Shader shader("../shaders/vertex_shader.vert", "../shaders/fragment_shader.frag");
+	//Shader shader("../shaders/vertex_shader.vert", "../shaders/fragment_shader.frag");
+	//// Load textures
+	//std::size_t bananaKey = 0;
+	//std::size_t targetKey = 0;
+	//
+	//rm->LoadImage("assets/Banana.jpg", bananaKey);
+	//rm->LoadImage("assets/image_UI_target.png", targetKey);
 
-	// Load textures
-	std::size_t bananaKey = 0;
-	std::size_t targetKey = 0;
-	rm->LoadImage("assets/Banana.jpg", bananaKey);
-	rm->LoadImage("assets/image_UI_target.png", targetKey);
-	ResourceImage* imgBanana = rm->GetImageResource(bananaKey);
-	ResourceImage* imgTarget = rm->GetImageResource(targetKey);
-	unsigned char* pixelsBanana = rm->GetImage(bananaKey);
-	unsigned char* pixelsTarget = rm->GetImage(targetKey);
-	Texture bananaTex(pixelsBanana, imgBanana->Width(), imgBanana->Height(), imgBanana->Channels());
-	Texture targetTex(pixelsTarget, imgTarget->Width(), imgTarget->Height(), imgTarget->Channels());
+	//ResourceImage* imgBanana = rm->GetImageResource(bananaKey);
+	//ResourceImage* imgTarget = rm->GetImageResource(targetKey);
 
-	// Create materials with texture
-	Material bananaMat(&shader, &bananaTex);
-	Material targetMat(&shader, &targetTex);
+	//unsigned char* pixelsBanana = rm->GetImage(bananaKey);
+	//unsigned char* pixelsTarget = rm->GetImage(targetKey);
 
-	// Create materials with color
-	Material red(&shader, glm::vec3(1.f, 0.f, 0.f));
-	Material blue(&shader, glm::vec3(0.f, 0.f, 1.f));
-	Material green(&shader, glm::vec3(0.f, 1.f, 0.f));
-	Mesh rectangle = Mesh::CreateSquare();
+	//Texture bananaTex(pixelsBanana, imgBanana->Width(), imgBanana->Height(), imgBanana->Channels());
+	//Texture targetTex(pixelsTarget, imgTarget->Width(), imgTarget->Height(), imgTarget->Channels());
 
-	// Create different mesh shapes
-	Mesh point = Mesh::CreatePoint();
-	Mesh line = Mesh::CreateLine({ 0.f, 0.f }, { 100.f, 0.f });
-	Mesh square = Mesh::CreateSquare();
+	//// Material
+	//Material bananaMat(&shader, &bananaTex);
+	//Material whiteMaterial(&shader, glm::vec3(1.f));
+
+
+	Mesh* circleMesh = coord.GetSystem<GraphicsSystem>()->GetMesh("circleMesh");
+	Material* whiteMaterial = coord.GetSystem<GraphicsSystem>()->GetMaterial("whiteMaterial");
+	Renderable r1{ circleMesh, whiteMaterial, false };
+	coord.AddComponent<Renderable>(p1, r1);
+
+	// Default Meshes
+	/*Mesh square = Mesh::CreateSquare();
 	Mesh circle = Mesh::CreateCircle();
+	Renderable r1{ &circle, &whiteMaterial, false };
+	coord.AddComponent<Renderable>(p1, r1);*/
 
-	// Create renderables
-	Renderable r1{ &circle, &targetMat, false };
-	Renderable r2{ &circle, &bananaMat, false };
-	Renderable r3{ &rectangle, &red, true };
-	Renderable r4{ &circle, &red, true };
-	Renderable r5{ &circle, &red, false };
-	Renderable ground_r{ &rectangle, &blue , false };
-
-	coord.AddComponent<Renderable>(control, r4);
-	coord.AddComponent<Renderable>(p0, r1); 
-	coord.AddComponent<Renderable>(p1, r2);
-	coord.AddComponent<Renderable>(p2, r3);
-	coord.AddComponent<Renderable>(p3, r5);
-	coord.AddComponent<Renderable>(p4ground, ground_r);
+	//coord.AddComponent<Renderable>(p0, {
+	//	"circleMesh", "whiteMaterial", false
+	//	});
+	/*coord.AddComponent<Renderable>(p1, {
+		"circleMesh", "targetMaterial", false
+		});*/
+	//coord.AddComponent<Renderable>(p2, r3);
+	//coord.AddComponent<Renderable>(p3, r5);
+	//coord.AddComponent<Renderable>(p4ground, ground_r);
 
 	// Camera object
 	Entity camera = coord.CreateEntity();
