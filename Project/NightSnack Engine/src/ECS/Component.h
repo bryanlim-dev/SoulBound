@@ -21,11 +21,24 @@ struct Scale {
 };
 
 struct Velocity {
-  float dx, dy;
+	float dx, dy;
+};
+
+struct Acceleration {
+	float ax, ay;
+};
+
+struct Force {
+	float fx{ 0.0 };
+	float fy{ 0.0 };
+};
+
+struct Mass {
+	float val = 1.0;
 };
 
 struct Sprite {
-  std::string textureName;
+	std::string textureName;
 };
 
 struct Color {
@@ -58,21 +71,23 @@ enum class ShapeType {
 
 enum class ColliderType {
     Solid,   // Blocks movement
-    Trigger  // Detects overlaps only
+    Trigger,  // Detects overlaps only
+	Ground
 };
 
 struct Collider {
-    ShapeType shape;     // AABB or Circle
-    ColliderType type;   // Solid or Trigger
-    bool isStatic;       // true = immovable (walls), false = dynamic (player)
+	ShapeType shape;     // AABB or Circle
+	ColliderType type;   // Solid or Trigger
+	bool isStatic;       // true = immovable (walls), false = dynamic (player)
 
-    // Shape data
-    float width{ 1.0f };   // AABB width
-    float height{ 1.0f };  // AABB height
-    float radius{ 0.5f };  // Circle radius
+	// Shape data
+	float width{ 1.0f };   // AABB width
+	float height{ 1.0f };  // AABB height
+	float radius{ 0.5f };  // Circle radius
 
-    // Collision state
-    bool colliding{ false };
+	// Collision state
+	bool isGrounded{ false };
+	bool colliding{ false };
 };
 
 // Add more Components here if necessary...

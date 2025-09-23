@@ -68,7 +68,7 @@ public:
 
 	// Core update loop -------------------------------------------------------------------------------
 	// ------------------------------------------------------------------------------------------------
-	void Update(double dt, Coordinator& coord) override {
+	void Update(float dt, Coordinator& coord) override {
 		(void)dt;
 
 		// Clear the screen
@@ -125,7 +125,7 @@ public:
 				shader->SetMat4("uMVP", mvpMatrix);
 			}
 
-			renderable.material->ApplyUniforms(); // baseColor, textures etc
+			renderable.material->ApplyUniforms(renderable.isWireframe); // baseColor, textures etc
 
 			if (renderable.isWireframe) // Change the polygon mode to wireframe
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
