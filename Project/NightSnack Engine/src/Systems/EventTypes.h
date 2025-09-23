@@ -2,36 +2,9 @@
 
 enum class EventType
 {
-    Application,
     Input,
     Collision,
-    Movement,
-    Graphics
-};
-
-// Application/Window event
-class AppWindowEvent : public IEvent
-{
-public:
-    enum class Action 
-    {
-        // Application actions
-        Start, Quit, Resize, Pause, Resume
-    };
-    Action action;
-
-    // Only used for resize action
-    int width = 0;
-    int height = 0;
-
-    // Constructor for application actions
-    AppWindowEvent(Action act) : action(act) {}
-
-    // Constructor for window actions
-    AppWindowEvent(Action act, int w, int h)
-        : action(act), width(w), height(h) {}
-
-    EventType GetType() const override { return EventType::Application; }
+    Audio
 };
 
 // Input event (keyboard/mouse)
@@ -56,31 +29,6 @@ public:
     EventType GetType() const override { return EventType::Collision; }
 };
 
-// Movement event
-class MovementEvent : public IEvent
-{
-public:
-    int   entityId;
-    float x, y, z;
-
-    MovementEvent(int id, float nx, float ny, float nz)
-        : entityId(id), x(nx), y(ny), z(nz) {}
-    EventType GetType() const override { return EventType::Movement; }
-};
-
-// Graphics event
-class GraphicsEvent : public IEvent
-{
-public:
-    enum class GraphicsAction { Render, LoadTexture, UnloadTexture };
-    GraphicsAction action;
-    int resourceId;
-
-    GraphicsEvent(GraphicsAction act, int resId)
-        : action(act), resourceId(resId) {}
-    EventType GetType() const override { return EventType::Graphics; }
-};
-
 // Audio event (play/stop sound)
 class AudioEvent : public IEvent
 {
@@ -91,5 +39,5 @@ public:
 
     AudioEvent(AudioAction act, int id)
         : action(act), soundId(id) {}
-    EventType GetType() const override { return EventType::Application; }
+    EventType GetType() const override { return EventType::Audio; }
 };

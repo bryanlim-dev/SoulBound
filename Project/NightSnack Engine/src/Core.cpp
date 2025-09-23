@@ -38,11 +38,14 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	// Add more Components here...
 
 	// Initialise ApplicationSystem
-	m_coord.GetSystem<ApplicationSystem>().get()->Init(windowWidth, windowHeight, std::move(windowTitle), core_dispatcher);
+	m_coord.GetSystem<ApplicationSystem>().get()->Init(windowWidth, windowHeight, std::move(windowTitle));
 
 	// Initialise InputSystem
 	m_coord.GetSystem<InputSystem>().get()->Init(
-		m_coord.GetSystem<ApplicationSystem>().get()->GetNativeHandle()); // GLFWwindow* handle
+		m_coord.GetSystem<ApplicationSystem>().get()->GetNativeHandle(), core_dispatcher); // GLFWwindow* handle
+
+	// Initialise CollisionSystem
+	m_coord.GetSystem<CollisionSystem>().get()->Init(core_dispatcher);
 
 	// Call this only after the OpenGL context has been created, which is after ApplicationSystem::Init()
 	// TEMP; By right this will be handled by Graphics system and will be removed;

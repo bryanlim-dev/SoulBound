@@ -1,4 +1,5 @@
 #include "Input.h"
+#include <iostream> // just for inputevent testing (removing later)
 
 // Define static variables
 std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysDown;
@@ -13,14 +14,29 @@ int InputSystem::m_currentModifiers = 0;
 float InputSystem::m_mousePosX = 0.f;
 float InputSystem::m_mousePosY = 0.f;
 
+EventDispatcher* InputSystem::m_dispatcher = nullptr;
+
 // Set up the respective callbacks with GLFW ------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-void InputSystem::Init(GLFWwindow* window) {
+void InputSystem::Init(GLFWwindow* window, EventDispatcher& dispatcher) {
 	glfwSetKeyCallback(window, KeyCallback); // key button
 	glfwSetMouseButtonCallback(window, MouseButtonCallback); // mouse button
 	glfwSetCursorPosCallback(window, CursorPosCallback); // mouse position
 
 	m_prevMousePosX = m_prevMousePosY = m_deltaPosX = m_deltaPosY = 0.f;
+
+	// Store the event dispatcher
+	m_dispatcher = &dispatcher;
+
+	// Testing subscription to InputEvent
+	m_dispatcher->Subscribe<InputEvent>([](const InputEvent& event) {
+		if (event.pressed) {
+			std::cout << "Key pressed: " << event.key << std::endl;
+		}
+		else {
+			std::cout << "Key released: " << event.key << std::endl;
+		}
+		});
 }
 
 // Update the mouse positions every update loop / frame -------------------------------------------
@@ -92,6 +108,12 @@ void InputSystem::KeyCallback(GLFWwindow* window, int key, int scancode, int act
 
 	// Update the modifier state
 	m_currentModifiers = mods;
+
+	// Dispatch InputEvent when key is pressed
+	if (m_dispatcher)
+	{
+		m_dispatcher->Dispatch(InputEvent(key, action == GLFW_PRESS));
+	}
 }
 
 // Mouse callback function ------------------------------------------------------------------------

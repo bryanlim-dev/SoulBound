@@ -12,6 +12,19 @@ CollisionSystem::CollisionSystem()
     m_systemSignature.set(GetComponentTypeID<Collider>());
 }
 
+// Initializing Collision System
+void CollisionSystem::Init(EventDispatcher& dispatcher)
+{
+    m_dispatcher = &dispatcher;
+
+	// Testing code for collision event subscibtion (subscribe only in init)
+    m_dispatcher->Subscribe<CollisionEvent>([](const CollisionEvent& event)
+        {
+            // Example: Play sound, spawn particles, update score, etc.
+            //std::cout << "Collision event: Entity " << event.entityA << " collided with Entity " << event.entityB << std::endl;
+        });
+}
+
 // Update loop (runs each frame)
 void CollisionSystem::Update(float dt, Coordinator& coord)
 {
@@ -67,7 +80,13 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
                 colA.colliding = true;
                 colB.colliding = true;
 
-                std::cout << "Collision detected between Entity " << *itA << " and Entity " << *itB << std::endl;
+                //std::cout << "Collision detected between Entity " << *itA << " and Entity " << *itB << std::endl;
+
+				// Dispatch collision event between entity A & entity B
+                if (m_dispatcher)
+                {
+                    m_dispatcher->Dispatch(CollisionEvent(*itA, *itB));
+                }
 
                 // Separate objects first
                 // SeparateObjects(posA, colA, posB, colB, velA, velB);
