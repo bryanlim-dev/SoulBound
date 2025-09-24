@@ -67,6 +67,8 @@ ApplicationSystem::~ApplicationSystem() {
 void ApplicationSystem::Update(float dt, Coordinator& coord) {
 	(void)dt;
 	(void)coord;
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 // Set Window Title -------------------------------------------------------------------------------

@@ -63,6 +63,15 @@ struct Renderable {
 	//}
 };
 
+// For testing...
+struct Renderable2 {
+	std::string meshName{};
+	std::string materialName{};
+	Color colour{ 1.f, 1.f, 1.f, 1.f};
+	bool isWireframe{ false };
+	bool wasModified{ true };
+};
+
 struct Camera {
 	bool isMainCam{ true };
 	float zoom{ 1.f };

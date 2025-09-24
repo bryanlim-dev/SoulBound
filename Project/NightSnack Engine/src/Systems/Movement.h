@@ -24,8 +24,8 @@ public:
     for (auto const& e : m_entities) {
 
 	  // First obtain references to components of interest;
-    auto& transform = coord.GetComponent<Position>(e);
-    auto& velocity = coord.GetComponent<Velocity>(e);
+    auto& transform = coord.ModifyComponent<Position>(e);
+    auto& velocity = coord.ModifyComponent<Velocity>(e);
 
 	  // Get more components here if necessary...
 

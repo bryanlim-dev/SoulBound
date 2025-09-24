@@ -2,6 +2,7 @@
 #define COORD_HPP
 
 #include "ECS/Entity.h"
+#include "ECS/Component.h"
 #include "ECS/EntityManager.h"
 #include "ECS/ComponentManager.h"
 #include "ECS/ISystem.h"
@@ -26,7 +27,11 @@ public:
 	void RemoveComponent(Entity e);
 
 	template <typename T>
-	T& GetComponent(Entity e);
+	T const& GetComponent(Entity e) const;
+	template <typename T>
+	T& ModifyComponent(Entity e);
+	template <>	// specialization for Renderable;
+	Renderable2& ModifyComponent<Renderable2>(Entity e);
 
 	Signature& GetEntitySignature(Entity e) { return m_entityManager->GetSignature(e); }
 
@@ -96,8 +101,19 @@ void Coordinator::RemoveComponent(Entity e) {
 }
 
 template <typename T>
-T& Coordinator::GetComponent(Entity e) {
+T const& Coordinator::GetComponent(Entity e) const {
 	return m_componentManager->GetComponent<T>(e);
+}
+
+template <typename T>
+T& Coordinator::ModifyComponent(Entity e) {
+	return m_componentManager->GetComponent<T>(e);
+}
+template <>	// specialization for Renderable;
+inline Renderable2& Coordinator::ModifyComponent<Renderable2>(Entity e) {
+	auto& r = m_componentManager->GetComponent<Renderable2>(e);
+	r.wasModified = true;
+	return r;
 }
 
 template <typename T>

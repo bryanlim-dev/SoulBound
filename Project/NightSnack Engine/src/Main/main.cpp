@@ -24,14 +24,14 @@ int main()
 
 	ResourceManager* rm = ResourceManager::GetInstance();
 
-	//Resource Manager test
-	{
-		//rm->DebugTestEverything();
-	}
+	////Resource Manager test
+	//{
+	//	//rm->DebugTestEverything();
+	//}
 
-	//Replace this with actual sound manager later
-	FMOD::System* fmodSystem = nullptr;
-	FMOD::System_Create(&fmodSystem);
+	////Replace this with actual sound manager later
+	//FMOD::System* fmodSystem = nullptr;
+	//FMOD::System_Create(&fmodSystem);
 
   	// Create Core engine
   	CoreEngine core;
@@ -39,42 +39,42 @@ int main()
   	// Will register all components;
   	// If you create new components, please register them in this function defined in Core.cpp;
   	core.Initialize(1600, 900, "NightSnack Engine");
+	Coordinator& coord = core.GetCoord();
 
 	// ECS test --------------------------------------------------------------------------------------
 	// -----------------------------------------------------------------------------------------------
-	Coordinator& coord = core.GetCoord();
 	Entity p0 = coord.CreateEntity();
 	Entity p1 = coord.CreateEntity();
 	Entity p2 = coord.CreateEntity();
 	Entity p3 = coord.CreateEntity();
-	Entity p4ground = coord.CreateEntity();
+	Entity ground = coord.CreateEntity();
 	// To test that systems don't affect entities that don't have all required components;
 	Entity control = coord.CreateEntity();
 
+	Collider c0{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 100.f, true };
+	coord.AddComponent<Collider>(p0, c0);
 	Collider c1{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 100.f, true };
-	coord.AddComponent<Collider>(p0, c1);
-	Collider c2{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 100.f, true };
-	coord.AddComponent<Collider>(p1, c2);
-	Collider c3{ ShapeType::AABB, ColliderType::Solid, true, 100.f, 400.f, 0.f, true };
-	coord.AddComponent<Collider>(p2, c3);
+	coord.AddComponent<Collider>(p1, c1);
+	Collider c2{ ShapeType::AABB, ColliderType::Solid, true, 100.f, 400.f, 0.f, true };
+	coord.AddComponent<Collider>(p2, c2);
 	Collider ground_c{ ShapeType::AABB, ColliderType::Ground, true, 1600.f, 100.f, 0.f, true };
-	coord.AddComponent<Collider>(p4ground, ground_c);
+	coord.AddComponent<Collider>(ground, ground_c);
 	// isGrounded->false to test gravity;
-	Collider c4{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 50.f, false };
-	coord.AddComponent<Collider>(p3, c4);
+	Collider c3{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 50.f, false };
+	coord.AddComponent<Collider>(p3, c3);
 
 	coord.AddComponent<Position>(control, Position{ 300.f, 0.f });
 	coord.AddComponent<Position>(p0, Position{ 0.f, 0.f });
 	coord.AddComponent<Position>(p1, Position{ 500.f, 0.f });
 	coord.AddComponent<Position>(p2, Position{ -300.f, 0.f });
 	coord.AddComponent<Position>(p3, Position{ -500.f, 400.f });
-	coord.AddComponent<Position>(p4ground, Position{ 0.f, -350.f });
+	coord.AddComponent<Position>(ground, Position{ 0.f, -350.f });
 
 	coord.AddComponent<Mass>(p0, Mass{ 1.f });
 	coord.AddComponent<Mass>(p1, Mass{ 1.f });
 	coord.AddComponent<Mass>(p2, Mass{ 1.f });
 	coord.AddComponent<Mass>(p3, Mass{ 1.f });
-	coord.AddComponent<Mass>(p4ground, Mass{ 1.f });
+	coord.AddComponent<Mass>(ground, Mass{ 1.f });
 
 	coord.AddComponent<Acceleration>(p0, Acceleration{ 0.f,0.f });
 	coord.AddComponent<Acceleration>(p1, Acceleration{ 0.f,0.f });
@@ -91,71 +91,35 @@ int main()
 	coord.AddComponent<Velocity>(p1, Velocity{ 0.f, 0.f });
 	coord.AddComponent<Velocity>(p2, Velocity{ 0.f, 0.f });
 	coord.AddComponent<Velocity>(p3, Velocity{ 0.f, 0.f });
-	coord.AddComponent<Velocity>(p4ground, Velocity{ 0.f, 0.f });
+	coord.AddComponent<Velocity>(ground, Velocity{ 0.f, 0.f });
 
 	coord.AddComponent<Scale>(control, Scale{ 20.f, 20.f });
 	coord.AddComponent<Scale>(p0, Scale{ 100.f, 100.f });
 	coord.AddComponent<Scale>(p1, Scale{ 100.f, 100.f });
 	coord.AddComponent<Scale>(p2, Scale{ 100.f, 400.f });
 	coord.AddComponent<Scale>(p3, Scale{ 50.f, 50.f });
-	coord.AddComponent<Scale>(p4ground, Scale{ 1600.f, 100.f });
+	coord.AddComponent<Scale>(ground, Scale{ 1600.f, 100.f });
 
 	coord.AddComponent<Rotation>(control, Rotation{});
 	coord.AddComponent<Rotation>(p0, Rotation{});
 	coord.AddComponent<Rotation>(p1, Rotation{});
 	coord.AddComponent<Rotation>(p2, Rotation{});
 	coord.AddComponent<Rotation>(p3, Rotation{});
-	coord.AddComponent<Rotation>(p4ground, Rotation{});
+	coord.AddComponent<Rotation>(ground, Rotation{});
 
-	//coord.AddComponent<Renderable>(control, r4);
-
-
-	
-
-
-	// Load shader
-	//Shader shader("../shaders/vertex_shader.vert", "../shaders/fragment_shader.frag");
-	//// Load textures
-	//std::size_t bananaKey = 0;
-	//std::size_t targetKey = 0;
-	//
-	//rm->LoadImage("assets/Banana.jpg", bananaKey);
-	//rm->LoadImage("assets/image_UI_target.png", targetKey);
-
-	//ResourceImage* imgBanana = rm->GetImageResource(bananaKey);
-	//ResourceImage* imgTarget = rm->GetImageResource(targetKey);
-
-	//unsigned char* pixelsBanana = rm->GetImage(bananaKey);
-	//unsigned char* pixelsTarget = rm->GetImage(targetKey);
-
-	//Texture bananaTex(pixelsBanana, imgBanana->Width(), imgBanana->Height(), imgBanana->Channels());
-	//Texture targetTex(pixelsTarget, imgTarget->Width(), imgTarget->Height(), imgTarget->Channels());
-
-	//// Material
-	//Material bananaMat(&shader, &bananaTex);
-	//Material whiteMaterial(&shader, glm::vec3(1.f));
-
-
-	Mesh* circleMesh = coord.GetSystem<GraphicsSystem>()->GetMesh("circleMesh");
-	Material* whiteMaterial = coord.GetSystem<GraphicsSystem>()->GetMaterial("whiteMaterial");
-	Renderable r1{ circleMesh, whiteMaterial, false };
-	coord.AddComponent<Renderable>(p1, r1);
-
-	// Default Meshes
-	/*Mesh square = Mesh::CreateSquare();
-	Mesh circle = Mesh::CreateCircle();
-	Renderable r1{ &circle, &whiteMaterial, false };
-	coord.AddComponent<Renderable>(p1, r1);*/
-
-	//coord.AddComponent<Renderable>(p0, {
-	//	"circleMesh", "whiteMaterial", false
-	//	});
-	/*coord.AddComponent<Renderable>(p1, {
-		"circleMesh", "targetMaterial", false
-		});*/
-	//coord.AddComponent<Renderable>(p2, r3);
-	//coord.AddComponent<Renderable>(p3, r5);
-	//coord.AddComponent<Renderable>(p4ground, ground_r);
+	// TESTING GRAPHICS2;
+	Renderable2 r0{ "square", "bananaMat" };
+	coord.AddComponent<Renderable2>(control, r0);
+	Renderable2 r1{ "circle", "targetMat" };
+	coord.AddComponent<Renderable2>(p0, r1);
+	Renderable2 r2{ "circle", "bananaMat" };
+	coord.AddComponent<Renderable2>(p1, r2);
+	Renderable2 r3{ "square", "bananaMat" };
+	coord.AddComponent<Renderable2>(p2, r3);
+	Renderable2 r4{ "circle", "targetMat" };
+	coord.AddComponent<Renderable2>(p3, r4);
+	Renderable2 r5{ "square", "targetMat" };
+	coord.AddComponent<Renderable2>(ground, r5);
 
 	// Camera object
 	Entity camera = coord.CreateEntity();
@@ -181,7 +145,7 @@ int main()
 
 	// Clean termination;
 	rm->DeleteRM();
-	fmodSystem->close();
+	//fmodSystem->close();
   return 0;
 
 }
