@@ -70,7 +70,7 @@ void ApplicationSystem::Update(float dt, Coordinator& coord) {
 
 
 	// Displaying active system timers into Console (temp.)
-	m_timer.DisplaySystemTimers();
+	//m_timer.DisplaySystemTimers();
 }
 
 // Set Window Title -------------------------------------------------------------------------------
