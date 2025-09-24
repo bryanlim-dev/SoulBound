@@ -135,6 +135,20 @@ unsigned char* ResourceManager::GetImage(const std::size_t imageKey)
 	return (image != nullptr) ? GetImageResource(imageKey)->Image(): nullptr;
 }
 
+unsigned char* ResourceManager::GetImage(const std::size_t imageKey, int& width, int& height, int& channels)
+{
+	//Same logic as func get image resource so just reuse it
+	ResourceImage* image = GetImageResource(imageKey);
+	if (image != nullptr)
+	{
+		width = image->Width();
+		height = image->Height();
+		channels = image->Channels();
+		return GetImageResource(imageKey)->Image();
+	}
+	return nullptr;
+}
+
 ResourceImage* ResourceManager::GetImageResource(const std::size_t imageKey)
 {
 	//Does the resource exist?
@@ -243,6 +257,12 @@ ResourceTxtFile* ResourceManager::GetTxtFileResource(const std::size_t txtKey)
 
 	return nullptr;
 }
+void ResourceManager::SaveTxtFile(std::string filePath, std::vector<std::string> txtVec)
+{
+	ResourceTxtFile saveResource;
+	saveResource.EditResource(txtVec, filePath);
+	saveResource.SaveFile();
+}	
 #pragma endregion
 
 #pragma region Json
@@ -506,7 +526,6 @@ void ResourceManager::DebugTestEverything()
 	std::cout << std::endl;
 
 	std::cout << "Save Txt File" << std::endl;
-	ResourceTxtFile newTxtFile;
 	std::vector<std::string> newTxt = {
 		"This is a new txt file",
 		"Newwww file",
@@ -514,8 +533,7 @@ void ResourceManager::DebugTestEverything()
 		"I lied it was 3",
 		"This is 5 tho"
 	};
-	newTxtFile.EditResource(newTxt, "assets/data/newTxt.txt");
-	newTxtFile.SaveFile();
+	SaveTxtFile("assets/data/savedNewTxt.txt", newTxt);
 	std::cout << "Attempted save to Txt File" << std::endl;
 
 

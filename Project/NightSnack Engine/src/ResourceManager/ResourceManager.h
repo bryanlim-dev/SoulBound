@@ -104,6 +104,28 @@ public:
 	/************************************************************************/
 	/*!
 	\brief
+	Get an image based on the file path.
+	Uses GetImageResource to find class containing it.
+	Returns variables to return width height and channels
+
+	\param input[in]
+	The input string of the file path.
+
+	\param width[out]
+	Output param, width of image
+
+	\param height[out]
+	Output param, height of image
+
+	\return
+	Pointer of unsigned char of image.
+	*/
+	/************************************************************************/
+	unsigned char* GetImage(const std::size_t imageKey, int& width, int& height, int& channels);
+
+	/************************************************************************/
+	/*!
+	\brief
 	Get an image resource class pointer based on the file path
 	
 	\param input
@@ -158,16 +180,30 @@ public:
 	/************************************************************************/
 	/*!
 	\brief
-	Get an image resource class pointer based on the file path
+	Get an Txt File resource class pointer based on the file path
 	
-	\param input
-	The input string of the file path
+	\param txtKey
+	size__t key to the txt file
 	
 	\return
-	Pointer of image resource
+	Pointer of txt file resource
 	*/
 	/************************************************************************/
 	ResourceTxtFile* GetTxtFileResource(const std::size_t txtKey);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Saves a inputted vector of strings to save to the filepath inputted
+
+	\param[in] filePath
+	The input string of the file path
+
+	\param[in] txtVec
+	The inputed vector of strings to input
+	*/
+	/************************************************************************/
+	void SaveTxtFile(std::string filePath, std::vector<std::string> txtVec);
 #pragma endregion
 
 #pragma region Json Functions
