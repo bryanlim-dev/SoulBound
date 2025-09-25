@@ -101,9 +101,10 @@ ResourceTxtFile::ResourceTxtFile(const std::string& inFilePath, const std::size_
 ResourceTxtFile::ResourceTxtFile(std::vector<std::string>& txtVec, std::string newPath) 
 	: Resource(newPath, 0)
 {
+	resourceType = RESOURCE_TXTFILE;
+
 	txtStringVec = txtVec;
 	path = newPath;
-	resourceType = RESOURCE_TXTFILE;
 }
 
 ResourceTxtFile::~ResourceTxtFile()
@@ -166,7 +167,15 @@ ResourceJson::ResourceJson(const std::string& inFilePath, const std::size_t& inM
 	: Resource(inFilePath, inMapKey)
 {
 	resourceType = RESOURCE_JSON;
-}                                                              
+}
+
+ResourceJson::ResourceJson(std::unordered_map<std::string, Archtype> const& newArchtypeMap, std::string newPath)
+	: Resource (newPath, 0)
+{
+	resourceType = RESOURCE_JSON;
+
+	archetypeMap = newArchtypeMap;
+}
 
 ResourceJson::~ResourceJson()
 {
@@ -195,8 +204,26 @@ void ResourceJson::LoadFile()
 #endif
 }
 
+void ResourceJson::SaveFile()
+{
+	ConvertArchtypeToJson();
 
-nlohmann::json& ResourceJson::GetJson()
+	std::ofstream outFile(path.c_str());
+
+	if (outFile.is_open())
+	{
+		outFile << jsonData;
+		outFile.close();
+	}
+}
+
+
+std::unordered_map<std::string, Archtype> ResourceJson::GetJson()
+{
+	return archetypeMap;
+}
+
+nlohmann::json& ResourceJson::GetJsonRaw()
 {
 	return jsonData;
 }
@@ -283,6 +310,40 @@ void ResourceJson::PrintMapSubArchtypeData(const Archtype& arch, int indents = 0
 		std::cout << strIndents << "}" << std::endl;
 	}
 }
+
+void ResourceJson::ConvertArchtypeToJson()
+{
+	jsonData.clear();
+
+	//structured bindings round 3
+	//Save top level section  and sub section as its data
+	for (const auto& [archTypeKey, archtypeStructData] : archetypeMap)
+	{
+		jsonData.emplace(archTypeKey, ConvertSubArchtypeToJson(archtypeStructData));
+	}
+}
+
+nlohmann::json ResourceJson::ConvertSubArchtypeToJson(Archtype const& subArchtype)
+{
+	nlohmann::json subArch;
+	//Save all the components first
+	//Then recurrsive call this function to save sub section componenets
+
+	//Basic key-value components saved
+	for (auto const& [subArchTypeKey, subArchTypeData] : subArchtype.componentMap)
+	{
+		subArch.emplace(subArchTypeKey, subArchTypeData);
+	}
+
+	//Now save all further key-seciton components
+	for (auto const& [subSectionArchKey, subSectionArchTypeData] : subArchtype.subArchtype)
+	{
+		subArch.emplace(subSectionArchKey, ConvertSubArchtypeToJson(subSectionArchTypeData));
+	}
+
+	return subArch;
+}
+
 #pragma endregion
 
 #pragma region Sound

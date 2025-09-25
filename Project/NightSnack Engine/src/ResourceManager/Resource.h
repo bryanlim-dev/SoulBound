@@ -157,11 +157,21 @@ private:
 public: 
 	ResourceJson() = delete;
 	ResourceJson(const std::string& inFilePath, const std::size_t& jsonKey);
+	ResourceJson(std::unordered_map<std::string, Archtype> const& newArchtypeMap, std::string newPath);
 	~ResourceJson();
 
 	void LoadFile() override;
+	/************************************************************************/
+	/*!
+	\brief
+	Converts map data into nlohmann::json via ConvertArchtypeToJson()
+	Then saves that data into the filepath stored
+	*/
+	/************************************************************************/
+	void SaveFile() override;
 
-	nlohmann::json& GetJson();
+	std::unordered_map<std::string, Archtype> GetJson();
+	nlohmann::json& GetJsonRaw();
 
 private:
 	void ConvertJsonToArchtypeMap();
@@ -181,6 +191,13 @@ private:
 	//Is a recurrsive function to print nested archtypes
 	//This may not print data out as same format as json as all nested data is printed at end
 	void PrintMapSubArchtypeData(const Archtype& arch, int indents);
+
+	//Converts archtype to nlohmann::json
+	//Calls convery sub 
+	void ConvertArchtypeToJson();
+
+	//Converts sub sections recurrsivly
+	nlohmann::json ConvertSubArchtypeToJson(Archtype const& archType);
 };
 
 
