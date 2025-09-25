@@ -68,14 +68,8 @@ void CoreEngine::Update() {
 	// Start frame timing;
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartFrame();
 
-	// Reset input states at the start of the frame
-	m_coord.GetSystem<InputSystem>()->ResetInputStates();
-
 	// Obtain dt from Timer;
 	float deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
-
-	// glfw callbacks are triggered here
-	m_coord.GetSystem<ApplicationSystem>().get()->PollEvents();
 
 	// Iterate through Systems and Update them through Coordinator;
 	for (auto& System : m_systems) {
@@ -86,17 +80,6 @@ void CoreEngine::Update() {
 
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(System->GetName());
 	}
-
-	m_coord.GetSystem<ApplicationSystem>().get()->SwapBuffers();
-
-	// Update window title with FPS from Timer;
-	std::string title = "NightSnack Engine | FPS: " + std::to_string(static_cast<int>(m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetFPS()))
-		+ " | Game Time: " + std::to_string(static_cast<int>(m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetTotalSystemTime()));
-	
-	m_coord.GetSystem<ApplicationSystem>().get()->SetWindowTitle(
-		m_coord.GetSystem<ApplicationSystem>().get()->GetNativeHandle(), title.c_str()
-	);
-
 	// End frame timing;
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndFrame();
 	//timer_.FrameCap(60.f); // Cap frame rate to 60 FPS (optional);
