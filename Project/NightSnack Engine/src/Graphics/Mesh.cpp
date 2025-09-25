@@ -27,7 +27,7 @@ Mesh::Mesh(GLenum primitiveType,
 
 	// Position attribute (location = 0)
 	glEnableVertexArrayAttrib(m_vao, 0);
-	glVertexArrayAttribFormat(m_vao, 0, 2, GL_FLOAT, GL_FALSE,
+	glVertexArrayAttribFormat(m_vao, 0, 3, GL_FLOAT, GL_FALSE,
 		offsetof(Vertex, position));
 	glVertexArrayAttribBinding(m_vao, 0, 0);
 
@@ -113,7 +113,7 @@ void Mesh::Draw() const {
 std::unique_ptr<Mesh> Mesh::CreatePoint() {
 	// Default position is at the center of the screen
 	std::vector<Vertex> vertices{
-		{ glm::vec2(0.f, 0.f), // position
+		{ glm::vec3(0.f, 0.f, 0.f), // position
 		glm::vec2(0.f, 0.f) } // dummy texCoord
 	};
 
@@ -123,7 +123,7 @@ std::unique_ptr<Mesh> Mesh::CreatePoint() {
 
 // Helper function to create a mesh representing a line -------------------------------------------
 // ------------------------------------------------------------------------------------------------
-std::unique_ptr<Mesh> Mesh::CreateLine(const glm::vec2& startPos, const glm::vec2& endPos) {
+std::unique_ptr<Mesh> Mesh::CreateLine(const glm::vec3& startPos, const glm::vec3& endPos) {
 	std::vector<Vertex> vertices{
 		{ startPos, glm::vec2(0.f, 0.f) }, // dummy texCoord
 		{ endPos, glm::vec2(0.f, 0.f) }
@@ -140,10 +140,10 @@ std::unique_ptr<Mesh> Mesh::CreateSquare() {
 	// Order of texCoords must follow the order of vertices
 
 	std::vector<Vertex> vertices{ // position, texCoord
-		{ { 0.5f, 0.5f }, { 1.f, 1.f } },	// Top right
-		{ { -0.5f, 0.5f }, { 0.f, 1.f } },	// Top left
-		{ { -0.5f, -0.5f }, { 0.f, 0.f } }, // Bottom left
-		{ { 0.5f, -0.5f }, { 1.f, 0.f } }	// Bottom right
+		{ { 0.5f, 0.5f, 0.f }, { 1.f, 1.f } },	// Top right
+		{ { -0.5f, 0.5f, 0.f }, { 0.f, 1.f } },	// Top left
+		{ { -0.5f, -0.5f, 0.f }, { 0.f, 0.f } }, // Bottom left
+		{ { 0.5f, -0.5f, 0.f }, { 1.f, 0.f } }	// Bottom right
 	};
 
 	std::vector<unsigned int> indices{ 0,1,2,2,3,0 };
@@ -154,7 +154,7 @@ std::unique_ptr<Mesh> Mesh::CreateSquare() {
 // Helper function to create a mesh representing a circle at the center of the screen -------------
 // ------------------------------------------------------------------------------------------------
 std::unique_ptr<Mesh> Mesh::CreateCircle() {
-	glm::vec2 centerPos{ 0.f, 0.f };
+	glm::vec3 centerPos{ 0.f, 0.f, 0.f };
 	const float radius{ 1.f };
 
 	std::vector<Vertex> vertices{
@@ -166,8 +166,9 @@ std::unique_ptr<Mesh> Mesh::CreateCircle() {
 	for (int i{ 0 }; i <= slices; ++i) {
 		float rad = glm::radians(i * degree);
 
-		glm::vec2 pos(centerPos.x + radius * cos(rad),
-					centerPos.y + radius * sin(rad));
+		glm::vec3 pos(centerPos.x + radius * cos(rad),
+					centerPos.y + radius * sin(rad), 
+					0.f);
 
 		glm::vec2 tex(0.5f + 0.5f * cos(rad),
 					0.5f + 0.5f * sin(rad));

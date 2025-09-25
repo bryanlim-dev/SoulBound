@@ -24,7 +24,7 @@ void ApplicationSystem::Init(int width, int height, std::string const& title) {
 	glfwWindowHint(GLFW_DEPTH_BITS, 24);
 	glfwWindowHint(GLFW_RED_BITS, 8); glfwWindowHint(GLFW_GREEN_BITS, 8);
 	glfwWindowHint(GLFW_BLUE_BITS, 8); glfwWindowHint(GLFW_ALPHA_BITS, 8);
-	
+
 	// Create window;
 	m_appWidth = width;
 	m_appHeight = height;
@@ -51,6 +51,10 @@ void ApplicationSystem::Init(int width, int height, std::string const& title) {
 	glViewport(0, 0, m_appWidth, m_appHeight);
 	glfwSetFramebufferSizeCallback(m_windowHandle, FramebufferSizeCallback);
 
+	// Depth testing
+	glEnable(GL_DEPTH_TEST);
+	// Depth buffer stores values in NDC [0,1], render the fragment if z is lesser/closer
+	glDepthFunc(GL_LESS); 
 }
 
 // Destructor -------------------------------------------------------------------------------------

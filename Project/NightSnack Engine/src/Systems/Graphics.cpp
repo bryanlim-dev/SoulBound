@@ -1,4 +1,5 @@
 #include "Graphics.h"
+#include "MathLibrary/Math.h"
 
 // Default constructor to set up SystemSignature;
 GraphicsSystem::GraphicsSystem() {
@@ -21,6 +22,8 @@ void GraphicsSystem::Init() {
 	AddTexture("banana", std::move(bananaTex));
 	auto targetTex = std::make_unique<Texture>("assets/image_UI_target.png");
 	AddTexture("target", std::move(targetTex));
+	auto bgTex = std::make_unique<Texture>("assets/background.png");
+	AddTexture("background", std::move(bgTex));
 
 	// Meshes;
 	AddMesh("point", Mesh::CreatePoint());
@@ -28,20 +31,21 @@ void GraphicsSystem::Init() {
 	AddMesh("square", Mesh::CreateSquare());
 	AddMesh("circle", Mesh::CreateCircle());
 
-	// Materials;
+	// Materials with texture
 	auto bananaMat = std::make_unique<Material>(GetShader("default"), GetTexture("banana"));
 	AddMaterial("bananaMat", std::move(bananaMat));
 	auto targetMat = std::make_unique<Material>(GetShader("default"), GetTexture("target"));
 	AddMaterial("targetMat", std::move(targetMat));
+	auto backgroundMat = std::make_unique<Material>(GetShader("default"), GetTexture("background"));
+	AddMaterial("backgroundMat", std::move(backgroundMat));
 
+	// Materials with solid color
 	auto redMat = std::make_unique<Material>(GetShader("default"));
 	redMat->SetBaseColor(1.f, 0.f, 0.f, 1.f);
 	AddMaterial("redMat", std::move(redMat));
-
 	auto greenMat = std::make_unique<Material>(GetShader("default"));
 	greenMat->SetBaseColor(0.f, 1.f, 0.f, 1.f);
 	AddMaterial("greenMat", std::move(greenMat));
-
 	auto blueMat = std::make_unique<Material>(GetShader("default"));
 	blueMat->SetBaseColor(0.f, 0.f, 1.f, 1.f);
 	AddMaterial("blueMat", std::move(blueMat));
@@ -60,7 +64,7 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 	auto& camInfo = coord.GetComponent<Camera>(mainCam);
 
 	glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height);
-	glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, 0.f));
+	glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
 	for (Entity e : m_entities) {
 		// Obtain entity components;
@@ -80,9 +84,12 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 		}
 
 		CachedRenderData& data = it->second;
-		if (!data.valid) continue;
+		if (!data.valid) {
+			std::cout << "Entity " << e << " skipped (invalid renderable)\n";
+			continue;
+		}
 
-		glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl);
+		glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl, ren.renderLayer);
 		glm::mat4 mvp = proj * view * model;
 
 		Shader* shader = data.material->GetShader();
@@ -128,14 +135,20 @@ glm::mat4 GraphicsSystem::GetCameraProjectionMatrix(float width, float height) {
 	float halfHeight = height * 0.5f;
 	// Orthographic projection keeps objects the same size regardless of depth
 	// Arguments in the order of (left, right, bottom, top, near, far)
-	return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1.f, 1.f);
+	return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, Z_EPSILON, 10.f);
 }
 
 // Compute the ModelToWorld matrix ----------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale) {
+glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale, RenderLayer layer) {
 	glm::mat4 model(1.f);
-	model = glm::translate(model, glm::vec3(position.x, position.y, 0.f));
+
+	// Base z offset from the RenderLayer
+	float layerZ = GetRenderLayerZPos(layer);
+	// Final z offset of this renderable
+	float z = layerZ + position.z;
+
+	model = glm::translate(model, glm::vec3(position.x, position.y, z));
 	model = glm::rotate(model, glm::radians(rotation.degrees), glm::vec3(0.f, 0.f, 1.f)); // Rotate about z-axis
 	model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.f));
 	return model;
@@ -186,4 +199,19 @@ Entity GraphicsSystem::FindCamera(Coordinator& Coord) {
 	}
 	std::cerr << "Error: No main camera found in scene!\n";
 	return INVALID_ENTITY;
+}
+
+// Get the base z offset of the Renderable, based on the RenderLayer ------------------------------
+// ------------------------------------------------------------------------------------------------
+float GraphicsSystem::GetRenderLayerZPos(RenderLayer layer) {
+
+	// Higher values will render on top of lower values
+	// Currently, the near and far plane is -0.0001.f and -10.f
+	switch (layer) {
+	case RenderLayer::BACKGROUND: return -9.5f;	 break;
+	case RenderLayer::DEFAULT:	  return -7.f;	 break;
+	case RenderLayer::DEBUG:	  return -3.f;	 break;
+	case RenderLayer::UI:		  return -2.f;	 break;
+	default:					  return -7.f;	 break;
+	}
 }

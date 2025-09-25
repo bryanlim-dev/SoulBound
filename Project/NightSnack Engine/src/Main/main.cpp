@@ -43,6 +43,7 @@ int main()
 
 	// ECS test --------------------------------------------------------------------------------------
 	// -----------------------------------------------------------------------------------------------
+	Entity background = coord.CreateEntity();
 	Entity p0 = coord.CreateEntity();
 	Entity p1 = coord.CreateEntity();
 	Entity p2 = coord.CreateEntity();
@@ -62,13 +63,17 @@ int main()
 	// isGrounded->false to test gravity;
 	Collider c3{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 50.f, false };
 	coord.AddComponent<Collider>(p3, c3);
-
-	coord.AddComponent<Position>(control, Position{ 300.f, 0.f });
-	coord.AddComponent<Position>(p0, Position{ 0.f, 0.f });
-	coord.AddComponent<Position>(p1, Position{ 500.f, 0.f });
-	coord.AddComponent<Position>(p2, Position{ -300.f, 0.f });
-	coord.AddComponent<Position>(p3, Position{ -500.f, 400.f });
-	coord.AddComponent<Position>(ground, Position{ 0.f, -350.f });
+	
+	// Higher values will render on top of lower values
+	int posIndexBackgroundLayer = 1;
+	int posIndexDefaultLayer = 1;
+	coord.AddComponent<Position>(control, Position{ 300.f, 0.f, posIndexDefaultLayer++ * Z_EPSILON });
+	coord.AddComponent<Position>(p0, Position{ 0.f, 0.f, posIndexDefaultLayer++ * Z_EPSILON });
+	coord.AddComponent<Position>(p1, Position{ 500.f, 0.f, posIndexDefaultLayer++ * Z_EPSILON });
+	coord.AddComponent<Position>(p2, Position{ -300.f, 0.f, posIndexDefaultLayer++ * Z_EPSILON });
+	coord.AddComponent<Position>(background, Position{ 0.f, 0.f, posIndexBackgroundLayer++ * Z_EPSILON });
+	coord.AddComponent<Position>(p3, Position{ -500.f, 400.f, posIndexBackgroundLayer++ * Z_EPSILON });
+	coord.AddComponent<Position>(ground, Position{ 0.f, -350.f, posIndexBackgroundLayer++ * Z_EPSILON });
 
 	coord.AddComponent<Mass>(p0, Mass{ 1.f });
 	coord.AddComponent<Mass>(p1, Mass{ 1.f });
@@ -99,6 +104,7 @@ int main()
 	coord.AddComponent<Scale>(p2, Scale{ 100.f, 400.f });
 	coord.AddComponent<Scale>(p3, Scale{ 50.f, 50.f });
 	coord.AddComponent<Scale>(ground, Scale{ 1600.f, 100.f });
+	coord.AddComponent<Scale>(background, Scale{ 1920.f, 1080.f });
 
 	coord.AddComponent<Rotation>(control, Rotation{});
 	coord.AddComponent<Rotation>(p0, Rotation{});
@@ -106,26 +112,29 @@ int main()
 	coord.AddComponent<Rotation>(p2, Rotation{});
 	coord.AddComponent<Rotation>(p3, Rotation{});
 	coord.AddComponent<Rotation>(ground, Rotation{});
+	coord.AddComponent<Rotation>(background, Rotation{});
 
-	// TESTING GRAPHICS2;
-	Renderable r0{ "square", "bananaMat" };
+	// TESTING GRAPHICS;
+	Renderable r0{ "square", "bananaMat", RenderLayer::DEFAULT };
 	coord.AddComponent<Renderable>(control, r0);
-	Renderable r1{ "circle", "redMat" };
+	Renderable r1{ "circle", "redMat", RenderLayer::DEFAULT };
 	coord.AddComponent<Renderable>(p0, r1);
-	Renderable r2{ "circle", "bananaMat" };
+	Renderable r2{ "circle", "bananaMat", RenderLayer::DEFAULT };
 	coord.AddComponent<Renderable>(p1, r2);
-	Renderable r3{ "square", "bananaMat", true };
+	Renderable r3{ "square", "bananaMat", RenderLayer::DEFAULT, true };
 	coord.AddComponent<Renderable>(p2, r3);
-	Renderable r4{ "circle", "greenMat" };
+	Renderable r4{ "circle", "greenMat", RenderLayer::DEFAULT };
 	coord.AddComponent<Renderable>(p3, r4);
-	Renderable r5{ "square", "blueMat" };
+	Renderable r5{ "square", "blueMat", RenderLayer::DEFAULT };
 	coord.AddComponent<Renderable>(ground, r5);
+	Renderable r6{ "square", "backgroundMat", RenderLayer::BACKGROUND };
+	coord.AddComponent<Renderable>(background, r6);
 
 	// Camera object
 	Entity camera = coord.CreateEntity();
-	Position posCam{ 0.0, 0.0 };
+	Position posCam{ 0.f, 0.f, 0.f };
 	Rotation rotCam{ 0.f };
-	Scale scaleCam{ 200.0,200.0 };
+	Scale scaleCam{ 200.f, 200.f };
 	coord.AddComponent<Position>(camera, posCam);
 	coord.AddComponent<Rotation>(camera, rotCam);
 	coord.AddComponent<Scale>(camera, scaleCam);

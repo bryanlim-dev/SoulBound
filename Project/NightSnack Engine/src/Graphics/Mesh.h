@@ -10,7 +10,7 @@ class Mesh {
 public:
 	// Contains geometry data
 	struct Vertex {
-		glm::vec2 position;
+		glm::vec3 position;
 		glm::vec2 texCoord;
 	};
 
@@ -65,7 +65,7 @@ public:
 
 	// Helper functions to create basic debug shapes of unit length
 	static std::unique_ptr<Mesh> CreatePoint();
-	static std::unique_ptr<Mesh> CreateLine(const glm::vec2& startPos, const glm::vec2& endPos);
+	static std::unique_ptr<Mesh> CreateLine(const glm::vec3& startPos, const glm::vec3& endPos);
 	static std::unique_ptr<Mesh> CreateSquare();
 	static std::unique_ptr<Mesh> CreateCircle();
 

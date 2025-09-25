@@ -29,7 +29,7 @@ public:
 	void AddMaterial(std::string const& name, std::unique_ptr<Material> material);
 
 	glm::mat4 GetCameraProjectionMatrix(float width, float height);
-	glm::mat4 GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale);
+	glm::mat4 GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale, RenderLayer layer);
 
 	// Resource Lookup -----------------------------------------------
 	Shader*		GetShader(std::string const& n)   const;	// Using raw pointers as the resource belongs to the System...
@@ -60,6 +60,7 @@ private:
 	// Helper functions;
 	void ResolveRenderable(Entity e, Renderable const& r);
 	Entity FindCamera(Coordinator& Coord);
+	float GetRenderLayerZPos(RenderLayer layer);
 
 	Signature m_systemSignature{};
 

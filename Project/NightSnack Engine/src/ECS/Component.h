@@ -9,7 +9,7 @@
 // ================================================================================================
 
 struct Position {
-  float x, y;
+  float x, y, z;
 };
 
 struct Rotation {
@@ -49,25 +49,17 @@ struct Color {
 // GRAPHICS COMPONENTS
 // ================================================================================================
 
-//struct Renderable {
-//	Mesh* mesh{ nullptr }; // Stores a pointer to a GPU mesh
-//	Material* material{ nullptr }; // Stores shader + color/texture information
-//	//std::string meshName;
-//	//std::string materialName;
-//	bool isWireframe{ true }; // default is wireframe mode
-//
-//	//Renderable() = default;
-//
-//	//Renderable(Mesh* m, Material* mat, bool wire = false)
-//	//	: mesh(m), material(mat), isWireframe(wire) {
-//	//}
-//};
+enum class RenderLayer {
+	BACKGROUND = 0,
+	DEFAULT,
+	DEBUG,
+	UI
+};
 
-// For testing...
 struct Renderable {
 	std::string meshName{};
 	std::string materialName{};
-	//Color colour{ 1.f, 1.f, 1.f, 1.f};
+	RenderLayer renderLayer{ RenderLayer::DEFAULT };
 	bool isWireframe{ false };
 	bool wasModified{ true };
 };
