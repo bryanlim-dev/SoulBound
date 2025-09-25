@@ -1,0 +1,43 @@
+#pragma once
+
+enum class EventType
+{
+    Input,
+    Collision,
+    Audio
+};
+
+// Input event (keyboard/mouse)
+class InputEvent : public IEvent
+{
+public:
+    int  key;
+    bool pressed;
+
+    InputEvent(int k, bool p) : key(k), pressed(p) {}
+    EventType GetType() const override { return EventType::Input; }
+};
+
+// Collision event
+class CollisionEvent : public IEvent
+{
+public:
+    int entityA;
+    int entityB;
+
+    CollisionEvent(int a, int b) : entityA(a), entityB(b) {}
+    EventType GetType() const override { return EventType::Collision; }
+};
+
+// Audio event (play/stop sound)
+class AudioEvent : public IEvent
+{
+public:
+    enum class AudioAction { Play, Stop, Pause };
+    AudioAction action;
+    int soundId;
+
+    AudioEvent(AudioAction act, int id)
+        : action(act), soundId(id) {}
+    EventType GetType() const override { return EventType::Audio; }
+};

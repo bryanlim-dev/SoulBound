@@ -6,6 +6,7 @@
 #include <array>
 #include "ECS/ISystem.h"
 #include "ECS/Coordinator.h"
+#include "Systems/IEvent.h"
 
 class InputSystem : public ISystem {
 
@@ -27,7 +28,7 @@ public:
 		NUM_TOTAL_MOUSE_BUTTON
 	};
 
-	void Init(GLFWwindow* window);
+	void Init(GLFWwindow* window, EventDispatcher& dispatcher);
 
 	void Update(float dt, Coordinator& coord) override;
 	std::string GetName() const { return "InputSystem"; }
@@ -81,6 +82,9 @@ private:
 	float m_deltaPosX{ 0.f }, m_deltaPosY{ 0.f };			// Represents the relative movement since the last frame
 
 	Signature m_systemSignature{};
+
+	// System event dispatcher
+	static EventDispatcher* m_dispatcher;
 };
 
 

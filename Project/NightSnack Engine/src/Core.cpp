@@ -41,12 +41,14 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	// Initialise ApplicationSystem
 	m_coord.GetSystem<ApplicationSystem>()->Init(windowWidth, windowHeight, std::move(windowTitle));
 
-	// Initialise InputSystem
-	m_coord.GetSystem<InputSystem>()->Init(
-		m_coord.GetSystem<ApplicationSystem>()->GetNativeHandle()); // GLFWwindow* handle
-
 	// Initialise GraphicsSystem
 	m_coord.GetSystem<GraphicsSystem>()->Initialize();
+	
+	// Initialise InputSystem
+	m_coord.GetSystem<InputSystem>()->Init(m_coord.GetSystem<ApplicationSystem>()->GetNativeHandle(), core_dispatcher); // GLFWwindow* handle
+
+	// Initialise CollisionSystem
+	m_coord.GetSystem<CollisionSystem>()->Init(core_dispatcher);
 
 	// Call this only after the OpenGL context has been created, which is after ApplicationSystem::Init()
 	// TEMP; By right this will be handled by Graphics system and will be removed;
@@ -94,9 +96,6 @@ void CoreEngine::Update() {
 	m_coord.GetSystem<ApplicationSystem>().get()->SetWindowTitle(
 		m_coord.GetSystem<ApplicationSystem>().get()->GetNativeHandle(), title.c_str()
 	);
-
-	// Displaying active system timers into Console (temp.);
-	//m_coord.GetSystem<ApplicationSystem>()->GetTimer().DisplaySystemTimers();
 
 	// End frame timing;
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndFrame();

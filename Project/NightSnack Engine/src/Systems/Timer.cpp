@@ -53,7 +53,6 @@ void Timer::EndSystemTimer(const std::string& name)
     float end = static_cast<float>(glfwGetTime());
     float elapsed = end - m_systemStartTimes[name];
     m_systemsTimes[name] += elapsed;
-    m_totalSystemTime += elapsed;
 }
 
 void Timer::DisplaySystemTimers() const
@@ -66,8 +65,8 @@ void Timer::DisplaySystemTimers() const
     for (const auto& [name, time] : m_systemsTimes)
     {
         float percent = (time / m_totalSystemTime) * 100.f;
-        std::cout << name << ": " << std::fixed << std::setprecision(4)
-            << percent << "% of game loop | ";
+        std::cout << name << " Time : " << std::fixed << std::setprecision(4)
+            << percent << "% | ";
     }
     std::cout << std::endl;
 }
