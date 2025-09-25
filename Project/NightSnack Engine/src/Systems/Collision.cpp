@@ -89,10 +89,6 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
                     velB.dx = -velA.dx * 0.7f;
                     velB.dy = -velB.dy * 0.7f;
 
-                    /*velA.dx = -velA.dx * 0.7;
-                    velA.dy = -velA.dy * 0.7;
-                    velB.dx = -velB.dx * 0.7;
-                    velB.dy = -velB.dy * 0.7;*/
                 }
                 else if (!colA.isStatic && colB.isStatic)
                 {
