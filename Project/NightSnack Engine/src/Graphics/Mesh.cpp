@@ -1,11 +1,16 @@
 #include "Mesh.h"
+#include <iostream>
+
+#include <GLFW/glfw3.h>
 
 // Construct a Mesh with the actual geometry data -------------------------------------------------
 // Sets up the VAO, VBO, and EBO for rendering ----------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-Mesh::Mesh(GLenum primitiveType, std::vector<Vertex> const& vertices, std::vector<unsigned int> const& indices) : 
-m_primitiveType(primitiveType) {
-	// The number of indices, so we can use it for glDrawElements()
+Mesh::Mesh(GLenum primitiveType,
+	std::vector<Vertex> const& vertices,
+	std::vector<unsigned int> const& indices)
+	: m_primitiveType(primitiveType)
+{
 	m_indexCount = static_cast<GLsizei>(indices.size());
 	m_vertexCount = static_cast<GLsizei>(vertices.size());
 
@@ -14,27 +19,49 @@ m_primitiveType(primitiveType) {
 
 	// Create VBO
 	glCreateBuffers(1, &m_vbo);
-	glNamedBufferStorage(m_vbo, vertices.size() * sizeof(Vertex), vertices.data(), 0);
+	glNamedBufferStorage(m_vbo, vertices.size() * sizeof(Vertex),
+		vertices.data(), 0);
 
 	// Bind vertex buffer to VAO
 	glVertexArrayVertexBuffer(m_vao, 0, m_vbo, 0, sizeof(Vertex));
 
 	// Position attribute (location = 0)
 	glEnableVertexArrayAttrib(m_vao, 0);
-	glVertexArrayAttribFormat(m_vao, 0, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
+	glVertexArrayAttribFormat(m_vao, 0, 2, GL_FLOAT, GL_FALSE,
+		offsetof(Vertex, position));
 	glVertexArrayAttribBinding(m_vao, 0, 0);
 
 	// TexCoord attribute (location = 1)
 	glEnableVertexArrayAttrib(m_vao, 1);
-	glVertexArrayAttribFormat(m_vao, 1, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, texCoord));
+	glVertexArrayAttribFormat(m_vao, 1, 2, GL_FLOAT, GL_FALSE,
+		offsetof(Vertex, texCoord));
 	glVertexArrayAttribBinding(m_vao, 1, 0);
 
-	// Create EBO (optional if using indices)
+	// Optional EBO
 	if (!indices.empty()) {
 		glCreateBuffers(1, &m_ebo);
-		glNamedBufferStorage(m_ebo, indices.size() * sizeof(unsigned int), indices.data(), 0);
+		glNamedBufferStorage(m_ebo,
+			indices.size() * sizeof(unsigned int),
+			indices.data(), 0);
+
+		// --- Try DSA binding first ---
 		glVertexArrayElementBuffer(m_vao, m_ebo);
+
+		// Verify binding
+		GLint boundEBO = 0;
+		glGetVertexArrayiv(m_vao, GL_ELEMENT_ARRAY_BUFFER_BINDING, &boundEBO);
+
+		//if (boundEBO == 0) {
+		//	std::cerr << "[Mesh] DSA element buffer binding failed, "
+		//		<< "falling back to legacy bind.\n";
+
+		//	// Legacy fallback
+		//	glBindVertexArray(m_vao);
+		//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
+		//	glBindVertexArray(0);
+		//}
 	}
+
 }
 
 // Destructor -------------------------------------------------------------------------------------
@@ -68,7 +95,7 @@ void Mesh::Draw() const {
 
 	case GL_TRIANGLES:
 		if (m_ebo)
-			glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0);
+			glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, nullptr);
 		else
 			glDrawArrays(GL_TRIANGLES, 0, m_vertexCount);
 		break;
@@ -83,7 +110,7 @@ void Mesh::Draw() const {
 
 // Helper function to create a mesh representing a point at the center of the screen --------------
 // ------------------------------------------------------------------------------------------------
-Mesh Mesh::CreatePoint() {
+std::unique_ptr<Mesh> Mesh::CreatePoint() {
 	// Default position is at the center of the screen
 	std::vector<Vertex> vertices{
 		{ glm::vec2(0.f, 0.f), // position
@@ -91,24 +118,24 @@ Mesh Mesh::CreatePoint() {
 	};
 
 	// No indices since we will be using glDrawArrays for points
-	return Mesh(GL_POINTS, vertices, {});
+	return std::make_unique<Mesh>(GL_POINTS, vertices, std::vector<unsigned int>{});
 }
 
 // Helper function to create a mesh representing a line -------------------------------------------
 // ------------------------------------------------------------------------------------------------
-Mesh Mesh::CreateLine(const glm::vec2& startPos, const glm::vec2& endPos) {
+std::unique_ptr<Mesh> Mesh::CreateLine(const glm::vec2& startPos, const glm::vec2& endPos) {
 	std::vector<Vertex> vertices{
 		{ startPos, glm::vec2(0.f, 0.f) }, // dummy texCoord
 		{ endPos, glm::vec2(0.f, 0.f) }
 	};
 	
 	// No indices since we will be using glDrawArrays for lines
-	return Mesh(GL_LINES, vertices, {});
+	return std::make_unique<Mesh>(GL_LINES, vertices, std::vector<unsigned int>{});
 }
 
 // Helper function to create a mesh representing a rectangle at the center of the screen ----------
 // ------------------------------------------------------------------------------------------------
-Mesh Mesh::CreateSquare() {
+std::unique_ptr<Mesh> Mesh::CreateSquare() {
 	// Default position is at the center of the screen
 	// Order of texCoords must follow the order of vertices
 
@@ -121,12 +148,12 @@ Mesh Mesh::CreateSquare() {
 
 	std::vector<unsigned int> indices{ 0,1,2,2,3,0 };
 
-	return Mesh(GL_TRIANGLES, vertices, indices);
+	return std::make_unique<Mesh>(GL_TRIANGLES, vertices, indices);
 }
 
 // Helper function to create a mesh representing a circle at the center of the screen -------------
 // ------------------------------------------------------------------------------------------------
-Mesh Mesh::CreateCircle() {
+std::unique_ptr<Mesh> Mesh::CreateCircle() {
 	glm::vec2 centerPos{ 0.f, 0.f };
 	const float radius{ 1.f };
 
@@ -149,5 +176,5 @@ Mesh Mesh::CreateCircle() {
 	}
 
 	// No indices since we will be using glDrawArrays for triangle fans
-	return Mesh(GL_TRIANGLE_FAN, vertices, {});
+	return std::make_unique<Mesh>(GL_TRIANGLE_FAN, vertices, std::vector<unsigned int>{});
 }

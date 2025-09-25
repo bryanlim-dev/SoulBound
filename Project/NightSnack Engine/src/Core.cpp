@@ -21,10 +21,11 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 
 	m_coord.RegisterComponent<Collider>();		// Collision;
 
-	m_coord.RegisterComponent<Renderable>();	// Graphics;
 	m_coord.RegisterComponent<Color>();
 	m_coord.RegisterComponent<Scale>();
 	m_coord.RegisterComponent<Camera>();
+
+	m_coord.RegisterComponent<Renderable>();	// Graphics;
 
 	// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
 	// i.e: Input-> Movement -> Collision -> Graphics;
@@ -39,14 +40,16 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	// Add more Components here...
 
 	// Initialise ApplicationSystem
-	m_coord.GetSystem<ApplicationSystem>().get()->Init(windowWidth, windowHeight, std::move(windowTitle));
+	m_coord.GetSystem<ApplicationSystem>()->Init(windowWidth, windowHeight, std::move(windowTitle));
 
+	// Initialise GraphicsSystem
+	m_coord.GetSystem<GraphicsSystem>()->Init();
+	
 	// Initialise InputSystem
-	m_coord.GetSystem<InputSystem>().get()->Init(
-		m_coord.GetSystem<ApplicationSystem>().get()->GetNativeHandle(), core_dispatcher); // GLFWwindow* handle
+	m_coord.GetSystem<InputSystem>()->Init(m_coord.GetSystem<ApplicationSystem>()->GetNativeHandle(), core_dispatcher); // GLFWwindow* handle
 
 	// Initialise CollisionSystem
-	m_coord.GetSystem<CollisionSystem>().get()->Init(core_dispatcher);
+	m_coord.GetSystem<CollisionSystem>()->Init(core_dispatcher);
 
 	
 
@@ -81,7 +84,9 @@ void CoreEngine::Update() {
 	for (auto& System : m_systems) {
 
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(System->GetName());
+
 		System->Update(deltaTime, m_coord);
+
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(System->GetName());
 	}
 

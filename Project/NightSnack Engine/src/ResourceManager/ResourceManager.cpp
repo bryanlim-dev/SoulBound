@@ -135,6 +135,20 @@ unsigned char* ResourceManager::GetImage(const std::size_t imageKey)
 	return (image != nullptr) ? GetImageResource(imageKey)->Image(): nullptr;
 }
 
+unsigned char* ResourceManager::GetImage(const std::size_t imageKey, int& width, int& height, int& channels)
+{
+	//Same logic as func get image resource so just reuse it
+	ResourceImage* image = GetImageResource(imageKey);
+	if (image != nullptr)
+	{
+		width = image->Width();
+		height = image->Height();
+		channels = image->Channels();
+		return GetImageResource(imageKey)->Image();
+	}
+	return nullptr;
+}
+
 ResourceImage* ResourceManager::GetImageResource(const std::size_t imageKey)
 {
 	//Does the resource exist?
@@ -243,6 +257,11 @@ ResourceTxtFile* ResourceManager::GetTxtFileResource(const std::size_t txtKey)
 
 	return nullptr;
 }
+void ResourceManager::SaveTxtFile(std::string filePath, std::vector<std::string> txtVec)
+{
+	ResourceTxtFile saveResource(txtVec, filePath);
+	saveResource.SaveFile();
+}	
 #pragma endregion
 
 #pragma region Json
@@ -312,10 +331,16 @@ void ResourceManager::UnloadJson(std::size_t jsonKey)
 	if (it == deletionVec.end())
 		deletionVec.push_back(resourceJsonMap[jsonKey]);
 }
-const nlohmann::json& ResourceManager::GetJson(const std::size_t jsonKey)
+std::unordered_map<std::string, Archtype> ResourceManager::GetJson(const std::size_t jsonKey)
 {
 	ResourceJson* jsn = GetJsonResource(jsonKey);
 	return jsn->GetJson();
+}
+
+nlohmann::json ResourceManager::GetJsonRaw(const std::size_t jsonKey)
+{
+	ResourceJson* jsn = GetJsonResource(jsonKey);
+	return jsn->GetJsonRaw();
 }
 
 ResourceJson* ResourceManager::GetJsonResource(const std::size_t jsonKey)
@@ -328,6 +353,12 @@ ResourceJson* ResourceManager::GetJsonResource(const std::size_t jsonKey)
 
 	return nullptr;
 }
+void ResourceManager::SaveJsonFile(std::string filePath, std::unordered_map<std::string, Archtype> const& newArchtypeMap)
+{
+	ResourceJson jsonResouce(newArchtypeMap, filePath);
+	jsonResouce.SaveFile();
+}
+
 #pragma endregion
 
 #pragma region Sound File Functions
@@ -504,35 +535,55 @@ void ResourceManager::DebugTestEverything()
 		std::cout << strTest << std::endl;
 	}
 	std::cout << std::endl;
+
+	std::cout << "Test: Save Txt File" << std::endl;
+	std::vector<std::string> newTxt = {
+		"This is a new txt file",
+		"Newwww file",
+		"THIS is line 4",
+		"I lied it was 3",
+		"This is 5 tho"
+	};
+	SaveTxtFile("assets/data/savedNewTxt.txt", newTxt);
+	std::cout << "Attempted save to Txt File" << std::endl;
+
+
+	std::cout << std::endl;
 	std::cout << std::endl;
 
 	rm->UnloadTxtFile(txtKey); //Actual unloading test
 	rm->Update(0); //Run unload code
 
-	std::cout << "Test Load Json File" << std::endl;
+	std::cout << "Test: Load Json File" << std::endl;
 	std::size_t jsonKey = 0;
 	rm->LoadJson("assets/data/jsonTestFile.json", jsonKey);
 
 	//Riskier is there is a typo or something, it WILL crash if cannot find
-	// std::cout << "boolean: " << (rm->GetJson(jsonKey)["testJson"]["boolean"]? "true" : "false") << std::endl;
-	std::cout << "boolean: " << (rm->GetJson(jsonKey).at("testJson").at("boolean") ? "true" : "false") << std::endl;
-	std::cout << "interger: " << rm->GetJson(jsonKey).at("testJson").at("interger") << std::endl;
-	for (auto& [key, value] : rm->GetJson(jsonKey).items()) {
-		std::cout << key << " : " << value << std::endl;
-	}
+	std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey)["testJson"]["boolean"]? "true" : "false") << std::endl;
+	std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey).at("testJson").at("boolean") ? "true" : "false") << std::endl;
+	std::cout << "interger: " << rm->GetJsonRaw(jsonKey).at("testJson").at("interger") << std::endl;
+	//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
+	//	std::cout << key << " : " << value << std::endl;
+	//}
 	rm->UnloadJson(jsonKey);
 	rm->Update(0); //Run unload code
 	std::cout << std::endl;
 
 	rm->LoadJson("assets/data/jsonTestFile2.json", jsonKey);
-	for (auto& [key, value] : rm->GetJson(jsonKey).items()) {
-		std::cout << key << " : " << value << std::endl;
-	}
+	//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
+	//	std::cout << key << " : " << value << std::endl;
+	//}
+
+	std::cout << "Test: Save Json File" << std::endl;
+	rm->SaveJsonFile("assets/data/savedJsonTest2.json", rm->GetJson(jsonKey));
+
 
 	rm->UnloadJson(jsonKey);
 	rm->Update(0); //Run unload code
 	std::cout << std::endl;
 	std::cout << std::endl;
+
+
 
 	FMOD::System* fSys = nullptr;
 	FMOD::Channel* channel = nullptr;

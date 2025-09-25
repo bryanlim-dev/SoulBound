@@ -32,7 +32,7 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
     // Step 1: Reset collision flags
     for (auto const& e : m_entities) 
     {
-        auto& col = coord.GetComponent<Collider>(e);
+        auto& col = coord.ModifyComponent<Collider>(e);
         col.colliding = false;
     }
 
@@ -44,12 +44,12 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
             if (itB == itA) continue;
 
             auto& posA = coord.GetComponent<Position>(*itA);
-            auto& velA = coord.GetComponent<Velocity>(*itA);
-            auto& colA = coord.GetComponent<Collider>(*itA);
+            auto& velA = coord.ModifyComponent<Velocity>(*itA);
+            auto& colA = coord.ModifyComponent<Collider>(*itA);
 
             auto& posB = coord.GetComponent<Position>(*itB);
-            auto& velB = coord.GetComponent<Velocity>(*itB);
-            auto& colB = coord.GetComponent<Collider>(*itB);
+            auto& velB = coord.ModifyComponent<Velocity>(*itB);
+            auto& colB = coord.ModifyComponent<Collider>(*itB);
 
             // Skip if both are static
             if (colA.isStatic) continue;
