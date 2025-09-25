@@ -49,15 +49,25 @@ int main()
 	}
 	// Set the ResourceManager first
 	audioSystem->SetResourceManager(rm);
+
 	// Load a valid sound
 	std::size_t soundKey = 0;
 	rm->LoadSound("assets/Sound/SFX/sound_button_temp.wav", soundKey, audioSystem->GetFMODSystem());
 	// Play the valid sound
 	audioSystem->PlaySound(soundKey);
-	// Try an invalid key (to trigger "not found")
-	// audioSystem->PlaySound(0);
 
-
+	// Load a valid sound
+	std::size_t musicKey = 0;
+	rm->LoadSound("assets/Sound/Music/LevelCompleteMusic.wav", musicKey, audioSystem->GetFMODSystem());
+	// Make music loop
+	FMOD::Sound* musicSound = rm->GetSound(musicKey);
+	if (musicSound)
+	{
+		musicSound->setMode(FMOD_LOOP_NORMAL);   // loop indefinitely
+		musicSound->setLoopCount(-1);            // -1 = infinite
+	}
+	// Play the valid sound
+	audioSystem->PlaySound(musicKey);
 
 	// ECS test --------------------------------------------------------------------------------------
 	// -----------------------------------------------------------------------------------------------
