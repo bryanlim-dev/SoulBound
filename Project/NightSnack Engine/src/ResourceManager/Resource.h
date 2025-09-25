@@ -7,9 +7,10 @@
 
 #include <json.hpp>
 #include <fmod.hpp>
+#include <ft2build.h>
 
 #define RESOURCE_DEBUG_MODE 1
-
+#include FT_FREETYPE_H
 
 //Type of resource loaded
 enum RESOURCE_TYPE
@@ -19,6 +20,7 @@ enum RESOURCE_TYPE
 	RESOURCE_TXTFILE,
 	RESOURCE_JSON,
 	RESOURCE_SOUND,
+	RESOURCE_FONT,
 };
 
 class Resource
@@ -218,5 +220,14 @@ public:
 private:
 	void LoadFile() override {};
 
+
+};
+
+class ResourceFont : public Resource
+{
+private:
+
+
+public:
 
 };
