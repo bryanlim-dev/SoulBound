@@ -5,7 +5,7 @@
 # ------------------------------------------------------------ #
 
 # Minimum version of CMake required
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.15)
 
 # ------------------------------------------------------------
 # Project Setup
@@ -69,6 +69,11 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy_if_different
      "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmod.dll"
      "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+
+#freetype dll
+   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+     "${CMAKE_CURRENT_SOURCE_DIR}/extern/freetype/freetype.dll"
+     "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
 )
 
 
@@ -100,6 +105,13 @@ target_link_libraries(fmod INTERFACE
 add_library(nlohmann_json INTERFACE)
 target_include_directories(nlohmann_json INTERFACE extern/nlohmann)
 
+#freetype
+add_library(freetype INTERFACE)
+target_include_directories(freetype INTERFACE extern/freetype)
+target_link_libraries(freetype INTERFACE 
+	"${CMAKE_CURRENT_SOURCE_DIR}/extern/freetype/freetype.lib"
+)
+
 
 # ------------------------------------------------------------
 # Linking
@@ -111,6 +123,7 @@ target_link_libraries(${PROJECT_NAME}
     stb_image
     fmod
     nlohmann_json
+    freetype
 )
 
 # ------------------------------------------------------------
@@ -125,4 +138,5 @@ target_include_directories(${PROJECT_NAME}
     extern/glm
     extern/stb_image/include
     extern/fmod
+    extern/freetype
 )
