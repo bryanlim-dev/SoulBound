@@ -38,6 +38,14 @@ void GraphicsSystem::Init() {
 	redMat->SetBaseColor(1.f, 0.f, 0.f, 1.f);
 	AddMaterial("redMat", std::move(redMat));
 
+	auto greenMat = std::make_unique<Material>(GetShader("default"));
+	greenMat->SetBaseColor(0.f, 1.f, 0.f, 1.f);
+	AddMaterial("greenMat", std::move(greenMat));
+
+	auto blueMat = std::make_unique<Material>(GetShader("default"));
+	blueMat->SetBaseColor(0.f, 0.f, 1.f, 1.f);
+	AddMaterial("blueMat", std::move(blueMat));
+
 }
 
 void GraphicsSystem::Update(float dt, Coordinator& coord) {

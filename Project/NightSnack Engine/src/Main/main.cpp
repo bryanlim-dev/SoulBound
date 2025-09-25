@@ -114,11 +114,11 @@ int main()
 	coord.AddComponent<Renderable>(p0, r1);
 	Renderable r2{ "circle", "bananaMat" };
 	coord.AddComponent<Renderable>(p1, r2);
-	Renderable r3{ "square", "bananaMat" };
+	Renderable r3{ "square", "bananaMat", true };
 	coord.AddComponent<Renderable>(p2, r3);
-	Renderable r4{ "circle", "targetMat" };
+	Renderable r4{ "circle", "greenMat" };
 	coord.AddComponent<Renderable>(p3, r4);
-	Renderable r5{ "square", "targetMat" };
+	Renderable r5{ "square", "blueMat" };
 	coord.AddComponent<Renderable>(ground, r5);
 
 	// Camera object
