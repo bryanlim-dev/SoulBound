@@ -256,13 +256,28 @@ Archtype ResourceJson::SplitJsonSectionData(const nlohmann::json& sectionData)
 		//CHeck if is a simple type - int, bool, char, string, etc.
 		if (value.is_primitive())
 		{
-			//For now it saves as a string, split this later
-			archTypeData.componentMap.insert(std::pair(keyInput, value.dump()));
+			//Splits strings and other types
+			if (value.is_string())
+				archTypeData.componentMap.insert(std::pair(keyInput, value.get<std::string>()));
+			else 
+				archTypeData.componentMap.insert(std::pair(keyInput, value.dump()));
 		}
 		else if (value.is_array())
 		{
-			//Yeet the entire value array as a string
-			archTypeData.componentMap[keyInput] = value.dump();
+			std::string arrStr;
+			arrStr.clear();
+			for (size_t arrPos = 0; arrPos < value.size(); ++arrPos)
+			{
+				if (value[arrPos].is_string())
+					arrStr += value[arrPos].get<std::string>();
+				else
+					arrStr += value[arrPos].dump();
+
+				if (arrPos + 1 < value.size())
+					arrStr += ", ";
+			}
+
+			archTypeData.componentMap[keyInput] = arrStr;
 		}
 		//It's a nested section
 		else if (value.is_object())
