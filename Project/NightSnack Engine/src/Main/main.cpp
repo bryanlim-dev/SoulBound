@@ -14,6 +14,8 @@
 #include "Systems/AllSystems.h"
 
 #include "ResourceManager/ResourceManager.h"
+#include "Systems/AudioSystem.h"
+
 #include <fmod.hpp>
 
 
@@ -21,8 +23,6 @@ int main()
 {
 	// Enable memory leak checking at program exit
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
-	ResourceManager* rm = ResourceManager::GetInstance();
 
 	//Resource Manager test
 	{
@@ -39,6 +39,25 @@ int main()
   	// Will register all components;
   	// If you create new components, please register them in this function defined in Core.cpp;
   	core.Initialize(1600, 900, "NightSnack Engine");
+
+	ResourceManager* rm = ResourceManager::GetInstance();
+	// Initialize AudioSystem
+	AudioSystem* audioSystem = AudioSystem::GetInstance();
+	if (!audioSystem->Initialize())
+	{
+		std::cout << "Failed to initialize AudioSystem!" << std::endl;
+	}
+	// Set the ResourceManager first
+	audioSystem->SetResourceManager(rm);
+	// Load a valid sound
+	std::size_t soundKey = 0;
+	rm->LoadSound("assets/Sound/SFX/sound_button_temp.wav", soundKey, audioSystem->GetFMODSystem());
+	// Play the valid sound
+	audioSystem->PlaySound(soundKey);
+	// Try an invalid key (to trigger "not found")
+	// audioSystem->PlaySound(0);
+
+
 
 	// ECS test --------------------------------------------------------------------------------------
 	// -----------------------------------------------------------------------------------------------
@@ -173,12 +192,16 @@ int main()
   // Core Application Loop;
   while (!core.ShouldClose()) {
   	core.Update();
+	// Update AudioSystem every frame
+	audioSystem->Update();
 
   }
 
 	// Clean termination;
 	rm->DeleteRM();
 	fmodSystem->close();
+	// Clean up when game exits
+	AudioSystem::DestroyInstance();
   return 0;
 
 }
