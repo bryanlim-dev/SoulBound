@@ -42,7 +42,7 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	m_coord.GetSystem<ApplicationSystem>()->Init(windowWidth, windowHeight, std::move(windowTitle));
 
 	// Initialise GraphicsSystem
-	m_coord.GetSystem<GraphicsSystem>()->Initialize();
+	m_coord.GetSystem<GraphicsSystem>()->Init();
 	
 	// Initialise InputSystem
 	m_coord.GetSystem<InputSystem>()->Init(m_coord.GetSystem<ApplicationSystem>()->GetNativeHandle(), core_dispatcher); // GLFWwindow* handle

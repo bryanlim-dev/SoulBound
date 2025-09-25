@@ -11,24 +11,33 @@ GraphicsSystem::GraphicsSystem() {
 	m_systemSignature.set(GetComponentTypeID<Renderable>());
 }
 
-// Compute the projection matrix ------------------------------------------------------------------
-// Transforms camera coords to clip coords --------------------------------------------------------
-glm::mat4 GraphicsSystem::GetCameraProjectionMatrix(float width, float height) {
-	float halfWidth = width * 0.5f;
-	float halfHeight = height * 0.5f;
-	// Orthographic projection keeps objects the same size regardless of depth
-	// Arguments in the order of (left, right, bottom, top, near, far)
-	return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1.f, 1.f);
-}
+void GraphicsSystem::Init() {
+	// Default Shader;
+	auto shader = std::make_unique<Shader>("../shaders/vertex_shader.vert", "../shaders/fragment_shader.frag");
+	AddShader("default", std::move(shader));
 
-// Compute the ModelToWorld matrix ----------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
-glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale) {
-	glm::mat4 model(1.f);
-	model = glm::translate(model, glm::vec3(position.x, position.y, 0.f));
-	model = glm::rotate(model, glm::radians(rotation.degrees), glm::vec3(0.f, 0.f, 1.f)); // Rotate about z-axis
-	model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.f));
-	return model;
+	// Textures;
+	auto bananaTex = std::make_unique<Texture>("assets/banana.jpg");
+	AddTexture("banana", std::move(bananaTex));
+	auto targetTex = std::make_unique<Texture>("assets/image_UI_target.png");
+	AddTexture("target", std::move(targetTex));
+
+	// Meshes;
+	AddMesh("point", Mesh::CreatePoint());
+	//AddMesh("line", Mesh::CreateLine());
+	AddMesh("square", Mesh::CreateSquare());
+	AddMesh("circle", Mesh::CreateCircle());
+
+	// Materials;
+	auto bananaMat = std::make_unique<Material>(GetShader("default"), GetTexture("banana"));
+	AddMaterial("bananaMat", std::move(bananaMat));
+	auto targetMat = std::make_unique<Material>(GetShader("default"), GetTexture("target"));
+	AddMaterial("targetMat", std::move(targetMat));
+
+	auto redMat = std::make_unique<Material>(GetShader("default"));
+	redMat->SetBaseColor(1.f, 0.f, 0.f, 1.f);
+	AddMaterial("redMat", std::move(redMat));
+
 }
 
 void GraphicsSystem::Update(float dt, Coordinator& coord) {
@@ -90,35 +99,6 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 	}
 }
 
-void GraphicsSystem::Initialize() {
-	// Default Shader;
-	auto shader = std::make_unique<Shader>("../shaders/vertex_shader.vert", "../shaders/fragment_shader.frag");
-	AddShader("default", std::move(shader));
-
-	// Textures;
-	auto bananaTex = std::make_unique<Texture>("assets/banana.jpg");
-	AddTexture("banana", std::move(bananaTex));
-	auto targetTex = std::make_unique<Texture>("assets/image_UI_target.png");
-	AddTexture("target", std::move(targetTex));
-
-	// Meshes;
-	AddMesh("point", Mesh::CreatePoint());
-	//AddMesh("line", Mesh::CreateLine());
-	AddMesh("square", Mesh::CreateSquare());
-	AddMesh("circle", Mesh::CreateCircle());
-
-	// Materials;
-	auto bananaMat = std::make_unique<Material>(GetShader("default"), GetTexture("banana"));
-	AddMaterial("bananaMat", std::move(bananaMat));
-	auto targetMat = std::make_unique<Material>(GetShader("default"), GetTexture("target"));
-	AddMaterial("targetMat", std::move(targetMat));
-
-	auto redMat = std::make_unique<Material>(GetShader("default"));
-	redMat->SetBaseColor(1.f, 0.f, 0.f, 1.f);
-	AddMaterial("redMat", std::move(redMat));
-
-}
-
 // ------------------------------------------------------------------------------------------------
 void GraphicsSystem::AddShader(std::string const& name, std::unique_ptr<Shader> shader) {
 	m_shaders[name] = std::move(shader);
@@ -131,6 +111,26 @@ void GraphicsSystem::AddMesh(std::string const& name, std::unique_ptr<Mesh> mesh
 }
 void GraphicsSystem::AddMaterial(std::string const& name, std::unique_ptr<Material> mat) {
 	m_materials[name] = std::move(mat);
+}
+
+// Compute the projection matrix ------------------------------------------------------------------
+// Transforms camera coords to clip coords --------------------------------------------------------
+glm::mat4 GraphicsSystem::GetCameraProjectionMatrix(float width, float height) {
+	float halfWidth = width * 0.5f;
+	float halfHeight = height * 0.5f;
+	// Orthographic projection keeps objects the same size regardless of depth
+	// Arguments in the order of (left, right, bottom, top, near, far)
+	return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, -1.f, 1.f);
+}
+
+// Compute the ModelToWorld matrix ----------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale) {
+	glm::mat4 model(1.f);
+	model = glm::translate(model, glm::vec3(position.x, position.y, 0.f));
+	model = glm::rotate(model, glm::radians(rotation.degrees), glm::vec3(0.f, 0.f, 1.f)); // Rotate about z-axis
+	model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.f));
+	return model;
 }
 
 // ------------------------------------------------------------------------------------------------

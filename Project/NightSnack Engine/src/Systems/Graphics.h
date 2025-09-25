@@ -17,14 +17,12 @@ public:
 	// Default constructor to set up SystemSignature;
 	GraphicsSystem();
 
-	// Main update called by core;
+	void Init();
+
+	// Main update called by core
 	void Update(float dt, Coordinator& coord) override;
 
-	// Helper functions ------------------------------------------------------------------------------
-	// -----------------------------------------------------------------------------------------------
-	void Initialize();
-
-	// Resource Creation;
+	// Helper functions for Resource Creation
 	void AddShader(std::string const& name, std::unique_ptr<Shader> shader);
 	void AddTexture(std::string const& name, std::unique_ptr<Texture> tex);
 	void AddMesh(std::string const& name, std::unique_ptr<Mesh> mesh);

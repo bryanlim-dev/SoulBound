@@ -10,22 +10,18 @@ Texture::Texture(std::string textureImage) {
 		return;
 	}
 
-	// ResourceManager stuff...
+	// ResourceManager stuff
 	size_t key = 0;
 	ResourceManager* rm = ResourceManager::GetInstance();
 	rm->LoadImage(textureImage, key);
 
-	ResourceImage* img = rm->GetImageResource(key);
-	unsigned char* pixels = rm->GetImage(key);
-	if (!img || !pixels) {
-		std::cerr << "Error: Failed to load image " << textureImage << "\n";
-		m_texID = 0;
-		return;
-	}
+	// Texture parameters
+	int width, height, channels;
+	
+	unsigned char* pixels = rm->GetImage(key, width, height, channels);
 
-	// Actual Texture stuff...
-	if (img->Channels() == 4) { m_hasAlphaComponent = true; }
-	int width = img->Width(), height = img->Height();
+	// Actual Texture stuff
+	if (channels == 4) { m_hasAlphaComponent = true; }
 
 	// Create the OpenGL texture object
 	glCreateTextures(GL_TEXTURE_2D, 1, &m_texID);
