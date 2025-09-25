@@ -50,6 +50,8 @@ void InputSystem::Update(float dt, Coordinator& coord) {
 	m_deltaPosY = m_mousePosY - m_prevMousePosY;
 	m_prevMousePosX = m_mousePosX;
 	m_prevMousePosY = m_mousePosY;
+
+	ResetInputStates();
 }
 
 // Reset the key and mouse button states at the end of every update loop / frame ------------------
@@ -137,6 +139,12 @@ void InputSystem::MouseButtonCallback(GLFWwindow* window, int button, int action
 
 	// Update the modifier state
 	m_currentModifiers = mods;
+
+	// Dispatch InputEvent when key is pressed
+	if (m_dispatcher)
+	{
+		m_dispatcher->Dispatch(InputEvent(button, action == GLFW_PRESS));
+	}
 }
 
 // Mouse position callback function ---------------------------------------------------------------

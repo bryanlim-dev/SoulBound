@@ -66,7 +66,7 @@ void Timer::DisplaySystemTimers() const
     {
         float percent = (time / m_totalSystemTime) * 100.f;
         std::cout << name << " Time : " << std::fixed << std::setprecision(4)
-            << percent << "% | ";
+            << percent << "% | \n";
     }
     std::cout << std::endl;
 }
