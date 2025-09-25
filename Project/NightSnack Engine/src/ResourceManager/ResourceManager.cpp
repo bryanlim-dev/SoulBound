@@ -259,8 +259,7 @@ ResourceTxtFile* ResourceManager::GetTxtFileResource(const std::size_t txtKey)
 }
 void ResourceManager::SaveTxtFile(std::string filePath, std::vector<std::string> txtVec)
 {
-	ResourceTxtFile saveResource;
-	saveResource.EditResource(txtVec, filePath);
+	ResourceTxtFile saveResource(txtVec, filePath);
 	saveResource.SaveFile();
 }	
 #pragma endregion

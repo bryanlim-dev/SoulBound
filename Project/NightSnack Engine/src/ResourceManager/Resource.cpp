@@ -8,14 +8,10 @@
 #include "fmod.hpp"
 
 #pragma region Base Resource
-Resource::Resource()
-	: mapKey(0)
-{
-}
 
 Resource::~Resource()
 {
-#if RESOURCE_DEBUG_MODE 1
+#if RESOURCE_DEBUG_MODE
 	std::cout << path << " is deleted!" << std::endl;
 #endif
 }
@@ -49,10 +45,7 @@ bool& Resource::FlaggedForDeletion()
 
 
 #pragma region Image
-ResourceImage::ResourceImage()
-{
-	resourceType = RESOURCE_IMAGE;
-}
+
 ResourceImage::ResourceImage(const std::string& inFilePath, const std::size_t& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
@@ -97,14 +90,19 @@ unsigned char* ResourceImage::Image() const
 
 
 #pragma region TxtFile
-ResourceTxtFile::ResourceTxtFile()
-{
-	resourceType = RESOURCE_TXTFILE;
-}
+
 
 ResourceTxtFile::ResourceTxtFile(const std::string& inFilePath, const std::size_t& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
+	resourceType = RESOURCE_TXTFILE;
+}
+
+ResourceTxtFile::ResourceTxtFile(std::vector<std::string>& txtVec, std::string newPath) 
+	: Resource(newPath, 0)
+{
+	txtStringVec = txtVec;
+	path = newPath;
 	resourceType = RESOURCE_TXTFILE;
 }
 
@@ -164,10 +162,6 @@ std::vector<std::string> ResourceTxtFile::TextStringVec() const
 #pragma endregion
 
 #pragma region JsonFile
-ResourceJson::ResourceJson()
-{
-	resourceType = RESOURCE_JSON;
-}
 ResourceJson::ResourceJson(const std::string& inFilePath, const std::size_t& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
@@ -194,7 +188,7 @@ void ResourceJson::LoadFile()
 
 	resourceLoaded = true;
 
-#if RESOURCE_DEBUG_MODE 1
+#if RESOURCE_DEBUG_MODE
 
 	PrintJsonMapData();
 
@@ -292,10 +286,6 @@ void ResourceJson::PrintMapSubArchtypeData(const Archtype& arch, int indents = 0
 #pragma endregion
 
 #pragma region Sound
-ResourceSound::ResourceSound()
-{
-	resourceType = RESOURCE_SOUND;
-}
 ResourceSound::ResourceSound(const std::string& inFilePath, const std::size_t& inMapKey)
 	: Resource (inFilePath, inMapKey)
 {
