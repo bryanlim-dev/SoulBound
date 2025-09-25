@@ -1,7 +1,7 @@
 {
   "RedSquare": {
     "Position": { "x": 0.0, "y": 0.0 },
-    "Rotation": { "val": 0.0 },
+    "Rotation": { "degrees": 0.0 },
     "Scale": { "x": 1.0, "y": 1.0 },
     "Color": { "r": 1.0, "g": 0.0, "b": 0.0, "a": 1.0 },
     "Collider": {
@@ -10,13 +10,18 @@
       "isStatic": false,
       "width": 1.0,
       "height": 1.0
+    },
+    "Renderable": {
+      "meshName": "square",
+      "materialName": "redMat",
+      "isWireframe" : false
     }
   },
 
   "BlueCircle": {
     "Position": { "x": 5.0, "y": 3.0 },
-    "Scale": { "x": 2.0, "y": 2.0 },
     "Rotation": { "degrees": 0.0 },
+    "Scale": { "x": 2.0, "y": 2.0 },
     "Color": { "r": 0.0, "g": 0.0, "b": 1.0, "a": 1.0 },
     "Collider": {
       "shape": "Circle",
@@ -33,6 +38,8 @@
 
   "Player": {
     "Position": { "x": 2.0, "y": 2.0 },
+    "Rotation": { "degrees": 0.0 },
+    "Scale": { "x": 2.0, "y": 2.0 },
     "Velocity": { "dx": 0.0, "dy": 0.0 },
     "Acceleration": { "ax": 0.0, "ay": -9.8 },
     "Mass": { "val": 1.0 },
@@ -43,6 +50,11 @@
       "isStatic": false,
       "width": 0.5,
       "height": 1.0
+    },
+    "Renderable": {
+      "meshName": "square",
+      "materialName": "bananaMat",
+      "isWireframe" : false
     }
   }
 }

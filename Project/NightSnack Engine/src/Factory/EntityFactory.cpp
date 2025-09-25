@@ -1,6 +1,5 @@
 #include "EntityFactory.h"
 
-
 void EntityFactory::Update(float dt, Coordinator& coord) {
 
 	static float time{};
@@ -20,6 +19,33 @@ void EntityFactory::Update(float dt, Coordinator& coord) {
 
 			time = 0.f;
 		}
+		if (m_coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::A)) {
+			Transform trans{}; static int offset{ ((rand() % 1600) - 800) };
+			trans.pos.x = offset += ((rand() % 1600) - 800);
+			trans.pos.y = offset += ((rand() % 900) - 450);
+
+			trans.scale.x = trans.scale.y = 50.f;
+
+			Entity e = Create("RedSquare", trans);
+			std::cout << "Created Entity: " << e << " at "
+				<< trans.pos.x << ", " << trans.pos.y << "\n";
+
+			time = 0.f;
+		}
+		if (m_coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::S)) {
+			Transform trans{}; static int offset{ ((rand() % 1600) - 800) };
+			trans.pos.x = offset += ((rand() % 1600) - 800);
+			trans.pos.y = offset += ((rand() % 900) - 450);
+
+			trans.scale.x = trans.scale.y = 100.f;
+
+			Entity e = Create("Player", trans);
+			std::cout << "Created Entity: " << e << " at "
+				<< trans.pos.x << ", " << trans.pos.y << "\n";
+
+			time = 0.f;
+		}
+
 	}	
 }
 
@@ -38,4 +64,16 @@ Entity EntityFactory::Create(std::string const& name, Transform trans) {
 	//m_coord.GetComponent<Renderable>(e) = r1;
 
 	return e;
+}
+
+Entity EntityFactory::Clone(Entity e, Transform trans) {
+	//std::string name = entityToPrefab.find(e);
+
+	Entity clone = m_prefabManager.CreateFromPrefab(name, m_archetypes);
+
+	m_coord.ModifyComponent<Position>(clone) = trans.pos;
+	m_coord.ModifyComponent<Rotation>(clone) = trans.rot;
+	m_coord.ModifyComponent<Scale>(clone) = trans.scale;
+
+	return clone;
 }

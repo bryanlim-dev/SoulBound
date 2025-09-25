@@ -1,7 +1,7 @@
 #ifndef ENTITYFACTORY_H
 #define ENTITYFACTORY_H
 
-#include <unordered_map>
+#include <unordered_multimap>
 #include <string>
 #include <json.hpp>
 #include <fstream>
@@ -41,17 +41,19 @@ public:
 	}
 
 	void Update(float dt, Coordinator& coord) override;
-	
+
 	Signature GetSignature() const override { return Signature{}; }
 	std::string GetName() const override { return "EntityFactory"; }
 
 	Entity Create(std::string const& name);
 	Entity Create(std::string const& name, Transform trans);
 
+	Entity Clone(Entity e, Transform trans);
+
 private:
 	Coordinator& m_coord;
 	PrefabManager m_prefabManager;
-	json m_archetypes{};
+	json m_archetypes{};;
 };
 
 // First obtains all archetypes through initialization;
