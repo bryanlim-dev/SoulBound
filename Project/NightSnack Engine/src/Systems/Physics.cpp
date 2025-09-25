@@ -4,7 +4,7 @@
 // Main update function;
 void PhysicsSystem::Update(float dt, Coordinator& coord) {
 
-	if (coord.GetSystem<InputSystem>()->IsKeyDown(InputSystem::SPACE)) {
+	if (coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::SPACE)) {
 		coord.GetSystem<PhysicsSystem>()->ApplyForce(coord, Entity{ 0 }, 8.f, 0.f);
 	}
 

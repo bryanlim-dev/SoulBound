@@ -6,23 +6,21 @@ void EntityFactory::Update(float dt, Coordinator& coord) {
 	static float time{};
 	time += dt;
 
-	if (time > 1.f)
+	if (time > 1.f) {
 		if (m_coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::W)) {
 			Transform trans{};
-			trans.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
-			trans.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
+			trans.pos.x = coord.GetSystem<InputSystem>()->GetMousePosX();
+			trans.pos.y = coord.GetSystem<InputSystem>()->GetMousePosY();
 
 			trans.scale.x = trans.scale.y = 100.f;
 
-			Mesh circle = Mesh::CreateCircle();
-			// Load shader
-			Shader shader("../shaders/vertex_shader.vert", "../shaders/fragment_shader.frag");
-			Material blue(&shader, glm::vec3(0.f, 0.f, 1.f));
-			Renderable r1{ &circle, &blue, false };
+			Entity e = Create("BlueCircle", trans);
+			std::cout << "Created Entity: " << e << " at "
+				<< trans.pos.x << ", " << trans.pos.y << "\n";
 
-			Entity e = Create("BlueCircle", trans, r1);
-			std::cout << "Created Entity: " << e << "\n";
+			time = 0.f;
 		}
+	}	
 }
 
 Entity EntityFactory::Create(std::string const& name) {
@@ -30,14 +28,14 @@ Entity EntityFactory::Create(std::string const& name) {
 	return e;
 }
 
-Entity EntityFactory::Create(std::string const& name, Transform trans, Renderable r1) {
+Entity EntityFactory::Create(std::string const& name, Transform trans) {
 	Entity e = m_prefabManager.CreateFromPrefab(name, m_archetypes);
 
-	m_coord.GetComponent<Position>(e) = trans.pos;
-	m_coord.GetComponent<Rotation>(e) = trans.rot;
-	m_coord.GetComponent<Scale>(e) = trans.scale;
+	m_coord.ModifyComponent<Position>(e) = trans.pos;
+	m_coord.ModifyComponent<Rotation>(e) = trans.rot;
+	m_coord.ModifyComponent<Scale>(e) = trans.scale;
 
-	m_coord.GetComponent<Renderable>(e) = r1;
+	//m_coord.GetComponent<Renderable>(e) = r1;
 
 	return e;
 }

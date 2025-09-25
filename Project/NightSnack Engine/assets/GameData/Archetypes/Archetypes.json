@@ -16,12 +16,18 @@
   "BlueCircle": {
     "Position": { "x": 5.0, "y": 3.0 },
     "Scale": { "x": 2.0, "y": 2.0 },
+    "Rotation": { "degrees": 0.0 },
     "Color": { "r": 0.0, "g": 0.0, "b": 1.0, "a": 1.0 },
     "Collider": {
       "shape": "Circle",
       "type": "Trigger",
       "isStatic": true,
       "radius": 1.5
+    },
+    "Renderable": {
+      "meshName": "circle",
+      "materialName": "blueMat",
+      "isWireframe" : false
     }
   },
 

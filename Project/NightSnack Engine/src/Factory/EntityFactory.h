@@ -18,8 +18,7 @@ using json = nlohmann::json;
 class EntityFactory : public ISystem {
 
 public:
-	// Right now factory parses the json file by itself, but eventually, to support multiple levels;
-	// m_archetypes should be owned by ResourceManager and passed in;
+
 	EntityFactory(Coordinator& coord, std::string const& archetypes_filename)
 		: m_coord(coord), m_prefabManager(coord) {
 
@@ -47,12 +46,12 @@ public:
 	std::string GetName() const override { return "EntityFactory"; }
 
 	Entity Create(std::string const& name);
-	Entity Create(std::string const& name, Transform trans, Renderable r1);
+	Entity Create(std::string const& name, Transform trans);
 
 private:
 	Coordinator& m_coord;
 	PrefabManager m_prefabManager;
-	json m_archetypes;
+	json m_archetypes{};
 };
 
 // First obtains all archetypes through initialization;

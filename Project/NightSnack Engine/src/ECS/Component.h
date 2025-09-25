@@ -57,25 +57,10 @@ struct Color {
 // GRAPHICS COMPONENTS
 // ================================================================================================
 
-//struct Renderable {
-//	Mesh* mesh{ nullptr }; // Stores a pointer to a GPU mesh
-//	Material* material{ nullptr }; // Stores shader + color/texture information
-//	//std::string meshName;
-//	//std::string materialName;
-//	bool isWireframe{ true }; // default is wireframe mode
-//
-//	//Renderable() = default;
-//
-//	//Renderable(Mesh* m, Material* mat, bool wire = false)
-//	//	: mesh(m), material(mat), isWireframe(wire) {
-//	//}
-//};
-
 // For testing...
 struct Renderable {
 	std::string meshName{};
 	std::string materialName{};
-	//Color colour{ 1.f, 1.f, 1.f, 1.f};
 	bool isWireframe{ false };
 	bool wasModified{ true };
 };
@@ -179,11 +164,17 @@ inline void from_json(const json& j, Color& c) {
 // Renderable is tricky since Mesh* and Material* are runtime resources.
 // Might instead serialize names/ids and resolve them later; Store meshes in an unorderedmap with std::string keys;
 inline void from_json(const json& j, Renderable& r) {
-    // Just a stub: actual loading must be handled by resource manager
-    bool wf = false;
-    j.at("isWireframe").get_to(wf);
-    r.isWireframe = wf;
-    // Could also read "meshName" / "materialName"
+
+    j.at("meshName").get_to(r.meshName);
+    j.at("materialName").get_to(r.materialName);
+
+    if (j.contains("isWireframe"))
+        j.at("isWireframe").get_to(r.isWireframe);
+    else
+        r.isWireframe = false;
+
+    r.wasModified = true;
+
 }
 
 // Camera =====================================================

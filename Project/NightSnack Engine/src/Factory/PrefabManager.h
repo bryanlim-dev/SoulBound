@@ -16,7 +16,7 @@ using ComponentLoader = std::function<void(Entity, json const&, Coordinator&)>;
 
 class PrefabManager {
 public:
-	PrefabManager(Coordinator& coord) : m_coord{ coord } {}
+	PrefabManager(Coordinator& coord) : m_coord{ coord } { Initialize(); }
 
 	void Initialize() {
 		RegisterComponentLoader<Position>("Position");

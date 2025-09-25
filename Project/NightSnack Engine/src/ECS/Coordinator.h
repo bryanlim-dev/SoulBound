@@ -121,9 +121,9 @@ inline Renderable& Coordinator::ModifyComponent<Renderable>(Entity e) {
 	return r;
 }
 
-template <typename T>
-std::shared_ptr<T> Coordinator::RegisterSystem() {
-	return m_systemManager->RegisterSystem<T>();
+template <typename T, typename... Args>
+std::shared_ptr<T> Coordinator::RegisterSystem(Args&&... args) {
+	return m_systemManager->RegisterSystem<T>(std::forward<Args>(args)...);
 }
 
 template <typename T>

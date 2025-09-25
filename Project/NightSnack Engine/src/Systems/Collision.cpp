@@ -20,6 +20,8 @@ void CollisionSystem::Init(EventDispatcher& dispatcher)
 	// Testing code for collision event subscibtion (subscribe only in init)
     m_dispatcher->Subscribe<CollisionEvent>([](const CollisionEvent& event)
         {
+            (void)event; // temp unreferenced;
+
             // Example: Play sound, spawn particles, update score, etc.
             //std::cout << "Collision event: Entity " << event.entityA << " collided with Entity " << event.entityB << std::endl;
         });
