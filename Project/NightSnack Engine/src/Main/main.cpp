@@ -40,34 +40,33 @@ int main()
   	// If you create new components, please register them in this function defined in Core.cpp;
   	core.Initialize(1600, 900, "NightSnack Engine");
 
+	// Get singletons
 	ResourceManager* rm = ResourceManager::GetInstance();
-	// Initialize AudioSystem
 	AudioSystem* audioSystem = AudioSystem::GetInstance();
+
+	// Init AudioSystem
 	if (!audioSystem->Initialize())
 	{
 		std::cout << "Failed to initialize AudioSystem!" << std::endl;
+		return -1;
 	}
-	// Set the ResourceManager first
+
+	// Link ResourceManager
 	audioSystem->SetResourceManager(rm);
 
-	// Load a valid sound
-	std::size_t soundKey = 0;
-	rm->LoadSound("assets/Sound/SFX/sound_button_temp.wav", soundKey, audioSystem->GetFMODSystem());
-	// Play the valid sound
-	audioSystem->PlaySound(soundKey);
+	// Load sounds
+	std::size_t sfxKey = audioSystem->LoadSFX("assets/Sound/SFX/sound_button_temp.wav");
+	std::size_t musicKey = audioSystem->LoadMusic("assets/Sound/Music/LevelCompleteMusic.wav", true);
 
-	// Load a valid sound
-	std::size_t musicKey = 0;
-	rm->LoadSound("assets/Sound/Music/LevelCompleteMusic.wav", musicKey, audioSystem->GetFMODSystem());
-	// Make music loop
-	FMOD::Sound* musicSound = rm->GetSound(musicKey);
-	if (musicSound)
+	if (sfxKey == 0 || musicKey == 0)
 	{
-		musicSound->setMode(FMOD_LOOP_NORMAL);   // loop indefinitely
-		musicSound->setLoopCount(-1);            // -1 = infinite
+		std::cout << "Failed to load sounds!" << std::endl;
+		return -1;
 	}
-	// Play the valid sound
-	audioSystem->PlaySound(musicKey);
+
+	// Play sounds
+	audioSystem->PlaySound(sfxKey);   // play button click once
+	audioSystem->PlaySound(musicKey); // play looping background music
 
 	// ECS test --------------------------------------------------------------------------------------
 	// -----------------------------------------------------------------------------------------------
@@ -205,6 +204,11 @@ int main()
 	// Update AudioSystem every frame
 	audioSystem->Update();
 
+	if (coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::SPACE)) 
+	{
+		audioSystem->PlaySound(sfxKey);
+		std::cout << "Playing SFX!\n";
+	}
   }
 
 	// Clean termination;

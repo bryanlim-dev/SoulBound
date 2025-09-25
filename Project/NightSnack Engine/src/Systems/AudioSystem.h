@@ -23,8 +23,11 @@ private:
 
     FMOD::System* fmodSystem;
     ResourceManager* resourceManager;
-    std::unordered_map<int, FMOD::Channel*> activeChannels;
-    int nextChannelId;
+
+    // Track active channels separately
+    std::unordered_map<std::size_t, FMOD::Channel*> sfxChannels;
+    std::unordered_map<std::size_t, FMOD::Channel*> musicChannels;
+
     bool initialized;
 
     // Private constructor for singleton
@@ -42,9 +45,15 @@ public:
     void Update();
     void SetResourceManager(ResourceManager* rm);
 
-    // Simple audio playback
+    // Loading
+    std::size_t LoadSFX(const std::string& path);
+    std::size_t LoadMusic(const std::string& path, bool loop = true);
+
+    // Playback control
     bool PlaySound(std::size_t soundKey);
+    bool StopSound(std::size_t soundKey);
     void StopAllSounds();
+    bool PauseSound(std::size_t soundKey, bool pause);
 
     // Getters
     FMOD::System* GetFMODSystem() { return fmodSystem; }

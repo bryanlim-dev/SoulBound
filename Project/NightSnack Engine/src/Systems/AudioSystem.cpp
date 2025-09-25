@@ -11,7 +11,6 @@ AudioSystem::AudioSystem()
 {
     fmodSystem = nullptr;
     resourceManager = nullptr;
-    nextChannelId = 1;
     initialized = false;
     std::cout << "AudioSystem created" << std::endl;
 }
@@ -29,7 +28,7 @@ AudioSystem::~AudioSystem()
     std::cout << "AudioSystem destroyed" << std::endl;
 }
 
-// Static singleton getter
+// Singleton getter
 AudioSystem* AudioSystem::GetInstance()
 {
     if (instance == nullptr)
@@ -39,7 +38,7 @@ AudioSystem* AudioSystem::GetInstance()
     return instance;
 }
 
-// Static singleton destroyer
+// Singleton destroyer
 void AudioSystem::DestroyInstance()
 {
     if (instance != nullptr)
@@ -49,86 +48,124 @@ void AudioSystem::DestroyInstance()
     }
 }
 
-// Initialize FMOD system
+// Initialize FMOD
 bool AudioSystem::Initialize()
 {
-    // Create FMOD system
     FMOD_RESULT result = FMOD::System_Create(&fmodSystem);
     if (result != FMOD_OK)
     {
-        std::cout << "AudioSystem: Failed to create FMOD system - " << FMOD_ErrorString(result) << std::endl;
+        std::cout << "AudioSystem: Failed to create FMOD system - "
+            << FMOD_ErrorString(result) << std::endl;
         return false;
     }
 
-    // Initialize FMOD system with 32 channels
-    result = fmodSystem->init(16, FMOD_INIT_NORMAL, nullptr);
+    result = fmodSystem->init(32, FMOD_INIT_NORMAL, nullptr);
     if (result != FMOD_OK)
     {
-        std::cout << "AudioSystem: Failed to initialize FMOD system - " << FMOD_ErrorString(result) << std::endl;
+        std::cout << "AudioSystem: Failed to initialize FMOD system - "
+            << FMOD_ErrorString(result) << std::endl;
         return false;
     }
 
     initialized = true;
-    std::cout << "AudioSystem: Initialized successfully with 16 channels" << std::endl;
+    std::cout << "AudioSystem: Initialized successfully with 32 channels" << std::endl;
     return true;
 }
 
-// Update FMOD and clean up finished channels
+// Update FMOD + cleanup finished channels
 void AudioSystem::Update()
 {
     if (!fmodSystem || !initialized)
         return;
 
-    // Update FMOD system
     fmodSystem->update();
 
-    // Clean up finished channels
-    std::vector<int> channelsToRemove;
-    for (auto& pair : activeChannels)
+    // Clean up finished SFX
+    std::vector<std::size_t> sfxToRemove;
+    for (auto& [key, channel] : sfxChannels)
     {
-        if (pair.second)
+        if (channel)
         {
             bool isPlaying = false;
-            pair.second->isPlaying(&isPlaying);
+            channel->isPlaying(&isPlaying);
             if (!isPlaying)
-            {
-                channelsToRemove.push_back(pair.first);
-            }
+                sfxToRemove.push_back(key);
         }
     }
+    for (auto key : sfxToRemove)
+        sfxChannels.erase(key);
 
-    // Remove finished channels from the map
-    for (int channelId : channelsToRemove)
+    // Clean up finished Music
+    std::vector<std::size_t> musicToRemove;
+    for (auto& [key, channel] : musicChannels)
     {
-        activeChannels.erase(channelId);
+        if (channel)
+        {
+            bool isPlaying = false;
+            channel->isPlaying(&isPlaying);
+            if (!isPlaying)
+                musicToRemove.push_back(key);
+        }
     }
+    for (auto key : musicToRemove)
+        musicChannels.erase(key);
 }
 
-// Set the ResourceManager pointer
+// Set resource manager
 void AudioSystem::SetResourceManager(ResourceManager* rm)
 {
     resourceManager = rm;
     if (rm)
-    {
         std::cout << "AudioSystem: ResourceManager set successfully" << std::endl;
-    }
     else
-    {
         std::cout << "AudioSystem: ResourceManager set to nullptr" << std::endl;
-    }
 }
 
-// Play a sound using ResourceManager key
+// -------------------------------
+// Loading
+// -------------------------------
+std::size_t AudioSystem::LoadSFX(const std::string& path)
+{
+    if (!resourceManager || !fmodSystem)
+        return 0;
+
+    std::size_t key = 0;
+    if (resourceManager->LoadSound(path, key, fmodSystem) == LOAD_SUCCESS)
+        return key;
+
+    return 0;
+}
+
+std::size_t AudioSystem::LoadMusic(const std::string& path, bool loop)
+{
+    if (!resourceManager || !fmodSystem)
+        return 0;
+
+    std::size_t key = 0;
+    if (resourceManager->LoadSound(path, key, fmodSystem) == LOAD_SUCCESS)
+    {
+        FMOD::Sound* music = resourceManager->GetSound(key);
+        if (music && loop)
+        {
+            music->setMode(FMOD_LOOP_NORMAL);
+            music->setLoopCount(-1); // infinite
+        }
+        return key;
+    }
+    return 0;
+}
+
+// -------------------------------
+// Playback
+// -------------------------------
 bool AudioSystem::PlaySound(std::size_t soundKey)
 {
-    // Check if system is properly initialized
     if (!initialized || !resourceManager || !fmodSystem)
     {
         std::cout << "AudioSystem: Cannot play sound - system not properly initialized" << std::endl;
         return false;
     }
 
-    // Get sound from ResourceManager using the key
     FMOD::Sound* sound = resourceManager->GetSound(soundKey);
     if (!sound)
     {
@@ -136,39 +173,91 @@ bool AudioSystem::PlaySound(std::size_t soundKey)
         return false;
     }
 
-    // Play the sound
     FMOD::Channel* channel = nullptr;
     FMOD_RESULT result = fmodSystem->playSound(sound, nullptr, false, &channel);
     if (result != FMOD_OK)
     {
-        std::cout << "AudioSystem: Failed to play sound - " << FMOD_ErrorString(result) << std::endl;
+        std::cout << "AudioSystem: Failed to play sound - "
+            << FMOD_ErrorString(result) << std::endl;
         return false;
     }
 
-    // Store the channel for tracking
-    if (channel)
+    // Detect if this is music (looping) or SFX
+    FMOD_MODE mode;
+    sound->getMode(&mode);
+    if (mode & FMOD_LOOP_NORMAL)
     {
-        activeChannels[nextChannelId] = channel;
-        std::cout << "AudioSystem: Playing sound (Key: " << soundKey << ", Channel: " << nextChannelId << ")" << std::endl;
-        nextChannelId++;
+        musicChannels[soundKey] = channel;
+        std::cout << "AudioSystem: Playing music (Key: " << soundKey << ")" << std::endl;
+    }
+    else
+    {
+        sfxChannels[soundKey] = channel;
+        std::cout << "AudioSystem: Playing SFX (Key: " << soundKey << ")" << std::endl;
     }
 
     return true;
 }
 
-// Stop all currently playing sounds
-void AudioSystem::StopAllSounds()
+bool AudioSystem::StopSound(std::size_t soundKey)
 {
-    std::cout << "AudioSystem: Stopping all sounds (" << activeChannels.size() << " active channels)" << std::endl;
-
-    for (auto& pair : activeChannels)
+    // Look in SFX
+    auto itSfx = sfxChannels.find(soundKey);
+    if (itSfx != sfxChannels.end() && itSfx->second)
     {
-        if (pair.second)
-        {
-            pair.second->stop();
-        }
+        itSfx->second->stop();
+        sfxChannels.erase(itSfx);
+        std::cout << "AudioSystem: Stopped SFX (Key: " << soundKey << ")" << std::endl;
+        return true;
     }
 
-    activeChannels.clear();
+    // Look in Music
+    auto itMusic = musicChannels.find(soundKey);
+    if (itMusic != musicChannels.end() && itMusic->second)
+    {
+        itMusic->second->stop();
+        musicChannels.erase(itMusic);
+        std::cout << "AudioSystem: Stopped Music (Key: " << soundKey << ")" << std::endl;
+        return true;
+    }
+
+    return false;
+}
+
+bool AudioSystem::PauseSound(std::size_t soundKey, bool pause)
+{
+    auto itSfx = sfxChannels.find(soundKey);
+    if (itSfx != sfxChannels.end() && itSfx->second)
+    {
+        itSfx->second->setPaused(pause);
+        std::cout << "AudioSystem: " << (pause ? "Paused" : "Resumed")
+            << " SFX (Key: " << soundKey << ")" << std::endl;
+        return true;
+    }
+
+    auto itMusic = musicChannels.find(soundKey);
+    if (itMusic != musicChannels.end() && itMusic->second)
+    {
+        itMusic->second->setPaused(pause);
+        std::cout << "AudioSystem: " << (pause ? "Paused" : "Resumed")
+            << " Music (Key: " << soundKey << ")" << std::endl;
+        return true;
+    }
+
+    return false;
+}
+
+void AudioSystem::StopAllSounds()
+{
+    std::cout << "AudioSystem: Stopping all sounds ("
+        << sfxChannels.size() + musicChannels.size() << " active)" << std::endl;
+
+    for (auto& [key, channel] : sfxChannels)
+        if (channel) channel->stop();
+    for (auto& [key, channel] : musicChannels)
+        if (channel) channel->stop();
+
+    sfxChannels.clear();
+    musicChannels.clear();
     std::cout << "AudioSystem: All sounds stopped" << std::endl;
 }
