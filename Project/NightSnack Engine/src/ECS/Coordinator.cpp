@@ -1,10 +1,11 @@
 #include "ECS/Coordinator.h"
 
-void Coordinator::Initialize() {
+void Coordinator::Initialize(/*EventDispatcher disp*/) /*: m_dispatcher{disp}*/ {
 	// Create ECS Managers;
 	m_entityManager = std::make_unique<EntityManager>();
 	m_systemManager = std::make_unique<SystemManager>();
 	m_componentManager = std::make_unique<ComponentManager>();
+
 }
 
 //void Coordinator::Update(float deltaTime) {

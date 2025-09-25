@@ -1,76 +1,19 @@
-﻿#pragma once
+#include "Graphics.h"
 
-#include <iostream>
-
-#include "ECS/Entity.h"
-#include "ECS/ISystem.h"
-#include "ECS/Coordinator.h"
-#include "ECS/Component.h"
-#include "Systems/Input.h"
-
-#include <glm/gtc/matrix_transform.hpp>
-
-
-class GraphicsSystem2 : public ISystem {
-
-public:
-	// Default constructor to set up SystemSignature;
-	GraphicsSystem2() {
-		m_systemSignature.set(GetComponentTypeID<Position>());
-		m_systemSignature.set(GetComponentTypeID<Rotation>());
-		m_systemSignature.set(GetComponentTypeID<Scale>());
-		m_systemSignature.set(GetComponentTypeID<Renderable2>());
-	}
-
-	// Main update called by core;
-	void Update(float dt, Coordinator& coord) override;
-
-	// Helper functions ------------------------------------------------------------------------------
-	// -----------------------------------------------------------------------------------------------
-	void Initialize();
-	// Resource Creation;
-	void AddShader(std::string const& name, std::unique_ptr<Shader> shader);
-	void AddTexture(std::string const& name, std::unique_ptr<Texture> tex);
-	void AddMesh(std::string const& name, std::unique_ptr<Mesh> mesh);
-	void AddMaterial(std::string const& name, std::unique_ptr<Material> material);
-
-	// Resource Lookup -----------------------------------------------
-	Shader*		GetShader(std::string const& n)   const;	// Using raw pointers as the resource belongs to the System...
-	Texture*	GetTexture(std::string const& n)  const;
-	Mesh*		GetMesh(std::string const& n)     const;
-	Material*	GetMaterial(std::string const& n) const;
-
-	// Required by ISystem inheritance;
-	Signature GetSignature() const override { return m_systemSignature; }
-	std::string GetName() const { return "GraphicsSystem"; }
-
-private:
-	// Entity → cached resolved pointers;
-	struct CachedRenderData {
-		Mesh* mesh{ nullptr };
-		Material* material{ nullptr };
-		bool valid{ false };
-	};
-	// Associates each entity with its “ready-to-draw” data;
-	std::unordered_map<Entity, CachedRenderData> m_renderCache;
-
-	// Resource stores (owned by system);
-	std::unordered_map<std::string, std::unique_ptr<Shader>>   m_shaders;
-	std::unordered_map<std::string, std::unique_ptr<Texture>>  m_textures;
-	std::unordered_map<std::string, std::unique_ptr<Mesh>>     m_meshes;
-	std::unordered_map<std::string, std::unique_ptr<Material>> m_materials;
-
-	// Helper functions;
-	void ResolveRenderable(Entity e, Renderable2 const& r);
-	Entity FindCamera(Coordinator& Coord);
-
-	Signature m_systemSignature{};
-
-};
+// Default constructor to set up SystemSignature;
+GraphicsSystem::GraphicsSystem() {
+	// The Graphics System only cares about entities with these components
+	// - Position, Rotation, Scale
+	// - Renderable (mesh, material, texture, color)
+	m_systemSignature.set(GetComponentTypeID<Position>());
+	m_systemSignature.set(GetComponentTypeID<Rotation>());
+	m_systemSignature.set(GetComponentTypeID<Scale>());
+	m_systemSignature.set(GetComponentTypeID<Renderable>());
+}
 
 // Compute the projection matrix ------------------------------------------------------------------
 // Transforms camera coords to clip coords --------------------------------------------------------
-static glm::mat4 GetCameraProjectionMatrix(float width, float height) {
+glm::mat4 GraphicsSystem::GetCameraProjectionMatrix(float width, float height) {
 	float halfWidth = width * 0.5f;
 	float halfHeight = height * 0.5f;
 	// Orthographic projection keeps objects the same size regardless of depth
@@ -80,7 +23,7 @@ static glm::mat4 GetCameraProjectionMatrix(float width, float height) {
 
 // Compute the ModelToWorld matrix ----------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-static glm::mat4 GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale) {
+glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale) {
 	glm::mat4 model(1.f);
 	model = glm::translate(model, glm::vec3(position.x, position.y, 0.f));
 	model = glm::rotate(model, glm::radians(rotation.degrees), glm::vec3(0.f, 0.f, 1.f)); // Rotate about z-axis
@@ -88,7 +31,7 @@ static glm::mat4 GetModelToWorldMatrix(Position position, Rotation rotation, Sca
 	return model;
 }
 
-inline void GraphicsSystem2::Update(float dt, Coordinator& coord) {
+void GraphicsSystem::Update(float dt, Coordinator& coord) {
 	(void)dt; // dt is unused for now...
 
 	// Camera stuff...
@@ -104,13 +47,13 @@ inline void GraphicsSystem2::Update(float dt, Coordinator& coord) {
 
 	for (Entity e : m_entities) {
 		// Obtain entity components;
-		auto& ren = coord.GetComponent<Renderable2>(e);
+		auto& ren = coord.GetComponent<Renderable>(e);
 		auto& pos = coord.GetComponent<Position>(e);
 		auto& rot = coord.GetComponent<Rotation>(e);
 		auto& scl = coord.GetComponent<Scale>(e);
 
 		// @TODO: Event-Driven check whether e's renderable was changed...
-		// if (renderable was changed) { ResolveRenderable(e, renderable);
+		// if (renderable was changed) { ResolveRenderable(e, renderable); }
 
 		// Find entity's renderCache;
 		auto it = m_renderCache.find(e);
@@ -122,7 +65,6 @@ inline void GraphicsSystem2::Update(float dt, Coordinator& coord) {
 		CachedRenderData& data = it->second;
 		if (!data.valid) continue;
 
-
 		glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl);
 		glm::mat4 mvp = proj * view * model;
 
@@ -132,16 +74,15 @@ inline void GraphicsSystem2::Update(float dt, Coordinator& coord) {
 		shader->SetMat4("uMVP", mvp);
 		data.material->ApplyUniforms(ren.isWireframe);
 
-		GLint loc = glGetUniformLocation(data.material->GetShader()->GetID(), "uMVP");
-		std::cout << "uMVP loc=" << loc << "\n";
+		//GLint loc = glGetUniformLocation(data.material->GetShader()->GetID(), "uMVP");
+		//std::cout << "uMVP loc=" << loc << "\n";
 
 		// Change the polygon mode to wireframe
-		if (ren.isWireframe) { 
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
+		if (ren.isWireframe) {
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 			mesh->Draw();
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		}
-		else {
+		} else {
 			mesh->Draw();
 		}
 		GLenum err = glGetError();
@@ -149,7 +90,7 @@ inline void GraphicsSystem2::Update(float dt, Coordinator& coord) {
 	}
 }
 
-inline void GraphicsSystem2::Initialize() {
+void GraphicsSystem::Initialize() {
 	// Default Shader;
 	auto shader = std::make_unique<Shader>("../shaders/vertex_shader.vert", "../shaders/fragment_shader.frag");
 	AddShader("default", std::move(shader));
@@ -179,39 +120,39 @@ inline void GraphicsSystem2::Initialize() {
 }
 
 // ------------------------------------------------------------------------------------------------
-inline void GraphicsSystem2::AddShader(std::string const& name, std::unique_ptr<Shader> shader) {
+void GraphicsSystem::AddShader(std::string const& name, std::unique_ptr<Shader> shader) {
 	m_shaders[name] = std::move(shader);
 }
-inline void GraphicsSystem2::AddTexture(std::string const& name, std::unique_ptr<Texture> tex) {
+void GraphicsSystem::AddTexture(std::string const& name, std::unique_ptr<Texture> tex) {
 	m_textures[name] = std::move(tex);
 }
-inline void GraphicsSystem2::AddMesh(std::string const& name, std::unique_ptr<Mesh> mesh) {
+void GraphicsSystem::AddMesh(std::string const& name, std::unique_ptr<Mesh> mesh) {
 	m_meshes[name] = std::move(mesh);
 }
-inline void GraphicsSystem2::AddMaterial(std::string const& name, std::unique_ptr<Material> mat) {
+void GraphicsSystem::AddMaterial(std::string const& name, std::unique_ptr<Material> mat) {
 	m_materials[name] = std::move(mat);
 }
 
 // ------------------------------------------------------------------------------------------------
-inline Shader* GraphicsSystem2::GetShader(std::string const& n) const {
+Shader* GraphicsSystem::GetShader(std::string const& n) const {
 	auto it = m_shaders.find(n);
 	return (it != m_shaders.end()) ? it->second.get() : nullptr;
 }
-inline Texture* GraphicsSystem2::GetTexture(std::string const& n) const {
+Texture* GraphicsSystem::GetTexture(std::string const& n) const {
 	auto it = m_textures.find(n);
 	return (it != m_textures.end()) ? it->second.get() : nullptr;
 }
-inline Mesh* GraphicsSystem2::GetMesh(std::string const& n) const {
+Mesh* GraphicsSystem::GetMesh(std::string const& n) const {
 	auto it = m_meshes.find(n);
 	return (it != m_meshes.end()) ? it->second.get() : nullptr;
 }
-inline Material* GraphicsSystem2::GetMaterial(std::string const& n) const {
+Material* GraphicsSystem::GetMaterial(std::string const& n) const {
 	auto it = m_materials.find(n);
 	return (it != m_materials.end()) ? it->second.get() : nullptr;
 }
 
 // ------------------------------------------------------------------------------------------------
-inline void GraphicsSystem2::ResolveRenderable(Entity e, Renderable2 const& r) {
+void GraphicsSystem::ResolveRenderable(Entity e, Renderable const& r) {
 	CachedRenderData cache;
 	cache.mesh = GetMesh(r.meshName);
 	cache.material = GetMaterial(r.materialName);
@@ -219,7 +160,7 @@ inline void GraphicsSystem2::ResolveRenderable(Entity e, Renderable2 const& r) {
 	m_renderCache[e] = cache;
 }
 
-inline Entity GraphicsSystem2::FindCamera(Coordinator& Coord) {
+Entity GraphicsSystem::FindCamera(Coordinator& Coord) {
 	// Camera Signature (only have components Camera and Tranform)
 	Signature cameraSig;
 	cameraSig.set(GetComponentTypeID<Camera>());

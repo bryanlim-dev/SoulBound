@@ -6,53 +6,6 @@
 // Construct a Mesh with the actual geometry data -------------------------------------------------
 // Sets up the VAO, VBO, and EBO for rendering ----------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-
-//Mesh::Mesh(GLenum primitiveType, std::vector<Vertex> const& vertices, std::vector<unsigned int> const& indices) : 
-//m_primitiveType(primitiveType) {
-//	// The number of indices, so we can use it for glDrawElements()
-//	m_indexCount = static_cast<GLsizei>(indices.size());
-//	m_vertexCount = static_cast<GLsizei>(vertices.size());
-//
-//	// Create VAO
-//	glCreateVertexArrays(1, &m_vao);
-//
-//	// Create VBO
-//	glCreateBuffers(1, &m_vbo);
-//	glNamedBufferStorage(m_vbo, vertices.size() * sizeof(Vertex), vertices.data(), 0);
-//
-//	// Bind vertex buffer to VAO
-//	glVertexArrayVertexBuffer(m_vao, 0, m_vbo, 0, sizeof(Vertex));
-//
-//	// Position attribute (location = 0)
-//	glEnableVertexArrayAttrib(m_vao, 0);
-//	glVertexArrayAttribFormat(m_vao, 0, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, position));
-//	glVertexArrayAttribBinding(m_vao, 0, 0);
-//
-//	// TexCoord attribute (location = 1)
-//	glEnableVertexArrayAttrib(m_vao, 1);
-//	glVertexArrayAttribFormat(m_vao, 1, 2, GL_FLOAT, GL_FALSE, offsetof(Vertex, texCoord));
-//	glVertexArrayAttribBinding(m_vao, 1, 0);
-//
-//	// Create EBO (optional if using indices)
-//	if (!indices.empty()) {
-//		glCreateBuffers(1, &m_ebo);
-//		glNamedBufferStorage(m_ebo, indices.size() * sizeof(unsigned int), indices.data(), 0);
-//		//glVertexArrayElementBuffer(m_vao, m_ebo);
-//
-//		// With this:
-//		glBindVertexArray(m_vao);
-//		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ebo);
-//		glBindVertexArray(0);
-//	}
-//
-//	std::cout << "VAO = " << m_vao
-//		<< " VBO = " << m_vbo
-//		<< " EBO = " << m_ebo
-//		<< " vertices = " << m_vertexCount
-//		<< " indices = " << m_indexCount
-//		<< std::endl;
-//}
-
 Mesh::Mesh(GLenum primitiveType,
 	std::vector<Vertex> const& vertices,
 	std::vector<unsigned int> const& indices)
@@ -109,27 +62,11 @@ Mesh::Mesh(GLenum primitiveType,
 		//}
 	}
 
-	//// Debug print
-	//std::cout << "[Mesh] VAO=" << m_vao
-	//	<< " VBO=" << m_vbo
-	//	<< " EBO=" << m_ebo
-	//	<< " verts=" << m_vertexCount
-	//	<< " idx=" << m_indexCount
-	//	<< std::endl;
-
-
-	//GLint ctx = 0;
-	//glGetIntegerv(GL_MAJOR_VERSION, &ctx);
-	//if (ctx == 0) {
-	//	std::cerr << "[Mesh] ERROR: Created before OpenGL context!" << std::endl;
-	//}
 }
 
 // Destructor -------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 Mesh::~Mesh() {
-	//std::cout << "[Mesh] Destructor called (VAO=" << m_vao << ", VBO=" << m_vbo << ", EBO=" << m_ebo << ")\n";
-
 	if (m_ebo)
 		glDeleteBuffers(1, &m_ebo);
 	if (m_vbo)
@@ -141,10 +78,6 @@ Mesh::~Mesh() {
 // Render the mesh according to its primitive type ------------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void Mesh::Draw() const {
-	//GLint ebo = 0;
-	//glGetVertexArrayiv(m_vao, GL_ELEMENT_ARRAY_BUFFER_BINDING, &ebo);
-	//std::cout << "VAO " << m_vao << " has EBO = " << ebo << std::endl;
-
 	glBindVertexArray(m_vao);
 
 	switch (m_primitiveType) {

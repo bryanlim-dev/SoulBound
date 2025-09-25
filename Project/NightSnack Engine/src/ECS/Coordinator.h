@@ -30,8 +30,9 @@ public:
 	T const& GetComponent(Entity e) const;
 	template <typename T>
 	T& ModifyComponent(Entity e);
+
 	template <>	// specialization for Renderable;
-	Renderable2& ModifyComponent<Renderable2>(Entity e);
+	Renderable& ModifyComponent<Renderable>(Entity e);
 
 	Signature& GetEntitySignature(Entity e) { return m_entityManager->GetSignature(e); }
 
@@ -50,6 +51,9 @@ private:
 	std::unique_ptr<EntityManager> m_entityManager;
 	std::unique_ptr<ComponentManager> m_componentManager;
 	std::unique_ptr<SystemManager> m_systemManager;
+
+	// Event Dispatcher;
+	// EventDispatcher& m_dispather;
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -107,11 +111,12 @@ T const& Coordinator::GetComponent(Entity e) const {
 
 template <typename T>
 T& Coordinator::ModifyComponent(Entity e) {
+
 	return m_componentManager->GetComponent<T>(e);
 }
 template <>	// specialization for Renderable;
-inline Renderable2& Coordinator::ModifyComponent<Renderable2>(Entity e) {
-	auto& r = m_componentManager->GetComponent<Renderable2>(e);
+inline Renderable& Coordinator::ModifyComponent<Renderable>(Entity e) {
+	auto& r = m_componentManager->GetComponent<Renderable>(e);
 	r.wasModified = true;
 	return r;
 }

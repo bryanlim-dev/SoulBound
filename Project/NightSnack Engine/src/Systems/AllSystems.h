@@ -8,8 +8,6 @@
 #include "Physics.h"
 #include "Collision.h"
 
-#include "Graphics2.h"
-
 // Add System header files here...
 
 #endif // SYSTEM_HPP

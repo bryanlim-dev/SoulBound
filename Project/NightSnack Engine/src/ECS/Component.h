@@ -49,25 +49,25 @@ struct Color {
 // GRAPHICS COMPONENTS
 // ================================================================================================
 
-struct Renderable {
-	Mesh* mesh{ nullptr }; // Stores a pointer to a GPU mesh
-	Material* material{ nullptr }; // Stores shader + color/texture information
-	//std::string meshName;
-	//std::string materialName;
-	bool isWireframe{ true }; // default is wireframe mode
-
-	//Renderable() = default;
-
-	//Renderable(Mesh* m, Material* mat, bool wire = false)
-	//	: mesh(m), material(mat), isWireframe(wire) {
-	//}
-};
+//struct Renderable {
+//	Mesh* mesh{ nullptr }; // Stores a pointer to a GPU mesh
+//	Material* material{ nullptr }; // Stores shader + color/texture information
+//	//std::string meshName;
+//	//std::string materialName;
+//	bool isWireframe{ true }; // default is wireframe mode
+//
+//	//Renderable() = default;
+//
+//	//Renderable(Mesh* m, Material* mat, bool wire = false)
+//	//	: mesh(m), material(mat), isWireframe(wire) {
+//	//}
+//};
 
 // For testing...
-struct Renderable2 {
+struct Renderable {
 	std::string meshName{};
 	std::string materialName{};
-	Color colour{ 1.f, 1.f, 1.f, 1.f};
+	//Color colour{ 1.f, 1.f, 1.f, 1.f};
 	bool isWireframe{ false };
 	bool wasModified{ true };
 };

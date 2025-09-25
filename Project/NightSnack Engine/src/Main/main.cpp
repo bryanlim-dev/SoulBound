@@ -108,18 +108,18 @@ int main()
 	coord.AddComponent<Rotation>(ground, Rotation{});
 
 	// TESTING GRAPHICS2;
-	Renderable2 r0{ "square", "bananaMat" };
-	coord.AddComponent<Renderable2>(control, r0);
-	Renderable2 r1{ "circle", "targetMat" };
-	coord.AddComponent<Renderable2>(p0, r1);
-	Renderable2 r2{ "circle", "bananaMat" };
-	coord.AddComponent<Renderable2>(p1, r2);
-	Renderable2 r3{ "square", "bananaMat" };
-	coord.AddComponent<Renderable2>(p2, r3);
-	Renderable2 r4{ "circle", "targetMat" };
-	coord.AddComponent<Renderable2>(p3, r4);
-	Renderable2 r5{ "square", "targetMat" };
-	coord.AddComponent<Renderable2>(ground, r5);
+	Renderable r0{ "square", "bananaMat" };
+	coord.AddComponent<Renderable>(control, r0);
+	Renderable r1{ "circle", "redMat" };
+	coord.AddComponent<Renderable>(p0, r1);
+	Renderable r2{ "circle", "bananaMat" };
+	coord.AddComponent<Renderable>(p1, r2);
+	Renderable r3{ "square", "bananaMat" };
+	coord.AddComponent<Renderable>(p2, r3);
+	Renderable r4{ "circle", "targetMat" };
+	coord.AddComponent<Renderable>(p3, r4);
+	Renderable r5{ "square", "targetMat" };
+	coord.AddComponent<Renderable>(ground, r5);
 
 	// Camera object
 	Entity camera = coord.CreateEntity();
