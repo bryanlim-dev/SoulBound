@@ -43,7 +43,10 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 
 	// Initialise InputSystem
 	m_coord.GetSystem<InputSystem>().get()->Init(
-		m_coord.GetSystem<ApplicationSystem>().get()->GetNativeHandle()); // GLFWwindow* handle
+		m_coord.GetSystem<ApplicationSystem>().get()->GetNativeHandle(), core_dispatcher); // GLFWwindow* handle
+
+	// Initialise CollisionSystem
+	m_coord.GetSystem<CollisionSystem>().get()->Init(core_dispatcher);
 
 	
 
@@ -91,9 +94,6 @@ void CoreEngine::Update() {
 	m_coord.GetSystem<ApplicationSystem>().get()->SetWindowTitle(
 		m_coord.GetSystem<ApplicationSystem>().get()->GetNativeHandle(), title.c_str()
 	);
-
-	// Displaying active system timers into Console (temp.);
-	//m_coord.GetSystem<ApplicationSystem>()->GetTimer().DisplaySystemTimers();
 
 	// End frame timing;
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndFrame();

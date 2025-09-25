@@ -4,12 +4,13 @@
 #include "ECS/ISystem.h"
 #include "ECS/Coordinator.h"
 #include "ECS/Component.h"
+#include "Systems/IEvent.h"
 #include <iostream>
 
 class CollisionSystem : public ISystem {
 public:
     CollisionSystem();
-    // to change to float after TK push changes for ISystem
+    void Init(EventDispatcher& dispatcher);
     void Update(float dt, Coordinator& coord) override;
     std::string GetName() const { return "CollisionSystem"; }
     Signature GetSignature() const override { return m_systemSignature; }
@@ -40,6 +41,9 @@ public:
 
 private:
     Signature m_systemSignature{};
+
+    // System event dispatcher
+	EventDispatcher* m_dispatcher = nullptr;
 };
 
 #endif // COLLISION_HPP
