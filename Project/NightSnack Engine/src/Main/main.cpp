@@ -181,7 +181,7 @@ int main()
 
 	// Clean termination;
 	rm->DeleteRM();
-	fmodSystem->close();
+	//fmodSystem->close();
 	// Clean up when game exits
 	AudioSystem::DestroyInstance();
 
