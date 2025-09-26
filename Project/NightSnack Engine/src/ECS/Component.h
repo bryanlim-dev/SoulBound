@@ -62,6 +62,7 @@ struct Renderable {
 	RenderLayer renderLayer{ RenderLayer::DEFAULT };
 	bool isWireframe{ false };
 	bool wasModified{ true };
+	bool isSelected{ false };
 };
 
 struct Camera {

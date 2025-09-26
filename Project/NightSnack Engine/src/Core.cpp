@@ -42,7 +42,7 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	m_coord.GetSystem<ApplicationSystem>()->Init(windowWidth, windowHeight, std::move(windowTitle));
 
 	// Initialise GraphicsSystem
-	m_coord.GetSystem<GraphicsSystem>()->Init();
+	m_coord.GetSystem<GraphicsSystem>()->Init(m_coord, core_dispatcher);
 	
 	// Initialise InputSystem
 	m_coord.GetSystem<InputSystem>()->Init(m_coord.GetSystem<ApplicationSystem>()->GetNativeHandle(), core_dispatcher); // GLFWwindow* handle
@@ -82,7 +82,7 @@ void CoreEngine::Update() {
 	}
 
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
-	m_coord.GetSystem<ApplicationSystem>().get()->SwapBuffers();
+	m_coord.GetSystem<ApplicationSystem>()->SwapBuffers();
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
 
 	// End frame timing;

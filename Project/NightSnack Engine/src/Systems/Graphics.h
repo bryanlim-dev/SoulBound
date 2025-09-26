@@ -6,7 +6,7 @@
 #include "ECS/ISystem.h"
 #include "ECS/Coordinator.h"
 #include "ECS/Component.h"
-#include "Systems/Input.h"
+#include "Systems/IEvent.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -17,7 +17,7 @@ public:
 	// Default constructor to set up SystemSignature;
 	GraphicsSystem();
 
-	void Init();
+	void Init(Coordinator& Coord, EventDispatcher& dispatcher);
 
 	// Main update called by core
 	void Update(float dt, Coordinator& coord) override;
@@ -57,11 +57,17 @@ private:
 	std::unordered_map<std::string, std::unique_ptr<Mesh>>     m_meshes;
 	std::unordered_map<std::string, std::unique_ptr<Material>> m_materials;
 
+	int m_selectedEntityIndex = -1;
+
 	// Helper functions;
 	void ResolveRenderable(Entity e, Renderable const& r);
 	Entity FindCamera(Coordinator& Coord);
 	float GetRenderLayerZPos(RenderLayer layer);
+	void ModifyEntityScale(Coordinator& Coord, float value);
+	void ModifyEntityRotation(Coordinator& Coord, float value);
 
 	Signature m_systemSignature{};
 
+	// System event dispatcher
+	EventDispatcher* m_dispatcher = nullptr;
 };

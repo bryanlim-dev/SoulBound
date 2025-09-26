@@ -72,6 +72,7 @@ InputSystem::KeyboardKeys InputSystem::TranslateGLFWKeyboardKey(int glfwKey) {
 	case GLFW_KEY_A: return KeyboardKeys::A;
 	case GLFW_KEY_S: return KeyboardKeys::S;
 	case GLFW_KEY_D: return KeyboardKeys::D;
+	case GLFW_KEY_R: return KeyboardKeys::R;
 	case GLFW_KEY_SPACE: return KeyboardKeys::SPACE;
 	case GLFW_KEY_ESCAPE: return KeyboardKeys::ESC;
 	default: return KeyboardKeys::NUM_TOTAL_KEYBOARD_KEY;
