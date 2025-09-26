@@ -65,8 +65,9 @@ void Timer::DisplaySystemTimers() const
     for (const auto& [name, time] : m_systemsTimes)
     {
         float percent = (time / m_totalSystemTime) * 100.f;
-        std::cout << name << " Time : " << std::fixed << std::setprecision(4)
-            << percent << "% | \n";
+        std::cout << std::left << std::setw(36) << (name + " Time Consumption :")
+            << std::right << std::setw(8) << std::fixed << std::setprecision(4) << percent
+            << "% |" << std::endl;
     }
     std::cout << std::endl;
 }

@@ -80,6 +80,11 @@ void CoreEngine::Update() {
 
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(System->GetName());
 	}
+
+	m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
+	m_coord.GetSystem<ApplicationSystem>().get()->SwapBuffers();
+	m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
+
 	// End frame timing;
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndFrame();
 	//timer_.FrameCap(60.f); // Cap frame rate to 60 FPS (optional);

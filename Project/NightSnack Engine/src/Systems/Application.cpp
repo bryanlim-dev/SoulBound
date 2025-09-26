@@ -74,7 +74,6 @@ void ApplicationSystem::Update(float dt, Coordinator& coord) {
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	PollEvents();
-	SwapBuffers();
 
 	std::string title = "NightSnack Engine | FPS: " + std::to_string(static_cast<int>(GetTimer().GetFPS()))
 		+ " | Game Time: " + std::to_string(static_cast<int>(GetTimer().GetTotalSystemTime()));
