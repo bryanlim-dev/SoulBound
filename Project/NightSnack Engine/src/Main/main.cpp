@@ -14,6 +14,8 @@
 #include "Systems/AllSystems.h"
 
 #include "ResourceManager/ResourceManager.h"
+#include "Systems/AudioSystem.h"
+
 #include <fmod.hpp>
 
 
@@ -22,12 +24,11 @@ int main()
 	// Enable memory leak checking at program exit
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	ResourceManager* rm = ResourceManager::GetInstance();
-
 	////Resource Manager test
 	//{
 	//	//rm->DebugTestEverything();
 	//}
+
 
 	////Replace this with actual sound manager later
 	//FMOD::System* fmodSystem = nullptr;
@@ -40,6 +41,34 @@ int main()
   	// If you create new components, please register them in this function defined in Core.cpp;
   	core.Initialize(1600, 900, "NightSnack Engine");
 	Coordinator& coord = core.GetCoord();
+
+	// Get singletons
+	ResourceManager* rm = ResourceManager::GetInstance();
+	AudioSystem* audioSystem = AudioSystem::GetInstance();
+
+	// Init AudioSystem
+	if (!audioSystem->Initialize())
+	{
+		std::cout << "Failed to initialize AudioSystem!" << std::endl;
+		return -1;
+	}
+
+	// Link ResourceManager
+	audioSystem->SetResourceManager(rm);
+
+	// Load sounds
+	std::size_t sfxKey = audioSystem->LoadSFX("assets/Sound/SFX/sound_button_temp.wav");
+	std::size_t musicKey = audioSystem->LoadMusic("assets/Sound/Music/LevelCompleteMusic.wav", true);
+
+	if (sfxKey == 0 || musicKey == 0)
+	{
+		std::cout << "Failed to load sounds!" << std::endl;
+		return -1;
+	}
+
+	// Play sounds
+	audioSystem->PlaySound(sfxKey);   // play button click once
+	audioSystem->PlaySound(musicKey); // play looping background music
 
 	// ECS test --------------------------------------------------------------------------------------
 	// -----------------------------------------------------------------------------------------------
@@ -140,12 +169,22 @@ int main()
   // Core Application Loop;
   while (!core.ShouldClose()) {
   	core.Update();
+	// Update AudioSystem every frame
+	audioSystem->Update();
 
+	if (coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::SPACE)) 
+	{
+		audioSystem->PlaySound(sfxKey);
+		std::cout << "Playing SFX!\n";
+	}
   }
 
 	// Clean termination;
 	rm->DeleteRM();
-	//fmodSystem->close();
+	fmodSystem->close();
+	// Clean up when game exits
+	AudioSystem::DestroyInstance();
+
   return 0;
 
 }

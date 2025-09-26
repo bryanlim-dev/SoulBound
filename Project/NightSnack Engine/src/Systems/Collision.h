@@ -25,17 +25,6 @@ public:
 
     // Utility helpers
     float Clamp(float value, float min, float max);
-    bool IsMovingAway(const Position& pos1, const Position& pos2, const Velocity& vel1);
-
-    // Separation helpers for resolving penetration
-    void SeparateObjects(Position& posA, const Collider& colA,
-        Position& posB, const Collider& colB,
-        const Velocity& velA, const Velocity& velB);
-    void SeparateCircles(Position& posA, const Collider& colA,
-        Position& posB, const Collider& colB,
-        const Velocity& velA, const Velocity& velB);
-    void SeparateCircleAABB(Position& circlePos, const Collider& circle,
-        Position& aabbPos, const Collider& aabb, bool circleIsA);
 
     bool ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt);
 
