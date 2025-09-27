@@ -37,13 +37,25 @@ int main()
   	// Create Core engine
   	CoreEngine core;
 
+	//Creatr resource manager
+	ResourceManager* rm = ResourceManager::GetInstance();
+	size_t configKey = 0;
+	rm->LoadJson("assets/Data/WindowConfig.json", configKey);
+	std::string windowTitle = "";
+	int winWidth = 0;
+	int winHeight = 0;
+
+	windowTitle = (rm->GetJson(configKey)["WindowConfig"].componentMap["windowTitle"]);
+	winWidth = std::stoi(rm->GetJson(configKey)["WindowConfig"].componentMap["Width"]);
+	winHeight = std::stoi(rm->GetJson(configKey)["WindowConfig"].componentMap["Height"]);
+	rm->UnloadJson(configKey);
+
   	// Will register all components;
   	// If you create new components, please register them in this function defined in Core.cpp;
-  	core.Initialize(1600, 900, "NightSnack Engine");
+  	core.Initialize(winWidth, winHeight, windowTitle.c_str());
 	Coordinator& coord = core.GetCoord();
 
 	// Get singletons
-	ResourceManager* rm = ResourceManager::GetInstance();
 	AudioSystem* audioSystem = AudioSystem::GetInstance();
 
 	// Init AudioSystem
