@@ -75,7 +75,13 @@ void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
 					}
 
 					// Move on to the next selection
-					m_selectedEntityIndex = (m_selectedEntityIndex + 1) % static_cast<int>(m_entities.size());
+					if (++m_selectedEntityIndex == static_cast<int>(m_entities.size())) {
+						// Reset to selecting no objects once it reached the end
+						m_selectedEntityIndex = -1;
+						return;
+					}
+					
+					// Set the current object selection to be true
 					it = m_entities.begin(); // Reset it back to the start, before advancing again
 					std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
 					auto& ren = coord.ModifyComponent<Renderable>(*it);

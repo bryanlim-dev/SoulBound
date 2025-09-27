@@ -19,6 +19,7 @@ public:
         Rotate, // R
         ApplyForce, // SPACE
         ClickLMB, // LMB
+        Save, // CTRL + S
         NumTotalInputAction
     };
 
