@@ -179,6 +179,7 @@ ResourceJson::ResourceJson(std::unordered_map<std::string, Archtype> const& newA
 
 ResourceJson::~ResourceJson()
 {
+
 }
 
 void ResourceJson::LoadFile()
@@ -410,6 +411,9 @@ ResourceFont::~ResourceFont()
 {
 	if (fontFace)
 		FT_Done_Face(fontFace);
+
+	fontFace = nullptr;
+
 	resourceLoaded = false;
 }
 
