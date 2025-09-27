@@ -50,6 +50,8 @@ void InputSystem::Update(float dt, Coordinator& coord) {
 	m_deltaPosY = m_mousePosY - m_prevMousePosY;
 	m_prevMousePosX = m_mousePosX;
 	m_prevMousePosY = m_mousePosY;
+
+	ResetInputStates();
 }
 
 // Reset the key and mouse button states at the end of every update loop / frame ------------------
@@ -70,6 +72,7 @@ InputSystem::KeyboardKeys InputSystem::TranslateGLFWKeyboardKey(int glfwKey) {
 	case GLFW_KEY_A: return KeyboardKeys::A;
 	case GLFW_KEY_S: return KeyboardKeys::S;
 	case GLFW_KEY_D: return KeyboardKeys::D;
+	case GLFW_KEY_R: return KeyboardKeys::R;
 	case GLFW_KEY_SPACE: return KeyboardKeys::SPACE;
 	case GLFW_KEY_ESCAPE: return KeyboardKeys::ESC;
 	default: return KeyboardKeys::NUM_TOTAL_KEYBOARD_KEY;
@@ -137,6 +140,12 @@ void InputSystem::MouseButtonCallback(GLFWwindow* window, int button, int action
 
 	// Update the modifier state
 	m_currentModifiers = mods;
+
+	// Dispatch InputEvent when key is pressed
+	if (m_dispatcher)
+	{
+		m_dispatcher->Dispatch(InputEvent(button, action == GLFW_PRESS));
+	}
 }
 
 // Mouse position callback function ---------------------------------------------------------------

@@ -43,7 +43,7 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	m_coord.GetSystem<ApplicationSystem>()->Init(windowWidth, windowHeight, std::move(windowTitle));
 
 	// Initialise GraphicsSystem
-	m_coord.GetSystem<GraphicsSystem>()->Init();
+	m_coord.GetSystem<GraphicsSystem>()->Init(m_coord, core_dispatcher);
 	
 	// Initialise InputSystem
 	m_coord.GetSystem<InputSystem>()->Init(m_coord.GetSystem<ApplicationSystem>()->GetNativeHandle(), core_dispatcher); // GLFWwindow* handle
@@ -71,14 +71,8 @@ void CoreEngine::Update() {
 	// Start frame timing;
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartFrame();
 
-	// Reset input states at the start of the frame
-	m_coord.GetSystem<InputSystem>()->ResetInputStates();
-
 	// Obtain dt from Timer;
 	float deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
-
-	// glfw callbacks are triggered here
-	m_coord.GetSystem<ApplicationSystem>().get()->PollEvents();
 
 	// Iterate through Systems and Update them through Coordinator;
 	for (auto& System : m_systems) {
@@ -90,15 +84,9 @@ void CoreEngine::Update() {
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(System->GetName());
 	}
 
-	m_coord.GetSystem<ApplicationSystem>().get()->SwapBuffers();
-
-	// Update window title with FPS from Timer;
-	std::string title = "NightSnack Engine | FPS: " + std::to_string(static_cast<int>(m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetFPS()))
-		+ " | Game Time: " + std::to_string(static_cast<int>(m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetTotalSystemTime()));
-	
-	m_coord.GetSystem<ApplicationSystem>().get()->SetWindowTitle(
-		m_coord.GetSystem<ApplicationSystem>().get()->GetNativeHandle(), title.c_str()
-	);
+	m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
+	m_coord.GetSystem<ApplicationSystem>()->SwapBuffers();
+	m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
 
 	// End frame timing;
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndFrame();

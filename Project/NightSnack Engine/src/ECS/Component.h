@@ -11,7 +11,7 @@ using json = nlohmann::json;
 // COMPONENTS
 // ================================================================================================
 struct Position {
-	float x, y;
+  float x, y, z;
 };
 
 struct Rotation {
@@ -57,12 +57,20 @@ struct Color {
 // GRAPHICS COMPONENTS
 // ================================================================================================
 
-// For testing...
+enum class RenderLayer {
+	BACKGROUND = 0,
+	DEFAULT,
+	DEBUG,
+	UI
+};
+
 struct Renderable {
 	std::string meshName{};
 	std::string materialName{};
+	RenderLayer renderLayer{ RenderLayer::DEFAULT };
 	bool isWireframe{ false };
 	bool wasModified{ true };
+	bool isSelected{ false };
 };
 
 struct Camera {

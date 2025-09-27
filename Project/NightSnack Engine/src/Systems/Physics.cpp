@@ -5,7 +5,7 @@
 void PhysicsSystem::Update(float dt, Coordinator& coord) {
 
 	if (coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::SPACE)) {
-		coord.GetSystem<PhysicsSystem>()->ApplyForce(coord, Entity{ 0 }, 8.f, 0.f);
+		coord.GetSystem<PhysicsSystem>()->ApplyForce(coord, Entity{ 0 }, 750.f, 0.f);
 	}
 
 	// Iterate through all Entities this system can access;
