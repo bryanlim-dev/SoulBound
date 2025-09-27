@@ -49,7 +49,7 @@ int main()
 
 		if (rm->ResourceLoaded(RESOURCE_JSON, configKey))
 		{
-			windowTitle = (rm->GetJson(configKey)["WindowConfig"].componentMap["windowTitle"]);
+			windowTitle = (rm->GetJson(configKey)["WindowConfig"].componentMap["WindowTitle"]);
 			winWidth = std::stoi(rm->GetJson(configKey)["WindowConfig"].componentMap["Width"]);
 			winHeight = std::stoi(rm->GetJson(configKey)["WindowConfig"].componentMap["Height"]);
 			rm->UnloadJson(configKey);
