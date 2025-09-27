@@ -11,10 +11,21 @@ enum class EventType
 class InputEvent : public IEvent
 {
 public:
-    int  key;
+
+    enum class InputAction {
+        SelectNext, // W
+        ScaleUp, // D
+        ScaleDown, // A
+        Rotate, // R
+        ApplyForce, // SPACE
+        ClickLMB, // LMB
+        NumTotalInputAction
+    };
+
+    InputAction inputAction;
     bool pressed;
 
-    InputEvent(int k, bool p) : key(k), pressed(p) {}
+    InputEvent(InputAction a, bool p) : inputAction(a), pressed(p) {}
     EventType GetType() const override { return EventType::Input; }
 };
 

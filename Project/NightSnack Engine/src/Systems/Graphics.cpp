@@ -63,8 +63,9 @@ void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
 				return;
 
 			if (event.pressed) {
-				if (event.key == 87) { // W key pressed
-
+				switch (event.inputAction) {
+				case InputEvent::InputAction::SelectNext:
+				{
 					auto it = m_entities.begin();
 					// Clear the previous selection
 					if (m_selectedEntityIndex >= 0 && m_selectedEntityIndex < static_cast<int>(m_entities.size())) {
@@ -79,15 +80,17 @@ void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
 					std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
 					auto& ren = coord.ModifyComponent<Renderable>(*it);
 					ren.isSelected = true;
-
-				} else if (m_selectedEntityIndex >= 0) { // There is a current selection
-					if (event.key == 65) { // A key pressed
-						ModifyEntityScale(coord, 1.1f);
-					} else if (event.key == 68) { // D key pressed
-						ModifyEntityScale(coord, 0.9f);
-					} else if (event.key == 82) { // R key pressed
-						ModifyEntityRotation(coord, 30.f);
-					}
+				}
+					break;
+				case InputEvent::InputAction::ScaleUp:
+					ModifyEntityScale(coord, 1.1f);
+					break;
+				case InputEvent::InputAction::ScaleDown:
+					ModifyEntityScale(coord, 0.9f);
+					break;
+				case InputEvent::InputAction::Rotate:
+					ModifyEntityRotation(coord, 30.f);
+					break;
 				}
 			}
 		});
@@ -261,6 +264,10 @@ float GraphicsSystem::GetRenderLayerZPos(RenderLayer layer) {
 // Modify the scale of the currently selected object ----------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void GraphicsSystem::ModifyEntityScale(Coordinator& coord, float value) {
+	// No object is currently selected
+	if (m_selectedEntityIndex < 0)
+		return;
+
 	auto it = m_entities.begin();
 	std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
 	auto& scale = coord.ModifyComponent<Scale>(*it);
@@ -271,6 +278,10 @@ void GraphicsSystem::ModifyEntityScale(Coordinator& coord, float value) {
 // Modify the rotation of the currently selected object -------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void GraphicsSystem::ModifyEntityRotation(Coordinator& coord, float value) {
+	// No object is currently selected
+	if (m_selectedEntityIndex < 0)
+		return;
+
 	auto it = m_entities.begin();
 	std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
 	auto& rotation = coord.ModifyComponent<Rotation>(*it);
