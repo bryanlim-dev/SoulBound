@@ -92,9 +92,6 @@ void CoreEngine::Update() {
 		m_coord.GetSystem<ApplicationSystem>().get()->GetNativeHandle(), title.c_str()
 	);
 
-	// Displaying active system timers into Console (temp.);
-	//m_coord.GetSystem<ApplicationSystem>()->GetTimer().DisplaySystemTimers();
-
 	// End frame timing;
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndFrame();
 	//timer_.FrameCap(60.f); // Cap frame rate to 60 FPS (optional);

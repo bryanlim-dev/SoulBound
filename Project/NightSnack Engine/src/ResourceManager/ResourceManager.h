@@ -93,13 +93,35 @@ public:
 	Uses GetImageResource to find class containing it.
 	
 	\param input
-	The input string of the file path.
-	
+	The input string of the key to the resource
+
 	\return
 	Pointer of unsigned char of image.
 	*/
 	/************************************************************************/
 	unsigned char* GetImage(const std::size_t imageKey);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Get an image based on the file path.
+	Uses GetImageResource to find class containing it.
+	Returns variables to return width height and channels
+
+	\param input[in]
+	The input string of the file path.
+
+	\param width[out]
+	Output param, width of image
+
+	\param height[out]
+	Output param, height of image
+
+	\return
+	Pointer of unsigned char of image.
+	*/
+	/************************************************************************/
+	unsigned char* GetImage(const std::size_t imageKey, int& width, int& height, int& channels);
 
 	/************************************************************************/
 	/*!
@@ -147,8 +169,8 @@ public:
 	Uses GetImageResource to find class containing it.
 	
 	\param input
-	The input string of the file path.
-	
+	The input string of the key to the resource
+
 	\return
 	Pointer of unsigned char of image.
 	*/
@@ -158,16 +180,30 @@ public:
 	/************************************************************************/
 	/*!
 	\brief
-	Get an image resource class pointer based on the file path
+	Get an Txt File resource class pointer based on the file path
 	
-	\param input
-	The input string of the file path
+	\param txtKey
+	size__t key to the txt file
 	
 	\return
-	Pointer of image resource
+	Pointer of txt file resource
 	*/
 	/************************************************************************/
 	ResourceTxtFile* GetTxtFileResource(const std::size_t txtKey);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Saves a inputted vector of strings to save to the filepath inputted
+
+	\param[in] filePath
+	The input string of the file path
+
+	\param[in] txtVec
+	The inputed vector of strings to input
+	*/
+	/************************************************************************/
+	void SaveTxtFile(std::string filePath, std::vector<std::string> txtVec);
 #pragma endregion
 
 #pragma region Json Functions
@@ -199,31 +235,63 @@ public:
 	/************************************************************************/
 	/*!
 	\brief
-	Get an image based on the file path.
+	Get an unordered map of <std::string, Archtype> based on the file path.
 	Uses GetImageResource to find class containing it.
 
 	\param input
-	The input string of the file path.
+	The input string of the key to the resource
 
 	\return
-	Pointer of unsigned char of image.
+	Pointer of std::unordered_map<std::string, Archtype> of the json resource
 	*/
 	/************************************************************************/
-	const nlohmann::json& GetJson(const std::size_t jsonKey);
+	std::unordered_map<std::string, Archtype> GetJson(const std::size_t jsonKey);
 
 	/************************************************************************/
 	/*!
 	\brief
-	Get an image resource class pointer based on the file path
+	Get an nlohmann::json based on the file path.
+	Uses GetImageResource to find class containing it.
+
+	\param input
+	The input string of the key to the resource
+
+	\return
+	Pointer of nlohmann::json of the json resource
+	*/
+	/************************************************************************/
+	nlohmann::json GetJsonRaw(const std::size_t jsonKey);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Get an json resource class pointer based on the file path
 
 	\param input
 	The input string of the file path
 
 	\return
-	Pointer of image resource
+	Pointer of json resource
 	*/
 	/************************************************************************/
 	ResourceJson* GetJsonResource(const std::size_t jsonKey);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Saves a map containing json data to the filepath inputted
+	
+	\param[in] filePath
+	The input string of the file path
+	
+	\param[in] newArchtypeMap
+	std::unordered_map<std::string, Archtype>
+	string are the is section name
+	archtype struct of the component data
+	*/
+	/************************************************************************/
+	void SaveJsonFile(std::string filePath, std::unordered_map<std::string, Archtype> const& newArchtypeMap);
+
 #pragma endregion
 
 #pragma region Sound Functions
@@ -254,18 +322,17 @@ public:
 	void UnloadSound(std::size_t soundKey);
 
 
-
 	/************************************************************************/
 	/*!
 	\brief
-	Get an image based on the file path.
+	Get an sound pointer based on the file path.
 	Uses GetImageResource to find class containing it.
 
 	\param input
-	The input string of the file path.
+	The input key to use for the resource map
 
 	\return
-	Pointer of unsigned char of image.
+	FMOD::Sound pointer of the sound resource
 	*/
 	/************************************************************************/
 	FMOD::Sound* GetSound(const std::size_t soundKey);
@@ -273,13 +340,13 @@ public:
 	/************************************************************************/
 	/*!
 	\brief
-	Get an image resource class pointer based on the file path
+	Get an sound resource class pointer based on the file path
 
 	\param input
 	The input string of the file path
 
 	\return
-	Pointer of image resource
+	Pointer of sound resource
 	*/
 	/************************************************************************/
 	ResourceSound* GetSoundResource(const std::size_t soundKey);

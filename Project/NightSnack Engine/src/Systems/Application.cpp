@@ -67,6 +67,10 @@ ApplicationSystem::~ApplicationSystem() {
 void ApplicationSystem::Update(float dt, Coordinator& coord) {
 	(void)dt;
 	(void)coord;
+
+
+	// Displaying active system timers into Console (temp.)
+	//m_timer.DisplaySystemTimers();
 }
 
 // Set Window Title -------------------------------------------------------------------------------

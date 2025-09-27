@@ -7,9 +7,10 @@
 
 #include <json.hpp>
 #include <fmod.hpp>
+#include <ft2build.h>
 
 #define RESOURCE_DEBUG_MODE 1
-
+#include FT_FREETYPE_H
 
 //Type of resource loaded
 enum RESOURCE_TYPE
@@ -19,6 +20,7 @@ enum RESOURCE_TYPE
 	RESOURCE_TXTFILE,
 	RESOURCE_JSON,
 	RESOURCE_SOUND,
+	RESOURCE_FONT,
 };
 
 class Resource
@@ -37,8 +39,8 @@ protected:
 	bool flaggedForDeletion = false;
 
 public:
-	//Default constructor
-	Resource();
+	//Default constructor deleted
+	Resource() = delete;
 	/************************************************************************/
 	/*!
 	\brief
@@ -64,6 +66,7 @@ public:
 	RESOURCE_TYPE FileType() const;
 
 	virtual void LoadFile() {};
+	virtual void SaveFile() {};
 
 private:
 
@@ -78,11 +81,13 @@ protected:
 	int width = 0, height = 0, channels = 0;
 
 public:
-	ResourceImage();
+	ResourceImage() = delete;
 	ResourceImage(const std::string& inFilePath, const std::size_t& inMapKey);
 	~ResourceImage();
 
 	void LoadFile() override;
+	//UNUSED FOR NOW DO NOT USE
+	void SaveFile() override;
 
 	unsigned char* Image() const;
 
@@ -100,14 +105,7 @@ protected:
 	std::vector<std::string> txtStringVec;
 
 public:
-	/************************************************************************/
-	/*!
-	\brief
-	Default Constructor of txt resource class
-	Creates a class with no no txt data
-	*/
-	/************************************************************************/
-	ResourceTxtFile();
+	ResourceTxtFile() = delete;
 
 	/************************************************************************/
 	/*!
@@ -117,15 +115,33 @@ public:
 	Does NOT open file, call LoadFile for that
 	*/
 	/************************************************************************/
-	ResourceTxtFile(const std::string& inFilePath, const std::size_t& inMapKey);
+	ResourceTxtFile(const std::string& inFilePath, const std::size_t& inMapKey);	
+
+	/************************************************************************/
+	/*!
+	\brief
+	Constructor of txt resource class
+	Creates a class with set txtVec and path
+
+	\param[in] txtVec
+	Vector of strings to store
+
+	\param[in] newPath
+	string of the filepath to store
+	*/
+	/************************************************************************/
+	ResourceTxtFile(std::vector<std::string>& txtVec, std::string newPath);
+
 	~ResourceTxtFile();
 
 	void LoadFile() override;
+	void SaveFile() override;
+
+	void EditResource(std::vector<std::string> &txtVec, std::string newPath);
 
 	std::vector<std::string> TextStringVec() const;
 
 private:
-
 };
 
 struct Archtype
@@ -141,16 +157,25 @@ private:
 	std::unordered_map<std::string, Archtype> archetypeMap;
 
 public: 
-	ResourceJson();
+	ResourceJson() = delete;
 	ResourceJson(const std::string& inFilePath, const std::size_t& jsonKey);
+	ResourceJson(std::unordered_map<std::string, Archtype> const& newArchtypeMap, std::string newPath);
 	~ResourceJson();
 
 	void LoadFile() override;
+	/************************************************************************/
+	/*!
+	\brief
+	Converts map data into nlohmann::json via ConvertArchtypeToJson()
+	Then saves that data into the filepath stored
+	*/
+	/************************************************************************/
+	void SaveFile() override;
 
-	nlohmann::json& GetJson();
+	std::unordered_map<std::string, Archtype> GetJson();
+	nlohmann::json& GetJsonRaw();
 
 private:
-
 	void ConvertJsonToArchtypeMap();
 
 	//Splits data in json into a archtype map
@@ -168,6 +193,13 @@ private:
 	//Is a recurrsive function to print nested archtypes
 	//This may not print data out as same format as json as all nested data is printed at end
 	void PrintMapSubArchtypeData(const Archtype& arch, int indents);
+
+	//Converts archtype to nlohmann::json
+	//Calls convery sub 
+	void ConvertArchtypeToJson();
+
+	//Converts sub sections recurrsivly
+	nlohmann::json ConvertSubArchtypeToJson(Archtype const& archType);
 };
 
 
@@ -177,7 +209,7 @@ private:
 	FMOD::Sound* soundData = nullptr;
 
 public:
-	ResourceSound();
+	ResourceSound() = delete;
 	ResourceSound(const std::string& inFilePath, const std::size_t& inMapKey);
 	~ResourceSound();
 
@@ -187,5 +219,15 @@ public:
 
 private:
 	void LoadFile() override {};
+
+
+};
+
+class ResourceFont : public Resource
+{
+private:
+
+
+public:
 
 };
