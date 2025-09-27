@@ -1,7 +1,7 @@
 #ifndef ENTITYFACTORY_H
 #define ENTITYFACTORY_H
 
-#include <unordered_multimap>
+#include <unordered_map>
 #include <string>
 #include <json.hpp>
 #include <fstream>
@@ -12,6 +12,7 @@
 #include "ECS/Component.h"
 #include "Factory/PrefabManager.h"
 #include "Systems/Input.h"
+#include "Systems/IEvent.h"
 
 using json = nlohmann::json;
 
@@ -19,11 +20,44 @@ class EntityFactory : public ISystem {
 
 public:
 
-	EntityFactory(Coordinator& coord, std::string const& archetypes_filename)
-		: m_coord(coord), m_prefabManager(coord) {
+	EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& archetypes_filename)
+		: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord } {
 
 		m_prefabManager.Initialize();
 		LoadJsonFile(archetypes_filename);
+
+		// Setup input events;
+		m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
+			if (event.pressed) {
+				switch (event.inputAction) {
+					case InputEvent::InputAction::CreateSquare:
+						Create("Square");
+						//std::cout << "Create Square!\n";
+						break;
+
+					case InputEvent::InputAction::CreateCircle:
+						Create("Circle");
+						//std::cout << "Create Circle!\n";
+						break;
+
+					case InputEvent::InputAction::CreateBananaCircle:
+						Create("Player");
+						//std::cout << "Create Banana!\n";
+						break;
+
+					case InputEvent::InputAction::DoubleEntities:
+						DoubleEntities();
+						//std::cout << "Doubled Entities!\n";
+						break;
+
+					case InputEvent::InputAction::HalfEntities:
+						HalfEntities();
+						//std::cout << "Removed Entities!\n";
+						break;
+				}
+			}
+
+			});
 	}
 
 	void LoadJsonFile(std::string const& filename) {
@@ -49,11 +83,21 @@ public:
 	Entity Create(std::string const& name, Transform trans);
 
 	Entity Clone(Entity e, Transform trans);
+	void DoubleEntities();
+	void HalfEntities();
+
+	void Remove(Entity e);
+
+	std::vector<Entity> m_toBeDestroyed;
 
 private:
 	Coordinator& m_coord;
 	PrefabManager m_prefabManager;
-	json m_archetypes{};;
+	EventDispatcher* m_dispatcher;
+	json m_archetypes{};
+
+	// map of prefab name to entity;
+	std::unordered_map<Entity, std::string> entityToPrefab;
 };
 
 // First obtains all archetypes through initialization;

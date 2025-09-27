@@ -6,6 +6,7 @@
 #include "ECS/EntityManager.h"
 #include "ECS/ComponentManager.h"
 #include "ECS/ISystem.h"
+#include "./Systems/Application.h"
 
 // Coordinator manages the ECS Managers;
 // Provides an interface that can access all of ECS Managers' functions and data;
@@ -18,6 +19,8 @@ public:
 	Entity CreateEntity();
 	void DestroyEntity(Entity e);
 
+	size_t GetEntityNum() { return m_entityManager->GetLivingEntities().size(); }	// number of living entities;
+
 	template <typename T>
 	void RegisterComponent();
 
@@ -26,6 +29,8 @@ public:
 	template <typename T>
 	void RemoveComponent(Entity e);
 
+	template<typename T>
+	bool HasComponent(Entity e) const;
 	template <typename T>
 	T const& GetComponent(Entity e) const;
 	template <typename T>
@@ -45,6 +50,9 @@ public:
 
 	template <typename T>
 	void SetSystemSignature(Signature sig);
+
+	int GetWindowHeight();
+	int GetWindowWidth();
 
 private:
 	// ECS Managers;
@@ -107,6 +115,11 @@ void Coordinator::RemoveComponent(Entity e) {
 template <typename T>
 T const& Coordinator::GetComponent(Entity e) const {
 	return m_componentManager->GetComponent<T>(e);
+}
+
+template <typename T>
+bool Coordinator::HasComponent(Entity e) const {
+	return m_componentManager->HasComponent<T>(e);
 }
 
 template <typename T>

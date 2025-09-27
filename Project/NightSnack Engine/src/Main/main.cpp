@@ -179,18 +179,22 @@ int main()
 		// TESTING GRAPHICS;
 		Renderable r0{ "square", "bananaMat", RenderLayer::DEFAULT };
 		coord.AddComponent<Renderable>(control, r0);
-		Renderable r1{ "circle", "redMat", RenderLayer::DEFAULT };
+		Renderable r1{ "circle", "ColorMat", RenderLayer::DEFAULT };
 		coord.AddComponent<Renderable>(p0, r1);
 		Renderable r2{ "circle", "bananaMat", RenderLayer::DEFAULT };
 		coord.AddComponent<Renderable>(p1, r2);
 		Renderable r3{ "square", "bananaMat", RenderLayer::DEFAULT, true };
 		coord.AddComponent<Renderable>(p2, r3);
-		Renderable r4{ "circle", "greenMat", RenderLayer::DEFAULT };
+		Renderable r4{ "circle", "ColorMat", RenderLayer::DEFAULT };
 		coord.AddComponent<Renderable>(p3, r4);
-		Renderable r5{ "square", "blueMat", RenderLayer::DEFAULT };
+		Renderable r5{ "square", "ColorMat", RenderLayer::DEFAULT };
 		coord.AddComponent<Renderable>(ground, r5);
 		Renderable r6{ "square", "backgroundMat", RenderLayer::BACKGROUND };
 		coord.AddComponent<Renderable>(background, r6);
+
+		coord.AddComponent<Color>(p0, Color{ 1.f, 0.f, 0.f, 1.f });
+		coord.AddComponent<Color>(p3, Color{ 0.f, 1.f, 0.f, 1.f });
+		coord.AddComponent<Color>(ground, Color{ 0.8f, 0.f, 0.8f, 1.f });
 
 		// Camera object
 		Entity camera = coord.CreateEntity();

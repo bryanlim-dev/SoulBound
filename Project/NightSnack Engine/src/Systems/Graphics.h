@@ -15,7 +15,7 @@ class GraphicsSystem : public ISystem {
 
 public:
 	// Default constructor to set up SystemSignature;
-	GraphicsSystem();
+	GraphicsSystem(Coordinator& coord);
 
 	void Init(Coordinator& Coord, EventDispatcher& dispatcher);
 
@@ -36,6 +36,9 @@ public:
 	Texture*	GetTexture(std::string const& n)  const;
 	Mesh*		GetMesh(std::string const& n)     const;
 	Material*	GetMaterial(std::string const& n) const;
+
+	Entity FindCamera();
+	void RemoveCache(Entity e);
 
 	// Required by ISystem inheritance;
 	Signature GetSignature() const override { return m_systemSignature; }
@@ -61,13 +64,18 @@ private:
 
 	// Helper functions;
 	void ResolveRenderable(Entity e, Renderable const& r);
-	Entity FindCamera(Coordinator& Coord);
 	float GetRenderLayerZPos(RenderLayer layer);
 	void ModifyEntityScale(Coordinator& Coord, float value);
 	void ModifyEntityRotation(Coordinator& Coord, float value);
+	Position ScreenToWorld(Position const& screenPos);
 
 	Signature m_systemSignature{};
 
+	// Viewport dimensions;
+	float Hvp, Wvp;
+
+	// Reference to Coordinator;
+	Coordinator& m_coord;
 	// System event dispatcher
 	EventDispatcher* m_dispatcher = nullptr;
 };

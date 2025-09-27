@@ -1,58 +1,49 @@
 {
-  "RedSquare": {
+  "Square": {
     "Position": { "x": 0.0, "y": 0.0 },
     "Rotation": { "degrees": 0.0 },
-    "Scale": { "x": 1.0, "y": 1.0 },
-    "Color": { "r": 1.0, "g": 0.0, "b": 0.0, "a": 1.0 },
+    "Scale": { "x": 20.0, "y": 20.0 },
     "Collider": {
-      "shape": "AABB",
-      "type": "Solid",
-      "isStatic": false,
-      "width": 1.0,
-      "height": 1.0
+        "shape": "AABB",
+        "type": "Solid",
+        "isStatic": false,
+        "width": 100.0,
+        "height": 100.0
     },
     "Renderable": {
       "meshName": "square",
-      "materialName": "redMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
-    }
+    },
+    "Color": { "r": 0.1, "g": 0.7, "b": 0.7, "a": 1.0}
   },
 
-  "BlueCircle": {
-    "Position": { "x": 5.0, "y": 3.0 },
+  "Circle": {
+    "Position": { "x": 0.0, "y": 0.0 },
     "Rotation": { "degrees": 0.0 },
-    "Scale": { "x": 2.0, "y": 2.0 },
-    "Color": { "r": 0.0, "g": 0.0, "b": 1.0, "a": 1.0 },
-    "Collider": {
-      "shape": "Circle",
-      "type": "Trigger",
-      "isStatic": true,
-      "radius": 1.5
-    },
+    "Scale": { "x": 50.0, "y": 35.0 },
+    "Velocity": { "dx": 0.0, "dy": 0.0 },
+    "Acceleration": { "ax": 0.0, "ay": 0.0 },
+    "Mass": { "val": 1.0 },
+    "Force": { "fx": 0.0, "fy": 0.0 },
     "Renderable": {
       "meshName": "circle",
-      "materialName": "blueMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
-    }
+    },
+    "Color": { "r": 0.8, "g": 0.1, "b": 0.7, "a": 1.0}
   },
 
   "Player": {
-    "Position": { "x": 2.0, "y": 2.0 },
+    "Position": { "x": 0.0, "y": 0.0 },
     "Rotation": { "degrees": 0.0 },
-    "Scale": { "x": 2.0, "y": 2.0 },
+    "Scale": { "x": 50.0, "y": 50.0 },
     "Velocity": { "dx": 0.0, "dy": 0.0 },
-    "Acceleration": { "ax": 0.0, "ay": -9.8 },
+    "Acceleration": { "ax": 0.0, "ay": 0.0 },
     "Mass": { "val": 1.0 },
-    "Color": { "r": 0.2, "g": 0.8, "b": 0.2, "a": 1.0 },
-    "Collider": {
-      "shape": "AABB",
-      "type": "Solid",
-      "isStatic": false,
-      "width": 0.5,
-      "height": 1.0
-    },
+    "Force": { "fx": 0.0, "fy": 0.0 },
     "Renderable": {
-      "meshName": "square",
+      "meshName": "circle",
       "materialName": "bananaMat",
       "isWireframe" : false
     }

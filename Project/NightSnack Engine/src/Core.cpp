@@ -31,11 +31,11 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	// i.e: Input-> Movement -> Collision -> Graphics;
 	AddSystem<ApplicationSystem>();
 	AddSystem<InputSystem>();
-	AddSystem<EntityFactory>(m_coord, "assets/GameData/Archetypes/Archetypes.json");
+	AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json");
 	AddSystem<PhysicsSystem>();
 	AddSystem<CollisionSystem>();
 	AddSystem<MovementSystem>();
-	AddSystem<GraphicsSystem>();
+	AddSystem<GraphicsSystem>(m_coord);
 
 	// Add more Components here...
 
@@ -83,6 +83,10 @@ void CoreEngine::Update() {
 
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(System->GetName());
 	}
+	for (Entity e : m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed) { 
+		m_coord.DestroyEntity(e);
+	}
+	m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed.clear();
 
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
 	m_coord.GetSystem<ApplicationSystem>()->SwapBuffers();

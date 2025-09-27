@@ -24,6 +24,7 @@ class ComponentArray : public IComponentArray {
 public:
 	void Insert(Entity e, T const& component);
 	void Remove(Entity e);
+	bool HasComponent(Entity e);
 	T& Get(Entity e);
 	void EntityDestroyed(Entity e) override;
 
@@ -45,6 +46,9 @@ public:
 
 	template <typename T>
 	void AddComponent(Entity e, T const& component);
+
+	template <typename T>
+	bool HasComponent(Entity e);
 
 	template <typename T>
 	void RemoveComponent(Entity e);
@@ -121,24 +125,51 @@ void ComponentArray<T>::Insert(Entity e, T const& component) {
 template<typename T>
 void ComponentArray<T>::Remove(Entity e) {
 
-	// Find indices of Component to be removed and last Component in array;
-	size_t index = m_entityToIndex[e];
-	size_t lastIndex = m_size - 1;
+	// Ensure entity actually exists in this array
+	auto it = m_entityToIndex.find(e);
+	if (it == m_entityToIndex.end()) {
+		std::cout << "WARNING: Tried to remove non-existent component "
+			<< std::to_string(GetComponentTypeID<T>()) << " from entity " << e << std::endl;
+		return;
+	}
 
-	// Move the last component into the removed component's slot;
-	m_components[index] = m_components[lastIndex];
+	if (m_size <= 0) { 
+		std::cout << "ERROR: Remove called on empty ComponentArray! "
+			<< "ComponentID=" << std::to_string(GetComponentTypeID<T>())
+			<< " Entity=" << e << std::endl;
+		return; 
+	}
 
-	// Update mapping of moved components to new indices;
-	Entity lastEntity = m_indexToEntity[lastIndex];
-	m_entityToIndex[lastEntity] = index;
-	m_indexToEntity[index] = lastEntity;
+	assert(m_size > 0 && "Removing from empty ComponentArray!\n");
 
-	// Erase mapping of removed Components;
+	size_t indexOfRemoved = it->second;
+	size_t indexOfLast = m_size - 1;
+
+	if (indexOfRemoved != indexOfLast) {
+		// Move the last component into the removed slot
+		m_components[indexOfRemoved] = m_components[indexOfLast];
+
+		// Update entity mappings
+		Entity entityOfLast = m_indexToEntity[indexOfLast];
+		m_entityToIndex[entityOfLast] = indexOfRemoved;
+		m_indexToEntity[indexOfRemoved] = entityOfLast;
+	}
+
+	// Erase mappings for removed entity
 	m_entityToIndex.erase(e);
-	m_indexToEntity.erase(lastIndex);
+	m_indexToEntity.erase(indexOfLast);
 
-	// Update size;
 	--m_size;
+}
+
+template <typename T>
+bool ComponentArray<T>::HasComponent(Entity e) {
+
+	auto it = m_entityToIndex.find(e);
+	if (it == m_entityToIndex.end()) {
+		return false;
+	}
+	return true;
 
 }
 
@@ -180,6 +211,11 @@ void ComponentManager::AddComponent(Entity e, T const& component) {
 	// Call member function of ComponentArray to insert Component;
 	GetComponentArray<T>()->Insert(e, component);
 
+}
+
+template <typename T>
+bool ComponentManager::HasComponent(Entity e) {
+	return GetComponentArray<T>()->HasComponent(e);
 }
 
 template <typename T>

@@ -35,6 +35,7 @@ private:
 	static void CursorPosCallback(GLFWwindow* window, double xPos, double yPos);
 
 	static float m_mousePosX, m_mousePosY;					// Represents the current position in the current frame
+	float m_mouseWorldPosX{}, m_mouseWorldPosY{};
 
 	float m_prevMousePosX{ 0.f }, m_prevMousePosY{ 0.f };	// Represents the previous position in the previous frame
 	float m_deltaPosX{ 0.f }, m_deltaPosY{ 0.f };			// Represents the relative movement since the last frame

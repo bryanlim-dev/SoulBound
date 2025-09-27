@@ -1,4 +1,5 @@
 #include "Input.h"
+#include "Graphics.h"
 
 // Define static variables
 float InputSystem::m_mousePosX = 0.f;
@@ -24,6 +25,13 @@ void InputSystem::Update(float dt, Coordinator& coord) {
 	(void)dt;
 	(void)coord;
 
+	// Find current mouse position (World)
+	float Hvp = static_cast<float>(coord.GetWindowHeight());
+	float Wvp = static_cast<float>(coord.GetWindowWidth());
+	Entity cam = coord.GetSystem<GraphicsSystem>()->FindCamera();
+	m_mouseWorldPosX = (-Wvp / 2.f) + m_mousePosX + coord.GetComponent<Position>(cam).x;
+	m_mouseWorldPosY = (Hvp / 2.f) - m_mousePosY + coord.GetComponent<Position>(cam).y;
+
 	// Compute mouse delta - the relative movement since the last frame
 	m_deltaPosX = m_mousePosX - m_prevMousePosX;
 	m_deltaPosY = m_mousePosY - m_prevMousePosY;
@@ -40,8 +48,15 @@ InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int m
 	case GLFW_KEY_A: return InputEvent::InputAction::ScaleDown;
 	case GLFW_KEY_D: return InputEvent::InputAction::ScaleUp;
 	case GLFW_KEY_R: return InputEvent::InputAction::Rotate;
-	case GLFW_KEY_SPACE: return InputEvent::InputAction::ApplyForce;
+	//case GLFW_KEY_SPACE: return InputEvent::InputAction::ApplyForce;
 	case GLFW_MOUSE_BUTTON_LEFT: return InputEvent::InputAction::ClickLMB;
+
+	// Number keys;
+	case GLFW_KEY_1: return InputEvent::InputAction::CreateSquare;
+	case GLFW_KEY_2: return InputEvent::InputAction::CreateCircle;
+	case GLFW_KEY_3: return InputEvent::InputAction::CreateBananaCircle;
+	case GLFW_KEY_SPACE: return InputEvent::InputAction::DoubleEntities;
+	case GLFW_KEY_BACKSPACE: return InputEvent::InputAction::HalfEntities;
 
 	// Modifier keys (CTRL+S etc)
 	case GLFW_KEY_S: 
@@ -96,7 +111,7 @@ void InputSystem::CursorPosCallback(GLFWwindow* window, double xPos, double yPos
 
 // Queries for mouse position ---------------------------------------------------------------------
 // Note: Mouse position origin is from top left corner of the screen ------------------------------
-float InputSystem::GetMousePosX() const { return m_mousePosX; }
-float InputSystem::GetMousePosY() const { return m_mousePosY; }
+float InputSystem::GetMousePosX() const { return m_mouseWorldPosX; }
+float InputSystem::GetMousePosY() const { return m_mouseWorldPosY; }
 float InputSystem::GetMouseDeltaPosX() const { return m_deltaPosX; }
 float InputSystem::GetMouseDeltaPosY() const { return m_deltaPosY; }

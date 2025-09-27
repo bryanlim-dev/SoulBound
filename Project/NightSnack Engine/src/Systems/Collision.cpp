@@ -82,7 +82,7 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
                 colA.colliding = true;
                 colB.colliding = true;
 
-                std::cout << "Collision detected between Entity " << *itA << " and Entity " << *itB << std::endl;
+                //std::cout << "Collision detected between Entity " << *itA << " and Entity " << *itB << std::endl;
 
 				// Dispatch collision event between entity A & entity B
                 if (m_dispatcher)

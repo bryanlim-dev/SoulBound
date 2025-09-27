@@ -2,7 +2,7 @@
 #include "MathLibrary/Math.h"
 
 // Default constructor to set up SystemSignature;
-GraphicsSystem::GraphicsSystem() {
+GraphicsSystem::GraphicsSystem(Coordinator& coord) : m_coord{ coord } {
 	// The Graphics System only cares about entities with these components
 	// - Position, Rotation, Scale
 	// - Renderable (mesh, material, texture, color)
@@ -10,6 +10,10 @@ GraphicsSystem::GraphicsSystem() {
 	m_systemSignature.set(GetComponentTypeID<Rotation>());
 	m_systemSignature.set(GetComponentTypeID<Scale>());
 	m_systemSignature.set(GetComponentTypeID<Renderable>());
+
+	// Initialize viewport dimensions;
+	Hvp = static_cast<float>(coord.GetWindowHeight());
+	Wvp = static_cast<float>(coord.GetWindowWidth());
 }
 
 void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
@@ -33,7 +37,7 @@ void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
 
 	// Materials with texture
 	auto bananaMat = std::make_unique<Material>(GetShader("default"), GetTexture("banana"));
-	bananaMat->SetBaseColor(0.f, 1.f, 0.f, 1.f);
+	bananaMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
 	AddMaterial("bananaMat", std::move(bananaMat));
 	auto targetMat = std::make_unique<Material>(GetShader("default"), GetTexture("target"));
 	AddMaterial("targetMat", std::move(targetMat));
@@ -41,72 +45,70 @@ void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
 	AddMaterial("backgroundMat", std::move(backgroundMat));
 
 	// Materials with solid color
-	auto redMat = std::make_unique<Material>(GetShader("default"));
-	redMat->SetBaseColor(1.f, 0.f, 0.f, 1.f);
-	AddMaterial("redMat", std::move(redMat));
-	auto greenMat = std::make_unique<Material>(GetShader("default"));
-	greenMat->SetBaseColor(0.f, 1.f, 0.f, 1.f);
-	AddMaterial("greenMat", std::move(greenMat));
-	auto blueMat = std::make_unique<Material>(GetShader("default"));
-	blueMat->SetBaseColor(0.f, 0.f, 1.f, 1.f);
-	AddMaterial("blueMat", std::move(blueMat));
+	auto colorMat = std::make_unique<Material>(GetShader("default"));
+	colorMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
+	AddMaterial("ColorMat", std::move(colorMat));
 
 	// Event dispatcher initialisations
 	m_dispatcher = &dispatcher;
 	m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
-		{
-			// This input event currently only handles key inputs for
-			// - selection of an object (W)
-			// - scaling of an object (A / D)
-			// - rotating of an object (R)
-			if (m_entities.empty())
-				return;
+	{
+		// This input event currently only handles key inputs for
+		// - selection of an object (W)
+		// - scaling of an object (A / D)
+		// - rotating of an object (R)
+		if (m_entities.empty())
+			return;
 
-			if (event.pressed) {
-				switch (event.inputAction) {
-				case InputEvent::InputAction::SelectNext:
-				{
-					auto it = m_entities.begin();
-					// Clear the previous selection
-					if (m_selectedEntityIndex >= 0 && m_selectedEntityIndex < static_cast<int>(m_entities.size())) {
-						std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
-						auto& ren = coord.ModifyComponent<Renderable>(*it);
-						ren.isSelected = false;
-					}
-
-					// Move on to the next selection
-					if (++m_selectedEntityIndex == static_cast<int>(m_entities.size())) {
-						// Reset to selecting no objects once it reached the end
-						m_selectedEntityIndex = -1;
-						return;
-					}
-					
-					// Set the current object selection to be true
-					it = m_entities.begin(); // Reset it back to the start, before advancing again
+		if (event.pressed) {
+			switch (event.inputAction) {
+			case InputEvent::InputAction::SelectNext:
+			{
+				auto it = m_entities.begin();
+				// Clear the previous selection
+				if (m_selectedEntityIndex >= 0 && m_selectedEntityIndex < static_cast<int>(m_entities.size())) {
 					std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
 					auto& ren = coord.ModifyComponent<Renderable>(*it);
-					ren.isSelected = true;
+					ren.isSelected = false;
 				}
-					break;
-				case InputEvent::InputAction::ScaleUp:
-					ModifyEntityScale(coord, 1.1f);
-					break;
-				case InputEvent::InputAction::ScaleDown:
-					ModifyEntityScale(coord, 0.9f);
-					break;
-				case InputEvent::InputAction::Rotate:
-					ModifyEntityRotation(coord, 30.f);
-					break;
+
+				// Move on to the next selection
+				if (++m_selectedEntityIndex == static_cast<int>(m_entities.size())) {
+					// Reset to selecting no objects once it reached the end
+					m_selectedEntityIndex = -1;
+					return;
 				}
+
+				// Set the current object selection to be true
+				it = m_entities.begin(); // Reset it back to the start, before advancing again
+				std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
+				auto& ren = coord.ModifyComponent<Renderable>(*it);
+				ren.isSelected = true;
 			}
-		});
+			break;
+			case InputEvent::InputAction::ScaleUp:
+				ModifyEntityScale(coord, 1.1f);
+				break;
+			case InputEvent::InputAction::ScaleDown:
+				ModifyEntityScale(coord, 0.9f);
+				break;
+			case InputEvent::InputAction::Rotate:
+				ModifyEntityRotation(coord, 30.f);
+				break;
+			}
+		}
+	});
 }
 
 void GraphicsSystem::Update(float dt, Coordinator& coord) {
 	(void)dt; // dt is unused for now...
 
+	// Update viewport dimensions;
+	Hvp = static_cast<float>(coord.GetWindowHeight());
+	Wvp = static_cast<float>(coord.GetWindowWidth());
+
 	// Camera stuff...
-	Entity mainCam = FindCamera(coord);
+	Entity mainCam = FindCamera();
 	if (mainCam == INVALID_ENTITY) return;
 
 	// Get camera components
@@ -146,6 +148,12 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 		Mesh* mesh = data.mesh;
 		shader->Use();
 		shader->SetMat4("uMVP", mvp);
+
+		if (m_coord.HasComponent<Color>(e)) {
+			auto& col = m_coord.GetComponent<Color>(e);
+			shader->SetVec3("uEntityColor", { col.r, col.g, col.b });
+		}
+		
 		data.material->ApplyUniforms(ren.isWireframe, ren.isSelected);
 
 		//GLint loc = glGetUniformLocation(data.material->GetShader()->GetID(), "uMVP");
@@ -232,7 +240,7 @@ void GraphicsSystem::ResolveRenderable(Entity e, Renderable const& r) {
 	m_renderCache[e] = cache;
 }
 
-Entity GraphicsSystem::FindCamera(Coordinator& Coord) {
+Entity GraphicsSystem::FindCamera() {
 	// Camera Signature (only have components Camera and Tranform)
 	Signature cameraSig;
 	cameraSig.set(GetComponentTypeID<Camera>());
@@ -242,9 +250,9 @@ Entity GraphicsSystem::FindCamera(Coordinator& Coord) {
 
 	// Iterate through all living Entities in the COORDINATOR instead
 	// Since the GraphicsSystem will not have a Camera Entity
-	for (const Entity e : Coord.GetLivingEntities()) {
-		if ((Coord.GetEntitySignature(e) & cameraSig) == cameraSig &&
-			Coord.GetComponent<Camera>(e).isMainCam) { // This camera Entity is the main camera
+	for (const Entity e : m_coord.GetLivingEntities()) {
+		if ((m_coord.GetEntitySignature(e) & cameraSig) == cameraSig &&
+			m_coord.GetComponent<Camera>(e).isMainCam) { // This camera Entity is the main camera
 			return e;
 		}
 	}
@@ -294,4 +302,23 @@ void GraphicsSystem::ModifyEntityRotation(Coordinator& coord, float value) {
 	rotation.degrees += value;
 	if (rotation.degrees >= 360.f)
 		rotation.degrees -= 360.f;
+}
+
+Position GraphicsSystem::ScreenToWorld(Position const& screenPos) {
+	Position pos{};
+	// To convert from screen to clip: X -> -Wvp/2 + x; Y -> Hvp/2 - y; 
+	pos.x = (-Wvp / 2.f) + screenPos.x;
+	pos.y = (Hvp / 2.f) - screenPos.y;
+	
+	// Clip to World: take into account CameraPos;
+	Entity cam = FindCamera();
+
+	pos.x += m_coord.GetComponent<Position>(cam).x;
+	pos.y += m_coord.GetComponent<Position>(cam).y;
+
+	return pos;
+}
+
+void GraphicsSystem::RemoveCache(Entity e) {
+	m_renderCache.erase(e);
 }

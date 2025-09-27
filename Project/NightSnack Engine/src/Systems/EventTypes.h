@@ -20,7 +20,13 @@ public:
         ApplyForce, // SPACE
         ClickLMB, // LMB
         Save, // CTRL + S
-        NumTotalInputAction
+        NumTotalInputAction,
+
+        CreateSquare, // 1
+        CreateCircle, // 2 -> has physics;
+        CreateBananaCircle, // 3 -> texture entity;
+        DoubleEntities,
+        HalfEntities
     };
 
     InputAction inputAction;

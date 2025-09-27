@@ -4,10 +4,6 @@
 // Main update function;
 void PhysicsSystem::Update(float dt, Coordinator& coord) {
 
-	//if (coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::SPACE)) {
-	//	coord.GetSystem<PhysicsSystem>()->ApplyForce(coord, Entity{ 0 }, 750.f, 0.f);
-	//}
-
 	// Iterate through all Entities this system can access;
 	for (auto const& e : m_entities) {
 
