@@ -564,6 +564,43 @@ ResourceFont* ResourceManager::GetFontResource(const std::size_t fontKey)
 	return nullptr;
 }
 
+bool ResourceManager::ResourceLoaded(RESOURCE_TYPE type, size_t resourceKey)
+{
+	Resource* resourceChecked = nullptr;
+	//Try to avoid object slicing
+	switch (type)
+	{
+	case RESOURCE_IMAGE:
+		resourceChecked = GetImageResource(resourceKey);
+		break;
+
+	case RESOURCE_TXTFILE:
+		resourceChecked = GetTxtFileResource(resourceKey);
+		break;
+
+	case RESOURCE_JSON:
+		resourceChecked = GetJsonResource(resourceKey);
+		break;
+
+	case RESOURCE_SOUND:
+		resourceChecked = GetSoundResource(resourceKey);
+		break;
+
+	case RESOURCE_FONT:
+		resourceChecked = GetFontResource(resourceKey);
+		break;
+
+	default:
+		std::cout << "ResourceLoaded(): INVALID RESOURCE TYPE" << std::endl;
+		return false;
+	}
+
+	if (resourceChecked && resourceChecked->Loaded())
+		return true;
+	else
+		return false;
+}
+
 void ResourceManager::DeleteRM()
 {
 	delete this;
@@ -587,7 +624,7 @@ void ResourceManager::DebugTestEverything()
 	//Testing loading png
 	std::size_t targetKey = 0;
 	rm->LoadImage("assets/image_UI_target.png", targetKey);
-	if (rm->GetImage(targetKey) != nullptr)
+	if (ResourceLoaded(RESOURCE_IMAGE, targetKey))
 		std::cout << "Load Image(PNG) test: SUCCESS" << std::endl;
 	else
 		std::cout << "Load Image(PNG) test: FAIL" << std::endl;
@@ -627,11 +664,11 @@ void ResourceManager::DebugTestEverything()
 	rm->LoadImage("assets/image_UI_target.png", targetKey); //Reloading a unloaded image test
 	rm->GetImage(targetKey);
 	rm->GetImage(bananaKey);
-	if (rm->GetImage(targetKey) != nullptr)
+	if (ResourceLoaded(RESOURCE_IMAGE, targetKey))
 	{
 		std::cout << "Get Image found target resource" << std::endl;
 	}
-	if (rm->GetImage(bananaKey) != nullptr)
+	if (ResourceLoaded(RESOURCE_IMAGE, bananaKey))
 	{
 		std::cout << "Get Image found banana resource" << std::endl;
 	}
@@ -647,11 +684,21 @@ void ResourceManager::DebugTestEverything()
 	std::size_t txtKey = 0;
 	rm->LoadTxtFile("assets/data/TestTxt.txt", txtKey);
 	std::vector<std::string> txtVec = rm->GetTxtFile(txtKey);
-	for (std::string strTest : txtVec)
+	if (ResourceLoaded(RESOURCE_TXTFILE, txtKey))
 	{
-		std::cout << strTest << std::endl;
+		std::cout << "Load TXT: SUCCESS" << std::endl;
+		for (std::string strTest : txtVec)
+		{
+			std::cout << strTest << std::endl;
+		}
 	}
+	else
+		std::cout << "Load TXT: FAIL" << std::endl;
+
+	rm->UnloadTxtFile(txtKey); //Actual unloading test
+	rm->Update(0); //Run unload code
 	std::cout << std::endl;
+
 
 	std::cout << "Test: Save Txt File" << std::endl;
 	std::vector<std::string> newTxt = {
@@ -664,9 +711,6 @@ void ResourceManager::DebugTestEverything()
 	SaveTxtFile("assets/data/savedNewTxt.txt", newTxt);
 	std::cout << "Attempted save to Txt File" << std::endl;
 
-	rm->UnloadTxtFile(txtKey); //Actual unloading test
-	rm->Update(0); //Run unload code
-
 	std::cout << std::endl;
 	std::cout << std::endl;
 
@@ -675,19 +719,32 @@ void ResourceManager::DebugTestEverything()
 	std::cout << "Test: Load Json File" << std::endl;
 	std::size_t jsonKey = 0;
 	rm->LoadJson("assets/data/jsonTestFile.json", jsonKey);
+	if (ResourceLoaded(RESOURCE_JSON, jsonKey))
+	{
+		std::cout << "Load JSON: SUCCESS" << std::endl;
+		//Riskier is there is a typo or something, it WILL crash if cannot find
+		std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey)["testJson"]["boolean"] ? "true" : "false") << std::endl;
+		std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey).at("testJson").at("boolean") ? "true" : "false") << std::endl;
+		std::cout << "interger: " << rm->GetJsonRaw(jsonKey).at("testJson").at("interger") << std::endl;
+		//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
+		//	std::cout << key << " : " << value << std::endl;
+		//}
+	}
+	else
+		std::cout << "Load JSON: FAIL" << std::endl;
 
-	//Riskier is there is a typo or something, it WILL crash if cannot find
-	std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey)["testJson"]["boolean"]? "true" : "false") << std::endl;
-	std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey).at("testJson").at("boolean") ? "true" : "false") << std::endl;
-	std::cout << "interger: " << rm->GetJsonRaw(jsonKey).at("testJson").at("interger") << std::endl;
-	//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
-	//	std::cout << key << " : " << value << std::endl;
-	//}
 	rm->UnloadJson(jsonKey);
 	rm->Update(0); //Run unload code
 	std::cout << std::endl;
 
 	rm->LoadJson("assets/data/jsonTestFile2.json", jsonKey);
+	if (ResourceLoaded(RESOURCE_JSON, jsonKey))
+	{
+		std::cout << "Load JSON: SUCCESS" << std::endl;
+	}
+	else
+		std::cout << "Load JSON: FAIL" << std::endl;
+
 	//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
 	//	std::cout << key << " : " << value << std::endl;
 	//}
@@ -748,7 +805,7 @@ void ResourceManager::DebugTestEverything()
 	std::cout << "Font Load Test" << std::endl;
 	rm->LoadFont("assets/Font/liberation-mono.ttf", fontKey);
 	ResourceFont* recFont = rm->GetFontResource(fontKey);
-	if (recFont == nullptr || !recFont->Loaded())
+	if (ResourceLoaded(RESOURCE_FONT, fontKey))
 		std::cout << "Font Load Test: FAILED" << std::endl;
 	else
 		std::cout << "Font Load Test: SUCCESS" << std::endl;

@@ -49,6 +49,7 @@ private:
 	//Unload<Resource> -> Set flag for dleetion
 	//Get<Resource>
 	//Get<Resource>Class
+	//ResouceLoaded -> switch case
 	//DebugTestEverything
 	
 	//Key, Value
@@ -161,6 +162,7 @@ public:
 	*/
 	/************************************************************************/
 	ResourceImage* GetImageResource(const std::size_t imageKey);
+
 #pragma endregion
 
 #pragma region Txt File Functions
@@ -470,6 +472,23 @@ public:
 	/************************************************************************/
 	ResourceFont* GetFontResource(const std::size_t fontKey);
 #pragma endregion
+
+
+	/************************************************************************/
+	/*!
+	\brief
+	Check if a resource is loaded/exists based on resource type and key
+
+	\param type
+	The type of resource to check for
+
+	\return
+	bool of is resource loaded/exists or not
+	true - Resource exists AND loaded
+	false - Resource does not exist OR is not loaded
+	*/
+	/************************************************************************/
+	bool ResourceLoaded(RESOURCE_TYPE type, size_t resourceKey);
 
 
 	//Delete the Resource Manager
