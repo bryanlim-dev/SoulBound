@@ -213,11 +213,11 @@ int main()
 			// Update AudioSystem every frame
 			audioSystem->Update();
 
-			if (coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::SPACE))
+			/*if (coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::SPACE))
 			{
 				audioSystem->PlaySound(sfxKey);
 				std::cout << "Playing SFX!\n";
-			}
+			}*/
 		}
 
 		// Clean termination;

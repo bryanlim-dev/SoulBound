@@ -12,23 +12,6 @@ class InputSystem : public ISystem {
 
 public:
 
-	enum KeyboardKeys {
-		W = 0,
-		A,
-		S,
-		D,
-		R,
-		SPACE,
-		ESC,
-		NUM_TOTAL_KEYBOARD_KEY
-	};
-
-	enum MouseButtons {
-		LMB = 0,
-		RMB,
-		NUM_TOTAL_MOUSE_BUTTON
-	};
-
 	void Init(GLFWwindow* window, EventDispatcher& dispatcher);
 
 	void Update(float dt, Coordinator& coord) override;
@@ -36,9 +19,9 @@ public:
 	void ResetInputStates();
 
 	// Keyboard queries
-	bool IsKeyDown(int key) const;
-	bool IsKeyPressed(int key) const;
-	bool IsKeyReleased(int key) const;
+	//bool IsKeyDown(int key) const;
+	//bool IsKeyPressed(int key) const;
+	//bool IsKeyReleased(int key) const;
 
 	// Keyboard modifier queries
 	bool IsShiftDown() const;
@@ -46,9 +29,9 @@ public:
 	bool IsAltDown() const;
 
 	// Mouse queries
-	bool IsMouseButtonDown(int button) const;
-	bool IsMouseButtonPressed(int button) const;
-	bool IsMouseButtonReleased(int button) const;
+	//bool IsMouseButtonDown(int button) const;
+	//bool IsMouseButtonPressed(int button) const;
+	//bool IsMouseButtonReleased(int button) const;
 
 	float GetMousePosX() const;
 	float GetMousePosY() const;
@@ -59,8 +42,7 @@ public:
 
 private:
 
-	static KeyboardKeys TranslateGLFWKeyboardKey(int glfwKey);
-	static MouseButtons TranslateGLFWMouseButton(int glfwButton);
+	static InputEvent::InputAction TranslateGLFWKeyToAction(int glfwKey);
 
 	// Callbacks
 	static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -68,13 +50,13 @@ private:
 	static void CursorPosCallback(GLFWwindow* window, double xPos, double yPos);
 
 	// State tracking
-	static std::array<bool, static_cast<size_t>(NUM_TOTAL_KEYBOARD_KEY)> m_keysDown;		// Represents the keys that are being held down
-	static std::array<bool, static_cast<size_t>(NUM_TOTAL_KEYBOARD_KEY)> m_keysPressed;		// Represents the keys that are pressed once
-	static std::array<bool, static_cast<size_t>(NUM_TOTAL_KEYBOARD_KEY)> m_keysReleased;	// Represents the keys that are released
+	//static std::array<bool, static_cast<size_t>(NUM_TOTAL_KEYBOARD_KEY)> m_keysDown;		// Represents the keys that are being held down
+	//static std::array<bool, static_cast<size_t>(NUM_TOTAL_KEYBOARD_KEY)> m_keysPressed;		// Represents the keys that are pressed once
+	//static std::array<bool, static_cast<size_t>(NUM_TOTAL_KEYBOARD_KEY)> m_keysReleased;	// Represents the keys that are released
 
-	static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mouseDown;		// Represents the mouse that is being held down
-	static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mousePressed;	// Represents the mouse that is pressed once
-	static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mouseReleased;	// Represents the mouse that is released
+	//static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mouseDown;		// Represents the mouse that is being held down
+	//static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mousePressed;	// Represents the mouse that is pressed once
+	//static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mouseReleased;	// Represents the mouse that is released
 
 	static int m_currentModifiers;							// Represents the bitfield of modifier keys
 	static float m_mousePosX, m_mousePosY;					// Represents the current position in the current frame
