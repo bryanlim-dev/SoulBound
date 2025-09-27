@@ -7,9 +7,10 @@
 
 #include <json.hpp>
 #include <fmod.hpp>
+#include <ft2build.h>
 
 #define RESOURCE_DEBUG_MODE 1
-
+#include FT_FREETYPE_H
 
 //Type of resource loaded
 enum RESOURCE_TYPE
@@ -19,6 +20,7 @@ enum RESOURCE_TYPE
 	RESOURCE_TXTFILE,
 	RESOURCE_JSON,
 	RESOURCE_SOUND,
+	RESOURCE_FONT,
 };
 
 class Resource
@@ -84,8 +86,7 @@ public:
 	~ResourceImage();
 
 	void LoadFile() override;
-	//UNUSED FOR NOW DO NOT USE
-	void SaveFile() override;
+
 
 	unsigned char* Image() const;
 
@@ -94,6 +95,8 @@ public:
 	int Channels() const { return channels; }
 
 private:
+	//UNUSED FOR NOW DO NOT USE
+	void SaveFile() override;
 };
 
 class ResourceTxtFile : public Resource
@@ -218,5 +221,25 @@ public:
 private:
 	void LoadFile() override {};
 
+
+};
+
+class ResourceFont : public Resource
+{
+private:
+	FT_Face fontFace = nullptr;
+
+public:
+	ResourceFont(const std::string& inFilePath, const std::size_t& inMapKey);
+	~ResourceFont();
+
+	//Returns FT_Face stored
+	FT_Face Font();
+
+	void LoadFile(FT_Library& fontLib);
+
+private:
+	void LoadFile() override {};
+	void SaveFile() override {};
 
 };
