@@ -2,6 +2,7 @@
 #define COORD_HPP
 
 #include "ECS/Entity.h"
+#include "ECS/Component.h"
 #include "ECS/EntityManager.h"
 #include "ECS/ComponentManager.h"
 #include "ECS/ISystem.h"
@@ -26,7 +27,12 @@ public:
 	void RemoveComponent(Entity e);
 
 	template <typename T>
-	T& GetComponent(Entity e);
+	T const& GetComponent(Entity e) const;
+	template <typename T>
+	T& ModifyComponent(Entity e);
+
+	template <>	// specialization for Renderable;
+	Renderable& ModifyComponent<Renderable>(Entity e);
 
 	Signature& GetEntitySignature(Entity e) { return m_entityManager->GetSignature(e); }
 
@@ -45,6 +51,9 @@ private:
 	std::unique_ptr<EntityManager> m_entityManager;
 	std::unique_ptr<ComponentManager> m_componentManager;
 	std::unique_ptr<SystemManager> m_systemManager;
+
+	// Event Dispatcher;
+	// EventDispatcher& m_dispather;
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -96,8 +105,20 @@ void Coordinator::RemoveComponent(Entity e) {
 }
 
 template <typename T>
-T& Coordinator::GetComponent(Entity e) {
+T const& Coordinator::GetComponent(Entity e) const {
 	return m_componentManager->GetComponent<T>(e);
+}
+
+template <typename T>
+T& Coordinator::ModifyComponent(Entity e) {
+
+	return m_componentManager->GetComponent<T>(e);
+}
+template <>	// specialization for Renderable;
+inline Renderable& Coordinator::ModifyComponent<Renderable>(Entity e) {
+	auto& r = m_componentManager->GetComponent<Renderable>(e);
+	r.wasModified = true;
+	return r;
 }
 
 template <typename T>

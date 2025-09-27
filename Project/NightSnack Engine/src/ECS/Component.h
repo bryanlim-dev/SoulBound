@@ -9,7 +9,7 @@
 // ================================================================================================
 
 struct Position {
-  float x, y;
+  float x, y, z;
 };
 
 struct Rotation {
@@ -49,10 +49,20 @@ struct Color {
 // GRAPHICS COMPONENTS
 // ================================================================================================
 
+enum class RenderLayer {
+	BACKGROUND = 0,
+	DEFAULT,
+	DEBUG,
+	UI
+};
+
 struct Renderable {
-	Mesh* mesh{ nullptr }; // Stores a pointer to a GPU mesh
-	Material* material{ nullptr }; // Stores shader + color/texture information
-	bool isWireframe{ true }; // default is wireframe mode
+	std::string meshName{};
+	std::string materialName{};
+	RenderLayer renderLayer{ RenderLayer::DEFAULT };
+	bool isWireframe{ false };
+	bool wasModified{ true };
+	bool isSelected{ false };
 };
 
 struct Camera {

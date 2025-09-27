@@ -3,6 +3,7 @@
 #include <stdexcept>
 
 constexpr double PI = 3.14159265358979323846;
+constexpr float Z_EPSILON = 0.0001f;
 
 // Degrees to Radians
 inline float deg2rad(float deg)

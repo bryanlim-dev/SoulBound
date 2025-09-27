@@ -1,8 +1,9 @@
 #pragma once
 
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <string>
 #include <glm/glm.hpp>
-#include <glad/glad.h>
 
 class Shader {
 
@@ -12,13 +13,20 @@ public:
 	~Shader();
 
 	void Use() const;
-	GLuint GetId() const;
+	GLuint GetID() const;
 
 	// Uniform helpers
 	void SetMat4(const std::string& name, const glm::mat4& mat) const;
 	void SetMat3(const std::string& name, const glm::mat3& mat) const;
 	void SetVec3(const std::string& name, const glm::vec3& value) const;
 	void SetInt(const std::string& name, int value) const;
+
+    void SetBool(std::string const& name, bool value) const {
+        glUniform1i(glGetUniformLocation(programID, name.c_str()), (int)value);
+    }
+    void SetFloat(std::string const& name, float value) const {
+        glUniform1f(glGetUniformLocation(programID, name.c_str()), value);
+    }
 
 private:
 

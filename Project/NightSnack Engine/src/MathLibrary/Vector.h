@@ -3,9 +3,7 @@
 #include <cmath>
 #include <stdexcept>
 
-// ============================
 // Vec2
-// ============================
 struct Vec2 {
     float x, y;
 
@@ -40,9 +38,7 @@ struct Vec2 {
 std::ostream& operator<<(std::ostream& os, const Vec2& v);
 
 
-// ============================
 // Vec3
-// ============================
 struct Vec3 {
     float x, y, z;
 

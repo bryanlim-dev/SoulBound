@@ -1,6 +1,7 @@
 #ifndef INPUT_HPP
 #define INPUT_HPP
 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <array>
 #include "ECS/ISystem.h"
@@ -16,6 +17,7 @@ public:
 		A,
 		S,
 		D,
+		R,
 		SPACE,
 		ESC,
 		NUM_TOTAL_KEYBOARD_KEY

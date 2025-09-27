@@ -13,6 +13,115 @@
 //#define TESTING_GRAVITY 0
 //#endif
 //
+// 	// ECS test --------------------------------------------------------------------------------------
+	// -----------------------------------------------------------------------------------------------
+//Coordinator& coord = core.GetCoord();
+//Entity p0 = coord.CreateEntity();
+//Entity p1 = coord.CreateEntity();
+//Entity p2 = coord.CreateEntity();
+//Entity p3 = coord.CreateEntity();
+//Entity ground = coord.CreateEntity();
+//// To test that systems don't affect entities that don't have all required components;
+//Entity control = coord.CreateEntity();
+//
+//Collider c0{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 100.f, true };
+//coord.AddComponent<Collider>(p0, c0);
+//Collider c1{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 100.f, true };
+//coord.AddComponent<Collider>(p1, c1);
+//Collider c2{ ShapeType::AABB, ColliderType::Solid, true, 100.f, 400.f, 0.f, true };
+//coord.AddComponent<Collider>(p2, c2);
+//Collider ground_c{ ShapeType::AABB, ColliderType::Ground, true, 1600.f, 100.f, 0.f, true };
+//coord.AddComponent<Collider>(ground, ground_c);
+//// isGrounded->false to test gravity;
+//Collider c3{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 50.f, false };
+//coord.AddComponent<Collider>(p3, c3);
+//
+//coord.AddComponent<Position>(control, Position{ 300.f, 0.f });
+//coord.AddComponent<Position>(p0, Position{ 0.f, 0.f });
+//coord.AddComponent<Position>(p1, Position{ 500.f, 0.f });
+//coord.AddComponent<Position>(p2, Position{ -300.f, 0.f });
+//coord.AddComponent<Position>(p3, Position{ -500.f, 400.f });
+//coord.AddComponent<Position>(ground, Position{ 0.f, -350.f });
+//
+//coord.AddComponent<Mass>(p0, Mass{ 1.f });
+//coord.AddComponent<Mass>(p1, Mass{ 1.f });
+//coord.AddComponent<Mass>(p2, Mass{ 1.f });
+//coord.AddComponent<Mass>(p3, Mass{ 1.f });
+//coord.AddComponent<Mass>(ground, Mass{ 1.f });
+//
+//coord.AddComponent<Acceleration>(p0, Acceleration{ 0.f,0.f });
+//coord.AddComponent<Acceleration>(p1, Acceleration{ 0.f,0.f });
+//coord.AddComponent<Acceleration>(p2, Acceleration{ 0.f,0.f });
+//coord.AddComponent<Acceleration>(p3, Acceleration{ 0.f,0.f });
+//
+//coord.AddComponent<Force>(p0, Force{ 0.f,0.f });
+//coord.AddComponent<Force>(p1, Force{ 0.f,0.f });
+//coord.AddComponent<Force>(p2, Force{ 0.f,0.f });
+//coord.AddComponent<Force>(p3, Force{ 0.f,0.f });
+//
+//// Using Physics System interface to make entity move instead;
+//coord.AddComponent<Velocity>(p0, Velocity{ 0.f, 0.f });
+//coord.AddComponent<Velocity>(p1, Velocity{ 0.f, 0.f });
+//coord.AddComponent<Velocity>(p2, Velocity{ 0.f, 0.f });
+//coord.AddComponent<Velocity>(p3, Velocity{ 0.f, 0.f });
+//coord.AddComponent<Velocity>(ground, Velocity{ 0.f, 0.f });
+//
+//coord.AddComponent<Scale>(control, Scale{ 20.f, 20.f });
+//coord.AddComponent<Scale>(p0, Scale{ 100.f, 100.f });
+//coord.AddComponent<Scale>(p1, Scale{ 100.f, 100.f });
+//coord.AddComponent<Scale>(p2, Scale{ 100.f, 400.f });
+//coord.AddComponent<Scale>(p3, Scale{ 50.f, 50.f });
+//coord.AddComponent<Scale>(ground, Scale{ 1600.f, 100.f });
+//
+//coord.AddComponent<Rotation>(control, Rotation{});
+//coord.AddComponent<Rotation>(p0, Rotation{});
+//coord.AddComponent<Rotation>(p1, Rotation{});
+//coord.AddComponent<Rotation>(p2, Rotation{});
+//coord.AddComponent<Rotation>(p3, Rotation{});
+//coord.AddComponent<Rotation>(ground, Rotation{});
+//
+//// TESTING GRAPHICS2;
+//Renderable2 r0{ "square", "bananaMat" };
+//coord.AddComponent<Renderable2>(control, r0);
+//Renderable2 r1{ "circle", "targetMat" };
+//coord.AddComponent<Renderable2>(p0, r1);
+//Renderable2 r2{ "circle", "bananaMat" };
+//coord.AddComponent<Renderable2>(p1, r2);
+//Renderable2 r3{ "square", "bananaMat" };
+//coord.AddComponent<Renderable2>(p2, r3);
+//Renderable2 r4{ "circle", "targetMat" };
+//coord.AddComponent<Renderable2>(p3, r4);
+//Renderable2 r5{ "square", "targetMat" };
+//coord.AddComponent<Renderable2>(ground, r5);
+//
+//// Camera object
+//Entity camera = coord.CreateEntity();
+//Position posCam{ 0.0, 0.0 };
+//Rotation rotCam{ 0.f };
+//Scale scaleCam{ 200.0,200.0 };
+//coord.AddComponent<Position>(camera, posCam);
+//coord.AddComponent<Rotation>(camera, rotCam);
+//coord.AddComponent<Scale>(camera, scaleCam);
+//Camera isCamera{
+//	true,
+//	1.f,
+//	1600.f,
+//	900.f
+//};
+//coord.AddComponent<Camera>(camera, isCamera);
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
+// 
 //int main_testPhysics() {
 //	// Enable memory leak checking at program exit
 //	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
