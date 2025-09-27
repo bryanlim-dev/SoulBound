@@ -9,6 +9,7 @@
 #include "ECS/ISystem.h"
 #include "Systems/Application.h"
 #include "Systems/IEvent.h"
+#include "CrashLogger.h"
 
 class CoreEngine {
 
