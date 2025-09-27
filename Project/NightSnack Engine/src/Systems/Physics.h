@@ -19,6 +19,7 @@ public:
         m_systemSignature.set(GetComponentTypeID<Acceleration>());
         m_systemSignature.set(GetComponentTypeID<Mass>());
         m_systemSignature.set(GetComponentTypeID<Force>());
+        m_systemSignature.set(GetComponentTypeID<Collider>());
     
     }
 

@@ -20,6 +20,8 @@ void CollisionSystem::Init(EventDispatcher& dispatcher)
 	// Testing code for collision event subscibtion (subscribe only in init)
     m_dispatcher->Subscribe<CollisionEvent>([](const CollisionEvent& event)
         {
+            (void)event; // temp unreferenced;
+
             // Example: Play sound, spawn particles, update score, etc.
             //std::cout << "Collision event: Entity " << event.entityA << " collided with Entity " << event.entityB << std::endl;
         });
@@ -32,7 +34,7 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
     // Step 1: Reset collision flags
     for (auto const& e : m_entities) 
     {
-        auto& col = coord.GetComponent<Collider>(e);
+        auto& col = coord.ModifyComponent<Collider>(e);
         col.colliding = false;
     }
 
@@ -44,12 +46,12 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
             if (itB == itA) continue;
 
             auto& posA = coord.GetComponent<Position>(*itA);
-            auto& velA = coord.GetComponent<Velocity>(*itA);
-            auto& colA = coord.GetComponent<Collider>(*itA);
+            auto& velA = coord.ModifyComponent<Velocity>(*itA);
+            auto& colA = coord.ModifyComponent<Collider>(*itA);
 
             auto& posB = coord.GetComponent<Position>(*itB);
-            auto& velB = coord.GetComponent<Velocity>(*itB);
-            auto& colB = coord.GetComponent<Collider>(*itB);
+            auto& velB = coord.ModifyComponent<Velocity>(*itB);
+            auto& colB = coord.ModifyComponent<Collider>(*itB);
 
             // Skip if both are static
             if (colA.isStatic) continue;
@@ -80,7 +82,7 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
                 colA.colliding = true;
                 colB.colliding = true;
 
-                std::cout << "Collision detected between Entity " << *itA << " and Entity " << *itB << std::endl;
+                //std::cout << "Collision detected between Entity " << *itA << " and Entity " << *itB << std::endl;
 
 				// Dispatch collision event between entity A & entity B
                 if (m_dispatcher)
@@ -108,10 +110,6 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
                     velB.dx = -velA.dx * 0.7f;
                     velB.dy = -velB.dy * 0.7f;
 
-                    /*velA.dx = -velA.dx * 0.7;
-                    velA.dy = -velA.dy * 0.7;
-                    velB.dx = -velB.dx * 0.7;
-                    velB.dy = -velB.dy * 0.7;*/
                 }
                 else if (!colA.isStatic && colB.isStatic)
                 {

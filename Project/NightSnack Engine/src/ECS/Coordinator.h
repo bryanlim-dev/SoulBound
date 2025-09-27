@@ -2,9 +2,11 @@
 #define COORD_HPP
 
 #include "ECS/Entity.h"
+#include "ECS/Component.h"
 #include "ECS/EntityManager.h"
 #include "ECS/ComponentManager.h"
 #include "ECS/ISystem.h"
+#include "./Systems/Application.h"
 
 // Coordinator manages the ECS Managers;
 // Provides an interface that can access all of ECS Managers' functions and data;
@@ -17,6 +19,8 @@ public:
 	Entity CreateEntity();
 	void DestroyEntity(Entity e);
 
+	size_t GetEntityNum() { return m_entityManager->GetLivingEntities().size(); }	// number of living entities;
+
 	template <typename T>
 	void RegisterComponent();
 
@@ -25,26 +29,39 @@ public:
 	template <typename T>
 	void RemoveComponent(Entity e);
 
+	template<typename T>
+	bool HasComponent(Entity e) const;
 	template <typename T>
-	T& GetComponent(Entity e);
+	T const& GetComponent(Entity e) const;
+	template <typename T>
+	T& ModifyComponent(Entity e);
+
+	template <>	// specialization for Renderable;
+	Renderable& ModifyComponent<Renderable>(Entity e);
 
 	Signature& GetEntitySignature(Entity e) { return m_entityManager->GetSignature(e); }
 
 	std::set<Entity> const& GetLivingEntities() const { return m_entityManager->GetLivingEntities(); }
 
-	template<typename T>
-	std::shared_ptr<T> RegisterSystem();
-
-	template<typename T>
-	void SetSystemSignature(Signature sig);
+	template <typename T, typename... Args>
+	std::shared_ptr<T> RegisterSystem(Args&&... args);
 	template <typename T>
-	std::shared_ptr<T> GetSystem();
+	std::shared_ptr<T> GetSystem() { return m_systemManager->GetSystem<T>(); }
+
+	template <typename T>
+	void SetSystemSignature(Signature sig);
+
+	int GetWindowHeight();
+	int GetWindowWidth();
 
 private:
 	// ECS Managers;
 	std::unique_ptr<EntityManager> m_entityManager;
 	std::unique_ptr<ComponentManager> m_componentManager;
 	std::unique_ptr<SystemManager> m_systemManager;
+
+	// Event Dispatcher;
+	// EventDispatcher& m_dispather;
 };
 
 // ------------------------------------------------------------------------------------------------
@@ -96,13 +113,30 @@ void Coordinator::RemoveComponent(Entity e) {
 }
 
 template <typename T>
-T& Coordinator::GetComponent(Entity e) {
+T const& Coordinator::GetComponent(Entity e) const {
 	return m_componentManager->GetComponent<T>(e);
 }
 
 template <typename T>
-std::shared_ptr<T> Coordinator::RegisterSystem() {
-	return m_systemManager->RegisterSystem<T>();
+bool Coordinator::HasComponent(Entity e) const {
+	return m_componentManager->HasComponent<T>(e);
+}
+
+template <typename T>
+T& Coordinator::ModifyComponent(Entity e) {
+
+	return m_componentManager->GetComponent<T>(e);
+}
+template <>	// specialization for Renderable;
+inline Renderable& Coordinator::ModifyComponent<Renderable>(Entity e) {
+	auto& r = m_componentManager->GetComponent<Renderable>(e);
+	r.wasModified = true;
+	return r;
+}
+
+template <typename T, typename... Args>
+std::shared_ptr<T> Coordinator::RegisterSystem(Args&&... args) {
+	return m_systemManager->RegisterSystem<T>(std::forward<Args>(args)...);
 }
 
 template <typename T>
@@ -110,8 +144,4 @@ void Coordinator::SetSystemSignature(Signature sig) {
 	m_systemManager->SetSignature<T>(sig);
 }
 
-template <typename T>
-std::shared_ptr<T> Coordinator::GetSystem(){
-	return m_systemManager->GetSystem<T>();
-}
 #endif // COORD_HPP

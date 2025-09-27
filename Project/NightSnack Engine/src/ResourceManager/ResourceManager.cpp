@@ -4,8 +4,7 @@
 
 ResourceManager::ResourceManager()
 {
-	totalResourcesLoaded = 0;
-	stbi_set_flip_vertically_on_load(true); // Flip the y-axis of the images loaded
+	Init();
 }
 
 ResourceManager::~ResourceManager()
@@ -44,7 +43,30 @@ ResourceManager::~ResourceManager()
 	}
 	resourceSoundMap.clear();
 
+	//Delete Font map
+	std::map<std::size_t, ResourceFont*>::iterator itFont;
+	for (itFont = resourceFontMap.begin(); itFont != resourceFontMap.end(); itFont++)
+	{
+		delete itFont->second;
+	}
+	resourceFontMap.clear();
+
 	deletionVec.clear();
+
+}
+
+void ResourceManager::Init()
+{
+	totalResourcesLoaded = 0;
+	stbi_set_flip_vertically_on_load(true); // Flip the y-axis of the images loaded
+
+	FT_Init_FreeType(&fontLibrary);
+
+	resourceImageMap.clear();
+	resourceTxtFileMap.clear();
+	resourceJsonMap.clear();
+	resourceSoundMap.clear();
+	resourceFontMap.clear();
 }
 
 void ResourceManager::Update(float /*dt*/)
@@ -133,6 +155,20 @@ unsigned char* ResourceManager::GetImage(const std::size_t imageKey)
 	//Same logic as func get image resource so just reuse it
 	ResourceImage* image = GetImageResource(imageKey);
 	return (image != nullptr) ? GetImageResource(imageKey)->Image(): nullptr;
+}
+
+unsigned char* ResourceManager::GetImage(const std::size_t imageKey, int& width, int& height, int& channels)
+{
+	//Same logic as func get image resource so just reuse it
+	ResourceImage* image = GetImageResource(imageKey);
+	if (image != nullptr)
+	{
+		width = image->Width();
+		height = image->Height();
+		channels = image->Channels();
+		return GetImageResource(imageKey)->Image();
+	}
+	return nullptr;
 }
 
 ResourceImage* ResourceManager::GetImageResource(const std::size_t imageKey)
@@ -243,6 +279,11 @@ ResourceTxtFile* ResourceManager::GetTxtFileResource(const std::size_t txtKey)
 
 	return nullptr;
 }
+void ResourceManager::SaveTxtFile(std::string filePath, std::vector<std::string> txtVec)
+{
+	ResourceTxtFile saveResource(txtVec, filePath);
+	saveResource.SaveFile();
+}	
 #pragma endregion
 
 #pragma region Json
@@ -312,10 +353,16 @@ void ResourceManager::UnloadJson(std::size_t jsonKey)
 	if (it == deletionVec.end())
 		deletionVec.push_back(resourceJsonMap[jsonKey]);
 }
-const nlohmann::json& ResourceManager::GetJson(const std::size_t jsonKey)
+std::unordered_map<std::string, Archtype> ResourceManager::GetJson(const std::size_t jsonKey)
 {
 	ResourceJson* jsn = GetJsonResource(jsonKey);
 	return jsn->GetJson();
+}
+
+nlohmann::json ResourceManager::GetJsonRaw(const std::size_t jsonKey)
+{
+	ResourceJson* jsn = GetJsonResource(jsonKey);
+	return jsn->GetJsonRaw();
 }
 
 ResourceJson* ResourceManager::GetJsonResource(const std::size_t jsonKey)
@@ -328,6 +375,12 @@ ResourceJson* ResourceManager::GetJsonResource(const std::size_t jsonKey)
 
 	return nullptr;
 }
+void ResourceManager::SaveJsonFile(std::string filePath, std::unordered_map<std::string, Archtype> const& newArchtypeMap)
+{
+	ResourceJson jsonResouce(newArchtypeMap, filePath);
+	jsonResouce.SaveFile();
+}
+
 #pragma endregion
 
 #pragma region Sound File Functions
@@ -419,6 +472,134 @@ ResourceSound* ResourceManager::GetSoundResource(const std::size_t soundKey)
 }
 #pragma endregion
 
+#pragma region Fonts
+FT_Library& ResourceManager::GetFontLibrary()
+{
+	return fontLibrary;
+}
+
+LOAD_RESULT ResourceManager::LoadFont(std::string filePath, std::size_t& fontKey)
+{
+	std::cout << "RM: ";
+
+	fontKey = ConstructMapKey(filePath);
+
+	//Check if resource alr exists
+	if (resourceFontMap.find(fontKey) != resourceFontMap.end())
+	{
+		std::cout << filePath << " already exists" << std::endl;
+
+		//Check if it was flagged for deletion
+		if (resourceFontMap[fontKey]->FlaggedForDeletion())
+		{
+			//Remove the flag if it was flagged for deletion
+			//(This will cause it to not delete in update)
+			resourceFontMap[fontKey]->FlaggedForDeletion() = false;
+			return LOAD_SUCCESS_STOPPED_UNLOAD;
+		}
+		else
+			return LOAD_FAIL_PREEXIST;
+	}
+
+	//This loads the image via the ResourceImage class
+	ResourceFont* newResource = new ResourceFont(filePath, fontKey);
+	newResource->LoadFile(fontLibrary);
+
+	//This checks if it is loaded or now
+	if (!newResource->Loaded())
+	{
+		std::cout << "Failed to load sound" << std::endl;
+
+		if (newResource)
+			delete newResource;
+
+		return LOAD_FAIL_BADPATH;
+	}
+	else
+	{
+		std::cout << "Loaded sound " << newResource->Path() << std::endl;
+
+		//Insert the loaded image into the map only if managed to load
+		resourceFontMap.insert({fontKey, newResource });
+		totalResourcesLoaded++;
+		return LOAD_SUCCESS;
+	}
+
+	return LOAD_RESULT();
+}
+
+void ResourceManager::UnloadFont(std::size_t fontKey)
+{
+	//Check if resource alr exists
+	if (resourceFontMap.find(fontKey) == resourceFontMap.end())
+	{
+		std::cout << "Resource does not exist, cannot unload" << std::endl;
+		return;
+	}
+
+	resourceFontMap[fontKey]->FlaggedForDeletion() = true;
+
+	//Change this to a queue system
+	//Check if it exists witin the vec alr tho
+	auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceFontMap[fontKey]);
+	if (it == deletionVec.end())
+		deletionVec.push_back(resourceFontMap[fontKey]);
+}
+
+FT_Face ResourceManager::GetFont(const std::size_t fontKey)
+{
+	ResourceFont* fnt = GetFontResource(fontKey);
+	return (fnt != nullptr) ? fnt->Font() : nullptr;
+}
+#pragma endregion
+
+ResourceFont* ResourceManager::GetFontResource(const std::size_t fontKey)
+{
+	//Does the resource exist?
+	if (resourceFontMap.find(fontKey) != resourceFontMap.end())
+	{
+		return resourceFontMap[fontKey];
+	}
+
+	return nullptr;
+}
+
+bool ResourceManager::ResourceLoaded(RESOURCE_TYPE type, size_t resourceKey)
+{
+	Resource* resourceChecked = nullptr;
+	//Try to avoid object slicing
+	switch (type)
+	{
+	case RESOURCE_IMAGE:
+		resourceChecked = GetImageResource(resourceKey);
+		break;
+
+	case RESOURCE_TXTFILE:
+		resourceChecked = GetTxtFileResource(resourceKey);
+		break;
+
+	case RESOURCE_JSON:
+		resourceChecked = GetJsonResource(resourceKey);
+		break;
+
+	case RESOURCE_SOUND:
+		resourceChecked = GetSoundResource(resourceKey);
+		break;
+
+	case RESOURCE_FONT:
+		resourceChecked = GetFontResource(resourceKey);
+		break;
+
+	default:
+		std::cout << "ResourceLoaded(): INVALID RESOURCE TYPE" << std::endl;
+		return false;
+	}
+
+	if (resourceChecked && resourceChecked->Loaded())
+		return true;
+	else
+		return false;
+}
 
 void ResourceManager::DeleteRM()
 {
@@ -429,9 +610,10 @@ void ResourceManager::DebugTestEverything()
 {
 	ResourceManager* rm = this;
 
+	//--------------------IMAGE FILE--------------------
 	//Testing a loading jpg
 	std::size_t bananaKey = 0;
-	std::cout << "Test Load Images (Png/JPG)" << std::endl;
+	std::cout << "<<<Test Load Images (Png/JPG)>>>" << std::endl;
 	rm->LoadImage("assets/Banana.jpg", bananaKey); 
 
 	if (rm->GetImage(bananaKey) != nullptr)
@@ -442,7 +624,7 @@ void ResourceManager::DebugTestEverything()
 	//Testing loading png
 	std::size_t targetKey = 0;
 	rm->LoadImage("assets/image_UI_target.png", targetKey);
-	if (rm->GetImage(targetKey) != nullptr)
+	if (ResourceLoaded(RESOURCE_IMAGE, targetKey))
 		std::cout << "Load Image(PNG) test: SUCCESS" << std::endl;
 	else
 		std::cout << "Load Image(PNG) test: FAIL" << std::endl;
@@ -482,11 +664,11 @@ void ResourceManager::DebugTestEverything()
 	rm->LoadImage("assets/image_UI_target.png", targetKey); //Reloading a unloaded image test
 	rm->GetImage(targetKey);
 	rm->GetImage(bananaKey);
-	if (rm->GetImage(targetKey) != nullptr)
+	if (ResourceLoaded(RESOURCE_IMAGE, targetKey))
 	{
 		std::cout << "Get Image found target resource" << std::endl;
 	}
-	if (rm->GetImage(bananaKey) != nullptr)
+	if (ResourceLoaded(RESOURCE_IMAGE, bananaKey))
 	{
 		std::cout << "Get Image found banana resource" << std::endl;
 	}
@@ -494,46 +676,90 @@ void ResourceManager::DebugTestEverything()
 	std::cout << std::endl;
 	std::cout << std::endl;
 
+
+	//--------------------TXT FILE--------------------
+	std::cout << "<<<Test Txt File>>>" << std::endl;
 	std::cout << "Test Load Txt File" << std::endl;
 
 	std::size_t txtKey = 0;
 	rm->LoadTxtFile("assets/data/TestTxt.txt", txtKey);
 	std::vector<std::string> txtVec = rm->GetTxtFile(txtKey);
-	for (std::string strTest : txtVec)
+	if (ResourceLoaded(RESOURCE_TXTFILE, txtKey))
 	{
-		std::cout << strTest << std::endl;
+		std::cout << "Load TXT: SUCCESS" << std::endl;
+		for (std::string strTest : txtVec)
+		{
+			std::cout << strTest << std::endl;
+		}
 	}
-	std::cout << std::endl;
-	std::cout << std::endl;
+	else
+		std::cout << "Load TXT: FAIL" << std::endl;
 
 	rm->UnloadTxtFile(txtKey); //Actual unloading test
 	rm->Update(0); //Run unload code
+	std::cout << std::endl;
 
-	std::cout << "Test Load Json File" << std::endl;
+
+	std::cout << "Test: Save Txt File" << std::endl;
+	std::vector<std::string> newTxt = {
+		"This is a new txt file",
+		"Newwww file",
+		"THIS is line 4",
+		"I lied it was 3",
+		"This is 5 tho"
+	};
+	SaveTxtFile("assets/data/savedNewTxt.txt", newTxt);
+	std::cout << "Attempted save to Txt File" << std::endl;
+
+	std::cout << std::endl;
+	std::cout << std::endl;
+
+	//--------------------JSON FILE--------------------
+	std::cout << "<<<Test Json File>>>" << std::endl;
+	std::cout << "Test: Load Json File" << std::endl;
 	std::size_t jsonKey = 0;
 	rm->LoadJson("assets/data/jsonTestFile.json", jsonKey);
-
-	//Riskier is there is a typo or something, it WILL crash if cannot find
-	// std::cout << "boolean: " << (rm->GetJson(jsonKey)["testJson"]["boolean"]? "true" : "false") << std::endl;
-	std::cout << "boolean: " << (rm->GetJson(jsonKey).at("testJson").at("boolean") ? "true" : "false") << std::endl;
-	std::cout << "interger: " << rm->GetJson(jsonKey).at("testJson").at("interger") << std::endl;
-	for (auto& [key, value] : rm->GetJson(jsonKey).items()) {
-		std::cout << key << " : " << value << std::endl;
+	if (ResourceLoaded(RESOURCE_JSON, jsonKey))
+	{
+		std::cout << "Load JSON: SUCCESS" << std::endl;
+		//Riskier is there is a typo or something, it WILL crash if cannot find
+		std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey)["testJson"]["boolean"] ? "true" : "false") << std::endl;
+		std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey).at("testJson").at("boolean") ? "true" : "false") << std::endl;
+		std::cout << "interger: " << rm->GetJsonRaw(jsonKey).at("testJson").at("interger") << std::endl;
+		//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
+		//	std::cout << key << " : " << value << std::endl;
+		//}
 	}
+	else
+		std::cout << "Load JSON: FAIL" << std::endl;
+
 	rm->UnloadJson(jsonKey);
 	rm->Update(0); //Run unload code
 	std::cout << std::endl;
 
 	rm->LoadJson("assets/data/jsonTestFile2.json", jsonKey);
-	for (auto& [key, value] : rm->GetJson(jsonKey).items()) {
-		std::cout << key << " : " << value << std::endl;
+	if (ResourceLoaded(RESOURCE_JSON, jsonKey))
+	{
+		std::cout << "Load JSON: SUCCESS" << std::endl;
 	}
+	else
+		std::cout << "Load JSON: FAIL" << std::endl;
+
+	//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
+	//	std::cout << key << " : " << value << std::endl;
+	//}
+
+	std::cout << "Test: Save Json File" << std::endl;
+	rm->SaveJsonFile("assets/data/savedJsonTest2.json", rm->GetJson(jsonKey));
+
 
 	rm->UnloadJson(jsonKey);
 	rm->Update(0); //Run unload code
 	std::cout << std::endl;
 	std::cout << std::endl;
 
+	//--------------------SOUND FILE--------------------
+	std::cout << "<<<Test FMOD/Sound File>>>" << std::endl;
 	FMOD::System* fSys = nullptr;
 	FMOD::Channel* channel = nullptr;
 	size_t soundKey = 0;
@@ -559,11 +785,35 @@ void ResourceManager::DebugTestEverything()
 			std::cout << "Load Sound test: FAIL" << std::endl;
 	}
 
-	if (fSys)
-		fSys->release();
 
 	rm->UnloadSound(soundKey);
+	rm->Update(0);
 
+	if (fSys)
+	{
+		fSys->release();
+		fSys = nullptr;
+	}
+
+	std::cout << std::endl;
+	std::cout << std::endl;
+
+	//--------------------FONT FILE--------------------
+	std::cout << "<<<Test FreeType/Font File>>>" << std::endl;
+
+	size_t fontKey = 0;
+	std::cout << "Font Load Test" << std::endl;
+	rm->LoadFont("assets/Font/liberation-mono.ttf", fontKey);
+	ResourceFont* recFont = rm->GetFontResource(fontKey);
+	if (ResourceLoaded(RESOURCE_FONT, fontKey))
+		std::cout << "Font Load Test: FAILED" << std::endl;
+	else
+		std::cout << "Font Load Test: SUCCESS" << std::endl;
+	rm->UnloadFont(fontKey);
+	rm->Update(0);
+
+	std::cout << std::endl;
+	std::cout << std::endl;
 }
 
 void ResourceManager::DeleteFlaggedResources()
@@ -588,6 +838,10 @@ void ResourceManager::DeleteFlaggedResources()
 		case RESOURCE_SOUND:
 			resourceSoundMap.erase(resource->MapKey());
 			break;
+		case RESOURCE_FONT:
+			resourceFontMap.erase(resource->MapKey());
+			break;
+
 		}
 		delete resource;
 	}

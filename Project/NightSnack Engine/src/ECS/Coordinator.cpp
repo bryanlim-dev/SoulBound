@@ -1,10 +1,12 @@
 #include "ECS/Coordinator.h"
+#include "./Systems/Graphics.h"
 
-void Coordinator::Initialize() {
+void Coordinator::Initialize(/*EventDispatcher disp*/) /*: m_dispatcher{disp}*/ {
 	// Create ECS Managers;
 	m_entityManager = std::make_unique<EntityManager>();
 	m_systemManager = std::make_unique<SystemManager>();
 	m_componentManager = std::make_unique<ComponentManager>();
+
 }
 
 //void Coordinator::Update(float deltaTime) {
@@ -25,10 +27,22 @@ Entity Coordinator::CreateEntity() {
 
 // Destroy an Entity, remove it from all Systems and ComponentArrays;
 void Coordinator::DestroyEntity(Entity e) {
+	if (HasComponent<Renderable>(e)) {
+		GetSystem<GraphicsSystem>()->RemoveCache(e);
+	}
+
 	// Remove from Live Entites;
 	m_entityManager->DestroyEntity(e);
 	// Remove Entity from Components;
 	m_componentManager->EntityDestroyed(e);
 	// Remove Entity from all Systems;
 	m_systemManager->EntityDestroyed(e);
+}
+
+int Coordinator::GetWindowHeight() {
+	return GetSystem<ApplicationSystem>()->GetHeight();
+}
+
+int Coordinator::GetWindowWidth() {
+	return GetSystem<ApplicationSystem>()->GetWidth();
 }
