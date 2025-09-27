@@ -39,16 +39,26 @@ int main()
 
 	//Creatr resource manager
 	ResourceManager* rm = ResourceManager::GetInstance();
+	//rm->DebugTestEverything();
 	size_t configKey = 0;
-	rm->LoadJson("assets/Data/WindowConfig.json", configKey);
+	rm->LoadJson("assets/Data/WindoConfig.json", configKey);
 	std::string windowTitle = "";
 	int winWidth = 0;
 	int winHeight = 0;
 
-	windowTitle = (rm->GetJson(configKey)["WindowConfig"].componentMap["windowTitle"]);
-	winWidth = std::stoi(rm->GetJson(configKey)["WindowConfig"].componentMap["Width"]);
-	winHeight = std::stoi(rm->GetJson(configKey)["WindowConfig"].componentMap["Height"]);
-	rm->UnloadJson(configKey);
+	if (rm->ResourceLoaded(RESOURCE_JSON, configKey))
+	{
+		windowTitle = (rm->GetJson(configKey)["WindowConfig"].componentMap["windowTitle"]);
+		winWidth = std::stoi(rm->GetJson(configKey)["WindowConfig"].componentMap["Width"]);
+		winHeight = std::stoi(rm->GetJson(configKey)["WindowConfig"].componentMap["Height"]);
+		rm->UnloadJson(configKey);
+	}
+	else
+	{
+		windowTitle = "Load Failed";
+		winWidth = 100;
+		winHeight = 100;
+	}
 
   	// Will register all components;
   	// If you create new components, please register them in this function defined in Core.cpp;
