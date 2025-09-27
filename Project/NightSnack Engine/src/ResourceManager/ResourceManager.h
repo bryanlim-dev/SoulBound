@@ -24,6 +24,9 @@
 //loadidng images
 //https://solarianprogrammer.com/2019/06/10/c-programming-reading-writing-images-stb_image-libraries/
 
+//freetype doccumentation
+//https://freetype.org/freetype2/docs/tutorial/index.html
+
 enum LOAD_RESULT
 {
 	LOAD_SUCCESS,		//Resource loaded in
@@ -53,13 +56,14 @@ private:
 
 public:
 
+	void Init();
+
 	/************************************************************************/
 	/*!
 	\brief
 	Update function for logic (i.e calling flagged deletion)
 	*/
 	/************************************************************************/
-
 	void Update(float dt);
 
 
@@ -351,6 +355,10 @@ public:
 	/************************************************************************/
 	ResourceSound* GetSoundResource(const std::size_t soundKey);
 #pragma endregion
+
+#pragma region Fonts
+#pragma enndregion
+
 
 	//Delete the Resource Manager
 	void DeleteRM();

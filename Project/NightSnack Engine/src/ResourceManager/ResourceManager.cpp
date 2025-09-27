@@ -4,8 +4,7 @@
 
 ResourceManager::ResourceManager()
 {
-	totalResourcesLoaded = 0;
-	stbi_set_flip_vertically_on_load(true); // Flip the y-axis of the images loaded
+	Init();
 }
 
 ResourceManager::~ResourceManager()
@@ -45,6 +44,12 @@ ResourceManager::~ResourceManager()
 	resourceSoundMap.clear();
 
 	deletionVec.clear();
+}
+
+void ResourceManager::Init()
+{
+	totalResourcesLoaded = 0;
+	stbi_set_flip_vertically_on_load(true); // Flip the y-axis of the images loaded
 }
 
 void ResourceManager::Update(float /*dt*/)
