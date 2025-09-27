@@ -86,8 +86,7 @@ public:
 	~ResourceImage();
 
 	void LoadFile() override;
-	//UNUSED FOR NOW DO NOT USE
-	void SaveFile() override;
+
 
 	unsigned char* Image() const;
 
@@ -96,6 +95,8 @@ public:
 	int Channels() const { return channels; }
 
 private:
+	//UNUSED FOR NOW DO NOT USE
+	void SaveFile() override;
 };
 
 class ResourceTxtFile : public Resource
@@ -226,8 +227,19 @@ private:
 class ResourceFont : public Resource
 {
 private:
-
+	FT_Face fontFace = nullptr;
 
 public:
+	ResourceFont(const std::string& inFilePath, const std::size_t& inMapKey);
+	~ResourceFont();
+
+	//Returns FT_Face stored
+	FT_Face Font();
+
+	void LoadFile(FT_Library& fontLib);
+
+private:
+	void LoadFile() override {};
+	void SaveFile() override {};
 
 };

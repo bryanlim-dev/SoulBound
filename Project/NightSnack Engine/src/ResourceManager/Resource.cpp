@@ -370,7 +370,11 @@ ResourceSound::ResourceSound(const std::string& inFilePath, const std::size_t& i
 ResourceSound::~ResourceSound()
 {
 	if (soundData)
+	{
 		soundData->release();
+		//delete soundData;
+		soundData = nullptr;
+	}
 
 	soundData = nullptr;
 }
@@ -393,4 +397,45 @@ FMOD::Sound* ResourceSound::Sound() const
 	return soundData;
 }
 
+#pragma endregion
+
+#pragma region Font
+ResourceFont::ResourceFont(const std::string& inFilePath, const std::size_t& inMapKey)
+	: Resource(inFilePath, inMapKey)
+{
+	resourceType = RESOURCE_FONT;
+}
+
+ResourceFont::~ResourceFont()
+{
+	if (fontFace)
+		FT_Done_Face(fontFace);
+	resourceLoaded = false;
+}
+
+FT_Face ResourceFont::Font()
+{
+	return fontFace;
+}
+
+void ResourceFont::LoadFile(FT_Library& fontLib)
+{
+	//Load font based on file path using system
+	FT_Error error = FT_New_Face(fontLib, path.c_str(), 0, &fontFace);
+
+	if (error)
+	{
+		resourceLoaded = false;
+
+#if RESOURCE_DEBUG_MODE
+		std::cout << path << " font type cannot be loaded!" << std::endl;
+		if (error == FT_Err_Unknown_File_Format)
+		{
+			std::cout << path << " font type is unnsupported and cannot be loaded!" << std::endl;
+		}
+#endif
+	}
+	else
+		resourceLoaded = true;
+}
 #pragma endregion

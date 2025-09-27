@@ -40,15 +40,30 @@ class ResourceManager : public Singleton<ResourceManager>
 private:
 	unsigned int totalResourcesLoaded = 0;
 
+	
+	//Whenn creating a new map check this checlist
+	//Init -> Cleared
+	//Delete/Destructor -> deleted
+	//DeleteFlaggedResources() -> erase in switch case
+	//Load<Resource> -> Insert into map and increase resource counter
+	//Unload<Resource> -> Set flag for dleetion
+	//Get<Resource>
+	//Get<Resource>Class
+	//DebugTestEverything
+	
 	//Key, Value
 	//Maps of resources
 	std::map<std::size_t, ResourceImage*> resourceImageMap;
 	std::map<std::size_t, ResourceTxtFile*> resourceTxtFileMap;
 	std::map<std::size_t, ResourceJson*> resourceJsonMap;
 	std::map<std::size_t, ResourceSound*> resourceSoundMap;
+	std::map<std::size_t, ResourceFont*> resourceFontMap;
 
 	//List of resources to track to delete
 	std::vector<Resource*> deletionVec;
+
+	//Font system
+	FT_Library fontLibrary;
 
 	ResourceManager();
 	~ResourceManager();
@@ -86,6 +101,12 @@ public:
 	/************************************************************************/
 	LOAD_RESULT LoadImage(std::string filePath, std::size_t& imageKey);
 
+	/************************************************************************/
+	/*!
+	\brief
+	Flags resource to be deleted/unloaded
+	*/
+	/************************************************************************/
 	void UnloadImage(std::size_t imageKey);
 
 	
@@ -93,7 +114,7 @@ public:
 	/************************************************************************/
 	/*!
 	\brief
-	Get an image based on the file path.
+	Get an image based on the file key.
 	Uses GetImageResource to find class containing it.
 	
 	\param input
@@ -108,7 +129,7 @@ public:
 	/************************************************************************/
 	/*!
 	\brief
-	Get an image based on the file path.
+	Get an image based on the file key.
 	Uses GetImageResource to find class containing it.
 	Returns variables to return width height and channels
 
@@ -163,13 +184,19 @@ public:
 	*/
 	/************************************************************************/
 	LOAD_RESULT LoadTxtFile(std::string filePath, std::size_t& txtKey);
-
+	
+	/************************************************************************/
+	/*!
+	\brief
+	Flags resource to be deleted/unloaded
+	*/
+	/************************************************************************/
 	void UnloadTxtFile(std::size_t txtKey);
 
 	/************************************************************************/
 	/*!
 	\brief
-	Get an image based on the file path.
+	Get an image based on the file key.
 	Uses GetImageResource to find class containing it.
 	
 	\param input
@@ -232,6 +259,12 @@ public:
 	/************************************************************************/
 	LOAD_RESULT LoadJson(std::string filePath, std::size_t& imageKey);
 
+	/************************************************************************/
+	/*!
+	\brief
+	Flags resource to be deleted/unloaded
+	*/
+	/************************************************************************/
 	void UnloadJson(std::size_t jsonKey);
 
 
@@ -254,7 +287,7 @@ public:
 	/************************************************************************/
 	/*!
 	\brief
-	Get an nlohmann::json based on the file path.
+	Get an nlohmann::json based on the file key.
 	Uses GetImageResource to find class containing it.
 
 	\param input
@@ -323,13 +356,19 @@ public:
 	/************************************************************************/
 	LOAD_RESULT LoadSound(std::string filePath, std::size_t& soundKey, FMOD::System* system);
 
+	/************************************************************************/
+	/*!
+	\brief
+	Flags resource to be deleted/unloaded
+	*/
+	/************************************************************************/
 	void UnloadSound(std::size_t soundKey);
 
 
 	/************************************************************************/
 	/*!
 	\brief
-	Get an sound pointer based on the file path.
+	Get an sound pointer based on the file key.
 	Uses GetImageResource to find class containing it.
 
 	\param input
@@ -357,7 +396,80 @@ public:
 #pragma endregion
 
 #pragma region Fonts
-#pragma enndregion
+	/************************************************************************/
+	/*!
+	\brief
+	Returns FT_Lirary refrence that is/was used to load fonts
+
+	\return
+	FT_Library refrence
+	*/
+	/************************************************************************/
+
+	FT_Library& GetFontLibrary();
+
+	/************************************************************************/
+	/*!
+	\brief
+	Load an font based on the file path.
+
+	\param[in] filePath
+	The input string of the file path.
+
+	\param[out] imageKey
+	The return of key to pass in to reobtain the resource (font).
+
+	\param[out] system
+	FMOD::System pointer to be used to init the font
+
+	\return
+	LOAD_RESULT enum of what happened
+	LOAD_SUCCESS - Resource loaded in.
+	LOAD_SUCCESS_STOPPED_UNLOAD - Resource already exists but was going to be unloaded soon, so it was stopped from being unloaded.
+	LOAD_FAIL_PREEXIST - Resource already exists, did not load.
+	LOAD_FAIL_BADPATH -	Resource fails to load due to bad file bath.
+	*/
+	/************************************************************************/
+	LOAD_RESULT LoadFont(std::string filePath, std::size_t& fontKey);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Flags resource to be deleted/unloaded
+	*/
+	/************************************************************************/
+	void UnloadFont(std::size_t fontKey);
+
+
+	/************************************************************************/
+	/*!
+	\brief
+	Get an FT_Face font based on the file key.
+	Uses GetFontResource to find class containing it.
+
+	\param input
+	The input key to use for the resource map
+
+	\return
+	FT_Face of the font resource
+	*/
+	/************************************************************************/
+	FT_Face GetFont(const std::size_t fontKey);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Get an font resource class pointer based on the file path
+
+	\param input
+	The input string of the file path
+
+	\return
+	Pointer of font resource
+	*/
+	/************************************************************************/
+	ResourceFont* GetFontResource(const std::size_t fontKey);
+#pragma endregion
 
 
 	//Delete the Resource Manager
