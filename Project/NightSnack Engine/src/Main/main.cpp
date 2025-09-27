@@ -105,6 +105,22 @@ int main()
 
 		// ECS test --------------------------------------------------------------------------------------
 		// -----------------------------------------------------------------------------------------------
+		// Camera object
+		Entity camera = coord.CreateEntity();
+		Position posCam{ 0.f, 0.f, 0.f };
+		Rotation rotCam{ 0.f };
+		Scale scaleCam{ 200.f, 200.f };
+		coord.AddComponent<Position>(camera, posCam);
+		coord.AddComponent<Rotation>(camera, rotCam);
+		coord.AddComponent<Scale>(camera, scaleCam);
+		Camera isCamera{
+			true,
+			1.f,
+			1600.f,
+			900.f
+		};
+		coord.AddComponent<Camera>(camera, isCamera);
+
 		Entity background = coord.CreateEntity();
 		Entity p0 = coord.CreateEntity();
 		Entity p1 = coord.CreateEntity();
@@ -195,22 +211,6 @@ int main()
 		coord.AddComponent<Color>(p0, Color{ 1.f, 0.f, 0.f, 1.f });
 		coord.AddComponent<Color>(p3, Color{ 0.f, 1.f, 0.f, 1.f });
 		coord.AddComponent<Color>(ground, Color{ 0.8f, 0.f, 0.8f, 1.f });
-
-		// Camera object
-		Entity camera = coord.CreateEntity();
-		Position posCam{ 0.f, 0.f, 0.f };
-		Rotation rotCam{ 0.f };
-		Scale scaleCam{ 200.f, 200.f };
-		coord.AddComponent<Position>(camera, posCam);
-		coord.AddComponent<Rotation>(camera, rotCam);
-		coord.AddComponent<Scale>(camera, scaleCam);
-		Camera isCamera{
-			true,
-			1.f,
-			1600.f,
-			900.f
-		};
-		coord.AddComponent<Camera>(camera, isCamera);
 
 		// Core Application Loop;
 		while (!core.ShouldClose()) {
