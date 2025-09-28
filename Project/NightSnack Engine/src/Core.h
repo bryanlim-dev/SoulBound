@@ -8,6 +8,8 @@
 #include "ECS/Coordinator.h"
 #include "ECS/ISystem.h"
 #include "Systems/Application.h"
+#include "Systems/IEvent.h"
+#include "CrashLogger.h"
 
 class CoreEngine {
 
@@ -18,12 +20,14 @@ public:
 
 	void Update();
 
-	template <typename T>
-	void AddSystem();
+	template <typename T, typename... Args>
+	void AddSystem(Args&&... args);
 	template <typename T>
 	void RemoveSystem(std::shared_ptr<T> system);
 
 	Coordinator& GetCoord() { return m_coord; }
+
+	EventDispatcher& GetEventDispatcher() { return core_dispatcher; }
 
 	bool ShouldClose() {  
 		return m_coord.GetSystem<ApplicationSystem>().get()->ShouldClose();
@@ -36,15 +40,19 @@ private:
 	// ECS Coordinator;
 	Coordinator m_coord;
 
+	// Event Dispatcher;
+	EventDispatcher core_dispatcher;
+
+	bool m_paused = false;
 };
 
-template <typename T>
-void CoreEngine::AddSystem() {
+template <typename T, typename... Args>
+void CoreEngine::AddSystem(Args&&... args) {
 	// Ensure T derives from ISystem;
 	static_assert(std::is_base_of<ISystem, T>::value, "T must derive from ISystem");
 
 	// Register the system in Coordinator (returns a shared_ptr<T>);
-	auto systemPtr = m_coord.RegisterSystem<T>();
+	auto systemPtr = m_coord.RegisterSystem<T>(std::forward<Args>(args)...);
 
 	// Add to CoreEngine's vector of systems as ISystem;
 	m_systems.push_back(std::static_pointer_cast<ISystem>(systemPtr));

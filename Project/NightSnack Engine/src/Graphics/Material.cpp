@@ -1,19 +1,47 @@
 #include "Material.h"
 
-// Construct a Material with a shader program and a base color ------------------------------------
-// ------------------------------------------------------------------------------------------------
-Material::Material(Shader* shader, const glm::vec3& baseColor) :
-	m_shader(shader), m_baseColor(baseColor) {
+Material::Material(Shader* shader, Texture* texture)
+    : m_shader(shader), m_texture(texture) {
+
+    // Enable alpha blending only if there is a texture
+    // And if the texture is a png format too
+    m_enableAlphaBlending = m_texture && m_texture->HasAlpha();
 }
 
-// Get the shader of this particular Material object ----------------------------------------------
-// ------------------------------------------------------------------------------------------------
-Shader* Material::GetShader() const {
-	return m_shader;
+Shader* Material::GetShader() const { 
+    return m_shader;
 }
 
-// Pass the uniform variables to the shader programs-----------------------------------------------
-// ------------------------------------------------------------------------------------------------
-void Material::ApplyUniforms() const {
-	m_shader->SetVec3("uBaseColor", m_baseColor);
+Texture* Material::GetTexture() const { 
+    return m_texture; 
+}
+
+void Material::SetBaseColor(float r, float g, float b, float a) {
+    m_baseColor = glm::vec4{ r, g, b, a };
+}
+
+void Material::ApplyUniforms(bool wireframe, bool isSelected) {
+
+    m_shader->Use();
+
+    // Selected objects will have a yellow base color instead
+    if (isSelected)
+        m_shader->SetVec3("uBaseColor", glm::vec3(1.f, 1.f, 0.f)); // yellow
+    else
+        m_shader->SetVec3("uBaseColor", m_baseColor); 
+
+    if (m_texture && !wireframe) {
+        m_texture->Bind(); // calls glBindTexture(GL_TEXTURE_2D, m_id)
+        m_shader->SetInt("uTex2d", 0);
+        m_shader->SetBool("uHasTexture", true);
+    } else {
+        m_shader->SetBool("uHasTexture", false);
+    }
+
+    if (m_enableAlphaBlending) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    } else {
+        glDisable(GL_BLEND);
+    }
 }

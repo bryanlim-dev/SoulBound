@@ -4,13 +4,14 @@
 #include "ECS/ISystem.h"
 #include "ECS/Coordinator.h"
 #include "ECS/Component.h"
+#include "Systems/IEvent.h"
 #include <iostream>
 
 class CollisionSystem : public ISystem {
 public:
     CollisionSystem();
-    // to change to float after TK push changes for ISystem
-    void Update(double dt, Coordinator& coord) override;
+    void Init(EventDispatcher& dispatcher);
+    void Update(float dt, Coordinator& coord) override;
     std::string GetName() const { return "CollisionSystem"; }
     Signature GetSignature() const override { return m_systemSignature; }
 
@@ -24,23 +25,17 @@ public:
 
     // Utility helpers
     float Clamp(float value, float min, float max);
-    bool IsMovingAway(const Position& pos1, const Position& pos2, const Velocity& vel1);
 
-    // Separation helpers for resolving penetration
-    void SeparateObjects(Position& posA, const Collider& colA,
-        Position& posB, const Collider& colB,
-        const Velocity& velA, const Velocity& velB);
-    void SeparateCircles(Position& posA, const Collider& colA,
-        Position& posB, const Collider& colB,
-        const Velocity& velA, const Velocity& velB);
-    void SeparateCircleAABB(Position& circlePos, const Collider& circle,
-        Position& aabbPos, const Collider& aabb, bool circleIsA);
+    bool ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt);
 
     float bounciness = 0.6f;      // bounciness (0 = no bounce, 1 = perfect bounce)
     float minBounceSpeed = 5.0f;  // cutoff to stop bouncing
 
 private:
     Signature m_systemSignature{};
+
+    // System event dispatcher
+	EventDispatcher* m_dispatcher = nullptr;
 };
 
 #endif // COLLISION_HPP

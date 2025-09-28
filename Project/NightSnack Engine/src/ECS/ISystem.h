@@ -17,7 +17,7 @@ public:
 	// Entities that the system can access;
 	std::set<Entity> m_entities;
 	// Every system must define an Update function;
-	virtual void Update(double dt, Coordinator& Coord) = 0;
+	virtual void Update(float dt, Coordinator& Coord) = 0;
 	// Every system must expose its signature;
 	virtual Signature GetSignature() const = 0;
 	// Retrieve name of system
@@ -50,8 +50,8 @@ inline SystemID GetSystemID() noexcept {
 class SystemManager {
 
 public:
-	template <typename T>
-	std::shared_ptr<T> RegisterSystem();
+	template <typename T, typename... Args>
+	std::shared_ptr<T> RegisterSystem(Args&&... args);
 
 	template <typename T>
 	void SetSignature(Signature sig);
@@ -72,13 +72,13 @@ public:
 
 
 // Register a System of type T into the SystemManager;
-template <typename T>
-std::shared_ptr<T> SystemManager::RegisterSystem() {
+template <typename T, typename... Args>
+std::shared_ptr<T> SystemManager::RegisterSystem(Args&&... args) {
 
 	// Obtain type index for mapping;
 	SystemID typeIdx = GetSystemID<T>();
 	// Shared pointer of type System;
-	auto system = std::make_shared<T>();
+	auto system = std::make_shared<T>(std::forward<Args>(args)...);
 	// Insert system into Map of systems;
 	m_systems[typeIdx] = system;
 

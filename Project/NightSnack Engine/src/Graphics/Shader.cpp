@@ -39,7 +39,7 @@ void Shader::Use() const {
 
 // Get the OpenGL program ID ----------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
-GLuint Shader::GetId() const {
+GLuint Shader::GetID() const {
 	return programID;
 }
 

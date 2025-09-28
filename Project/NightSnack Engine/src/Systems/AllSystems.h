@@ -5,7 +5,9 @@
 #include "Input.h"
 #include "Movement.h"
 #include "Graphics.h"
+#include "Physics.h"
 #include "Collision.h"
+#include "./Factory/EntityFactory.h"
 
 // Add System header files here...
 

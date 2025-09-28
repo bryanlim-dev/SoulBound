@@ -4,9 +4,11 @@
 #include <unordered_map>
 #include <memory>
 #include <cassert>
+#include <string>
 
 #include "ECS/Entity.h"
 
+// ------------------------------------------------------------------------------------------------
 // ComponentArray interface to allow storage of multiple different ComponentArrays in ComponentManager;
 class IComponentArray {
 public:
@@ -20,8 +22,9 @@ template <typename T>
 class ComponentArray : public IComponentArray {
 
 public:
-	void Insert(Entity e, T component);
+	void Insert(Entity e, T const& component);
 	void Remove(Entity e);
+	bool HasComponent(Entity e);
 	T& Get(Entity e);
 	void EntityDestroyed(Entity e) override;
 
@@ -32,6 +35,43 @@ private:
 	size_t m_size = 0;
 
 };
+
+// ------------------------------------------------------------------------------------------------
+// Manager for all Component Arrays;
+class ComponentManager {
+
+public:
+	template <typename T>
+	void RegisterComponent();
+
+	template <typename T>
+	void AddComponent(Entity e, T const& component);
+
+	template <typename T>
+	bool HasComponent(Entity e);
+
+	template <typename T>
+	void RemoveComponent(Entity e);
+
+	template <typename T>
+	T& GetComponent(Entity e);
+
+	// Obtains a shared_ptr to ComponentArray of specified type T;
+	// Use case: auto CompArrayPtr = GetComponentArray<Position>();
+	template <typename T>
+	std::shared_ptr<ComponentArray<T>> GetComponentArray();
+
+	void EntityDestroyed(Entity e);
+
+private:
+	// Mapping of all Component Arrays of any type;
+	std::unordered_map<ComponentType, std::shared_ptr<IComponentArray>> m_componentArrays;
+};
+
+
+// ------------------------------------------------------------------------------------------------
+// HELPER FUNCTIONS
+// ------------------------------------------------------------------------------------------------
 
 // Get Unique ID for Component Type upon creation of ComponentArray;
 // Inline is to prevent multiple definition error, as this function is defined
@@ -55,33 +95,6 @@ inline ComponentType GetComponentTypeID() noexcept {
 	return typeID;
 }
 
-class ComponentManager {
-
-public:
-	template <typename T>
-	void RegisterComponent();
-
-	template <typename T>
-	void AddComponent(Entity e, T component);
-
-	template <typename T>
-	void RemoveComponent(Entity e);
-
-	template <typename T>
-	T& GetComponent(Entity e);
-
-	// Obtains a shared_ptr to ComponentArray of specified type T;
-	// Use case: auto CompArrayPtr = GetComponentArray<Position>();
-	template <typename T>
-	std::shared_ptr<ComponentArray<T>> GetComponentArray();
-
-	void EntityDestroyed(Entity e);
-
-private:
-	// Mapping of all Component Arrays of any type;
-	std::unordered_map<ComponentType, std::shared_ptr<IComponentArray>> m_componentArrays;
-};
-
 // ------------------------------------------------------------------------------------------------
 // COMPONENT ARRAY
 // ------------------------------------------------------------------------------------------------
@@ -91,7 +104,7 @@ private:
 // Map the location(size) of the Component to the Entity ID;
 // Update size of the Array;
 template <typename T>
-void ComponentArray<T>::Insert(Entity e, T component) {
+void ComponentArray<T>::Insert(Entity e, T const& component) {
 
 	// Mapping Entity ID to Component index -> Last index currently;
 	m_entityToIndex[e] = m_size;
@@ -112,24 +125,51 @@ void ComponentArray<T>::Insert(Entity e, T component) {
 template<typename T>
 void ComponentArray<T>::Remove(Entity e) {
 
-	// Find indices of Component to be removed and last Component in array;
-	size_t index = m_entityToIndex[e];
-	size_t lastIndex = m_size - 1;
+	// Ensure entity actually exists in this array
+	auto it = m_entityToIndex.find(e);
+	if (it == m_entityToIndex.end()) {
+		std::cout << "WARNING: Tried to remove non-existent component "
+			<< std::to_string(GetComponentTypeID<T>()) << " from entity " << e << std::endl;
+		return;
+	}
 
-	// Move the last component into the removed component's slot;
-	m_components[index] = m_components[lastIndex];
+	if (m_size <= 0) { 
+		std::cout << "ERROR: Remove called on empty ComponentArray! "
+			<< "ComponentID=" << std::to_string(GetComponentTypeID<T>())
+			<< " Entity=" << e << std::endl;
+		return; 
+	}
 
-	// Update mapping of moved components to new indices;
-	Entity lastEntity = m_indexToEntity[lastIndex];
-	m_entityToIndex[lastEntity] = index;
-	m_indexToEntity[index] = lastEntity;
+	assert(m_size > 0 && "Removing from empty ComponentArray!\n");
 
-	// Erase mapping of removed Components;
+	size_t indexOfRemoved = it->second;
+	size_t indexOfLast = m_size - 1;
+
+	if (indexOfRemoved != indexOfLast) {
+		// Move the last component into the removed slot
+		m_components[indexOfRemoved] = m_components[indexOfLast];
+
+		// Update entity mappings
+		Entity entityOfLast = m_indexToEntity[indexOfLast];
+		m_entityToIndex[entityOfLast] = indexOfRemoved;
+		m_indexToEntity[indexOfRemoved] = entityOfLast;
+	}
+
+	// Erase mappings for removed entity
 	m_entityToIndex.erase(e);
-	m_indexToEntity.erase(lastIndex);
+	m_indexToEntity.erase(indexOfLast);
 
-	// Update size;
 	--m_size;
+}
+
+template <typename T>
+bool ComponentArray<T>::HasComponent(Entity e) {
+
+	auto it = m_entityToIndex.find(e);
+	if (it == m_entityToIndex.end()) {
+		return false;
+	}
+	return true;
 
 }
 
@@ -166,11 +206,16 @@ void ComponentManager::RegisterComponent() {
 }
 
 template <typename T>
-void ComponentManager::AddComponent(Entity e, T component) {
+void ComponentManager::AddComponent(Entity e, T const& component) {
 
 	// Call member function of ComponentArray to insert Component;
 	GetComponentArray<T>()->Insert(e, component);
 
+}
+
+template <typename T>
+bool ComponentManager::HasComponent(Entity e) {
+	return GetComponentArray<T>()->HasComponent(e);
 }
 
 template <typename T>

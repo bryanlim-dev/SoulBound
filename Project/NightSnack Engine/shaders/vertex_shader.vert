@@ -1,13 +1,14 @@
-// Vertex shader code goes here...
+// Vertex shader
 #version 450 core
 
-// 0 is vertex attribute index that is associated with per-vertex
-// position coordinates in VBO; this association was performed by
-// this call: glEnableVertexArrayAttrib(vaoid, 0);
 layout (location=0) in vec3 aVertexPosition;
+layout (location=1) in vec2 aTexCoord;
 
 uniform mat4 uMVP;
 
+out vec2 vTexCoord; // give texcoord to fragment shader
+
 void main(void) {
-    gl_Position = uMVP * vec4(aVertexPosition, 1.0);
+    gl_Position = uMVP * vec4(aVertexPosition, 1.0); 
+    vTexCoord = aTexCoord;
 }

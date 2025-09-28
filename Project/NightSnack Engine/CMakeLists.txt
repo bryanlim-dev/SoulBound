@@ -5,7 +5,7 @@
 # ------------------------------------------------------------ #
 
 # Minimum version of CMake required
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.15)
 
 # ------------------------------------------------------------
 # Project Setup
@@ -55,19 +55,24 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     ${CMAKE_CURRENT_SOURCE_DIR}/assets
     $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
 
-#copy to build/assets
+# Copy to build/assets
   COMMAND ${CMAKE_COMMAND} -E copy_directory
     "${CMAKE_CURRENT_SOURCE_DIR}/assets"
     "${CMAKE_BINARY_DIR}/assets"
 
-#fmod debug ver dll
+# fmod debug ver dll
    COMMAND ${CMAKE_COMMAND} -E copy_if_different
      "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmodL.dll"
      "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
 
-#fmod release ver dll
+# fmod release ver dll
    COMMAND ${CMAKE_COMMAND} -E copy_if_different
      "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmod.dll"
+     "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+
+#freetype dll
+   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+     "${CMAKE_CURRENT_SOURCE_DIR}/extern/freetype/freetype.dll"
      "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
 )
 
@@ -96,9 +101,43 @@ target_link_libraries(fmod INTERFACE
     optimized "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmod_vc.lib"
 )
 
-#nlohmann_json
+# nlohmann_json
 add_library(nlohmann_json INTERFACE)
 target_include_directories(nlohmann_json INTERFACE extern/nlohmann)
+
+# IMGui
+set(IMGUI_SRC
+    extern/imgui/imgui.cpp
+    extern/imgui/imgui_draw.cpp
+    extern/imgui/imgui_tables.cpp
+    extern/imgui/imgui_widgets.cpp
+    extern/imgui/backends/imgui_impl_glfw.cpp
+    extern/imgui/backends/imgui_impl_opengl3.cpp
+)
+
+add_library(imgui STATIC ${IMGUI_SRC})
+target_include_directories(imgui PUBLIC
+    extern/imgui
+    extern/imgui/backends
+    extern/glfw/include
+)
+target_link_libraries(${PROJECT_NAME} PRIVATE imgui)
+
+#freetype
+add_library(freetype INTERFACE)
+target_include_directories(freetype INTERFACE extern/freetype)
+target_link_libraries(freetype INTERFACE 
+	"${CMAKE_CURRENT_SOURCE_DIR}/extern/freetype/freetype.lib"
+)
+
+# Hide library folders in Solution Explorer
+set_target_properties(glad PROPERTIES FOLDER "ThirdParty")
+set_target_properties(glfw PROPERTIES FOLDER "ThirdParty")
+set_target_properties(stb_image PROPERTIES FOLDER "ThirdParty")
+set_target_properties(fmod PROPERTIES FOLDER "ThirdParty")
+set_target_properties(nlohmann_json PROPERTIES FOLDER "ThirdParty")
+set_target_properties(imgui PROPERTIES FOLDER "ThirdParty")
+set_target_properties(freetype PROPERTIES FOLDER "ThirdParty")
 
 
 # ------------------------------------------------------------
@@ -111,6 +150,8 @@ target_link_libraries(${PROJECT_NAME}
     stb_image
     fmod
     nlohmann_json
+    imgui
+    freetype
 )
 
 # ------------------------------------------------------------
@@ -125,4 +166,7 @@ target_include_directories(${PROJECT_NAME}
     extern/glm
     extern/stb_image/include
     extern/fmod
+    extern/imgui
+    extern/imgui/backends
+    extern/freetype
 )

@@ -2,20 +2,22 @@
 
 #include <glm/glm.hpp>
 #include "Shader.h"
+#include "Texture.h"
 
 class Material {
+public:
+    Material(Shader* shader, Texture* texture = nullptr);
 
-public: 
+    Shader* GetShader() const;
+    Texture* GetTexture() const;
 
-	Material(Shader* shader, const glm::vec3& baseColor);
+    void SetBaseColor(float r, float g, float b, float a);
 
-	Shader* GetShader() const;
-
-	void ApplyUniforms() const;
+    void ApplyUniforms(bool wireframe, bool isSelected);
 
 private:
-
-	Shader* m_shader = nullptr;
-	glm::vec3 m_baseColor;
-
+    Shader* m_shader;
+    Texture* m_texture;
+    glm::vec4 m_baseColor{ 1.f, 1.f, 1.f, 1.f};
+    bool m_enableAlphaBlending{ false };
 };

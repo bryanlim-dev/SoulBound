@@ -8,14 +8,12 @@
 #include "fmod.hpp"
 
 #pragma region Base Resource
-Resource::Resource()
-	: mapKey(0)
-{
-}
 
 Resource::~Resource()
 {
+#if RESOURCE_DEBUG_MODE
 	std::cout << path << " is deleted!" << std::endl;
+#endif
 }
 
 
@@ -47,6 +45,7 @@ bool& Resource::FlaggedForDeletion()
 
 
 #pragma region Image
+
 ResourceImage::ResourceImage(const std::string& inFilePath, const std::size_t& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
@@ -79,6 +78,10 @@ void ResourceImage::LoadFile()
 		resourceLoaded = false;
 }
 
+void ResourceImage::SaveFile() {
+	//Empty for now
+}
+
 unsigned char* ResourceImage::Image() const
 {
 	return imageData;
@@ -87,17 +90,21 @@ unsigned char* ResourceImage::Image() const
 
 
 #pragma region TxtFile
-ResourceTxtFile::ResourceTxtFile()
-{
-}
+
 
 ResourceTxtFile::ResourceTxtFile(const std::string& inFilePath, const std::size_t& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
+	resourceType = RESOURCE_TXTFILE;
+}
 
+ResourceTxtFile::ResourceTxtFile(std::vector<std::string>& txtVec, std::string newPath) 
+	: Resource(newPath, 0)
+{
 	resourceType = RESOURCE_TXTFILE;
 
-	
+	txtStringVec = txtVec;
+	path = newPath;
 }
 
 ResourceTxtFile::~ResourceTxtFile()
@@ -125,6 +132,29 @@ void ResourceTxtFile::LoadFile()
 	resourceLoaded = true;
 }
 
+void ResourceTxtFile::SaveFile()
+{
+	std::ofstream outFile(path.c_str());
+	
+	if (outFile.is_open())
+	{
+		for (std::string str : txtStringVec)
+		{
+			outFile << str << std::endl;
+		}
+
+		outFile.close();
+	}
+
+
+}
+
+void ResourceTxtFile::EditResource(std::vector<std::string>& txtVec, std::string newPath)
+{
+	txtStringVec = txtVec;
+	path = newPath;
+}
+
 std::vector<std::string> ResourceTxtFile::TextStringVec() const
 {
 	return txtStringVec;
@@ -133,17 +163,23 @@ std::vector<std::string> ResourceTxtFile::TextStringVec() const
 #pragma endregion
 
 #pragma region JsonFile
-ResourceJson::ResourceJson()
-{
-}
 ResourceJson::ResourceJson(const std::string& inFilePath, const std::size_t& inMapKey)
 	: Resource(inFilePath, inMapKey)
 {
 	resourceType = RESOURCE_JSON;
-}                                                              
+}
+
+ResourceJson::ResourceJson(std::unordered_map<std::string, Archtype> const& newArchtypeMap, std::string newPath)
+	: Resource (newPath, 0)
+{
+	resourceType = RESOURCE_JSON;
+
+	archetypeMap = newArchtypeMap;
+}
 
 ResourceJson::~ResourceJson()
 {
+
 }
 
 void ResourceJson::LoadFile()
@@ -162,15 +198,33 @@ void ResourceJson::LoadFile()
 
 	resourceLoaded = true;
 
-#if RESOURCE_DEBUG_MODE 1
+#if RESOURCE_DEBUG_MODE
 
 	PrintJsonMapData();
 
 #endif
 }
 
+void ResourceJson::SaveFile()
+{
+	ConvertArchtypeToJson();
 
-nlohmann::json& ResourceJson::GetJson()
+	std::ofstream outFile(path.c_str());
+
+	if (outFile.is_open())
+	{
+		outFile << jsonData;
+		outFile.close();
+	}
+}
+
+
+std::unordered_map<std::string, Archtype> ResourceJson::GetJson()
+{
+	return archetypeMap;
+}
+
+nlohmann::json& ResourceJson::GetJsonRaw()
 {
 	return jsonData;
 }
@@ -203,13 +257,28 @@ Archtype ResourceJson::SplitJsonSectionData(const nlohmann::json& sectionData)
 		//CHeck if is a simple type - int, bool, char, string, etc.
 		if (value.is_primitive())
 		{
-			//For now it saves as a string, split this later
-			archTypeData.componentMap.insert(std::pair(keyInput, value.dump()));
+			//Splits strings and other types
+			if (value.is_string())
+				archTypeData.componentMap.insert(std::pair(keyInput, value.get<std::string>()));
+			else 
+				archTypeData.componentMap.insert(std::pair(keyInput, value.dump()));
 		}
 		else if (value.is_array())
 		{
-			//Yeet the entire value array as a string
-			archTypeData.componentMap[keyInput] = value.dump();
+			std::string arrStr;
+			arrStr.clear();
+			for (size_t arrPos = 0; arrPos < value.size(); ++arrPos)
+			{
+				if (value[arrPos].is_string())
+					arrStr += value[arrPos].get<std::string>();
+				else
+					arrStr += value[arrPos].dump();
+
+				if (arrPos + 1 < value.size())
+					arrStr += ", ";
+			}
+
+			archTypeData.componentMap[keyInput] = arrStr;
 		}
 		//It's a nested section
 		else if (value.is_object())
@@ -256,5 +325,121 @@ void ResourceJson::PrintMapSubArchtypeData(const Archtype& arch, int indents = 0
 		PrintMapSubArchtypeData(subData.second, indents + 2);
 		std::cout << strIndents << "}" << std::endl;
 	}
+}
+
+void ResourceJson::ConvertArchtypeToJson()
+{
+	jsonData.clear();
+
+	//structured bindings round 3
+	//Save top level section  and sub section as its data
+	for (const auto& [archTypeKey, archtypeStructData] : archetypeMap)
+	{
+		jsonData.emplace(archTypeKey, ConvertSubArchtypeToJson(archtypeStructData));
+	}
+}
+
+nlohmann::json ResourceJson::ConvertSubArchtypeToJson(Archtype const& subArchtype)
+{
+	nlohmann::json subArch;
+	//Save all the components first
+	//Then recurrsive call this function to save sub section componenets
+
+	//Basic key-value components saved
+	for (auto const& [subArchTypeKey, subArchTypeData] : subArchtype.componentMap)
+	{
+		subArch.emplace(subArchTypeKey, subArchTypeData);
+	}
+
+	//Now save all further key-seciton components
+	for (auto const& [subSectionArchKey, subSectionArchTypeData] : subArchtype.subArchtype)
+	{
+		subArch.emplace(subSectionArchKey, ConvertSubArchtypeToJson(subSectionArchTypeData));
+	}
+
+	return subArch;
+}
+
+#pragma endregion
+
+#pragma region Sound
+ResourceSound::ResourceSound(const std::string& inFilePath, const std::size_t& inMapKey)
+	: Resource (inFilePath, inMapKey)
+{
+	resourceType = RESOURCE_SOUND;
+}
+ResourceSound::~ResourceSound()
+{
+	if (soundData)
+	{
+		soundData->release();
+		//delete soundData;
+		soundData = nullptr;
+	}
+
+	soundData = nullptr;
+}
+
+void ResourceSound::LoadFile(FMOD::System* system)
+{
+	FMOD_RESULT result = system->createSound(path.c_str(), FMOD_DEFAULT, nullptr, &soundData);
+
+	if (result != FMOD_OK)
+	{
+		resourceLoaded = false;
+		return;
+	}
+
+	resourceLoaded = true;
+}	
+
+FMOD::Sound* ResourceSound::Sound() const
+{
+	return soundData;
+}
+
+#pragma endregion
+
+#pragma region Font
+ResourceFont::ResourceFont(const std::string& inFilePath, const std::size_t& inMapKey)
+	: Resource(inFilePath, inMapKey)
+{
+	resourceType = RESOURCE_FONT;
+}
+
+ResourceFont::~ResourceFont()
+{
+	if (fontFace)
+		FT_Done_Face(fontFace);
+
+	fontFace = nullptr;
+
+	resourceLoaded = false;
+}
+
+FT_Face ResourceFont::Font()
+{
+	return fontFace;
+}
+
+void ResourceFont::LoadFile(FT_Library& fontLib)
+{
+	//Load font based on file path using system
+	FT_Error error = FT_New_Face(fontLib, path.c_str(), 0, &fontFace);
+
+	if (error)
+	{
+		resourceLoaded = false;
+
+#if RESOURCE_DEBUG_MODE
+		std::cout << path << " font type cannot be loaded!" << std::endl;
+		if (error == FT_Err_Unknown_File_Format)
+		{
+			std::cout << path << " font type is unnsupported and cannot be loaded!" << std::endl;
+		}
+#endif
+	}
+	else
+		resourceLoaded = true;
 }
 #pragma endregion
