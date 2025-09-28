@@ -117,7 +117,7 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
                             static std::unordered_map<Entity, int> bounceCount;
                             bounceCount[*itA]++;
 
-                            float dynamicBounciness = bounciness * std::pow(0.8f, bounceCount[*itA]);
+                            float dynamicBounciness = bounciness * static_cast<float>(std::pow(0.8f, bounceCount[*itA]));
                             velA.dy = -velA.dy * dynamicBounciness;
 
                             if (std::abs(velA.dy) < minBounceSpeed)

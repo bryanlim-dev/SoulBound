@@ -48,10 +48,12 @@ InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int m
 	case GLFW_KEY_A: return InputEvent::InputAction::ScaleDown;
 	case GLFW_KEY_D: return InputEvent::InputAction::ScaleUp;
 	case GLFW_KEY_R: return InputEvent::InputAction::Rotate;
-	//case GLFW_KEY_SPACE: return InputEvent::InputAction::ApplyForce;
 	case GLFW_MOUSE_BUTTON_LEFT: return InputEvent::InputAction::ClickLMB;
 
-	// Number keys;
+	case GLFW_KEY_F: return InputEvent::InputAction::DynamicBallTest;
+	case GLFW_KEY_G: return InputEvent::InputAction::GravityBallTest;
+
+	// Entity keys;
 	case GLFW_KEY_1: return InputEvent::InputAction::CreateSquare;
 	case GLFW_KEY_2: return InputEvent::InputAction::CreateCircle;
 	case GLFW_KEY_3: return InputEvent::InputAction::CreateBananaCircle;

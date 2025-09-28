@@ -17,7 +17,8 @@ public:
         ScaleUp, // D
         ScaleDown, // A
         Rotate, // R
-        ApplyForce, // SPACE
+        DynamicBallTest, // F
+        GravityBallTest, // G
         ClickLMB, // LMB
         Save, // CTRL + S
         NumTotalInputAction,
@@ -25,8 +26,8 @@ public:
         CreateSquare, // 1
         CreateCircle, // 2 -> has physics;
         CreateBananaCircle, // 3 -> texture entity;
-        DoubleEntities,
-        HalfEntities
+        DoubleEntities, // Space
+        HalfEntities // Backspace
     };
 
     InputAction inputAction;

@@ -77,14 +77,14 @@ void EntityFactory::HalfEntities() {
 	// count only eligible entities (skip default scene)
 	size_t eligibleCount = 0;
 	for (Entity e : entities) {
-		if (e >= 8) ++eligibleCount;
+		if (e >= 9) ++eligibleCount;
 	}
 
 	size_t toDestroy = eligibleCount / 2;
 	size_t destroyed = 0;
 
 	for (Entity e : entities) {
-		if (e < 8) continue; // skip default scene
+		if (e < 9) continue; // skip default scene
 
 		Remove(e);
 		if (++destroyed >= toDestroy) {

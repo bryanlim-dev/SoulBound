@@ -32,7 +32,7 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	AddSystem<ApplicationSystem>();
 	AddSystem<InputSystem>();
 	AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json");
-	AddSystem<PhysicsSystem>();
+	AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
 	AddSystem<CollisionSystem>();
 	AddSystem<MovementSystem>();
 	AddSystem<GraphicsSystem>(m_coord);

@@ -4,6 +4,7 @@
 #include "ECS/ISystem.h"
 #include "ECS/Coordinator.h"
 #include "ECS/Component.h"
+#include "./Systems/Input.h"
 
 // Minimum velocity threshold to consider an object at rest;
 constexpr float velocityCutoff = 0.2f;
@@ -12,7 +13,7 @@ class PhysicsSystem : public ISystem {
 
 public:
     // Default constructor to set up SystemSignature;
-    PhysicsSystem() {
+    PhysicsSystem(Coordinator& coord, EventDispatcher& dispatcher) {
 		// Physics components of interest;
         m_systemSignature.set(GetComponentTypeID<Position>());
         m_systemSignature.set(GetComponentTypeID<Velocity>());
@@ -21,6 +22,24 @@ public:
         m_systemSignature.set(GetComponentTypeID<Force>());
         m_systemSignature.set(GetComponentTypeID<Collider>());
     
+        // Event dispatcher initialisations
+        m_dispatcher = &dispatcher;
+        m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
+			if (event.pressed) {
+			switch (event.inputAction) {
+			case InputEvent::InputAction::DynamicBallTest:
+                ApplyForce(coord, 2, 80.f, 0.f);
+                break;
+            case InputEvent::InputAction::GravityBallTest:
+                if (coord.GetComponent<Collider>(6).isGrounded) {
+                coord.ModifyComponent<Collider>(6).isGrounded = false;
+                ApplyForce(coord, 6, 0.f, 60.f);
+                }
+                break;
+			}
+		}
+
+		});
     }
 
     void Update(float dt, Coordinator& coord) override;
@@ -31,6 +50,8 @@ public:
 
 private:
     Signature m_systemSignature{};
+    EventDispatcher* m_dispatcher = nullptr;
+
 
 	// Physics parameters;
     float gravity = -980.f;
