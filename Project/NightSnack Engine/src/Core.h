@@ -43,6 +43,7 @@ private:
 	// Event Dispatcher;
 	EventDispatcher core_dispatcher;
 
+	bool m_paused = false;
 };
 
 template <typename T, typename... Args>

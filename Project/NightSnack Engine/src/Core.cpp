@@ -74,6 +74,17 @@ void CoreEngine::Update() {
 	// Obtain dt from Timer;
 	float deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
 
+	// Clamp dt to prevent giant steps when window is dragged / unfocused
+	if (deltaTime > 0.05f)
+		deltaTime = 0.05f;
+
+	// If paused, skip updating systems that rely on dt
+	if (m_paused) {
+		// Reset timer so dt doesn't accumulate during pause
+		deltaTime = 0.0f;		
+		return;
+	}
+
 	// Iterate through Systems and Update them through Coordinator;
 	for (auto& System : m_systems) {
 
