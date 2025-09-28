@@ -36,6 +36,9 @@ public:
     void SeparateCircleAABB(Position& circlePos, const Collider& circle,
         Position& aabbPos, const Collider& aabb, bool circleIsA);
 
+    float bounciness = 0.6f;      // bounciness (0 = no bounce, 1 = perfect bounce)
+    float minBounceSpeed = 5.0f;  // cutoff to stop bouncing
+
 private:
     Signature m_systemSignature{};
 };

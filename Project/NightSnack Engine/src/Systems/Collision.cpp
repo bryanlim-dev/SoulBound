@@ -88,10 +88,6 @@ void CollisionSystem::Update(double dt, Coordinator& coord)
                 // Separate objects first
                 SeparateObjects(posA, colA, posB, colB, velA, velB);
 
-                // Debug: Check velocities before collision response
-                if (*itA == 0) {
-                    //std::cout << "P1 velocity before response: (" << velA.dx << ", " << velA.dy << ")" << std::endl;
-                }
 
                 // Handle collision response
                 if (!colA.isStatic && !colB.isStatic)
@@ -104,19 +100,41 @@ void CollisionSystem::Update(double dt, Coordinator& coord)
                 }
                 else if (!colA.isStatic && colB.isStatic)
                 {
-                    // A is dynamic, B is static - A bounces with 30% energy loss
-                    velA.dx = -velA.dx * 0.7;
-                    velA.dy = -velA.dy * 0.7;
-                }
-                else if (colA.isStatic && !colB.isStatic)
-                {
-                    // A is static, B is dynamic - B bounces with 30% energy loss
-                    velB.dx = -velB.dx * 0.7;
-                    velB.dy = -velB.dy * 0.7;
+                    if (colB.type == ColliderType::Ground)
+                    {
+                        if (velA.dy < 0.0f)  // Moving downward
+                        {
+                            // Progressive damping - reduce bounciness with each bounce
+                            static std::unordered_map<Entity, int> bounceCount;
+                            bounceCount[*itA]++;
+
+                            float dynamicBounciness = bounciness * std::pow(0.8f, bounceCount[*itA]);
+                            velA.dy = -velA.dy * dynamicBounciness;
+
+                            if (std::abs(velA.dy) < minBounceSpeed)
+                            {
+                                velA.dy = 0.0f;
+                                colA.isGrounded = true;
+                                bounceCount[*itA] = 0; // Reset counter
+                                std::cout << "ball stopped after " << bounceCount[*itA] << " bounces" << std::endl;
+                            }
+                            else
+                            {
+                                colA.isGrounded = false;
+                                std::cout << "ball bounced #" << bounceCount[*itA] << " with velocity: " << velA.dy << std::endl;
+                            }
+                        }
+                    }
+                    else {
+                        // A is dynamic, B is static (wall/other) - bounce with damping
+                        velA.dx = flipVel ? -velA.dx * 0.7f : velA.dx;
+                        velA.dy = -velA.dy * 0.7f;
+                    }
                 }
 
                 // Check velocities after collision response
-                if (*itA == 0) {
+                if (*itA == 0) 
+                {
                     //std::cout << "P1 velocity after response: (" << velA.dx << ", " << velA.dy << ")" << std::endl;
                 }
             }
