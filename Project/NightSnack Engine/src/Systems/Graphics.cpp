@@ -148,6 +148,7 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 		Mesh* mesh = data.mesh;
 		shader->Use();
 		shader->SetMat4("uMVP", mvp);
+		shader->SetBool("uIsSelected", ren.isSelected);
 
 		if (m_coord.HasComponent<Color>(e)) {
 			auto& col = m_coord.GetComponent<Color>(e);

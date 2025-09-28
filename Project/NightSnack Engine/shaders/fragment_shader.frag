@@ -7,15 +7,24 @@ in vec2 vTexCoord;
 
 uniform vec3 uBaseColor;
 uniform vec3 uEntityColor;
+
 uniform sampler2D uTex2d; // bound in Material::ApplyUniforms()
+
 uniform bool uHasTexture;
+uniform bool uIsSelected;
 
 void main() {
 
     if (uHasTexture){
         fFragColor = texture(uTex2d, vTexCoord) * vec4(uBaseColor, 1.0);
     } else{
-        fFragColor = vec4(uEntityColor, 1.0);
+
+        if (uIsSelected) {
+            fFragColor = vec4(uBaseColor, 1.0);
+        }
+        else {
+            fFragColor = vec4(uEntityColor, 1.0);
+        }
     }
 
 }
