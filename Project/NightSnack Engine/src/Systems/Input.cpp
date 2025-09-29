@@ -58,11 +58,25 @@ InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int m
 	case GLFW_KEY_SPACE: return InputEvent::InputAction::DoubleEntities;
 	case GLFW_KEY_BACKSPACE: return InputEvent::InputAction::HalfEntities;
 
+	case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
+	case GLFW_KEY_RIGHT: return InputEvent::InputAction::PlayerMoveRight;
+	case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJump;
+
+
 	// Modifier keys (CTRL+S etc)
 	case GLFW_KEY_S: 
 		return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::Save : InputEvent::InputAction::NumTotalInputAction;
 
 	default: return InputEvent::InputAction::NumTotalInputAction;
+	}
+}
+
+InputEvent::InputActionState InputSystem::TranslateGLFWKeyStateToAction(int glfwKeyState) {
+	switch (glfwKeyState) {
+	case GLFW_PRESS: return InputEvent::InputActionState::Pressed;
+	case GLFW_RELEASE: return InputEvent::InputActionState::Released;
+	case GLFW_REPEAT: return InputEvent::InputActionState::Pressed;
+	
 	}
 }
 
@@ -76,10 +90,12 @@ void InputSystem::KeyCallback(GLFWwindow* window, int key, int scancode, int act
 	if (mappedAction == InputEvent::InputAction::NumTotalInputAction)
 		return;
 
+	InputEvent::InputActionState mappedActionState = TranslateGLFWKeyStateToAction(action);
+
 	// Dispatch InputEvent when key is pressed
 	if (m_dispatcher)
 	{
-		m_dispatcher->Dispatch(InputEvent(mappedAction, action == GLFW_PRESS));
+		m_dispatcher->Dispatch(InputEvent(mappedAction, mappedActionState));
 	}
 }
 
@@ -91,11 +107,13 @@ void InputSystem::MouseButtonCallback(GLFWwindow* window, int button, int action
 	InputEvent::InputAction mappedAction = TranslateGLFWKeyToAction(button, mods);
 	if (mappedAction == InputEvent::InputAction::NumTotalInputAction)
 		return;
+	
+	InputEvent::InputActionState mappedActionState = TranslateGLFWKeyStateToAction(action);
 
 	// Dispatch InputEvent when key is pressed
 	if (m_dispatcher)
 	{
-		m_dispatcher->Dispatch(InputEvent(mappedAction, action == GLFW_PRESS));
+		m_dispatcher->Dispatch(InputEvent(mappedAction, mappedActionState));
 	}
 }
 

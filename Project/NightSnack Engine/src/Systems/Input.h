@@ -28,6 +28,7 @@ public:
 private:
 
 	static InputEvent::InputAction TranslateGLFWKeyToAction(int glfwKey, int modifier);
+	static InputEvent::InputActionState TranslateGLFWKeyStateToAction(int glfwkeyState);
 
 	// Callbacks
 	static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);

@@ -53,6 +53,12 @@ struct Color {
 	float r, g, b, a;
 };
 
+struct PlayerController {
+    float moveSpeed;
+    float jumpForce;
+    // maybe can add abilities etc...
+};
+
 // ================================================================================================
 // GRAPHICS COMPONENTS
 // ================================================================================================

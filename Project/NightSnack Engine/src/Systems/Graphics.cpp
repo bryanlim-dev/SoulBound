@@ -60,7 +60,7 @@ void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
 		if (m_entities.empty())
 			return;
 
-		if (event.pressed) {
+		if (event.pressed == InputEvent::InputActionState::Pressed) {
 			switch (event.inputAction) {
 			case InputEvent::InputAction::SelectNext:
 			{

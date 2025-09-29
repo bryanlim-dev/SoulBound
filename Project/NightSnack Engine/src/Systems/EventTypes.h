@@ -25,14 +25,31 @@ public:
         CreateSquare, // 1
         CreateCircle, // 2 -> has physics;
         CreateBananaCircle, // 3 -> texture entity;
+<<<<<<< Updated upstream
         DoubleEntities,
         HalfEntities
+=======
+        DoubleEntities, // Space
+        HalfEntities, // Backspace
+
+        PlayerMoveLeft, // Player controller with Arrow keys;
+        PlayerMoveRight,
+        PlayerJump,
+        ChangePlayer    // Down arrow;
+
+    };
+
+    enum class InputActionState {
+        Pressed = 0,
+        Repeat,
+        Released
+>>>>>>> Stashed changes
     };
 
     InputAction inputAction;
-    bool pressed;
+    InputActionState pressed;
 
-    InputEvent(InputAction a, bool p) : inputAction(a), pressed(p) {}
+    InputEvent(InputAction a, InputActionState p) : inputAction(a), pressed(p) {}
     EventType GetType() const override { return EventType::Input; }
 };
 

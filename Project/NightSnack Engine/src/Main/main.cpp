@@ -208,9 +208,135 @@ int main()
 		Renderable r6{ "square", "backgroundMat", RenderLayer::BACKGROUND };
 		coord.AddComponent<Renderable>(background, r6);
 
+<<<<<<< Updated upstream
 		coord.AddComponent<Color>(p0, Color{ 1.f, 0.f, 0.f, 1.f });
 		coord.AddComponent<Color>(p3, Color{ 0.f, 1.f, 0.f, 1.f });
 		coord.AddComponent<Color>(ground, Color{ 0.8f, 0.f, 0.8f, 1.f });
+=======
+		// Dynamic Red ball --------------
+		// -------------------------------
+		Entity redBallDynamic = coord.CreateEntity();
+		coord.AddComponent<Position>(redBallDynamic, Position{ 0.f, 0.f, posIndexDefaultLayer++ * Z_EPSILON });
+		coord.AddComponent<Rotation>(redBallDynamic, Rotation{});
+		coord.AddComponent<Scale>(redBallDynamic, Scale{ 100.f, 100.f });
+		coord.AddComponent<Acceleration>(redBallDynamic, Acceleration{ 0.f,0.f });
+		coord.AddComponent<Velocity>(redBallDynamic, Velocity{ 0.f, 0.f });
+		coord.AddComponent<Force>(redBallDynamic, Force{ 0.f,0.f });
+		coord.AddComponent<Mass>(redBallDynamic, Mass{ 1.f });
+		Collider c0{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 100.f, true };
+		coord.AddComponent<Collider>(redBallDynamic, c0);
+		Renderable r1{ "circle", "ColorMat", RenderLayer::DEFAULT };
+		coord.AddComponent<Renderable>(redBallDynamic, r1);
+		coord.AddComponent<Color>(redBallDynamic, Color{ 1.f, 0.f, 0.f, 1.f });
+		// -------------------------------
+
+		// Dynamic ball 2 ----------------
+		// -------------------------------
+		Entity bananaBallDynamic = coord.CreateEntity();
+		coord.AddComponent<Position>(bananaBallDynamic, Position{ 500.f, 0.f, posIndexDefaultLayer++ * Z_EPSILON });
+		coord.AddComponent<Rotation>(bananaBallDynamic, Rotation{});
+		coord.AddComponent<Scale>(bananaBallDynamic, Scale{ 100.f, 100.f });
+		coord.AddComponent<Velocity>(bananaBallDynamic, Velocity{ 0.f, 0.f });
+		coord.AddComponent<Acceleration>(bananaBallDynamic, Acceleration{ 0.f,0.f });
+		coord.AddComponent<Force>(bananaBallDynamic, Force{ 0.f,0.f });
+		coord.AddComponent<Mass>(bananaBallDynamic, Mass{ 1.f });
+		Collider c1{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 100.f, true };
+		coord.AddComponent<Collider>(bananaBallDynamic, c1);
+		Renderable r2{ "circle", "bananaMat", RenderLayer::DEFAULT };
+		coord.AddComponent<Renderable>(bananaBallDynamic, r2);
+		// -------------------------------
+
+		// Control - Only draw, no collision or physics;
+		// -------------------------------
+		Entity control = coord.CreateEntity();
+		coord.AddComponent<Position>(control, Position{ 300.f, 0.f, posIndexDefaultLayer++ * Z_EPSILON });
+		coord.AddComponent<Rotation>(control, Rotation{});
+		coord.AddComponent<Scale>(control, Scale{ 50.f, 50.f });
+		Renderable r0{ "square", "targetMat", RenderLayer::DEFAULT };
+		coord.AddComponent<Renderable>(control, r0);
+		// -------------------------------
+
+		// Wall wireframe ----------------
+		// -------------------------------
+		Entity wWall = coord.CreateEntity();
+		coord.AddComponent<Position>(wWall, Position{ -300.f, 0.f, posIndexDefaultLayer++ * Z_EPSILON });
+		coord.AddComponent<Rotation>(wWall, Rotation{});
+		coord.AddComponent<Scale>(wWall, Scale{ 100.f, 400.f });
+		coord.AddComponent<Acceleration>(wWall, Acceleration{ 0.f,0.f });
+		coord.AddComponent<Velocity>(wWall, Velocity{ 0.f, 0.f });
+		coord.AddComponent<Force>(wWall, Force{ 0.f,0.f });
+		coord.AddComponent<Mass>(wWall, Mass{ 1.f });
+		Collider c2{ ShapeType::AABB, ColliderType::Solid, true, 100.f, 400.f, 0.f, true };
+		coord.AddComponent<Collider>(wWall, c2);
+		Renderable r3{ "square", "ColorMat", RenderLayer::DEFAULT, true };
+		coord.AddComponent<Renderable>(wWall, r3);
+		coord.AddComponent<Color>(wWall, Color{ 0.f, 1.f, 0.7f, 1.f });
+		// -------------------------------
+
+		// Falling ball - Test gravity ---
+		// -------------------------------
+		Entity gravityBall = coord.CreateEntity();
+		coord.AddComponent<Position>(gravityBall, Position{ -500.f, 400.f, posIndexDefaultLayer++ * Z_EPSILON });
+		coord.AddComponent<Rotation>(gravityBall, Rotation{});
+		coord.AddComponent<Scale>(gravityBall, Scale{ 30.f, 30.f });
+		coord.AddComponent<Acceleration>(gravityBall, Acceleration{ 0.f,0.f });
+		coord.AddComponent<Velocity>(gravityBall, Velocity{ 0.f, 0.f });
+		coord.AddComponent<Force>(gravityBall, Force{ 0.f,0.f });
+		coord.AddComponent<Mass>(gravityBall, Mass{ 1.f });
+		Collider c3{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 30.f, false };
+		coord.AddComponent<Collider>(gravityBall, c3);
+		Renderable r4{ "circle", "ColorMat", RenderLayer::DEFAULT };
+		coord.AddComponent<Renderable>(gravityBall, r4);
+		coord.AddComponent<Color>(gravityBall, Color{ 0.f, 1.f, 0.f, 1.f });
+		coord.AddComponent<PlayerController>(gravityBall, PlayerController{25.f, 50.f});
+		// -------------------------------
+
+		// Right side wall ---------------
+		// -------------------------------
+		Entity RightWall = coord.CreateEntity();
+		coord.AddComponent<Position>(RightWall, Position{ 800.f, 0.f, posIndexBackgroundLayer++ * Z_EPSILON });
+		coord.AddComponent<Rotation>(RightWall, Rotation{});
+		coord.AddComponent<Scale>(RightWall, Scale{ 100.f, 800.f });
+		coord.AddComponent<Acceleration>(RightWall, Acceleration{ 0.f,0.f });
+		coord.AddComponent<Velocity>(RightWall, Velocity{ 0.f, 0.f });
+		coord.AddComponent<Force>(RightWall, Force{ 0.f,0.f });
+		coord.AddComponent<Mass>(RightWall, Mass{ 1.f });
+		Collider c4{ ShapeType::AABB, ColliderType::Solid, true, 100.f, 800.f, 0.f, true };
+		coord.AddComponent<Collider>(RightWall, c4);
+		Renderable r7{ "square", "ColorMat", RenderLayer::DEFAULT};
+		coord.AddComponent<Renderable>(RightWall, r7);
+		coord.AddComponent<Color>(RightWall, Color{ 1.f, 1.f, 0.f, 1.f });
+		// -------------------------------
+
+		// Left side wall ----------------
+		// -------------------------------
+		Entity LeftWall = coord.CreateEntity();
+		coord.AddComponent<Position>(LeftWall, Position{ -800.f, 0.f, posIndexBackgroundLayer++ * Z_EPSILON });
+		coord.AddComponent<Rotation>(LeftWall, Rotation{});
+		coord.AddComponent<Scale>(LeftWall, Scale{ 100.f, 800.f });
+		coord.AddComponent<Acceleration>(LeftWall, Acceleration{ 0.f,0.f });
+		coord.AddComponent<Velocity>(LeftWall, Velocity{ 0.f, 0.f });
+		coord.AddComponent<Force>(LeftWall, Force{ 0.f,0.f });
+		coord.AddComponent<Mass>(LeftWall, Mass{ 1.f });
+		coord.AddComponent<Collider>(LeftWall, c4);
+		coord.AddComponent<Renderable>(LeftWall, r7);
+		coord.AddComponent<Color>(LeftWall, Color{ 1.f, 1.f, 0.f, 1.f });
+		// -------------------------------
+
+		// Ground ------------------------
+		// -------------------------------
+		Entity ground = coord.CreateEntity();
+		coord.AddComponent<Position>(ground, Position{ 0.f, -350.f, posIndexBackgroundLayer++ * Z_EPSILON });
+		coord.AddComponent<Rotation>(ground, Rotation{});
+		coord.AddComponent<Scale>(ground, Scale{ 1600.f, 100.f });
+		coord.AddComponent<Velocity>(ground, Velocity{ 0.f, 0.f });
+		coord.AddComponent<Mass>(ground, Mass{ 1.f });
+		Collider ground_c{ ShapeType::AABB, ColliderType::Ground, true, 1600.f, 100.f, 0.f, true };
+		coord.AddComponent<Collider>(ground, ground_c);
+		Renderable r5{ "square", "ColorMat", RenderLayer::DEFAULT };
+		coord.AddComponent<Renderable>(ground, r5);
+		coord.AddComponent<Color>(ground, Color{ 0.2f, 0.1f, 0.3f, 1.f });
+>>>>>>> Stashed changes
 
 		// Core Application Loop;
 		while (!core.ShouldClose()) {

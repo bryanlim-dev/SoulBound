@@ -25,6 +25,7 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	m_coord.RegisterComponent<Scale>();
 	m_coord.RegisterComponent<Camera>();
 
+	m_coord.RegisterComponent<PlayerController>();
 	m_coord.RegisterComponent<Renderable>();	// Graphics;
 
 	// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
@@ -32,7 +33,12 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	AddSystem<ApplicationSystem>();
 	AddSystem<InputSystem>();
 	AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json");
+<<<<<<< Updated upstream
 	AddSystem<PhysicsSystem>();
+=======
+	AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
+	AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
+>>>>>>> Stashed changes
 	AddSystem<CollisionSystem>();
 	AddSystem<MovementSystem>();
 	AddSystem<GraphicsSystem>(m_coord);

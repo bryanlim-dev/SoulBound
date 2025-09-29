@@ -8,6 +8,7 @@
 #include "Physics.h"
 #include "Collision.h"
 #include "./Factory/EntityFactory.h"
+#include "PlayerController.h"
 
 // Add System header files here...
 
