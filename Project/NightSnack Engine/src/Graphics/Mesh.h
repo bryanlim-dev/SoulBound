@@ -69,6 +69,10 @@ public:
 	static std::unique_ptr<Mesh> CreateSquare();
 	static std::unique_ptr<Mesh> CreateCircle();
 
+	// DEBUG DRAWING MESHES
+	static std::unique_ptr<Mesh> CreateAABBMesh();
+	static std::unique_ptr<Mesh> CreateCircleMesh();
+
 	GLsizei m_indexCount{ 0 }, m_vertexCount{ 0 };
 
 private:
