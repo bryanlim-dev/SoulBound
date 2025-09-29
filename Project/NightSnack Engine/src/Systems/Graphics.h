@@ -81,8 +81,7 @@ private:
 	void ModifyEntityRotation(Coordinator& Coord, float value);
 	Position ScreenToWorld(Position const& screenPos);
 
-	// DEBUG DRAWING
-	bool m_debug{ false };
+	bool m_enableDebugDraw{ false };
 
 	Signature m_systemSignature{};
 

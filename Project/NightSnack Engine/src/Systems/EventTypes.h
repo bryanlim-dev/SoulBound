@@ -27,7 +27,9 @@ public:
         CreateCircle, // 2 -> has physics;
         CreateBananaCircle, // 3 -> texture entity;
         DoubleEntities, // Space
-        HalfEntities // Backspace
+        HalfEntities, // Backspace
+
+        ToggleDebugDraw
     };
 
     InputAction inputAction;

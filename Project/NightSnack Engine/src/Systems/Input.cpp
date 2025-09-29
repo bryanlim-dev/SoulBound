@@ -60,6 +60,8 @@ InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int m
 	case GLFW_KEY_SPACE: return InputEvent::InputAction::DoubleEntities;
 	case GLFW_KEY_BACKSPACE: return InputEvent::InputAction::HalfEntities;
 
+	case GLFW_KEY_T: return InputEvent::InputAction::ToggleDebugDraw;
+
 	// Modifier keys (CTRL+S etc)
 	case GLFW_KEY_S: 
 		return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::Save : InputEvent::InputAction::NumTotalInputAction;

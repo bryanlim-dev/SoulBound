@@ -42,7 +42,6 @@ void PhysicsSystem::Update(float dt, Coordinator& coord) {
 		// Clear forces for next frame;
 		force.fx = 0.f;
 		force.fy = 0.f;
-
 	}
 }
 

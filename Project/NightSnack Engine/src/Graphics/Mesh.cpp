@@ -88,9 +88,7 @@ void Mesh::Draw() const {
 		break;
 
 	case GL_LINES:
-		glLineWidth(3.f);
 		glDrawArrays(GL_LINES, 0, m_vertexCount);
-		glLineWidth(1.f);
 		break;
 
 	case GL_TRIANGLES:
@@ -121,7 +119,7 @@ std::unique_ptr<Mesh> Mesh::CreatePoint() {
 	return std::make_unique<Mesh>(GL_POINTS, vertices, std::vector<unsigned int>{});
 }
 
-// Helper function to create a mesh representing a line -------------------------------------------
+// Helper function to create a mesh representing a line pointing upwards by default ---------------
 // ------------------------------------------------------------------------------------------------
 std::unique_ptr<Mesh> Mesh::CreateLine(const glm::vec3& startPos, const glm::vec3& endPos) {
 	std::vector<Vertex> vertices{

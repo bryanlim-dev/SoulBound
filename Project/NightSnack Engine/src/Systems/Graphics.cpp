@@ -16,7 +16,7 @@ void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
 
 	// Meshes;
 	AddMesh("point", Mesh::CreatePoint());
-	//AddMesh("line", Mesh::CreateLine());
+	AddMesh("line", Mesh::CreateLine(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f))); // Default facing upwards
 	AddMesh("square", Mesh::CreateSquare());
 	AddMesh("circle", Mesh::CreateCircle());
 	AddMesh("AABBColliderMesh", Mesh::CreateAABBMesh());
@@ -74,13 +74,16 @@ void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
 			}
 			break;
 			case InputEvent::InputAction::ScaleUp:
-				ModifyEntityScale(coord, 1.1f);
+					ModifyEntityScale(coord, 1.1f);
 				break;
 			case InputEvent::InputAction::ScaleDown:
-				ModifyEntityScale(coord, 0.9f);
+					ModifyEntityScale(coord, 0.9f);
 				break;
 			case InputEvent::InputAction::Rotate:
-				ModifyEntityRotation(coord, 30.f);
+					ModifyEntityRotation(coord, 30.f);
+				break;
+			case InputEvent::InputAction::ToggleDebugDraw:
+				m_enableDebugDraw = !m_enableDebugDraw;
 				break;
 			}
 		}
@@ -137,6 +140,11 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 		shader->SetMat4("uMVP", mvp);
 		shader->SetBool("uIsSelected", ren.isSelected);
 
+		if (m_coord.HasComponent<Color>(e)) {
+			auto& col = m_coord.GetComponent<Color>(e);
+			shader->SetVec3("uEntityColor", { col.r, col.g, col.b });
+		}
+
 		data.material->ApplyUniforms(ren.isWireframe, ren.isSelected);
 
 		//GLint loc = glGetUniformLocation(data.material->GetShader()->GetID(), "uMVP");
@@ -154,41 +162,67 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 		GLenum err = glGetError();
 		if (err != GL_NO_ERROR) std::cerr << "GL ERROR: " << err << "\n";
 
-
-		if (m_coord.HasComponent<Color>(e)) {
-			auto& col = m_coord.GetComponent<Color>(e);
-			shader->SetVec3("uEntityColor", { col.r, col.g, col.b });
-		}
-
-		// DEBUG DRAWING TEMP ----------------------------------
-		if (m_debug) {	// boolean for whether debugging
+		// Debug Drawing, for entities with no texture
+		if (m_enableDebugDraw) {
+			// Drawing of colliders 
 			if (m_coord.HasComponent<Collider>(e)) {
-				// Set-up matrix for debug mesh drawing;
 				Collider const& col = m_coord.GetComponent<Collider>(e);
 
 				switch (col.shape) {
 				case ShapeType::AABB:
 				{
+					// Model matrix according to its collider's scale
 					glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Scale{ col.width, col.height }, RenderLayer::DEBUG);
 					glm::mat4 debugmvp = proj * view * debugmodel;
 					shader->SetMat4("uMVP", debugmvp);
+					shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green colo
 					GetMesh("AABBColliderMesh")->Draw();
 				}
 					break;
 
 				case ShapeType::Circle:
 				{
+					// Model matrix according to its collider's scale
 					glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Scale{ col.radius, col.radius }, RenderLayer::DEBUG);
 					glm::mat4 debugmvp = proj * view * debugmodel;
 					shader->SetMat4("uMVP", debugmvp);
+					shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
 					GetMesh("CircleColliderMesh")->Draw();
 				}
 					break;
 
 				}
 			}
-		}
 
+			// Drawing of velocity direction for moving objects
+			if (m_coord.HasComponent<Velocity>(e)) {
+				Velocity const& vel = m_coord.GetComponent<Velocity>(e);
+
+				glm::vec3 velocity(vel.dx, vel.dy, 0.f);
+				float speed = glm::length(velocity); // Magnitude of the velocity vector
+
+				// Only draw the velocity line if it is moving
+				if (speed > 0.f) {
+					float maxLength = std::max(scl.x, scl.y); // Max length is according to the scale of this entity
+					float length = std::min(speed, maxLength);
+
+					glm::vec3 dir = glm::normalize(velocity); // Direction of the velocity vector
+					
+					// Compute angle between +ve y-axis and the velocity direction
+					// atan2(y, x) gives angle relative to +ve x-axis, so subtract 90 degrees to align with +ve y-axis
+					float angle = glm::degrees(std::atan2(dir.y, dir.x) - glm::half_pi<float>());
+
+					// Model matrix according to its new rotation, and y-scale so line size reflects speed
+					glm::mat4 debugModel = GetModelToWorldMatrix(pos, Rotation{ angle }, Scale{ 1.f, length }, RenderLayer::DEBUG);
+					glm::mat4 debugMvp = proj * view * debugModel;
+					
+					shader->SetMat4("uMVP", debugMvp);
+					shader->SetVec3("uEntityColor", glm::vec3(1.f, 1.f, 1.f)); // White color for velocity lines
+					// Points upwards by default, will be rotated accordingly
+					GetMesh("line")->Draw();
+				}
+			}
+		}
 	}
 }
 
@@ -298,29 +332,43 @@ float GraphicsSystem::GetRenderLayerZPos(RenderLayer layer) {
 // ------------------------------------------------------------------------------------------------
 void GraphicsSystem::ModifyEntityScale(Coordinator& coord, float value) {
 	// No object is currently selected
-	if (m_selectedEntityIndex < 0)
-		return;
+	//if (m_selectedEntityIndex < 0)
+	//	return;
 
 	auto it = m_entities.begin();
-	std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
+	//std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
+
+	// Currently hardcoded to only 'control entity'
+	std::advance(it, 3); 
+	auto& ren = coord.GetComponent<Renderable>(*it);
+	if (ren.materialName != "targetMat")
+		return;
+
 	auto& scale = coord.ModifyComponent<Scale>(*it);
 	scale.x *= value;
 	scale.y *= value;
-	auto& collider = coord.ModifyComponent<Collider>(*it);
-	collider.width *= value;
-	collider.height *= value;
-	collider.radius *= value;
+	//auto& collider = coord.ModifyComponent<Collider>(*it);
+	//collider.width *= value;
+	//collider.height *= value;
+	//collider.radius *= value;
 }
 
 // Modify the rotation of the currently selected object -------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void GraphicsSystem::ModifyEntityRotation(Coordinator& coord, float value) {
 	// No object is currently selected
-	if (m_selectedEntityIndex < 0)
-		return;
+	//if (m_selectedEntityIndex < 0)
+	//	return;
 
 	auto it = m_entities.begin();
-	std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
+	//std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
+
+	// Currently hardcoded to only 'control entity'
+	std::advance(it, 3); 
+	auto& ren = coord.GetComponent<Renderable>(*it);
+	if (ren.materialName != "targetMat")
+		return;
+
 	auto& rotation = coord.ModifyComponent<Rotation>(*it);
 	rotation.degrees += value;
 	if (rotation.degrees >= 360.f)
