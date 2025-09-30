@@ -77,15 +77,22 @@ void EntityFactory::HalfEntities() {
 	// count only eligible entities (skip default scene)
 	size_t eligibleCount = 0;
 	for (Entity e : entities) {
+<<<<<<< Updated upstream
+		if (e >= 8) ++eligibleCount;
+=======
 		if (e >= 10) ++eligibleCount;
-
+>>>>>>> Stashed changes
 	}
 
 	size_t toDestroy = eligibleCount / 2;
 	size_t destroyed = 0;
 
 	for (Entity e : entities) {
+<<<<<<< Updated upstream
+		if (e < 8) continue; // skip default scene
+=======
 		if (e < 10) continue; // skip default scene
+>>>>>>> Stashed changes
 
 		Remove(e);
 		if (++destroyed >= toDestroy) {
