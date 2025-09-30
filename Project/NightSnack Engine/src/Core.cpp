@@ -75,8 +75,8 @@ void CoreEngine::Update() {
 	float deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
 
 	// Clamp dt to prevent giant steps when window is dragged / unfocused
-	if (deltaTime > 0.05f)
-		deltaTime = 0.05f;
+	if (deltaTime > 0.02f)
+		deltaTime = 0.02f;
 
 	// If paused, skip updating systems that rely on dt
 	if (m_paused) {

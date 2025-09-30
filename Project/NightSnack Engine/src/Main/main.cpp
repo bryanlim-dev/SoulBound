@@ -228,6 +228,21 @@ int main()
 		coord.AddComponent<Color>(RightWall, Color{ 1.f, 1.f, 0.f, 1.f });
 		// -------------------------------
 
+		// Left side wall ----------------
+		// -------------------------------
+		Entity LeftWall = coord.CreateEntity();
+		coord.AddComponent<Position>(LeftWall, Position{ -800.f, 0.f, posIndexBackgroundLayer++ * Z_EPSILON });
+		coord.AddComponent<Rotation>(LeftWall, Rotation{});
+		coord.AddComponent<Scale>(LeftWall, Scale{ 100.f, 800.f });
+		coord.AddComponent<Acceleration>(LeftWall, Acceleration{ 0.f,0.f });
+		coord.AddComponent<Velocity>(LeftWall, Velocity{ 0.f, 0.f });
+		coord.AddComponent<Force>(LeftWall, Force{ 0.f,0.f });
+		coord.AddComponent<Mass>(LeftWall, Mass{ 1.f });
+		coord.AddComponent<Collider>(LeftWall, c4);
+		coord.AddComponent<Renderable>(LeftWall, r7);
+		coord.AddComponent<Color>(LeftWall, Color{ 1.f, 1.f, 0.f, 1.f });
+		// -------------------------------
+
 		// Ground ------------------------
 		// -------------------------------
 		Entity ground = coord.CreateEntity();
