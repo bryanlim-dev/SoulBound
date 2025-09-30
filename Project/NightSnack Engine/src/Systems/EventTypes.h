@@ -25,10 +25,6 @@ public:
         CreateSquare, // 1
         CreateCircle, // 2 -> has physics;
         CreateBananaCircle, // 3 -> texture entity;
-<<<<<<< Updated upstream
-        DoubleEntities,
-        HalfEntities
-=======
         DoubleEntities, // Space
         HalfEntities, // Backspace
 
@@ -43,7 +39,6 @@ public:
         Pressed = 0,
         Repeat,
         Released
->>>>>>> Stashed changes
     };
 
     InputAction inputAction;
