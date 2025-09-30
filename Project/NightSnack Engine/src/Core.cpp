@@ -72,7 +72,6 @@ int CoreEngine::Terminate() {
 
 void CoreEngine::Update() {
 	// Start frame timing;
-	m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartFrame();
 
 	// Obtain dt from Timer;
 	float deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
@@ -88,6 +87,7 @@ void CoreEngine::Update() {
 		return;
 	}
 
+	m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartFrame();
 	// Iterate through Systems and Update them through Coordinator;
 	for (auto& System : m_systems) {
 
@@ -101,13 +101,13 @@ void CoreEngine::Update() {
 		m_coord.DestroyEntity(e);
 	}
 	m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed.clear();
+	m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndFrame();
 
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
 	m_coord.GetSystem<ApplicationSystem>()->SwapBuffers();
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
 
 	// End frame timing;
-	m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndFrame();
 	//timer_.FrameCap(60.f); // Cap frame rate to 60 FPS (optional);
 }
 
