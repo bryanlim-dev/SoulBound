@@ -220,8 +220,8 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 					glm::mat4 debugMvp = proj * view * debugModel;
 					
 					shader->SetMat4("uMVP", debugMvp);
-					shader->SetVec3("uEntityColor", glm::vec3(0.1f, 0.9f, 0.9f)); // White color for velocity lines
-					shader->SetVec3("uBaseColor", glm::vec3(0.1f, 0.9f, 0.9f)); // Green color for texture velocity lines
+					shader->SetVec3("uEntityColor", glm::vec3(0.1f, 0.9f, 0.9f));
+					shader->SetVec3("uBaseColor", glm::vec3(0.1f, 0.9f, 0.9f)); 
 					// Points upwards by default, will be rotated accordingly
 					GetMesh("line")->Draw();
 				}
