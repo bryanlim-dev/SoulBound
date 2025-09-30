@@ -140,7 +140,6 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
                         velA.dy = -velA.dy * 0.7f;
                     }
                 }
-                //if (std::abs(velA.dy) < )
                 //else if (colA.isStatic && !colB.isStatic)             // <- technically not necessary;
                 //{
                 //    // A is static, B is dynamic - B bounces with 30% energy loss
