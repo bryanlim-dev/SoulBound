@@ -23,14 +23,13 @@ public:
         NumTotalInputAction,
 
         CreateSquare, // 1
-        CreateCircle, // 2 -> has physics;
+        CreateCircle, // 2
         CreateBananaCircle, // 3 -> texture entity;
-<<<<<<< Updated upstream
-        DoubleEntities,
-        HalfEntities
-=======
         DoubleEntities, // Space
         HalfEntities, // Backspace
+
+        DynamicBallTest,
+        GravityBallTest,
 
         PlayerMoveLeft, // Player controller with Arrow keys;
         PlayerMoveRight,
@@ -43,7 +42,6 @@ public:
         Pressed = 0,
         Repeat,
         Released
->>>>>>> Stashed changes
     };
 
     InputAction inputAction;

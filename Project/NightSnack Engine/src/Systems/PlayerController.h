@@ -16,7 +16,7 @@ public:
         m_systemSignature.set(GetComponentTypeID<Scale>());
         m_systemSignature.set(GetComponentTypeID<Velocity>());
 
-        FindPlayer(coord);
+        //m_player = FindPlayer(coord);
 
         m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
             PlayerController const& pcont = coord.GetComponent<PlayerController>(m_player);
@@ -27,14 +27,12 @@ public:
                 switch (event.inputAction) {
                 case InputEvent::InputAction::PlayerMoveLeft:
 
-                    force.fx = -pcont.moveSpeed;
-                    vel.dx = vel.dx < -200.f ? -200.f : vel.dx;
+                    vel.dx = -pcont.moveSpeed;
                     break;
 
                 case InputEvent::InputAction::PlayerMoveRight:
 
-                    force.fx = pcont.moveSpeed;
-                    vel.dx = vel.dx > 200.f ? 200.f : vel.dx;
+                    vel.dx = pcont.moveSpeed;
                     break;
 
                 case InputEvent::InputAction::PlayerJump:
@@ -49,24 +47,12 @@ public:
 
                 }
             }
-            if (event.pressed == InputEvent::InputActionState::Released) {
-                switch (event.inputAction) {
-                case InputEvent::InputAction::PlayerMoveLeft:
-                    force.fx = 0.f;
-                    break;
-
-                case InputEvent::InputAction::PlayerMoveRight:
-                    force.fx = 0.f;
-                    break;
-                }
-            }
-
         });
     }
 
     void Update(float dt, Coordinator& coord) override {
         (void)dt;
-
+        
         m_player = FindPlayer(coord);
     }
 

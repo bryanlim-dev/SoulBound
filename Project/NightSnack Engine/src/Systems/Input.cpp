@@ -58,6 +58,10 @@ InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int m
 	case GLFW_KEY_SPACE: return InputEvent::InputAction::DoubleEntities;
 	case GLFW_KEY_BACKSPACE: return InputEvent::InputAction::HalfEntities;
 
+	case GLFW_KEY_F: return InputEvent::InputAction::DynamicBallTest;
+	case GLFW_KEY_G: return InputEvent::InputAction::GravityBallTest;
+
+
 	case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
 	case GLFW_KEY_RIGHT: return InputEvent::InputAction::PlayerMoveRight;
 	case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJump;
