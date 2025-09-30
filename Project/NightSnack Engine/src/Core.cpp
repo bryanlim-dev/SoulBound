@@ -73,6 +73,9 @@ int CoreEngine::Terminate() {
 void CoreEngine::Update() {
 	// Start frame timing;
 
+	// Reset input states at the start of the frame
+	m_coord.GetSystem<InputSystem>()->ResetInputStates();
+
 	// Obtain dt from Timer;
 	float deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
 
