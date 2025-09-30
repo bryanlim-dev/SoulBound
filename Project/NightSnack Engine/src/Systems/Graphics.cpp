@@ -3,7 +3,7 @@
 
 void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
 	// Default Shader;
-	auto shader = std::make_unique<Shader>("../shaders/vertex_shader.vert", "../shaders/fragment_shader.frag");
+	auto shader = std::make_unique<Shader>("assets/shaders/vertex_shader.vert", "assets/shaders/fragment_shader.frag");
 	AddShader("default", std::move(shader));
 
 	// Textures;
