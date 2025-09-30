@@ -17,6 +17,7 @@ public:
 		A,
 		S,
 		D,
+		H,
 		SPACE,
 		ESC,
 		NUM_TOTAL_KEYBOARD_KEY

@@ -67,6 +67,7 @@ InputSystem::KeyboardKeys InputSystem::TranslateGLFWKeyboardKey(int glfwKey) {
 	case GLFW_KEY_A: return KeyboardKeys::A;
 	case GLFW_KEY_S: return KeyboardKeys::S;
 	case GLFW_KEY_D: return KeyboardKeys::D;
+	case GLFW_KEY_H: return KeyboardKeys::H;
 	case GLFW_KEY_SPACE: return KeyboardKeys::SPACE;
 	case GLFW_KEY_ESCAPE: return KeyboardKeys::ESC;
 	default: return KeyboardKeys::NUM_TOTAL_KEYBOARD_KEY;
@@ -121,13 +122,29 @@ void InputSystem::KeyCallback(GLFWwindow* window, int key, int scancode, int act
 	(void)window;
 
 	InputEvent::InputAction mappedAction = TranslateGLFWKeyToAction(key, mods);
-	if (mappedAction == InputEvent::InputAction::NumTotalInputAction)
-		return;
+	//if (mappedAction == InputEvent::InputAction::NumTotalInputAction)
+	//	return;
 
 	// Dispatch InputEvent when key is pressed
 	if (m_dispatcher)
 	{
 		m_dispatcher->Dispatch(InputEvent(mappedAction, action == GLFW_PRESS));
+	}
+
+	// Update the modifier state
+	m_currentModifiers = mods;
+
+	// Evalute the respective key states
+	KeyboardKeys mappedKey = TranslateGLFWKeyboardKey(key);
+	if (mappedKey == NUM_TOTAL_KEYBOARD_KEY)
+		return;
+
+	if (action == GLFW_PRESS) {
+		m_keysDown[mappedKey] = true;
+		m_keysPressed[mappedKey] = true;
+	} else if (action == GLFW_RELEASE) {
+		m_keysDown[mappedKey] = false;
+		m_keysReleased[mappedKey] = true;
 	}
 }
 
@@ -137,13 +154,29 @@ void InputSystem::MouseButtonCallback(GLFWwindow* window, int button, int action
 	(void)window;
 
 	InputEvent::InputAction mappedAction = TranslateGLFWKeyToAction(button, mods);
-	if (mappedAction == InputEvent::InputAction::NumTotalInputAction)
-		return;
+	//if (mappedAction == InputEvent::InputAction::NumTotalInputAction)
+	//	return;
 
 	// Dispatch InputEvent when key is pressed
 	if (m_dispatcher)
 	{
 		m_dispatcher->Dispatch(InputEvent(mappedAction, action == GLFW_PRESS));
+	}
+
+	// Update the modifier state
+	m_currentModifiers = mods;
+
+	// Evalute the respective mouse states
+	KeyboardKeys mappedButton = TranslateGLFWKeyboardKey(button);
+	if (mappedButton == NUM_TOTAL_KEYBOARD_KEY)
+		return;
+
+	if (action == GLFW_PRESS) {
+		m_mouseDown[mappedButton] = true;
+		m_mousePressed[mappedButton] = true;
+	} else if (action == GLFW_RELEASE) {
+		m_mouseDown[mappedButton] = false;
+		m_mouseReleased[mappedButton] = true;
 	}
 }
 

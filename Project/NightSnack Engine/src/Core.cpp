@@ -95,8 +95,6 @@ void CoreEngine::Update() {
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(System->GetName());
 	}
 
-	m_coord.GetSystem<InputSystem>()->ResetInputStates();
-
 	for (Entity e : m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed) { 
 		m_coord.DestroyEntity(e);
 	}
