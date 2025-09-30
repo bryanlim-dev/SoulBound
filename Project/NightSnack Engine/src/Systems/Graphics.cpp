@@ -175,7 +175,8 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 					glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Scale{ col.width, col.height }, RenderLayer::DEBUG);
 					glm::mat4 debugmvp = proj * view * debugmodel;
 					shader->SetMat4("uMVP", debugmvp);
-					shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green colo
+					shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
+					shader->SetVec3("uBaseColor", glm::vec3(0.f, 1.f, 0.f));
 					GetMesh("AABBColliderMesh")->Draw();
 				}
 					break;
@@ -187,6 +188,7 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 					glm::mat4 debugmvp = proj * view * debugmodel;
 					shader->SetMat4("uMVP", debugmvp);
 					shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
+					shader->SetVec3("uBaseColor", glm::vec3(0.f, 1.f, 0.f));
 					GetMesh("CircleColliderMesh")->Draw();
 				}
 					break;
@@ -203,7 +205,8 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 
 				// Only draw the velocity line if it is moving
 				if (speed > 0.f) {
-					float maxLength = std::max(scl.x, scl.y); // Max length is according to the scale of this entity
+					// Max length of the velocity line is slightly above the scale of the entity
+					float maxLength = std::max(scl.x, scl.y) * 1.4f; 
 					float length = std::min(speed, maxLength);
 
 					glm::vec3 dir = glm::normalize(velocity); // Direction of the velocity vector
@@ -217,7 +220,8 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 					glm::mat4 debugMvp = proj * view * debugModel;
 					
 					shader->SetMat4("uMVP", debugMvp);
-					shader->SetVec3("uEntityColor", glm::vec3(1.f, 1.f, 1.f)); // White color for velocity lines
+					shader->SetVec3("uEntityColor", glm::vec3(0.1f, 0.9f, 0.9f)); // White color for velocity lines
+					shader->SetVec3("uBaseColor", glm::vec3(0.1f, 0.9f, 0.9f)); // Green color for texture velocity lines
 					// Points upwards by default, will be rotated accordingly
 					GetMesh("line")->Draw();
 				}
