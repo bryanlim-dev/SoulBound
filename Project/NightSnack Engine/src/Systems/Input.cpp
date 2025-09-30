@@ -2,8 +2,18 @@
 #include "Graphics.h"
 
 // Define static variables
+std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysDown;
+std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysPressed;
+std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysReleased;
+
+std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_MOUSE_BUTTON)> InputSystem::m_mouseDown;
+std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_MOUSE_BUTTON)> InputSystem::m_mousePressed;
+std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_MOUSE_BUTTON)> InputSystem::m_mouseReleased;
+
+int InputSystem::m_currentModifiers = 0;
 float InputSystem::m_mousePosX = 0.f;
 float InputSystem::m_mousePosY = 0.f;
+
 EventDispatcher* InputSystem::m_dispatcher = nullptr;
 
 // Set up the respective callbacks with GLFW ------------------------------------------------------
@@ -37,6 +47,40 @@ void InputSystem::Update(float dt, Coordinator& coord) {
 	m_deltaPosY = m_mousePosY - m_prevMousePosY;
 	m_prevMousePosX = m_mousePosX;
 	m_prevMousePosY = m_mousePosY;
+}
+
+// Reset the key and mouse button states at the end of every update loop / frame ------------------
+// ------------------------------------------------------------------------------------------------
+void InputSystem::ResetInputStates() {
+	// Reset states back to false
+	m_keysPressed.fill(false);
+	m_keysReleased.fill(false);
+	m_mousePressed.fill(false);
+	m_mouseReleased.fill(false);
+}
+
+// Translates GLFW key input into InputSystem's enum KeyboardKeys --------------------------------
+// ------------------------------------------------------------------------------------------------
+InputSystem::KeyboardKeys InputSystem::TranslateGLFWKeyboardKey(int glfwKey) {
+	switch (glfwKey) {
+	case GLFW_KEY_W: return KeyboardKeys::W;
+	case GLFW_KEY_A: return KeyboardKeys::A;
+	case GLFW_KEY_S: return KeyboardKeys::S;
+	case GLFW_KEY_D: return KeyboardKeys::D;
+	case GLFW_KEY_SPACE: return KeyboardKeys::SPACE;
+	case GLFW_KEY_ESCAPE: return KeyboardKeys::ESC;
+	default: return KeyboardKeys::NUM_TOTAL_KEYBOARD_KEY;
+	}
+}
+
+// Translates GLFW mouse input into InputSystem's enum MouseButtons ------------------------------
+// ------------------------------------------------------------------------------------------------
+InputSystem::MouseButtons InputSystem::TranslateGLFWMouseButton(int glfwButton) {
+	switch (glfwButton) {
+	case GLFW_MOUSE_BUTTON_LEFT: return MouseButtons::LMB;
+	case GLFW_MOUSE_BUTTON_RIGHT: return MouseButtons::RMB;
+	default: return MouseButtons::NUM_TOTAL_MOUSE_BUTTON;
+	}
 }
 
 // Translate the GLFW key value to its respective InputActions ------------------------------------
@@ -112,6 +156,24 @@ void InputSystem::CursorPosCallback(GLFWwindow* window, double xPos, double yPos
 	m_mousePosX = static_cast<float>(xPos);
 	m_mousePosY = static_cast<float>(yPos);
 }
+
+// Queries for key states -------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+bool InputSystem::IsKeyDown(int key) const { return m_keysDown[key]; }
+bool InputSystem::IsKeyPressed(int key) const { return m_keysPressed[key]; }
+bool InputSystem::IsKeyReleased(int key) const { return m_keysReleased[key]; }
+
+// Queries for modifier key states ----------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+bool InputSystem::IsShiftDown() const { return m_currentModifiers & GLFW_MOD_SHIFT; }
+bool InputSystem::IsCtrlDown() const { return m_currentModifiers & GLFW_MOD_CONTROL; }
+bool InputSystem::IsAltDown() const { return m_currentModifiers & GLFW_MOD_ALT; }
+
+// Queries for mouse states -----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+bool InputSystem::IsMouseButtonDown(int button) const { return m_mouseDown[button]; }
+bool InputSystem::IsMouseButtonPressed(int button) const { return m_mousePressed[button]; }
+bool InputSystem::IsMouseButtonReleased(int button) const { return m_mouseReleased[button]; }
 
 // Queries for mouse position ---------------------------------------------------------------------
 // Note: Mouse position origin is from top left corner of the screen ------------------------------

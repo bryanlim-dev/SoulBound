@@ -94,12 +94,15 @@ void CoreEngine::Update() {
 
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(System->GetName());
 	}
+
+	m_coord.GetSystem<InputSystem>()->ResetInputStates();
+
 	for (Entity e : m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed) { 
 		m_coord.DestroyEntity(e);
 	}
 	m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed.clear();
 
-	m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(62.f); // Cap frame rate to 60 FPS (optional);
+	m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(82.f); // Cap frame rate to 60 FPS (optional);
 
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
 	m_coord.GetSystem<ApplicationSystem>()->SwapBuffers();
