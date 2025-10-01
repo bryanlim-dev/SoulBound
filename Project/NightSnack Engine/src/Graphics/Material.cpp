@@ -20,15 +20,11 @@ void Material::SetBaseColor(float r, float g, float b, float a) {
     m_baseColor = glm::vec4{ r, g, b, a };
 }
 
-void Material::ApplyUniforms(bool wireframe, bool isSelected) {
+void Material::ApplyUniforms(bool wireframe) {
 
     m_shader->Use();
 
-    // Selected objects will have a yellow base color instead
-    if (isSelected)
-        m_shader->SetVec3("uBaseColor", glm::vec3(1.f, 1.f, 0.f)); // yellow
-    else
-        m_shader->SetVec3("uBaseColor", m_baseColor); 
+    m_shader->SetVec3("uBaseColor", m_baseColor); 
 
     if (m_texture && !wireframe) {
         m_texture->Bind(); // calls glBindTexture(GL_TEXTURE_2D, m_id)
