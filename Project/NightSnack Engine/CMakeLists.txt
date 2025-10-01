@@ -19,6 +19,10 @@ if (MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
+if (MSVC)
+    set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT NightSnack)
+endif()
+
 # ------------------------------------------------------------
 # Gather Source and Header Files
 # ------------------------------------------------------------
