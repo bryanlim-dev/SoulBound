@@ -15,7 +15,7 @@ class GraphicsSystem : public ISystem {
 
 public:
 	// Default constructor to set up SystemSignature;
-	GraphicsSystem(Coordinator& coord) : m_coord{ coord } {
+	GraphicsSystem(Coordinator& coord, EventDispatcher& dispatcher) : m_coord{ coord }, m_dispatcher{ &dispatcher } {
 		// The Graphics System only cares about entities with these components
 		// - Position, Rotation, Scale
 		// - Renderable (mesh, material, texture, color)
@@ -27,9 +27,11 @@ public:
 		// Initialize viewport dimensions;
 		Hvp = static_cast<float>(coord.GetWindowHeight());
 		Wvp = static_cast<float>(coord.GetWindowWidth());
+
+		Init(coord);
 	}
 
-	void Init(Coordinator& Coord, EventDispatcher& dispatcher);
+	void Init(Coordinator& Coord);
 
 	// Main update called by core
 	void Update(float dt, Coordinator& coord) override;

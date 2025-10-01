@@ -9,7 +9,15 @@
 
 class CollisionSystem : public ISystem {
 public:
-    CollisionSystem();
+    CollisionSystem(EventDispatcher& disp) { 
+        // Register the components this system needs:
+        // Position, Velocity, and Collider
+        m_systemSignature.set(GetComponentTypeID<Position>());
+        m_systemSignature.set(GetComponentTypeID<Velocity>());
+        m_systemSignature.set(GetComponentTypeID<Collider>());
+
+        Init(disp); 
+    }
     void Init(EventDispatcher& dispatcher);
     void Update(float dt, Coordinator& coord) override;
     std::string GetName() const { return "CollisionSystem"; }

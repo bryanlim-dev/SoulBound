@@ -27,33 +27,20 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 
 	m_coord.RegisterComponent<PlayerController>();
 	m_coord.RegisterComponent<Renderable>();	// Graphics;
+	
+	// Add more Components here...
 
 	// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
 	// i.e: Input-> Movement -> Collision -> Graphics;
-	AddSystem<ApplicationSystem>();
-	AddSystem<InputSystem>();
+	AddSystem<ApplicationSystem>(windowWidth, windowHeight, std::move(windowTitle));
+	AddSystem<InputSystem>(m_coord, core_dispatcher);
 	AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json");
 	AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
 	AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
-	AddSystem<CollisionSystem>();
+	AddSystem<CollisionSystem>(core_dispatcher);
 	AddSystem<MovementSystem>(m_coord, core_dispatcher);
-	AddSystem<GraphicsSystem>(m_coord);
-
-	// Add more Components here...
-
-	// Initialise ApplicationSystem
-	m_coord.GetSystem<ApplicationSystem>()->Init(windowWidth, windowHeight, std::move(windowTitle));
-
-	// Initialise GraphicsSystem
-	m_coord.GetSystem<GraphicsSystem>()->Init(m_coord, core_dispatcher);
-	
-	// Initialise InputSystem
-	m_coord.GetSystem<InputSystem>()->Init(m_coord.GetSystem<ApplicationSystem>()->GetNativeHandle(), core_dispatcher); // GLFWwindow* handle
-
-	// Initialise CollisionSystem
-	m_coord.GetSystem<CollisionSystem>()->Init(core_dispatcher);
-
-	
+	AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
+	AddSystem<ImguiSystem>(m_coord);
 
 	// Call this only after the OpenGL context has been created, which is after ApplicationSystem::Init()
 	// TEMP; By right this will be handled by Graphics system and will be removed;

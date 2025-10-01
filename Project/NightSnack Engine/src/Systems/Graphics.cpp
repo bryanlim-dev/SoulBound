@@ -1,7 +1,7 @@
 #include "Graphics.h"
 #include "MathLibrary/Math.h"
 
-void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
+void GraphicsSystem::Init(Coordinator& coord) {
 	// Default Shader;
 	auto shader = std::make_unique<Shader>("assets/shaders/vertex_shader.vert", "assets/shaders/fragment_shader.frag");
 	AddShader("default", std::move(shader));
@@ -36,8 +36,7 @@ void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
 	colorMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
 	AddMaterial("ColorMat", std::move(colorMat));
 
-	// Event dispatcher initialisations
-	m_dispatcher = &dispatcher;
+	// Dispatcher lambda
 	m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
 	{
 		// This input event currently only handles key inputs for

@@ -34,6 +34,10 @@ public:
 		NUM_TOTAL_MOUSE_BUTTON
 	};
 
+	InputSystem(Coordinator& coord, EventDispatcher& disp) {
+		Init(coord.GetSystem<ApplicationSystem>()->GetNativeHandle(), disp);
+	}
+
 	void Init(GLFWwindow* window, EventDispatcher& dispatcher);
 
 	void Update(float dt, Coordinator& coord) override;

@@ -10,10 +10,9 @@
 class ApplicationSystem : public ISystem
 {
 public:
-	ApplicationSystem() {};
+	ApplicationSystem(int width, int height, std::string const& title);
 	~ApplicationSystem();
 
-	void Init(int width, int height, std::string const& title);
 	void Update(float dt, Coordinator& coord) override;
 	std::string GetName() const { return "ApplicationSystem"; }
 

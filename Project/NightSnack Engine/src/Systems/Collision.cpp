@@ -2,16 +2,6 @@
 #include <cmath>
 #include <iostream>
 
-// Constructor
-CollisionSystem::CollisionSystem()
-{
-    // Register the components this system needs:
-    // Position, Velocity, and Collider
-    m_systemSignature.set(GetComponentTypeID<Position>());
-    m_systemSignature.set(GetComponentTypeID<Velocity>());
-    m_systemSignature.set(GetComponentTypeID<Collider>());
-}
-
 // Initializing Collision System
 void CollisionSystem::Init(EventDispatcher& dispatcher)
 {
