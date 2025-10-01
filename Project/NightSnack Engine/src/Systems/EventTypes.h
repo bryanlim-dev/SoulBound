@@ -20,7 +20,6 @@ public:
         GravityBallTest,    // G
         ClickLMB,           // LMB
         Save,               // CTRL + S
-        NumTotalInputAction,
 
         CreateSquare,       // 1
         CreateCircle,       // 2
@@ -36,7 +35,9 @@ public:
         ToggleDebugDraw,    // T
         PhysicsDebugMode,   // CTRL + P
         PhysicsDebugStep,   // P
-        CrashTest           // C
+        CrashTest,          // C
+
+        NumTotalInputAction
     };
 
     enum class InputActionState {
