@@ -16,44 +16,29 @@ public:
         m_systemSignature.set(GetComponentTypeID<Scale>());
         m_systemSignature.set(GetComponentTypeID<Velocity>());
 
-        //m_player = FindPlayer(coord);
-
-        m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
-            PlayerController const& pcont = coord.GetComponent<PlayerController>(m_player);
-            Force& force = coord.ModifyComponent<Force>(m_player);
-            Velocity& vel = coord.ModifyComponent<Velocity>(m_player);
-            
-            if (event.pressed == InputEvent::InputActionState::Pressed) {
-                switch (event.inputAction) {
-                case InputEvent::InputAction::PlayerMoveLeft:
-
-                    vel.dx = -pcont.moveSpeed;
-                    break;
-
-                case InputEvent::InputAction::PlayerMoveRight:
-
-                    vel.dx = pcont.moveSpeed;
-                    break;
-
-                case InputEvent::InputAction::PlayerJump:
-                    if (coord.GetComponent<Collider>(m_player).isGrounded) {
-                        coord.ModifyComponent<Collider>(m_player).isGrounded = false;
-                        force.fy = pcont.jumpForce;
-                    }
-                    break;
-                case InputEvent::InputAction::ChangePlayer:
-                    m_playerChange = true;
-                    break;
-
-                }
-            }
-        });
+        m_player = FindPlayer(coord);
     }
 
     void Update(float dt, Coordinator& coord) override {
         (void)dt;
         
         m_player = FindPlayer(coord);
+
+        PlayerController const& pcont = coord.GetComponent<PlayerController>(m_player);
+        Velocity& vel = coord.ModifyComponent<Velocity>(m_player);
+
+        if (coord.GetSystem<InputSystem>()->IsKeyDown(InputSystem::RIGHT_ARROW) && !coord.GetComponent<Collider>(m_player).colliding) {
+            vel.dx = pcont.moveSpeed;
+        }
+        else if (coord.GetSystem<InputSystem>()->IsKeyDown(InputSystem::LEFT_ARROW) && !coord.GetComponent<Collider>(m_player).colliding) {
+            vel.dx = -pcont.moveSpeed;
+        }
+        if ((coord.GetSystem<InputSystem>()->IsKeyDown(InputSystem::UP_ARROW))) {
+            if (coord.GetComponent<Collider>(m_player).isGrounded) {
+                vel.dy = pcont.jumpSpeed;
+                coord.ModifyComponent<Collider>(m_player).isGrounded = false;
+            }
+        }
     }
 
     Entity FindPlayer(Coordinator& coord) {

@@ -19,7 +19,7 @@ public:
     // Event dispatcher initialisations
     m_dispatcher = &dispatcher;
     m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
-        if (event.pressed) {
+        if (event.pressed == InputEvent::InputActionState::Pressed) {
             switch (event.inputAction) {
             case InputEvent::InputAction::PhysicsDebugMode:
                 debugMode = !debugMode;

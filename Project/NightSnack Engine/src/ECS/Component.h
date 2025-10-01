@@ -55,7 +55,7 @@ struct Color {
 
 struct PlayerController {
     float moveSpeed;
-    float jumpForce;
+    float jumpSpeed;
     // maybe can add abilities etc...
 };
 

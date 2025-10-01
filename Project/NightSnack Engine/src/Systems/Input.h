@@ -20,7 +20,12 @@ public:
 		H,
 		SPACE,
 		ESC,
-		NUM_TOTAL_KEYBOARD_KEY
+
+		RIGHT_ARROW,
+		LEFT_ARROW,
+		UP_ARROW,
+
+		NUM_TOTAL_KEYBOARD_KEY	// MUST BE THE LAST
 	};
 
 	enum MouseButtons {

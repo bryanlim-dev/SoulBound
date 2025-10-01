@@ -94,15 +94,16 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
                 // SeparateObjects(posA, colA, posB, colB, velA, velB);
 
 
-                bool flipVel = ShouldFlipVelocity(posA.x, posB.x, velA.dx, dt);
+                bool flipVelx = ShouldFlipVelocity(posA.x, posB.x, velA.dx, dt);
+                bool flipVely = ShouldFlipVelocity(posA.y, posB.y, velA.dy, dt);
 
                 // Handle collision response
                 if (!colA.isStatic && !colB.isStatic)
                 {
                     // Dynamic vs Dynamic - both bounce with 30% energy loss
                    
-                    velA.dx = flipVel ? -velA.dx * 0.7f : velA.dx;
-                    velA.dy = flipVel ? -velA.dy * 0.7f : velA.dy;
+                    velA.dx = flipVelx ? -velA.dx * 0.7f : velA.dx;
+                    velA.dy = flipVely ? -velA.dy * 0.7f : velA.dy;
                     velB.dx = -velA.dx * 0.7f;
                     velB.dy = -velB.dy * 0.7f;
 
@@ -136,8 +137,8 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
                     }
                     else {
                         // A is dynamic, B is static (wall/other) - bounce with damping
-                        velA.dx = flipVel ? -velA.dx * 0.7f : velA.dx;
-                        velA.dy = -velA.dy * 0.7f;
+                        velA.dx = flipVelx ? -velA.dx * 0.7f : velA.dx;
+                        velA.dy = flipVely ? -velA.dy * 0.7f : velA.dy;
                     }
                 }
                 //else if (colA.isStatic && !colB.isStatic)             // <- technically not necessary;

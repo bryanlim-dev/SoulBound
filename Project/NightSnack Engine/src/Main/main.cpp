@@ -204,12 +204,12 @@ int main()
 		coord.AddComponent<Velocity>(gravityBall, Velocity{ 0.f, 0.f });
 		coord.AddComponent<Force>(gravityBall, Force{ 0.f,0.f });
 		coord.AddComponent<Mass>(gravityBall, Mass{ 1.f });
-		Collider c3{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 50.f, false };
+		Collider c3{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 30.f, false };
 		coord.AddComponent<Collider>(gravityBall, c3);
 		Renderable r4{ "circle", "ColorMat", RenderLayer::DEFAULT };
 		coord.AddComponent<Renderable>(gravityBall, r4);
 		coord.AddComponent<Color>(gravityBall, Color{ 0.2f, 0.2f, 0.6f, 1.f });
-		coord.AddComponent<PlayerController>(gravityBall, PlayerController{300.f, 70.f});
+		coord.AddComponent<PlayerController>(gravityBall, PlayerController{300.f, 1000.f});
 		// -------------------------------
 
 		// Right side wall ---------------

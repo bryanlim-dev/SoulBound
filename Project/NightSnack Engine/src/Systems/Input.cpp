@@ -70,6 +70,9 @@ InputSystem::KeyboardKeys InputSystem::TranslateGLFWKeyboardKey(int glfwKey) {
 	case GLFW_KEY_H: return KeyboardKeys::H;
 	case GLFW_KEY_SPACE: return KeyboardKeys::SPACE;
 	case GLFW_KEY_ESCAPE: return KeyboardKeys::ESC;
+	case GLFW_KEY_RIGHT: return KeyboardKeys::RIGHT_ARROW;
+	case GLFW_KEY_LEFT: return KeyboardKeys::LEFT_ARROW;
+	case GLFW_KEY_UP: return KeyboardKeys::UP_ARROW;
 	default: return KeyboardKeys::NUM_TOTAL_KEYBOARD_KEY;
 	}
 }
@@ -104,10 +107,6 @@ InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int m
 	case GLFW_KEY_3: return InputEvent::InputAction::CreateBananaCircle;
 	case GLFW_KEY_SPACE: return InputEvent::InputAction::DoubleEntities;
 	case GLFW_KEY_BACKSPACE: return InputEvent::InputAction::HalfEntities;
-
-	case GLFW_KEY_F: return InputEvent::InputAction::DynamicBallTest;
-	case GLFW_KEY_G: return InputEvent::InputAction::GravityBallTest;
-
 
 	case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
 	case GLFW_KEY_RIGHT: return InputEvent::InputAction::PlayerMoveRight;

@@ -29,9 +29,6 @@ public:
         DoubleEntities, // Space
         HalfEntities, // Backspace
 
-        DynamicBallTest,
-        GravityBallTest,
-
         PlayerMoveLeft, // Player controller with Arrow keys;
         PlayerMoveRight,
         PlayerJump,
