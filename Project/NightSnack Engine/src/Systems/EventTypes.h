@@ -13,7 +13,6 @@ class InputEvent : public IEvent
 public:
 
     enum class InputAction {
-        SelectNext,         // W
         ScaleUp,            // D
         ScaleDown,          // A
         Rotate,             // R
@@ -21,8 +20,7 @@ public:
         GravityBallTest,    // G
         ClickLMB,           // LMB
         Save,               // CTRL + S
-        NumTotalInputAction,
-
+        
         CreateSquare, // 1
         CreateCircle, // 2
         CreateBananaCircle, // 3 -> texture entity;
@@ -36,14 +34,16 @@ public:
 
         ToggleDebugDraw,    // T
         PhysicsDebugMode,   // CTRL + P
-        PhysicsDebugStep    // P
+        PhysicsDebugStep,    // P
 
+        NumTotalInputAction
     };
 
     enum class InputActionState {
         Pressed = 0,
         Repeat,
-        Released
+        Released,
+        NumTotalInputActionState
     };
 
     InputAction inputAction;

@@ -74,8 +74,6 @@ private:
 	std::unordered_map<std::string, std::unique_ptr<Mesh>>     m_meshes;
 	std::unordered_map<std::string, std::unique_ptr<Material>> m_materials;
 
-	int m_selectedEntityIndex = -1;
-
 	// Helper functions;
 	void ResolveRenderable(Entity e, Renderable const& r);
 	float GetRenderLayerZPos(RenderLayer layer);

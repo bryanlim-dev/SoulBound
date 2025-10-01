@@ -13,7 +13,7 @@ public:
 
     void SetBaseColor(float r, float g, float b, float a);
 
-    void ApplyUniforms(bool wireframe, bool isSelected);
+    void ApplyUniforms(bool wireframe);
 
 private:
     Shader* m_shader;
