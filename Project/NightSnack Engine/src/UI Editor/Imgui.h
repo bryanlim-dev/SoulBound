@@ -59,7 +59,7 @@ inline void ImguiSystem::Update(float dt, Coordinator& coord) {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::SetNextWindowSize(ImVec2(400, 300));
+	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
 	ImGui::Begin("TestPanel");
 
 	// stuff here...
