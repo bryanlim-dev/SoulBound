@@ -110,6 +110,9 @@ InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int m
 	// Modifier keys (CTRL+S etc)
 	case GLFW_KEY_S: 
 		return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::Save : InputEvent::InputAction::NumTotalInputAction;
+	// Modifier keys (CTRL+P etc)
+	case GLFW_KEY_P: 
+		return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::PhysicsDebugMode : InputEvent::InputAction::PhysicsDebugStep;;
 
 	default: return InputEvent::InputAction::NumTotalInputAction;
 	}

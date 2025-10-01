@@ -13,23 +13,25 @@ class InputEvent : public IEvent
 public:
 
     enum class InputAction {
-        SelectNext, // W
-        ScaleUp, // D
-        ScaleDown, // A
-        Rotate, // R
-        DynamicBallTest, // F
-        GravityBallTest, // G
-        ClickLMB, // LMB
-        Save, // CTRL + S
+        SelectNext,         // W
+        ScaleUp,            // D
+        ScaleDown,          // A
+        Rotate,             // R
+        DynamicBallTest,    // F
+        GravityBallTest,    // G
+        ClickLMB,           // LMB
+        Save,               // CTRL + S
         NumTotalInputAction,
 
-        CreateSquare, // 1
-        CreateCircle, // 2 -> has physics;
+        CreateSquare,       // 1
+        CreateCircle,       // 2 -> has physics;
         CreateBananaCircle, // 3 -> texture entity;
-        DoubleEntities, // Space
-        HalfEntities, // Backspace
+        DoubleEntities,     // Space
+        HalfEntities,       // Backspace
 
-        ToggleDebugDraw
+        ToggleDebugDraw,    // T
+        PhysicsDebugMode,   // CTRL + P
+        PhysicsDebugStep    // P
     };
 
     InputAction inputAction;

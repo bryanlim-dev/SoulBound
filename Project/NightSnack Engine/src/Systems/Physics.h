@@ -36,6 +36,12 @@ public:
                 ApplyForce(coord, 6, 0.f, 60.f);
                 }
                 break;
+            case InputEvent::InputAction::PhysicsDebugMode:
+                debugMode = !debugMode;
+                break;
+            case InputEvent::InputAction::PhysicsDebugStep:
+                stepRequest = true;
+                break;
 			}
 		}
 
@@ -45,6 +51,9 @@ public:
     void Update(float dt, Coordinator& coord) override;
 	Signature GetSignature() const override { return m_systemSignature; }
     std::string GetName() const { return "PhysicsSystem"; }
+
+	bool IsDebugMode() const { return debugMode; }
+	bool IsStepRequested() const { return stepRequest; }
 
     void ApplyForce(Coordinator& coord, Entity e, float fx, float fy);
 
@@ -58,4 +67,7 @@ private:
     float drag = 0.2f;
     float friction = 0.8f;
 
+	// DebugMode for Physics;
+	bool debugMode = false;
+	bool stepRequest = false;
 };
