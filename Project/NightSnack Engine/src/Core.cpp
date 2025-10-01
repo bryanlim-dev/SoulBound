@@ -27,6 +27,8 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 
 	m_coord.RegisterComponent<Renderable>();	// Graphics;
 
+	m_coord.RegisterComponent<Text>();
+
 	// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
 	// i.e: Input-> Movement -> Collision -> Graphics;
 	AddSystem<ApplicationSystem>();
@@ -36,6 +38,8 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	AddSystem<CollisionSystem>();
 	AddSystem<MovementSystem>();
 	AddSystem<GraphicsSystem>(m_coord);
+	AddSystem<TextSystem>(m_coord);
+
 
 	// Add more Components here...
 
@@ -51,7 +55,8 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	// Initialise CollisionSystem
 	m_coord.GetSystem<CollisionSystem>()->Init(core_dispatcher);
 
-	
+	// Initialise TextSystem
+	m_coord.GetSystem<TextSystem>()->Init(/*m_coord.GetSystem<ResourceManager>().get()*/);
 
 	// Call this only after the OpenGL context has been created, which is after ApplicationSystem::Init()
 	// TEMP; By right this will be handled by Graphics system and will be removed;

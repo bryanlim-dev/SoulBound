@@ -81,6 +81,13 @@ struct Camera {
 	float height{ 900.f };
 };
 
+struct Text {
+    std::string text;
+    std::string font;
+    float size{ 12.f };
+    Color color;
+};
+
 // COLLISION COMPONENTS;
 
 enum class ShapeType {
@@ -184,6 +191,13 @@ inline void from_json(const json& j, Renderable& r) {
 
     r.wasModified = true;
 
+}
+
+inline void from_json(const json& j, Text& t) {
+    j.at("text").get_to(t.text);
+    j.at("font").get_to(t.font);
+    j.at("size").get_to(t.size);
+    from_json(j, t.color);
 }
 
 // Camera =====================================================

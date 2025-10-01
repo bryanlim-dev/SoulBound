@@ -188,6 +188,40 @@ void GraphicsSystem::AddMaterial(std::string const& name, std::unique_ptr<Materi
 	m_materials[name] = std::move(mat);
 }
 
+void GraphicsSystem::RenderText(FT_Face font, const std::string& text, glm::vec2 position, float size, glm::vec4 color, float rotation)
+{
+	if (!font) return;
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	float x = position.x;
+	float y = position.y;
+
+	for (char c : text)
+	{
+		if (FT_Load_Char(font, c, FT_LOAD_RENDER))
+			continue;
+
+		FT_GlyphSlot g = font->glyph;
+
+		float xpos = x + g->bitmap_left;
+		float ypos = y - g->bitmap_top;
+		float w = static_cast<float>(g->bitmap.width);
+		float h = static_cast<float>(g->bitmap.rows);
+
+		// Here you would generate a quad with texture g->bitmap.buffer
+		// And draw it using your default shader
+		// You can reuse your existing Mesh/Material pipeline or make a small textured quad renderer
+
+		// Advance cursor to next glyph
+		x += (g->advance.x >> 6); // 1/64th of a pixel
+		y += (g->advance.y >> 6);
+	}
+
+	glDisable(GL_BLEND);
+}
+
 // Compute the projection matrix ------------------------------------------------------------------
 // Transforms camera coords to clip coords --------------------------------------------------------
 glm::mat4 GraphicsSystem::GetCameraProjectionMatrix(float width, float height) {

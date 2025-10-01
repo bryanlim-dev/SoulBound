@@ -67,6 +67,9 @@ int main()
 		core.Initialize(winWidth, winHeight, windowTitle.c_str());
 		Coordinator& coord = core.GetCoord();
 
+
+		//coord.SetSystemSignature<TextSystem>(textSystem->GetSignature());
+
 		// Get singletons
 		AudioSystem* audioSystem = AudioSystem::GetInstance();
 
@@ -242,11 +245,25 @@ int main()
 		coord.AddComponent<Renderable>(ground, r5);
 		coord.AddComponent<Color>(ground, Color{ 0.2f, 0.1f, 0.3f, 1.f });
 
+		// <<< Text entity
+		Entity helloText = coord.CreateEntity();
+		coord.AddComponent<Position>(helloText, Position{ 100.f, 200.f, 0.f });
+		coord.AddComponent<Rotation>(helloText, Rotation{ 0.f });
+		coord.AddComponent<Text>(helloText, Text{
+			"Hello, ECS World!",
+			"defaultFont",
+			24.f,
+			Color{1.f, 1.f, 1.f, 1.f}
+			});
+
 		// Core Application Loop;
 		while (!core.ShouldClose()) {
 			core.Update();
 			// Update AudioSystem every frame
 			audioSystem->Update();
+
+			// <<< Call text system update
+			//textSystem->Update(0.0f, coord);
 
 			/*if (coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::SPACE))
 			{

@@ -28,6 +28,8 @@ public:
 	void AddMesh(std::string const& name, std::unique_ptr<Mesh> mesh);
 	void AddMaterial(std::string const& name, std::unique_ptr<Material> material);
 
+	void RenderText(FT_Face font, const std::string& text, glm::vec2 position, float size, glm::vec4 color, float rotation = 0.f);
+
 	glm::mat4 GetCameraProjectionMatrix(float width, float height);
 	glm::mat4 GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale, RenderLayer layer);
 
