@@ -13,7 +13,6 @@ class InputEvent : public IEvent
 public:
 
     enum class InputAction {
-        SelectNext,         // W
         ScaleUp,            // D
         ScaleDown,          // A
         Rotate,             // R
@@ -43,7 +42,8 @@ public:
     enum class InputActionState {
         Pressed = 0,
         Repeat,
-        Released
+        Released,
+        NumTotalInputActionState
     };
 
     InputAction inputAction;

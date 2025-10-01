@@ -5,7 +5,7 @@
 static constexpr int REQUIRED_GL_MAJOR = 4;
 static constexpr int REQUIRED_GL_MINOR = 5;
 
-void ApplicationSystem::Init(int width, int height, std::string const& title) {
+ApplicationSystem::ApplicationSystem(int width, int height, std::string const& title) {
 	// Initialize GLFW;
 	if (!glfwInit())
 	{

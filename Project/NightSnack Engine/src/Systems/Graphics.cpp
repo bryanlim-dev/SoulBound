@@ -1,7 +1,7 @@
 #include "Graphics.h"
 #include "MathLibrary/Math.h"
 
-void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
+void GraphicsSystem::Init(Coordinator& coord) {
 	// Default Shader;
 	auto shader = std::make_unique<Shader>("assets/shaders/vertex_shader.vert", "assets/shaders/fragment_shader.frag");
 	AddShader("default", std::move(shader));
@@ -36,12 +36,10 @@ void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
 	colorMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
 	AddMaterial("ColorMat", std::move(colorMat));
 
-	// Event dispatcher initialisations
-	m_dispatcher = &dispatcher;
+	// Dispatcher lambda
 	m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
 	{
 		// This input event currently only handles key inputs for
-		// - selection of an object (W)
 		// - scaling of an object (A / D)
 		// - rotating of an object (R)
 		if (m_entities.empty())
@@ -49,30 +47,6 @@ void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
 
 		if (event.pressed == InputEvent::InputActionState::Pressed) {
 			switch (event.inputAction) {
-			case InputEvent::InputAction::SelectNext:
-			{
-				auto it = m_entities.begin();
-				// Clear the previous selection
-				if (m_selectedEntityIndex >= 0 && m_selectedEntityIndex < static_cast<int>(m_entities.size())) {
-					std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
-					auto& ren = coord.ModifyComponent<Renderable>(*it);
-					ren.isSelected = false;
-				}
-
-				// Move on to the next selection
-				if (++m_selectedEntityIndex == static_cast<int>(m_entities.size())) {
-					// Reset to selecting no objects once it reached the end
-					m_selectedEntityIndex = -1;
-					return;
-				}
-
-				// Set the current object selection to be true
-				it = m_entities.begin(); // Reset it back to the start, before advancing again
-				std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
-				auto& ren = coord.ModifyComponent<Renderable>(*it);
-				ren.isSelected = true;
-			}
-			break;
 			case InputEvent::InputAction::ScaleUp:
 					ModifyEntityScale(coord, 1.1f);
 				break;
@@ -143,14 +117,13 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 		Mesh* mesh = data.mesh;
 		shader->Use();
 		shader->SetMat4("uMVP", mvp);
-		shader->SetBool("uIsSelected", ren.isSelected);
 
 		if (m_coord.HasComponent<Color>(e)) {
 			auto& col = m_coord.GetComponent<Color>(e);
 			shader->SetVec3("uEntityColor", { col.r, col.g, col.b });
 		}
 
-		data.material->ApplyUniforms(ren.isWireframe, ren.isSelected);
+		data.material->ApplyUniforms(ren.isWireframe);
 
 		//GLint loc = glGetUniformLocation(data.material->GetShader()->GetID(), "uMVP");
 		//std::cout << "uMVP loc=" << loc << "\n";
@@ -340,13 +313,8 @@ float GraphicsSystem::GetRenderLayerZPos(RenderLayer layer) {
 // Modify the scale of the currently selected object ----------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void GraphicsSystem::ModifyEntityScale(Coordinator& coord, float value) {
-	// No object is currently selected
-	//if (m_selectedEntityIndex < 0)
-	//	return;
-
 	auto it = m_entities.begin();
-	//std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
-
+	
 	// Currently hardcoded to only 'control entity'
 	std::advance(it, 3); 
 	auto& ren = coord.GetComponent<Renderable>(*it);
@@ -356,6 +324,7 @@ void GraphicsSystem::ModifyEntityScale(Coordinator& coord, float value) {
 	auto& scale = coord.ModifyComponent<Scale>(*it);
 	scale.x *= value;
 	scale.y *= value;
+	// In the future, modify the collider too when scaling normal objects
 	//auto& collider = coord.ModifyComponent<Collider>(*it);
 	//collider.width *= value;
 	//collider.height *= value;
@@ -365,12 +334,7 @@ void GraphicsSystem::ModifyEntityScale(Coordinator& coord, float value) {
 // Modify the rotation of the currently selected object -------------------------------------------
 // ------------------------------------------------------------------------------------------------
 void GraphicsSystem::ModifyEntityRotation(Coordinator& coord, float value) {
-	// No object is currently selected
-	//if (m_selectedEntityIndex < 0)
-	//	return;
-
 	auto it = m_entities.begin();
-	//std::advance(it, m_selectedEntityIndex); // Advance the iterator by n elements
 
 	// Currently hardcoded to only 'control entity'
 	std::advance(it, 3); 

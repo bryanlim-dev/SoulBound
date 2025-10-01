@@ -92,7 +92,6 @@ InputSystem::MouseButtons InputSystem::TranslateGLFWMouseButton(int glfwButton) 
 InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int modifier) {
 	switch (glfwKey) {
 	// Single key presses
-	case GLFW_KEY_W: return InputEvent::InputAction::SelectNext;
 	case GLFW_KEY_A: return InputEvent::InputAction::ScaleDown;
 	case GLFW_KEY_D: return InputEvent::InputAction::ScaleUp;
 	case GLFW_KEY_R: return InputEvent::InputAction::Rotate;
@@ -131,7 +130,8 @@ InputEvent::InputActionState InputSystem::TranslateGLFWKeyStateToAction(int glfw
 	case GLFW_PRESS: return InputEvent::InputActionState::Pressed;
 	case GLFW_RELEASE: return InputEvent::InputActionState::Released;
 	case GLFW_REPEAT: return InputEvent::InputActionState::Pressed;
-	
+
+	default: return InputEvent::InputActionState::NumTotalInputActionState;
 	}
 }
 
