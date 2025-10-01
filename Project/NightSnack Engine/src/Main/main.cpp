@@ -209,7 +209,7 @@ int main()
 		Renderable r4{ "circle", "ColorMat", RenderLayer::DEFAULT };
 		coord.AddComponent<Renderable>(gravityBall, r4);
 		coord.AddComponent<Color>(gravityBall, Color{ 0.2f, 0.2f, 0.6f, 1.f });
-		coord.AddComponent<PlayerController>(gravityBall, PlayerController{300.f, 1000.f});
+		coord.AddComponent<PlayerController>(gravityBall, PlayerController{300.f, 600.f});
 		// -------------------------------
 
 		// Right side wall ---------------
