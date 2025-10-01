@@ -113,6 +113,7 @@ InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int m
 	case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJump;
 
 	case GLFW_KEY_T: return InputEvent::InputAction::ToggleDebugDraw;
+	case GLFW_KEY_C: return InputEvent::InputAction::CrashTest;
 
 	// Modifier keys (CTRL+S etc)
 	case GLFW_KEY_S: 

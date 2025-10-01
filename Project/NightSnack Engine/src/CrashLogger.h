@@ -9,6 +9,7 @@
 class CrashLogger 
 {
 public:
+    static void InstallGlobalHandler();
     static void LogCrash(const IException& ex) noexcept 
     {
         try 

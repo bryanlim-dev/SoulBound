@@ -23,21 +23,21 @@ public:
         Save,               // CTRL + S
         NumTotalInputAction,
 
-        CreateSquare, // 1
-        CreateCircle, // 2
+        CreateSquare,       // 1
+        CreateCircle,       // 2
         CreateBananaCircle, // 3 -> texture entity;
-        DoubleEntities, // Space
-        HalfEntities, // Backspace
+        DoubleEntities,     // Space
+        HalfEntities,       // Backspace
 
-        PlayerMoveLeft, // Player controller with Arrow keys;
+        PlayerMoveLeft,     // Player controller with Arrow keys;
         PlayerMoveRight,
         PlayerJump,
-        ChangePlayer,    // Down arrow;
+        ChangePlayer,       // Down arrow;
 
         ToggleDebugDraw,    // T
         PhysicsDebugMode,   // CTRL + P
-        PhysicsDebugStep    // P
-
+        PhysicsDebugStep,   // P
+        CrashTest           // C
     };
 
     enum class InputActionState {

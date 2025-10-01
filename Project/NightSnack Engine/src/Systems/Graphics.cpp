@@ -85,6 +85,11 @@ void GraphicsSystem::Init(Coordinator& coord, EventDispatcher& dispatcher) {
 			case InputEvent::InputAction::ToggleDebugDraw:
 				m_enableDebugDraw = !m_enableDebugDraw;
 				break;
+			case InputEvent::InputAction::CrashTest:
+				// Simulate a crash by dereferencing a null pointer
+				Shader* crashShader = nullptr;
+				crashShader->Use();
+				break;
 			}
 		}
 	});
