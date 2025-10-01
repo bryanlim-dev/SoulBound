@@ -121,11 +121,12 @@ int main()
 		};
 		coord.AddComponent<Camera>(camera, isCamera);
 
-
 		// Higher values will render on top of lower values
 		int posIndexBackgroundLayer = 1;
 		int posIndexDefaultLayer = 1;
-				
+
+		// Background image --------------
+		// -------------------------------
 		Entity background = coord.CreateEntity();
 		coord.AddComponent<Position>(background, Position{ 0.f, 0.f, posIndexBackgroundLayer++ * Z_EPSILON });
 		coord.AddComponent<Scale>(background, Scale{ 1920.f, 1080.f });
@@ -143,7 +144,7 @@ int main()
 		coord.AddComponent<Velocity>(redBallDynamic, Velocity{ 0.f, 0.f });
 		coord.AddComponent<Force>(redBallDynamic, Force{ 0.f,0.f });
 		coord.AddComponent<Mass>(redBallDynamic, Mass{ 1.f });
-		Collider c0{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 100.f, true };
+		Collider c0{ ShapeType::AABB, ColliderType::Solid, false, 200.f, 200.f, 0.f, true };
 		coord.AddComponent<Collider>(redBallDynamic, c0);
 		Renderable r1{ "circle", "ColorMat", RenderLayer::DEFAULT };
 		coord.AddComponent<Renderable>(redBallDynamic, r1);
@@ -203,11 +204,11 @@ int main()
 		coord.AddComponent<Velocity>(gravityBall, Velocity{ 0.f, 0.f });
 		coord.AddComponent<Force>(gravityBall, Force{ 0.f,0.f });
 		coord.AddComponent<Mass>(gravityBall, Mass{ 1.f });
-		Collider c3{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 30.f, false };
+		Collider c3{ ShapeType::Circle, ColliderType::Solid, false, 0.f, 0.f, 50.f, false };
 		coord.AddComponent<Collider>(gravityBall, c3);
 		Renderable r4{ "circle", "ColorMat", RenderLayer::DEFAULT };
 		coord.AddComponent<Renderable>(gravityBall, r4);
-		coord.AddComponent<Color>(gravityBall, Color{ 0.f, 1.f, 0.f, 1.f });
+		coord.AddComponent<Color>(gravityBall, Color{ 0.2f, 0.2f, 0.6f, 1.f });
 		coord.AddComponent<PlayerController>(gravityBall, PlayerController{300.f, 70.f});
 		// -------------------------------
 
@@ -263,11 +264,18 @@ int main()
 			// Update AudioSystem every frame
 			audioSystem->Update();
 
-			/*if (coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::SPACE))
+			// Temporary test code for music sound
+			// To be moved once audio system has been fully integrated into the ECS
+			if (coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::H))
 			{
 				audioSystem->PlaySound(sfxKey);
 				std::cout << "Playing SFX!\n";
-			}*/
+			}
+
+			// Reset input states is temporarily reset here! 
+			// Once audio system has been fully integrated into the ECS, 
+			// move this function call to Core.cpp Update()
+			coord.GetSystem<InputSystem>()->ResetInputStates();
 		}
 
 		// Clean termination;

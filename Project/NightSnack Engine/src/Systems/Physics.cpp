@@ -3,7 +3,10 @@
 
 // Main update function;
 void PhysicsSystem::Update(float dt, Coordinator& coord) {
-
+	// Skip Physics if in debug mode
+	if (debugMode && !stepRequest) {
+		return;
+	}
 	// Iterate through all Entities this system can access;
 	for (auto const& e : m_entities) {
 
@@ -42,8 +45,8 @@ void PhysicsSystem::Update(float dt, Coordinator& coord) {
 		// Clear forces for next frame;
 		force.fx = 0.f;
 		force.fy = 0.f;
-
 	}
+	if (debugMode) stepRequest = false; // reset step request
 }
 
 // Apply a force to an entity by modifying its Force component;

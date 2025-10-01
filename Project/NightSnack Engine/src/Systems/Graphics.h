@@ -15,7 +15,19 @@ class GraphicsSystem : public ISystem {
 
 public:
 	// Default constructor to set up SystemSignature;
-	GraphicsSystem(Coordinator& coord);
+	GraphicsSystem(Coordinator& coord) : m_coord{ coord } {
+		// The Graphics System only cares about entities with these components
+		// - Position, Rotation, Scale
+		// - Renderable (mesh, material, texture, color)
+		m_systemSignature.set(GetComponentTypeID<Position>());
+		m_systemSignature.set(GetComponentTypeID<Rotation>());
+		m_systemSignature.set(GetComponentTypeID<Scale>());
+		m_systemSignature.set(GetComponentTypeID<Renderable>());
+
+		// Initialize viewport dimensions;
+		Hvp = static_cast<float>(coord.GetWindowHeight());
+		Wvp = static_cast<float>(coord.GetWindowWidth());
+	}
 
 	void Init(Coordinator& Coord, EventDispatcher& dispatcher);
 
@@ -68,6 +80,8 @@ private:
 	void ModifyEntityScale(Coordinator& Coord, float value);
 	void ModifyEntityRotation(Coordinator& Coord, float value);
 	Position ScreenToWorld(Position const& screenPos);
+
+	bool m_enableDebugDraw{ false };
 
 	Signature m_systemSignature{};
 

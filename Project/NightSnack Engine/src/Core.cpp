@@ -36,7 +36,7 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
 	AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
 	AddSystem<CollisionSystem>();
-	AddSystem<MovementSystem>();
+	AddSystem<MovementSystem>(m_coord, core_dispatcher);
 	AddSystem<GraphicsSystem>(m_coord);
 
 	// Add more Components here...
@@ -77,8 +77,8 @@ void CoreEngine::Update() {
 	float deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
 
 	// Clamp dt to prevent giant steps when window is dragged / unfocused
-	if (deltaTime > 0.05f)
-		deltaTime = 0.05f;
+	if (deltaTime > 0.02f)
+		deltaTime = 0.02f;
 
 	// If paused, skip updating systems that rely on dt
 	if (m_paused) {
@@ -96,10 +96,13 @@ void CoreEngine::Update() {
 
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(System->GetName());
 	}
+
 	for (Entity e : m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed) { 
 		m_coord.DestroyEntity(e);
 	}
 	m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed.clear();
+
+	m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(102.f); // Cap frame rate to 60 FPS (optional);
 
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
 	m_coord.GetSystem<ApplicationSystem>()->SwapBuffers();
@@ -107,6 +110,5 @@ void CoreEngine::Update() {
 
 	// End frame timing;
 	m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndFrame();
-	//timer_.FrameCap(60.f); // Cap frame rate to 60 FPS (optional);
 }
 

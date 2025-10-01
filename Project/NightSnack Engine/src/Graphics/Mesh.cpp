@@ -88,9 +88,7 @@ void Mesh::Draw() const {
 		break;
 
 	case GL_LINES:
-		glLineWidth(3.f);
 		glDrawArrays(GL_LINES, 0, m_vertexCount);
-		glLineWidth(1.f);
 		break;
 
 	case GL_TRIANGLES:
@@ -121,7 +119,7 @@ std::unique_ptr<Mesh> Mesh::CreatePoint() {
 	return std::make_unique<Mesh>(GL_POINTS, vertices, std::vector<unsigned int>{});
 }
 
-// Helper function to create a mesh representing a line -------------------------------------------
+// Helper function to create a mesh representing a line pointing upwards by default ---------------
 // ------------------------------------------------------------------------------------------------
 std::unique_ptr<Mesh> Mesh::CreateLine(const glm::vec3& startPos, const glm::vec3& endPos) {
 	std::vector<Vertex> vertices{
@@ -178,4 +176,53 @@ std::unique_ptr<Mesh> Mesh::CreateCircle() {
 
 	// No indices since we will be using glDrawArrays for triangle fans
 	return std::make_unique<Mesh>(GL_TRIANGLE_FAN, vertices, std::vector<unsigned int>{});
+}
+
+// DEBUG DRAWING MESHES
+std::unique_ptr<Mesh> Mesh::CreateAABBMesh() {
+	// Default position is at the center of the screen
+	// Order of texCoords must follow the order of vertices
+
+	std::vector<Vertex> vertices{ // position, texCoord
+		{ { 0.5f, 0.5f, 0.f }, { 1.f, 1.f } },	// Top right
+		{ { -0.5f, 0.5f, 0.f }, { 0.f, 1.f } },	// Top left
+		{ { -0.5f, 0.5f, 0.f }, { 0.f, 1.f } },	// Top left
+		{ { -0.5f, -0.5f, 0.f }, { 0.f, 0.f } }, // Bottom left
+		{ { -0.5f, -0.5f, 0.f }, { 0.f, 0.f } }, // Bottom left
+		{ { 0.5f, -0.5f, 0.f }, { 1.f, 0.f } },	// Bottom right
+		{ { 0.5f, -0.5f, 0.f }, { 1.f, 0.f } },	// Bottom right
+		{ { 0.5f, 0.5f, 0.f }, { 1.f, 1.f } }	// Top right
+	};
+
+	// No indices since we will be using glDrawArrays for GL_LINES
+	return std::make_unique<Mesh>(GL_LINES, vertices, std::vector<unsigned int>{});
+}
+
+std::unique_ptr<Mesh> Mesh::CreateCircleMesh() {
+
+	glm::vec3 centerPos{ 0.f, 0.f, 0.f };
+	const float radius{ 1.f };
+	std::vector<Vertex> vertices;
+
+	int slices = 30;
+	float degree = 360.f / slices;
+	for (int i{ 0 }; i <= slices; ++i) {
+		float rad = glm::radians(i * degree);
+
+		glm::vec3 pos(centerPos.x + radius * cos(rad),
+			centerPos.y + radius * sin(rad),
+			0.f);
+
+		glm::vec2 tex(0.5f + 0.5f * cos(rad),
+			0.5f + 0.5f * sin(rad));
+
+		vertices.push_back({ pos, tex });
+		
+		// Push back the same position twice
+		if (vertices.size() > 1 || slices != 30) // Except for the first and last vertice
+			vertices.push_back({ pos, tex });
+	}
+
+	// No indices since we will be using glDrawArrays for GL_LINES
+	return std::make_unique<Mesh>(GL_LINES, vertices, std::vector<unsigned int>{});
 }

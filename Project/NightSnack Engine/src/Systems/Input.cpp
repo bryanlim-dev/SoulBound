@@ -2,8 +2,18 @@
 #include "Graphics.h"
 
 // Define static variables
+std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysDown;
+std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysPressed;
+std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysReleased;
+
+std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_MOUSE_BUTTON)> InputSystem::m_mouseDown;
+std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_MOUSE_BUTTON)> InputSystem::m_mousePressed;
+std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_MOUSE_BUTTON)> InputSystem::m_mouseReleased;
+
+int InputSystem::m_currentModifiers = 0;
 float InputSystem::m_mousePosX = 0.f;
 float InputSystem::m_mousePosY = 0.f;
+
 EventDispatcher* InputSystem::m_dispatcher = nullptr;
 
 // Set up the respective callbacks with GLFW ------------------------------------------------------
@@ -39,6 +49,41 @@ void InputSystem::Update(float dt, Coordinator& coord) {
 	m_prevMousePosY = m_mousePosY;
 }
 
+// Reset the key and mouse button states at the end of every update loop / frame ------------------
+// ------------------------------------------------------------------------------------------------
+void InputSystem::ResetInputStates() {
+	// Reset states back to false
+	m_keysPressed.fill(false);
+	m_keysReleased.fill(false);
+	m_mousePressed.fill(false);
+	m_mouseReleased.fill(false);
+}
+
+// Translates GLFW key input into InputSystem's enum KeyboardKeys --------------------------------
+// ------------------------------------------------------------------------------------------------
+InputSystem::KeyboardKeys InputSystem::TranslateGLFWKeyboardKey(int glfwKey) {
+	switch (glfwKey) {
+	case GLFW_KEY_W: return KeyboardKeys::W;
+	case GLFW_KEY_A: return KeyboardKeys::A;
+	case GLFW_KEY_S: return KeyboardKeys::S;
+	case GLFW_KEY_D: return KeyboardKeys::D;
+	case GLFW_KEY_H: return KeyboardKeys::H;
+	case GLFW_KEY_SPACE: return KeyboardKeys::SPACE;
+	case GLFW_KEY_ESCAPE: return KeyboardKeys::ESC;
+	default: return KeyboardKeys::NUM_TOTAL_KEYBOARD_KEY;
+	}
+}
+
+// Translates GLFW mouse input into InputSystem's enum MouseButtons ------------------------------
+// ------------------------------------------------------------------------------------------------
+InputSystem::MouseButtons InputSystem::TranslateGLFWMouseButton(int glfwButton) {
+	switch (glfwButton) {
+	case GLFW_MOUSE_BUTTON_LEFT: return MouseButtons::LMB;
+	case GLFW_MOUSE_BUTTON_RIGHT: return MouseButtons::RMB;
+	default: return MouseButtons::NUM_TOTAL_MOUSE_BUTTON;
+	}
+}
+
 // Translate the GLFW key value to its respective InputActions ------------------------------------
 // ------------------------------------------------------------------------------------------------
 InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int modifier) {
@@ -48,10 +93,12 @@ InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int m
 	case GLFW_KEY_A: return InputEvent::InputAction::ScaleDown;
 	case GLFW_KEY_D: return InputEvent::InputAction::ScaleUp;
 	case GLFW_KEY_R: return InputEvent::InputAction::Rotate;
-	//case GLFW_KEY_SPACE: return InputEvent::InputAction::ApplyForce;
 	case GLFW_MOUSE_BUTTON_LEFT: return InputEvent::InputAction::ClickLMB;
 
-	// Number keys;
+	case GLFW_KEY_F: return InputEvent::InputAction::DynamicBallTest;
+	case GLFW_KEY_G: return InputEvent::InputAction::GravityBallTest;
+
+	// Entity keys;
 	case GLFW_KEY_1: return InputEvent::InputAction::CreateSquare;
 	case GLFW_KEY_2: return InputEvent::InputAction::CreateCircle;
 	case GLFW_KEY_3: return InputEvent::InputAction::CreateBananaCircle;
@@ -66,10 +113,14 @@ InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int m
 	case GLFW_KEY_RIGHT: return InputEvent::InputAction::PlayerMoveRight;
 	case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJump;
 
+	case GLFW_KEY_T: return InputEvent::InputAction::ToggleDebugDraw;
 
 	// Modifier keys (CTRL+S etc)
 	case GLFW_KEY_S: 
 		return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::Save : InputEvent::InputAction::NumTotalInputAction;
+	// Modifier keys (CTRL+P etc)
+	case GLFW_KEY_P: 
+		return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::PhysicsDebugMode : InputEvent::InputAction::PhysicsDebugStep;;
 
 	default: return InputEvent::InputAction::NumTotalInputAction;
 	}
@@ -91,8 +142,8 @@ void InputSystem::KeyCallback(GLFWwindow* window, int key, int scancode, int act
 	(void)window;
 
 	InputEvent::InputAction mappedAction = TranslateGLFWKeyToAction(key, mods);
-	if (mappedAction == InputEvent::InputAction::NumTotalInputAction)
-		return;
+	//if (mappedAction == InputEvent::InputAction::NumTotalInputAction)
+	//	return;
 
 	InputEvent::InputActionState mappedActionState = TranslateGLFWKeyStateToAction(action);
 
@@ -100,6 +151,22 @@ void InputSystem::KeyCallback(GLFWwindow* window, int key, int scancode, int act
 	if (m_dispatcher)
 	{
 		m_dispatcher->Dispatch(InputEvent(mappedAction, mappedActionState));
+	}
+
+	// Update the modifier state
+	m_currentModifiers = mods;
+
+	// Evalute the respective key states
+	KeyboardKeys mappedKey = TranslateGLFWKeyboardKey(key);
+	if (mappedKey == NUM_TOTAL_KEYBOARD_KEY)
+		return;
+
+	if (action == GLFW_PRESS) {
+		m_keysDown[mappedKey] = true;
+		m_keysPressed[mappedKey] = true;
+	} else if (action == GLFW_RELEASE) {
+		m_keysDown[mappedKey] = false;
+		m_keysReleased[mappedKey] = true;
 	}
 }
 
@@ -119,6 +186,22 @@ void InputSystem::MouseButtonCallback(GLFWwindow* window, int button, int action
 	{
 		m_dispatcher->Dispatch(InputEvent(mappedAction, mappedActionState));
 	}
+
+	// Update the modifier state
+	m_currentModifiers = mods;
+
+	// Evalute the respective mouse states
+	KeyboardKeys mappedButton = TranslateGLFWKeyboardKey(button);
+	if (mappedButton == NUM_TOTAL_KEYBOARD_KEY)
+		return;
+
+	if (action == GLFW_PRESS) {
+		m_mouseDown[mappedButton] = true;
+		m_mousePressed[mappedButton] = true;
+	} else if (action == GLFW_RELEASE) {
+		m_mouseDown[mappedButton] = false;
+		m_mouseReleased[mappedButton] = true;
+	}
 }
 
 // Mouse position callback function ---------------------------------------------------------------
@@ -130,6 +213,24 @@ void InputSystem::CursorPosCallback(GLFWwindow* window, double xPos, double yPos
 	m_mousePosX = static_cast<float>(xPos);
 	m_mousePosY = static_cast<float>(yPos);
 }
+
+// Queries for key states -------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+bool InputSystem::IsKeyDown(int key) const { return m_keysDown[key]; }
+bool InputSystem::IsKeyPressed(int key) const { return m_keysPressed[key]; }
+bool InputSystem::IsKeyReleased(int key) const { return m_keysReleased[key]; }
+
+// Queries for modifier key states ----------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+bool InputSystem::IsShiftDown() const { return m_currentModifiers & GLFW_MOD_SHIFT; }
+bool InputSystem::IsCtrlDown() const { return m_currentModifiers & GLFW_MOD_CONTROL; }
+bool InputSystem::IsAltDown() const { return m_currentModifiers & GLFW_MOD_ALT; }
+
+// Queries for mouse states -----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+bool InputSystem::IsMouseButtonDown(int button) const { return m_mouseDown[button]; }
+bool InputSystem::IsMouseButtonPressed(int button) const { return m_mousePressed[button]; }
+bool InputSystem::IsMouseButtonReleased(int button) const { return m_mouseReleased[button]; }
 
 // Queries for mouse position ---------------------------------------------------------------------
 // Note: Mouse position origin is from top left corner of the screen ------------------------------

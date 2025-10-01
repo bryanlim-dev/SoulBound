@@ -13,13 +13,14 @@ class InputEvent : public IEvent
 public:
 
     enum class InputAction {
-        SelectNext, // W
-        ScaleUp, // D
-        ScaleDown, // A
-        Rotate, // R
-        ApplyForce, // SPACE
-        ClickLMB, // LMB
-        Save, // CTRL + S
+        SelectNext,         // W
+        ScaleUp,            // D
+        ScaleDown,          // A
+        Rotate,             // R
+        DynamicBallTest,    // F
+        GravityBallTest,    // G
+        ClickLMB,           // LMB
+        Save,               // CTRL + S
         NumTotalInputAction,
 
         CreateSquare, // 1
@@ -34,7 +35,11 @@ public:
         PlayerMoveLeft, // Player controller with Arrow keys;
         PlayerMoveRight,
         PlayerJump,
-        ChangePlayer    // Down arrow;
+        ChangePlayer,    // Down arrow;
+
+        ToggleDebugDraw,    // T
+        PhysicsDebugMode,   // CTRL + P
+        PhysicsDebugStep    // P
 
     };
 

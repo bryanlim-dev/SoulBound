@@ -78,7 +78,6 @@ void EntityFactory::HalfEntities() {
 	size_t eligibleCount = 0;
 	for (Entity e : entities) {
 		if (e >= 10) ++eligibleCount;
-
 	}
 
 	size_t toDestroy = eligibleCount / 2;
