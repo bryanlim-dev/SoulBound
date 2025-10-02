@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        Vector.cpp
+ * Project:     NightSnack
+ * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Vec2 and Vec3 functions
+ *
+ * Description:
+ * This file defines the functionality for vec2 and vec3 classes.
+ * Handles arithmetic operators, dot and cross product, magnitude, normalization and
+ * formmatted output for debug.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Vector.h"
 
 // Vec2

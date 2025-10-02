@@ -1,3 +1,16 @@
+/******************************************************************************
+ * File:        Angle.cpp
+ * Project:     NightSnack
+ * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Created Angle functions (sin,cos,tan).
+ *
+ * Description:
+ * This file defines Angle functions such as conversion from angle to radians and back,
+ * as well as trigonometric functions like sine, cosine and tangent.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Angle.h"
 
 // Constructor

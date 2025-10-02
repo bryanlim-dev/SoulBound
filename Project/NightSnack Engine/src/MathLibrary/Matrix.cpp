@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        Matrix.cpp
+ * Project:     NightSnack
+ * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - 3x3 Matrix class
+ *
+ * Description:
+ * This file declares the 3x3 matrix class and algebra operations.
+ * Handles matrix addition, subtraction, scalar multiplication and divison, as well
+ * as matrix multiplication. Has formatted output included as well for debug.
+ * 
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Matrix.h"
 
 // Default constructor with value of 0
