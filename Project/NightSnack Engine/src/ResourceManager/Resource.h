@@ -1,3 +1,16 @@
+/******************************************************************************
+ * File:        Resource.h
+ * Project:     NightSnack
+ * Author(s):	Clement Ang Yang Ying (Primary, 100%) - Created base class and child class
+ *
+ * Description:
+ * This file contains the declarations of a base Resource class and its derived classes (Img, Sound, Json, Txt & Font)
+ * It has various functions such as loading, gettinng and unloading, etc.
+ * Some resouces have additional functions such as saving for txt or json, or converting json into a struct with maps
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 #pragma once
 
 #include <iostream>
