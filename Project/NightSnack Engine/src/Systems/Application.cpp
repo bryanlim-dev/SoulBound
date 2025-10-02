@@ -5,7 +5,7 @@
 static constexpr int REQUIRED_GL_MAJOR = 4;
 static constexpr int REQUIRED_GL_MINOR = 5;
 
-ApplicationSystem::ApplicationSystem(int width, int height, std::string const& title) {
+ApplicationSystem::ApplicationSystem(int width, int height, std::string const& title, Coordinator& coord, EventDispatcher& dispatcher) {
 	// Initialize GLFW;
 	if (!glfwInit())
 	{
@@ -55,6 +55,10 @@ ApplicationSystem::ApplicationSystem(int width, int height, std::string const& t
 	glEnable(GL_DEPTH_TEST);
 	// Depth buffer stores values in NDC [0,1], render the fragment if z is lesser/closer
 	glDepthFunc(GL_LESS); 
+
+	// Store the event dispatcher
+	m_dispatcher = &dispatcher;
+	Init(coord);
 }
 
 // Destructor -------------------------------------------------------------------------------------
@@ -64,6 +68,23 @@ ApplicationSystem::~ApplicationSystem() {
 	if (m_windowHandle) { glfwDestroyWindow(m_windowHandle); }
 	// Terminate program;
 	glfwTerminate();
+}
+
+// Init -------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+void ApplicationSystem::Init(Coordinator& Coord) {
+	
+	// Subscribe to input events
+	m_dispatcher->Subscribe<InputEvent>([this, &Coord](const InputEvent& event) {
+		if (event.pressed == InputEvent::InputActionState::Pressed) {
+			switch (event.inputAction) {
+			case InputEvent::InputAction::ToggleSystemTimers:
+				// Toggle switch for System Timers Debug Mode
+				systemTimersEnabled = !systemTimersEnabled;
+				break;
+			}
+		}
+		});
 }
 
 // Update -----------------------------------------------------------------------------------------
@@ -82,9 +103,8 @@ void ApplicationSystem::Update(float dt, Coordinator& coord) {
 		+ " | Number of Entities: " + std::to_string(livingEntities);
 
 	SetWindowTitle(GetNativeHandle(), title.c_str());
-
-	// Displaying active system timers into Console (temp.)
-	//m_timer.DisplaySystemTimers();
+	
+	if (systemTimersEnabled) { m_timer.DisplaySystemTimers(); }
 }
 
 // Set Window Title -------------------------------------------------------------------------------

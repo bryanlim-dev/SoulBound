@@ -32,6 +32,7 @@ public:
         PlayerJump,
         ChangePlayer,       // Down arrow;
 
+        ToggleSystemTimers, // Y
         ToggleDebugDraw,    // T
         PhysicsDebugMode,   // CTRL + P
         PhysicsDebugStep,   // P
