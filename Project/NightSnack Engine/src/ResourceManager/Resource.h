@@ -164,6 +164,7 @@ protected:
 	int width = 0, height = 0, channels = 0;
 
 public:
+	//Default constructor deleted
 	ResourceImage() = delete;
 	ResourceImage(const std::string& inFilePath, const std::size_t& inMapKey);
 	~ResourceImage();
@@ -189,6 +190,7 @@ protected:
 	std::vector<std::string> txtStringVec;
 
 public:
+	//Default constructor deleted
 	ResourceTxtFile() = delete;
 
 	/************************************************************************/
@@ -241,6 +243,7 @@ private:
 	std::unordered_map<std::string, Archtype> archetypeMap;
 
 public: 
+	//Default constructor deleted
 	ResourceJson() = delete;
 	ResourceJson(const std::string& inFilePath, const std::size_t& jsonKey);
 	ResourceJson(std::unordered_map<std::string, Archtype> const& newArchtypeMap, std::string newPath);
@@ -293,6 +296,7 @@ private:
 	FMOD::Sound* soundData = nullptr;
 
 public:
+	//Default constructor deleted
 	ResourceSound() = delete;
 	ResourceSound(const std::string& inFilePath, const std::size_t& inMapKey);
 	~ResourceSound();
