@@ -41,7 +41,6 @@ public:
 	void Init(GLFWwindow* window, EventDispatcher& dispatcher);
 
 	void Update(float dt, Coordinator& coord) override;
-	std::string GetName() const { return "InputSystem"; }
 	void ResetInputStates();
 
 	// Keyboard queries
@@ -65,7 +64,9 @@ public:
 	float GetMouseDeltaPosX() const;
 	float GetMouseDeltaPosY() const;
 
+	// Required by ISystem inheritance
 	Signature GetSignature() const override { return m_systemSignature; }
+	std::string GetName() const { return "InputSystem"; }
 
 private:
 

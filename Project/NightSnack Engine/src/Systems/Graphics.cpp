@@ -1,6 +1,9 @@
 #include "Graphics.h"
 #include "MathLibrary/Math.h"
 
+// Graphics system Initializations ----------------------------------------------------------------
+// All the different types of shaders, textures, meshes, materials are created and stored here ----
+// Subscribing to Input Events from the Event Dispatcher is done here too -------------------------
 void GraphicsSystem::Init(Coordinator& coord) {
 	// Default Shader;
 	auto shader = std::make_unique<Shader>("assets/shaders/vertex_shader.vert", "assets/shaders/fragment_shader.frag");
@@ -69,6 +72,8 @@ void GraphicsSystem::Init(Coordinator& coord) {
 	});
 }
 
+// Graphics System Update function ----------------------------------------------------------------
+// Rendering of all renderable entities, as well as Debug drawing visualizations are done here ----
 void GraphicsSystem::Update(float dt, Coordinator& coord) {
 	(void)dt; // dt is unused for now...
 

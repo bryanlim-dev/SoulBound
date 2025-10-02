@@ -1,4 +1,20 @@
-﻿#pragma once
+﻿/******************************************************************************
+ * File:        Graphics.h
+ * Project:     NightSnack
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Graphics System
+ *
+ * Description:
+ * This file contains the declarations of the Graphics System.
+ * It manages resources (shaders, textures, meshes, materials), prepares transformation matrices, 
+ * applies uniforms, and issues draw calls for each renderable entity in the scene.
+ * It also provides debug drawing visualization (circle and AABB collider outlines, velocity vector) 
+ * and basic scaling and rotating of a specific object via input events from the event dispatcher. 
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
+#pragma once
 
 #include <iostream>
 
@@ -14,7 +30,20 @@
 class GraphicsSystem : public ISystem {
 
 public:
-	// Default constructor to set up SystemSignature;
+	/************************************************************************/
+	/*!
+	\brief
+	Constructor for the GraphicsSystem
+	Sets up the system signatures so that this system only operates on entities 
+	that contain components (Position, Rotation, Scale, Renderable)
+
+	\param[in] coord
+	Reference to the ECS Coordinator
+
+	\param[in] dispatcher
+	Reference to the event dispatcher used for Input Events
+	*/
+	/************************************************************************/
 	GraphicsSystem(Coordinator& coord, EventDispatcher& dispatcher) : m_coord{ coord }, m_dispatcher{ &dispatcher } {
 		// The Graphics System only cares about entities with these components
 		// - Position, Rotation, Scale
@@ -31,31 +60,229 @@ public:
 		Init(coord);
 	}
 
+	/************************************************************************/
+	/*!
+	\brief
+	Initialize function 
+	All the different types of shaders, textures, meshes, materials are created here
+	Subscribing to Input Events from the Event Dispatcher is done here too
+
+	\param[in] Coord
+	Reference to the ECS Coordinator
+	*/
+	/************************************************************************/
 	void Init(Coordinator& Coord);
 
-	// Main update called by core
+	/************************************************************************/
+	/*!
+	\brief
+	Main update called by the core
+
+	\param[in] dt
+	Delta time
+
+	\param[in] coord
+	Reference to the ECS Coordinator
+	*/
+	/************************************************************************/
 	void Update(float dt, Coordinator& coord) override;
 
-	// Helper functions for Resource Creation
+	/************************************************************************/
+	/*!
+	\brief
+	Adds a new shader resource to the Graphics System
+
+	\param[in] name
+	Key name for lookup
+
+	\param[in] shader
+	Unique pointer to Shader
+	*/
+	/************************************************************************/
 	void AddShader(std::string const& name, std::unique_ptr<Shader> shader);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Adds a new texture resource to the Graphics System
+
+	\param[in] name
+	Key name for lookup
+
+	\param[in] tex
+	Unique pointer to Texture
+	*/
+	/************************************************************************/
 	void AddTexture(std::string const& name, std::unique_ptr<Texture> tex);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Adds a new mesh resource to the Graphics System
+
+	\param[in] name
+	Key name for lookup
+
+	\param[in] mesh
+	Unique pointer to Mesh
+	*/
+	/************************************************************************/
 	void AddMesh(std::string const& name, std::unique_ptr<Mesh> mesh);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Adds a new material resource to the Graphics System
+
+	\param[in] name
+	Key name for lookup
+
+	\param[in] material
+	Unique pointer to Material
+	*/
+	/************************************************************************/
 	void AddMaterial(std::string const& name, std::unique_ptr<Material> material);
 
+	/************************************************************************/
+	/*!
+	\brief
+	Builds and returns the camera's projection matrix (orthographic)
+
+	\param[in] width
+	Viewport width
+
+	\param[in] height
+	Viewport height
+
+	\return
+	Orthographic projection matrix
+	*/
+	/************************************************************************/
 	glm::mat4 GetCameraProjectionMatrix(float width, float height);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Builds and returns the Model-to-World transformation matrix
+
+	\param[in] position
+	Entity's position component
+
+	\param[in] rotation
+	Entity's rotation component
+
+	\param[in] scale
+	Entity's scale component
+
+	\param[in] layer
+	Entity's render layer, used to compute z-position
+
+	\return
+	Model-to-World transformation matrix
+	*/
+	/************************************************************************/
 	glm::mat4 GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale, RenderLayer layer);
 
-	// Resource Lookup -----------------------------------------------
+	/************************************************************************/
+	/*!
+	\brief
+	Retrieves a shader by name
+
+	\param[in] n
+	Key name for lookup
+
+	\return
+	Pointer to the Shader resource
+	*/
+	/************************************************************************/
 	Shader*		GetShader(std::string const& n)   const;	// Using raw pointers as the resource belongs to the System...
+	
+	/************************************************************************/
+	/*!
+	\brief
+	Retrieves a texture by name
+
+	\param[in] n
+	Key name for lookup
+
+	\return
+	Pointer to the Texture resource
+	*/
+	/************************************************************************/
 	Texture*	GetTexture(std::string const& n)  const;
+	
+	/************************************************************************/
+	/*!
+	\brief
+	Retrieves a mesh by name
+
+	\param[in] n
+	Key name for lookup
+
+	\return
+	Pointer to the Mesh resource
+	*/
+	/************************************************************************/
 	Mesh*		GetMesh(std::string const& n)     const;
+	
+	/************************************************************************/
+	/*!
+	\brief
+	Retrieves a material by name
+
+	\param[in] n
+	Key name for lookup
+
+	\return
+	Pointer to the Material resource
+	*/
+	/************************************************************************/
 	Material*	GetMaterial(std::string const& n) const;
 
+	/************************************************************************/
+	/*!
+	\brief
+	Finds the active main camera entity in the scene
+
+	\return
+	Entity ID of the camera
+	*/
+	/************************************************************************/
 	Entity FindCamera();
+
+	/************************************************************************/
+	/*!
+	\brief
+	Removes cached rendering data for an entity
+
+	\param[in] e
+	The entity to remove from cache
+	*/
+	/************************************************************************/
 	void RemoveCache(Entity e);
 
-	// Required by ISystem inheritance;
+	/************************************************************************/
+	/*!
+	\brief
+	Get the system's signature.
+	Required by ISystem inheritance
+
+	\return
+	Signature (set of required components)
+	*/
+	/************************************************************************/
 	Signature GetSignature() const override { return m_systemSignature; }
+	
+	/************************************************************************/
+	/*!
+	\brief
+	Gets the name of this system, for debugging purposes
+	Required by ISystem inheritance
+
+	\return
+	Name of the system
+	*/
+	/************************************************************************/
 	std::string GetName() const { return "GraphicsSystem"; }
 
 private:
@@ -74,20 +301,88 @@ private:
 	std::unordered_map<std::string, std::unique_ptr<Mesh>>     m_meshes;
 	std::unordered_map<std::string, std::unique_ptr<Material>> m_materials;
 
-	// Helper functions;
+	/************************************************************************/
+	/*!
+	\brief
+	Resolves a Renderable component into cached render data (mesh + material).
+	Looks up the mesh and material resources referenced by the Renderable component
+	of an entity. It caches those resolved pointers in m_renderCache.
+
+	\param[in] e
+	The entity whose renderable component is being processed
+
+	\param[in] r
+	The Renderable component, which contains references (names or IDs)
+	to the mesh and material resources used by the entity.
+	*/
+	/************************************************************************/
 	void ResolveRenderable(Entity e, Renderable const& r);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Compute the Z-position value based on the given render layer
+
+	\param[in] layer
+	The render layer of an entity
+
+	\return
+	A Z-position that can be applied in the model matrix
+	*/
+	/************************************************************************/
 	float GetRenderLayerZPos(RenderLayer layer);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Modifies the scale of an entity's transform
+
+	\param[in] Coord
+	Reference to the ECS Coordinator
+
+	\param[in] value
+	The scaling value to be used to multiply with its current scale
+	*/
+	/************************************************************************/
 	void ModifyEntityScale(Coordinator& Coord, float value);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Modifies the rotation of an entity's transform
+
+	\param[in] Coord
+	Reference to the ECS Coordinator
+
+	\param[in] value
+	The rotation value to be used to add to its current rotation
+	*/
+	/************************************************************************/
 	void ModifyEntityRotation(Coordinator& Coord, float value);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Converts screen-space coordinates (mouse position etc) into world-space 
+	coordinates within the current camera projection.
+
+	Useful to use for interacting with the game world using input devices.
+
+	\param[in] screenPos
+	A position in screen coordinates, the mouse cursor location.
+
+	\return
+	A Position in world coordinates
+	*/
+	/************************************************************************/
 	Position ScreenToWorld(Position const& screenPos);
 
 	bool m_enableDebugDraw{ false };
 
-	Signature m_systemSignature{};
-
 	// Viewport dimensions;
 	float Hvp, Wvp;
 
+	Signature m_systemSignature{};
 	// Reference to Coordinator;
 	Coordinator& m_coord;
 	// System event dispatcher

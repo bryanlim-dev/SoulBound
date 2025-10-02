@@ -63,6 +63,8 @@ struct PlayerController {
 // GRAPHICS COMPONENTS
 // ================================================================================================
 
+// The render layer determines the base z position of all renderable entities
+// This is to prevent z fighting glitches for all renderable entities
 enum class RenderLayer {
 	BACKGROUND = 0,
 	DEFAULT,
@@ -70,6 +72,8 @@ enum class RenderLayer {
 	UI
 };
 
+// All renderable entities will have this component
+// Each renderable will have a Mesh, Material, Shader, Texture tied to them
 struct Renderable {
 	std::string meshName{};
 	std::string materialName{};
@@ -79,6 +83,7 @@ struct Renderable {
 
 };
 
+// Only camera objects will have this component
 struct Camera {
 	bool isMainCam{ true };
 	float zoom{ 1.f };
