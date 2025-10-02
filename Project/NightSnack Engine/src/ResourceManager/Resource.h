@@ -501,14 +501,60 @@ private:
 public:
 	//Default constructor deleted
 	ResourceSound() = delete;
+	/************************************************************************/
+	/*!
+	\brief
+	Constructor of sound resource class
+	Inits a resource class that stores filepath and mapKey 
+	Does NOT open file, call LoadFile for that
+
+	\param[in] inFilePath
+	std::string const ref of the file path of the text file to open
+
+	\param[in] inMapKey
+	std::size_t const ref of the key that is used in the map to store it
+	*/
+	/************************************************************************/
 	ResourceSound(const std::string& inFilePath, const std::size_t& inMapKey);
+	/************************************************************************/
+	/*!
+	\brief
+	Destructor of ResourceSound.
+	Frees soundData if loaded
+	*/
+	/************************************************************************/
 	~ResourceSound();
 
+	/************************************************************************/
+	/*!
+	\brief
+	Loads soune from stored file path via the inputted Fmod system
+
+	\param[in] system
+	FMOD::System pointer used to load the sound file
+	*/
+	/************************************************************************/
 	void LoadFile(FMOD::System* system);
 
+
+	/************************************************************************/
+	/*!
+	\brief
+	Gets sound data
+
+	\return
+	FMOD::Sound pointer of loaded sound
+	*/
+	/************************************************************************/
 	FMOD::Sound* Sound() const;
 
 private:
+	/************************************************************************/
+	/*!
+	\brief
+	Unused hidden private function, as the load requires fmod syste,
+	*/
+	/************************************************************************/
 	void LoadFile() override {};
 
 
