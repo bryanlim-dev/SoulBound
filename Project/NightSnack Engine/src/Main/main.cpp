@@ -3,6 +3,7 @@
  * Project:     NightSnack
  * Author(s):	<NAME> (Primary, xx%) - <Comments>
  *				<NAME> (Secondary, xx%) - <Comments>
+ *				Bryan Lim Jun Jie (Secondary, 5%) - Initialized Audio system and play background audio/ click sound using H key
  *				Clement Ang Yang Ying (Secondary, 5%) - Created/Inited Resource Manager, loaded & assigned window high/width/title into application
  *
  * Description:
@@ -12,6 +13,7 @@
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
+
 #define _CRTDBG_MAP_ALLOC
 #include <cstdlib>
 #include <crtdbg.h>

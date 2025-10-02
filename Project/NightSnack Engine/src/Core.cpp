@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        Core.cpp
+ * Project:     NightSnack
+ * Author(s):	<NAME> (Primary, xx%) - <Comments>
+ *				<NAME> (Secondary, xx%) - <Comments>
+ *				Bryan Lim Jun Jie (Secondary, 5%) - pause delta time when game paused
+ *
+ * Description:
+ * 
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Core.h"
 #include "Systems/AllSystems.h"
 
