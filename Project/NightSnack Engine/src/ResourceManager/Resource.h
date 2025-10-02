@@ -255,6 +255,12 @@ public:
 	Constructor of txt resource class
 	Creates a class that stores filepath and mapKey
 	Does NOT open file, call LoadFile for that
+
+	\param[in] inFilePath
+	std::string const ref of the file path of the text file to open
+
+	\param[in] inMapKey
+	std::size_t const ref of the key that is used in the map to store it
 	*/
 	/************************************************************************/
 	ResourceTxtFile(const std::string& inFilePath, const std::size_t& inMapKey);	
@@ -264,6 +270,7 @@ public:
 	\brief
 	Constructor of txt resource class
 	Creates a class with set txtVec and path
+	Does NOT open file, call LoadFile for that
 
 	\param[in] txtVec
 	Vector of strings to store
@@ -340,10 +347,31 @@ private:
 public: 
 	//Default constructor deleted
 	ResourceJson() = delete;
+	/************************************************************************/
+	/*!
+	\brief
+	Constructor of json resource class
+	Creates a class that stores filepath and mapKey
+	Does NOT open file, call LoadFile for that
+
+	\param[in] inFilePath
+	std::string const ref of the file path of the text file to open
+
+	\param[in] jsonKey
+	std::size_t const ref of the key that is used in the map to store it
+	*/
+	/************************************************************************/
 	ResourceJson(const std::string& inFilePath, const std::size_t& jsonKey);
 	ResourceJson(std::unordered_map<std::string, Archtype> const& newArchtypeMap, std::string newPath);
 	~ResourceJson();
 
+	/************************************************************************/
+	/*!
+	\brief
+	Loads json from store file path 
+	Converts nlohmann::json into map with Archtype struct via ConvertJsonToArchtypeMap()
+	*/
+	/************************************************************************/
 	void LoadFile() override;
 	/************************************************************************/
 	/*!
@@ -354,33 +382,91 @@ public:
 	/************************************************************************/
 	void SaveFile();
 
+	/************************************************************************/
+	/*!
+	\brief
+	Gets map of std::string (key/section name) to Archtype (section data)
+
+	\return
+	std::unordered_map<std::string, Archtype> of json file
+	std::string - Key, Section Name
+	Archtype struct - Value, stores component values and any sub sections
+	*/
+	/************************************************************************/
 	std::unordered_map<std::string, Archtype> GetJson();
+	/************************************************************************/
+	/*!
+	\brief
+	Gets nlohmann::json data stored
+
+	\return
+	json data stored as type nlohmann::json
+	*/
+	/************************************************************************/
 	nlohmann::json& GetJsonRaw();
 
 private:
+	/************************************************************************/
+	/*!
+	\brief
+	Converts nlohmann::json stored into std::unordered_map of 
+	sections name (string) to Archtype struct
+	*/
+	/************************************************************************/
 	void ConvertJsonToArchtypeMap();
 
 	//Splits data in json into a archtype map
 	//May be called recurrsivly if htere is nested data
+	/************************************************************************/
+	/*!
+	\brief
+	Splits data in sectionData into a archtype map
+	May be called recurrsivly if htere is nested data
+
+	\return
+	Archtype struct of stored component data
+	*/
+	/************************************************************************/
 	Archtype SplitJsonSectionData(const nlohmann::json &sectionData);
 
 
-	//A function to print all data within the map
-	//Calls PrintMapSubArchtypeData as a recurssive function if there is nested data;
-	//This may not print data out as same format as json as all nested data is printed at end
+	/************************************************************************/
+	/*!
+	\brief
+	A function to print all data within the map
+	Calls PrintMapSubArchtypeData as a recurssive function if there is nested data;
+	This may not print data out as same format as json as all nested data is printed at end
+	*/
+	/************************************************************************/
 	void PrintJsonMapData();
 
 
-	//Prints the contents within a Archtype
-	//Is a recurrsive function to print nested archtypes
-	//This may not print data out as same format as json as all nested data is printed at end
+	/************************************************************************/
+	/*!
+	\brief
+	Prints the contents within a Archtype
+	Is a recurrsive function to print nested archtypes
+	This may not print data out as same format as json as all nested data is printed at end
+	*/
+	/************************************************************************/
 	void PrintMapSubArchtypeData(const Archtype& arch, int indents);
 
-	//Converts archtype to nlohmann::json
-	//Calls convery sub 
+	/************************************************************************/
+	/*!
+	\brief
+	Converts archtype to nlohmann::json
+	Calls ConvertSubArchtypeToJson as recurrsive function if there is nested data
+	*/
+	/************************************************************************/
 	void ConvertArchtypeToJson();
 
-	//Converts sub sections recurrsivly
+	/************************************************************************/
+	/*!
+	\brief
+	Converts archtype to nlohmann::json
+	Converts sub sections recurrsivly
+	*/
+	/************************************************************************/
 	nlohmann::json ConvertSubArchtypeToJson(Archtype const& archType);
 };
 
