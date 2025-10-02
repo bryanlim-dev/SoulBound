@@ -64,8 +64,11 @@ public:
 	\brief
 	Virtual Constructor of resource class
 
-	\param input
-	The input string of the file path
+	\param[in] inFilePath
+	std::string const ref file path of the file to load
+
+	\param[in] inMapKey
+	std::size_t const ref of the key that is used in the map to store it
 	*/
 	/************************************************************************/
 	Resource(const std::string &inFilePath, const std::size_t &inMapKey) : path(inFilePath), mapKey(inMapKey)
@@ -142,14 +145,14 @@ public:
 	*/
 	/************************************************************************/
 	virtual void LoadFile() {};
-	/************************************************************************/
-	/*!
-	\brief
-	Pure virtual function to save a file
-	Does not do anything in the base class
-	*/
-	/************************************************************************/
-	virtual void SaveFile() {};
+	///************************************************************************/
+	///*!
+	//\brief
+	//Pure virtual function to save a file
+	//Does not do anything in the base class
+	//*/
+	///************************************************************************/
+	//virtual void SaveFile() {};
 
 private:
 
@@ -166,21 +169,80 @@ protected:
 public:
 	//Default constructor deleted
 	ResourceImage() = delete;
-	ResourceImage(const std::string& inFilePath, const std::size_t& inMapKey);
-	~ResourceImage();
+	/************************************************************************/
+	/*!
+	\brief
+	Constructor of ResourceImage that handles image resources
 
+	\param[in] inFilePath
+	std::string const ref file path of the file to load
+
+	\param[in] inMapKey
+	std::size_t const ref of the key that is used in the map to store it
+	*/
+	/************************************************************************/
+	ResourceImage(const std::string& inFilePath, const std::size_t& inMapKey);
+	/************************************************************************/
+	/*!
+	\brief
+	Destructor of ResouceImage.
+	Desstoys image resource if it is loaded
+	*/
+	/************************************************************************/
+	~ResourceImage();
+	/************************************************************************/
+	/*!
+	\brief
+	Loads image resource from saved file path
+	*/
+	/************************************************************************/
 	void LoadFile() override;
 
+	/************************************************************************/
+	/*!
+	\brief
+	Gets unsigned char* of the loaded image reosurce
 
+	\return
+	Returns unsigned char* of the image
+	*/
+	/************************************************************************/
 	unsigned char* Image() const;
+	/************************************************************************/
+	/*!
+	\brief
+	Gets width of image loaded
 
+	\return
+	int of width of image
+	*/
+	/************************************************************************/
 	int Width() const { return width; }
+	/************************************************************************/
+	/*!
+	\brief
+	Gets height of image loaded
+
+	\return
+	int of height of image
+	*/
+	/************************************************************************/
 	int Height() const { return height; }
+	/************************************************************************/
+	/*!
+	\brief
+	Gets channels of image loaded
+
+	\return
+	int of channels of image
+	*/
+	/************************************************************************/
 	int Channels() const { return channels; }
 
 private:
+
 	//UNUSED FOR NOW DO NOT USE
-	void SaveFile() override;
+	//void SaveFile() override;
 };
 
 class ResourceTxtFile : public Resource
@@ -221,7 +283,7 @@ public:
 	~ResourceTxtFile();
 
 	void LoadFile() override;
-	void SaveFile() override;
+	void SaveFile();
 
 	void EditResource(std::vector<std::string> &txtVec, std::string newPath);
 
@@ -257,7 +319,7 @@ public:
 	Then saves that data into the filepath stored
 	*/
 	/************************************************************************/
-	void SaveFile() override;
+	void SaveFile();
 
 	std::unordered_map<std::string, Archtype> GetJson();
 	nlohmann::json& GetJsonRaw();
@@ -327,6 +389,6 @@ public:
 
 private:
 	void LoadFile() override {};
-	void SaveFile() override {};
+	//void SaveFile() override {};
 
 };
