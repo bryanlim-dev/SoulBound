@@ -111,7 +111,7 @@ InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int m
 	case GLFW_KEY_RIGHT: return InputEvent::InputAction::PlayerMoveRight;
 	case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJump;
 
-	case GLFW_KEY_Y: return InputEvent::InputAction::ToggleSystemTimers;
+	case GLFW_KEY_TAB: return InputEvent::InputAction::ToggleSystemTimers;
 	case GLFW_KEY_T: return InputEvent::InputAction::ToggleDebugDraw;
 	case GLFW_KEY_C: return InputEvent::InputAction::CrashTest;
 
