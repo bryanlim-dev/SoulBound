@@ -34,9 +34,6 @@
 
 int main()
 {
-	// OS-level exception handler
-	CrashLogger::InstallGlobalHandler(); 
-
 	try
 	{
 		// Enable memory leak checking at program exit
