@@ -7,6 +7,7 @@
  * This file contains the declarations of a base Resource class and its derived classes (Img, Sound, Json, Txt & Font)
  * It has various functions such as loading, gettinng and unloading, etc.
  * Some resouces have additional functions such as saving for txt or json, or converting json into a struct with maps
+ * It also has enum to diffreinate differnt types sor resources
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.

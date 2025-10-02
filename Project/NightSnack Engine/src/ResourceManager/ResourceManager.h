@@ -1,3 +1,18 @@
+/******************************************************************************
+ * File:        ResourceManager.h
+ * Project:     NightSnack
+ * Author(s):	Clement Ang Yang Ying (Primary, 100%) - Created manager class and logic
+ *
+ * Description:
+ * This file contains the declarations of a ResourceManager class, that manages Resouorce pointers
+ * It saves/creates Resources and puts them in a different map depending on the resource type.
+ * The key to the pointers made using the string of the file path and returning it to the caller.
+ * When unloading Resources, it flags the Resource with a bool within the that class and unloads them all within update.
+ * Each Resource has its own functions to interact with it (get/load/unload/etc.)
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 #pragma once
 #include <iostream>
 #include <string>
