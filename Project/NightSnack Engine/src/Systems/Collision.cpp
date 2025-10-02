@@ -1,3 +1,18 @@
+/******************************************************************************
+ * File:        Collision.cpp
+ * Project:     NightSnack
+ * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - 
+ *
+ * Description:
+ * This file defines the collision system. It handles collision detection
+ * and response with entities in the game. It supports dynamic and static
+ * collision checks such as circle and circle, AABB and AABB, circle and AABB etc
+ * Handles collision responses such as velocity flips and dampening.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Collision.h"
 #include <cmath>
 #include <iostream>
