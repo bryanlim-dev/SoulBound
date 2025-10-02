@@ -41,15 +41,19 @@ class Resource
 {
 protected:
 
+	//Key to the map in resourcemanager
 	std::size_t mapKey = 0 ;
 
 	//Path of the file
 	std::string path = "";
 
+	//Type of resource
 	RESOURCE_TYPE resourceType = RESOURCE_NONE;
 
+	//Is this resource loaded
 	bool resourceLoaded = false;
 
+	//This flag is to check if it will be deleted next cycle
 	bool flaggedForDeletion = false;
 
 public:
@@ -67,19 +71,84 @@ public:
 	Resource(const std::string &inFilePath, const std::size_t &inMapKey) : path(inFilePath), mapKey(inMapKey)
 	{
 	};
+
+	/************************************************************************/
+	/*!
+	\brief
+	Virtual Destructor of resource class
+	*/
+	/************************************************************************/
 	virtual ~Resource();
 
 
+	/************************************************************************/
+	/*!
+	\brief
+	Returns if the resosurce loaded or not.
+
+	\return
+	bool of var isLoaded
+	true - Resource is loaded
+	false - Resource is not loaded
+	*/
+	/************************************************************************/
 	bool Loaded() const;
+	/************************************************************************/
+	/*!
+	\brief
+	Returns filepath of the resource
+
+	\return
+	std::string filepath of the resource
+	*/
+	/************************************************************************/
 	std::string Path() const;
+	/************************************************************************/
+	/*!
+	\brief
+	Returns key to the map used to store this resource
 
+	\return
+	std::size_t of the key of the key-pair value in the map used to store this
+	*/
+	/************************************************************************/
 	std::size_t MapKey() const;
+	/************************************************************************/
+	/*!
+	\brief
+	Returns refrence to the bool of is the Resource is flagged for deletion next cycle
 
+	\return
+	bool refrennce of vara flaggedForDeletion
+	*/
+	/************************************************************************/
 	bool& FlaggedForDeletion();
+	/************************************************************************/
+	/*!
+	\brief
+	Returns enum RESOURCE_TYPE of the type resource this class is
 
+	\return
+	RESOURCE_TYPE enum of the resource type class is
+	*/
+	/************************************************************************/
 	RESOURCE_TYPE FileType() const;
 
+	/************************************************************************/
+	/*!
+	\brief
+	Pure virtual function to load a file
+	Does not do anything in the base class
+	*/
+	/************************************************************************/
 	virtual void LoadFile() {};
+	/************************************************************************/
+	/*!
+	\brief
+	Pure virtual function to save a file
+	Does not do anything in the base class
+	*/
+	/************************************************************************/
 	virtual void SaveFile() {};
 
 private:
