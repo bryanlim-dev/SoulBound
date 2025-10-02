@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        main.h
+ * Project:     NightSnack
+ * Author(s):	<NAME> (Primary, xx%) - <Comments>
+ *				<NAME> (Secondary, xx%) - <Comments>
+ *				Clement Ang Yang Ying (Secondary, 5%) - Created/Inited Resource Manager, loaded & assigned window high/width/title into application
+ *
+ * Description:
+ * This file contains the main function.
+ * It creates uhhhh fill this in someone else pls
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 #define _CRTDBG_MAP_ALLOC
 #include <cstdlib>
 #include <crtdbg.h>
