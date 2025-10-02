@@ -1,7 +1,7 @@
 /******************************************************************************
  * File:        Collision.cpp
  * Project:     NightSnack
- * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - 
+ * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Collision system with respective entity response
  *
  * Description:
  * This file defines the collision system. It handles collision detection
