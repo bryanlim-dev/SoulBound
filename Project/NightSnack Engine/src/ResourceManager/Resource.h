@@ -145,13 +145,7 @@ public:
 	*/
 	/************************************************************************/
 	virtual void LoadFile() {};
-	///************************************************************************/
-	///*!
-	//\brief
-	//Pure virtual function to save a file
-	//Does not do anything in the base class
-	//*/
-	///************************************************************************/
+
 	//virtual void SaveFile() {};
 
 private:
@@ -279,14 +273,53 @@ public:
 	*/
 	/************************************************************************/
 	ResourceTxtFile(std::vector<std::string>& txtVec, std::string newPath);
-
+	/************************************************************************/
+	/*!
+	\brief
+	Destructor of ResouceTxt.
+	Desstoys txt file resource if it is loaded
+	*/
+	/************************************************************************/
 	~ResourceTxtFile();
-
+	/************************************************************************/
+	/*!
+	\brief
+	Loads txt file resource from saved file path
+	*/
+	/************************************************************************/
 	void LoadFile() override;
+	/************************************************************************/
+	/*!
+	\brief
+	Saved image resource to stored file path
+	*/
+	/************************************************************************/
 	void SaveFile();
+	/************************************************************************/
+	/*!
+	\brief
+	Edited stored data within resource class
 
+	\param[in] txtVec
+	std::vector of std::strings of the new txt
+	Each string is a new line
+
+	\param[in] newPath
+	std::string of new path/name of file
+	*/
+	/************************************************************************/
 	void EditResource(std::vector<std::string> &txtVec, std::string newPath);
 
+	/************************************************************************/
+	/*!
+	\brief
+	Gets std::vector of std::string of info within txt resource class
+
+	\return
+	std::vector of std::string of text
+	Each std::string within the vector is a new line of text
+	*/
+	/************************************************************************/
 	std::vector<std::string> TextStringVec() const;
 
 private:
