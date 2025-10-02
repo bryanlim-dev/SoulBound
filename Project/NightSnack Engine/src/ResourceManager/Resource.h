@@ -288,6 +288,7 @@ public:
 	*/
 	/************************************************************************/
 	~ResourceTxtFile();
+	
 	/************************************************************************/
 	/*!
 	\brief
@@ -362,7 +363,28 @@ public:
 	*/
 	/************************************************************************/
 	ResourceJson(const std::string& inFilePath, const std::size_t& jsonKey);
+	/************************************************************************/
+	/*!
+	\brief
+	Constructor of json resource class
+	Creates a class that stores filepath and mapKey
+	Does NOT open file, call LoadFile for that
+
+	\param[in] newArchtypeMap
+	std::unordered_map<std::string, Archtype> of section name (key) to the Archtype struct of data
+
+	\param[in] newPath
+	std::string const ref of the file path stored
+
+	*/
+	/************************************************************************/
 	ResourceJson(std::unordered_map<std::string, Archtype> const& newArchtypeMap, std::string newPath);
+	/************************************************************************/
+	/*!
+	\brief
+	Destructor of ResourceJson.
+	*/
+	/************************************************************************/
 	~ResourceJson();
 
 	/************************************************************************/
