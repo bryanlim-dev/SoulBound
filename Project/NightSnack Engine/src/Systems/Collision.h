@@ -1,7 +1,7 @@
 /******************************************************************************
  * File:        Collision.h
  * Project:     NightSnack
- * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Collision system with dynamic and static collision
+ * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Collision system with respective entity response
  *
  * Description:
  * This file declares the collision system. It handles collision detection
