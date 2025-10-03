@@ -164,13 +164,15 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
 }
 
 // Checks if velocity needs to be flipped;
-bool CollisionSystem::ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt) {
+bool CollisionSystem::ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt) 
+{
     float newpos = pos1 + vel1 * dt;
     float distsq = (pos2 - pos1) * (pos2 - pos1);
     float newdistsq = (pos2 - newpos) * (pos2 - newpos);
 
     // If the current velocity will bring the two objects closer;
-    if (newdistsq < distsq) {
+    if (newdistsq < distsq) 
+    {
         // Should flip the velocity;
         return true;
     }
