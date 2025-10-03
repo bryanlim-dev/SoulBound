@@ -20,7 +20,6 @@
 class CrashLogger 
 {
 public:
-    static void InstallGlobalHandler();
     static void LogCrash(const IException& ex) noexcept 
     {
         try 
@@ -57,6 +56,12 @@ public:
         {
             // Exception safety: do nothing if logging fails
         }
+    }
+
+    static void ForceCrash(const std::string& message = "Forced crash for testing")
+    {
+        IException ex(message, ExceptionType::General, __FILE__);
+        throw ex;
     }
 };
 
