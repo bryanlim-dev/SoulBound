@@ -1,10 +1,15 @@
 /******************************************************************************
  * File:        Mesh.cpp
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Mesh class
  *
  * Description:
- *
+ * This Mesh class represents renderable geometry data.
+ * A Mesh stores vertex, index and primitive information and sets up the OpenGL 
+ * VAO, VBO, and optional EBO. 
+ * It also provides helper functions for creating shapes such as points, lines, 
+ * rectangles, circles. 
+ * 
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
@@ -14,9 +19,6 @@
 
 #include <GLFW/glfw3.h>
 
-// Construct a Mesh with the actual geometry data -------------------------------------------------
-// Sets up the VAO, VBO, and EBO for rendering ----------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 Mesh::Mesh(GLenum primitiveType,
 	std::vector<Vertex> const& vertices,
 	std::vector<unsigned int> const& indices)
@@ -55,7 +57,7 @@ Mesh::Mesh(GLenum primitiveType,
 			indices.size() * sizeof(unsigned int),
 			indices.data(), 0);
 
-		// --- Try DSA binding first ---
+		// Try DSA binding first
 		glVertexArrayElementBuffer(m_vao, m_ebo);
 
 		// Verify binding
@@ -75,8 +77,6 @@ Mesh::Mesh(GLenum primitiveType,
 
 }
 
-// Destructor -------------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 Mesh::~Mesh() {
 	if (m_ebo)
 		glDeleteBuffers(1, &m_ebo);
@@ -86,11 +86,10 @@ Mesh::~Mesh() {
 		glDeleteVertexArrays(1, &m_vao);
 }
 
-// Render the mesh according to its primitive type ------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 void Mesh::Draw() const {
 	glBindVertexArray(m_vao);
 
+	// Call the correct draw call based on the primitive type
 	switch (m_primitiveType) {
 	case GL_POINTS:
 		glPointSize(10.f);
@@ -117,8 +116,6 @@ void Mesh::Draw() const {
 	glBindVertexArray(0);
 }
 
-// Helper function to create a mesh representing a point at the center of the screen --------------
-// ------------------------------------------------------------------------------------------------
 std::unique_ptr<Mesh> Mesh::CreatePoint() {
 	// Default position is at the center of the screen
 	std::vector<Vertex> vertices{
@@ -130,8 +127,6 @@ std::unique_ptr<Mesh> Mesh::CreatePoint() {
 	return std::make_unique<Mesh>(GL_POINTS, vertices, std::vector<unsigned int>{});
 }
 
-// Helper function to create a mesh representing a line pointing upwards by default ---------------
-// ------------------------------------------------------------------------------------------------
 std::unique_ptr<Mesh> Mesh::CreateLine(const glm::vec3& startPos, const glm::vec3& endPos) {
 	std::vector<Vertex> vertices{
 		{ startPos, glm::vec2(0.f, 0.f) }, // dummy texCoord
@@ -142,8 +137,6 @@ std::unique_ptr<Mesh> Mesh::CreateLine(const glm::vec3& startPos, const glm::vec
 	return std::make_unique<Mesh>(GL_LINES, vertices, std::vector<unsigned int>{});
 }
 
-// Helper function to create a mesh representing a rectangle at the center of the screen ----------
-// ------------------------------------------------------------------------------------------------
 std::unique_ptr<Mesh> Mesh::CreateSquare() {
 	// Default position is at the center of the screen
 	// Order of texCoords must follow the order of vertices
@@ -160,8 +153,6 @@ std::unique_ptr<Mesh> Mesh::CreateSquare() {
 	return std::make_unique<Mesh>(GL_TRIANGLES, vertices, indices);
 }
 
-// Helper function to create a mesh representing a circle at the center of the screen -------------
-// ------------------------------------------------------------------------------------------------
 std::unique_ptr<Mesh> Mesh::CreateCircle() {
 	glm::vec3 centerPos{ 0.f, 0.f, 0.f };
 	const float radius{ 1.f };
@@ -189,7 +180,6 @@ std::unique_ptr<Mesh> Mesh::CreateCircle() {
 	return std::make_unique<Mesh>(GL_TRIANGLE_FAN, vertices, std::vector<unsigned int>{});
 }
 
-// DEBUG DRAWING MESHES
 std::unique_ptr<Mesh> Mesh::CreateAABBMesh() {
 	// Default position is at the center of the screen
 	// Order of texCoords must follow the order of vertices

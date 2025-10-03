@@ -1,9 +1,12 @@
 /******************************************************************************
  * File:        Texture.cpp
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Texture class
  *
  * Description:
+ * This Texture class loads image data from the ResourceManager.
+ * It then creates an OpenGL 2D texture and configures default parameters.
+ * There are helper functions for binding and getting texture properties.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -11,8 +14,6 @@
 
 #include "Texture.h"
 
-// Constructor to create an OpenGL texture --------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 Texture::Texture(std::string textureImage) {
 
 	if (textureImage.empty()) {
@@ -49,28 +50,20 @@ Texture::Texture(std::string textureImage) {
 
 }
 
-// Destructor -------------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 Texture::~Texture() {
 	if (m_texID != 0)
 		glDeleteTextures(1, &m_texID);
 }
 
-// Binds the texture to the specified texture unit ------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 void Texture::Bind(GLuint unit) const {
 	glActiveTexture(GL_TEXTURE0 + unit);
 	glBindTexture(GL_TEXTURE_2D, m_texID);
 }
 
-// Get the texture ID -----------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 GLuint Texture::GetID() const { 
 	return m_texID;
 }
 
-// Get whether this texture has an Alpha component ------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 bool Texture::HasAlpha() const { 
 	return m_hasAlphaComponent; 
 }

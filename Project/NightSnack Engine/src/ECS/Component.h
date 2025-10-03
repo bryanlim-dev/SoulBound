@@ -1,7 +1,9 @@
 /******************************************************************************
  * File:        Component.h
  * Project:     NightSnack
- * Author(s):	
+ * Author(s):	<NAME> (Primary, xx%) - <Comments>
+ *				<NAME> (Secondary, xx%) - <Comments>
+ *				Goh Bei Lai (Secondary, 15%) - Created Graphics components (RenderLayer, Renderable, Camera)
  *
  * Description:
  *
@@ -116,9 +118,9 @@ enum class ColliderType {
 };
 
 struct Collider {
-	ShapeType shape;     // AABB or Circle
-	ColliderType type;   // Solid or Trigger
-	bool isStatic;       // true = immovable (walls), false = dynamic (player)
+    ShapeType shape{ ShapeType::AABB };     // AABB or Circle
+    ColliderType type{ ColliderType::Solid };   // Solid or Trigger
+    bool isStatic{ true };       // true = immovable (walls), false = dynamic (player)
 
 	// Shape data
 	float width{ 1.0f };   // AABB width
