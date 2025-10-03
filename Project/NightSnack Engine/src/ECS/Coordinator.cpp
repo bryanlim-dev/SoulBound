@@ -1,9 +1,10 @@
 /******************************************************************************
  * File:        Coordinator.cpp
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Chewn Thing Kwan (Primary, 100%)
  *
  * Description:
+ * Defines all member functions (non-templated) of Coordinator ECS interface.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -19,13 +20,6 @@ void Coordinator::Initialize(/*EventDispatcher disp*/) /*: m_dispatcher{disp}*/ 
 	m_componentManager = std::make_unique<ComponentManager>();
 
 }
-
-//void Coordinator::Update(float deltaTime) {
-//	// Update all Systems through System Manager;
-//	for (auto& pair : System_M->Systems) {
-//		pair.second->Update(deltaTime);
-//	}
-//}
 
 // ------------------------------------------------------------------------------------------------
 // ECS INTERFACE;

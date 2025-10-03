@@ -10,7 +10,7 @@
  * This file contains the main function.
  * This file is the main entry point of the NightSnack Engine
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -90,6 +90,15 @@ int main()
 			std::cout << "Failed to initialize AudioSystem!" << std::endl;
 			return -1;
 		}
+
+		// FMOD warning: FMOD_ErrorString is currently unused for now...
+#ifdef _DEBUG
+		(void)FMOD_ErrorString(FMOD_OK);
+#endif
+
+
+		//Crash Logger test message
+		//throw THROW_IEXCEPTION("This is a real crash test from main!", ExceptionType::General);
 
 		////Replace this with actual sound manager later
 		//FMOD::System* fmodSystem = nullptr;

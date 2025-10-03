@@ -1,9 +1,10 @@
 /******************************************************************************
  * File:        EntityFactory.cpp
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Chewn Thing Kwan
  *
  * Description:
+ * Defines member functions of EntityFactory class.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -12,11 +13,11 @@
 #include "EntityFactory.h"
 #include "Systems/Graphics.h"
 
+// unused for now...
 void EntityFactory::Update(float dt, Coordinator& coord) {
 
 	(void)coord;
-	static float time{};
-	time += dt;
+	(void)dt;
 
 }
 
@@ -58,14 +59,16 @@ Entity EntityFactory::Clone(Entity e, Transform trans) {
 }
 
 void EntityFactory::DoubleEntities() {
+	// seed for rand;
 	srand(69);
-
+	// current number of live entities;
 	size_t currNum = m_coord.GetLivingEntities().size();
 	int Hvp = m_coord.GetWindowHeight();
 	int Wvp = m_coord.GetWindowWidth();
 
 	std::vector<std::string> prefabs{ "Square", "Circle", "Player"};
 
+	// double the number of living entities with random transforms;
 	for (size_t i{}; i < currNum && (currNum + i) < MAX_ENTITIES; ++i) {
 		Position pos = { static_cast<float>(rand() % Wvp - Wvp / 2),
 		static_cast<float>(rand() % Hvp - Hvp / 2) };
@@ -73,7 +76,8 @@ void EntityFactory::DoubleEntities() {
 		Scale scale = { static_cast<float>(rand() % 50 + 15), static_cast<float>(rand() % 50 + 15) };
 
 		Transform trans{ pos, rot, scale };
-
+		
+		// create from a random prefab;
 		Create(prefabs[i%3], trans);
 	}
 }
@@ -88,6 +92,7 @@ void EntityFactory::HalfEntities() {
 	// count only eligible entities (skip default scene)
 	size_t eligibleCount = 0;
 	for (Entity e : entities) {
+		// entities 0-10 are the default scene, which we do not want to remove for testing purposes...
 		if (e >= 10) ++eligibleCount;
 	}
 

@@ -1,9 +1,12 @@
 /******************************************************************************
  * File:        ISystem.h
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Chewn Thing Kwan
  *
  * Description:
+ * Defines two classes: Base system class "ISystem" and SystemManager.
+ * 
+ * SystemManager handles all operations relating to Systems in the ECS core.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -36,6 +39,75 @@ public:
 
 };
 
+class SystemManager {
+
+public:
+	/************************************************************************/
+	/*!
+	\brief
+	Constructs a system with args and inserts it and its signature into
+	m_systems and m_signatures respectively.
+
+	\return
+	Returns a shared_ptr to the constructed system.
+	*/
+	/************************************************************************/
+	template <typename T, typename... Args>
+	std::shared_ptr<T> RegisterSystem(Args&&... args);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Iterates through all systems and remove Entity e from their set of
+	m_entities (the entities that they work on).
+
+	\param e
+	Entity
+	*/
+	/************************************************************************/
+	void EntityDestroyed(Entity e);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Updates all systems' m_entities after an Entity's signature has been
+	changed (systems should only work on entities that have all required components).
+
+	\param e
+	Entity
+	\param entitySig
+	Signature of entity e.
+	*/
+	/************************************************************************/
+	void EntitySignatureChanged(Entity e, Signature entitySig);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains the signature of an individual system.
+
+	\return
+	Signature of system.
+	*/
+	/************************************************************************/
+	template <typename T>
+	Signature GetSystemSignature();
+
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains 
+	*/
+	/************************************************************************/
+	template <typename T>
+	std::shared_ptr<T> GetSystem();
+
+private:
+	std::unordered_map<SystemID, Signature> m_signatures;
+	std::unordered_map<SystemID, std::shared_ptr<ISystem>> m_systems;
+
+};
+
 // Get Unique ID for System upon Registering System;
 // Inline is to prevent multiple definition error, as this function is defined
 // in a header file;
@@ -58,29 +130,6 @@ inline SystemID GetSystemID() noexcept {
 	return typeID;
 }
 
-class SystemManager {
-
-public:
-	template <typename T, typename... Args>
-	std::shared_ptr<T> RegisterSystem(Args&&... args);
-
-	template <typename T>
-	void SetSignature(Signature sig);
-
-	void EntityDestroyed(Entity e);
-
-	void EntitySignatureChanged(Entity e, Signature entitySig);
-
-	template <typename T>
-	Signature GetSystemSignature();
-	template <typename T>
-	std::shared_ptr<T> GetSystem();
-
-	std::unordered_map<SystemID, Signature> m_signatures;
-	std::unordered_map<SystemID, std::shared_ptr<ISystem>> m_systems;
-
-};
-
 
 // Register a System of type T into the SystemManager;
 template <typename T, typename... Args>
@@ -98,17 +147,6 @@ std::shared_ptr<T> SystemManager::RegisterSystem(Args&&... args) {
 
 	// Return a smart pointer to system registered;
 	return system;
-
-}
-
-// Obtain a Signature using type_index and insert Signature into unordered Map of Signatures;
-template <typename T>
-void SystemManager::SetSignature(Signature sig) {
-
-	// Obtain type index for mapping;
-	SystemID typeIdx = GetSystemID<T>();
-	// Now sig is linked with typeIdx and System<T> pointer stored in Systems unordered map;
-	m_signatures[typeIdx] = sig;
 
 }
 

@@ -1,9 +1,11 @@
 /******************************************************************************
  * File:        PrefabManager.h
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Chewn Thing Kwan
  *
  * Description:
+ * Defines PrefabManager class that stores component loaders that assist in
+ * creation of entities from prefabs.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -27,6 +29,14 @@ using ComponentLoader = std::function<void(Entity, json const&, Coordinator&)>;
 
 class PrefabManager {
 public:
+	/************************************************************************/
+	/*!
+	\brief
+	Constructor that calls Initialize() to register all component loaders and
+	stores them in m_componentLoaders.
+	They are mapped from string to component loader type ("Position" -> <Postion>).
+	*/
+	/************************************************************************/
 	PrefabManager(Coordinator& coord) : m_coord{ coord } { Initialize(); }
 
 	void Initialize() {
@@ -57,7 +67,23 @@ public:
 			};
 	}
 
-	// Create entity with prefabname and json of archetypes; CreateFromPrefab("Player", archetypes);
+	/************************************************************************/
+	/*!
+	\brief
+	Create entity with prefabname and json of archetypes
+	e.g: CreateFromPrefab("Player", archetypes)
+	Adds all components of prefab to created entity with the usage of component
+	loaders.
+
+	\param prefabName
+	Name of desired prefab.
+	\param archetypes
+	Container of prefabs.
+
+	\return
+	ID of created entity.
+	*/
+	/************************************************************************/
 	Entity CreateFromPrefab(std::string const& prefabName, json const& archetypes) {
 		// Create a new entity using coordinator;
 		Entity e = m_coord.CreateEntity();

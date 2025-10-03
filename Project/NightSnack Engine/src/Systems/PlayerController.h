@@ -1,9 +1,11 @@
 /******************************************************************************
  * File:        PlayerController.h
  * Project:     NightSnack
- * Author(s):
+ * Author(s):   Chewn Thing Kwan
  *
  * Description:
+ * Controls the Player Entity and sets their Velocity component when key inputs
+ * are detected.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -19,6 +21,18 @@
 class PlayerControllerSystem : public ISystem {
 
 public:
+    /************************************************************************/
+    /*!
+    \brief
+    Constructor for PlayerControllerSystem class taht sets up the system's
+    signature and initializes the current player (m_player).
+
+    \param coord
+    Reference to the Coordinator.
+    \param disp
+    Reference to the Event Dispatcher.
+    */
+    /************************************************************************/
     PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_dispatcher{ &disp } {
         // Physics components of interest;
         m_systemSignature.set(GetComponentTypeID<PlayerController>());
@@ -30,6 +44,18 @@ public:
         m_player = FindPlayer(coord);
     }
 
+    /************************************************************************/
+    /*!
+    \brief
+    Updates the current player.
+    Sets Velocity component of Player entity when Inputs are triggered.
+
+    \param dt
+    delta time.
+    \param coord
+    Reference to Coordinator.
+    */
+    /************************************************************************/
     void Update(float dt, Coordinator& coord) override {
         (void)dt;
         
@@ -52,6 +78,18 @@ public:
         }
     }
 
+    /************************************************************************/
+    /*!
+    \brief
+    Finds the current Player Entity.
+
+    \param coord
+    Reference to Coordinator.
+
+    \return
+    The ID of the current Player Entity.
+    */
+    /************************************************************************/
     Entity FindPlayer(Coordinator& coord) {
         // Camera Signature (only have components Camera and Tranform)
         Signature playerSig;
@@ -78,6 +116,7 @@ public:
         return INVALID_ENTITY;
     }
 
+    // Required by ISystem base class.
     std::string GetName() const override { return "PlayerController"; }
     Signature GetSignature() const override { return m_systemSignature; }
 
