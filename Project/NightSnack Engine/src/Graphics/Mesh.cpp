@@ -1,3 +1,14 @@
+/******************************************************************************
+ * File:        Mesh.cpp
+ * Project:     NightSnack
+ * Author(s):
+ *
+ * Description:
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Mesh.h"
 #include <iostream>
 

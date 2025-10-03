@@ -1,3 +1,14 @@
+/******************************************************************************
+ * File:        Texture.cpp
+ * Project:     NightSnack
+ * Author(s):
+ *
+ * Description:
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Texture.h"
 
 // Constructor to create an OpenGL texture --------------------------------------------------------

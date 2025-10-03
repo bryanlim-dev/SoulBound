@@ -1,3 +1,14 @@
+/******************************************************************************
+ * File:        Material.cpp
+ * Project:     NightSnack
+ * Author(s):
+ *
+ * Description:
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Material.h"
 
 Material::Material(Shader* shader, Texture* texture)

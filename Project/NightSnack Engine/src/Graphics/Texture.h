@@ -1,3 +1,14 @@
+/******************************************************************************
+ * File:        Texture.h
+ * Project:     NightSnack
+ * Author(s):
+ *
+ * Description:
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
