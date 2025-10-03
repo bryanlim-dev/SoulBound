@@ -1,8 +1,8 @@
 /******************************************************************************
  * File:        Component.h
  * Project:     NightSnack
- * Author(s):	<NAME> (Primary, xx%) - <Comments>
- *				<NAME> (Secondary, xx%) - <Comments>
+ * Author(s):	Chewn Thing Kwan (Primary) - Created basic components | Defined json 
+                overloads for reading components
  *				Goh Bei Lai (Secondary, 15%) - Created Graphics components (RenderLayer, Renderable, Camera)
  *
  * Description:

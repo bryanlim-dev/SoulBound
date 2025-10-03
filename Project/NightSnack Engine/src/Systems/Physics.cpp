@@ -1,7 +1,7 @@
 /******************************************************************************
  * File:        Physics.cpp
  * Project:     NightSnack
- * Author(s):	Chewn Thing Kwan (Primary)
+ * Author(s):	Chewn Thing Kwan (Primary, 88%) - Defined PhysicsSystem member functions
  *				Lim Wei Jie (Secondary, 12%) - Skips Physics updates when in
  *				debug mode unless a step is requested via InputEvent
  *

@@ -1,9 +1,7 @@
 /******************************************************************************
  * File:        main.cpp
  * Project:     NightSnack
- * Author(s):	<NAME> (Primary, xx%) - <Comments>
- *				<NAME> (Secondary, xx%) - <Comments>
- *				Bryan Lim Jun Jie (Secondary, 5%) - Initialized Audio system and play background audio/ click sound using H key
+ * Author(s):	Bryan Lim Jun Jie (Secondary, 5%) - Initialized Audio system and play background audio/ click sound using H key
  *				Clement Ang Yang Ying (Secondary, 5%) - Created/Inited Resource Manager, loaded & assigned window high/width/title into application
  *
  * Description:
@@ -95,7 +93,6 @@ int main()
 #ifdef _DEBUG
 		(void)FMOD_ErrorString(FMOD_OK);
 #endif
-
 
 		//Crash Logger test message
 		//throw THROW_IEXCEPTION("This is a real crash test from main!", ExceptionType::General);
