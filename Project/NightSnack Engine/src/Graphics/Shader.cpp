@@ -1,9 +1,11 @@
 /******************************************************************************
  * File:        Shader.cpp
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Shader class
  *
  * Description:
+ * This Shader class is the Shader Manager, where it loads GLSL source files like the 
+ * vertex and fragment shaders, and compile and link them into a program. 
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -16,8 +18,6 @@
 #include <sstream>
 #include <iostream>
 
-// Load, compile and link shaders into an OpenGL program ------------------------------------------
-// ------------------------------------------------------------------------------------------------
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
 	// Load GLSL source code from files
 	std::string vsSrc = LoadFile(vertexPath);
@@ -35,27 +35,19 @@ Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
 	glDeleteShader(fs);
 }
 
-// Destructor -------------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 Shader::~Shader() {
 	if (programID)
 		glDeleteProgram(programID);
 }
 
-// Use or make this shader program active for draw calls ------------------------------------------
-// ------------------------------------------------------------------------------------------------
 void Shader::Use() const {
 	glUseProgram(programID);
 }
 
-// Get the OpenGL program ID ----------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 GLuint Shader::GetID() const {
 	return programID;
 }
 
-// Reads a shader source file into a string -------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 std::string Shader::LoadFile(const std::string& path) {
 
 	std::ifstream file(path);
@@ -63,16 +55,15 @@ std::string Shader::LoadFile(const std::string& path) {
 	if (!file.is_open())
 		throw std::runtime_error("Failed to open Shader File: " + path);
 	
+	// Read and loads the contents of the shader source file into a string
 	std::stringstream ss;
 	ss << file.rdbuf();
 	file.close();
 	return ss.str();
 }
 
-// Compiles GLSL source code into a shader object -------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 GLuint Shader::CompileShader(const std::string& src, GLenum type) {
-
+	// Compile the GLSL source code into an OpenGL shader object
 	GLuint shader = glCreateShader(type);
 	const char* csrc = src.c_str();
 	glShaderSource(shader, 1, &csrc, nullptr);
@@ -90,10 +81,8 @@ GLuint Shader::CompileShader(const std::string& src, GLenum type) {
 	return shader;
 }
 
-// Links the compiled shaders into a single program -----------------------------------------------
-// ------------------------------------------------------------------------------------------------
 void Shader::LinkProgram(GLuint vs, GLuint fs) {
-
+	// Link the compiled vertex and fragment shaders into a single OpenGL program
 	programID = glCreateProgram();
 	glAttachShader(programID, vs);
 	glAttachShader(programID, fs);
@@ -109,30 +98,32 @@ void Shader::LinkProgram(GLuint vs, GLuint fs) {
 	}
 }
 
-// Helper function to upload a 4x4 Matrix uniform to the shader program ---------------------------
-// ------------------------------------------------------------------------------------------------
 void Shader::SetMat4(const std::string& name, const glm::mat4& mat) const {
 	GLint location = glGetUniformLocation(programID, name.c_str());
 	glUniformMatrix4fv(location, 1, GL_FALSE, &mat[0][0]);
 }
 
-// Helper function to upload a 3x3 Matrix uniform to the shader program ---------------------------
-// ------------------------------------------------------------------------------------------------
 void Shader::SetMat3(const std::string& name, const glm::mat3& mat) const {
 	GLint location = glGetUniformLocation(programID, name.c_str());
 	glUniformMatrix3fv(location, 1, GL_FALSE, &mat[0][0]);
 }
 
-// Helper function to upload a vec3 uniform to the shader program ---------------------------------
-// ------------------------------------------------------------------------------------------------
 void Shader::SetVec3(const std::string& name, const glm::vec3& value) const {
 	GLint location = glGetUniformLocation(programID, name.c_str());
 	glUniform3fv(location, 1, &value[0]);
 }
 
-// Helper function to upload an Int uniform to the shader program ---------------------------------
-// ------------------------------------------------------------------------------------------------
 void Shader::SetInt(const std::string& name, int value) const {
 	GLint location = glGetUniformLocation(programID, name.c_str());
 	glUniform1i(location, value);
+}
+
+void Shader::SetBool(const std::string& name, bool value) const {
+	GLint location = glGetUniformLocation(programID, name.c_str());
+	glUniform1i(location, (int)value);
+}
+
+void Shader::SetFloat(const std::string& name, float value) const {
+	GLint location = glGetUniformLocation(programID, name.c_str());
+	glUniform1f(location, value);
 }

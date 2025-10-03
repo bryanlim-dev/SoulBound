@@ -1,9 +1,11 @@
 /******************************************************************************
  * File:        Material.cpp
  * Project:     NightSnack
- * Author(s):
+ * Author(s):   Goh Bei Lai (Primary, 100%) - Created Material class
  *
  * Description:
+ * The Material class encapsulates shader and texture data.
+ * It manages base color, texture binding.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -37,6 +39,7 @@ void Material::ApplyUniforms(bool wireframe) {
 
     m_shader->SetVec3("uBaseColor", m_baseColor); 
 
+    // Textures will be binded if it is not in wireframe mode
     if (m_texture && !wireframe) {
         m_texture->Bind(); // calls glBindTexture(GL_TEXTURE_2D, m_id)
         m_shader->SetInt("uTex2d", 0);
@@ -45,6 +48,7 @@ void Material::ApplyUniforms(bool wireframe) {
         m_shader->SetBool("uHasTexture", false);
     }
 
+    // Enable alpha blending for textures with .png format
     if (m_enableAlphaBlending) {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
