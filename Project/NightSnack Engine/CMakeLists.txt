@@ -143,6 +143,7 @@ set_target_properties(nlohmann_json PROPERTIES FOLDER "ThirdParty")
 set_target_properties(imgui PROPERTIES FOLDER "ThirdParty")
 set_target_properties(freetype PROPERTIES FOLDER "ThirdParty")
 
+target_link_options(${PROJECT_NAME} PRIVATE /NODEFAULTLIB:LIBCMT)
 
 # ------------------------------------------------------------
 # Linking
@@ -173,4 +174,5 @@ target_include_directories(${PROJECT_NAME}
     extern/imgui
     extern/imgui/backends
     extern/freetype
+	extern/nlohmann
 )
