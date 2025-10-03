@@ -1,3 +1,18 @@
+/******************************************************************************
+ * File:        Input.cpp
+ * Project:     NightSnack
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Input System
+ *
+ * Description:
+ * This file contains the definitions of the Input System.
+ * The Input System gets its key and mouse inputs via GLFW callbacks.
+ * It will then dispatch Input Events via the Event Dispatcher.
+ * Other Systems in the ECS can check for the state of the specific keys via Getter functions.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Input.h"
 #include "Graphics.h"
 
@@ -16,21 +31,17 @@ float InputSystem::m_mousePosY = 0.f;
 
 EventDispatcher* InputSystem::m_dispatcher = nullptr;
 
-// Set up the respective callbacks with GLFW ------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 void InputSystem::Init(GLFWwindow* window, EventDispatcher& dispatcher) {
 	glfwSetKeyCallback(window, KeyCallback); // key button
 	glfwSetMouseButtonCallback(window, MouseButtonCallback); // mouse button
 	glfwSetCursorPosCallback(window, CursorPosCallback); // mouse position
 
-	m_prevMousePosX = m_prevMousePosY = m_deltaPosX = m_deltaPosY = 0.f;
+	m_prevMouseWorldPosX = m_prevMouseWorldPosY = m_deltaWorldPosX = m_deltaWorldPosY = 0.f;
 
 	// Store the event dispatcher
 	m_dispatcher = &dispatcher;
 }
 
-// Update the mouse positions every update loop / frame -------------------------------------------
-// ------------------------------------------------------------------------------------------------
 void InputSystem::Update(float dt, Coordinator& coord) {
 	(void)dt;
 	(void)coord;
@@ -43,14 +54,12 @@ void InputSystem::Update(float dt, Coordinator& coord) {
 	m_mouseWorldPosY = (Hvp / 2.f) - m_mousePosY + coord.GetComponent<Position>(cam).y;
 
 	// Compute mouse delta - the relative movement since the last frame
-	m_deltaPosX = m_mousePosX - m_prevMousePosX;
-	m_deltaPosY = m_mousePosY - m_prevMousePosY;
-	m_prevMousePosX = m_mousePosX;
-	m_prevMousePosY = m_mousePosY;
+	m_deltaWorldPosX = m_mouseWorldPosX - m_prevMouseWorldPosX;
+	m_deltaWorldPosY = m_mouseWorldPosY - m_prevMouseWorldPosY;
+	m_prevMouseWorldPosX = m_mousePosX;
+	m_prevMouseWorldPosY = m_mousePosY;
 }
 
-// Reset the key and mouse button states at the end of every update loop / frame ------------------
-// ------------------------------------------------------------------------------------------------
 void InputSystem::ResetInputStates() {
 	// Reset states back to false
 	m_keysPressed.fill(false);
@@ -59,8 +68,6 @@ void InputSystem::ResetInputStates() {
 	m_mouseReleased.fill(false);
 }
 
-// Translates GLFW key input into InputSystem's enum KeyboardKeys --------------------------------
-// ------------------------------------------------------------------------------------------------
 InputSystem::KeyboardKeys InputSystem::TranslateGLFWKeyboardKey(int glfwKey) {
 	switch (glfwKey) {
 	case GLFW_KEY_W: return KeyboardKeys::W;
@@ -77,8 +84,6 @@ InputSystem::KeyboardKeys InputSystem::TranslateGLFWKeyboardKey(int glfwKey) {
 	}
 }
 
-// Translates GLFW mouse input into InputSystem's enum MouseButtons ------------------------------
-// ------------------------------------------------------------------------------------------------
 InputSystem::MouseButtons InputSystem::TranslateGLFWMouseButton(int glfwButton) {
 	switch (glfwButton) {
 	case GLFW_MOUSE_BUTTON_LEFT: return MouseButtons::LMB;
@@ -87,8 +92,6 @@ InputSystem::MouseButtons InputSystem::TranslateGLFWMouseButton(int glfwButton) 
 	}
 }
 
-// Translate the GLFW key value to its respective InputActions ------------------------------------
-// ------------------------------------------------------------------------------------------------
 InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int modifier) {
 	switch (glfwKey) {
 	// Single key presses
@@ -136,8 +139,9 @@ InputEvent::InputActionState InputSystem::TranslateGLFWKeyStateToAction(int glfw
 	}
 }
 
-// Key callback function --------------------------------------------------------------------------
+// Callback functions --------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
+
 void InputSystem::KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	(void)scancode; // not needed, unless implementing with custom keyboard layouts
 	(void)window;
@@ -171,8 +175,6 @@ void InputSystem::KeyCallback(GLFWwindow* window, int key, int scancode, int act
 	}
 }
 
-// Mouse callback function ------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 void InputSystem::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 	(void)window;
 
@@ -205,8 +207,6 @@ void InputSystem::MouseButtonCallback(GLFWwindow* window, int button, int action
 	}
 }
 
-// Mouse position callback function ---------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 void InputSystem::CursorPosCallback(GLFWwindow* window, double xPos, double yPos) {
 	(void)window;
 
@@ -217,25 +217,29 @@ void InputSystem::CursorPosCallback(GLFWwindow* window, double xPos, double yPos
 
 // Queries for key states -------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
+
 bool InputSystem::IsKeyDown(int key) const { return m_keysDown[key]; }
 bool InputSystem::IsKeyPressed(int key) const { return m_keysPressed[key]; }
 bool InputSystem::IsKeyReleased(int key) const { return m_keysReleased[key]; }
 
 // Queries for modifier key states ----------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
+
 bool InputSystem::IsShiftDown() const { return m_currentModifiers & GLFW_MOD_SHIFT; }
 bool InputSystem::IsCtrlDown() const { return m_currentModifiers & GLFW_MOD_CONTROL; }
 bool InputSystem::IsAltDown() const { return m_currentModifiers & GLFW_MOD_ALT; }
 
 // Queries for mouse states -----------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------------
+
 bool InputSystem::IsMouseButtonDown(int button) const { return m_mouseDown[button]; }
 bool InputSystem::IsMouseButtonPressed(int button) const { return m_mousePressed[button]; }
 bool InputSystem::IsMouseButtonReleased(int button) const { return m_mouseReleased[button]; }
 
-// Queries for mouse position ---------------------------------------------------------------------
-// Note: Mouse position origin is from top left corner of the screen ------------------------------
+// Queries for mouse position -----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+
 float InputSystem::GetMousePosX() const { return m_mouseWorldPosX; }
 float InputSystem::GetMousePosY() const { return m_mouseWorldPosY; }
-float InputSystem::GetMouseDeltaPosX() const { return m_deltaPosX; }
-float InputSystem::GetMouseDeltaPosY() const { return m_deltaPosY; }
+float InputSystem::GetMouseDeltaPosX() const { return m_deltaWorldPosX; }
+float InputSystem::GetMouseDeltaPosY() const { return m_deltaWorldPosY; }

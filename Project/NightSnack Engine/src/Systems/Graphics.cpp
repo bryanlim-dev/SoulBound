@@ -1,9 +1,22 @@
+/******************************************************************************
+ * File:        Graphics.cpp
+ * Project:     NightSnack
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Graphics System
+ *
+ * Description:
+ * This file contains the definitions of the Graphics System.
+ * It manages resources (shaders, textures, meshes, materials), prepares transformation matrices,
+ * applies uniforms, and issues draw calls for each renderable entity in the scene.
+ * It also provides debug drawing visualization (circle and AABB collider outlines, velocity vector)
+ * and basic scaling and rotating of a specific object via input events from the event dispatcher.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Graphics.h"
 #include "MathLibrary/Math.h"
 
-// Graphics system Initializations ----------------------------------------------------------------
-// All the different types of shaders, textures, meshes, materials are created and stored here ----
-// Subscribing to Input Events from the Event Dispatcher is done here too -------------------------
 void GraphicsSystem::Init(Coordinator& coord) {
 	// Default Shader;
 	auto shader = std::make_unique<Shader>("assets/shaders/vertex_shader.vert", "assets/shaders/fragment_shader.frag");
@@ -72,8 +85,6 @@ void GraphicsSystem::Init(Coordinator& coord) {
 	});
 }
 
-// Graphics System Update function ----------------------------------------------------------------
-// Rendering of all renderable entities, as well as Debug drawing visualizations are done here ----
 void GraphicsSystem::Update(float dt, Coordinator& coord) {
 	(void)dt; // dt is unused for now...
 
@@ -213,7 +224,9 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 	}
 }
 
-// ------------------------------------------------------------------------------------------------
+// Helper functions to add resources --------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------
+
 void GraphicsSystem::AddShader(std::string const& name, std::unique_ptr<Shader> shader) {
 	m_shaders[name] = std::move(shader);
 }
@@ -227,8 +240,9 @@ void GraphicsSystem::AddMaterial(std::string const& name, std::unique_ptr<Materi
 	m_materials[name] = std::move(mat);
 }
 
-// Compute the projection matrix ------------------------------------------------------------------
-// Transforms camera coords to clip coords --------------------------------------------------------
+// Compute the transformation matrices ------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------
+
 glm::mat4 GraphicsSystem::GetCameraProjectionMatrix(float width, float height) {
 	float halfWidth = width * 0.5f;
 	float halfHeight = height * 0.5f;
@@ -237,8 +251,6 @@ glm::mat4 GraphicsSystem::GetCameraProjectionMatrix(float width, float height) {
 	return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, Z_EPSILON, 10.f);
 }
 
-// Compute the ModelToWorld matrix ----------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
 glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale, RenderLayer layer) {
 	glm::mat4 model(1.f);
 
@@ -253,7 +265,9 @@ glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Position position, Rotation rota
 	return model;
 }
 
-// ------------------------------------------------------------------------------------------------
+// Helper functions to access resources -----------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------------
+
 Shader* GraphicsSystem::GetShader(std::string const& n) const {
 	auto it = m_shaders.find(n);
 	return (it != m_shaders.end()) ? it->second.get() : nullptr;
@@ -271,7 +285,6 @@ Material* GraphicsSystem::GetMaterial(std::string const& n) const {
 	return (it != m_materials.end()) ? it->second.get() : nullptr;
 }
 
-// ------------------------------------------------------------------------------------------------
 void GraphicsSystem::ResolveRenderable(Entity e, Renderable const& r) {
 	CachedRenderData cache;
 	cache.mesh = GetMesh(r.meshName);
@@ -300,8 +313,6 @@ Entity GraphicsSystem::FindCamera() {
 	return INVALID_ENTITY;
 }
 
-// Get the base z offset of the Renderable, based on the RenderLayer ------------------------------
-// ------------------------------------------------------------------------------------------------
 float GraphicsSystem::GetRenderLayerZPos(RenderLayer layer) {
 
 	// Higher values will render on top of lower values
@@ -315,8 +326,6 @@ float GraphicsSystem::GetRenderLayerZPos(RenderLayer layer) {
 	}
 }
 
-// Modify the scale of the currently selected object ----------------------------------------------
-// ------------------------------------------------------------------------------------------------
 void GraphicsSystem::ModifyEntityScale(Coordinator& coord, float value) {
 	auto it = m_entities.begin();
 	
@@ -336,8 +345,6 @@ void GraphicsSystem::ModifyEntityScale(Coordinator& coord, float value) {
 	//collider.radius *= value;
 }
 
-// Modify the rotation of the currently selected object -------------------------------------------
-// ------------------------------------------------------------------------------------------------
 void GraphicsSystem::ModifyEntityRotation(Coordinator& coord, float value) {
 	auto it = m_entities.begin();
 
