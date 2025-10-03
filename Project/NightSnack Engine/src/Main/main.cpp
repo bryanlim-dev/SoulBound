@@ -309,18 +309,27 @@ int main()
 	{
 		CrashLogger::LogCrash(ex);
 		ex.print();
+		ResourceManager* rm = ResourceManager::GetInstance();
+		rm->DeleteRM();
+		AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}
 	catch (const std::exception& ex)
 	{
 		CrashLogger::LogCrash(IException(ex.what(), ExceptionType::General, __FILE__));
 		std::cerr << "[Exception][std::exception] " << ex.what() << std::endl;
+		ResourceManager* rm = ResourceManager::GetInstance();
+		rm->DeleteRM();
+		AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}
 	catch (...)
 	{
 		CrashLogger::LogCrash(IException("Unknown exception", ExceptionType::General, __FILE__));
 		std::cerr << "[Exception][Unknown]" << std::endl;
+		ResourceManager* rm = ResourceManager::GetInstance();
+		rm->DeleteRM();
+		AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}
 }
