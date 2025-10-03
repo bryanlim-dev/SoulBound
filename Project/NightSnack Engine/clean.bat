@@ -18,7 +18,7 @@ if exist "%BUILD_DIR%" (
 )
 
 REM #------------#
-REM Remove local CMake
+REM Remove local CMake (if still not deleted by run.bat
 REM #------------#
 if exist "%LOCAL_CMAKE_DIR%" rmdir /s /q "%LOCAL_CMAKE_DIR%"
 
