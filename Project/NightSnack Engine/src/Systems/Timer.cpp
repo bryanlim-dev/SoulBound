@@ -1,9 +1,10 @@
 /******************************************************************************
  * File:        Timer.cpp
  * Project:     NightSnack
- * Author(s):
+ * Author(s):   Lim Wei Jie (Primary, 100%) - Created a Timer class to handle
+ *              frame timing, delta time, FPS calculation and system time tracking
  *
- * Description:
+ * Description: This file contains the implementation of the Timer class.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -12,6 +13,7 @@
 #include "Timer.h"
 #include <GLFW/glfw3.h>
 
+// Default constructor to setup initial Timer values;
 Timer::Timer()
     : m_lastFrameTime(static_cast<float>(glfwGetTime())), m_currentFrameTime(0.f), m_endFrameTime(0.f), m_deltaTime(0.f), 
     m_fps(0.f), m_frameCount(0), m_lastFpsUpdateTime(static_cast<float>(glfwGetTime())), m_totalSystemTime(0.f)
@@ -19,6 +21,7 @@ Timer::Timer()
 	glfwSwapInterval(1); // Enable VSync
 }
 
+// Starts game loop timer, delta time and FPS calculation
 void Timer::StartFrame() 
 {
     // Delta time calculation
@@ -36,16 +39,19 @@ void Timer::StartFrame()
     }
 }
 
+// Ends game loop timer and accumulates total game loop time
 void Timer::EndFrame() 
 {
 	m_endFrameTime = static_cast<float>(glfwGetTime());
 	m_totalSystemTime += (m_endFrameTime - m_currentFrameTime);
 }
 
+// Caps the frame rate to the target FPS
 void Timer::FrameCap(float targetFPS)
 {
     if (targetFPS <= 0.f) return;
 
+	// Calculate the time to wait until the next frame
     float targetFrameTime = 1.f / targetFPS;
     float frameEnd = static_cast<float>(glfwGetTime());
     while (frameEnd - m_currentFrameTime < targetFrameTime)
@@ -54,11 +60,13 @@ void Timer::FrameCap(float targetFPS)
     }
 }
 
+// Starts a system timer with the given name
 void Timer::StartSystemTimer(const std::string& name)
 {
     m_systemStartTimes[name] = static_cast<float>(glfwGetTime());
 }
 
+// Ends a system timer with the given name and accumulates elapsed time
 void Timer::EndSystemTimer(const std::string& name)
 {
     float end = static_cast<float>(glfwGetTime());
@@ -66,6 +74,7 @@ void Timer::EndSystemTimer(const std::string& name)
     m_systemsTimes[name] += elapsed;
 }
 
+// Displays the percentage time consumption of each system
 void Timer::DisplaySystemTimers() const
 {
     if (m_systemsTimes.empty() || m_totalSystemTime == 0.f)
@@ -73,6 +82,7 @@ void Timer::DisplaySystemTimers() const
         return;
     }
 
+	// Display formatted table of system times
     for (const auto& [name, time] : m_systemsTimes)
     {
         float percent = (time / m_totalSystemTime) * 100.f;
@@ -83,6 +93,7 @@ void Timer::DisplaySystemTimers() const
     std::cout << std::endl;
 }
 
+// Resets all system timers and total system time
 void Timer::ResetSystemsTimers()
 {
     m_systemsTimes.clear();

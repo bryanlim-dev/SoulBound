@@ -1,9 +1,12 @@
 /******************************************************************************
  * File:        CrashLogger.h
  * Project:     NightSnack
- * Author(s):
+ * Author(s):   Lim Wei Jie (Primary, 100%) - Created CrashLogger to log 
+ *              exceptions to a file
  *
- * Description:
+ * Description: This file contains the declaration of the CrashLogger class,
+ *              which logs crash information from IException to a text file in
+ *              the folder "CrashLog".
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -20,18 +23,34 @@
 class CrashLogger 
 {
 public:
+    /************************************************************************/
+    /*!
+    \brief
+	Logs crash information from an IException to a text file "crash_log.txt"
+	in the "CrashLog" directory. Each log entry includes a timestamp, exception
+	type, source, and message. If the log file already exists, the new entry
+	is appended below the existing content.
+
+    \param[in] ex
+	The IException instance containing crash details.
+    */
+    /************************************************************************/
     static void LogCrash(const IException& ex) noexcept 
     {
+		// Exception safety: ensure no exceptions escape this function
         try 
         {
+			// Ensure the CrashLog directory exists
             std::string folder = "CrashLog";
             std::string filePath = folder + "/crash_log.txt";
             std::filesystem::create_directories(folder);
 
+			// Get current local time
             std::time_t now = std::time(nullptr);
             struct tm timeinfo;
             localtime_s(&timeinfo, &now);
 
+			// Format log entry
             char timeStr[26]; // Buffer for time string
             asctime_s(timeStr, sizeof(timeStr), &timeinfo); // fills timeStr with formatted time
             std::string logEntry =
@@ -50,6 +69,7 @@ public:
             }
             logVec.push_back(logEntry);
 
+			// Save updated log file
             rm->SaveTxtFile(filePath, logVec);
         }
         catch (...) 
@@ -57,7 +77,15 @@ public:
             // Exception safety: do nothing if logging fails
         }
     }
+    /************************************************************************/
+    /*!
+    \brief
+	Forcefully throw an IException for testing purposes.
 
+	\param[in] message
+	The message to include in the forced exception.
+    */
+    /************************************************************************/
     static void ForceCrash(const std::string& message = "Forced crash for testing")
     {
         IException ex(message, ExceptionType::General, __FILE__);

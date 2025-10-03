@@ -1,9 +1,10 @@
 /******************************************************************************
  * File:        Timer.h
  * Project:     NightSnack
- * Author(s):
+ * Author(s):   Lim Wei Jie (Primary, 100%) - Created a Timer class to handle
+ *              frame timing, delta time, FPS calculation and system time tracking
  *
- * Description:
+ * Description: This file contains the declaration of the Timer class.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -20,23 +21,101 @@
 class Timer
 {
 public:
-	// Default constructor to setup initial Timer values;
+    /************************************************************************/
+    /*!
+    \brief
+    Default constructor to setup initial Timer values;
+    */
+    /************************************************************************/
     Timer();
 
-    // Frame timing
+    /************************************************************************/
+    /*!
+    \brief
+    Starts game loop timer, delta time and FPS calculation
+    */
+    /************************************************************************/
     void    StartFrame();
+
+    /************************************************************************/
+    /*!
+    \brief
+	Ends game loop timer and accumulates total game loop time
+    */
+    /************************************************************************/
     void    EndFrame();
+
+    /************************************************************************/
+    /*!
+    \brief
+	Caps the frame rate to the target FPS
+
+	\param[in] targetFPS
+	The desired frames per second to cap the game loop to
+    */
+    /************************************************************************/
 	void    FrameCap(float targetFPS);
 
-    // System timing
-    void    StartSystemTimer(const std::string& name);
-    void    EndSystemTimer(const std::string& name);
-    void    DisplaySystemTimers() const;
-    void    ResetSystemsTimers();
+    /************************************************************************/
+    /*!
+    \brief
+	Starts timing a specific system by parameter name
 
-    // Getters
+    \param[in] name
+	The name of the system to start timing
+    */
+    /************************************************************************/
+    void    StartSystemTimer(const std::string& name);
+
+    /************************************************************************/
+    /*!
+    \brief
+	Ends timing a specific system by parameter name and accumulates the time taken
+
+    \param[in] name
+	The name of the system to end timing
+    */
+    /************************************************************************/
+    void    EndSystemTimer(const std::string& name);
+
+    /************************************************************************/
+    /*!
+    \brief
+	Displays the accumulated times for all systems to the console in a formatted table
+    */
+    /************************************************************************/
+    void    DisplaySystemTimers() const;
+
+    /************************************************************************/
+    /*!
+    \brief
+	Resets all system timers and total system time to zero
+    */
+    /************************************************************************/
+    void    ResetSystemsTimers();
+    
+    /************************************************************************/
+    /*!
+    \brief
+	Gets the delta time
+    */
+    /************************************************************************/
     float  GetDT() const;
+
+    /************************************************************************/
+    /*!
+    \brief
+	Gets the current FPS
+    */
+    /************************************************************************/
     float  GetFPS() const;
+
+    /************************************************************************/
+    /*!
+    \brief
+	Gets the total accumulated game loop time
+    */
+    /************************************************************************/
     float  GetTotalSystemTime() const;
 
 
@@ -47,6 +126,7 @@ private:
     float  m_lastFrameTime;
     float  m_endFrameTime;
 
+	// Delta time and FPS
     float  m_deltaTime;
     float  m_fps;
     float  m_lastFpsUpdateTime;

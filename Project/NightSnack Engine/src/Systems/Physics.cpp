@@ -1,7 +1,9 @@
 /******************************************************************************
  * File:        Physics.cpp
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	<NAME> (Primary, xx%) - <Comments>
+ *				Lim Wei Jie (Secondary, 12%) - Skips Physics updates when in
+ *				debug mode unless a step is requested via InputEvent
  *
  * Description:
  *

@@ -1,7 +1,11 @@
 /******************************************************************************
  * File:        Movement.h
  * Project:     NightSnack
- * Author(s):
+ * Author(s):   <NAME> (Primary, xx%) - <Comments>
+ *				Lim Wei Jie (Secondary, 40%) - Event dispatcher subscription
+ *              to Input Events to toggle debug mode and step through physics
+ *              updates. Skips Movement updates when in debug mode unless step
+ *              is requested.
  *
  * Description:
  *

@@ -1,9 +1,10 @@
 /******************************************************************************
  * File:        Application.cpp
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Lim Wei Jie (Primary, 100%) - Created Application system to
  *
- * Description:
+ * Description: This file contains the definitions of the Application System, 
+ *				which manages the application window, OpenGL context, and timing.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -16,6 +17,7 @@
 static constexpr int REQUIRED_GL_MAJOR = 4;
 static constexpr int REQUIRED_GL_MINOR = 5;
 
+// Default constructor to create a window with given width, height and title.
 ApplicationSystem::ApplicationSystem(int width, int height, std::string const& title, Coordinator& coord, EventDispatcher& dispatcher) {
 	// Initialize GLFW;
 	if (!glfwInit())
@@ -72,8 +74,7 @@ ApplicationSystem::ApplicationSystem(int width, int height, std::string const& t
 	Init(coord);
 }
 
-// Destructor -------------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
+// Destructor to clean up and terminate GLFW.
 ApplicationSystem::~ApplicationSystem() {
 	// Check if window exists;
 	if (m_windowHandle) { glfwDestroyWindow(m_windowHandle); }
@@ -81,8 +82,7 @@ ApplicationSystem::~ApplicationSystem() {
 	glfwTerminate();
 }
 
-// Init -------------------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
+// Initialize the system and set up event subscriptions
 void ApplicationSystem::Init(Coordinator& Coord) {
 	
 	// Subscribe to input events
@@ -98,11 +98,9 @@ void ApplicationSystem::Init(Coordinator& Coord) {
 		});
 }
 
-// Update -----------------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
+// Update function called every frame
 void ApplicationSystem::Update(float dt, Coordinator& coord) {
 	(void)dt;
-	(void)coord;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	PollEvents();
@@ -118,40 +116,28 @@ void ApplicationSystem::Update(float dt, Coordinator& coord) {
 	if (systemTimersEnabled) { m_timer.DisplaySystemTimers(); }
 }
 
-// Set Window Title -------------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
-//void Window::SetTitle(const std::string& title)
-//{
-//	Title_ = title;
-//	glfwSetWindowTitle(Handle_, Title_.c_str());
-//}
-
-// Poll for and process events --------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
-void ApplicationSystem::PollEvents() {
+// Poll for and process events
+void ApplicationSystem::PollEvents()
+{
 	glfwPollEvents();
 }
 
-// Swap front and back buffers --------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
+// Swap front and back buffers
 void ApplicationSystem::SwapBuffers() {
 	glfwSwapBuffers(m_windowHandle);
 }
 
-// Update the window title ------------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
+// Update the window title
 void ApplicationSystem::SetWindowTitle(GLFWwindow* window, const char* title) {
 	glfwSetWindowTitle(window, title);
 }
 
-// Check if window should close -------------------------------------------------------------------
-// ------------------------------------------------------------------------------------------------
+// Check if window should close
 bool ApplicationSystem::ShouldClose() const {
 	return glfwWindowShouldClose(m_windowHandle);
 }
 
-// Changes the viewport when the window is resized ------------------------------------------------
-// ------------------------------------------------------------------------------------------------
+// Changes the viewport when the window is resized
 void ApplicationSystem::FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
 	(void)window;
 	glViewport(0, 0, width, height);

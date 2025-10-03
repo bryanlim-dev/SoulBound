@@ -3,6 +3,8 @@
  * Project:     NightSnack
  * Author(s):	<NAME> (Primary, xx%) - <Comments>
  *				<NAME> (Secondary, xx%) - <Comments>
+ *				LIM Wei Jie (Secondary, 17%) - Tracking of game loop timer 
+ *				and system timers, and capping of frame rate
  *				Bryan Lim Jun Jie (Secondary, 5%) - pause delta time when game paused
  *
  * Description:

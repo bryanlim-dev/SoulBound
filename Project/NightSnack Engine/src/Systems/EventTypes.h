@@ -1,9 +1,11 @@
 /******************************************************************************
  * File:        EventTypes.h
  * Project:     NightSnack
- * Author(s):
+ * Author(s):   Lim Wei Jie (Primary, 100%) - Created event types for Input, 
+ *              Collision and Audio
  *
- * Description:
+ * Description: This file contains the declarations of various event types 
+ *              used in the engine.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -11,6 +13,7 @@
 
 #pragma once
 
+// Types of events
 enum class EventType
 {
     Input,

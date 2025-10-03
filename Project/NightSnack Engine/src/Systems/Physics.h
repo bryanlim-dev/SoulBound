@@ -1,9 +1,11 @@
 /******************************************************************************
  * File:        Physics.h
  * Project:     NightSnack
- * Author(s):
+ * Author(s):   <NAME> (Primary, xx%) - <Comments>
+ *				LIM Wei Jie (Secondary, 38%) - Event dispatcher subscription 
+ *              to Input Events to toggle debug mode and step through physics updates
  *
- * Description:
+ * Description: 
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.

@@ -91,10 +91,6 @@ int main()
 			return -1;
 		}
 
-
-		//Crash Logger test message
-		//throw THROW_IEXCEPTION("This is a real crash test from main!", ExceptionType::General);
-
 		////Replace this with actual sound manager later
 		//FMOD::System* fmodSystem = nullptr;
 		//FMOD::System_Create(&fmodSystem);

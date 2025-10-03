@@ -27,7 +27,7 @@ void CollisionSystem::Init(EventDispatcher& dispatcher)
         {
             (void)event; // temp unreferenced;
 
-            // Example: Play sound, spawn particles, update score, etc.
+            //Play sound, spawn particles, update score, etc.
             //std::cout << "Collision event: Entity " << event.entityA << " collided with Entity " << event.entityB << std::endl;
         });
 }
