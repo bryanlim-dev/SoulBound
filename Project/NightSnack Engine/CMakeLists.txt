@@ -94,7 +94,7 @@ target_include_directories(glad PUBLIC extern/glad/include)
 
 # stb_image (header-only)
 add_library(stb_image INTERFACE)
-target_include_directories(stb_image INTERFACE extern/stb_image/include)
+target_include_directories(stb_image SYSTEM INTERFACE extern/stb_image/include)
 
 # fmod
 add_library(fmod INTERFACE)
@@ -107,7 +107,7 @@ target_link_libraries(fmod INTERFACE
 
 # nlohmann_json
 add_library(nlohmann_json INTERFACE)
-target_include_directories(nlohmann_json INTERFACE extern/nlohmann)
+target_include_directories(nlohmann_json SYSTEM INTERFACE extern/nlohmann)
 
 # IMGui
 set(IMGUI_SRC
