@@ -1,3 +1,14 @@
+/******************************************************************************
+ * File:        Timer.cpp
+ * Project:     NightSnack
+ * Author(s):
+ *
+ * Description:
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Timer.h"
 #include <GLFW/glfw3.h>
 

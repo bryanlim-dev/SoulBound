@@ -1,3 +1,14 @@
+/******************************************************************************
+ * File:        Physics.cpp
+ * Project:     NightSnack
+ * Author(s):
+ *
+ * Description:
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Systems/Physics.h"
 #include "Systems/Input.h"
 

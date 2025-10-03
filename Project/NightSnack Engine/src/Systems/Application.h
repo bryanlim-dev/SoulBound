@@ -1,3 +1,14 @@
+/******************************************************************************
+ * File:        Application.h
+ * Project:     NightSnack
+ * Author(s):
+ *
+ * Description:
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #ifndef APPLICATION_HPP
 #define APPLICATION_HPP
 
