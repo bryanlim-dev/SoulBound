@@ -6,13 +6,15 @@
 #include <GLFW/glfw3.h>
 #include "ECS/Coordinator.h"
 #include "Systems/Timer.h"
+#include "Systems/IEvent.h"
 
 class ApplicationSystem : public ISystem
 {
 public:
-	ApplicationSystem(int width, int height, std::string const& title);
+	ApplicationSystem(int width, int height, std::string const& title, Coordinator& coord, EventDispatcher& dispatcher);
 	~ApplicationSystem();
 
+	void Init(Coordinator& Coord);
 	void Update(float dt, Coordinator& coord) override;
 	std::string GetName() const { return "ApplicationSystem"; }
 
@@ -40,8 +42,12 @@ private:
 
 	// Tick Tocker
 	Timer m_timer;
+	bool systemTimersEnabled = false;
 
 	Signature m_systemSignature{};
+
+	// System event dispatcher
+	EventDispatcher* m_dispatcher = nullptr;
 };
 
 #endif // APPLICATION_HPP

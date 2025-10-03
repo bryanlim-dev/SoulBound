@@ -1,5 +1,5 @@
 /******************************************************************************
- * File:        main.h
+ * File:        main.cpp
  * Project:     NightSnack
  * Author(s):	<NAME> (Primary, xx%) - <Comments>
  *				<NAME> (Secondary, xx%) - <Comments>
@@ -7,7 +7,7 @@
  *
  * Description:
  * This file contains the main function.
- * It creates uhhhh fill this in someone else pls
+ * This file is the main entry point of the NightSnack Engine
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -17,8 +17,6 @@
 #include <crtdbg.h>
 
 #include <iostream>
-//#include <thread>
-//#include <chrono>
 
 #include "MathLibrary/Math.h"
 #include "Systems/Collision.h"
@@ -36,9 +34,6 @@
 
 int main()
 {
-	// OS-level exception handler
-	CrashLogger::InstallGlobalHandler(); 
-
 	try
 	{
 		// Enable memory leak checking at program exit

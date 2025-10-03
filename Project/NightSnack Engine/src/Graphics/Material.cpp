@@ -37,7 +37,12 @@ void Material::ApplyUniforms(bool wireframe) {
     if (m_enableAlphaBlending) {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        // Do not write depth when rendering transparent PNGs
+        // So that the transparent parts don't block later objects
+        glDepthMask(GL_FALSE);
     } else {
         glDisable(GL_BLEND);
+        glDepthMask(GL_TRUE);
     }
 }

@@ -1,4 +1,5 @@
 #include "Graphics.h"
+#include "CrashLogger.h"
 #include "MathLibrary/Math.h"
 
 void GraphicsSystem::Init(Coordinator& coord) {
@@ -60,9 +61,7 @@ void GraphicsSystem::Init(Coordinator& coord) {
 				m_enableDebugDraw = !m_enableDebugDraw;
 				break;
 			case InputEvent::InputAction::CrashTest:
-				// Simulate a crash by dereferencing a null pointer
-				Shader* crashShader = nullptr;
-				crashShader->Use();
+				CrashLogger::ForceCrash("Forced crash from GraphicsSystem for testing");
 				break;
 			}
 		}
