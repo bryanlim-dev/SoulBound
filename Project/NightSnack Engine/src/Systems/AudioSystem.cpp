@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        AudioSystem.cpp
+ * Project:     NightSnack
+ * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Audio system with channels to play audio
+ *
+ * Description:
+ * This file defines the AudioSystem class, which manages all game audio using FMOD.
+ * Works with ResourceManager to load and cache sounds. Handles playing, pausing, stopping
+ * and updating audio. Logs messages to cout for debug purposes.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "AudioSystem.h"
 #include "ResourceManager/ResourceManager.h"
 #include <vector>
@@ -121,9 +135,7 @@ void AudioSystem::SetResourceManager(ResourceManager* rm)
         std::cout << "AudioSystem: ResourceManager set to nullptr" << std::endl;
 }
 
-// -------------------------------
 // Loading
-// -------------------------------
 std::size_t AudioSystem::LoadSFX(const std::string& path)
 {
     if (!resourceManager || !fmodSystem)
@@ -155,21 +167,19 @@ std::size_t AudioSystem::LoadMusic(const std::string& path, bool loop)
     return 0;
 }
 
-// -------------------------------
 // Playback
-// -------------------------------
 bool AudioSystem::PlaySound(std::size_t soundKey)
 {
     if (!initialized || !resourceManager || !fmodSystem)
     {
-        std::cout << "AudioSystem: Cannot play sound - system not properly initialized" << std::endl;
+        std::cout << "AudioSystem: system not properly initialized" << std::endl;
         return false;
     }
 
     FMOD::Sound* sound = resourceManager->GetSound(soundKey);
     if (!sound)
     {
-        std::cout << "AudioSystem: Sound not found for key " << soundKey << std::endl;
+        std::cout << "AudioSystem: Sound not found" << soundKey << std::endl;
         return false;
     }
 
@@ -188,12 +198,12 @@ bool AudioSystem::PlaySound(std::size_t soundKey)
     if (mode & FMOD_LOOP_NORMAL)
     {
         musicChannels[soundKey] = channel;
-        std::cout << "AudioSystem: Playing music (Key: " << soundKey << ")" << std::endl;
+        std::cout << "AudioSystem: Playing music Key: " << soundKey << std::endl;
     }
     else
     {
         sfxChannels[soundKey] = channel;
-        std::cout << "AudioSystem: Playing SFX (Key: " << soundKey << ")" << std::endl;
+        std::cout << "AudioSystem: Playing SFX Key: " << soundKey << std::endl;
     }
 
     return true;
@@ -207,7 +217,7 @@ bool AudioSystem::StopSound(std::size_t soundKey)
     {
         itSfx->second->stop();
         sfxChannels.erase(itSfx);
-        std::cout << "AudioSystem: Stopped SFX (Key: " << soundKey << ")" << std::endl;
+        std::cout << "AudioSystem: Stopped SFX Key: " << soundKey << std::endl;
         return true;
     }
 
@@ -217,7 +227,7 @@ bool AudioSystem::StopSound(std::size_t soundKey)
     {
         itMusic->second->stop();
         musicChannels.erase(itMusic);
-        std::cout << "AudioSystem: Stopped Music (Key: " << soundKey << ")" << std::endl;
+        std::cout << "AudioSystem: Stopped Music Key: " << soundKey << std::endl;
         return true;
     }
 
@@ -249,8 +259,8 @@ bool AudioSystem::PauseSound(std::size_t soundKey, bool pause)
 
 void AudioSystem::StopAllSounds()
 {
-    std::cout << "AudioSystem: Stopping all sounds ("
-        << sfxChannels.size() + musicChannels.size() << " active)" << std::endl;
+    std::cout << "AudioSystem: Stopping all sounds "
+        << sfxChannels.size() + musicChannels.size() << " active" << std::endl;
 
     for (auto& [key, channel] : sfxChannels)
         if (channel) channel->stop();
