@@ -552,7 +552,8 @@ private:
 	/************************************************************************/
 	/*!
 	\brief
-	Unused hidden private function, as the load requires fmod syste,
+	Unused hidden private function.
+	As the load requires fmod system, this cannot be used
 	*/
 	/************************************************************************/
 	void LoadFile() override {};
@@ -566,15 +567,60 @@ private:
 	FT_Face fontFace = nullptr;
 
 public:
+	/************************************************************************/
+	/*!
+	\brief
+	Constructor of font resource class
+	Inits a resource class that stores filepath and mapKey
+	Does NOT open file, call LoadFile for that
+
+	\param[in] inFilePath
+	std::string const ref of the file path of the text file to open
+
+	\param[in] inMapKey
+	std::size_t const ref of the key that is used in the map to store it
+	*/
+	/************************************************************************/
 	ResourceFont(const std::string& inFilePath, const std::size_t& inMapKey);
+	/************************************************************************/
+	/*!
+	\brief
+	Destructor of ResourceFont.
+	Frees fontFace if loaded
+	*/
+	/************************************************************************/
 	~ResourceFont();
 
-	//Returns FT_Face stored
+	/************************************************************************/
+	/*!
+	\brief
+	Gets font data
+
+	\return
+	FT_Face of loaded font
+	*/
+	/************************************************************************/
 	FT_Face Font();
 
+	/************************************************************************/
+	/*!
+	\brief
+	Loads font resource from saved file path using inputted FT_Library
+
+	\param[in]
+	FT_Library refrence of library to use to load font
+	*/
+	/************************************************************************/
 	void LoadFile(FT_Library& fontLib);
 
 private:
+	/************************************************************************/
+	/*!
+	\brief
+	Unused hidden private function.
+	As the load requires FT_Library, this cannot be used
+	*/
+	/************************************************************************/
 	void LoadFile() override {};
 	//void SaveFile() override {};
 
