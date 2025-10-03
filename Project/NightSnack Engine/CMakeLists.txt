@@ -129,7 +129,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE imgui)
 
 #freetype
 add_library(freetype INTERFACE)
-target_include_directories(freetype INTERFACE extern/freetype)
+target_include_directories(freetype SYSTEM INTERFACE extern/freetype)
 target_link_libraries(freetype INTERFACE 
 	"${CMAKE_CURRENT_SOURCE_DIR}/extern/freetype/freetype.lib"
 )
