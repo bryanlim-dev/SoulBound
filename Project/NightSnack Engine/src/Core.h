@@ -1,9 +1,12 @@
 /******************************************************************************
  * File:        Core.h
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Chewn Thing Kwan
  *
  * Description:
+ * Declares CoreEngine class, application core with the main Init, Update and
+ * terminate functions. Contains the ECS Coordinator, Event Dispatcher and all
+ * registered systems are stored in m_systems.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -25,21 +28,82 @@
 class CoreEngine {
 
 public:
+	/************************************************************************/
+	/*!
+	\brief
+	Registers all Components and Systems and initializes Coordinator.
 
+	\param windowWidth
+	Application window width.
+	\param windowHeight
+	Application window height.
+	\param windowTitle
+	Application window title.
+	*/
+	/************************************************************************/
 	void Initialize(int windowWidth, int windowHeight, std::string&& windowTitle);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Does not currently do anything, will move all cleanup functions inside
+	here for clean main function.
+	*/
+	/************************************************************************/
 	int Terminate();
 
+	/************************************************************************/
+	/*!
+	\brief
+	Updates all systems in m_systems.
+	*/
+	/************************************************************************/
 	void Update();
 
+	/************************************************************************/
+	/*!
+	\brief
+	Registers a system and adds it into m_systems container.
+	Arguments are forwarded to individual system constructors.
+	*/
+	/************************************************************************/
 	template <typename T, typename... Args>
 	void AddSystem(Args&&... args);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Removes a system from the core engine.
+	*/
+	/************************************************************************/
 	template <typename T>
 	void RemoveSystem(std::shared_ptr<T> system);
 
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains a reference to the Coordinator.
+	*/
+	/************************************************************************/
 	Coordinator& GetCoord() { return m_coord; }
 
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains a reference to the Event Dispatcher.
+	*/
+	/************************************************************************/
 	EventDispatcher& GetEventDispatcher() { return core_dispatcher; }
 
+	/************************************************************************/
+	/*!
+	\brief
+	Checks if the application window should close.
+
+	\return
+	Returns true if the application should close, false otherwise.
+	*/
+	/************************************************************************/
 	bool ShouldClose() {  
 		return m_coord.GetSystem<ApplicationSystem>().get()->ShouldClose();
 	}

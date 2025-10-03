@@ -1,13 +1,15 @@
 /******************************************************************************
  * File:        Component.h
  * Project:     NightSnack
- * Author(s):	<NAME> (Primary, xx%) - <Comments>
- *				<NAME> (Secondary, xx%) - <Comments>
+ * Author(s):	Chewn Thing Kwan (Primary) - Created basic components | Defined json 
+                overloads for reading components
  *				Goh Bei Lai (Secondary, 15%) - Created Graphics components (RenderLayer, Renderable, Camera)
  *
  * Description:
+ * This file defines all components for this project, it also defines a specific
+ * json overload for each component to read from a json file.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 

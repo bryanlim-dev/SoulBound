@@ -1,9 +1,10 @@
 /******************************************************************************
  * File:        Entity.h
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Chewn Thing Kwan
  *
  * Description:
+ * Const expressions and aliases for types relating to the ECS core.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.

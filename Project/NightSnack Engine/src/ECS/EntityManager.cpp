@@ -1,9 +1,10 @@
 /******************************************************************************
  * File:        EntityManager.cpp
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Chewn Thing Kwan
  *
  * Description:
+ * Defines member functions of EntityManager class.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.

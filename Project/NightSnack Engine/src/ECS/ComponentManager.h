@@ -1,9 +1,17 @@
 /******************************************************************************
  * File:        ComponentManager.h
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Chewn Thing Kwan (Primary, 100%)
  *
  * Description:
+ * This file defines 3 classes and their member functions.
+ * - IComponentArray: Base class for all ComponentArrays.
+ * 
+ * - ComponentArray<T>: Templated class that stores an array of components and
+ *		uses two unordered-maps that assist in mapping entities to components.
+ * 
+ * - ComponentManager: Manages all ComponentArrays, creates the ComponentArray
+ *		when a new component is registered.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -23,8 +31,26 @@
 // ComponentArray interface to allow storage of multiple different ComponentArrays in ComponentManager;
 class IComponentArray {
 public:
+	/************************************************************************/
+	/*!
+	\brief
+	Destructor can be default, as the ComponentManager stores ComponentArrays
+	with smart pointers.
+	*/
+	/************************************************************************/
 	virtual ~IComponentArray() = default;
-	virtual void EntityDestroyed(Entity entity) = 0; // allows cleanup
+
+	/************************************************************************/
+	/*!
+	\brief
+	All ComponentArrays must update their unordered-maps when an entity is
+	destroyed, to ensure no removed components are accessed.
+
+	\param entity
+	The entity that was destroyed.
+	*/
+	/************************************************************************/
+	virtual void EntityDestroyed(Entity entity) = 0;
 };
 
 // Component Array class to store components of type T
@@ -33,16 +59,86 @@ template <typename T>
 class ComponentArray : public IComponentArray {
 
 public:
+	/************************************************************************/
+	/*!
+	\brief
+	Inserts Entity e into maps and updates m_components at specific index with
+	desired component.
+	e.g: Insert<Positon>(Player);
+
+	\param e
+	Entity to add component to.
+
+	\param component
+	Desired component that has already been set.
+	*/
+	/************************************************************************/
 	void Insert(Entity e, T const& component);
+
+	/************************************************************************/
+	/*!
+	\brief
+	When a component is removed from an entity, updates maps and Array
+	accordingly.
+	e.g: Remove<Positon>(Player);
+
+	\param e
+	The entity to remove component from.
+	*/
+	/************************************************************************/
 	void Remove(Entity e);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Checks whether an entity had been added with a component.
+	e.g: HasComponent<Positon>(Player);
+
+	\param e
+	The entity to check.
+
+	\return
+	Returns true if the entity has the specific component, false otherwise.
+	*/
+	/************************************************************************/
 	bool HasComponent(Entity e);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains a reference to a component for a specific entity.
+	e.g: Get<Position>(Player);
+
+	\param e
+	The entity that owns the component.
+
+	\return
+	Reference to desired component.
+	*/
+	/************************************************************************/
 	T& Get(Entity e);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Update unordered-maps when an entity is destroyed, to ensure no removed 
+	components are accessed.
+
+	\param e
+	The entity that was destroyed.
+	*/
+	/************************************************************************/
 	void EntityDestroyed(Entity e) override;
 
 private:
+	// Actual storage of components.
 	std::array<T, MAX_ENTITIES> m_components;
+
+	// Helper maps that link entities to their specific index in m_components.
 	std::unordered_map<Entity, size_t> m_entityToIndex;
 	std::unordered_map<size_t, Entity> m_indexToEntity;
+
+	// Number of live components.
 	size_t m_size = 0;
 
 };
@@ -52,26 +148,97 @@ private:
 class ComponentManager {
 
 public:
+	/************************************************************************/
+	/*!
+	\brief
+	Creates the ComponentArray, "registering" the component into the system.
+	Inserts it into m_componentArrays with a key of ComponentType.
+	e.g: RegisterComponent<Position>();
+	*/
+	/************************************************************************/
 	template <typename T>
 	void RegisterComponent();
 
+	/************************************************************************/
+	/*!
+	\brief
+	Calls ComponentArray's Insert() function to add a component to an entity.
+
+	\param e
+	Entity to be added to.
+
+	\param component
+	The desired settings of type Component.
+	*/
+	/************************************************************************/
 	template <typename T>
 	void AddComponent(Entity e, T const& component);
 
+	/************************************************************************/
+	/*!
+	\brief
+	Calls ComponentArray's member function to check if an entity has a specific
+	component.
+
+	\param e
+	Entity to be checked.
+
+	\return
+	Returns True if e has the specified component, false otherwise.
+	*/
+	/************************************************************************/
 	template <typename T>
 	bool HasComponent(Entity e);
 
+	/************************************************************************/
+	/*!
+	\brief
+	Removes a component from an entity by calling ComponentArray's member
+	function
+
+	\param e
+	Entity to remove component from.
+	*/
+	/************************************************************************/
 	template <typename T>
 	void RemoveComponent(Entity e);
 
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains a reference of a specific component that belongs to a specific
+	entity.
+
+	\param e
+	Entity that owns the component.
+	*/
+	/************************************************************************/
 	template <typename T>
 	T& GetComponent(Entity e);
 
-	// Obtains a shared_ptr to ComponentArray of specified type T;
-	// Use case: auto CompArrayPtr = GetComponentArray<Position>();
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains a shared_ptr to ComponentArray of specified type T;
+	e.g: auto CompArrayPtr = GetComponentArray<Position>();
+
+	\return
+	shared_ptr to desired ComponentArray.
+	*/
+	/************************************************************************/
 	template <typename T>
 	std::shared_ptr<ComponentArray<T>> GetComponentArray();
 
+	/************************************************************************/
+	/*!
+	\brief
+	Alerts all ComponentArrays that an entity has been destroyed and that
+	they need to update their mappings.
+
+	\param e
+	Entity that was destroyed.
+	*/
+	/************************************************************************/
 	void EntityDestroyed(Entity e);
 
 private:
@@ -151,7 +318,7 @@ void ComponentArray<T>::Remove(Entity e) {
 		return; 
 	}
 
-	assert(m_size > 0 && "Removing from empty ComponentArray!\n");
+	//assert(m_size > 0 && "Removing from empty ComponentArray!\n");
 
 	size_t indexOfRemoved = it->second;
 	size_t indexOfLast = m_size - 1;

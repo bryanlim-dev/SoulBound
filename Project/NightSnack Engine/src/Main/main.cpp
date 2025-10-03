@@ -1,16 +1,14 @@
 /******************************************************************************
  * File:        main.cpp
  * Project:     NightSnack
- * Author(s):	<NAME> (Primary, xx%) - <Comments>
- *				<NAME> (Secondary, xx%) - <Comments>
- *				Bryan Lim Jun Jie (Secondary, 5%) - Initialized Audio system and play background audio/ click sound using H key
+ * Author(s):	Bryan Lim Jun Jie (Secondary, 5%) - Initialized Audio system and play background audio/ click sound using H key
  *				Clement Ang Yang Ying (Secondary, 5%) - Created/Inited Resource Manager, loaded & assigned window high/width/title into application
  *
  * Description:
  * This file contains the main function.
  * This file is the main entry point of the NightSnack Engine
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -90,6 +88,14 @@ int main()
 			std::cout << "Failed to initialize AudioSystem!" << std::endl;
 			return -1;
 		}
+
+		// FMOD warning: FMOD_ErrorString is currently unused for now...
+#ifdef _DEBUG
+		(void)FMOD_ErrorString(FMOD_OK);
+#endif
+
+		//Crash Logger test message
+		//throw THROW_IEXCEPTION("This is a real crash test from main!", ExceptionType::General);
 
 		////Replace this with actual sound manager later
 		//FMOD::System* fmodSystem = nullptr;
@@ -300,18 +306,27 @@ int main()
 	{
 		CrashLogger::LogCrash(ex);
 		ex.print();
+		ResourceManager* rm = ResourceManager::GetInstance();
+		rm->DeleteRM();
+		AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}
 	catch (const std::exception& ex)
 	{
 		CrashLogger::LogCrash(IException(ex.what(), ExceptionType::General, __FILE__));
 		std::cerr << "[Exception][std::exception] " << ex.what() << std::endl;
+		ResourceManager* rm = ResourceManager::GetInstance();
+		rm->DeleteRM();
+		AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}
 	catch (...)
 	{
 		CrashLogger::LogCrash(IException("Unknown exception", ExceptionType::General, __FILE__));
 		std::cerr << "[Exception][Unknown]" << std::endl;
+		ResourceManager* rm = ResourceManager::GetInstance();
+		rm->DeleteRM();
+		AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}
 }

@@ -1,9 +1,10 @@
 /******************************************************************************
  * File:        Imgui.h
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Chewn Thing Kwan (Primary, 100%)
  *
  * Description:
+ * UI system that will be the foundation of UI editor, makes use of Imgui library.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -22,11 +23,36 @@
 class ImguiSystem : public ISystem {
 
 public:
+	/************************************************************************/
+	/*!
+	\brief
+	Creates imgui context and initializes OpenGL for imgui panel.
+	*/
+	/************************************************************************/
 	ImguiSystem(Coordinator& coord);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Destroys imgui constext and shuts down OpenGL and GLFW for imgui.
+	*/
+	/************************************************************************/
 	~ImguiSystem();
 
+	/************************************************************************/
+	/*!
+	\brief
+	Called in Core update, sets up and draws UI panels.
+
+	\param dt
+	delta time
+	\param coord
+	Reference to ECS Coordinator.
+	*/
+	/************************************************************************/
 	void Update(float dt, Coordinator& coord) override;
 
+	// Required by ISystem base class.
 	Signature GetSignature() const override { return m_systemSignature; }
 	std::string GetName() const override { return "ImguiSystem"; }
 

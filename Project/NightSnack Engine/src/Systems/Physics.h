@@ -1,13 +1,13 @@
 /******************************************************************************
  * File:        Physics.h
  * Project:     NightSnack
- * Author(s):   <NAME> (Primary, xx%) - <Comments>
+ * Author(s):   Chewn Thing Kwan (Primary - 62%) - Created the class.
  *				LIM Wei Jie (Secondary, 38%) - Event dispatcher subscription 
  *              to Input Events to toggle debug mode and step through physics updates
  *
  * Description: 
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -25,7 +25,21 @@ constexpr float velocityCutoff = 0.2f;
 class PhysicsSystem : public ISystem {
 
 public:
-    // Default constructor to set up SystemSignature;
+    /************************************************************************/
+    /*!
+    \brief
+    Constructor for PhysicsSystem that sets the system signature and sets up
+    input events for step by steps physics debugging mode as well as
+    ApplyForce() function that is used in default scene for testing:
+        Dynamic -> Dynamic collision
+        Dynamic -> Static collsion
+
+    \param coord
+    Reference to Coordinator.
+    \param dispatcher
+    Reference to Event Dispatcher.
+    */
+    /************************************************************************/
     PhysicsSystem(Coordinator& coord, EventDispatcher& disp) : m_dispatcher{ &disp } {
 		// Physics components of interest;
         m_systemSignature.set(GetComponentTypeID<Position>());
@@ -48,7 +62,6 @@ public:
             //    ApplyForce(coord, 6, 0.f, 60.f);
             //    }
             //    break;
-            //    break;
             case InputEvent::InputAction::PhysicsDebugMode:
                 debugMode = !debugMode;
                 break;
@@ -61,7 +74,21 @@ public:
 		});
     }
 
+    /************************************************************************/
+    /*!
+    \brief
+    Computes the Velocity components of entities based on their Force, Mass
+    and Acceleration components, and also applys gravity and drag/friction.
+
+    \param dt
+    delta time.
+    \param coord
+    Reference to Coordinator.
+    */
+    /************************************************************************/
     void Update(float dt, Coordinator& coord) override;
+
+    // Required by ISystem base class;
 	Signature GetSignature() const override { return m_systemSignature; }
     std::string GetName() const { return "PhysicsSystem"; }
 

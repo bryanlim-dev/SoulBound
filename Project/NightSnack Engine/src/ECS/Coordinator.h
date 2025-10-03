@@ -1,9 +1,11 @@
 /******************************************************************************
  * File:        Coordinator.h
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Chewn Thing Kwan (Primary, 100%)
  *
  * Description:
+ * This file declares class Coordinator, an interface that assists in interacting
+ * with the ECS core.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -24,45 +26,197 @@
 class Coordinator {
 
 public:
+	/************************************************************************/
+	/*!
+	\brief
+	Creates EntityManager, ComponentManager and SystemManager.
+	*/
+	/************************************************************************/
 	void Initialize();
 
-	// ECS Interface;
+	/************************************************************************/
+	/*!
+	\brief
+	Creates an entity and returns its ID (type Entity).
+
+	\return
+	Entity ID.
+	*/
+	/************************************************************************/
 	Entity CreateEntity();
+
+	/************************************************************************/
+	/*!
+	\brief
+	Destroys an entity and by calling upon functionality of individual managers,
+	will update all background linking (entities to components etc...).
+	*/
+	/************************************************************************/
 	void DestroyEntity(Entity e);
 
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains a count of all living entities.
+
+	\return
+	Count of number of living entities.
+	*/
+	/************************************************************************/
 	size_t GetEntityNum() { return m_entityManager->GetLivingEntities().size(); }	// number of living entities;
 
+	/************************************************************************/
+	/*!
+	\brief
+	Registers a component into the ECS core.
+	*/
+	/************************************************************************/
 	template <typename T>
 	void RegisterComponent();
 
+	/************************************************************************/
+	/*!
+	\brief
+	Adds a component to an entity.
+
+	\param e
+	Entity
+	\param component
+	Component desired to be added.
+	*/
+	/************************************************************************/
 	template <typename T>
 	void AddComponent(Entity e, T component);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Remove a component from an entity.
+
+	\param e
+	Entity
+	*/
+	/************************************************************************/
 	template <typename T>
 	void RemoveComponent(Entity e);
 
+	/************************************************************************/
+	/*!
+	\brief
+	Checks whether an entity has a specific component added.
+
+	\param e
+	Entity
+
+	\return
+	Returns true if the entity has the specified component, false otherwise.
+	*/
+	/************************************************************************/
 	template<typename T>
 	bool HasComponent(Entity e) const;
+
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains a const reference to a specific component of an entity.
+	(Accessor)
+
+	\param e
+	Entity
+
+	\return
+	Const reference to desired component.
+	*/
+	/************************************************************************/
 	template <typename T>
 	T const& GetComponent(Entity e) const;
+
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains a reference to a specific component of an entity.
+	(Modifier)
+
+	\param e
+	Entity
+
+	\return
+	Reference to desired component.
+	*/
+	/************************************************************************/
 	template <typename T>
 	T& ModifyComponent(Entity e);
-
-	template <>	// specialization for Renderable;
+	// specialization for Renderable;
+	template <>
 	Renderable& ModifyComponent<Renderable>(Entity e);
 
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains the signature of an entity.
+
+	\param e
+	Entity
+
+	\return
+	Reference to the Entity's signature.
+	*/
+	/************************************************************************/
 	Signature& GetEntitySignature(Entity e) { return m_entityManager->GetSignature(e); }
 
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains the set of living entities.
+
+	\return
+	Set of living entities.
+	*/
+	/************************************************************************/
 	std::set<Entity> const& GetLivingEntities() const { return m_entityManager->GetLivingEntities(); }
 
+	/************************************************************************/
+	/*!
+	\brief
+	Registers a system into the core. Arguments are forwarded down till the
+	individual constructors of each system.
+
+	\param args
+	May take any number of arguments, but must match the parameters of the
+	actual system's constructor.
+
+	\return
+	Returns a shared_ptr to the system that was constructed.
+	*/
+	/************************************************************************/
 	template <typename T, typename... Args>
 	std::shared_ptr<T> RegisterSystem(Args&&... args);
+
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains a shared_ptr of a specific system.
+
+	\return
+	shared_ptr of a specific system.
+	*/
+	/************************************************************************/
 	template <typename T>
 	std::shared_ptr<T> GetSystem() { return m_systemManager->GetSystem<T>(); }
 
-	template <typename T>
-	void SetSystemSignature(Signature sig);
-
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains the height of the application window.
+	*/
+	/************************************************************************/
 	int GetWindowHeight();
+	/************************************************************************/
+	/*!
+	\brief
+	Obtains the width of the application window.
+	*/
+	/************************************************************************/
 	int GetWindowWidth();
 
 private:
@@ -140,7 +294,9 @@ T& Coordinator::ModifyComponent(Entity e) {
 }
 template <>	// specialization for Renderable;
 inline Renderable& Coordinator::ModifyComponent<Renderable>(Entity e) {
+
 	auto& r = m_componentManager->GetComponent<Renderable>(e);
+	// To enable GraphicsSystem to know that RenderCache must be updated
 	r.wasModified = true;
 	return r;
 }
@@ -148,11 +304,6 @@ inline Renderable& Coordinator::ModifyComponent<Renderable>(Entity e) {
 template <typename T, typename... Args>
 std::shared_ptr<T> Coordinator::RegisterSystem(Args&&... args) {
 	return m_systemManager->RegisterSystem<T>(std::forward<Args>(args)...);
-}
-
-template <typename T>
-void Coordinator::SetSystemSignature(Signature sig) {
-	m_systemManager->SetSignature<T>(sig);
 }
 
 #endif // COORD_HPP
