@@ -2,7 +2,7 @@
  * File:        Input.cpp
  * Project:     NightSnack
  * Author(s):	Goh Bei Lai (Primary, 95%) - Created Input System
- *				Lim Wei Jie (Primary, 5%) - Initialized event dispatcher to 
+ *				Lim Wei Jie (Secondary, 5%) - Initialized event dispatcher to 
  *				dispatch Input Events on key/mouse input
  *
  * Description:
