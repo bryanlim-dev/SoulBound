@@ -65,6 +65,10 @@ int main()
 			winHeight = 100;
 		}
 
+#ifdef _DEBUG
+		(void)FMOD_ErrorString(FMOD_OK);
+#endif
+
 		// Will register all components;
 		// If you create new components, please register them in this function defined in Core.cpp;
 		core.Initialize(winWidth, winHeight, windowTitle.c_str());
