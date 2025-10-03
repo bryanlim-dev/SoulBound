@@ -66,7 +66,7 @@ REM #------------#
 REM Run CMake File
 REM #------------#
 echo Running CMake ..
-cmake -S . -B "%BUILD_DIR%" -G "Visual Studio 17 2022" -A x64
+"%CMAKE_EXE%" -S . -B "%BUILD_DIR%" -G "Visual Studio 17 2022" -A x64
 if %errorlevel% neq 0 (
     echo ERROR: CMake configuration failed with code %errorlevel%.
     pause
