@@ -821,9 +821,9 @@ void ResourceManager::DebugTestEverything()
 	rm->LoadFont("assets/Font/liberation-mono.ttf", fontKey);
 	//ResourceFont* recFont = rm->GetFontResource(fontKey);
 	if (ResourceLoaded(RESOURCE_FONT, fontKey))
-		std::cout << "Font Load Test: FAILED" << std::endl;
-	else
 		std::cout << "Font Load Test: SUCCESS" << std::endl;
+	else
+		std::cout << "Font Load Test: FAILED" << std::endl;
 	rm->UnloadFont(fontKey);
 	rm->Update(0);
 

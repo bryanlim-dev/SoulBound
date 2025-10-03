@@ -94,11 +94,11 @@ target_include_directories(glad PUBLIC extern/glad/include)
 
 # stb_image (header-only)
 add_library(stb_image INTERFACE)
-target_include_directories(stb_image INTERFACE extern/stb_image/include)
+target_include_directories(stb_image SYSTEM INTERFACE extern/stb_image/include)
 
 # fmod
 add_library(fmod INTERFACE)
-target_include_directories(fmod INTERFACE extern/fmod/inc)
+target_include_directories(fmod SYSTEM INTERFACE extern/fmod/inc)
 # diff fmod links based on config
 target_link_libraries(fmod INTERFACE
     debug "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmodL_vc.lib"
@@ -107,7 +107,7 @@ target_link_libraries(fmod INTERFACE
 
 # nlohmann_json
 add_library(nlohmann_json INTERFACE)
-target_include_directories(nlohmann_json INTERFACE extern/nlohmann)
+target_include_directories(nlohmann_json SYSTEM INTERFACE extern/nlohmann)
 
 # IMGui
 set(IMGUI_SRC
@@ -129,7 +129,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE imgui)
 
 #freetype
 add_library(freetype INTERFACE)
-target_include_directories(freetype INTERFACE extern/freetype)
+target_include_directories(freetype SYSTEM INTERFACE extern/freetype)
 target_link_libraries(freetype INTERFACE 
 	"${CMAKE_CURRENT_SOURCE_DIR}/extern/freetype/freetype.lib"
 )
