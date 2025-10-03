@@ -91,9 +91,9 @@ void ResourceImage::LoadFile()
 		resourceLoaded = false;
 }
 
-void ResourceImage::SaveFile() {
-	//Empty for now
-}
+//void ResourceImage::SaveFile() {
+//	//Empty for now
+//}
 
 unsigned char* ResourceImage::Image() const
 {
