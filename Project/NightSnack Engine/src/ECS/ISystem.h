@@ -1,3 +1,14 @@
+/******************************************************************************
+ * File:        ISystem.h
+ * Project:     NightSnack
+ * Author(s):
+ *
+ * Description:
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #ifndef ISYSTEM_HPP
 #define ISYSTEM_HPP
 

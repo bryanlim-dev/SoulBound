@@ -1,3 +1,14 @@
+/******************************************************************************
+ * File:        EntityManager.cpp
+ * Project:     NightSnack
+ * Author(s):
+ *
+ * Description:
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include <iostream>
 
 #include "ECS/EntityManager.h"

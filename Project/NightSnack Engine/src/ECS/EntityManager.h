@@ -1,3 +1,14 @@
+/******************************************************************************
+ * File:        EntityManager.h
+ * Project:     NightSnack
+ * Author(s):
+ *
+ * Description:
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #ifndef ENTMAN_HPP
 #define ENTMAN_HPP
 
