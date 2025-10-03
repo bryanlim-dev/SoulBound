@@ -98,7 +98,7 @@ target_include_directories(stb_image INTERFACE extern/stb_image/include)
 
 # fmod
 add_library(fmod INTERFACE)
-target_include_directories(fmod INTERFACE extern/fmod/inc)
+target_include_directories(fmod SYSTEM INTERFACE extern/fmod/inc)
 # diff fmod links based on config
 target_link_libraries(fmod INTERFACE
     debug "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmodL_vc.lib"
