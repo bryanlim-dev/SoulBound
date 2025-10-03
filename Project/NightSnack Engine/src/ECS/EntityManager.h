@@ -93,7 +93,7 @@ private:
 	std::set<Entity> m_livingEntities;
 
 	size_t m_livingEntityCount = 0;
-	std::array<Signature, MAX_ENTITIES> m_signatures;
+	std::array<Signature, MAX_ENTITIES + 1> m_signatures;
 
 };
 

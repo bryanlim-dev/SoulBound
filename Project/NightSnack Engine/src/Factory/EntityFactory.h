@@ -52,16 +52,19 @@ public:
 			if (event.pressed == InputEvent::InputActionState::Pressed) {
 				switch (event.inputAction) {
 					case InputEvent::InputAction::CreateSquare:
+						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
 						Create("Square");
 						//std::cout << "Create Square!\n";
 						break;
 
 					case InputEvent::InputAction::CreateCircle:
+						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
 						Create("Circle");
 						//std::cout << "Create Circle!\n";
 						break;
 
 					case InputEvent::InputAction::CreateBananaCircle:
+						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
 						Create("Player");
 						//std::cout << "Create Banana!\n";
 						break;

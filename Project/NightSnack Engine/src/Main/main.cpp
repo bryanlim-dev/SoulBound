@@ -39,15 +39,6 @@ int main()
 		// Enable memory leak checking at program exit
 		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-		////Resource Manager test
-		//{
-		//	//rm->DebugTestEverything();
-		//}
-
-		////Replace this with actual sound manager later
-		//FMOD::System* fmodSystem = nullptr;
-		//FMOD::System_Create(&fmodSystem);
-
 		// Create Core engine
 		CoreEngine core;
 
@@ -88,19 +79,6 @@ int main()
 			std::cout << "Failed to initialize AudioSystem!" << std::endl;
 			return -1;
 		}
-
-		// FMOD warning: FMOD_ErrorString is currently unused for now...
-#ifdef _DEBUG
-		(void)FMOD_ErrorString(FMOD_OK);
-#endif
-
-		//Crash Logger test message
-		//throw THROW_IEXCEPTION("This is a real crash test from main!", ExceptionType::General);
-
-		////Replace this with actual sound manager later
-		//FMOD::System* fmodSystem = nullptr;
-		//FMOD::System_Create(&fmodSystem);
-
 
 		// Link ResourceManager
 		audioSystem->SetResourceManager(rm);

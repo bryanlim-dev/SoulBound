@@ -78,11 +78,8 @@ void EntityManager::SetSignature(Entity e, Signature sig) {
 // Get signature for an entity with bounds checking;
 Signature& EntityManager::GetSignature(Entity e) {
 	if (e >= MAX_ENTITIES) {
-		std::cerr << "Entity ID out of range, unable to get Signature.\n";
-
-		// Return empty signature on error
-		Signature sig{};
-		return sig;
+		std::cerr << "Entity ID out of range, unable to obtain Signature.\n";
+		return m_signatures[MAX_ENTITIES];
 	}
 	return m_signatures[e];
 }
