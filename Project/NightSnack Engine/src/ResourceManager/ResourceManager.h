@@ -18,6 +18,7 @@
 #include <string>
 #include <map>
 #include <typeindex>
+#include <vector>
 
 #include "ResourceManager/Resource.h"
 #include "../Singleton.h"
@@ -28,7 +29,6 @@
 //Someone else trying to read PNG files (the compression format is really complicated apprently???)
 //https://stackoverflow.com/questions/31079947/how-can-i-manually-read-png-files-in-c
 
-#include <vector>
 
 //std::filesystem
 //loading file paths
@@ -81,18 +81,44 @@ private:
 	//Font system
 	FT_Library fontLibrary;
 
+	/************************************************************************/
+	/*!
+	\brief
+	Default Constructor for Resource Manager
+	Hidden due to singleton pattern
+	*/
+	/************************************************************************/
 	ResourceManager();
+
+	/************************************************************************/
+	/*!
+	\brief
+	Destructor for Resource Manager
+	Hidden due eto singleton pattern
+	*/
+	/************************************************************************/
 	~ResourceManager();
 	friend class Singleton<ResourceManager>;
 
 public:
 
+
+	/************************************************************************/
+	/*!
+	\brief
+	Initalizes variables required for ResourceManager
+	Also initalizes FT_Library
+	*/
+	/************************************************************************/
 	void Init();
 
 	/************************************************************************/
 	/*!
 	\brief
 	Update function for logic (i.e calling flagged deletion)
+
+	\param[in] dt
+	delta time in float of time passed
 	*/
 	/************************************************************************/
 	void Update(float dt);
@@ -506,10 +532,20 @@ public:
 	bool ResourceLoaded(RESOURCE_TYPE type, size_t resourceKey);
 
 
-	//Delete the Resource Manager
+	/************************************************************************/
+	/*!
+	\brief
+	Destory the Resource Manager and cleans up data withtin
+	*/
+	/************************************************************************/
 	void DeleteRM();
 
-	//Test all resources and prints result to std::cout
+	/************************************************************************/
+	/*!
+	\brief
+	Test all resources and prints result to std::cout
+	*/
+	/************************************************************************/
 	void DebugTestEverything();
 
 private:
