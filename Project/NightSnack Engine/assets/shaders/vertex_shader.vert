@@ -1,3 +1,15 @@
+/******************************************************************************
+ * File:        vertex_shader.vert
+ * Project:     NightSnack
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Vertex Shader
+ *
+ * Description:
+ * Vertex shader is responsible for transforming vertices from model space to 
+ * clip space, and passing texture coordinates to the fragment shader.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 // Vertex shader
 #version 450 core
 

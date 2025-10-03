@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        fragment_shader.frag
+ * Project:     NightSnack
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Fragment Shader
+ *
+ * Description:
+ * Fragment shader is responsible for determining the final color of each pixel.
+ * It supports both textured and non-textured rendering.
+ * If textured, sampled texture color is multiplied with base color.
+ * If not textured, solid entity color is used instead.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 // Fragment shader
 #version 450 core
 
