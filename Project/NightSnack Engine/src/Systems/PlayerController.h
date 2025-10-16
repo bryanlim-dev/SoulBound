@@ -42,6 +42,36 @@ public:
         m_systemSignature.set(GetComponentTypeID<Velocity>());
 
         m_player = FindPlayer(coord);
+
+        /*m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
+            {
+                // This input event currently only handles key inputs for
+                // - scaling of an object (A / D)
+                // - rotating of an object (R)
+                if (m_entities.empty())
+                    return;
+
+                if ((event.pressed == InputEvent::InputActionState::Pressed) ||
+                    (event.pressed == InputEvent::InputActionState::Repeat)) {
+                    m_player = FindPlayer(coord);
+                    PlayerController const& pcont = coord.GetComponent<PlayerController>(m_player);
+                    Velocity& vel = coord.ModifyComponent<Velocity>(m_player);
+                    switch (event.inputAction) {
+                    case InputEvent::InputAction::PlayerMoveLeft:
+                        vel.dx = -pcont.moveSpeed;
+                        break;
+                    case InputEvent::InputAction::PlayerMoveRight:
+                        vel.dx = pcont.moveSpeed;
+                        break;
+                    case InputEvent::InputAction::PlayerJump:
+                        if (coord.GetComponent<Collider>(m_player).isGrounded) {
+                            vel.dy = pcont.jumpSpeed;
+                            coord.ModifyComponent<Collider>(m_player).isGrounded = false;
+                        }
+                        break;
+                    }
+                }
+            });*/
     }
 
     /************************************************************************/
