@@ -27,31 +27,41 @@ class InputEvent : public IEvent
 public:
 
     enum class InputAction {
+        // Manipulation of a single textured object
         ScaleUp,            // D
         ScaleDown,          // A
         Rotate,             // R
+
+        // Physics tests
         DynamicBallTest,    // F
         GravityBallTest,    // G
-        ClickLMB,           // LMB
-        Save,               // CTRL + S
 
+        // Creation of entities
         CreateSquare,       // 1
         CreateCircle,       // 2
         CreateBananaCircle, // 3 -> texture entity;
         DoubleEntities,     // Space
         HalfEntities,       // Backspace
 
+        // Player movement
         PlayerMoveLeft,     // Player controller with Arrow keys;
         PlayerMoveRight,
         PlayerJump,
         ChangePlayer,       // Down arrow;
 
-        ToggleSystemTimers, // Y
+        // Debug tests
+        ToggleSystemTimers, // TAB
         ToggleDebugDraw,    // T
-        PhysicsDebugMode,   // CTRL + P
-        PhysicsDebugStep,   // P
         CrashTest,          // C
+        PhysicsDebugStep,   // P
 
+        // Mouse events
+        ClickLMB,           // LMB
+
+        // Modifier events
+        Save,               // CTRL + S
+        PhysicsDebugMode,   // CTRL + P
+        
         NumTotalInputAction
     };
 

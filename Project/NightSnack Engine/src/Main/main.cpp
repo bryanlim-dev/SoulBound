@@ -264,16 +264,16 @@ int main()
 
 			// Temporary test code for music sound
 			// To be moved once audio system has been fully integrated into the ECS
-			if (coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::H))
+			/*if (coord.GetSystem<InputSystem>()->IsKeyPressed(InputSystem::H))
 			{
 				audioSystem->PlaySound(sfxKey);
 				std::cout << "Playing SFX!\n";
-			}
+			}*/
 
 			// Reset input states is temporarily reset here! 
 			// Once audio system has been fully integrated into the ECS, 
 			// move this function call to Core.cpp Update()
-			coord.GetSystem<InputSystem>()->ResetInputStates();
+			//coord.GetSystem<InputSystem>()->ResetInputStates();
 		}
 
 		// Clean termination;
