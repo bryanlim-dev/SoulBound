@@ -43,35 +43,38 @@ public:
 
         m_player = FindPlayer(coord);
 
-        /*m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
+        m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
             {
-                // This input event currently only handles key inputs for
-                // - scaling of an object (A / D)
-                // - rotating of an object (R)
                 if (m_entities.empty())
                     return;
 
-                if ((event.pressed == InputEvent::InputActionState::Pressed) ||
-                    (event.pressed == InputEvent::InputActionState::Repeat)) {
-                    m_player = FindPlayer(coord);
-                    PlayerController const& pcont = coord.GetComponent<PlayerController>(m_player);
-                    Velocity& vel = coord.ModifyComponent<Velocity>(m_player);
-                    switch (event.inputAction) {
-                    case InputEvent::InputAction::PlayerMoveLeft:
-                        vel.dx = -pcont.moveSpeed;
-                        break;
-                    case InputEvent::InputAction::PlayerMoveRight:
-                        vel.dx = pcont.moveSpeed;
-                        break;
-                    case InputEvent::InputAction::PlayerJump:
-                        if (coord.GetComponent<Collider>(m_player).isGrounded) {
-                            vel.dy = pcont.jumpSpeed;
-                            coord.ModifyComponent<Collider>(m_player).isGrounded = false;
-                        }
-                        break;
+                switch (event.inputAction) {
+                case InputEvent::InputAction::PlayerMoveLeft:
+                    if (event.pressed == InputEvent::InputActionState::Pressed ||
+                        event.pressed == InputEvent::InputActionState::Repeat) {
+                        movingLeft = true;
                     }
+                    else if (event.pressed == InputEvent::InputActionState::Released) {
+                        movingLeft = false;
+                    }
+                    break;
+                case InputEvent::InputAction::PlayerMoveRight:
+                    if (event.pressed == InputEvent::InputActionState::Pressed ||
+                        event.pressed == InputEvent::InputActionState::Repeat) {
+                        movingRight = true;
+                    }
+                    else if (event.pressed == InputEvent::InputActionState::Released) {
+                        movingRight = false;
+                    }
+                    break;
+                case InputEvent::InputAction::PlayerJump:
+                    if (event.pressed == InputEvent::InputActionState::Pressed ||
+                        event.pressed == InputEvent::InputActionState::Repeat) {
+                        jumpRequested = true;
+                    }
+                    break;
                 }
-            });*/
+            });
     }
 
     /************************************************************************/
@@ -94,18 +97,17 @@ public:
         PlayerController const& pcont = coord.GetComponent<PlayerController>(m_player);
         Velocity& vel = coord.ModifyComponent<Velocity>(m_player);
 
-        if (coord.GetSystem<InputSystem>()->IsKeyDown(InputSystem::RIGHT_ARROW) && !coord.GetComponent<Collider>(m_player).colliding) {
+        if ((movingRight && !movingLeft) && !coord.GetComponent<Collider>(m_player).colliding) {
             vel.dx = pcont.moveSpeed;
         }
-        else if (coord.GetSystem<InputSystem>()->IsKeyDown(InputSystem::LEFT_ARROW) && !coord.GetComponent<Collider>(m_player).colliding) {
+        else if ((movingLeft && !movingRight) && !coord.GetComponent<Collider>(m_player).colliding) {
             vel.dx = -pcont.moveSpeed;
         }
-        if ((coord.GetSystem<InputSystem>()->IsKeyDown(InputSystem::UP_ARROW))) {
-            if (coord.GetComponent<Collider>(m_player).isGrounded) {
-                vel.dy = pcont.jumpSpeed;
-                coord.ModifyComponent<Collider>(m_player).isGrounded = false;
-            }
+        if (jumpRequested && coord.GetComponent<Collider>(m_player).isGrounded) {
+            vel.dy = pcont.jumpSpeed;
+            coord.ModifyComponent<Collider>(m_player).isGrounded = false;
         }
+        jumpRequested = false;
     }
 
     /************************************************************************/
@@ -156,4 +158,8 @@ private:
 
     Entity m_player;
     bool m_playerChange{ false };
+
+    bool movingLeft = false;
+    bool movingRight = false;
+    bool jumpRequested = false;
 };

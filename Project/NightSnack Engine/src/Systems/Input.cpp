@@ -135,7 +135,7 @@ InputEvent::InputActionState InputSystem::TranslateGLFWKeyStateToAction(int glfw
 	switch (glfwKeyState) {
 	case GLFW_PRESS: return InputEvent::InputActionState::Pressed;
 	case GLFW_RELEASE: return InputEvent::InputActionState::Released;
-	case GLFW_REPEAT: return InputEvent::InputActionState::Pressed;
+	case GLFW_REPEAT: return InputEvent::InputActionState::Repeat;
 
 	default: return InputEvent::InputActionState::NumTotalInputActionState;
 	}
