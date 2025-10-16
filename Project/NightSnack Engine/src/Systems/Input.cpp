@@ -60,6 +60,9 @@ void InputSystem::Update(float dt, Coordinator& coord) {
 	m_deltaWorldPosY = m_mouseWorldPosY - m_prevMouseWorldPosY;
 	m_prevMouseWorldPosX = m_mousePosX;
 	m_prevMouseWorldPosY = m_mousePosY;
+
+	// Process all queued events after input update and before the other systems
+	m_dispatcher->ProcessEvents();
 }
 
 //void InputSystem::ResetInputStates() {
@@ -164,7 +167,7 @@ void InputSystem::KeyCallback(GLFWwindow* window, int key, int scancode, int act
 	// Dispatch InputEvent when key is pressed
 	if (m_dispatcher)
 	{
-		m_dispatcher->Dispatch(InputEvent(mappedAction, mappedActionState));
+		m_dispatcher->QueueEvent(std::make_unique<InputEvent>(mappedAction, mappedActionState));
 	}
 
 	// Update the modifier state
@@ -197,7 +200,7 @@ void InputSystem::MouseButtonCallback(GLFWwindow* window, int button, int action
 	// Dispatch InputEvent when key is pressed
 	if (m_dispatcher)
 	{
-		m_dispatcher->Dispatch(InputEvent(mappedAction, mappedActionState));
+		m_dispatcher->QueueEvent(std::make_unique<InputEvent>(mappedAction, mappedActionState));
 	}
 
 	// Update the modifier state

@@ -18,6 +18,15 @@
 #include "./ECS/ISystem.h"
 #include "./Systems/Input.h"
 
+struct PlayerFlags {
+    bool movingLeft = false;
+    bool movingRight = false;
+    bool jumpRequested = false;
+
+	bool playerChange = false;
+	// add more flags if needed
+};
+
 class PlayerControllerSystem : public ISystem {
 
 public:
@@ -52,25 +61,25 @@ public:
                 case InputEvent::InputAction::PlayerMoveLeft:
                     if (event.pressed == InputEvent::InputActionState::Pressed ||
                         event.pressed == InputEvent::InputActionState::Repeat) {
-                        movingLeft = true;
+                        m_flags.movingLeft = true;
                     }
                     else if (event.pressed == InputEvent::InputActionState::Released) {
-                        movingLeft = false;
+                        m_flags.movingLeft = false;
                     }
                     break;
                 case InputEvent::InputAction::PlayerMoveRight:
                     if (event.pressed == InputEvent::InputActionState::Pressed ||
                         event.pressed == InputEvent::InputActionState::Repeat) {
-                        movingRight = true;
+                        m_flags.movingRight = true;
                     }
                     else if (event.pressed == InputEvent::InputActionState::Released) {
-                        movingRight = false;
+                        m_flags.movingRight = false;
                     }
                     break;
                 case InputEvent::InputAction::PlayerJump:
                     if (event.pressed == InputEvent::InputActionState::Pressed ||
                         event.pressed == InputEvent::InputActionState::Repeat) {
-                        jumpRequested = true;
+                        m_flags.jumpRequested = true;
                     }
                     break;
                 }
@@ -97,17 +106,17 @@ public:
         PlayerController const& pcont = coord.GetComponent<PlayerController>(m_player);
         Velocity& vel = coord.ModifyComponent<Velocity>(m_player);
 
-        if ((movingRight && !movingLeft) && !coord.GetComponent<Collider>(m_player).colliding) {
+        if ((m_flags.movingRight && !m_flags.movingLeft) && !coord.GetComponent<Collider>(m_player).colliding) {
             vel.dx = pcont.moveSpeed;
         }
-        else if ((movingLeft && !movingRight) && !coord.GetComponent<Collider>(m_player).colliding) {
+        else if ((m_flags.movingLeft && !m_flags.movingRight) && !coord.GetComponent<Collider>(m_player).colliding) {
             vel.dx = -pcont.moveSpeed;
         }
-        if (jumpRequested && coord.GetComponent<Collider>(m_player).isGrounded) {
+        if (m_flags.jumpRequested && coord.GetComponent<Collider>(m_player).isGrounded) {
             vel.dy = pcont.jumpSpeed;
             coord.ModifyComponent<Collider>(m_player).isGrounded = false;
         }
-        jumpRequested = false;
+        m_flags.jumpRequested = false;
     }
 
     /************************************************************************/
@@ -148,6 +157,10 @@ public:
         return INVALID_ENTITY;
     }
 
+    void ResetFlags() {
+        m_flags = PlayerFlags{};
+	}
+
     // Required by ISystem base class.
     std::string GetName() const override { return "PlayerController"; }
     Signature GetSignature() const override { return m_systemSignature; }
@@ -157,9 +170,7 @@ private:
     EventDispatcher* m_dispatcher = nullptr;
 
     Entity m_player;
-    bool m_playerChange{ false };
 
-    bool movingLeft = false;
-    bool movingRight = false;
-    bool jumpRequested = false;
+	// Accumulates states
+    PlayerFlags m_flags{};
 };
