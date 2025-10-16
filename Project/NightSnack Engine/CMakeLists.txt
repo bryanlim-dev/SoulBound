@@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Use static MSVC runtime (/MT or /MTd)
 if (MSVC)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL$<$<CONFIG:Debug>:Debug>")
 endif()
 
 if (MSVC)
@@ -143,7 +143,7 @@ set_target_properties(nlohmann_json PROPERTIES FOLDER "ThirdParty")
 set_target_properties(imgui PROPERTIES FOLDER "ThirdParty")
 set_target_properties(freetype PROPERTIES FOLDER "ThirdParty")
 
-target_link_options(${PROJECT_NAME} PRIVATE /NODEFAULTLIB:LIBCMT)
+#target_link_options(${PROJECT_NAME} PRIVATE /NODEFAULTLIB:LIBCMT)
 
 # ------------------------------------------------------------
 # Linking
