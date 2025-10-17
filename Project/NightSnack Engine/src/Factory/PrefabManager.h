@@ -82,6 +82,8 @@ namespace NightSnack {
 			// Create a new entity using coordinator;
 			Entity e = m_coord.CreateEntity();
 
+			if (e == INVALID_ENTITY) { return e; }
+
 			// Adds all components from prefab definition;
 			for (auto& [compName, compData] : archetypes[prefabName].items()) {
 				// Look for component loader with std::string component name;

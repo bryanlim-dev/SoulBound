@@ -34,6 +34,8 @@ namespace NightSnack {
 
 	// Destroy an Entity, remove it from all Systems and ComponentArrays;
 	void Coordinator::DestroyEntity(Entity e) {
+		if (e == INVALID_ENTITY) { return; }
+
 		if (HasComponent<Renderable>(e)) {
 			GetSystem<GraphicsSystem>()->RemoveCache(e);
 		}

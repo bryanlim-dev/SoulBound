@@ -177,6 +177,8 @@ namespace NightSnack {
 		/************************************************************************/
 		std::set<Entity> const& GetLivingEntities() const { return m_entityManager->GetLivingEntities(); }
 
+		size_t GetLivingEntityCount() const { return m_entityManager->GetLivingEntityCount(); }
+
 		/************************************************************************/
 		/*!
 		\brief

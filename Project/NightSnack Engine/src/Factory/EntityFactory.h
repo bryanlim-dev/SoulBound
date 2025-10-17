@@ -78,7 +78,11 @@ namespace NightSnack {
 						HalfEntities();
 						//std::cout << "Removed Entities!\n";
 						break;
+					case InputEvent::InputAction::CheckEntityNum:
+						std::cout << "Entity Num: " << coord.GetLivingEntityCount() << '\n';
+						break;
 					}
+						
 				}
 
 				});
@@ -186,7 +190,7 @@ namespace NightSnack {
 		/************************************************************************/
 		void Remove(Entity e);
 
-		std::vector<Entity> m_toBeDestroyed;
+		std::set<Entity> m_toBeDestroyed;
 
 	private:
 		Coordinator& m_coord;

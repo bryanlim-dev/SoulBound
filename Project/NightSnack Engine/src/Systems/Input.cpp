@@ -118,6 +118,7 @@ namespace NightSnack {
 		case GLFW_KEY_3: return InputEvent::InputAction::CreateBananaCircle;
 		case GLFW_KEY_SPACE: return InputEvent::InputAction::DoubleEntities;
 		case GLFW_KEY_BACKSPACE: return InputEvent::InputAction::HalfEntities;
+		case GLFW_KEY_L: return InputEvent::InputAction::CheckEntityNum;
 
 			// Player movement
 		case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
