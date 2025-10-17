@@ -50,17 +50,21 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src"
 # ------------------------------------------------------------
 # Assets Handling
 # ------------------------------------------------------------
-# Define resource path relative to executable
 target_compile_definitions(${PROJECT_NAME} PUBLIC RESOURCE_PATH=\"./assets/\")
 
-# Copy assets folder to output directory (per config: Debug/Release)
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets
-    $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
+# Gather all asset files (for dependency tracking)
+file(GLOB_RECURSE ASSET_FILES "${CMAKE_CURRENT_SOURCE_DIR}/assets/*")
 
-# Copy to build/assets
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
+# copy only modified assets and DLLs
+add_custom_target(copy_assets ALL
+
+# mirror assets folder to build output (only new files are copied)
+  COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+    "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
+
+# mirror to build/assets (for convenience)
+  COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
     "${CMAKE_CURRENT_SOURCE_DIR}/assets"
     "${CMAKE_BINARY_DIR}/assets"
 
@@ -78,9 +82,12 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy_if_different
      "${CMAKE_CURRENT_SOURCE_DIR}/extern/freetype/freetype.dll"
      "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+
+  DEPENDS ${ASSET_FILES}
 )
 
-
+# make sure assets are copied before building/running the main target
+add_dependencies(${PROJECT_NAME} copy_assets)
 
 # ------------------------------------------------------------
 # External Dependencies
