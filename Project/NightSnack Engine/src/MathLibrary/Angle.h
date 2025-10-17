@@ -14,75 +14,79 @@
 #include <cmath>
 #include "MathUtils.h"
 
-struct Angle {
-    float radians;  // angle value in radians
+namespace NightSnack {
 
-    /************************************************************************/
-    /*!
-    \brief
-    Creates a new Angle from radians.
+    struct Angle {
+        float radians;  // angle value in radians
 
-    \param rad
-    Angle value in radians.
-    */
-    /************************************************************************/
-    Angle(float rad = 0.0);
+        /************************************************************************/
+        /*!
+        \brief
+        Creates a new Angle from radians.
 
-    /************************************************************************/
-    /*!
-    \brief
-    Create an Angle using degree value.
+        \param rad
+        Angle value in radians.
+        */
+        /************************************************************************/
+        Angle(float rad = 0.0);
 
-    \param rad
-    Angle in degrees.
+        /************************************************************************/
+        /*!
+        \brief
+        Create an Angle using degree value.
 
-    \return
-    A new Angle object stored as radians.
-    */
-    /************************************************************************/
-    static Angle fromDegrees(float deg);
+        \param rad
+        Angle in degrees.
 
-    /************************************************************************/
-    /*!
-    \brief
-    Converts Angle back to degrees.
+        \return
+        A new Angle object stored as radians.
+        */
+        /************************************************************************/
+        static Angle fromDegrees(float deg);
 
-    \return
-    The value of the angle in degrees.
-    */
-    /************************************************************************/
-    float toDegrees() const;
+        /************************************************************************/
+        /*!
+        \brief
+        Converts Angle back to degrees.
 
-    /************************************************************************/
-    /*!
-    \brief
-    Gets the sine of Angle.
+        \return
+        The value of the angle in degrees.
+        */
+        /************************************************************************/
+        float toDegrees() const;
 
-    \return
-    The sine value of the radians.
-    */
-    /************************************************************************/
-    float sin() const;
+        /************************************************************************/
+        /*!
+        \brief
+        Gets the sine of Angle.
 
-    /************************************************************************/
-    /*!
-    \brief
-    Gets the cosine of Angle.
+        \return
+        The sine value of the radians.
+        */
+        /************************************************************************/
+        float sin() const;
 
-    \return
-    The cosine value of the radians.
-    */
-    /************************************************************************/
-    float cos() const;
+        /************************************************************************/
+        /*!
+        \brief
+        Gets the cosine of Angle.
 
-    /************************************************************************/
-    /*!
-    \brief
-    Gets the tangent of Angle.
+        \return
+        The cosine value of the radians.
+        */
+        /************************************************************************/
+        float cos() const;
 
-    \return
-    The tangent value of the radians.
-    */
-    /************************************************************************/
-    float tan() const;
-};
+        /************************************************************************/
+        /*!
+        \brief
+        Gets the tangent of Angle.
+
+        \return
+        The tangent value of the radians.
+        */
+        /************************************************************************/
+        float tan() const;
+    };
+
+}   // NightSnack

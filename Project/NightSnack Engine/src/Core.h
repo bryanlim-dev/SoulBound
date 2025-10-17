@@ -25,118 +25,122 @@
 #include "Systems/IEvent.h"
 #include "CrashLogger.h"
 
-class CoreEngine {
+namespace NightSnack {
 
-public:
-	/************************************************************************/
-	/*!
-	\brief
-	Registers all Components and Systems and initializes Coordinator.
+	class CoreEngine {
 
-	\param windowWidth
-	Application window width.
-	\param windowHeight
-	Application window height.
-	\param windowTitle
-	Application window title.
-	*/
-	/************************************************************************/
-	void Initialize(int windowWidth, int windowHeight, std::string&& windowTitle);
+	public:
+		/************************************************************************/
+		/*!
+		\brief
+		Registers all Components and Systems and initializes Coordinator.
 
-	/************************************************************************/
-	/*!
-	\brief
-	Does not currently do anything, will move all cleanup functions inside
-	here for clean main function.
-	*/
-	/************************************************************************/
-	int Terminate();
+		\param windowWidth
+		Application window width.
+		\param windowHeight
+		Application window height.
+		\param windowTitle
+		Application window title.
+		*/
+		/************************************************************************/
+		void Initialize(int windowWidth, int windowHeight, std::string&& windowTitle);
 
-	/************************************************************************/
-	/*!
-	\brief
-	Updates all systems in m_systems.
-	*/
-	/************************************************************************/
-	void Update();
+		/************************************************************************/
+		/*!
+		\brief
+		Does not currently do anything, will move all cleanup functions inside
+		here for clean main function.
+		*/
+		/************************************************************************/
+		int Terminate();
 
-	/************************************************************************/
-	/*!
-	\brief
-	Registers a system and adds it into m_systems container.
-	Arguments are forwarded to individual system constructors.
-	*/
-	/************************************************************************/
+		/************************************************************************/
+		/*!
+		\brief
+		Updates all systems in m_systems.
+		*/
+		/************************************************************************/
+		void Update();
+
+		/************************************************************************/
+		/*!
+		\brief
+		Registers a system and adds it into m_systems container.
+		Arguments are forwarded to individual system constructors.
+		*/
+		/************************************************************************/
+		template <typename T, typename... Args>
+		void AddSystem(Args&&... args);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Removes a system from the core engine.
+		*/
+		/************************************************************************/
+		template <typename T>
+		void RemoveSystem(std::shared_ptr<T> system);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Obtains a reference to the Coordinator.
+		*/
+		/************************************************************************/
+		Coordinator& GetCoord() { return m_coord; }
+
+		/************************************************************************/
+		/*!
+		\brief
+		Obtains a reference to the Event Dispatcher.
+		*/
+		/************************************************************************/
+		EventDispatcher& GetEventDispatcher() { return core_dispatcher; }
+
+		/************************************************************************/
+		/*!
+		\brief
+		Checks if the application window should close.
+
+		\return
+		Returns true if the application should close, false otherwise.
+		*/
+		/************************************************************************/
+		bool ShouldClose() {
+			return m_coord.GetSystem<ApplicationSystem>().get()->ShouldClose();
+		}
+
+	private:
+		// To store all Systems;
+		std::vector<std::shared_ptr<ISystem>> m_systems;
+
+		// ECS Coordinator;
+		Coordinator m_coord;
+
+		// Event Dispatcher;
+		EventDispatcher core_dispatcher;
+
+		bool m_paused = false;
+	};
+
 	template <typename T, typename... Args>
-	void AddSystem(Args&&... args);
+	void CoreEngine::AddSystem(Args&&... args) {
+		// Ensure T derives from ISystem;
+		static_assert(std::is_base_of<ISystem, T>::value, "T must derive from ISystem");
 
-	/************************************************************************/
-	/*!
-	\brief
-	Removes a system from the core engine.
-	*/
-	/************************************************************************/
-	template <typename T>
-	void RemoveSystem(std::shared_ptr<T> system);
+		// Register the system in Coordinator (returns a shared_ptr<T>);
+		auto systemPtr = m_coord.RegisterSystem<T>(std::forward<Args>(args)...);
 
-	/************************************************************************/
-	/*!
-	\brief
-	Obtains a reference to the Coordinator.
-	*/
-	/************************************************************************/
-	Coordinator& GetCoord() { return m_coord; }
-
-	/************************************************************************/
-	/*!
-	\brief
-	Obtains a reference to the Event Dispatcher.
-	*/
-	/************************************************************************/
-	EventDispatcher& GetEventDispatcher() { return core_dispatcher; }
-
-	/************************************************************************/
-	/*!
-	\brief
-	Checks if the application window should close.
-
-	\return
-	Returns true if the application should close, false otherwise.
-	*/
-	/************************************************************************/
-	bool ShouldClose() {  
-		return m_coord.GetSystem<ApplicationSystem>().get()->ShouldClose();
+		// Add to CoreEngine's vector of systems as ISystem;
+		m_systems.push_back(std::static_pointer_cast<ISystem>(systemPtr));
 	}
 
-private:
-	// To store all Systems;
-	std::vector<std::shared_ptr<ISystem>> m_systems;
+	template <typename T>
+	void CoreEngine::RemoveSystem(std::shared_ptr<T> system) {
+		// Shift unwanted Systems to the end of the vector, then uses erase() to remove them;
+		m_systems.erase(std::remove(m_systems.begin(), m_systems.end(), system), m_systems.end());
+	}
 
-	// ECS Coordinator;
-	Coordinator m_coord;
-
-	// Event Dispatcher;
-	EventDispatcher core_dispatcher;
-
-	bool m_paused = false;
-};
-
-template <typename T, typename... Args>
-void CoreEngine::AddSystem(Args&&... args) {
-	// Ensure T derives from ISystem;
-	static_assert(std::is_base_of<ISystem, T>::value, "T must derive from ISystem");
-
-	// Register the system in Coordinator (returns a shared_ptr<T>);
-	auto systemPtr = m_coord.RegisterSystem<T>(std::forward<Args>(args)...);
-
-	// Add to CoreEngine's vector of systems as ISystem;
-	m_systems.push_back(std::static_pointer_cast<ISystem>(systemPtr));
-}
-
-template <typename T>
-void CoreEngine::RemoveSystem(std::shared_ptr<T> system) {
-	// Shift unwanted Systems to the end of the vector, then uses erase() to remove them;
-	m_systems.erase(std::remove(m_systems.begin(), m_systems.end(), system), m_systems.end());
-}
+}	// NightSnack
 
 #endif // CORE_HPP

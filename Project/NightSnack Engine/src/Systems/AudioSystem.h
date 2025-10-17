@@ -19,192 +19,196 @@
 #include <unordered_map>
 #include <string>
 
-// Forward declaration
-class ResourceManager;
+namespace NightSnack {
 
-enum AUDIO_RESULT
-{
-    AUDIO_SUCCESS,
-    AUDIO_FAIL_INIT,
-    AUDIO_FAIL_SOUND_NOT_FOUND,
-    AUDIO_FAIL_ERROR
-};
+    // Forward declaration
+    class ResourceManager;
 
-class AudioSystem
-{
-private:
-    static AudioSystem* instance;
+    enum AUDIO_RESULT
+    {
+        AUDIO_SUCCESS,
+        AUDIO_FAIL_INIT,
+        AUDIO_FAIL_SOUND_NOT_FOUND,
+        AUDIO_FAIL_ERROR
+    };
 
-    FMOD::System* fmodSystem;
-    ResourceManager* resourceManager;
+    class AudioSystem
+    {
+    private:
+        static AudioSystem* instance;
 
-    // Track active channels separately
-    std::unordered_map<std::size_t, FMOD::Channel*> sfxChannels;
-    std::unordered_map<std::size_t, FMOD::Channel*> musicChannels;
+        FMOD::System* fmodSystem;
+        ResourceManager* resourceManager;
 
-    bool initialized;
+        // Track active channels separately
+        std::unordered_map<std::size_t, FMOD::Channel*> sfxChannels;
+        std::unordered_map<std::size_t, FMOD::Channel*> musicChannels;
 
-    // Private constructor for singleton
-    AudioSystem();
+        bool initialized;
 
-public:
-    ~AudioSystem();
+        // Private constructor for singleton
+        AudioSystem();
 
-    /************************************************************************/
-    /*!
-    \brief
-    Gets instance of AudioSystem
+    public:
+        ~AudioSystem();
 
-    \return
-    Pointer to AudioSystem
-    */
-    /************************************************************************/
-    static AudioSystem* GetInstance();
+        /************************************************************************/
+        /*!
+        \brief
+        Gets instance of AudioSystem
 
-    /************************************************************************/
-    /*!
-    \brief
-    Destroys instance of AudioSystem
+        \return
+        Pointer to AudioSystem
+        */
+        /************************************************************************/
+        static AudioSystem* GetInstance();
 
-    */
-    /************************************************************************/
-    static void DestroyInstance();
+        /************************************************************************/
+        /*!
+        \brief
+        Destroys instance of AudioSystem
 
-    /************************************************************************/
-    /*!
-    \brief
-    Init AudioSystem
+        */
+        /************************************************************************/
+        static void DestroyInstance();
 
-    \return
-    True if succeed, else false
-    */
-    /************************************************************************/
-    bool Initialize();
+        /************************************************************************/
+        /*!
+        \brief
+        Init AudioSystem
 
-    /************************************************************************/
-    /*!
-    \brief
-    Update FMOD system and clean finished sounds
-    */
-    /************************************************************************/
-    void Update();
+        \return
+        True if succeed, else false
+        */
+        /************************************************************************/
+        bool Initialize();
 
-    /************************************************************************/
-    /*!
-    \brief
-    Sets resource manager
+        /************************************************************************/
+        /*!
+        \brief
+        Update FMOD system and clean finished sounds
+        */
+        /************************************************************************/
+        void Update();
 
-    \return
-    Pointer to resource manager
-    */
-    /************************************************************************/
-    void SetResourceManager(ResourceManager* rm);
+        /************************************************************************/
+        /*!
+        \brief
+        Sets resource manager
 
-    /************************************************************************/
-    /*!
-    \brief
-    Load sound effect to memory
+        \return
+        Pointer to resource manager
+        */
+        /************************************************************************/
+        void SetResourceManager(ResourceManager* rm);
 
-    \param path
-    File path of the sound effect
+        /************************************************************************/
+        /*!
+        \brief
+        Load sound effect to memory
 
-    \return
-    Unique sound key
-    */
-    /************************************************************************/
-    std::size_t LoadSFX(const std::string& path);
+        \param path
+        File path of the sound effect
 
-    /************************************************************************/
-    /*!
-    \brief
-    Load music to memory
+        \return
+        Unique sound key
+        */
+        /************************************************************************/
+        std::size_t LoadSFX(const std::string& path);
 
-    \param path
-    File path of the music
+        /************************************************************************/
+        /*!
+        \brief
+        Load music to memory
 
-    \param loop
-    Loop or not; default true
+        \param path
+        File path of the music
 
-    \return
-    Unique music key
-    */
-    /************************************************************************/
-    std::size_t LoadMusic(const std::string& path, bool loop = true);
+        \param loop
+        Loop or not; default true
 
-    
-    /************************************************************************/
-    /*!
-    \brief
-    Play sound by the key
-
-    \param soundKey
-    Sound key to play
-
-    \return
-    True if success, else false
-    */
-    /************************************************************************/
-    bool PlaySound(std::size_t soundKey);
-
-    /************************************************************************/
-    /*!
-    \brief
-    Stop sound by the key
-
-    \param soundKey
-    Sound key to stop
-
-    \return
-    True if success, else false
-    */
-    /************************************************************************/
-    bool StopSound(std::size_t soundKey);
-
-    /************************************************************************/
-    /*!
-    \brief
-    Stop all audio (sound and music)
-    */
-    /************************************************************************/
-    void StopAllSounds();
-
-    /************************************************************************/
-    /*!
-    \brief
-    Pause or resume sound 
-
-    \param soundKey
-    Sound key to pause or play
-
-    \param pause
-    True to pause, false to resume.
-
-    \return
-    True if success, else false
-    */
-    /************************************************************************/
-    bool PauseSound(std::size_t soundKey, bool pause);
-
-    /************************************************************************/
-    /*!
-    \brief
-    Get FMOD system
-
-    \return
-    Pointer to FMOD system
-    */
-    /************************************************************************/
-    FMOD::System* GetFMODSystem() { return fmodSystem; }
+        \return
+        Unique music key
+        */
+        /************************************************************************/
+        std::size_t LoadMusic(const std::string& path, bool loop = true);
 
 
-    /************************************************************************/
-    /*!
-    \brief
-    Check if Audio is init
+        /************************************************************************/
+        /*!
+        \brief
+        Play sound by the key
 
-    \return
-    True if init, else false
-    */
-    /************************************************************************/
-    bool IsInitialized() { return initialized; }
-};
+        \param soundKey
+        Sound key to play
+
+        \return
+        True if success, else false
+        */
+        /************************************************************************/
+        bool PlaySound(std::size_t soundKey);
+
+        /************************************************************************/
+        /*!
+        \brief
+        Stop sound by the key
+
+        \param soundKey
+        Sound key to stop
+
+        \return
+        True if success, else false
+        */
+        /************************************************************************/
+        bool StopSound(std::size_t soundKey);
+
+        /************************************************************************/
+        /*!
+        \brief
+        Stop all audio (sound and music)
+        */
+        /************************************************************************/
+        void StopAllSounds();
+
+        /************************************************************************/
+        /*!
+        \brief
+        Pause or resume sound
+
+        \param soundKey
+        Sound key to pause or play
+
+        \param pause
+        True to pause, false to resume.
+
+        \return
+        True if success, else false
+        */
+        /************************************************************************/
+        bool PauseSound(std::size_t soundKey, bool pause);
+
+        /************************************************************************/
+        /*!
+        \brief
+        Get FMOD system
+
+        \return
+        Pointer to FMOD system
+        */
+        /************************************************************************/
+        FMOD::System* GetFMODSystem() { return fmodSystem; }
+
+
+        /************************************************************************/
+        /*!
+        \brief
+        Check if Audio is init
+
+        \return
+        True if init, else false
+        */
+        /************************************************************************/
+        bool IsInitialized() { return initialized; }
+    };
+
+}   // NightSnack

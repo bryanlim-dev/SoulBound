@@ -22,210 +22,214 @@
 #include "Systems/IEvent.h"
 #include <iostream>
 
- /******************************************************************************/
- /*!
- \class CollisionSystem
- \brief
- Handles collision detection and response between entities. The system checks
- for collisions between dynamic and static objects using AABB and circle shapes,
- updates collision states, applies bounce physics with energy loss, and dispatches
- collision events through the ECS event system.
- */
- /******************************************************************************/
-class CollisionSystem : public ISystem {
-public:
-    /************************************************************************/
+namespace NightSnack {
+
+    /******************************************************************************/
     /*!
+    \class CollisionSystem
     \brief
-    Constructor. Registers the Position, Velocity, and Collider components as
-    system requirements, and initializes the system with an event dispatcher
-
-    \param disp
-    Reference to the EventDispatcher used
+    Handles collision detection and response between entities. The system checks
+    for collisions between dynamic and static objects using AABB and circle shapes,
+    updates collision states, applies bounce physics with energy loss, and dispatches
+    collision events through the ECS event system.
     */
-    /************************************************************************/
-    CollisionSystem(EventDispatcher& disp) 
-    { 
-        // Register the components this system needs:
-        // Position, Velocity, and Collider
-        m_systemSignature.set(GetComponentTypeID<Transform>());
-        m_systemSignature.set(GetComponentTypeID<RigidBody>());
-        m_systemSignature.set(GetComponentTypeID<Collider>());
+    /******************************************************************************/
+    class CollisionSystem : public ISystem {
+    public:
+        /************************************************************************/
+        /*!
+        \brief
+        Constructor. Registers the Position, Velocity, and Collider components as
+        system requirements, and initializes the system with an event dispatcher
 
-        Init(disp); 
-    }
-    /************************************************************************/
-    /*!
-    \brief
-    Init the collision system and subscribe to collision events
+        \param disp
+        Reference to the EventDispatcher used
+        */
+        /************************************************************************/
+        CollisionSystem(EventDispatcher& disp)
+        {
+            // Register the components this system needs:
+            // Position, Velocity, and Collider
+            m_systemSignature.set(GetComponentTypeID<Transform>());
+            m_systemSignature.set(GetComponentTypeID<RigidBody>());
+            m_systemSignature.set(GetComponentTypeID<Collider>());
 
-    \param dispatcher
-    Reference to the EventDispatcher used
-    */
-    /************************************************************************/
-    void Init(EventDispatcher& dispatcher);
+            Init(disp);
+        }
+        /************************************************************************/
+        /*!
+        \brief
+        Init the collision system and subscribe to collision events
 
-    /************************************************************************/
-    /*!
-    \brief
-    Update collision system each frame. reset collision flags and 
-    checks for entity collisions and apply appropriate responses.
+        \param dispatcher
+        Reference to the EventDispatcher used
+        */
+        /************************************************************************/
+        void Init(EventDispatcher& dispatcher);
 
-    \param dt
-    delta time
+        /************************************************************************/
+        /*!
+        \brief
+        Update collision system each frame. reset collision flags and
+        checks for entity collisions and apply appropriate responses.
 
-    \param coord
-    Reference to ECS coordinator
-    */
-    /************************************************************************/
-    void Update(float dt, Coordinator& coord) override;
+        \param dt
+        delta time
 
-    /************************************************************************/
-    /*!
-    \brief
-    Returns name of the system
+        \param coord
+        Reference to ECS coordinator
+        */
+        /************************************************************************/
+        void Update(float dt, Coordinator& coord) override;
 
-    \return
-    String "CollisionSystem"
-    */
-    /************************************************************************/
-    std::string GetName() const { return "CollisionSystem"; }
+        /************************************************************************/
+        /*!
+        \brief
+        Returns name of the system
 
-    /************************************************************************/
-    /*!
-    \brief
-    Returns the system component signature
+        \return
+        String "CollisionSystem"
+        */
+        /************************************************************************/
+        std::string GetName() const { return "CollisionSystem"; }
 
-    \return
-    Required component types
-    */
-    /************************************************************************/
-    Signature GetSignature() const override { return m_systemSignature; }
+        /************************************************************************/
+        /*!
+        \brief
+        Returns the system component signature
 
-    /************************************************************************/
-    /*!
-    \brief
-    Checks for collision between two AABBs (Axis-Aligned Bounding Boxes).
+        \return
+        Required component types
+        */
+        /************************************************************************/
+        Signature GetSignature() const override { return m_systemSignature; }
 
-    \param aPos
-    Position of first AABB.
+        /************************************************************************/
+        /*!
+        \brief
+        Checks for collision between two AABBs (Axis-Aligned Bounding Boxes).
 
-    \param a
-    Collider of the first AABB.
+        \param aPos
+        Position of first AABB.
 
-    \param bPos
-    Position of second AABB.
+        \param a
+        Collider of the first AABB.
 
-    \param b
-    Collider of the second AABB.
+        \param bPos
+        Position of second AABB.
 
-    \return
-    True if the AABBs overlap, else false
-    */
-    /************************************************************************/
-    bool CheckAABBvsAABB(const Vec3& aPos, const Collider& a,
-        const Vec3& bPos, const Collider& b);
+        \param b
+        Collider of the second AABB.
 
-   /************************************************************************/
-   /*!
-   \brief
-   Checks for collision between two circles.
+        \return
+        True if the AABBs overlap, else false
+        */
+        /************************************************************************/
+        bool CheckAABBvsAABB(const Vec3& aPos, const Collider& a,
+            const Vec3& bPos, const Collider& b);
 
-   \param aPos
-   Position of the first circle.
+        /************************************************************************/
+        /*!
+        \brief
+        Checks for collision between two circles.
 
-   \param a
-   Collider of the first circle.
+        \param aPos
+        Position of the first circle.
 
-   \param bPos
-   Position of the second circle.
+        \param a
+        Collider of the first circle.
 
-   \param b
-   Collider of the second circle.
+        \param bPos
+        Position of the second circle.
 
-   \return
-   True if the circles overlap, else false.
-   */
-   /************************************************************************/
-    bool CheckCirclevsCircle(const Vec3& aPos, const Collider& a,
-        const Vec3& bPos, const Collider& b);
+        \param b
+        Collider of the second circle.
 
-   /************************************************************************/
-   /*!
-   \brief
-   Checks for collision between a circle and an AABB.
+        \return
+        True if the circles overlap, else false.
+        */
+        /************************************************************************/
+        bool CheckCirclevsCircle(const Vec3& aPos, const Collider& a,
+            const Vec3& bPos, const Collider& b);
 
-   \param circlePos
-   Position of the circle.
+        /************************************************************************/
+        /*!
+        \brief
+        Checks for collision between a circle and an AABB.
 
-   \param circle
-   Collider of the circle.
+        \param circlePos
+        Position of the circle.
 
-   \param aabbPos
-   Position of the AABB.
+        \param circle
+        Collider of the circle.
 
-   \param aabb
-   Collider of the AABB.
+        \param aabbPos
+        Position of the AABB.
 
-   \return
-   True if the circle intersects with the AABB, else false.
-   */
-   /************************************************************************/
-    bool CheckCirclevsAABB(const Vec3& circlePos, const Collider& circle,
-        const Vec3& aabbPos, const Collider& aabb);
+        \param aabb
+        Collider of the AABB.
 
-   /************************************************************************/
-   /*!
-   \brief
-   Clamps a value between a minimum and maximum
+        \return
+        True if the circle intersects with the AABB, else false.
+        */
+        /************************************************************************/
+        bool CheckCirclevsAABB(const Vec3& circlePos, const Collider& circle,
+            const Vec3& aabbPos, const Collider& aabb);
 
-   \param value
-   Value to clamp
+        /************************************************************************/
+        /*!
+        \brief
+        Clamps a value between a minimum and maximum
 
-   \param min
-   Minimum value
+        \param value
+        Value to clamp
 
-   \param max
-   Maximum value
+        \param min
+        Minimum value
 
-   \return
-   Clamped value
-   */
-   /************************************************************************/
-    float Clamp(float value, float min, float max);
+        \param max
+        Maximum value
 
-   /************************************************************************/
-   /*!
-   \brief
-   Determines whether a velocity should be flipped based on positions and
-   current movement direction.
+        \return
+        Clamped value
+        */
+        /************************************************************************/
+        float Clamp(float value, float min, float max);
 
-   \param pos1
-   Position of the first object
+        /************************************************************************/
+        /*!
+        \brief
+        Determines whether a velocity should be flipped based on positions and
+        current movement direction.
 
-   \param pos2
-   Position of the second object
+        \param pos1
+        Position of the first object
 
-   \param vel1
-   Velocity of the first object
+        \param pos2
+        Position of the second object
 
-   \param dt
-   Delta time
+        \param vel1
+        Velocity of the first object
 
-   \return
-   True if the velocity should flip, else false
-   */
-   /************************************************************************/
-    bool ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt);
+        \param dt
+        Delta time
 
-    float bounciness = 0.6f;      // bounciness (0 = no bounce, 1 = perfect bounce)
-    float minBounceSpeed = 5.0f;  // cutoff to stop bouncing
+        \return
+        True if the velocity should flip, else false
+        */
+        /************************************************************************/
+        bool ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt);
 
-private:
-    Signature m_systemSignature{};
+        float bounciness = 0.6f;      // bounciness (0 = no bounce, 1 = perfect bounce)
+        float minBounceSpeed = 5.0f;  // cutoff to stop bouncing
 
-    // System event dispatcher
-	EventDispatcher* m_dispatcher = nullptr;
-};
+    private:
+        Signature m_systemSignature{};
+
+        // System event dispatcher
+        EventDispatcher* m_dispatcher = nullptr;
+    };
+
+}   // NightSnack
 
 #endif // COLLISION_HPP

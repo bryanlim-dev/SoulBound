@@ -16,22 +16,26 @@
 #include <cstdint>
 #include <bitset>
 
-// Maximum number of entities in the system;
-constexpr size_t MAX_ENTITIES = 6000;
-// Maximum number of components;
-constexpr size_t MAX_COMPONENTS = 32;
+namespace NightSnack {
 
-// Unique IDs;
-using Entity = std::uint32_t;
-using SystemID = std::uint8_t;
-using ComponentType = std::uint8_t;
+	// Maximum number of entities in the system;
+	constexpr size_t MAX_ENTITIES = 2000;
+	// Maximum number of components;
+	constexpr size_t MAX_COMPONENTS = 32;
 
-// Signatures for Systems to recognize which Entities to work on;
-// It is a set of bits from 0 to MAX_COMPONENTS,
-// Whenever a new component is registered, it will have an ID from 0 to MAX_COMPONENTS;
-// Entity Manager, Coordinator and System Manager will each maintain and compare Signatures;
-using Signature = std::bitset<MAX_COMPONENTS>;
+	// Unique IDs;
+	using Entity = std::uint32_t;
+	using SystemID = std::uint8_t;
+	using ComponentType = std::uint8_t;
 
-constexpr Entity INVALID_ENTITY = UINT32_MAX;
+	// Signatures for Systems to recognize which Entities to work on;
+	// It is a set of bits from 0 to MAX_COMPONENTS,
+	// Whenever a new component is registered, it will have an ID from 0 to MAX_COMPONENTS;
+	// Entity Manager, Coordinator and System Manager will each maintain and compare Signatures;
+	using Signature = std::bitset<MAX_COMPONENTS>;
+
+	constexpr Entity INVALID_ENTITY = UINT32_MAX;
+
+}	// NightSnack
 
 #endif // ENTITY_HPP

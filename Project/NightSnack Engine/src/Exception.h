@@ -20,31 +20,33 @@
 // Macro to throw an IException with file info
 #define THROW_IEXCEPTION(msg, type) IException((msg), (type), __FILE__)
 
-// Different types of exceptions
-enum class ExceptionType
-{
-    General,
-    AppWindow,
-    Input,
-    Collision,
-    Graphics,
-	Physics,
-    ECS
-};
+namespace NightSnack {
 
-/************************************************************************/
-/*!
-\brief
-Converts an ExceptionType enum value to its corresponding string representation.
-
-\param[in] type
-The ExceptionType enum value to convert.
-*/
-/************************************************************************/
-inline const char* ExceptionTypeToString(ExceptionType type)
-{
-    switch (type)
+    // Different types of exceptions
+    enum class ExceptionType
     {
+        General,
+        AppWindow,
+        Input,
+        Collision,
+        Graphics,
+        Physics,
+        ECS
+    };
+
+    /************************************************************************/
+    /*!
+    \brief
+    Converts an ExceptionType enum value to its corresponding string representation.
+
+    \param[in] type
+    The ExceptionType enum value to convert.
+    */
+    /************************************************************************/
+    inline const char* ExceptionTypeToString(ExceptionType type)
+    {
+        switch (type)
+        {
         case ExceptionType::General:   return "General";
         case ExceptionType::AppWindow: return "AppWindow";
         case ExceptionType::Input:     return "Input";
@@ -53,54 +55,56 @@ inline const char* ExceptionTypeToString(ExceptionType type)
         case ExceptionType::Physics:   return "Physics";
         case ExceptionType::ECS:       return "ECS";
         default:                       return "Unknown";
-    }
-}
-
-// IException class encapsulates error messages, types, and sources for exceptions.
-class IException
-{
-public:
-    /************************************************************************/
-    /*!
-    \brief
-	Default constructor to setup initial IException values;
-    */
-    /************************************************************************/
-    IException(std::string message, ExceptionType type = ExceptionType::General, std::string source = __FILE__)
-        : m_message(std::move(message)), m_type(type), m_source(std::move(source)) {
+        }
     }
 
-    // Getters
-    ExceptionType type() const noexcept
-    { 
-        return m_type; 
-    }
-    const std::string& message() const noexcept
+    // IException class encapsulates error messages, types, and sources for exceptions.
+    class IException
     {
-        return m_message;
-    }
-    const std::string& source() const noexcept 
-    { 
-        return m_source; 
-    }
+    public:
+        /************************************************************************/
+        /*!
+        \brief
+        Default constructor to setup initial IException values;
+        */
+        /************************************************************************/
+        IException(std::string message, ExceptionType type = ExceptionType::General, std::string source = __FILE__)
+            : m_message(std::move(message)), m_type(type), m_source(std::move(source)) {
+        }
 
-    /************************************************************************/
-    /*!
-    \brief
-	Prints the exception details to standard error output.
-    */
-    /************************************************************************/
-    void print() const
-    {
-        std::cerr << "[Exception]"
-            << "[" << ExceptionTypeToString(m_type) << "] \n"
-            << "[" << (m_source.empty() ? "Unknown" : m_source) << "]\n"
-            << m_message << std::endl;
-    }
+        // Getters
+        ExceptionType type() const noexcept
+        {
+            return m_type;
+        }
+        const std::string& message() const noexcept
+        {
+            return m_message;
+        }
+        const std::string& source() const noexcept
+        {
+            return m_source;
+        }
 
-private:
-	// Exception details
-    ExceptionType m_type;
-    std::string m_message;
-    std::string m_source;
-};
+        /************************************************************************/
+        /*!
+        \brief
+        Prints the exception details to standard error output.
+        */
+        /************************************************************************/
+        void print() const
+        {
+            std::cerr << "[Exception]"
+                << "[" << ExceptionTypeToString(m_type) << "] \n"
+                << "[" << (m_source.empty() ? "Unknown" : m_source) << "]\n"
+                << m_message << std::endl;
+        }
+
+    private:
+        // Exception details
+        ExceptionType m_type;
+        std::string m_message;
+        std::string m_source;
+    };
+
+}   // NightSnack

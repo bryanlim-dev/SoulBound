@@ -27,30 +27,30 @@
 #include "Systems/Input.h"
 #include "Systems/IEvent.h"
 
-using json = nlohmann::json;
+namespace NightSnack {
 
-class EntityFactory : public ISystem {
+	class EntityFactory : public ISystem {
 
-public:
-	/************************************************************************/
-	/*!
-	\brief
-	Constructor for Factory, requires coordinator, event dispatcher and file
-	of archetypes.
-	Creates the prefabManager that will register all component loaders that
-	will help with entity creation.
-	*/
-	/************************************************************************/
-	EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& archetypes_filename)
-		: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord } {
+	public:
+		/************************************************************************/
+		/*!
+		\brief
+		Constructor for Factory, requires coordinator, event dispatcher and file
+		of archetypes.
+		Creates the prefabManager that will register all component loaders that
+		will help with entity creation.
+		*/
+		/************************************************************************/
+		EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& archetypes_filename)
+			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord } {
 
-		m_prefabManager.Initialize();
-		LoadJsonFile(archetypes_filename);
+			m_prefabManager.Initialize();
+			LoadJsonFile(archetypes_filename);
 
-		// Setup input events;
-		m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
-			if (event.pressed == InputEvent::InputActionState::Pressed) {
-				switch (event.inputAction) {
+			// Setup input events;
+			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
+				if (event.pressed == InputEvent::InputActionState::Pressed) {
+					switch (event.inputAction) {
 					case InputEvent::InputAction::CreateSquare:
 						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
 						Create("Square");
@@ -78,124 +78,126 @@ public:
 						HalfEntities();
 						//std::cout << "Removed Entities!\n";
 						break;
+					}
 				}
+
+				});
+		}
+
+		// For now the Factory will read the json file by itself, in M2 will transfer responsibility to ResourceManager;
+		void LoadJsonFile(std::string const& filename) {
+			std::ifstream file(filename);
+			if (!file.is_open()) {
+				throw std::runtime_error("Failed to open archetypes file: " + filename);
 			}
 
-			});
-	}
-
-	// For now the Factory will read the json file by itself, in M2 will transfer responsibility to ResourceManager;
-	void LoadJsonFile(std::string const& filename) {
-		std::ifstream file(filename);
-		if (!file.is_open()) {
-			throw std::runtime_error("Failed to open archetypes file: " + filename);
+			try {
+				file >> m_archetypes;
+			}
+			catch (json::parse_error& e) {
+				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
+			}
 		}
 
-		try {
-			file >> m_archetypes;
-		}
-		catch (json::parse_error& e) {
-			throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
-		}
-	}
+		/************************************************************************/
+		/*!
+		\brief
+		Currently does not do anything, but is required to be defined by ISystem
+		*/
+		/************************************************************************/
+		void Update(float dt, Coordinator& coord) override;
 
-	/************************************************************************/
-	/*!
-	\brief
-	Currently does not do anything, but is required to be defined by ISystem
-	*/
-	/************************************************************************/
-	void Update(float dt, Coordinator& coord) override;
+		// Required functions from base class ISystem.
+		Signature GetSignature() const override { return Signature{}; }
+		std::string GetName() const override { return "EntityFactory"; }
 
-	// Required functions from base class ISystem.
-	Signature GetSignature() const override { return Signature{}; }
-	std::string GetName() const override { return "EntityFactory"; }
+		/************************************************************************/
+		/*!
+		\brief
+		Creates an entity with the name of desired prefab.
 
-	/************************************************************************/
-	/*!
-	\brief
-	Creates an entity with the name of desired prefab.
+		\param name
+		Name of prefab.
 
-	\param name
-	Name of prefab.
+		\return
+		Returns ID of entity created.
+		*/
+		/************************************************************************/
+		Entity Create(std::string const& name);
 
-	\return
-	Returns ID of entity created.
-	*/
-	/************************************************************************/
-	Entity Create(std::string const& name);
+		/************************************************************************/
+		/*!
+		\brief
+		Creates an entity with the name of desired prefab and with a specific
+		transformation to be applied on the Entity.
 
-	/************************************************************************/
-	/*!
-	\brief
-	Creates an entity with the name of desired prefab and with a specific
-	transformation to be applied on the Entity.
+		\param name
+		Name of prefab.
+		\param trans
+		Transformation to be applied.
 
-	\param name
-	Name of prefab.
-	\param trans
-	Transformation to be applied.
+		\return
+		Returns ID of entity created.
+		*/
+		/************************************************************************/
+		Entity Create(std::string const& name, Transform trans);
 
-	\return
-	Returns ID of entity created.
-	*/
-	/************************************************************************/
-	Entity Create(std::string const& name, Transform trans);
+		/************************************************************************/
+		/*!
+		\brief
+		Creates an entity by clone from a specific entity's prefab and applying a
+		transformation on the created entity.
 
-	/************************************************************************/
-	/*!
-	\brief
-	Creates an entity by clone from a specific entity's prefab and applying a
-	transformation on the created entity.
+		\param e
+		Entity to be cloned from.
+		\param trans
+		Transform of new entity.
 
-	\param e
-	Entity to be cloned from.
-	\param trans
-	Transform of new entity.
+		\return
+		Returns ID of entity cloned.
+		*/
+		/************************************************************************/
+		Entity Clone(Entity e, Transform trans);
 
-	\return
-	Returns ID of entity cloned.
-	*/
-	/************************************************************************/
-	Entity Clone(Entity e, Transform trans);
+		/************************************************************************/
+		/*!
+		\brief
+		Creates entites with random transforms. until the number of living entities
+		has doubled.
+		*/
+		/************************************************************************/
+		void DoubleEntities();
 
-	/************************************************************************/
-	/*!
-	\brief
-	Creates entites with random transforms. until the number of living entities 
-	has doubled.
-	*/
-	/************************************************************************/
-	void DoubleEntities();
+		/************************************************************************/
+		/*!
+		\brief
+		Removes entities until half the current living entities (except for default
+		testing scene).
+		*/
+		/************************************************************************/
+		void HalfEntities();
 
-	/************************************************************************/
-	/*!
-	\brief
-	Removes entities until half the current living entities (except for default
-	testing scene).
-	*/
-	/************************************************************************/
-	void HalfEntities();
+		/************************************************************************/
+		/*!
+		\brief
+		Adds entity to m_toBeDestroyed (These entities will be destroyed at the
+		end of the core loop).
+		*/
+		/************************************************************************/
+		void Remove(Entity e);
 
-	/************************************************************************/
-	/*!
-	\brief
-	Adds entity to m_toBeDestroyed (These entities will be destroyed at the
-	end of the core loop).
-	*/
-	/************************************************************************/
-	void Remove(Entity e);
+		std::vector<Entity> m_toBeDestroyed;
 
-	std::vector<Entity> m_toBeDestroyed;
+	private:
+		Coordinator& m_coord;
+		PrefabManager m_prefabManager;
+		EventDispatcher* m_dispatcher;
+		json m_archetypes{};
 
-private:
-	Coordinator& m_coord;
-	PrefabManager m_prefabManager;
-	EventDispatcher* m_dispatcher;
-	json m_archetypes{};
+		// map of prefab name to entity;
+		std::unordered_map<Entity, std::string> entityToPrefab;
+	};
 
-	// map of prefab name to entity;
-	std::unordered_map<Entity, std::string> entityToPrefab;
-};
+}	// NightSnack
 
 #endif // ENTITYFACTORY_H

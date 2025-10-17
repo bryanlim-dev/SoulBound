@@ -21,169 +21,173 @@
 #include "Systems/Timer.h"
 #include "Systems/IEvent.h"
 
-class ApplicationSystem : public ISystem
-{
-public:
-	/************************************************************************/
-	/*!
-	\brief
-	Default constructor to create a window with given width, height and title.
+namespace NightSnack {
 
-	\param[in] width
-	Width of the application window
+	class ApplicationSystem : public ISystem
+	{
+	public:
+		/************************************************************************/
+		/*!
+		\brief
+		Default constructor to create a window with given width, height and title.
 
-	\param[in] height
-	Height of the application window
+		\param[in] width
+		Width of the application window
 
-	\param[in] title
-	Title of the application window
+		\param[in] height
+		Height of the application window
 
-	\param[in] coord
-	Reference to the ECS Coordinator
+		\param[in] title
+		Title of the application window
 
-	\param[in] dispatcher
-	Reference to the EventDispatcher used for system events
-	*/
-	/************************************************************************/
-	ApplicationSystem(int width, int height, std::string const& title, Coordinator& coord, EventDispatcher& dispatcher);
+		\param[in] coord
+		Reference to the ECS Coordinator
 
-	/************************************************************************/
-	/*!
-	\brief
-	Destructor to clean up and terminate GLFW.
-	*/
-	/************************************************************************/
-	~ApplicationSystem();
+		\param[in] dispatcher
+		Reference to the EventDispatcher used for system events
+		*/
+		/************************************************************************/
+		ApplicationSystem(int width, int height, std::string const& title, Coordinator& coord, EventDispatcher& dispatcher);
 
-	/************************************************************************/
-	/*!
-	\brief
-	Sets up subscribers to system events.
+		/************************************************************************/
+		/*!
+		\brief
+		Destructor to clean up and terminate GLFW.
+		*/
+		/************************************************************************/
+		~ApplicationSystem();
 
-	\param[in] coord
-	Reference to the ECS Coordinator
-	*/
-	/************************************************************************/
-	void Init(Coordinator& Coord);
+		/************************************************************************/
+		/*!
+		\brief
+		Sets up subscribers to system events.
 
-	/************************************************************************/
-	/*!
-	\brief
-	Updates the application system each frame, by polling events and
-	updating the window title with FPS and entity count.
+		\param[in] coord
+		Reference to the ECS Coordinator
+		*/
+		/************************************************************************/
+		void Init(Coordinator& Coord);
 
-	\param[in] dt
-	Delta time since last frame
+		/************************************************************************/
+		/*!
+		\brief
+		Updates the application system each frame, by polling events and
+		updating the window title with FPS and entity count.
 
-	\param[in] coord
-	Reference to the ECS Coordinator
-	*/
-	/************************************************************************/
-	void Update(float dt, Coordinator& coord) override;
+		\param[in] dt
+		Delta time since last frame
 
-	/************************************************************************/
-	/*!
-	\brief
-	Returns name of the system
-	*/
-	/************************************************************************/
-	std::string GetName() const { return "ApplicationSystem"; }
+		\param[in] coord
+		Reference to the ECS Coordinator
+		*/
+		/************************************************************************/
+		void Update(float dt, Coordinator& coord) override;
 
-	/************************************************************************/
-	/*!
-	\brief
-	Polls for and processes events, such as keyboard and mouse input.
-	*/
-	/************************************************************************/
-	void PollEvents();
+		/************************************************************************/
+		/*!
+		\brief
+		Returns name of the system
+		*/
+		/************************************************************************/
+		std::string GetName() const { return "ApplicationSystem"; }
 
-	/************************************************************************/
-	/*!
-	\brief
-	Swaps the front and back buffers of the window.
-	*/
-	/************************************************************************/
-	void SwapBuffers();
+		/************************************************************************/
+		/*!
+		\brief
+		Polls for and processes events, such as keyboard and mouse input.
+		*/
+		/************************************************************************/
+		void PollEvents();
 
-	/************************************************************************/
-	/*!
-	\brief
-	Checks if the window should close (e.g., if the user has requested to close it).
-	*/
-	/************************************************************************/
-	bool ShouldClose() const;
+		/************************************************************************/
+		/*!
+		\brief
+		Swaps the front and back buffers of the window.
+		*/
+		/************************************************************************/
+		void SwapBuffers();
 
-	/************************************************************************/
-	/*!
-	\brief
-	Updates the window title with the provided title string.
+		/************************************************************************/
+		/*!
+		\brief
+		Checks if the window should close (e.g., if the user has requested to close it).
+		*/
+		/************************************************************************/
+		bool ShouldClose() const;
 
-	\param[in] window
-	GLFWwindow pointer to the application window
+		/************************************************************************/
+		/*!
+		\brief
+		Updates the window title with the provided title string.
 
-	\param[in] title
-	Title string to set for the window
-	*/
-	/************************************************************************/
-	void SetWindowTitle(GLFWwindow* window, const char* title);
+		\param[in] window
+		GLFWwindow pointer to the application window
 
-	/************************************************************************/
-	/*!
-	\brief
-	Gets the current width of the application window.
-	*/
-	/************************************************************************/
-	int GetWidth() const { return m_appWidth; }
+		\param[in] title
+		Title string to set for the window
+		*/
+		/************************************************************************/
+		void SetWindowTitle(GLFWwindow* window, const char* title);
 
-	/************************************************************************/
-	/*!
-	\brief
-	Gets the current height of the application window.
-	*/
-	/************************************************************************/
-	int GetHeight() const { return m_appHeight; }
+		/************************************************************************/
+		/*!
+		\brief
+		Gets the current width of the application window.
+		*/
+		/************************************************************************/
+		int GetWidth() const { return m_appWidth; }
 
-	/************************************************************************/
-	/*!
-	\brief
-	Gets the native GLFW window handle.
-	*/
-	/************************************************************************/
-	GLFWwindow* GetNativeHandle() const { return m_windowHandle; }
+		/************************************************************************/
+		/*!
+		\brief
+		Gets the current height of the application window.
+		*/
+		/************************************************************************/
+		int GetHeight() const { return m_appHeight; }
 
-	/************************************************************************/
-	/*!
-	\brief
-	Gets the Timer instance for managing frame timing and system timers.
-	*/
-	/************************************************************************/
-	Timer& GetTimer() { return m_timer; }
+		/************************************************************************/
+		/*!
+		\brief
+		Gets the native GLFW window handle.
+		*/
+		/************************************************************************/
+		GLFWwindow* GetNativeHandle() const { return m_windowHandle; }
 
-	Signature GetSignature() const override { return m_systemSignature; }
+		/************************************************************************/
+		/*!
+		\brief
+		Gets the Timer instance for managing frame timing and system timers.
+		*/
+		/************************************************************************/
+		Timer& GetTimer() { return m_timer; }
 
-private:
-	/************************************************************************/
-	/*!
-	\brief
-	Callback function triggered by GLFW when the framebuffer is resized.
-	*/
-	/************************************************************************/
-	static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
+		Signature GetSignature() const override { return m_systemSignature; }
 
-	// Window properties
-	GLFWwindow* m_windowHandle{ nullptr };
-	int m_appWidth { 1600 };
-	int m_appHeight { 900 };
-	std::string m_appTitle;
+	private:
+		/************************************************************************/
+		/*!
+		\brief
+		Callback function triggered by GLFW when the framebuffer is resized.
+		*/
+		/************************************************************************/
+		static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 
-	// Tick Tocker
-	Timer m_timer;
-	bool systemTimersEnabled = false;
+		// Window properties
+		GLFWwindow* m_windowHandle{ nullptr };
+		int m_appWidth{ 1600 };
+		int m_appHeight{ 900 };
+		std::string m_appTitle;
 
-	Signature m_systemSignature{};
+		// Tick Tocker
+		Timer m_timer;
+		bool systemTimersEnabled = false;
 
-	// System event dispatcher
-	EventDispatcher* m_dispatcher = nullptr;
-};
+		Signature m_systemSignature{};
+
+		// System event dispatcher
+		EventDispatcher* m_dispatcher = nullptr;
+	};
+
+}	// NightSnack
 
 #endif // APPLICATION_HPP

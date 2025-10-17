@@ -16,362 +16,366 @@
 #include <cmath>
 #include <stdexcept>
 
-// Vec2
-struct Vec2 {
-    float x, y;
+namespace NightSnack {
+
+    // Vec2
+    struct Vec2 {
+        float x, y;
+
+        /************************************************************************/
+        /*!
+        \brief
+        2D vector with given values, defaulting to (0,0).
+
+        \param x
+        x of the vector.
+
+        \param y
+        y of the vector.
+        */
+        /************************************************************************/
+        Vec2(float x = 0.0, float y = 0.0);
+
+        /************************************************************************/
+        /*!
+        \brief
+        Compute dot product between vector and other.
+
+        \param other
+        Other vector.
+
+        \return
+        Scalar of the dot product.
+        */
+        /************************************************************************/
+        float dot(const Vec2& other) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Compute 2d cross product.
+
+        \param other
+        Other vector.
+
+        \return
+        Scalar of the cross product.
+        */
+        /************************************************************************/
+        float cross(const Vec2& other) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Addition of vector
+
+        \param other
+        Other vector to add.
+
+        \return
+        Sum of the new vector.
+        */
+        /************************************************************************/
+        Vec2 operator+(const Vec2& other) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Subtraction of vector.
+
+        \param other
+        Other vector to subtract.
+
+        \return
+        New vector after subtracting.
+        */
+        /************************************************************************/
+        Vec2 operator-(const Vec2& other) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Multiplication of scalar.
+
+        \param scalar
+        Scalar to multiply.
+
+        \return
+        New scalar after multiplying.
+        */
+        /************************************************************************/
+        Vec2 operator*(float scalar) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Division of scalar.
+
+        \param scalar
+        Scalar to divide.
+
+        \return
+        New scalar after dividing.
+        */
+        /************************************************************************/
+        Vec2 operator/(float scalar) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Overloaded operator for dot product.
+
+        \param other
+        Other vector.
+
+        \return
+        New scalar after multiplying.
+        */
+        /************************************************************************/
+        float operator*(const Vec2& other) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Overloaded operator for cross product.
+
+        \param other
+        Other vector.
+
+        \return
+        New scalar after cross product.
+        */
+        /************************************************************************/
+        float operator^(const Vec2& other) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Compute length of the vector.
+
+        \return
+        Magnitude.
+        */
+        /************************************************************************/
+        float magnitude() const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Return normalized copy of this vector.
+
+        \return
+        Unit vector pointing in same direction.
+        */
+        /************************************************************************/
+        Vec2 normalized() const;  // returns a unit vector
+
+        /************************************************************************/
+        /*!
+        \brief
+        Normalize this vector in place.
+        */
+        /************************************************************************/
+        void normalize();         // modifies this vector in-place
+    };
 
     /************************************************************************/
     /*!
     \brief
-    2D vector with given values, defaulting to (0,0).
+    Overloaded output stream operator for printing Vec2.
 
-    \param x
-    x of the vector.
+    \param os
+    Output stream.
 
-    \param y
-    y of the vector.
-    */
-    /************************************************************************/
-    Vec2(float x = 0.0, float y = 0.0);
-
-    /************************************************************************/
-    /*!
-    \brief
-    Compute dot product between vector and other.
-
-    \param other
-    Other vector.
+    \param v
+    Vector to print.
 
     \return
-    Scalar of the dot product.
+    Modified output stream with vector formatted as x,y
     */
     /************************************************************************/
-    float dot(const Vec2& other) const;
+    std::ostream& operator<<(std::ostream& os, const Vec2& v);
+
+
+    // Vec3
+    struct Vec3 {
+        float x, y, z;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Construct a 3D vector with default to (0,0,0).
+
+        \param x
+        x of the vector.
+
+        \param y
+        y of the vector.
+
+        \param z
+        Z of the vector.
+        */
+        /************************************************************************/
+        Vec3(float x = 0.0, float y = 0.0, float z = 0.0);
+
+        /************************************************************************/
+        /*!
+        \brief
+        Compute dot product between vector and other.
+
+        \param other
+        Other vector.
+
+        \return
+        Scalar of the dot product.
+        */
+        /************************************************************************/
+        float dot(const Vec3& other) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Compute 3d cross product.
+
+        \param other
+        Other vector.
+
+        \return
+        New vec3 cross product result.
+        */
+        /************************************************************************/
+        Vec3 cross(const Vec3& other) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Addition of vectors.
+
+        \param other
+        Vector to add.
+
+        \return
+        Sum of the two vectors.
+        */
+        /************************************************************************/
+        Vec3 operator+(const Vec3& other) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Subtraction of vectors.
+
+        \param other
+        Vector to subtract.
+
+        \return
+        Result of subtracting the two vectors.
+        */
+        /************************************************************************/
+        Vec3 operator-(const Vec3& other) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Multiplication of vectors.
+
+        \param scalar
+        Scalar to multiply.
+
+        \return
+        Scaled vector.
+        */
+        /************************************************************************/
+        Vec3 operator*(float scalar) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Division of vectors.
+
+        \param scalar
+        Scalar to divide.
+
+        \return
+        Scaled vector.
+        */
+        /************************************************************************/
+        Vec3 operator/(float scalar) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Overloaded dot product.
+
+        \param other
+        Other vector.
+
+        \return
+        Scalar dot product.
+        */
+        /************************************************************************/
+        float operator*(const Vec3& other) const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Overloaded cross product.
+
+        \param other
+        Other vector.
+
+        \return
+        Scalar cross product.
+        */
+        /************************************************************************/
+        Vec3 operator^(const Vec3& other) const;   // cross
+
+        /************************************************************************/
+        /*!
+        \brief
+        Compute length of the vector.
+
+        \return
+        Magnitude.
+        */
+        /************************************************************************/
+        float magnitude() const;
+
+        /************************************************************************/
+        /*!
+        \brief
+        Return normalized copy of this vector.
+
+        \return
+        Unit vector pointing in same direction.
+        */
+        /************************************************************************/
+        Vec3 normalized() const;  // returns a unit vector
+
+        /************************************************************************/
+        /*!
+        \brief
+        Normalize this vector in place.
+        */
+        /************************************************************************/
+        void normalize();         // modifies this vector in-place
+    };
 
     /************************************************************************/
     /*!
     \brief
-    Compute 2d cross product.
+    Overloaded output stream operator for printing Vec3.
 
-    \param other
-    Other vector.
+    \param os
+    Output stream.
+
+    \param v
+    Vector to print.
 
     \return
-    Scalar of the cross product.
+    Modified output stream with vector formatted as x,y,z
     */
     /************************************************************************/
-    float cross(const Vec2& other) const;
+    std::ostream& operator<<(std::ostream& os, const Vec3& v);
 
-    /************************************************************************/
-    /*!
-    \brief
-    Addition of vector
-
-    \param other
-    Other vector to add.
-
-    \return
-    Sum of the new vector.
-    */
-    /************************************************************************/
-    Vec2 operator+(const Vec2& other) const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Subtraction of vector.
-
-    \param other
-    Other vector to subtract.
-
-    \return
-    New vector after subtracting.
-    */
-    /************************************************************************/
-    Vec2 operator-(const Vec2& other) const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Multiplication of scalar.
-
-    \param scalar
-    Scalar to multiply.
-
-    \return
-    New scalar after multiplying.
-    */
-    /************************************************************************/
-    Vec2 operator*(float scalar) const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Division of scalar.
-
-    \param scalar
-    Scalar to divide.
-
-    \return
-    New scalar after dividing.
-    */
-    /************************************************************************/
-    Vec2 operator/(float scalar) const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Overloaded operator for dot product.
-
-    \param other
-    Other vector.
-
-    \return
-    New scalar after multiplying.
-    */
-    /************************************************************************/
-    float operator*(const Vec2& other) const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Overloaded operator for cross product.
-
-    \param other
-    Other vector.
-
-    \return
-    New scalar after cross product.
-    */
-    /************************************************************************/
-    float operator^(const Vec2& other) const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Compute length of the vector.
-
-    \return
-    Magnitude.
-    */
-    /************************************************************************/
-    float magnitude() const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Return normalized copy of this vector.
-
-    \return
-    Unit vector pointing in same direction.
-    */
-    /************************************************************************/
-    Vec2 normalized() const;  // returns a unit vector
-
-    /************************************************************************/
-    /*!
-    \brief
-    Normalize this vector in place.
-    */
-    /************************************************************************/
-    void normalize();         // modifies this vector in-place
-};
-
-/************************************************************************/
-/*!
-\brief
-Overloaded output stream operator for printing Vec2.
-
-\param os
-Output stream.
-
-\param v
-Vector to print.
-
-\return
-Modified output stream with vector formatted as x,y
-*/
-/************************************************************************/
-std::ostream& operator<<(std::ostream& os, const Vec2& v);
-
-
-// Vec3
-struct Vec3 {
-    float x, y, z;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Construct a 3D vector with default to (0,0,0).
-
-    \param x
-    x of the vector.
-
-    \param y
-    y of the vector.
-
-    \param z
-    Z of the vector.
-    */
-    /************************************************************************/
-    Vec3(float x = 0.0, float y = 0.0, float z = 0.0);
-
-    /************************************************************************/
-    /*!
-    \brief
-    Compute dot product between vector and other.
-
-    \param other
-    Other vector.
-
-    \return
-    Scalar of the dot product.
-    */
-    /************************************************************************/
-    float dot(const Vec3& other) const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Compute 3d cross product.
-
-    \param other
-    Other vector.
-
-    \return
-    New vec3 cross product result.
-    */
-    /************************************************************************/
-    Vec3 cross(const Vec3& other) const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Addition of vectors.
-
-    \param other
-    Vector to add.
-
-    \return
-    Sum of the two vectors.
-    */
-    /************************************************************************/
-    Vec3 operator+(const Vec3& other) const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Subtraction of vectors.
-
-    \param other
-    Vector to subtract.
-
-    \return
-    Result of subtracting the two vectors.
-    */
-    /************************************************************************/
-    Vec3 operator-(const Vec3& other) const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Multiplication of vectors.
-
-    \param scalar
-    Scalar to multiply.
-
-    \return
-    Scaled vector.
-    */
-    /************************************************************************/
-    Vec3 operator*(float scalar) const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Division of vectors.
-
-    \param scalar
-    Scalar to divide.
-
-    \return
-    Scaled vector.
-    */
-    /************************************************************************/
-    Vec3 operator/(float scalar) const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Overloaded dot product.
-
-    \param other
-    Other vector.
-
-    \return
-    Scalar dot product.
-    */
-    /************************************************************************/
-    float operator*(const Vec3& other) const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Overloaded cross product.
-
-    \param other
-    Other vector.
-
-    \return
-    Scalar cross product.
-    */
-    /************************************************************************/
-    Vec3 operator^(const Vec3& other) const;   // cross
-
-    /************************************************************************/
-    /*!
-    \brief
-    Compute length of the vector.
-
-    \return
-    Magnitude.
-    */
-    /************************************************************************/
-    float magnitude() const;
-
-    /************************************************************************/
-    /*!
-    \brief
-    Return normalized copy of this vector.
-
-    \return
-    Unit vector pointing in same direction.
-    */
-    /************************************************************************/
-    Vec3 normalized() const;  // returns a unit vector
-
-    /************************************************************************/
-    /*!
-    \brief
-    Normalize this vector in place.
-    */
-    /************************************************************************/
-    void normalize();         // modifies this vector in-place
-};
-
-/************************************************************************/
-/*!
-\brief
-Overloaded output stream operator for printing Vec3.
-
-\param os
-Output stream.
-
-\param v
-Vector to print.
-
-\return
-Modified output stream with vector formatted as x,y,z
-*/
-/************************************************************************/
-std::ostream& operator<<(std::ostream& os, const Vec3& v);
+}   // NightSnack

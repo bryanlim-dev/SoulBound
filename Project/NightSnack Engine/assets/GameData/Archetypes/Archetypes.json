@@ -1,9 +1,10 @@
 {
   "Square": {
-    "Position": { "x": 0.0, "y": 0.0 },
-    "Rotation": { "degrees": 0.0 },
-    "Scale": { "x": 20.0, "y": 20.0 },
-
+    "Transform": {
+      "Position": { "x": 0.0, "y": 0.0, "z": 1.0 },
+      "Rotation": 0.0,
+      "Scale": { "x": 20.0, "y": 20.0 }
+    },
     "Renderable": {
       "meshName": "square",
       "materialName": "ColorMat",
@@ -13,10 +14,11 @@
   },
 
   "Circle": {
-    "Position": { "x": 0.0, "y": 0.0 },
-    "Rotation": { "degrees": 0.0 },
-    "Scale": { "x": 50.0, "y": 35.0 },
-
+    "Transform": {
+      "Position": { "x": 0.0, "y": 0.0, "z": 1.0 },
+      "Rotation": 0.0,
+      "Scale": { "x": 50.0, "y": 35.0 }
+    },
     "Renderable": {
       "meshName": "circle",
       "materialName": "ColorMat",
@@ -26,10 +28,22 @@
   },
 
   "Player": {
-    "Position": { "x": 0.0, "y": 0.0 },
-    "Rotation": { "degrees": 0.0 },
-    "Scale": { "x": 50.0, "y": 50.0 },
-
+    "Transform": {
+      "Position": { "x": 0.0, "y": 0.0, "z": 1.0 },
+      "Rotation": 0.0,
+      "Scale": { "x": 50.0, "y": 50.0 }
+    },
+    "RigidBody": {
+      "mass": 1.0,
+      "useGravity": true
+    },
+    "Collider": {
+      "shape": "Circle",
+      "type": "Solid",
+      "isStatic": false,
+      "radius": 50.0
+    },
+    "Force": { "fx": 0.0, "fy": 0.0 },
     "Renderable": {
       "meshName": "circle",
       "materialName": "bananaMat",
