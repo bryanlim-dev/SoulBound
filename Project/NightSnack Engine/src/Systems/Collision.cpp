@@ -50,19 +50,19 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
         {
             if (itB == itA) continue;
 
-            auto& posA = coord.GetComponent<Position>(*itA);
-            auto& velA = coord.ModifyComponent<Velocity>(*itA);
+            auto& posA = coord.GetComponent<Transform>(*itA).pos;
+            auto& velA = coord.ModifyComponent<RigidBody>(*itA).vel;
             auto& colA = coord.ModifyComponent<Collider>(*itA);
 
-            auto& posB = coord.GetComponent<Position>(*itB);
-            auto& velB = coord.ModifyComponent<Velocity>(*itB);
+            auto& posB = coord.GetComponent<Transform>(*itB).pos;
+            auto& velB = coord.ModifyComponent<RigidBody>(*itB).vel;
             auto& colB = coord.ModifyComponent<Collider>(*itB);
 
             // Skip if both are static
             if (colA.isStatic) continue;
 
             bool collision = false;
-            Position nextPosA{ posA.x + velA.dx * dt, posA.y + velA.dy * dt};
+            Vec3 nextPosA{ posA.x + velA.x * dt, posA.y + velA.y * dt};
 
             // Check collision
             if (colA.shape == ShapeType::AABB && colB.shape == ShapeType::AABB)
@@ -99,36 +99,36 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
                 // SeparateObjects(posA, colA, posB, colB, velA, velB);
 
 
-                bool flipVelx = ShouldFlipVelocity(posA.x, posB.x, velA.dx, dt);
-                bool flipVely = ShouldFlipVelocity(posA.y, posB.y, velA.dy, dt);
+                bool flipVelx = ShouldFlipVelocity(posA.x, posB.x, velA.x, dt);
+                bool flipVely = ShouldFlipVelocity(posA.y, posB.y, velA.y, dt);
 
                 // Handle collision response
                 if (!colA.isStatic && !colB.isStatic)
                 {
                     // Dynamic vs Dynamic - both bounce with 30% energy loss
                    
-                    velA.dx = flipVelx ? -velA.dx * 0.7f : velA.dx;
-                    velA.dy = flipVely ? -velA.dy * 0.7f : velA.dy;
-                    velB.dx = -velA.dx * 0.7f;
-                    velB.dy = -velB.dy * 0.7f;
+                    velA.x = flipVelx ? -velA.x * 0.7f : velA.x;
+                    velA.y = flipVely ? -velA.y * 0.7f : velA.y;
+                    velB.x = -velA.x * 0.7f;
+                    velB.y = -velB.y * 0.7f;
 
                 }
                 else if (!colA.isStatic && colB.isStatic)
                 {
                     if (colB.type == ColliderType::Ground)
                     {
-                        if (velA.dy < 0.0f)  // Moving downward
+                        if (velA.y < 0.0f)  // Moving downward
                         {
                             // Progressive damping - reduce bounciness with each bounce
                             static std::unordered_map<Entity, int> bounceCount;
                             bounceCount[*itA]++;
 
                             float dynamicBounciness = bounciness * static_cast<float>(std::pow(0.8f, bounceCount[*itA]));
-                            velA.dy = -velA.dy * dynamicBounciness;
+                            velA.y = -velA.y * dynamicBounciness;
 
-                            if (std::abs(velA.dy) < minBounceSpeed)
+                            if (std::abs(velA.y) < minBounceSpeed)
                             {
-                                velA.dy = 0.0f;
+                                velA.y = 0.0f;
                                 colA.isGrounded = true;
                                 bounceCount[*itA] = 0; // Reset counter
                                 std::cout << "ball stopped after " << bounceCount[*itA] << " bounces" << std::endl;
@@ -136,14 +136,14 @@ void CollisionSystem::Update(float dt, Coordinator& coord)
                             else
                             {
                                 colA.isGrounded = false;
-                                std::cout << "ball bounced #" << bounceCount[*itA] << " with velocity: " << velA.dy << std::endl;
+                                std::cout << "ball bounced #" << bounceCount[*itA] << " with velocity: " << velA.y << std::endl;
                             }
                         }
                     }
                     else {
                         // A is dynamic, B is static (wall/other) - bounce with damping
-                        velA.dx = flipVelx ? -velA.dx * 0.7f : velA.dx;
-                        velA.dy = flipVely ? -velA.dy * 0.7f : velA.dy;
+                        velA.x = flipVelx ? -velA.x * 0.7f : velA.x;
+                        velA.y = flipVely ? -velA.y * 0.7f : velA.y;
                     }
                 }
                 //else if (colA.isStatic && !colB.isStatic)             // <- technically not necessary;
@@ -184,16 +184,16 @@ bool CollisionSystem::ShouldFlipVelocity(float pos1, float pos2, float vel1, flo
 // Helper Functions
 
 // Axis-Aligned Bounding Box vs AABB
-bool CollisionSystem::CheckAABBvsAABB(const Position& aPos, const Collider& a,
-    const Position& bPos, const Collider& b)
+bool CollisionSystem::CheckAABBvsAABB(const Vec3& aPos, const Collider& a,
+    const Vec3& bPos, const Collider& b)
 {
     return (std::abs(aPos.x - bPos.x) * 2 < (a.width + b.width)) &&
         (std::abs(aPos.y - bPos.y) * 2 < (a.height + b.height));
 }
 
 // Circle vs Circle
-bool CollisionSystem::CheckCirclevsCircle(const Position& aPos, const Collider& a,
-    const Position& bPos, const Collider& b)
+bool CollisionSystem::CheckCirclevsCircle(const Vec3& aPos, const Collider& a,
+    const Vec3& bPos, const Collider& b)
 {
     float dx = aPos.x - bPos.x;
     float dy = aPos.y - bPos.y;
@@ -204,8 +204,8 @@ bool CollisionSystem::CheckCirclevsCircle(const Position& aPos, const Collider& 
 }
 
 // Circle vs AABB
-bool CollisionSystem::CheckCirclevsAABB(const Position& circlePos, const Collider& circle,
-    const Position& aabbPos, const Collider& aabb)
+bool CollisionSystem::CheckCirclevsAABB(const Vec3& circlePos, const Collider& circle,
+    const Vec3& aabbPos, const Collider& aabb)
 {
     float halfW = aabb.width / 2.0f;
     float halfH = aabb.height / 2.0f;

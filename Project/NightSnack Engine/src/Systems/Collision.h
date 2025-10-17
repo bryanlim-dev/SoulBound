@@ -48,8 +48,8 @@ public:
     { 
         // Register the components this system needs:
         // Position, Velocity, and Collider
-        m_systemSignature.set(GetComponentTypeID<Position>());
-        m_systemSignature.set(GetComponentTypeID<Velocity>());
+        m_systemSignature.set(GetComponentTypeID<Transform>());
+        m_systemSignature.set(GetComponentTypeID<RigidBody>());
         m_systemSignature.set(GetComponentTypeID<Collider>());
 
         Init(disp); 
@@ -123,8 +123,8 @@ public:
     True if the AABBs overlap, else false
     */
     /************************************************************************/
-    bool CheckAABBvsAABB(const Position& aPos, const Collider& a,
-        const Position& bPos, const Collider& b);
+    bool CheckAABBvsAABB(const Vec3& aPos, const Collider& a,
+        const Vec3& bPos, const Collider& b);
 
    /************************************************************************/
    /*!
@@ -147,8 +147,8 @@ public:
    True if the circles overlap, else false.
    */
    /************************************************************************/
-    bool CheckCirclevsCircle(const Position& aPos, const Collider& a,
-        const Position& bPos, const Collider& b);
+    bool CheckCirclevsCircle(const Vec3& aPos, const Collider& a,
+        const Vec3& bPos, const Collider& b);
 
    /************************************************************************/
    /*!
@@ -171,8 +171,8 @@ public:
    True if the circle intersects with the AABB, else false.
    */
    /************************************************************************/
-    bool CheckCirclevsAABB(const Position& circlePos, const Collider& circle,
-        const Position& aabbPos, const Collider& aabb);
+    bool CheckCirclevsAABB(const Vec3& circlePos, const Collider& circle,
+        const Vec3& aabbPos, const Collider& aabb);
 
    /************************************************************************/
    /*!

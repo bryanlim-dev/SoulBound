@@ -24,6 +24,9 @@
 #include "ECS/Component.h"
 #include "Systems/IEvent.h"
 
+#include "Graphics/Mesh.h"
+#include "Graphics/Material.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 
 
@@ -48,9 +51,7 @@ public:
 		// The Graphics System only cares about entities with these components
 		// - Position, Rotation, Scale
 		// - Renderable (mesh, material, texture, color)
-		m_systemSignature.set(GetComponentTypeID<Position>());
-		m_systemSignature.set(GetComponentTypeID<Rotation>());
-		m_systemSignature.set(GetComponentTypeID<Scale>());
+		m_systemSignature.set(GetComponentTypeID<Transform>());
 		m_systemSignature.set(GetComponentTypeID<Renderable>());
 
 		// Initialize viewport dimensions;
@@ -181,7 +182,7 @@ public:
 	Model-to-World transformation matrix
 	*/
 	/************************************************************************/
-	glm::mat4 GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale, RenderLayer layer);
+	glm::mat4 GetModelToWorldMatrix(Vec3 position, float rotation, Vec2 scale, RenderLayer layer);
 
 	/************************************************************************/
 	/*!
@@ -375,7 +376,7 @@ private:
 	A Position in world coordinates
 	*/
 	/************************************************************************/
-	Position ScreenToWorld(Position const& screenPos);
+	Vec3 ScreenToWorld(Vec3 const& screenPos);
 
 	bool m_enableDebugDraw{ false };
 

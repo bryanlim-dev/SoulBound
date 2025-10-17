@@ -27,18 +27,13 @@ void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& win
 	m_coord.Initialize();
 
 	// Register all Components;
-	m_coord.RegisterComponent<Position>();
-	m_coord.RegisterComponent<Rotation>();
-	m_coord.RegisterComponent<Velocity>();
-	
-	m_coord.RegisterComponent<Acceleration>();	// Physics;
+	m_coord.RegisterComponent<Transform>();
+	m_coord.RegisterComponent<RigidBody>();		// Physics;
 	m_coord.RegisterComponent<Force>();
-	m_coord.RegisterComponent<Mass>();
 
 	m_coord.RegisterComponent<Collider>();		// Collision;
 
 	m_coord.RegisterComponent<Color>();
-	m_coord.RegisterComponent<Scale>();
 	m_coord.RegisterComponent<Camera>();
 
 	m_coord.RegisterComponent<PlayerController>();

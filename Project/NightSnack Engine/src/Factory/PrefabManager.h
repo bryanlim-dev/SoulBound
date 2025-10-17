@@ -40,14 +40,10 @@ public:
 	PrefabManager(Coordinator& coord) : m_coord{ coord } { Initialize(); }
 
 	void Initialize() {
-		RegisterComponentLoader<Position>("Position");
-		RegisterComponentLoader<Rotation>("Rotation");
-		RegisterComponentLoader<Scale>("Scale");
+		RegisterComponentLoader<Transform>("Transform");
 
-		RegisterComponentLoader<Velocity>("Velocity");
-		RegisterComponentLoader<Acceleration>("Acceleration");
+		RegisterComponentLoader<RigidBody>("RigidBody");
 		RegisterComponentLoader<Force>("Force");
-		RegisterComponentLoader<Mass>("Mass");
 
 		RegisterComponentLoader<Collider>("Collider");
 

@@ -52,8 +52,8 @@ void InputSystem::Update(float dt, Coordinator& coord) {
 	float Hvp = static_cast<float>(coord.GetWindowHeight());
 	float Wvp = static_cast<float>(coord.GetWindowWidth());
 	Entity cam = coord.GetSystem<GraphicsSystem>()->FindCamera();
-	m_mouseWorldPosX = (-Wvp / 2.f) + m_mousePosX + coord.GetComponent<Position>(cam).x;
-	m_mouseWorldPosY = (Hvp / 2.f) - m_mousePosY + coord.GetComponent<Position>(cam).y;
+	m_mouseWorldPosX = (-Wvp / 2.f) + m_mousePosX + coord.GetComponent<Transform>(cam).pos.x;
+	m_mouseWorldPosY = (Hvp / 2.f) - m_mousePosY + coord.GetComponent<Transform>(cam).pos.y;
 
 	// Compute mouse delta - the relative movement since the last frame
 	m_deltaWorldPosX = m_mouseWorldPosX - m_prevMouseWorldPosX;

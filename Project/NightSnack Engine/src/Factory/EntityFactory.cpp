@@ -29,7 +29,7 @@ Entity EntityFactory::Create(std::string const& name) {
 	trans.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
 	trans.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
 
-	m_coord.ModifyComponent<Position>(e) = trans.pos;
+	m_coord.ModifyComponent<Transform>(e).pos = trans.pos;
 
 	return e;
 }
@@ -38,9 +38,7 @@ Entity EntityFactory::Create(std::string const& name) {
 Entity EntityFactory::Create(std::string const& name, Transform trans) {
 	Entity e = m_prefabManager.CreateFromPrefab(name, m_archetypes);
 	
-	m_coord.ModifyComponent<Position>(e) = trans.pos;
-	m_coord.ModifyComponent<Rotation>(e) = trans.rot;
-	m_coord.ModifyComponent<Scale>(e) = trans.scale;
+	m_coord.ModifyComponent<Transform>(e) = trans;
 
 	return e;
 }
@@ -51,9 +49,7 @@ Entity EntityFactory::Clone(Entity e, Transform trans) {
 
 	Entity clone = m_prefabManager.CreateFromPrefab(name, m_archetypes);
 
-	m_coord.ModifyComponent<Position>(clone) = trans.pos;
-	m_coord.ModifyComponent<Rotation>(clone) = trans.rot;
-	m_coord.ModifyComponent<Scale>(clone) = trans.scale;
+	m_coord.ModifyComponent<Transform>(e) = trans;
 
 	return clone;
 }
@@ -70,10 +66,10 @@ void EntityFactory::DoubleEntities() {
 
 	// double the number of living entities with random transforms;
 	for (size_t i{}; i < currNum && (currNum + i) < MAX_ENTITIES; ++i) {
-		Position pos = { static_cast<float>(rand() % Wvp - Wvp / 2),
+		Vec3 pos = { static_cast<float>(rand() % Wvp - Wvp / 2),
 		static_cast<float>(rand() % Hvp - Hvp / 2) };
-		Rotation rot = { static_cast<float>(rand() % 360) };
-		Scale scale = { static_cast<float>(rand() % 50 + 15), static_cast<float>(rand() % 50 + 15) };
+		float rot = { static_cast<float>(rand() % 360) };
+		Vec2 scale = { static_cast<float>(rand() % 50 + 15), static_cast<float>(rand() % 50 + 15) };
 
 		Transform trans{ pos, rot, scale };
 		

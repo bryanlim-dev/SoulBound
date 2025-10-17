@@ -16,48 +16,51 @@
 #ifndef COMPONENT_HPP
 #define COMPONENT_HPP
 
-#include "Graphics/Mesh.h"
-#include "Graphics/Material.h"
-
 #include <json.hpp>
+#include "MathLibrary/Math.h"
+
 using json = nlohmann::json;
 
 // ================================================================================================
 // COMPONENTS
 // ================================================================================================
-struct Position {
-  float x, y, z;
-};
-
-struct Rotation {
-	float degrees;
-};
-
-struct Scale {
-	float x, y;
-};
-
 struct Transform {
-	Position pos;
-	Rotation rot;
-	Scale scale;
+	Vec3 pos;
+	float rot;
+	Vec2 scale;
 };
 
-struct Velocity {
-	float dx, dy;
+struct RigidBody {
+    float mass;
+    Vec2 vel;
+    Vec2 accel;
+    bool useGravity;
 };
 
-struct Acceleration {
-	float ax, ay;
+enum class ShapeType { AABB, Circle };
+enum class ColliderType {
+    Solid,   // Blocks movement
+    Trigger,  // Detects overlaps only
+    Ground
+};
+struct Collider {
+    ShapeType shape{ ShapeType::AABB };     // AABB or Circle
+    ColliderType type{ ColliderType::Solid };   // Solid or Trigger
+    bool isStatic{ true };       // true = immovable (walls), false = dynamic (player)
+
+    // Shape data
+    float width{ 1.0f };   // AABB width
+    float height{ 1.0f };  // AABB height
+    float radius{ 0.5f };  // Circle radius
+
+    // Collision state
+    bool isGrounded{ false };
+    bool colliding{ false };
 };
 
 struct Force {
 	float fx{ 0.0 };
 	float fy{ 0.0 };
-};
-
-struct Mass {
-	float val = 1.0;
 };
 
 struct Sprite {
@@ -106,34 +109,6 @@ struct Camera {
 	float height{ 900.f };
 };
 
-// COLLISION COMPONENTS;
-
-enum class ShapeType {
-    AABB,
-    Circle
-};
-
-enum class ColliderType {
-    Solid,   // Blocks movement
-    Trigger,  // Detects overlaps only
-	Ground
-};
-
-struct Collider {
-    ShapeType shape{ ShapeType::AABB };     // AABB or Circle
-    ColliderType type{ ColliderType::Solid };   // Solid or Trigger
-    bool isStatic{ true };       // true = immovable (walls), false = dynamic (player)
-
-	// Shape data
-	float width{ 1.0f };   // AABB width
-	float height{ 1.0f };  // AABB height
-	float radius{ 0.5f };  // Circle radius
-
-	// Collision state
-	bool isGrounded{ false };
-	bool colliding{ false };
-};
-
 // Add more Components here if necessary...
 // Ensure to add a Json overload below for your component to allow for Archetype Loading...
 
@@ -141,36 +116,24 @@ struct Collider {
 // COMPONENT JSON OVERLOADS
 // ================================================================================================
 // POSITION / ROTATION / SCALE / TRANSFORM ====================
-inline void from_json(const json& j, Position& p) {
+inline void from_json(const json& j, Vec3& p) {
     j.at("x").get_to(p.x);
     j.at("y").get_to(p.y);
+    j.at("z").get_to(p.z);
 }
 
-inline void from_json(const json& j, Rotation& r) {
-    j.at("degrees").get_to(r.degrees);
-}
-
-inline void from_json(const json& j, Scale& s) {
+inline void from_json(const json& j, Vec2& s) {
     j.at("x").get_to(s.x);
     j.at("y").get_to(s.y);
 }
 
 inline void from_json(const json& j, Transform& t) {
-    t.pos = j.at("Position").get<Position>();
-    t.rot = j.at("Rotation").get<Rotation>();
-    t.scale = j.at("Scale").get<Scale>();
+    from_json(j, t.pos);
+    from_json(j, t.scale);
+    j.at("Rotation").get_to(t.rot);
 }
 
 // PHYSICS ====================================================
-inline void from_json(const json& j, Velocity& v) {
-    j.at("dx").get_to(v.dx);
-    j.at("dy").get_to(v.dy);
-}
-
-inline void from_json(const json& j, Acceleration& a) {
-    j.at("ax").get_to(a.ax);
-    j.at("ay").get_to(a.ay);
-}
 
 inline void from_json(const json& j, Force& f) {
     j.value("fx", 0.0f); // optional default
@@ -179,8 +142,13 @@ inline void from_json(const json& j, Force& f) {
     j.at("fy").get_to(f.fy);
 }
 
-inline void from_json(const json& j, Mass& m) {
-    j.at("val").get_to(m.val);
+inline void from_json(const json& j, RigidBody& r) {
+    j.at("mass").get_to(r.mass);
+    j.at("accel").get_to(r.accel);
+    j.at("velocity").get_to(r.vel);
+
+    r.useGravity = false;
+    j.at("useGravity").get_to(r.useGravity);
 }
 
 // GRAPHICS ===================================================

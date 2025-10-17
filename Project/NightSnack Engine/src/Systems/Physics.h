@@ -42,10 +42,8 @@ public:
     /************************************************************************/
     PhysicsSystem(Coordinator& coord, EventDispatcher& disp) : m_dispatcher{ &disp } {
 		// Physics components of interest;
-        m_systemSignature.set(GetComponentTypeID<Position>());
-        m_systemSignature.set(GetComponentTypeID<Velocity>());
-        m_systemSignature.set(GetComponentTypeID<Acceleration>());
-        m_systemSignature.set(GetComponentTypeID<Mass>());
+        m_systemSignature.set(GetComponentTypeID<Transform>());
+        m_systemSignature.set(GetComponentTypeID<RigidBody>());
         m_systemSignature.set(GetComponentTypeID<Force>());
         m_systemSignature.set(GetComponentTypeID<Collider>());
 

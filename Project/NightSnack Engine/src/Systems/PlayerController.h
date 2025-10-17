@@ -36,10 +36,8 @@ public:
     PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_dispatcher{ &disp } {
         // Physics components of interest;
         m_systemSignature.set(GetComponentTypeID<PlayerController>());
-        m_systemSignature.set(GetComponentTypeID<Position>());
-        m_systemSignature.set(GetComponentTypeID<Rotation>());
-        m_systemSignature.set(GetComponentTypeID<Scale>());
-        m_systemSignature.set(GetComponentTypeID<Velocity>());
+        m_systemSignature.set(GetComponentTypeID<Transform>());
+        m_systemSignature.set(GetComponentTypeID<RigidBody>());
 
         m_player = FindPlayer(coord);
 
@@ -95,16 +93,16 @@ public:
         m_player = FindPlayer(coord);
 
         PlayerController const& pcont = coord.GetComponent<PlayerController>(m_player);
-        Velocity& vel = coord.ModifyComponent<Velocity>(m_player);
+        Vec2& vel = coord.ModifyComponent<RigidBody>(m_player).vel;
 
         if ((movingRight && !movingLeft) && !coord.GetComponent<Collider>(m_player).colliding) {
-            vel.dx = pcont.moveSpeed;
+            vel.x = pcont.moveSpeed;
         }
         else if ((movingLeft && !movingRight) && !coord.GetComponent<Collider>(m_player).colliding) {
-            vel.dx = -pcont.moveSpeed;
+            vel.x = -pcont.moveSpeed;
         }
         if (jumpRequested && coord.GetComponent<Collider>(m_player).isGrounded) {
-            vel.dy = pcont.jumpSpeed;
+            vel.y = pcont.jumpSpeed;
             coord.ModifyComponent<Collider>(m_player).isGrounded = false;
         }
         jumpRequested = false;
@@ -127,14 +125,10 @@ public:
         Signature playerSig;
 
         playerSig.set(GetComponentTypeID<PlayerController>());
-        playerSig.set(GetComponentTypeID<Position>());
-        playerSig.set(GetComponentTypeID<Rotation>());
-        playerSig.set(GetComponentTypeID<Scale>());
+        playerSig.set(GetComponentTypeID<Transform>());
 
         playerSig.set(GetComponentTypeID<Force>());
-        playerSig.set(GetComponentTypeID<Acceleration>());
-        playerSig.set(GetComponentTypeID<Velocity>());
-        playerSig.set(GetComponentTypeID<Mass>());
+        playerSig.set(GetComponentTypeID<RigidBody>());
         playerSig.set(GetComponentTypeID<Collider>());
 
         // Iterate through all living Entities in the COORDINATOR instead

@@ -41,8 +41,8 @@ public:
   /************************************************************************/
   MovementSystem(Coordinator& coord, EventDispatcher& dispatcher) {
     // Input all components you want access to...
-    m_systemSignature.set(GetComponentTypeID<Position>());
-    m_systemSignature.set(GetComponentTypeID<Velocity>());
+    m_systemSignature.set(GetComponentTypeID<Transform>());
+    m_systemSignature.set(GetComponentTypeID<RigidBody>());
     
     // Event dispatcher initialisations
     m_dispatcher = &dispatcher;
@@ -83,15 +83,15 @@ public:
     // Iterate through all Entities this system can access;
     for (auto const& e : m_entities) {
 
-	  // First obtain references to components of interest;
-    auto& transform = coord.ModifyComponent<Position>(e);
-    auto& velocity = coord.ModifyComponent<Velocity>(e);
+	    // First obtain references to components of interest;
+        auto& pos = coord.ModifyComponent<Transform>(e).pos;
+        auto& velocity = coord.ModifyComponent<RigidBody>(e).vel;
 
 	  // Get more components here if necessary...
 
-	  // Do stuff that you want to do with the components;
-    transform.x += velocity.dx * dt;
-    transform.y += velocity.dy * dt;
+	    // Do stuff that you want to do with the components;
+        pos.x += velocity.x * dt;
+        pos.y += velocity.y * dt;
 
 	  // Do more stuff here if necessary...
 

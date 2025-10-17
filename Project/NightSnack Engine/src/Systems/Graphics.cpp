@@ -96,7 +96,7 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 	if (mainCam == INVALID_ENTITY) return;
 
 	// Get camera components
-	auto& camPos = coord.GetComponent<Position>(mainCam);
+	auto& camPos = coord.GetComponent<Transform>(mainCam).pos;
 	auto& camInfo = coord.GetComponent<Camera>(mainCam);
 
 	glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height);
@@ -105,9 +105,9 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 	for (Entity e : m_entities) {
 		// Obtain entity components;
 		auto& ren = coord.GetComponent<Renderable>(e);
-		auto& pos = coord.GetComponent<Position>(e);
-		auto& rot = coord.GetComponent<Rotation>(e);
-		auto& scl = coord.GetComponent<Scale>(e);
+		auto& pos = coord.GetComponent<Transform>(e).pos;
+		auto& rot = coord.GetComponent<Transform>(e).rot;
+		auto& scl = coord.GetComponent<Transform>(e).scale;
 
 		// @TODO: Event-Driven check whether e's renderable was changed...
 		// if (renderable was changed) { ResolveRenderable(e, renderable); }
@@ -165,7 +165,7 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 				case ShapeType::AABB:
 				{
 					// Model matrix according to its collider's scale
-					glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Scale{ col.width, col.height }, RenderLayer::DEBUG);
+					glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.width, col.height }, RenderLayer::DEBUG);
 					glm::mat4 debugmvp = proj * view * debugmodel;
 					shader->SetMat4("uMVP", debugmvp);
 					shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
@@ -177,7 +177,7 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 				case ShapeType::Circle:
 				{
 					// Model matrix according to its collider's scale
-					glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Scale{ col.radius, col.radius }, RenderLayer::DEBUG);
+					glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.radius, col.radius }, RenderLayer::DEBUG);
 					glm::mat4 debugmvp = proj * view * debugmodel;
 					shader->SetMat4("uMVP", debugmvp);
 					shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
@@ -190,10 +190,10 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 			}
 
 			// Drawing of velocity direction for moving objects
-			if (m_coord.HasComponent<Velocity>(e)) {
-				Velocity const& vel = m_coord.GetComponent<Velocity>(e);
+			if (m_coord.HasComponent<RigidBody>(e)) {
+				Vec2 const& vel = m_coord.GetComponent<RigidBody>(e).vel;
 
-				glm::vec3 velocity(vel.dx, vel.dy, 0.f);
+				glm::vec3 velocity(vel.x, vel.y, 0.f);
 				float speed = glm::length(velocity); // Magnitude of the velocity vector
 
 				// Only draw the velocity line if it is moving
@@ -209,7 +209,7 @@ void GraphicsSystem::Update(float dt, Coordinator& coord) {
 					float angle = glm::degrees(std::atan2(dir.y, dir.x) - glm::half_pi<float>());
 
 					// Model matrix according to its new rotation, and y-scale so line size reflects speed
-					glm::mat4 debugModel = GetModelToWorldMatrix(pos, Rotation{ angle }, Scale{ 1.f, length }, RenderLayer::DEBUG);
+					glm::mat4 debugModel = GetModelToWorldMatrix(pos, angle, Vec2{ 1.f, length }, RenderLayer::DEBUG);
 					glm::mat4 debugMvp = proj * view * debugModel;
 					
 					shader->SetMat4("uMVP", debugMvp);
@@ -250,7 +250,7 @@ glm::mat4 GraphicsSystem::GetCameraProjectionMatrix(float width, float height) {
 	return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, Z_EPSILON, 10.f);
 }
 
-glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale, RenderLayer layer) {
+glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Vec3 position, float rotation, Vec2 scale, RenderLayer layer) {
 	glm::mat4 model(1.f);
 
 	// Base z offset from the RenderLayer
@@ -259,7 +259,7 @@ glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Position position, Rotation rota
 	float z = layerZ + position.z;
 
 	model = glm::translate(model, glm::vec3(position.x, position.y, z));
-	model = glm::rotate(model, glm::radians(rotation.degrees), glm::vec3(0.f, 0.f, 1.f)); // Rotate about z-axis
+	model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f)); // Rotate about z-axis
 	model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.f));
 	return model;
 }
@@ -296,9 +296,7 @@ Entity GraphicsSystem::FindCamera() {
 	// Camera Signature (only have components Camera and Tranform)
 	Signature cameraSig;
 	cameraSig.set(GetComponentTypeID<Camera>());
-	cameraSig.set(GetComponentTypeID<Position>());
-	cameraSig.set(GetComponentTypeID<Rotation>());
-	cameraSig.set(GetComponentTypeID<Scale>());
+	cameraSig.set(GetComponentTypeID<Transform>());
 
 	// Iterate through all living Entities in the COORDINATOR instead
 	// Since the GraphicsSystem will not have a Camera Entity
@@ -334,7 +332,7 @@ void GraphicsSystem::ModifyEntityScale(Coordinator& coord, float value) {
 	if (ren.materialName != "targetMat")
 		return;
 
-	auto& scale = coord.ModifyComponent<Scale>(*it);
+	auto& scale = coord.ModifyComponent<Transform>(*it).scale;
 	scale.x *= value;
 	scale.y *= value;
 	// In the future, modify the collider too when scaling normal objects
@@ -353,14 +351,14 @@ void GraphicsSystem::ModifyEntityRotation(Coordinator& coord, float value) {
 	if (ren.materialName != "targetMat")
 		return;
 
-	auto& rotation = coord.ModifyComponent<Rotation>(*it);
-	rotation.degrees += value;
-	if (rotation.degrees >= 360.f)
-		rotation.degrees -= 360.f;
+	auto& rotation = coord.ModifyComponent<Transform>(*it).rot;
+	rotation += value;
+	if (rotation >= 360.f)
+		rotation -= 360.f;
 }
 
-Position GraphicsSystem::ScreenToWorld(Position const& screenPos) {
-	Position pos{};
+Vec3 GraphicsSystem::ScreenToWorld(Vec3 const& screenPos) {
+	Vec3 pos{};
 	// To convert from screen to clip: X -> -Wvp/2 + x; Y -> Hvp/2 - y; 
 	pos.x = (-Wvp / 2.f) + screenPos.x;
 	pos.y = (Hvp / 2.f) - screenPos.y;
@@ -368,8 +366,8 @@ Position GraphicsSystem::ScreenToWorld(Position const& screenPos) {
 	// Clip to World: take into account CameraPos;
 	Entity cam = FindCamera();
 
-	pos.x += m_coord.GetComponent<Position>(cam).x;
-	pos.y += m_coord.GetComponent<Position>(cam).y;
+	pos.x += m_coord.GetComponent<Transform>(cam).pos.x;
+	pos.y += m_coord.GetComponent<Transform>(cam).pos.y;
 
 	return pos;
 }

@@ -26,34 +26,35 @@ void PhysicsSystem::Update(float dt, Coordinator& coord) {
 
 		// First obtain references to components of interest;
 		auto& force = coord.ModifyComponent<Force>(e);
-		auto& vel = coord.ModifyComponent<Velocity>(e);
-		auto& accel = coord.ModifyComponent<Acceleration>(e);
-		auto& mass = coord.ModifyComponent<Mass>(e);
+		auto& vel = coord.ModifyComponent<RigidBody>(e).vel;
+		auto& accel = coord.ModifyComponent<RigidBody>(e).accel;
+		auto& mass = coord.ModifyComponent<RigidBody>(e).mass;
+		bool g = coord.GetComponent<RigidBody>(e).useGravity;
 
 		// Calculate acceleration from force and mass;
-		accel.ax = force.fx * 1000.f / mass.val;
-		accel.ay = force.fy * 1000.f / mass.val;
+		accel.x = force.fx * 1000.f / mass;
+		accel.y = force.fy * 1000.f / mass;
 
 		// Apply gravity;
-		if (coord.GetComponent<Collider>(e).isGrounded == false) {
-			accel.ay += gravity;
+		if (g && coord.GetComponent<Collider>(e).isGrounded == false) {
+			accel.y += gravity;
 		}
 
 		// Update velocity based on acceleration;
-		vel.dx += accel.ax * dt;
-		vel.dy += accel.ay * dt;
+		vel.x += accel.x * dt;
+		vel.y += accel.y * dt;
 
 		// Apply horizontal drag, a force opposite to the direction of motion
 		// when mid-air;
-		vel.dx *= 1.f - drag * dt;
+		vel.x *= 1.f - drag * dt;
 
 		// Apply friction if on the ground;
 		if (coord.GetComponent<Collider>(e).isGrounded) {
 
-			vel.dx *= 1.f - friction * dt;
+			vel.x *= 1.f - friction * dt;
 
 			// Small threshold to stop sliding;
-			if (std::abs(vel.dx) < velocityCutoff) vel.dx = 0.0;
+			if (std::abs(vel.x) < velocityCutoff) vel.x = 0.0;
 		}
 
 		// Clear forces for next frame;
