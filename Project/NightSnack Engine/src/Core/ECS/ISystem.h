@@ -19,7 +19,7 @@
 #include <unordered_map>	// SystemManger -> Signatures, Systems
 #include <memory>
 
-#include "ECS/Entity.h"
+#include "Entity.h"
 
 namespace NightSnack {
 

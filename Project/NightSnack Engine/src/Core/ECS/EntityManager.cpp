@@ -12,7 +12,7 @@
 
 #include <iostream>
 
-#include "ECS/EntityManager.h"
+#include "EntityManager.h"
 
 namespace NightSnack {
 

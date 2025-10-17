@@ -17,9 +17,9 @@
 #include <string>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "ECS/Coordinator.h"
-#include "Systems/Timer.h"
-#include "Systems/IEvent.h"
+#include "Core/ECS/Coordinator.h"
+#include "Systems/Application/Timer.h"
+#include "Systems/Application/IEvent.h"
 
 namespace NightSnack {
 

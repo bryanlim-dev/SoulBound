@@ -10,8 +10,8 @@
  * All rights reserved.
  ******************************************************************************/
 
-#include "ECS/Coordinator.h"
-#include "./Systems/Graphics.h"
+#include "Coordinator.h"
+#include "Systems/Graphics.h"
 
 namespace NightSnack {
 

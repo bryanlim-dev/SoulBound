@@ -13,10 +13,8 @@
 
 #pragma once
 
-#include "./ECS/Coordinator.h"
-#include "./ECS/Component.h"
-#include "./ECS/ISystem.h"
-#include "./Systems/Input.h"
+#include "Core/ECS/Coordinator.h"
+#include "Systems/Application/Input.h"
 
 struct PlayerFlags {
     bool movingLeft = false;

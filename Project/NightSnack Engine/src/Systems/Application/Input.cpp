@@ -16,7 +16,7 @@
  ******************************************************************************/
 
 #include "Input.h"
-#include "Graphics.h"
+#include "Systems/Graphics.h"
 
 // Define static variables
 //std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysDown;

@@ -12,12 +12,12 @@
 #ifndef SYSTEM_HPP
 #define SYSTEM_HPP
 
-#include "Application.h"
-#include "Input.h"
-#include "Movement.h"
+#include "Application/Application.h"
+#include "Application/Input.h"
+#include "Physics/Movement.h"
 #include "Graphics.h"
-#include "Physics.h"
-#include "Collision.h"
+#include "Physics/Physics.h"
+#include "Physics/Collision.h"
 #include "./Factory/EntityFactory.h"
 #include "PlayerController.h"
 #include "UI Editor/Imgui.h"

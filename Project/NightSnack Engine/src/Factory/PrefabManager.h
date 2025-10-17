@@ -19,9 +19,7 @@
 #include <unordered_map>
 #include <iostream>
 
-#include "ECS/Entity.h"
-#include "ECS/Coordinator.h"
-#include "ECS/Component.h"
+#include "Core/ECS/Coordinator.h"
 
 namespace NightSnack {
 

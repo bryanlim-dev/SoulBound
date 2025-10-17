@@ -21,8 +21,8 @@
 
 #include "ECS/Coordinator.h"
 #include "ECS/ISystem.h"
-#include "Systems/Application.h"
-#include "Systems/IEvent.h"
+#include "Systems/Application/Application.h"
+#include "Systems/Application/IEvent.h"
 #include "CrashLogger.h"
 
 namespace NightSnack {
