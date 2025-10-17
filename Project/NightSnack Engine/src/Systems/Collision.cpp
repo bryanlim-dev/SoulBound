@@ -94,7 +94,7 @@ namespace NightSnack {
                     // Dispatch collision event between entity A & entity B
                     if (m_dispatcher)
                     {
-                        m_dispatcher->Dispatch(CollisionEvent(*itA, *itB));
+                        m_dispatcher->QueueEvent(std::make_unique<CollisionEvent>(*itA, *itB));
                     }
 
                     // Separate objects first
