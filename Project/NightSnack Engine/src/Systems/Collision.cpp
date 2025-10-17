@@ -17,223 +17,227 @@
 #include <cmath>
 #include <iostream>
 
-// Initializing Collision System
-void CollisionSystem::Init(EventDispatcher& dispatcher)
-{
-    m_dispatcher = &dispatcher;
+namespace NightSnack {
 
-	// Testing code for collision event subscibtion (subscribe only in init)
-    m_dispatcher->Subscribe<CollisionEvent>([](const CollisionEvent& event)
-        {
-            (void)event; // temp unreferenced;
-
-            //Play sound, spawn particles, update score, etc.
-            //std::cout << "Collision event: Entity " << event.entityA << " collided with Entity " << event.entityB << std::endl;
-        });
-}
-
-// Update loop (runs each frame)
-void CollisionSystem::Update(float dt, Coordinator& coord)
-{
-
-    // Step 1: Reset collision flags
-    for (auto const& e : m_entities) 
+    // Initializing Collision System
+    void CollisionSystem::Init(EventDispatcher& dispatcher)
     {
-        auto& col = coord.ModifyComponent<Collider>(e);
-        col.colliding = false;
+        m_dispatcher = &dispatcher;
+
+        // Testing code for collision event subscibtion (subscribe only in init)
+        m_dispatcher->Subscribe<CollisionEvent>([](const CollisionEvent& event)
+            {
+                (void)event; // temp unreferenced;
+
+                //Play sound, spawn particles, update score, etc.
+                //std::cout << "Collision event: Entity " << event.entityA << " collided with Entity " << event.entityB << std::endl;
+            });
     }
 
-    // Step 3: Check for collisions and resolve them
-    for (auto itA = m_entities.begin(); itA != m_entities.end(); ++itA)
+    // Update loop (runs each frame)
+    void CollisionSystem::Update(float dt, Coordinator& coord)
     {
-        for (auto itB = m_entities.begin(); itB != m_entities.end(); ++itB)
+
+        // Step 1: Reset collision flags
+        for (auto const& e : m_entities)
         {
-            if (itB == itA) continue;
+            auto& col = coord.ModifyComponent<Collider>(e);
+            col.colliding = false;
+        }
 
-            auto& posA = coord.GetComponent<Position>(*itA);
-            auto& velA = coord.ModifyComponent<Velocity>(*itA);
-            auto& colA = coord.ModifyComponent<Collider>(*itA);
-
-            auto& posB = coord.GetComponent<Position>(*itB);
-            auto& velB = coord.ModifyComponent<Velocity>(*itB);
-            auto& colB = coord.ModifyComponent<Collider>(*itB);
-
-            // Skip if both are static
-            if (colA.isStatic) continue;
-
-            bool collision = false;
-            Position nextPosA{ posA.x + velA.dx * dt, posA.y + velA.dy * dt};
-
-            // Check collision
-            if (colA.shape == ShapeType::AABB && colB.shape == ShapeType::AABB)
+        // Step 3: Check for collisions and resolve them
+        for (auto itA = m_entities.begin(); itA != m_entities.end(); ++itA)
+        {
+            for (auto itB = m_entities.begin(); itB != m_entities.end(); ++itB)
             {
-                collision = CheckAABBvsAABB(nextPosA, colA, posB, colB);
-            }
-            else if (colA.shape == ShapeType::Circle && colB.shape == ShapeType::Circle)
-            {
-                collision = CheckCirclevsCircle(nextPosA, colA, posB, colB);
-            }
-            else if (colA.shape == ShapeType::Circle && colB.shape == ShapeType::AABB)
-            {
-                collision = CheckCirclevsAABB(nextPosA, colA, posB, colB);
-            }
-            else if (colA.shape == ShapeType::AABB && colB.shape == ShapeType::Circle)
-            {
-                collision = CheckCirclevsAABB(posB, colB, nextPosA, colA);
-            }
+                if (itB == itA) continue;
 
-            if (collision)
-            {
-                colA.colliding = true;
-                colB.colliding = true;
+                auto& posA = coord.GetComponent<Transform>(*itA).pos;
+                auto& velA = coord.ModifyComponent<RigidBody>(*itA).vel;
+                auto& colA = coord.ModifyComponent<Collider>(*itA);
 
-                //std::cout << "Collision detected between Entity " << *itA << " and Entity " << *itB << std::endl;
+                auto& posB = coord.GetComponent<Transform>(*itB).pos;
+                auto& velB = coord.ModifyComponent<RigidBody>(*itB).vel;
+                auto& colB = coord.ModifyComponent<Collider>(*itB);
 
-				// Dispatch collision event between entity A & entity B
-                if (m_dispatcher)
+                // Skip if both are static
+                if (colA.isStatic) continue;
+
+                bool collision = false;
+                Vec3 nextPosA{ posA.x + velA.x * dt, posA.y + velA.y * dt };
+
+                // Check collision
+                if (colA.shape == ShapeType::AABB && colB.shape == ShapeType::AABB)
                 {
-                    m_dispatcher->Dispatch(CollisionEvent(*itA, *itB));
+                    collision = CheckAABBvsAABB(nextPosA, colA, posB, colB);
+                }
+                else if (colA.shape == ShapeType::Circle && colB.shape == ShapeType::Circle)
+                {
+                    collision = CheckCirclevsCircle(nextPosA, colA, posB, colB);
+                }
+                else if (colA.shape == ShapeType::Circle && colB.shape == ShapeType::AABB)
+                {
+                    collision = CheckCirclevsAABB(nextPosA, colA, posB, colB);
+                }
+                else if (colA.shape == ShapeType::AABB && colB.shape == ShapeType::Circle)
+                {
+                    collision = CheckCirclevsAABB(posB, colB, nextPosA, colA);
                 }
 
-                // Separate objects first
-                // SeparateObjects(posA, colA, posB, colB, velA, velB);
-
-
-                bool flipVelx = ShouldFlipVelocity(posA.x, posB.x, velA.dx, dt);
-                bool flipVely = ShouldFlipVelocity(posA.y, posB.y, velA.dy, dt);
-
-                // Handle collision response
-                if (!colA.isStatic && !colB.isStatic)
+                if (collision)
                 {
-                    // Dynamic vs Dynamic - both bounce with 30% energy loss
-                   
-                    velA.dx = flipVelx ? -velA.dx * 0.7f : velA.dx;
-                    velA.dy = flipVely ? -velA.dy * 0.7f : velA.dy;
-                    velB.dx = -velA.dx * 0.7f;
-                    velB.dy = -velB.dy * 0.7f;
+                    colA.colliding = true;
+                    colB.colliding = true;
 
-                }
-                else if (!colA.isStatic && colB.isStatic)
-                {
-                    if (colB.type == ColliderType::Ground)
+                    //std::cout << "Collision detected between Entity " << *itA << " and Entity " << *itB << std::endl;
+
+                    // Dispatch collision event between entity A & entity B
+                    if (m_dispatcher)
                     {
-                        if (velA.dy < 0.0f)  // Moving downward
+                        m_dispatcher->Dispatch(CollisionEvent(*itA, *itB));
+                    }
+
+                    // Separate objects first
+                    // SeparateObjects(posA, colA, posB, colB, velA, velB);
+
+
+                    bool flipVelx = ShouldFlipVelocity(posA.x, posB.x, velA.x, dt);
+                    bool flipVely = ShouldFlipVelocity(posA.y, posB.y, velA.y, dt);
+
+                    // Handle collision response
+                    if (!colA.isStatic && !colB.isStatic)
+                    {
+                        // Dynamic vs Dynamic - both bounce with 30% energy loss
+
+                        velA.x = flipVelx ? -velA.x * 0.7f : velA.x;
+                        velA.y = flipVely ? -velA.y * 0.7f : velA.y;
+                        velB.x = -velA.x * 0.7f;
+                        velB.y = -velB.y * 0.7f;
+
+                    }
+                    else if (!colA.isStatic && colB.isStatic)
+                    {
+                        if (colB.type == ColliderType::Ground)
                         {
-                            // Progressive damping - reduce bounciness with each bounce
-                            static std::unordered_map<Entity, int> bounceCount;
-                            bounceCount[*itA]++;
-
-                            float dynamicBounciness = bounciness * static_cast<float>(std::pow(0.8f, bounceCount[*itA]));
-                            velA.dy = -velA.dy * dynamicBounciness;
-
-                            if (std::abs(velA.dy) < minBounceSpeed)
+                            if (velA.y < 0.0f)  // Moving downward
                             {
-                                velA.dy = 0.0f;
-                                colA.isGrounded = true;
-                                bounceCount[*itA] = 0; // Reset counter
-                                std::cout << "ball stopped after " << bounceCount[*itA] << " bounces" << std::endl;
-                            }
-                            else
-                            {
-                                colA.isGrounded = false;
-                                std::cout << "ball bounced #" << bounceCount[*itA] << " with velocity: " << velA.dy << std::endl;
+                                // Progressive damping - reduce bounciness with each bounce
+                                static std::unordered_map<Entity, int> bounceCount;
+                                bounceCount[*itA]++;
+
+                                float dynamicBounciness = bounciness * static_cast<float>(std::pow(0.8f, bounceCount[*itA]));
+                                velA.y = -velA.y * dynamicBounciness;
+
+                                if (std::abs(velA.y) < minBounceSpeed)
+                                {
+                                    velA.y = 0.0f;
+                                    colA.isGrounded = true;
+                                    bounceCount[*itA] = 0; // Reset counter
+                                    std::cout << "ball stopped after " << bounceCount[*itA] << " bounces" << std::endl;
+                                }
+                                else
+                                {
+                                    colA.isGrounded = false;
+                                    std::cout << "ball bounced #" << bounceCount[*itA] << " with velocity: " << velA.y << std::endl;
+                                }
                             }
                         }
+                        else {
+                            // A is dynamic, B is static (wall/other) - bounce with damping
+                            velA.x = flipVelx ? -velA.x * 0.7f : velA.x;
+                            velA.y = flipVely ? -velA.y * 0.7f : velA.y;
+                        }
                     }
-                    else {
-                        // A is dynamic, B is static (wall/other) - bounce with damping
-                        velA.dx = flipVelx ? -velA.dx * 0.7f : velA.dx;
-                        velA.dy = flipVely ? -velA.dy * 0.7f : velA.dy;
-                    }
-                }
-                //else if (colA.isStatic && !colB.isStatic)             // <- technically not necessary;
-                //{
-                //    // A is static, B is dynamic - B bounces with 30% energy loss
-                //    velB.dx = -velB.dx * 0.7;
-                //    velB.dy = -velB.dy * 0.7;
-                //}
+                    //else if (colA.isStatic && !colB.isStatic)             // <- technically not necessary;
+                    //{
+                    //    // A is static, B is dynamic - B bounces with 30% energy loss
+                    //    velB.dx = -velB.dx * 0.7;
+                    //    velB.dy = -velB.dy * 0.7;
+                    //}
 
-                // Check velocities after collision response
-                if (*itA == 0) 
-                {
-                    //std::cout << "P1 velocity after response: (" << velA.dx << ", " << velA.dy << ")" << std::endl;
+                    // Check velocities after collision response
+                    if (*itA == 0)
+                    {
+                        //std::cout << "P1 velocity after response: (" << velA.dx << ", " << velA.dy << ")" << std::endl;
+                    }
                 }
             }
         }
     }
-}
 
-// Checks if velocity needs to be flipped;
-bool CollisionSystem::ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt) 
-{
-    float newpos = pos1 + vel1 * dt;
-    float distsq = (pos2 - pos1) * (pos2 - pos1);
-    float newdistsq = (pos2 - newpos) * (pos2 - newpos);
-
-    // If the current velocity will bring the two objects closer;
-    if (newdistsq < distsq) 
+    // Checks if velocity needs to be flipped;
+    bool CollisionSystem::ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt)
     {
-        // Should flip the velocity;
-        return true;
+        float newpos = pos1 + vel1 * dt;
+        float distsq = (pos2 - pos1) * (pos2 - pos1);
+        float newdistsq = (pos2 - newpos) * (pos2 - newpos);
+
+        // If the current velocity will bring the two objects closer;
+        if (newdistsq < distsq)
+        {
+            // Should flip the velocity;
+            return true;
+        }
+        else {
+            return false;
+        }
     }
-    else {
-        return false;
+
+    // Helper Functions
+
+    // Axis-Aligned Bounding Box vs AABB
+    bool CollisionSystem::CheckAABBvsAABB(const Vec3& aPos, const Collider& a,
+        const Vec3& bPos, const Collider& b)
+    {
+        return (std::abs(aPos.x - bPos.x) * 2 < (a.width + b.width)) &&
+            (std::abs(aPos.y - bPos.y) * 2 < (a.height + b.height));
     }
-}
 
-// Helper Functions
+    // Circle vs Circle
+    bool CollisionSystem::CheckCirclevsCircle(const Vec3& aPos, const Collider& a,
+        const Vec3& bPos, const Collider& b)
+    {
+        float dx = aPos.x - bPos.x;
+        float dy = aPos.y - bPos.y;
+        float distSq = dx * dx + dy * dy;
+        float radiusSum = a.radius + b.radius;
 
-// Axis-Aligned Bounding Box vs AABB
-bool CollisionSystem::CheckAABBvsAABB(const Position& aPos, const Collider& a,
-    const Position& bPos, const Collider& b)
-{
-    return (std::abs(aPos.x - bPos.x) * 2 < (a.width + b.width)) &&
-        (std::abs(aPos.y - bPos.y) * 2 < (a.height + b.height));
-}
+        return distSq <= radiusSum * radiusSum;
+    }
 
-// Circle vs Circle
-bool CollisionSystem::CheckCirclevsCircle(const Position& aPos, const Collider& a,
-    const Position& bPos, const Collider& b)
-{
-    float dx = aPos.x - bPos.x;
-    float dy = aPos.y - bPos.y;
-    float distSq = dx * dx + dy * dy;
-    float radiusSum = a.radius + b.radius;
+    // Circle vs AABB
+    bool CollisionSystem::CheckCirclevsAABB(const Vec3& circlePos, const Collider& circle,
+        const Vec3& aabbPos, const Collider& aabb)
+    {
+        float halfW = aabb.width / 2.0f;
+        float halfH = aabb.height / 2.0f;
 
-    return distSq <= radiusSum * radiusSum;
-}
+        // AABB bounds
+        float left = aabbPos.x - halfW;
+        float right = aabbPos.x + halfW;
+        float top = aabbPos.y + halfH;
+        float bottom = aabbPos.y - halfH;
 
-// Circle vs AABB
-bool CollisionSystem::CheckCirclevsAABB(const Position& circlePos, const Collider& circle,
-    const Position& aabbPos, const Collider& aabb)
-{
-    float halfW = aabb.width / 2.0f;
-    float halfH = aabb.height / 2.0f;
+        // Find closest point on AABB to circle center
+        float closestX = Clamp(circlePos.x, left, right);
+        float closestY = Clamp(circlePos.y, bottom, top);
 
-    // AABB bounds
-    float left = aabbPos.x - halfW;
-    float right = aabbPos.x + halfW;
-    float top = aabbPos.y + halfH;
-    float bottom = aabbPos.y - halfH;
+        // Distance from circle center to closest point
+        float dx = circlePos.x - closestX;
+        float dy = circlePos.y - closestY;
+        float distanceSquared = dx * dx + dy * dy;
+        float radiusSquared = circle.radius * circle.radius;
 
-    // Find closest point on AABB to circle center
-    float closestX = Clamp(circlePos.x, left, right);
-    float closestY = Clamp(circlePos.y, bottom, top);
+        // Add some debug output for AABB collisions
+        bool collision = distanceSquared <= radiusSquared;
 
-    // Distance from circle center to closest point
-    float dx = circlePos.x - closestX;
-    float dy = circlePos.y - closestY;
-    float distanceSquared = dx * dx + dy * dy;
-    float radiusSquared = circle.radius * circle.radius;
+        return collision;
+    }
 
-    // Add some debug output for AABB collisions
-    bool collision = distanceSquared <= radiusSquared;
+    // Clamp helper
+    float CollisionSystem::Clamp(float value, float min, float max)
+    {
+        return std::max(min, std::min(value, max));
+    }
 
-    return collision;
-}
-
-// Clamp helper
-float CollisionSystem::Clamp(float value, float min, float max)
-{
-    return std::max(min, std::min(value, max));
-}
+}   // NightSnack

@@ -16,237 +16,209 @@
 #ifndef COMPONENT_HPP
 #define COMPONENT_HPP
 
-#include "Graphics/Mesh.h"
-#include "Graphics/Material.h"
-
 #include <json.hpp>
-using json = nlohmann::json;
+#include "MathLibrary/Math.h"
 
-// ================================================================================================
-// COMPONENTS
-// ================================================================================================
-struct Position {
-  float x, y, z;
-};
+namespace NightSnack {
 
-struct Rotation {
-	float degrees;
-};
+    using json = nlohmann::json;
 
-struct Scale {
-	float x, y;
-};
+    // ================================================================================================
+    // COMPONENTS
+    // ================================================================================================
+    struct Transform {
+        Vec3 pos;
+        float rot;
+        Vec2 scale;
+    };
 
-struct Transform {
-	Position pos;
-	Rotation rot;
-	Scale scale;
-};
+    struct RigidBody {
+        float mass;
+        Vec2 vel;
+        Vec2 accel;
+        bool useGravity;
+    };
 
-struct Velocity {
-	float dx, dy;
-};
+    enum class ShapeType { AABB, Circle };
+    enum class ColliderType {
+        Solid,   // Blocks movement
+        Trigger,  // Detects overlaps only
+        Ground
+    };
+    struct Collider {
+        ShapeType shape{ ShapeType::AABB };     // AABB or Circle
+        ColliderType type{ ColliderType::Solid };   // Solid or Trigger
+        bool isStatic{ true };       // true = immovable (walls), false = dynamic (player)
 
-struct Acceleration {
-	float ax, ay;
-};
+        // Shape data
+        float width{ 1.0f };   // AABB width
+        float height{ 1.0f };  // AABB height
+        float radius{ 0.5f };  // Circle radius
 
-struct Force {
-	float fx{ 0.0 };
-	float fy{ 0.0 };
-};
+        // Collision state
+        bool isGrounded{ false };
+        bool colliding{ false };
+    };
 
-struct Mass {
-	float val = 1.0;
-};
+    struct Force {
+        float fx{ 0.0 };
+        float fy{ 0.0 };
+    };
 
-struct Sprite {
-	std::string textureName;
-};
+    struct Sprite {
+        std::string textureName;
+    };
 
-struct Color {
-	float r, g, b, a;
-};
+    struct Color {
+        float r, g, b, a;
+    };
 
-struct PlayerController {
-    float moveSpeed;
-    float jumpSpeed;
-    // maybe can add abilities etc...
-};
+    struct PlayerController {
+        float moveSpeed;
+        float jumpSpeed;
+        // maybe can add abilities etc...
+    };
 
-// ================================================================================================
-// GRAPHICS COMPONENTS
-// ================================================================================================
+    // ================================================================================================
+    // GRAPHICS COMPONENTS
+    // ================================================================================================
 
-// The render layer determines the base z position of all renderable entities
-// This is to prevent z fighting glitches for all renderable entities
-enum class RenderLayer {
-	BACKGROUND = 0,
-	DEFAULT,
-	DEBUG,
-	UI
-};
+    // The render layer determines the base z position of all renderable entities
+    // This is to prevent z fighting glitches for all renderable entities
+    enum class RenderLayer {
+        BACKGROUND = 0,
+        DEFAULT,
+        DEBUG,
+        UI
+    };
 
-// All renderable entities will have this component
-// Each renderable will have a Mesh, Material, Shader, Texture tied to them
-struct Renderable {
-	std::string meshName{};
-	std::string materialName{};
-	RenderLayer renderLayer{ RenderLayer::DEFAULT };
-	bool isWireframe{ false };
-	bool wasModified{ true };
+    // All renderable entities will have this component
+    // Each renderable will have a Mesh, Material, Shader, Texture tied to them
+    struct Renderable {
+        std::string meshName{};
+        std::string materialName{};
+        RenderLayer renderLayer{ RenderLayer::DEFAULT };
+        bool isWireframe{ false };
+        bool wasModified{ true };
 
-};
+    };
 
-// Only camera objects will have this component
-struct Camera {
-	bool isMainCam{ true };
-	float zoom{ 1.f };
-	float width{ 1600.f };
-	float height{ 900.f };
-};
+    // Only camera objects will have this component
+    struct Camera {
+        bool isMainCam{ true };
+        float zoom{ 1.f };
+        float width{ 1600.f };
+        float height{ 900.f };
+    };
 
-// COLLISION COMPONENTS;
+    // Add more Components here if necessary...
+    // Ensure to add a Json overload below for your component to allow for Archetype Loading...
 
-enum class ShapeType {
-    AABB,
-    Circle
-};
+    // ================================================================================================
+    // COMPONENT JSON OVERLOADS
+    // ================================================================================================
+    // POSITION / ROTATION / SCALE / TRANSFORM ====================
+    inline void from_json(const json& j, Vec3& p) {
+        j.at("x").get_to(p.x);
+        j.at("y").get_to(p.y);
+        j.at("z").get_to(p.z);
+    }
 
-enum class ColliderType {
-    Solid,   // Blocks movement
-    Trigger,  // Detects overlaps only
-	Ground
-};
+    inline void from_json(const json& j, Vec2& s) {
+        j.at("x").get_to(s.x);
+        j.at("y").get_to(s.y);
+    }
 
-struct Collider {
-    ShapeType shape{ ShapeType::AABB };     // AABB or Circle
-    ColliderType type{ ColliderType::Solid };   // Solid or Trigger
-    bool isStatic{ true };       // true = immovable (walls), false = dynamic (player)
+    inline void from_json(const json& j, Transform& t) {
+        j.at("Position").get_to(t.pos);
+        j.at("Rotation").get_to(t.rot);
+        j.at("Scale").get_to(t.scale);
+    }
 
-	// Shape data
-	float width{ 1.0f };   // AABB width
-	float height{ 1.0f };  // AABB height
-	float radius{ 0.5f };  // Circle radius
+    // PHYSICS ====================================================
 
-	// Collision state
-	bool isGrounded{ false };
-	bool colliding{ false };
-};
+    inline void from_json(const json& j, Force& f) {
+        j.value("fx", 0.0f); // optional default
+        j.value("fy", 0.0f);
+        j.at("fx").get_to(f.fx);
+        j.at("fy").get_to(f.fy);
+    }
 
-// Add more Components here if necessary...
-// Ensure to add a Json overload below for your component to allow for Archetype Loading...
+    inline void from_json(const json& j, RigidBody& r) {
+        j.at("mass").get_to(r.mass);
 
-// ================================================================================================
-// COMPONENT JSON OVERLOADS
-// ================================================================================================
-// POSITION / ROTATION / SCALE / TRANSFORM ====================
-inline void from_json(const json& j, Position& p) {
-    j.at("x").get_to(p.x);
-    j.at("y").get_to(p.y);
-}
+        r.accel = Vec2{};
+        r.vel = Vec2{};
+        r.useGravity = false;
+        j.at("useGravity").get_to(r.useGravity);
+    }
 
-inline void from_json(const json& j, Rotation& r) {
-    j.at("degrees").get_to(r.degrees);
-}
+    // GRAPHICS ===================================================
+    inline void from_json(const json& j, Sprite& s) {
+        j.at("textureName").get_to(s.textureName);
+    }
 
-inline void from_json(const json& j, Scale& s) {
-    j.at("x").get_to(s.x);
-    j.at("y").get_to(s.y);
-}
+    inline void from_json(const json& j, Color& c) {
+        j.at("r").get_to(c.r);
+        j.at("g").get_to(c.g);
+        j.at("b").get_to(c.b);
+        j.at("a").get_to(c.a);
+    }
 
-inline void from_json(const json& j, Transform& t) {
-    t.pos = j.at("Position").get<Position>();
-    t.rot = j.at("Rotation").get<Rotation>();
-    t.scale = j.at("Scale").get<Scale>();
-}
+    // Renderable is tricky since Mesh* and Material* are runtime resources.
+    // Might instead serialize names/ids and resolve them later; Store meshes in an unorderedmap with std::string keys;
+    inline void from_json(const json& j, Renderable& r) {
 
-// PHYSICS ====================================================
-inline void from_json(const json& j, Velocity& v) {
-    j.at("dx").get_to(v.dx);
-    j.at("dy").get_to(v.dy);
-}
+        j.at("meshName").get_to(r.meshName);
+        j.at("materialName").get_to(r.materialName);
 
-inline void from_json(const json& j, Acceleration& a) {
-    j.at("ax").get_to(a.ax);
-    j.at("ay").get_to(a.ay);
-}
+        if (j.contains("isWireframe"))
+            j.at("isWireframe").get_to(r.isWireframe);
+        else
+            r.isWireframe = false;
 
-inline void from_json(const json& j, Force& f) {
-    j.value("fx", 0.0f); // optional default
-    j.value("fy", 0.0f);
-    j.at("fx").get_to(f.fx);
-    j.at("fy").get_to(f.fy);
-}
+        r.wasModified = true;
 
-inline void from_json(const json& j, Mass& m) {
-    j.at("val").get_to(m.val);
-}
+    }
 
-// GRAPHICS ===================================================
-inline void from_json(const json& j, Sprite& s) {
-    j.at("textureName").get_to(s.textureName);
-}
-
-inline void from_json(const json& j, Color& c) {
-    j.at("r").get_to(c.r);
-    j.at("g").get_to(c.g);
-    j.at("b").get_to(c.b);
-    j.at("a").get_to(c.a);
-}
-
-// Renderable is tricky since Mesh* and Material* are runtime resources.
-// Might instead serialize names/ids and resolve them later; Store meshes in an unorderedmap with std::string keys;
-inline void from_json(const json& j, Renderable& r) {
-
-    j.at("meshName").get_to(r.meshName);
-    j.at("materialName").get_to(r.materialName);
-
-    if (j.contains("isWireframe"))
-        j.at("isWireframe").get_to(r.isWireframe);
-    else
-        r.isWireframe = false;
-
-    r.wasModified = true;
-
-}
-
-// Camera =====================================================
-inline void from_json(const json& j, Camera& c) {
-    j.at("isMainCam").get_to(c.isMainCam);
-    j.at("zoom").get_to(c.zoom);
-    j.at("width").get_to(c.width);
-    j.at("height").get_to(c.height);
-}
-
-// COLLISION ==================================================
-inline void from_json(const json& j, Collider& c) {
-    std::string shapeStr, typeStr;
-    j.at("shape").get_to(shapeStr);
-    j.at("type").get_to(typeStr);
-
-    if (shapeStr == "AABB") c.shape = ShapeType::AABB;
-    else if (shapeStr == "Circle") c.shape = ShapeType::Circle;
-
-    if (typeStr == "Solid") c.type = ColliderType::Solid;
-    else if (typeStr == "Trigger") c.type = ColliderType::Trigger;
-
-    j.at("isStatic").get_to(c.isStatic);
-
-    if (c.shape == ShapeType::AABB) {
+    // Camera =====================================================
+    inline void from_json(const json& j, Camera& c) {
+        j.at("isMainCam").get_to(c.isMainCam);
+        j.at("zoom").get_to(c.zoom);
         j.at("width").get_to(c.width);
         j.at("height").get_to(c.height);
-        c.radius = 0.f;
-    }
-    else if (c.shape == ShapeType::Circle) {
-        j.at("radius").get_to(c.radius);
-        c.width = 0.f;
-        c.height = 0.f;
     }
 
-    // Optional runtime-only flags (not usually in prefab JSON)
-    c.isGrounded = j.value("isGrounded", false);
-    c.colliding = j.value("colliding", false);
-}
+    // COLLISION ==================================================
+    inline void from_json(const json& j, Collider& c) {
+        std::string shapeStr, typeStr;
+        j.at("shape").get_to(shapeStr);
+        j.at("type").get_to(typeStr);
+
+        if (shapeStr == "AABB") c.shape = ShapeType::AABB;
+        else if (shapeStr == "Circle") c.shape = ShapeType::Circle;
+
+        if (typeStr == "Solid") c.type = ColliderType::Solid;
+        else if (typeStr == "Trigger") c.type = ColliderType::Trigger;
+
+        j.at("isStatic").get_to(c.isStatic);
+
+        if (c.shape == ShapeType::AABB) {
+            j.at("width").get_to(c.width);
+            j.at("height").get_to(c.height);
+            c.radius = 0.f;
+        }
+        else if (c.shape == ShapeType::Circle) {
+            j.at("radius").get_to(c.radius);
+            c.width = 0.f;
+            c.height = 0.f;
+        }
+
+        // Optional runtime-only flags (not usually in prefab JSON)
+        c.isGrounded = j.value("isGrounded", false);
+        c.colliding = j.value("colliding", false);
+    }
+
+}   // NightSnack
 
 #endif // COMPONENT_HPP

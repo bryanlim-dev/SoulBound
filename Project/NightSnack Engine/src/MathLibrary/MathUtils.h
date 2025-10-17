@@ -14,41 +14,45 @@
 #include <cmath>
 #include <stdexcept>
 
-// PI value
-constexpr double PI = 3.14159265358979323846;
-// Z coordinate position offset value 
-constexpr float Z_EPSILON = 0.0001f;
+namespace NightSnack {
 
-/************************************************************************/
-/*!
-\brief
-Convert degrees to radians.
+    // PI value
+    constexpr double PI = 3.14159265358979323846;
+    // Z coordinate position offset value 
+    constexpr float Z_EPSILON = 0.0001f;
 
-\param deg 
-Angle in degrees.
+    /************************************************************************/
+    /*!
+    \brief
+    Convert degrees to radians.
 
-\return
-Angle in radians.
-*/
-/************************************************************************/
-inline float deg2rad(float deg)
-{
-    return static_cast<float>(deg * PI / 180.0);
-}
+    \param deg
+    Angle in degrees.
 
-/************************************************************************/
-/*!
-\brief
-Convert radians to degrees.
+    \return
+    Angle in radians.
+    */
+    /************************************************************************/
+    inline float deg2rad(float deg)
+    {
+        return static_cast<float>(deg * PI / 180.0);
+    }
 
-\param rad
-Angle in radians.
+    /************************************************************************/
+    /*!
+    \brief
+    Convert radians to degrees.
 
-\return
-Angle in degrees.
-*/
-/************************************************************************/
-inline float rad2deg(float rad)
-{
-    return static_cast<float>(rad * 180.0 / PI);
-}
+    \param rad
+    Angle in radians.
+
+    \return
+    Angle in degrees.
+    */
+    /************************************************************************/
+    inline float rad2deg(float rad)
+    {
+        return static_cast<float>(rad * 180.0 / PI);
+    }
+
+}   // NightSnack

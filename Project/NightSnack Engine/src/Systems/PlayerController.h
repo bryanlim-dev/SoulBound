@@ -23,154 +23,152 @@ struct PlayerFlags {
     bool movingRight = false;
     bool jumpRequested = false;
 
-	bool playerChange = false;
-	// add more flags if needed
+    bool playerChange = false;
+    // add more flags if needed
 };
 
-class PlayerControllerSystem : public ISystem {
+namespace NightSnack {
 
-public:
-    /************************************************************************/
-    /*!
-    \brief
-    Constructor for PlayerControllerSystem class taht sets up the system's
-    signature and initializes the current player (m_player).
+    class PlayerControllerSystem : public ISystem {
 
-    \param coord
-    Reference to the Coordinator.
-    \param disp
-    Reference to the Event Dispatcher.
-    */
-    /************************************************************************/
-    PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_dispatcher{ &disp } {
-        // Physics components of interest;
-        m_systemSignature.set(GetComponentTypeID<PlayerController>());
-        m_systemSignature.set(GetComponentTypeID<Position>());
-        m_systemSignature.set(GetComponentTypeID<Rotation>());
-        m_systemSignature.set(GetComponentTypeID<Scale>());
-        m_systemSignature.set(GetComponentTypeID<Velocity>());
+    public:
+        /************************************************************************/
+        /*!
+        \brief
+        Constructor for PlayerControllerSystem class taht sets up the system's
+        signature and initializes the current player (m_player).
 
-        m_player = FindPlayer(coord);
+        \param coord
+        Reference to the Coordinator.
+        \param disp
+        Reference to the Event Dispatcher.
+        */
+        /************************************************************************/
+        PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_dispatcher{ &disp } {
+            // Physics components of interest;
+            m_systemSignature.set(GetComponentTypeID<PlayerController>());
+            m_systemSignature.set(GetComponentTypeID<Transform>());
+            m_systemSignature.set(GetComponentTypeID<RigidBody>());
 
-        m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
-            {
-                if (m_entities.empty())
-                    return;
+            m_player = FindPlayer(coord);
 
-                switch (event.inputAction) {
-                case InputEvent::InputAction::PlayerMoveLeft:
-                    if (event.pressed == InputEvent::InputActionState::Pressed ||
-                        event.pressed == InputEvent::InputActionState::Repeat) {
-                        m_flags.movingLeft = true;
+            m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
+                {
+                    if (m_entities.empty())
+                        return;
+
+                    switch (event.inputAction) {
+                    case InputEvent::InputAction::PlayerMoveLeft:
+                        if (event.pressed == InputEvent::InputActionState::Pressed ||
+                            event.pressed == InputEvent::InputActionState::Repeat) {
+                            m_flags.movingLeft = true;
+                        }
+                        else if (event.pressed == InputEvent::InputActionState::Released) {
+                            m_flags.movingLeft = false;
+                        }
+                        break;
+                    case InputEvent::InputAction::PlayerMoveRight:
+                        if (event.pressed == InputEvent::InputActionState::Pressed ||
+                            event.pressed == InputEvent::InputActionState::Repeat) {
+                            m_flags.movingRight = true;
+                        }
+                        else if (event.pressed == InputEvent::InputActionState::Released) {
+                            m_flags.movingRight = false;
+                        }
+                        break;
+                    case InputEvent::InputAction::PlayerJump:
+                        if (event.pressed == InputEvent::InputActionState::Pressed ||
+                            event.pressed == InputEvent::InputActionState::Repeat) {
+                            m_flags.jumpRequested = true;
+                        }
+                        break;
                     }
-                    else if (event.pressed == InputEvent::InputActionState::Released) {
-                        m_flags.movingLeft = false;
-                    }
-                    break;
-                case InputEvent::InputAction::PlayerMoveRight:
-                    if (event.pressed == InputEvent::InputActionState::Pressed ||
-                        event.pressed == InputEvent::InputActionState::Repeat) {
-                        m_flags.movingRight = true;
-                    }
-                    else if (event.pressed == InputEvent::InputActionState::Released) {
-                        m_flags.movingRight = false;
-                    }
-                    break;
-                case InputEvent::InputAction::PlayerJump:
-                    if (event.pressed == InputEvent::InputActionState::Pressed ||
-                        event.pressed == InputEvent::InputActionState::Repeat) {
-                        m_flags.jumpRequested = true;
-                    }
-                    break;
-                }
-            });
-    }
-
-    /************************************************************************/
-    /*!
-    \brief
-    Updates the current player.
-    Sets Velocity component of Player entity when Inputs are triggered.
-
-    \param dt
-    delta time.
-    \param coord
-    Reference to Coordinator.
-    */
-    /************************************************************************/
-    void Update(float dt, Coordinator& coord) override {
-        (void)dt;
-        
-        m_player = FindPlayer(coord);
-
-        PlayerController const& pcont = coord.GetComponent<PlayerController>(m_player);
-        Velocity& vel = coord.ModifyComponent<Velocity>(m_player);
-
-        if ((m_flags.movingRight && !m_flags.movingLeft) && !coord.GetComponent<Collider>(m_player).colliding) {
-            vel.dx = pcont.moveSpeed;
+                });
         }
-        else if ((m_flags.movingLeft && !m_flags.movingRight) && !coord.GetComponent<Collider>(m_player).colliding) {
-            vel.dx = -pcont.moveSpeed;
-        }
-        if (m_flags.jumpRequested && coord.GetComponent<Collider>(m_player).isGrounded) {
-            vel.dy = pcont.jumpSpeed;
-            coord.ModifyComponent<Collider>(m_player).isGrounded = false;
-        }
-        m_flags.jumpRequested = false;
-    }
 
-    /************************************************************************/
-    /*!
-    \brief
-    Finds the current Player Entity.
+        /************************************************************************/
+        /*!
+        \brief
+        Updates the current player.
+        Sets Velocity component of Player entity when Inputs are triggered.
 
-    \param coord
-    Reference to Coordinator.
+        \param dt
+        delta time.
+        \param coord
+        Reference to Coordinator.
+        */
+        /************************************************************************/
+        void Update(float dt, Coordinator& coord) override {
+            (void)dt;
 
-    \return
-    The ID of the current Player Entity.
-    */
-    /************************************************************************/
-    Entity FindPlayer(Coordinator& coord) {
-        // Camera Signature (only have components Camera and Tranform)
-        Signature playerSig;
+            m_player = FindPlayer(coord);
 
-        playerSig.set(GetComponentTypeID<PlayerController>());
-        playerSig.set(GetComponentTypeID<Position>());
-        playerSig.set(GetComponentTypeID<Rotation>());
-        playerSig.set(GetComponentTypeID<Scale>());
+            PlayerController const& pcont = coord.GetComponent<PlayerController>(m_player);
+            Vec2& vel = coord.ModifyComponent<RigidBody>(m_player).vel;
 
-        playerSig.set(GetComponentTypeID<Force>());
-        playerSig.set(GetComponentTypeID<Acceleration>());
-        playerSig.set(GetComponentTypeID<Velocity>());
-        playerSig.set(GetComponentTypeID<Mass>());
-        playerSig.set(GetComponentTypeID<Collider>());
-
-        // Iterate through all living Entities in the COORDINATOR instead
-        // Since the GraphicsSystem will not have a Camera Entity
-        for (Entity const& e : coord.GetLivingEntities()) {
-            if ((coord.GetEntitySignature(e) & playerSig) == playerSig) { // This camera Entity is the main camera
-                return e;
+            if ((m_flags.movingRight && !m_flags.movingLeft) && !coord.GetComponent<Collider>(m_player).colliding) {
+                vel.x = pcont.moveSpeed;
             }
+            else if ((m_flags.movingLeft && !m_flags.movingRight) && !coord.GetComponent<Collider>(m_player).colliding) {
+                vel.x = -pcont.moveSpeed;
+            }
+            if (m_flags.jumpRequested && coord.GetComponent<Collider>(m_player).isGrounded) {
+                vel.y = pcont.jumpSpeed;
+                coord.ModifyComponent<Collider>(m_player).isGrounded = false;
+            }
+            m_flags.jumpRequested = false;
         }
-        std::cerr << "Error: No Player Entity found in scene!\n";
-        return INVALID_ENTITY;
-    }
 
-    void ResetFlags() {
-        m_flags = PlayerFlags{};
-	}
+        /************************************************************************/
+        /*!
+        \brief
+        Finds the current Player Entity.
 
-    // Required by ISystem base class.
-    std::string GetName() const override { return "PlayerController"; }
-    Signature GetSignature() const override { return m_systemSignature; }
+        \param coord
+        Reference to Coordinator.
 
-private:
-    Signature m_systemSignature{};
-    EventDispatcher* m_dispatcher = nullptr;
+        \return
+        The ID of the current Player Entity.
+        */
+        /************************************************************************/
+        Entity FindPlayer(Coordinator& coord) {
+            // Camera Signature (only have components Camera and Tranform)
+            Signature playerSig;
 
-    Entity m_player;
+            playerSig.set(GetComponentTypeID<PlayerController>());
+            playerSig.set(GetComponentTypeID<Transform>());
 
-	// Accumulates states
-    PlayerFlags m_flags{};
-};
+            playerSig.set(GetComponentTypeID<Force>());
+            playerSig.set(GetComponentTypeID<RigidBody>());
+            playerSig.set(GetComponentTypeID<Collider>());
+
+            // Iterate through all living Entities in the COORDINATOR instead
+            // Since the GraphicsSystem will not have a Camera Entity
+            for (Entity const& e : coord.GetLivingEntities()) {
+                if ((coord.GetEntitySignature(e) & playerSig) == playerSig) { // This camera Entity is the main camera
+                    return e;
+                }
+            }
+            std::cerr << "Error: No Player Entity found in scene!\n";
+            return INVALID_ENTITY;
+        }
+
+        void ResetFlags() {
+            m_flags = PlayerFlags{};
+        }
+
+        // Required by ISystem base class.
+        std::string GetName() const override { return "PlayerController"; }
+        Signature GetSignature() const override { return m_systemSignature; }
+
+    private:
+        Signature m_systemSignature{};
+        EventDispatcher* m_dispatcher = nullptr;
+
+        Entity m_player;
+
+        // Accumulates states
+        PlayerFlags m_flags{};
+    };
+
+}   // namespace NightSnack

@@ -20,100 +20,104 @@
 #include "ECS/ISystem.h"
 #include "Systems/Application.h"
 
-class ImguiSystem : public ISystem {
+namespace NightSnack {
 
-public:
-	/************************************************************************/
-	/*!
-	\brief
-	Creates imgui context and initializes OpenGL for imgui panel.
-	*/
-	/************************************************************************/
-	ImguiSystem(Coordinator& coord);
+	class ImguiSystem : public ISystem {
 
-	/************************************************************************/
-	/*!
-	\brief
-	Destroys imgui constext and shuts down OpenGL and GLFW for imgui.
-	*/
-	/************************************************************************/
-	~ImguiSystem();
+	public:
+		/************************************************************************/
+		/*!
+		\brief
+		Creates imgui context and initializes OpenGL for imgui panel.
+		*/
+		/************************************************************************/
+		ImguiSystem(Coordinator& coord);
 
-	/************************************************************************/
-	/*!
-	\brief
-	Called in Core update, sets up and draws UI panels.
+		/************************************************************************/
+		/*!
+		\brief
+		Destroys imgui constext and shuts down OpenGL and GLFW for imgui.
+		*/
+		/************************************************************************/
+		~ImguiSystem();
 
-	\param dt
-	delta time
-	\param coord
-	Reference to ECS Coordinator.
-	*/
-	/************************************************************************/
-	void Update(float dt, Coordinator& coord) override;
+		/************************************************************************/
+		/*!
+		\brief
+		Called in Core update, sets up and draws UI panels.
 
-	// Required by ISystem base class.
-	Signature GetSignature() const override { return m_systemSignature; }
-	std::string GetName() const override { return "ImguiSystem"; }
+		\param dt
+		delta time
+		\param coord
+		Reference to ECS Coordinator.
+		*/
+		/************************************************************************/
+		void Update(float dt, Coordinator& coord) override;
 
-private:
-	Coordinator& m_coord;
-	
-	Signature m_systemSignature{};
+		// Required by ISystem base class.
+		Signature GetSignature() const override { return m_systemSignature; }
+		std::string GetName() const override { return "ImguiSystem"; }
 
-};
+	private:
+		Coordinator& m_coord;
 
-inline ImguiSystem::ImguiSystem(Coordinator& coord) : m_coord(coord) {
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
+		Signature m_systemSignature{};
 
-	ImGuiIO& io = ImGui::GetIO();
-	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-	ImGui::StyleColorsDark();
+	};
 
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-		ImGuiStyle& style = ImGui::GetStyle();
-		style.WindowRounding = 0.0f;
-		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	inline ImguiSystem::ImguiSystem(Coordinator& coord) : m_coord(coord) {
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+
+		ImGuiIO& io = ImGui::GetIO();
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		ImGui::StyleColorsDark();
+
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+			ImGuiStyle& style = ImGui::GetStyle();
+			style.WindowRounding = 0.0f;
+			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		}
+
+		ImGui_ImplGlfw_InitForOpenGL(coord.GetSystem<ApplicationSystem>()->GetNativeHandle(), true);
+		ImGui_ImplOpenGL3_Init("#version 450");
 	}
 
-	ImGui_ImplGlfw_InitForOpenGL(coord.GetSystem<ApplicationSystem>()->GetNativeHandle(), true);
-	ImGui_ImplOpenGL3_Init("#version 450");
-}
-
-inline ImguiSystem::~ImguiSystem() {
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-}
-
-inline void ImguiSystem::Update(float dt, Coordinator& coord) {
-	(void)coord;
-	(void)dt;
-
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplGlfw_NewFrame();
-	ImGui::NewFrame();
-
-	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
-	ImGui::Begin("TestPanel");
-
-	// stuff here...
-	//ImGui::Text("Fortnite und trink Cola! YIPEEE!");
-
-	ImGui::End();
-
-	// render
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-	ImGuiIO& io = ImGui::GetIO();
-	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-		GLFWwindow* backup = glfwGetCurrentContext();
-		ImGui::UpdatePlatformWindows();
-		ImGui::RenderPlatformWindowsDefault();
-		glfwMakeContextCurrent(backup);
+	inline ImguiSystem::~ImguiSystem() {
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
 	}
 
-}
+	inline void ImguiSystem::Update(float dt, Coordinator& coord) {
+		(void)coord;
+		(void)dt;
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
+		ImGui::Begin("TestPanel");
+
+		// stuff here...
+		//ImGui::Text("Fortnite und trink Cola! YIPEEE!");
+
+		ImGui::End();
+
+		// render
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		ImGuiIO& io = ImGui::GetIO();
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+			GLFWwindow* backup = glfwGetCurrentContext();
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			glfwMakeContextCurrent(backup);
+		}
+
+	}
+
+}	// NightSnack

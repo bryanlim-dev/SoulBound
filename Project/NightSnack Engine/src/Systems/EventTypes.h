@@ -13,92 +13,97 @@
 
 #pragma once
 
-// Types of events
-enum class EventType
-{
-    Input,
-    Collision,
-    Audio
-};
+namespace NightSnack {
 
-// Input event (keyboard/mouse)
-class InputEvent : public IEvent
-{
-public:
-
-    enum class InputAction {
-        // Manipulation of a single textured object
-        ScaleUp,            // D
-        ScaleDown,          // A
-        Rotate,             // R
-
-        // Physics tests
-        DynamicBallTest,    // F
-        GravityBallTest,    // G
-
-        // Creation of entities
-        CreateSquare,       // 1
-        CreateCircle,       // 2
-        CreateBananaCircle, // 3 -> texture entity;
-        DoubleEntities,     // Space
-        HalfEntities,       // Backspace
-
-        // Player movement
-        PlayerMoveLeft,     // Player controller with Arrow keys;
-        PlayerMoveRight,
-        PlayerJump,
-        ChangePlayer,       // Down arrow;
-
-        // Debug tests
-        ToggleSystemTimers, // TAB
-        ToggleDebugDraw,    // T
-        CrashTest,          // C
-        PhysicsDebugStep,   // P
-
-        // Mouse events
-        ClickLMB,           // LMB
-
-        // Modifier events
-        Save,               // CTRL + S
-        PhysicsDebugMode,   // CTRL + P
-        
-        NumTotalInputAction
+    // Types of events
+    enum class EventType
+    {
+        Input,
+        Collision,
+        Audio
     };
 
-    enum class InputActionState {
-        Pressed = 0,
-        Repeat,
-        Released,
-        NumTotalInputActionState
+    // Input event (keyboard/mouse)
+    class InputEvent : public IEvent
+    {
+    public:
+
+        enum class InputAction {
+            // Manipulation of a single textured object
+            ScaleUp,            // D
+            ScaleDown,          // A
+            Rotate,             // R
+
+            // Physics tests
+            DynamicBallTest,    // F
+            GravityBallTest,    // G
+
+            // Creation of entities
+            CreateSquare,       // 1
+            CreateCircle,       // 2
+            CreateBananaCircle, // 3 -> texture entity;
+            DoubleEntities,     // Space
+            HalfEntities,       // Backspace
+
+            // Player movement
+            PlayerMoveLeft,     // Player controller with Arrow keys;
+            PlayerMoveRight,
+            PlayerJump,
+            ChangePlayer,       // Down arrow;
+
+            // Debug tests
+            ToggleSystemTimers, // TAB
+            ToggleDebugDraw,    // T
+            CrashTest,          // C
+            PhysicsDebugStep,   // P
+
+            // Mouse events
+            ClickLMB,           // LMB
+
+            // Modifier events
+            Save,               // CTRL + S
+            PhysicsDebugMode,   // CTRL + P
+
+            NumTotalInputAction
+        };
+
+        enum class InputActionState {
+            Pressed = 0,
+            Repeat,
+            Released,
+            NumTotalInputActionState
+        };
+
+        InputAction inputAction;
+        InputActionState pressed;
+
+        InputEvent(InputAction a, InputActionState p) : inputAction(a), pressed(p) {}
+        EventType GetType() const override { return EventType::Input; }
     };
 
-    InputAction inputAction;
-    InputActionState pressed;
+    // Collision event
+    class CollisionEvent : public IEvent
+    {
+    public:
+        int entityA;
+        int entityB;
 
-    InputEvent(InputAction a, InputActionState p) : inputAction(a), pressed(p) {}
-    EventType GetType() const override { return EventType::Input; }
-};
+        CollisionEvent(int a, int b) : entityA(a), entityB(b) {}
+        EventType GetType() const override { return EventType::Collision; }
+    };
 
-// Collision event
-class CollisionEvent : public IEvent
-{
-public:
-    int entityA;
-    int entityB;
+    // Audio event (play/stop sound)
+    class AudioEvent : public IEvent
+    {
+    public:
+        enum class AudioAction { Play, Stop, Pause };
+        AudioAction action;
+        int soundId;
 
-    CollisionEvent(int a, int b) : entityA(a), entityB(b) {}
-    EventType GetType() const override { return EventType::Collision; }
-};
+        AudioEvent(AudioAction act, int id)
+            : action(act), soundId(id) {
+        }
+        EventType GetType() const override { return EventType::Audio; }
+    };
 
-// Audio event (play/stop sound)
-class AudioEvent : public IEvent
-{
-public:
-    enum class AudioAction { Play, Stop, Pause };
-    AudioAction action;
-    int soundId;
-
-    AudioEvent(AudioAction act, int id)
-        : action(act), soundId(id) {}
-    EventType GetType() const override { return EventType::Audio; }
-};
+}   // NightSnack

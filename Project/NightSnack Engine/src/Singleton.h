@@ -14,30 +14,33 @@
  ******************************************************************************/
 #pragma once
 
+namespace NightSnack {
 
-//Template class for a singleton
-template <typename T>
-class Singleton
-{
-public:
-	static T* GetInstance()
+	//Template class for a singleton
+	template <typename T>
+	class Singleton
 	{
-		static T* instance; //The only instance allowed
+	public:
+		static T* GetInstance()
+		{
+			static T* instance; //The only instance allowed
 
-		if (!instance)
-			instance = new T();
+			if (!instance)
+				instance = new T();
 
-		return instance;
-	}
+			return instance;
+		}
 
-protected:
+	protected:
 
-	//These are hidden so you cant access them
-	Singleton() = default;
-	virtual ~Singleton() = default;
+		//These are hidden so you cant access them
+		Singleton() = default;
+		virtual ~Singleton() = default;
 
-public:
-	//Delete the copy constructor and assigment operator
-	Singleton(Singleton const& rhs) = delete;
-	Singleton& operator= (Singleton const& rhs) = delete;
-};
+	public:
+		//Delete the copy constructor and assigment operator
+		Singleton(Singleton const& rhs) = delete;
+		Singleton& operator= (Singleton const& rhs) = delete;
+	};
+
+}	// NightSnack;

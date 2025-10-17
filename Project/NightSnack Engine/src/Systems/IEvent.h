@@ -16,50 +16,52 @@
 #include <vector>
 #include <typeindex>
 
-// Forward declaration of EventType enum
-enum class EventType;
+namespace NightSnack {
 
-/************************************************************************/
-/*!
-\brief
-Interface for all events in the system. Includes a virtual destructor
-and a method to get the event type.
-*/
-/************************************************************************/
-class IEvent
-{
-public:
-	virtual ~IEvent() = default;
-	virtual EventType GetType() const = 0;
-};
+    // Forward declaration of EventType enum
+    enum class EventType;
 
-class EventDispatcher 
-{
-public:
     /************************************************************************/
     /*!
     \brief
-    Subscribes a listener function to a specific event type.
-	When an event of that type is dispatched, the listener will be called.
-
-    \param[in] listener
-	The function to be called when the event is received.
+    Interface for all events in the system. Includes a virtual destructor
+    and a method to get the event type.
     */
     /************************************************************************/
-    template<typename EventType>
-    void Subscribe(std::function<void(const EventType&)> listener) 
+    class IEvent
     {
-        auto& listeners = m_listeners[std::type_index(typeid(EventType))];
-        listeners.push_back([listener](const void* event) 
-        {
-            listener(*static_cast<const EventType*>(event));
-        });
-    }
+    public:
+        virtual ~IEvent() = default;
+        virtual EventType GetType() const = 0;
+    };
 
-    /************************************************************************/
-    /*!
-    \brief
-	Dispatches an event to all subscribed listeners of that event type.
+    class EventDispatcher
+    {
+    public:
+        /************************************************************************/
+        /*!
+        \brief
+        Subscribes a listener function to a specific event type.
+        When an event of that type is dispatched, the listener will be called.
+
+        \param[in] listener
+        The function to be called when the event is received.
+        */
+        /************************************************************************/
+        template<typename EventType>
+        void Subscribe(std::function<void(const EventType&)> listener)
+        {
+            auto& listeners = m_listeners[std::type_index(typeid(EventType))];
+            listeners.push_back([listener](const void* event)
+                {
+                    listener(*static_cast<const EventType*>(event));
+                });
+        }
+
+        /************************************************************************/
+        /*!
+        \brief
+        Dispatches an event to all subscribed listeners of that event type.
 
     \param[in] event
 	The event instance to be dispatched.
@@ -101,6 +103,8 @@ private:
 	// Queue to hold events for deferred processing
     std::vector<std::unique_ptr<IEvent>> m_eventQueue;
 };
+
+}   // NightSnack
 
 // placed here to avoid circular dependency
 #include "Systems/EventTypes.h"

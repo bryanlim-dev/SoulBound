@@ -17,86 +17,90 @@
 #include "Shader.h"
 #include "Texture.h"
 
-class Material {
-public:
+namespace NightSnack {
 
-	/************************************************************************/
-	/*!
-	\brief
-	Constructor for the Material class.
-	Initializes a Material with a shader and optional texture. 
-	If the texture is a .png, alpha blending is enabled for it.
+	class Material {
+	public:
 
-	\param[in] shader
-	Pointer to the Shader object used for this material
+		/************************************************************************/
+		/*!
+		\brief
+		Constructor for the Material class.
+		Initializes a Material with a shader and optional texture.
+		If the texture is a .png, alpha blending is enabled for it.
 
-	\param[in] texture
-	Pointer to the Texture object bound to this material
-	If this material has no texture, this can be nullptr
-	*/
-	/************************************************************************/
-    Material(Shader* shader, Texture* texture = nullptr);
+		\param[in] shader
+		Pointer to the Shader object used for this material
 
-	/************************************************************************/
-	/*!
-	\brief
-	Retrieves the Shader object associated with this Material
+		\param[in] texture
+		Pointer to the Texture object bound to this material
+		If this material has no texture, this can be nullptr
+		*/
+		/************************************************************************/
+		Material(Shader* shader, Texture* texture = nullptr);
 
-	\return
-	Pointer to the Shader used by this Material
-	*/
-	/************************************************************************/
-    Shader* GetShader() const;
+		/************************************************************************/
+		/*!
+		\brief
+		Retrieves the Shader object associated with this Material
 
-	/************************************************************************/
-	/*!
-	\brief
-	Retrieves the Texture object associated with this Material
+		\return
+		Pointer to the Shader used by this Material
+		*/
+		/************************************************************************/
+		Shader* GetShader() const;
 
-	\return
-	Pointer to the Texture used by this Material.
-	Nullptr if this Material has no Texture
-	*/
-	/************************************************************************/
-    Texture* GetTexture() const;
+		/************************************************************************/
+		/*!
+		\brief
+		Retrieves the Texture object associated with this Material
 
-	/************************************************************************/
-	/*!
-	\brief
-	Sets the base color of the Material.
-	This color will be passed to the shader as "uBaseColor"
+		\return
+		Pointer to the Texture used by this Material.
+		Nullptr if this Material has no Texture
+		*/
+		/************************************************************************/
+		Texture* GetTexture() const;
 
-	\param[in] r
-	Red component of the color
+		/************************************************************************/
+		/*!
+		\brief
+		Sets the base color of the Material.
+		This color will be passed to the shader as "uBaseColor"
 
-	\param[in] g
-	Green component of the color
+		\param[in] r
+		Red component of the color
 
-	\param[in] b
-	Blue component of the color
+		\param[in] g
+		Green component of the color
 
-	\param[in] a
-	Alpha component of the color
-	*/
-	/************************************************************************/
-    void SetBaseColor(float r, float g, float b, float a);
+		\param[in] b
+		Blue component of the color
 
-	/************************************************************************/
-	/*!
-	\brief
-	Applies the material's properties before rendering.
-	This includes setting shader uniform variables, binding textures, and 
-	configuring OpenGL states such as alpha blending and depth mask.
+		\param[in] a
+		Alpha component of the color
+		*/
+		/************************************************************************/
+		void SetBaseColor(float r, float g, float b, float a);
 
-	\param[in] wireframe
-	Represents whether rendering is in wireframe mode.
-	If true, textures will not be binded.
-	/************************************************************************/
-    void ApplyUniforms(bool wireframe);
+		/************************************************************************/
+		/*!
+		\brief
+		Applies the material's properties before rendering.
+		This includes setting shader uniform variables, binding textures, and
+		configuring OpenGL states such as alpha blending and depth mask.
 
-private:
-    Shader* m_shader;
-    Texture* m_texture;
-    glm::vec4 m_baseColor{ 1.f, 1.f, 1.f, 1.f};
-    bool m_enableAlphaBlending{ false };
-};
+		\param[in] wireframe
+		Represents whether rendering is in wireframe mode.
+		If true, textures will not be binded.
+		/************************************************************************/
+		void ApplyUniforms(bool wireframe);
+
+	private:
+		Shader* m_shader;
+		Texture* m_texture;
+		glm::vec4 m_baseColor{ 1.f, 1.f, 1.f, 1.f };
+		bool m_enableAlphaBlending{ false };
+	};
+
+}	// NightSnack
