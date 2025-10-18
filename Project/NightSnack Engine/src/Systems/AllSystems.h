@@ -21,6 +21,7 @@
 #include "./Factory/EntityFactory.h"
 #include "PlayerController.h"
 #include "UI Editor/Imgui.h"
+#include "./ResourceManager/ResourceManager.h"
 
 // Add System header files here...
 

@@ -128,7 +128,7 @@ namespace NightSnack {
     }
 
     // Set resource manager
-    void AudioSystem::SetResourceManager(ResourceManager* rm)
+    void AudioSystem::SetResourceManager(std::shared_ptr<ResourceManager> rm)
     {
         resourceManager = rm;
         if (rm)

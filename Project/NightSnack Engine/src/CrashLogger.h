@@ -65,14 +65,14 @@ namespace NightSnack {
                 // Load existing log file if it exists
                 std::size_t txtKey = 0;
                 std::vector<std::string> logVec;
-                ResourceManager* rm = ResourceManager::GetInstance();
-                if (rm->LoadTxtFile(filePath, txtKey) == LOAD_SUCCESS) {
-                    logVec = rm->GetTxtFile(txtKey);
-                }
+                //ResourceManager* rm = ResourceManager::GetInstance();
+                //if (rm->LoadTxtFile(filePath, txtKey) == LOAD_SUCCESS) {
+                //    logVec = rm->GetTxtFile(txtKey);
+                //}
                 logVec.push_back(logEntry);
 
                 // Save updated log file
-                rm->SaveTxtFile(filePath, logVec);
+                //rm->SaveTxtFile(filePath, logVec);
             }
             catch (...)
             {

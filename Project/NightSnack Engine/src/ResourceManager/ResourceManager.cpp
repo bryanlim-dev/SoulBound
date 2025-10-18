@@ -85,7 +85,7 @@ namespace NightSnack {
 		resourceFontMap.clear();
 	}
 
-	void ResourceManager::Update(float /*dt*/)
+	void ResourceManager::Update(float /*dt*/, Coordinator& /*Coord*/)
 	{
 		DeleteFlaggedResources();
 	}
@@ -617,220 +617,225 @@ namespace NightSnack {
 			return false;
 	}
 
-	void ResourceManager::DeleteRM()
+
+	std::string ResourceManager::GetName() const
 	{
-		delete this;
+		return "ResourceManager"; 
 	}
 
-	void ResourceManager::DebugTestEverything()
-	{
-		ResourceManager* rm = this;
-
-		//--------------------IMAGE FILE--------------------
-		//Testing a loading jpg
-		std::size_t bananaKey = 0;
-		std::cout << "<<<Test Load Images (Png/JPG)>>>" << std::endl;
-		rm->LoadImage("assets/Banana.jpg", bananaKey);
-
-		if (rm->GetImage(bananaKey) != nullptr)
-			std::cout << "Load Image(JPG) test: SUCCESS" << std::endl;
-		else
-			std::cout << "Load Image(JPG) test: FAIL" << std::endl;
-
-		//Testing loading png
-		std::size_t targetKey = 0;
-		rm->LoadImage("assets/image_UI_target.png", targetKey);
-		if (ResourceLoaded(RESOURCE_IMAGE, targetKey))
-			std::cout << "Load Image(PNG) test: SUCCESS" << std::endl;
-		else
-			std::cout << "Load Image(PNG) test: FAIL" << std::endl;
-
-		rm->UnloadImage(targetKey);
-		switch (rm->LoadImage("assets/image_UI_target.png", targetKey))
-		{
-		case LOAD_SUCCESS_STOPPED_UNLOAD:
-			std::cout << "Stop unload Image(PNG) test: SUCCESS" << std::endl;
-			break;
-		case LOAD_SUCCESS:
-			std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_SUCCESS" << std::endl;
-			break;
-		case LOAD_FAIL_BADPATH:
-			std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_FAIL_BADPATH" << std::endl;
-			break;
-		case LOAD_FAIL_PREEXIST:
-			std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_FAIL_PREEXIST" << std::endl;
-			break;
-		default:
-			std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: UNKOWN (Swicth case default check)" << std::endl;
-			break;
-		}
-
-		rm->UnloadImage(targetKey);
-		rm->Update(0);
-		if (rm->GetImage(targetKey) == nullptr)
-			std::cout << "Unload Image(PNG): SUCCESS" << std::endl;
-		else
-			std::cout << "Unload Image(PNG): FAIL" << std::endl;
-
-		rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading a loaded image with deletion flagged
-		rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading same image
-		rm->Update(0); //Run unload code
-		rm->UnloadImage(targetKey); //Actual unloading test
-		rm->Update(0); //Run unload code
-		rm->LoadImage("assets/image_UI_target.png", targetKey); //Reloading a unloaded image test
-		rm->GetImage(targetKey);
-		rm->GetImage(bananaKey);
-		if (ResourceLoaded(RESOURCE_IMAGE, targetKey))
-		{
-			std::cout << "Get Image found target resource" << std::endl;
-		}
-		if (ResourceLoaded(RESOURCE_IMAGE, bananaKey))
-		{
-			std::cout << "Get Image found banana resource" << std::endl;
-		}
-
-		std::cout << std::endl;
-		std::cout << std::endl;
+	Signature ResourceManager::GetSignature() const
+	{ return m_systemSignature; }
 
 
-		//--------------------TXT FILE--------------------
-		std::cout << "<<<Test Txt File>>>" << std::endl;
-		std::cout << "Test Load Txt File" << std::endl;
+	//void ResourceManager::DebugTestEverything()
+	//{
+	//	ResourceManager* rm = this;
 
-		std::size_t txtKey = 0;
-		rm->LoadTxtFile("assets/data/TestTxt.txt", txtKey);
-		std::vector<std::string> txtVec = rm->GetTxtFile(txtKey);
-		if (ResourceLoaded(RESOURCE_TXTFILE, txtKey))
-		{
-			std::cout << "Load TXT: SUCCESS" << std::endl;
-			for (std::string strTest : txtVec)
-			{
-				std::cout << strTest << std::endl;
-			}
-		}
-		else
-			std::cout << "Load TXT: FAIL" << std::endl;
+	//	//--------------------IMAGE FILE--------------------
+	//	//Testing a loading jpg
+	//	std::size_t bananaKey = 0;
+	//	std::cout << "<<<Test Load Images (Png/JPG)>>>" << std::endl;
+	//	rm->LoadImage("assets/Banana.jpg", bananaKey);
 
-		rm->UnloadTxtFile(txtKey); //Actual unloading test
-		rm->Update(0); //Run unload code
-		std::cout << std::endl;
+	//	if (rm->GetImage(bananaKey) != nullptr)
+	//		std::cout << "Load Image(JPG) test: SUCCESS" << std::endl;
+	//	else
+	//		std::cout << "Load Image(JPG) test: FAIL" << std::endl;
 
+	//	//Testing loading png
+	//	std::size_t targetKey = 0;
+	//	rm->LoadImage("assets/image_UI_target.png", targetKey);
+	//	if (ResourceLoaded(RESOURCE_IMAGE, targetKey))
+	//		std::cout << "Load Image(PNG) test: SUCCESS" << std::endl;
+	//	else
+	//		std::cout << "Load Image(PNG) test: FAIL" << std::endl;
 
-		std::cout << "Test: Save Txt File" << std::endl;
-		std::vector<std::string> newTxt = {
-			"This is a new txt file",
-			"Newwww file",
-			"THIS is line 4",
-			"I lied it was 3",
-			"This is 5 tho"
-		};
-		SaveTxtFile("assets/data/savedNewTxt.txt", newTxt);
-		std::cout << "Attempted save to Txt File" << std::endl;
+	//	rm->UnloadImage(targetKey);
+	//	switch (rm->LoadImage("assets/image_UI_target.png", targetKey))
+	//	{
+	//	case LOAD_SUCCESS_STOPPED_UNLOAD:
+	//		std::cout << "Stop unload Image(PNG) test: SUCCESS" << std::endl;
+	//		break;
+	//	case LOAD_SUCCESS:
+	//		std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_SUCCESS" << std::endl;
+	//		break;
+	//	case LOAD_FAIL_BADPATH:
+	//		std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_FAIL_BADPATH" << std::endl;
+	//		break;
+	//	case LOAD_FAIL_PREEXIST:
+	//		std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_FAIL_PREEXIST" << std::endl;
+	//		break;
+	//	default:
+	//		std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: UNKOWN (Swicth case default check)" << std::endl;
+	//		break;
+	//	}
 
-		std::cout << std::endl;
-		std::cout << std::endl;
+	//	rm->UnloadImage(targetKey);
+	//	rm->Update(0);
+	//	if (rm->GetImage(targetKey) == nullptr)
+	//		std::cout << "Unload Image(PNG): SUCCESS" << std::endl;
+	//	else
+	//		std::cout << "Unload Image(PNG): FAIL" << std::endl;
 
-		//--------------------JSON FILE--------------------
-		std::cout << "<<<Test Json File>>>" << std::endl;
-		std::cout << "Test: Load Json File" << std::endl;
-		std::size_t jsonKey = 0;
-		rm->LoadJson("assets/data/jsonTestFile.json", jsonKey);
-		if (ResourceLoaded(RESOURCE_JSON, jsonKey))
-		{
-			std::cout << "Load JSON: SUCCESS" << std::endl;
-			//Riskier is there is a typo or something, it WILL crash if cannot find
-			std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey)["testJson"]["boolean"] ? "true" : "false") << std::endl;
-			std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey).at("testJson").at("boolean") ? "true" : "false") << std::endl;
-			std::cout << "interger: " << rm->GetJsonRaw(jsonKey).at("testJson").at("interger") << std::endl;
-			//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
-			//	std::cout << key << " : " << value << std::endl;
-			//}
-		}
-		else
-			std::cout << "Load JSON: FAIL" << std::endl;
+	//	rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading a loaded image with deletion flagged
+	//	rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading same image
+	//	rm->Update(0); //Run unload code
+	//	rm->UnloadImage(targetKey); //Actual unloading test
+	//	rm->Update(0); //Run unload code
+	//	rm->LoadImage("assets/image_UI_target.png", targetKey); //Reloading a unloaded image test
+	//	rm->GetImage(targetKey);
+	//	rm->GetImage(bananaKey);
+	//	if (ResourceLoaded(RESOURCE_IMAGE, targetKey))
+	//	{
+	//		std::cout << "Get Image found target resource" << std::endl;
+	//	}
+	//	if (ResourceLoaded(RESOURCE_IMAGE, bananaKey))
+	//	{
+	//		std::cout << "Get Image found banana resource" << std::endl;
+	//	}
 
-		rm->UnloadJson(jsonKey);
-		rm->Update(0); //Run unload code
-		std::cout << std::endl;
-
-		rm->LoadJson("assets/data/jsonTestFile2.json", jsonKey);
-		if (ResourceLoaded(RESOURCE_JSON, jsonKey))
-		{
-			std::cout << "Load JSON: SUCCESS" << std::endl;
-		}
-		else
-			std::cout << "Load JSON: FAIL" << std::endl;
-
-		//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
-		//	std::cout << key << " : " << value << std::endl;
-		//}
-
-		std::cout << "Test: Save Json File" << std::endl;
-		rm->SaveJsonFile("assets/data/savedJsonTest2.json", rm->GetJson(jsonKey));
+	//	std::cout << std::endl;
+	//	std::cout << std::endl;
 
 
-		rm->UnloadJson(jsonKey);
-		rm->Update(0); //Run unload code
-		std::cout << std::endl;
-		std::cout << std::endl;
+	//	//--------------------TXT FILE--------------------
+	//	std::cout << "<<<Test Txt File>>>" << std::endl;
+	//	std::cout << "Test Load Txt File" << std::endl;
 
-		//--------------------SOUND FILE--------------------
-		std::cout << "<<<Test FMOD/Sound File>>>" << std::endl;
-		FMOD::System* fSys = nullptr;
-		FMOD::Channel* channel = nullptr;
-		size_t soundKey = 0;
-		FMOD_RESULT fResult = FMOD::System_Create(&fSys);
-		if (fResult != FMOD_OK)
-			std::cout << "FMOD SYSTEM create: FAILED" << std::endl;
-		else
-		{
-			fSys->init(512, FMOD_INIT_NORMAL, nullptr);
-			std::cout << "FMOD SYSTEM create: SUCCESS" << std::endl;
-			if (rm->LoadSound("assets/Sound/SFX/sound_button_temp.wav", soundKey, fSys) == LOAD_SUCCESS)
-			{
-				std::cout << "Load Sound test: SUCCESS" << std::endl;
-				fResult = fSys->playSound(rm->GetSound(soundKey), nullptr, false, &channel);
-				fSys->update();
-				bool isPlaying = true;
-				do {
-					channel->isPlaying(&isPlaying);
-					fSys->update();
-				} while (isPlaying);
-			}
-			else
-				std::cout << "Load Sound test: FAIL" << std::endl;
-		}
+	//	std::size_t txtKey = 0;
+	//	rm->LoadTxtFile("assets/data/TestTxt.txt", txtKey);
+	//	std::vector<std::string> txtVec = rm->GetTxtFile(txtKey);
+	//	if (ResourceLoaded(RESOURCE_TXTFILE, txtKey))
+	//	{
+	//		std::cout << "Load TXT: SUCCESS" << std::endl;
+	//		for (std::string strTest : txtVec)
+	//		{
+	//			std::cout << strTest << std::endl;
+	//		}
+	//	}
+	//	else
+	//		std::cout << "Load TXT: FAIL" << std::endl;
+
+	//	rm->UnloadTxtFile(txtKey); //Actual unloading test
+	//	rm->Update(0); //Run unload code
+	//	std::cout << std::endl;
 
 
-		rm->UnloadSound(soundKey);
-		rm->Update(0);
+	//	std::cout << "Test: Save Txt File" << std::endl;
+	//	std::vector<std::string> newTxt = {
+	//		"This is a new txt file",
+	//		"Newwww file",
+	//		"THIS is line 4",
+	//		"I lied it was 3",
+	//		"This is 5 tho"
+	//	};
+	//	SaveTxtFile("assets/data/savedNewTxt.txt", newTxt);
+	//	std::cout << "Attempted save to Txt File" << std::endl;
 
-		if (fSys)
-		{
-			fSys->release();
-			fSys = nullptr;
-		}
+	//	std::cout << std::endl;
+	//	std::cout << std::endl;
 
-		std::cout << std::endl;
-		std::cout << std::endl;
+	//	//--------------------JSON FILE--------------------
+	//	std::cout << "<<<Test Json File>>>" << std::endl;
+	//	std::cout << "Test: Load Json File" << std::endl;
+	//	std::size_t jsonKey = 0;
+	//	rm->LoadJson("assets/data/jsonTestFile.json", jsonKey);
+	//	if (ResourceLoaded(RESOURCE_JSON, jsonKey))
+	//	{
+	//		std::cout << "Load JSON: SUCCESS" << std::endl;
+	//		//Riskier is there is a typo or something, it WILL crash if cannot find
+	//		std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey)["testJson"]["boolean"] ? "true" : "false") << std::endl;
+	//		std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey).at("testJson").at("boolean") ? "true" : "false") << std::endl;
+	//		std::cout << "interger: " << rm->GetJsonRaw(jsonKey).at("testJson").at("interger") << std::endl;
+	//		//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
+	//		//	std::cout << key << " : " << value << std::endl;
+	//		//}
+	//	}
+	//	else
+	//		std::cout << "Load JSON: FAIL" << std::endl;
 
-		//--------------------FONT FILE--------------------
-		std::cout << "<<<Test FreeType/Font File>>>" << std::endl;
+	//	rm->UnloadJson(jsonKey);
+	//	rm->Update(0); //Run unload code
+	//	std::cout << std::endl;
 
-		size_t fontKey = 0;
-		std::cout << "Font Load Test" << std::endl;
-		rm->LoadFont("assets/Font/liberation-mono.ttf", fontKey);
-		//ResourceFont* recFont = rm->GetFontResource(fontKey);
-		if (ResourceLoaded(RESOURCE_FONT, fontKey))
-			std::cout << "Font Load Test: SUCCESS" << std::endl;
-		else
-			std::cout << "Font Load Test: FAILED" << std::endl;
-		rm->UnloadFont(fontKey);
-		rm->Update(0);
+	//	rm->LoadJson("assets/data/jsonTestFile2.json", jsonKey);
+	//	if (ResourceLoaded(RESOURCE_JSON, jsonKey))
+	//	{
+	//		std::cout << "Load JSON: SUCCESS" << std::endl;
+	//	}
+	//	else
+	//		std::cout << "Load JSON: FAIL" << std::endl;
 
-		std::cout << std::endl;
-		std::cout << std::endl;
-	}
+	//	//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
+	//	//	std::cout << key << " : " << value << std::endl;
+	//	//}
+
+	//	std::cout << "Test: Save Json File" << std::endl;
+	//	rm->SaveJsonFile("assets/data/savedJsonTest2.json", rm->GetJson(jsonKey));
+
+
+	//	rm->UnloadJson(jsonKey);
+	//	rm->Update(0); //Run unload code
+	//	std::cout << std::endl;
+	//	std::cout << std::endl;
+
+	//	//--------------------SOUND FILE--------------------
+	//	std::cout << "<<<Test FMOD/Sound File>>>" << std::endl;
+	//	FMOD::System* fSys = nullptr;
+	//	FMOD::Channel* channel = nullptr;
+	//	size_t soundKey = 0;
+	//	FMOD_RESULT fResult = FMOD::System_Create(&fSys);
+	//	if (fResult != FMOD_OK)
+	//		std::cout << "FMOD SYSTEM create: FAILED" << std::endl;
+	//	else
+	//	{
+	//		fSys->init(512, FMOD_INIT_NORMAL, nullptr);
+	//		std::cout << "FMOD SYSTEM create: SUCCESS" << std::endl;
+	//		if (rm->LoadSound("assets/Sound/SFX/sound_button_temp.wav", soundKey, fSys) == LOAD_SUCCESS)
+	//		{
+	//			std::cout << "Load Sound test: SUCCESS" << std::endl;
+	//			fResult = fSys->playSound(rm->GetSound(soundKey), nullptr, false, &channel);
+	//			fSys->update();
+	//			bool isPlaying = true;
+	//			do {
+	//				channel->isPlaying(&isPlaying);
+	//				fSys->update();
+	//			} while (isPlaying);
+	//		}
+	//		else
+	//			std::cout << "Load Sound test: FAIL" << std::endl;
+	//	}
+
+
+	//	rm->UnloadSound(soundKey);
+	//	rm->Update(0);
+
+	//	if (fSys)
+	//	{
+	//		fSys->release();
+	//		fSys = nullptr;
+	//	}
+
+	//	std::cout << std::endl;
+	//	std::cout << std::endl;
+
+	//	//--------------------FONT FILE--------------------
+	//	std::cout << "<<<Test FreeType/Font File>>>" << std::endl;
+
+	//	size_t fontKey = 0;
+	//	std::cout << "Font Load Test" << std::endl;
+	//	rm->LoadFont("assets/Font/liberation-mono.ttf", fontKey);
+	//	//ResourceFont* recFont = rm->GetFontResource(fontKey);
+	//	if (ResourceLoaded(RESOURCE_FONT, fontKey))
+	//		std::cout << "Font Load Test: SUCCESS" << std::endl;
+	//	else
+	//		std::cout << "Font Load Test: FAILED" << std::endl;
+	//	rm->UnloadFont(fontKey);
+	//	rm->Update(0);
+
+	//	std::cout << std::endl;
+	//	std::cout << std::endl;
+	//}
 
 	void ResourceManager::DeleteFlaggedResources()
 	{

@@ -23,7 +23,7 @@ namespace NightSnack {
 	// CORE
 	// ------------------------------------------------------------------------------------------------
 
-	void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& windowTitle) {
+	void CoreEngine::Initialize(std::string&& configFilePath) {
 
 		// Initialize ECS Coordinator and Managers;
 		m_coord.Initialize();
@@ -45,7 +45,29 @@ namespace NightSnack {
 
 		// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
 		// i.e: Input-> Movement -> Collision -> Graphics;
-		AddSystem<ApplicationSystem>(windowWidth, windowHeight, std::move(windowTitle), m_coord, core_dispatcher);
+		AddSystem<ResourceManager>(); //RM first, so app can load values from it
+		std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
+		size_t configKey = 0;
+		rm->LoadJson(configFilePath, configKey);
+		std::string windowTitle = "";
+		int winWidth = 0;
+		int winHeight = 0;
+
+		if (rm->ResourceLoaded(NightSnack::RESOURCE_JSON, configKey))
+		{
+			windowTitle = (rm->GetJson(configKey)["WindowConfig"].componentMap["WindowTitle"]);
+			winWidth = std::stoi(rm->GetJson(configKey)["WindowConfig"].componentMap["Width"]);
+			winHeight = std::stoi(rm->GetJson(configKey)["WindowConfig"].componentMap["Height"]);
+			rm->UnloadJson(configKey);
+		}
+		else
+		{
+			windowTitle = "Load Failed";
+			winWidth = 100;
+			winHeight = 100;
+		}
+
+		AddSystem<ApplicationSystem>(winWidth, winHeight, std::move(windowTitle), m_coord, core_dispatcher);
 		AddSystem<InputSystem>(m_coord, core_dispatcher);
 		AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json");
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);

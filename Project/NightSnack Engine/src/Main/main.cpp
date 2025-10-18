@@ -43,36 +43,13 @@ int main()
 		// Create Core engine
 		CoreEngine core;
 
-		//Creatr resource manager
-		ResourceManager* rm = ResourceManager::GetInstance();
-		//rm->DebugTestEverything();
-		size_t configKey = 0;
-		rm->LoadJson("assets/Data/WindowConfig.json", configKey);
-		std::string windowTitle = "";
-		int winWidth = 0;
-		int winHeight = 0;
-
-		if (rm->ResourceLoaded(NightSnack::RESOURCE_JSON, configKey))
-		{
-			windowTitle = (rm->GetJson(configKey)["WindowConfig"].componentMap["WindowTitle"]);
-			winWidth = std::stoi(rm->GetJson(configKey)["WindowConfig"].componentMap["Width"]);
-			winHeight = std::stoi(rm->GetJson(configKey)["WindowConfig"].componentMap["Height"]);
-			rm->UnloadJson(configKey);
-		}
-		else
-		{
-			windowTitle = "Load Failed";
-			winWidth = 100;
-			winHeight = 100;
-		}
-
 #ifdef _DEBUG
 		(void)FMOD_ErrorString(FMOD_OK);
 #endif
 
 		// Will register all components;
 		// If you create new components, please register them in this function defined in Core.cpp;
-		core.Initialize(winWidth, winHeight, windowTitle.c_str());
+		core.Initialize("assets/Data/WindowConfig.json");
 		Coordinator& coord = core.GetCoord();
 
 		// Get singletons
@@ -86,7 +63,7 @@ int main()
 		}
 
 		// Link ResourceManager
-		audioSystem->SetResourceManager(rm);
+		audioSystem->SetResourceManager(core.GetCoord().GetSystem<ResourceManager>());
 
 		// Load sounds
 		std::size_t sfxKey = audioSystem->LoadSFX("assets/Sound/SFX/sound_button_temp.wav");
@@ -249,7 +226,7 @@ int main()
 		}
 
 		// Clean termination;
-		rm->DeleteRM();
+		//rm->DeleteRM();
 		//fmodSystem->close();
 		// Clean up when game exits
 		NightSnack::AudioSystem::DestroyInstance();
@@ -260,8 +237,8 @@ int main()
 	{
 		NightSnack::CrashLogger::LogCrash(ex);
 		ex.print();
-		NightSnack::ResourceManager* rm = NightSnack::ResourceManager::GetInstance();
-		rm->DeleteRM();
+		//std::shared_ptr<ResourceManager> rm = core.GetCoord().GetSystem<ResourceManager>();
+		//rm->DeleteRM();
 		NightSnack::AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}
@@ -269,8 +246,8 @@ int main()
 	{
 		NightSnack::CrashLogger::LogCrash(NightSnack::IException(ex.what(), NightSnack::ExceptionType::General, __FILE__));
 		std::cerr << "[Exception][std::exception] " << ex.what() << std::endl;
-		NightSnack::ResourceManager* rm = NightSnack::ResourceManager::GetInstance();
-		rm->DeleteRM();
+		//std::shared_ptr<ResourceManager> rm = core.GetCoord().GetSystem<ResourceManager>();
+		//rm->DeleteRM();
 		NightSnack::AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}
@@ -278,8 +255,8 @@ int main()
 	{
 		NightSnack::CrashLogger::LogCrash(NightSnack::IException("Unknown exception", NightSnack::ExceptionType::General, __FILE__));
 		std::cerr << "[Exception][Unknown]" << std::endl;
-		NightSnack::ResourceManager* rm = NightSnack::ResourceManager::GetInstance();
-		rm->DeleteRM();
+		//std::shared_ptr<ResourceManager> rm = core.GetCoord().GetSystem<ResourceManager>();
+		//rm->DeleteRM();
 		NightSnack::AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}

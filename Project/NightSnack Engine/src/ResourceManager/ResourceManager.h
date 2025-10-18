@@ -21,7 +21,7 @@
 #include <vector>
 
 #include "ResourceManager/Resource.h"
-#include "../Singleton.h"
+#include "ECS/ISystem.h"
 
 //PNG file formats, file bytes/critical chunks
 //https://en.wikipedia.org/wiki/PNG#File_format
@@ -52,7 +52,7 @@ namespace NightSnack {
 		LOAD_FAIL_BADPATH,	//Resource fails to load due to bad file bath
 	};
 
-	class ResourceManager : public Singleton<ResourceManager>
+	class ResourceManager : public ISystem
 	{
 	private:
 		unsigned int totalResourcesLoaded = 0;
@@ -67,7 +67,7 @@ namespace NightSnack {
 		//Get<Resource>
 		//Get<Resource>Class
 		//ResouceLoaded -> switch case
-		//DebugTestEverything
+		//DebugTestEverything - No longer in use
 
 		//Key, Value
 		//Maps of resources
@@ -83,11 +83,13 @@ namespace NightSnack {
 		//Font system
 		FT_Library fontLibrary;
 
+		Signature m_systemSignature{};
+
+	public:
 		/************************************************************************/
 		/*!
 		\brief
 		Default Constructor for Resource Manager
-		Hidden due to singleton pattern
 		*/
 		/************************************************************************/
 		ResourceManager();
@@ -96,14 +98,9 @@ namespace NightSnack {
 		/*!
 		\brief
 		Destructor for Resource Manager
-		Hidden due eto singleton pattern
 		*/
 		/************************************************************************/
 		~ResourceManager();
-		friend class Singleton<ResourceManager>;
-
-	public:
-
 
 		/************************************************************************/
 		/*!
@@ -121,9 +118,12 @@ namespace NightSnack {
 
 		\param[in] dt
 		delta time in float of time passed
+
+		\param[in] coord
+		Reference to Coordinator.
 		*/
 		/************************************************************************/
-		void Update(float dt);
+		void Update(float dt, Coordinator& Coord) override;
 
 
 #pragma region Image Functions
@@ -533,22 +533,29 @@ namespace NightSnack {
 		/************************************************************************/
 		bool ResourceLoaded(RESOURCE_TYPE type, size_t resourceKey);
 
-
 		/************************************************************************/
 		/*!
 		\brief
-		Destory the Resource Manager and cleans up data withtin
+		Returns name of system (overridden from ISystem)
+		Required by ISystem base class;
+
+		\return
+		Returns name of system (ResourceManager)
 		*/
 		/************************************************************************/
-		void DeleteRM();
-
+		std::string GetName() const override;
 		/************************************************************************/
 		/*!
 		\brief
-		Test all resources and prints result to std::cout
+		Returns signature of system (overridden from ISystem)
+		Required by ISystem base class;
+
+		\return
+		Returns name of system (ResourceManager)
 		*/
 		/************************************************************************/
-		void DebugTestEverything();
+		Signature GetSignature() const override;
+		//void DebugTestEverything(); 
 
 	private:
 

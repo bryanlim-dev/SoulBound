@@ -38,7 +38,7 @@ namespace NightSnack {
         static AudioSystem* instance;
 
         FMOD::System* fmodSystem;
-        ResourceManager* resourceManager;
+        std::shared_ptr<ResourceManager> resourceManager;
 
         // Track active channels separately
         std::unordered_map<std::size_t, FMOD::Channel*> sfxChannels;
@@ -100,7 +100,7 @@ namespace NightSnack {
         Pointer to resource manager
         */
         /************************************************************************/
-        void SetResourceManager(ResourceManager* rm);
+        void SetResourceManager(std::shared_ptr<ResourceManager> rm);
 
         /************************************************************************/
         /*!
