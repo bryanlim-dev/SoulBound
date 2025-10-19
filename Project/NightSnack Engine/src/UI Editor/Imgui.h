@@ -16,6 +16,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
+#include "./Panels/HierarchyPanel.h"
 
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/Application.h"
@@ -98,13 +99,8 @@ namespace NightSnack {
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_FirstUseEver);
-		ImGui::Begin("TestPanel");
-
-		// stuff here...
-		//ImGui::Text("Fortnite und trink Cola! YIPEEE!");
-
-		ImGui::End();
+		static NightSnack::HierarchyPanel panel(m_coord);
+		panel.Draw();
 
 		// render
 		ImGui::Render();
@@ -117,6 +113,11 @@ namespace NightSnack {
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup);
 		}
+
+		// stuff here...
+		//ImGui::Text("Fortnite und trink Cola! YIPEEE!");
+
+		//ImGui::End();
 
 	}
 
