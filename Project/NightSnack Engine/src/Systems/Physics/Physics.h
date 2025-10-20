@@ -39,7 +39,7 @@ namespace NightSnack {
         Reference to Event Dispatcher.
         */
         /************************************************************************/
-        PhysicsSystem(Coordinator& coord, EventDispatcher& disp) : m_dispatcher{ &disp } {
+        PhysicsSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord }, m_dispatcher{ &disp } {
             // Physics components of interest;
             m_systemSignature.set(GetComponentTypeID<Transform>());
             m_systemSignature.set(GetComponentTypeID<RigidBody>());
@@ -83,7 +83,7 @@ namespace NightSnack {
         Reference to Coordinator.
         */
         /************************************************************************/
-        void Update(float dt, Coordinator& coord) override;
+        void Update(int steps) override;
 
         // Required by ISystem base class;
         Signature GetSignature() const override { return m_systemSignature; }
@@ -97,6 +97,7 @@ namespace NightSnack {
     private:
         Signature m_systemSignature{};
         EventDispatcher* m_dispatcher{ nullptr };
+        Coordinator& m_coord;
 
         // Physics parameters;
         float gravity = -980.f;

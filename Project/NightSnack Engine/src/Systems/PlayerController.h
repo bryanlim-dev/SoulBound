@@ -42,7 +42,7 @@ namespace NightSnack {
         Reference to the Event Dispatcher.
         */
         /************************************************************************/
-        PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_dispatcher{ &disp } {
+        PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord }, m_dispatcher { &disp } {
             // Physics components of interest;
             m_systemSignature.set(GetComponentTypeID<PlayerController>());
             m_systemSignature.set(GetComponentTypeID<Transform>());
@@ -96,23 +96,23 @@ namespace NightSnack {
         Reference to Coordinator.
         */
         /************************************************************************/
-        void Update(float dt, Coordinator& coord) override {
-            (void)dt;
+        void Update(int steps) override {
+            (void)steps;
 
-            m_player = FindPlayer(coord);
+            m_player = FindPlayer(m_coord);
 
-            PlayerController const& pcont = coord.GetComponent<PlayerController>(m_player);
-            Vec2& vel = coord.ModifyComponent<RigidBody>(m_player).vel;
+            PlayerController const& pcont = m_coord.GetComponent<PlayerController>(m_player);
+            Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
 
-            if ((m_flags.movingRight && !m_flags.movingLeft) && !coord.GetComponent<Collider>(m_player).colliding) {
+            if ((m_flags.movingRight && !m_flags.movingLeft) && !m_coord.GetComponent<Collider>(m_player).colliding) {
                 vel.x = pcont.moveSpeed;
             }
-            else if ((m_flags.movingLeft && !m_flags.movingRight) && !coord.GetComponent<Collider>(m_player).colliding) {
+            else if ((m_flags.movingLeft && !m_flags.movingRight) && !m_coord.GetComponent<Collider>(m_player).colliding) {
                 vel.x = -pcont.moveSpeed;
             }
-            if (m_flags.jumpRequested && coord.GetComponent<Collider>(m_player).isGrounded) {
+            if (m_flags.jumpRequested && m_coord.GetComponent<Collider>(m_player).isGrounded) {
                 vel.y = pcont.jumpSpeed;
-                coord.ModifyComponent<Collider>(m_player).isGrounded = false;
+                m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
             }
             m_flags.jumpRequested = false;
         }
@@ -162,6 +162,7 @@ namespace NightSnack {
     private:
         Signature m_systemSignature{};
         EventDispatcher* m_dispatcher = nullptr;
+        Coordinator& m_coord;
 
         Entity m_player;
 

@@ -81,7 +81,7 @@ namespace NightSnack {
 		Reference to the ECS Coordinator
 		*/
 		/************************************************************************/
-		void Update(float dt, Coordinator& coord) override;
+		void Update(int steps) override;
 
 		/************************************************************************/
 		/*!
@@ -186,6 +186,8 @@ namespace NightSnack {
 
 		// System event dispatcher
 		EventDispatcher* m_dispatcher = nullptr;
+		// Reference to ECS coordinator
+		Coordinator& m_coord;
 	};
 
 }	// NightSnack

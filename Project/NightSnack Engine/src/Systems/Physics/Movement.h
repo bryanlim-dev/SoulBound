@@ -23,6 +23,8 @@
 
 namespace NightSnack {
 
+    static float dt = 0.016f;
+
     class MovementSystem : public ISystem {
 
     public:
@@ -38,7 +40,7 @@ namespace NightSnack {
         Reference to Event Dispatcher.
         */
         /************************************************************************/
-        MovementSystem(Coordinator& coord, EventDispatcher& dispatcher) {
+        MovementSystem(Coordinator& coord, EventDispatcher& dispatcher) : m_coord{ coord } {
             // Input all components you want access to...
             m_systemSignature.set(GetComponentTypeID<Transform>());
             m_systemSignature.set(GetComponentTypeID<RigidBody>());
@@ -73,7 +75,9 @@ namespace NightSnack {
         Reference to Coordinator.
         */
         /************************************************************************/
-        void Update(float dt, Coordinator& coord) override {
+        void Update(int steps) override {
+            (void)steps;
+
             // Pause movement updates if in Physics debug mode
             if (debugMode && !stepRequest) {
                 return;
@@ -83,8 +87,8 @@ namespace NightSnack {
             for (auto const& e : m_entities) {
 
                 // First obtain references to components of interest;
-                auto& pos = coord.ModifyComponent<Transform>(e).pos;
-                auto& velocity = coord.ModifyComponent<RigidBody>(e).vel;
+                auto& pos = m_coord.ModifyComponent<Transform>(e).pos;
+                auto& velocity = m_coord.ModifyComponent<RigidBody>(e).vel;
 
                 // Get more components here if necessary...
 
@@ -105,6 +109,7 @@ namespace NightSnack {
     private:
         Signature m_systemSignature{};
         EventDispatcher* m_dispatcher = nullptr;
+        Coordinator& m_coord;
 
         // DebugMode for Physics;
         bool debugMode = false;

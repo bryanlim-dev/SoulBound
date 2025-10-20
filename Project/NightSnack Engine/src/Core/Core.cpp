@@ -19,6 +19,10 @@
 
 namespace NightSnack {
 
+	constexpr float fixedDeltaTime = 0.016f;
+	static float accumulatedTime = 0.0f;
+	static int numberOfSteps = 0;
+
 	// ------------------------------------------------------------------------------------------------
 	// CORE
 	// ------------------------------------------------------------------------------------------------
@@ -50,7 +54,7 @@ namespace NightSnack {
 		AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json");
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
-		AddSystem<CollisionSystem>(core_dispatcher);
+		AddSystem<CollisionSystem>(m_coord, core_dispatcher);
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord);
@@ -73,18 +77,29 @@ namespace NightSnack {
 		// Start frame timing;
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartFrame();
 
-		// Obtain dt from Timer;
-		float deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
+		//// Obtain dt from Timer;
+		//float deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
 
-		// Clamp dt to prevent giant steps when window is dragged / unfocused
-		if (deltaTime > 0.02f)
-			deltaTime = 0.02f;
+		//// Clamp dt to prevent giant steps when window is dragged / unfocused
+		//if (deltaTime > 0.02f)
+		//	deltaTime = 0.02f;
 
-		// If paused, skip updating systems that rely on dt
-		if (m_paused) {
-			// Reset timer so dt doesn't accumulate during pause
-			deltaTime = 0.0f;
-			return;
+		//// If paused, skip updating systems that rely on dt
+		//if (m_paused) {
+		//	// Reset timer so dt doesn't accumulate during pause
+		//	deltaTime = 0.0f;
+		//	return;
+		//}
+
+		// Fixed DT with Accumulated time implementation;
+		numberOfSteps = 0;	// reset step count per frame;
+		float dt = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();	// compute actual game loop time;
+		accumulatedTime += dt;
+
+		// Obtain number of steps this loop;
+		while (accumulatedTime >= fixedDeltaTime) { 
+			accumulatedTime -= fixedDeltaTime;
+			++numberOfSteps;
 		}
 
 		// Iterate through Systems and Update them through Coordinator;
@@ -92,7 +107,7 @@ namespace NightSnack {
 
 			m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(System->GetName());
 
-			System->Update(deltaTime, m_coord);
+			System->Update(numberOfSteps);
 
 			m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(System->GetName());
 		}

@@ -46,16 +46,14 @@ namespace NightSnack {
 		m_dispatcher = &dispatcher;
 	}
 
-	void InputSystem::Update(float dt, Coordinator& coord) {
-		(void)dt;
-		(void)coord;
+	void InputSystem::Update(int steps) {
 
 		// Find current mouse position (World)
-		float Hvp = static_cast<float>(coord.GetWindowHeight());
-		float Wvp = static_cast<float>(coord.GetWindowWidth());
-		Entity cam = coord.GetSystem<GraphicsSystem>()->FindCamera();
-		m_mouseWorldPosX = (-Wvp / 2.f) + m_mousePosX + coord.GetComponent<Transform>(cam).pos.x;
-		m_mouseWorldPosY = (Hvp / 2.f) - m_mousePosY + coord.GetComponent<Transform>(cam).pos.y;
+		float Hvp = static_cast<float>(m_coord.GetWindowHeight());
+		float Wvp = static_cast<float>(m_coord.GetWindowWidth());
+		Entity cam = m_coord.GetSystem<GraphicsSystem>()->FindCamera();
+		m_mouseWorldPosX = (-Wvp / 2.f) + m_mousePosX + m_coord.GetComponent<Transform>(cam).pos.x;
+		m_mouseWorldPosY = (Hvp / 2.f) - m_mousePosY + m_coord.GetComponent<Transform>(cam).pos.y;
 
 	// Compute mouse delta - the relative movement since the last frame
 	m_deltaWorldPosX = m_mouseWorldPosX - m_prevMouseWorldPosX;

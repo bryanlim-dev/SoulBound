@@ -106,7 +106,7 @@ namespace NightSnack {
 		Currently does not do anything, but is required to be defined by ISystem
 		*/
 		/************************************************************************/
-		void Update(float dt, Coordinator& coord) override;
+		void Update(int steps) override;
 
 		// Required functions from base class ISystem.
 		Signature GetSignature() const override { return Signature{}; }

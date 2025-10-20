@@ -15,12 +15,11 @@
  ******************************************************************************/
 
 #include "Graphics.h"
-#include "Core/CrashLogger.h"
 #include "MathLibrary/Math.h"
 
 namespace NightSnack {
 
-	void GraphicsSystem::Init(Coordinator& coord) {
+	void GraphicsSystem::Init() {
 		// Default Shader;
 		auto shader = std::make_unique<Shader>("assets/shaders/vertex_shader.vert", "assets/shaders/fragment_shader.frag");
 		AddShader("default", std::move(shader));
@@ -55,61 +54,32 @@ namespace NightSnack {
 		colorMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
 		AddMaterial("ColorMat", std::move(colorMat));
 
-		// Dispatcher lambda
-		m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
-			{
-				// This input event currently only handles key inputs for
-				// - scaling of an object (A / D)
-				// - rotating of an object (R)
-				if (m_entities.empty())
-					return;
-
-				if (event.pressed == InputEvent::InputActionState::Pressed) {
-					switch (event.inputAction) {
-					case InputEvent::InputAction::ScaleUp:
-						ModifyEntityScale(coord, 1.1f);
-						break;
-					case InputEvent::InputAction::ScaleDown:
-						ModifyEntityScale(coord, 0.9f);
-						break;
-					case InputEvent::InputAction::Rotate:
-						ModifyEntityRotation(coord, 30.f);
-						break;
-					case InputEvent::InputAction::ToggleDebugDraw:
-						m_enableDebugDraw = !m_enableDebugDraw;
-						break;
-					case InputEvent::InputAction::CrashTest:
-						CrashLogger::ForceCrash("Forced crash from GraphicsSystem for testing");
-						break;
-					}
-				}
-			});
 	}
 
-	void GraphicsSystem::Update(float dt, Coordinator& coord) {
-		(void)dt; // dt is unused for now...
+	void GraphicsSystem::Update(int steps) {
+		(void)steps; // dt is unused for now...
 
 		// Update viewport dimensions;
-		Hvp = static_cast<float>(coord.GetWindowHeight());
-		Wvp = static_cast<float>(coord.GetWindowWidth());
+		Hvp = static_cast<float>(m_coord.GetWindowHeight());
+		Wvp = static_cast<float>(m_coord.GetWindowWidth());
 
 		// Camera stuff...
 		Entity mainCam = FindCamera();
 		if (mainCam == INVALID_ENTITY) return;
 
 		// Get camera components
-		auto& camPos = coord.GetComponent<Transform>(mainCam).pos;
-		auto& camInfo = coord.GetComponent<Camera>(mainCam);
+		auto& camPos = m_coord.GetComponent<Transform>(mainCam).pos;
+		auto& camInfo = m_coord.GetComponent<Camera>(mainCam);
 
 		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
 		for (Entity e : m_entities) {
 			// Obtain entity components;
-			auto& ren = coord.GetComponent<Renderable>(e);
-			auto& pos = coord.GetComponent<Transform>(e).pos;
-			auto& rot = coord.GetComponent<Transform>(e).rot;
-			auto& scl = coord.GetComponent<Transform>(e).scale;
+			auto& ren = m_coord.GetComponent<Renderable>(e);
+			auto& pos = m_coord.GetComponent<Transform>(e).pos;
+			auto& rot = m_coord.GetComponent<Transform>(e).rot;
+			auto& scl = m_coord.GetComponent<Transform>(e).scale;
 
 			// @TODO: Event-Driven check whether e's renderable was changed...
 			// if (renderable was changed) { ResolveRenderable(e, renderable); }

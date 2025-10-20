@@ -16,10 +16,9 @@
 namespace NightSnack {
 
 	// unused for now...
-	void EntityFactory::Update(float dt, Coordinator& coord) {
+	void EntityFactory::Update(int steps) {
 
-		(void)coord;
-		(void)dt;
+		(void)steps;
 
 	}
 

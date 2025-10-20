@@ -17,8 +17,10 @@
 
 namespace NightSnack {
 
+	static float dt = 0.016f;
+
 	// Main update function;
-	void PhysicsSystem::Update(float dt, Coordinator& coord) {
+	void PhysicsSystem::Update(int steps) {
 		// Skip Physics if in debug mode
 		if (debugMode && !stepRequest) {
 			return;
@@ -27,18 +29,18 @@ namespace NightSnack {
 		for (auto const& e : m_entities) {
 
 			// First obtain references to components of interest;
-			auto& force = coord.ModifyComponent<Force>(e);
-			auto& vel = coord.ModifyComponent<RigidBody>(e).vel;
-			auto& accel = coord.ModifyComponent<RigidBody>(e).accel;
-			auto& mass = coord.ModifyComponent<RigidBody>(e).mass;
-			bool g = coord.GetComponent<RigidBody>(e).useGravity;
+			auto& force = m_coord.ModifyComponent<Force>(e);
+			auto& vel = m_coord.ModifyComponent<RigidBody>(e).vel;
+			auto& accel = m_coord.ModifyComponent<RigidBody>(e).accel;
+			auto& mass = m_coord.ModifyComponent<RigidBody>(e).mass;
+			bool g = m_coord.GetComponent<RigidBody>(e).useGravity;
 
 			// Calculate acceleration from force and mass;
 			accel.x = force.fx * 1000.f / mass;
 			accel.y = force.fy * 1000.f / mass;
 
 			// Apply gravity;
-			if (g && coord.GetComponent<Collider>(e).isGrounded == false) {
+			if (g && m_coord.GetComponent<Collider>(e).isGrounded == false) {
 				accel.y += gravity;
 			}
 
@@ -51,7 +53,7 @@ namespace NightSnack {
 			vel.x *= 1.f - drag * dt;
 
 			// Apply friction if on the ground;
-			if (coord.GetComponent<Collider>(e).isGrounded) {
+			if (m_coord.GetComponent<Collider>(e).isGrounded) {
 
 				vel.x *= 1.f - friction * dt;
 

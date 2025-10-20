@@ -19,6 +19,7 @@
 #include <iostream>
 
 #include "Core/ECS/Coordinator.h"
+#include "Core/CrashLogger.h"
 #include "Systems/Application/IEvent.h"
 
 #include "Graphics/Mesh.h"
@@ -56,7 +57,37 @@ namespace NightSnack {
 			Hvp = static_cast<float>(coord.GetWindowHeight());
 			Wvp = static_cast<float>(coord.GetWindowWidth());
 
-			Init(coord);
+			Init();
+
+			// Dispatcher lambda
+			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
+				{
+					// This input event currently only handles key inputs for
+					// - scaling of an object (A / D)
+					// - rotating of an object (R)
+					if (m_entities.empty())
+						return;
+
+					if (event.pressed == InputEvent::InputActionState::Pressed) {
+						switch (event.inputAction) {
+						case InputEvent::InputAction::ScaleUp:
+							ModifyEntityScale(coord, 1.1f);
+							break;
+						case InputEvent::InputAction::ScaleDown:
+							ModifyEntityScale(coord, 0.9f);
+							break;
+						case InputEvent::InputAction::Rotate:
+							ModifyEntityRotation(coord, 30.f);
+							break;
+						case InputEvent::InputAction::ToggleDebugDraw:
+							m_enableDebugDraw = !m_enableDebugDraw;
+							break;
+						case InputEvent::InputAction::CrashTest:
+							CrashLogger::ForceCrash("Forced crash from GraphicsSystem for testing");
+							break;
+						}
+					}
+				});
 		}
 
 		/************************************************************************/
@@ -70,7 +101,7 @@ namespace NightSnack {
 		Reference to the ECS Coordinator
 		*/
 		/************************************************************************/
-		void Init(Coordinator& Coord);
+		void Init();
 
 		/************************************************************************/
 		/*!
@@ -84,7 +115,7 @@ namespace NightSnack {
 		Reference to the ECS Coordinator
 		*/
 		/************************************************************************/
-		void Update(float dt, Coordinator& coord) override;
+		void Update(int steps) override;
 
 		/************************************************************************/
 		/*!
