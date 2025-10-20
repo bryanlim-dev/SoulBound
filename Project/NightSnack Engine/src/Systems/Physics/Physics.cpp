@@ -25,45 +25,47 @@ namespace NightSnack {
 		if (debugMode && !stepRequest) {
 			return;
 		}
-		// Iterate through all Entities this system can access;
-		for (auto const& e : m_entities) {
+		for (int s{}; s < steps; ++s) {
+			// Iterate through all Entities this system can access;
+			for (auto const& e : m_entities) {
 
-			// First obtain references to components of interest;
-			auto& force = m_coord.ModifyComponent<Force>(e);
-			auto& vel = m_coord.ModifyComponent<RigidBody>(e).vel;
-			auto& accel = m_coord.ModifyComponent<RigidBody>(e).accel;
-			auto& mass = m_coord.ModifyComponent<RigidBody>(e).mass;
-			bool g = m_coord.GetComponent<RigidBody>(e).useGravity;
+				// First obtain references to components of interest;
+				auto& force = m_coord.ModifyComponent<Force>(e);
+				auto& vel = m_coord.ModifyComponent<RigidBody>(e).vel;
+				auto& accel = m_coord.ModifyComponent<RigidBody>(e).accel;
+				auto& mass = m_coord.ModifyComponent<RigidBody>(e).mass;
+				bool g = m_coord.GetComponent<RigidBody>(e).useGravity;
 
-			// Calculate acceleration from force and mass;
-			accel.x = force.fx * 1000.f / mass;
-			accel.y = force.fy * 1000.f / mass;
+				// Calculate acceleration from force and mass;
+				accel.x = force.fx * 1000.f / mass;
+				accel.y = force.fy * 1000.f / mass;
 
-			// Apply gravity;
-			if (g && m_coord.GetComponent<Collider>(e).isGrounded == false) {
-				accel.y += gravity;
+				// Apply gravity;
+				if (g && m_coord.GetComponent<Collider>(e).isGrounded == false) {
+					accel.y += gravity;
+				}
+
+				// Update velocity based on acceleration;
+				vel.x += accel.x * dt;
+				vel.y += accel.y * dt;
+
+				// Apply horizontal drag, a force opposite to the direction of motion
+				// when mid-air;
+				vel.x *= 1.f - drag * dt;
+
+				// Apply friction if on the ground;
+				if (m_coord.GetComponent<Collider>(e).isGrounded) {
+
+					vel.x *= 1.f - friction * dt;
+
+					// Small threshold to stop sliding;
+					if (std::abs(vel.x) < velocityCutoff) vel.x = 0.0;
+				}
+
+				// Clear forces for next frame;
+				force.fx = 0.f;
+				force.fy = 0.f;
 			}
-
-			// Update velocity based on acceleration;
-			vel.x += accel.x * dt;
-			vel.y += accel.y * dt;
-
-			// Apply horizontal drag, a force opposite to the direction of motion
-			// when mid-air;
-			vel.x *= 1.f - drag * dt;
-
-			// Apply friction if on the ground;
-			if (m_coord.GetComponent<Collider>(e).isGrounded) {
-
-				vel.x *= 1.f - friction * dt;
-
-				// Small threshold to stop sliding;
-				if (std::abs(vel.x) < velocityCutoff) vel.x = 0.0;
-			}
-
-			// Clear forces for next frame;
-			force.fx = 0.f;
-			force.fy = 0.f;
 		}
 		if (debugMode) stepRequest = false; // reset step request
 	}
