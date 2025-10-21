@@ -1,7 +1,8 @@
 /******************************************************************************
  * File:        ResourceManager.cpp
  * Project:     NightSnack
- * Author(s):	Clement Ang Yang Ying (Primary, 100%) - Created manager class and logic
+ * Author(s):	Clement Ang Yang Ying (Primary, 99%) - Created manager class and logic
+ *				Bryan Lim Jun Jie (Secondary, 1%) - Created orginal fmod system init code logic
  *
  * Description:
  * This file contains the definition of a ResourceManager class, that manages Resouorce pointers
@@ -14,6 +15,7 @@
  * All rights reserved.
  ******************************************************************************/
 #include "ResourceManager.h"
+#include <fmod_errors.h>
 #include <stb_image.h>
 
 namespace NightSnack {
@@ -69,6 +71,8 @@ namespace NightSnack {
 
 		deletionVec.clear();
 
+		//fModSystem deletion code is a lamba function created within Init();
+
 	}
 
 	void ResourceManager::Init()
@@ -77,6 +81,39 @@ namespace NightSnack {
 		stbi_set_flip_vertically_on_load(true); // Flip the y-axis of the images loaded
 
 		FT_Init_FreeType(&fontLibrary);
+
+		//Init Fmod
+		//Orginal code from Audio System.Init() changed to shared ptr now :D
+
+		//Just incase
+		if (!fmodSystem)
+		{
+			fmodSystem.reset();
+			fmodSystem = nullptr;
+		}
+
+		FMOD::System* systemPtr = nullptr;
+		FMOD_RESULT result = FMOD::System_Create(&systemPtr);
+		if (result != FMOD_OK)
+		{
+			std::cout << "AudioSystem: Failed to create FMOD system - "
+				<< FMOD_ErrorString(result) << std::endl;
+		}
+		else
+		{
+			result = systemPtr->init(32, FMOD_INIT_NORMAL, nullptr);
+			if (result != FMOD_OK)
+			{
+				std::cout << "AudioSystem: Failed to initialize FMOD system - "
+					<< FMOD_ErrorString(result) << std::endl;
+			}
+
+			std::cout << "AudioSystem: Initialized successfully with 32 channels" << std::endl;
+
+			//Move the pointer into shared ptr;
+			//Make a lamba func to rlease it when destoryed (turns out it crashes if i do i manually :( )
+			fmodSystem = std::shared_ptr<FMOD::System>(systemPtr, [](FMOD::System* system) { if (system) system->release(); }); 
+		}
 
 		resourceImageMap.clear();
 		resourceTxtFileMap.clear();
@@ -395,6 +432,11 @@ namespace NightSnack {
 	{
 		ResourceJson jsonResouce(newArchtypeMap, filePath);
 		jsonResouce.SaveFile();
+	}
+
+	std::shared_ptr<FMOD::System> ResourceManager::FmodSystem()
+	{
+		return fmodSystem;
 	}
 
 #pragma endregion

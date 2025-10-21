@@ -19,6 +19,7 @@
 #include <map>
 #include <typeindex>
 #include <vector>
+#include <fmod.hpp>
 
 #include "ResourceManager/Resource.h"
 #include "ECS/ISystem.h"
@@ -82,6 +83,8 @@ namespace NightSnack {
 
 		//Font system
 		FT_Library fontLibrary;
+
+		std::shared_ptr<FMOD::System> fmodSystem; //Shared with audio system
 
 		Signature m_systemSignature{};
 
@@ -377,6 +380,16 @@ namespace NightSnack {
 #pragma endregion
 
 #pragma region Sound Functions
+		/************************************************************************/
+		/*!
+		/brief Gets the sharhed_tr of fmod system
+
+		/return 
+		FMOD::System shared_ptr
+		*/
+		/************************************************************************/
+		std::shared_ptr<FMOD::System> FmodSystem();
+
 		/************************************************************************/
 		/*!
 		\brief

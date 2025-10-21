@@ -55,6 +55,9 @@ int main()
 		// Get singletons
 		NightSnack::AudioSystem* audioSystem = NightSnack::AudioSystem::GetInstance();
 
+		// Link ResourceManager
+		audioSystem->SetResourceManager(core.GetCoord().GetSystem<ResourceManager>());
+
 		// Init AudioSystem
 		if (!audioSystem->Initialize())
 		{
@@ -62,8 +65,6 @@ int main()
 			return -1;
 		}
 
-		// Link ResourceManager
-		audioSystem->SetResourceManager(core.GetCoord().GetSystem<ResourceManager>());
 
 		// Load sounds
 		std::size_t sfxKey = audioSystem->LoadSFX("assets/Sound/SFX/sound_button_temp.wav");

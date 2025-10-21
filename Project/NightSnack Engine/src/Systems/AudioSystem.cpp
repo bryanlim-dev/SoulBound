@@ -37,8 +37,8 @@ namespace NightSnack {
         if (fmodSystem)
         {
             StopAllSounds();
-            fmodSystem->release();
-            fmodSystem = nullptr;
+            //fmodSystem->release(); //ResourceManager will handle this
+            fmodSystem.reset();
         }
         initialized = false;
         std::cout << "AudioSystem destroyed" << std::endl;
@@ -67,25 +67,35 @@ namespace NightSnack {
     // Initialize FMOD
     bool AudioSystem::Initialize()
     {
-        FMOD_RESULT result = FMOD::System_Create(&fmodSystem);
-        if (result != FMOD_OK)
+        //FMOD_RESULT result = FMOD::System_Create(&fmodSystem);
+        //if (result != FMOD_OK)
+        //{
+        //    std::cout << "AudioSystem: Failed to create FMOD system - "
+        //        << FMOD_ErrorString(result) << std::endl;
+        //    return false;
+        //}
+        //
+        //result = fmodSystem->init(32, FMOD_INIT_NORMAL, nullptr);
+        //if (result != FMOD_OK)
+        //{
+        //    std::cout << "AudioSystem: Failed to initialize FMOD system - "
+        //        << FMOD_ErrorString(result) << std::endl;
+        //    return false;
+        //}
+        //
+        //initialized = true;
+        //std::cout << "AudioSystem: Initialized successfully with 32 channels" << std::endl;
+
+        fmodSystem = resourceManager->FmodSystem();
+        if (fmodSystem)
         {
-            std::cout << "AudioSystem: Failed to create FMOD system - "
-                << FMOD_ErrorString(result) << std::endl;
+            initialized = true;
+            return true;
+        }
+        else //It assigned to nullptr if it wasnt loaded properly
+        {
             return false;
         }
-
-        result = fmodSystem->init(32, FMOD_INIT_NORMAL, nullptr);
-        if (result != FMOD_OK)
-        {
-            std::cout << "AudioSystem: Failed to initialize FMOD system - "
-                << FMOD_ErrorString(result) << std::endl;
-            return false;
-        }
-
-        initialized = true;
-        std::cout << "AudioSystem: Initialized successfully with 32 channels" << std::endl;
-        return true;
     }
 
     // Update FMOD + cleanup finished channels
@@ -144,7 +154,7 @@ namespace NightSnack {
             return 0;
 
         std::size_t key = 0;
-        if (resourceManager->LoadSound(path, key, fmodSystem) == LOAD_SUCCESS)
+        if (resourceManager->LoadSound(path, key, fmodSystem.get()) == LOAD_SUCCESS)
             return key;
 
         return 0;
@@ -156,7 +166,7 @@ namespace NightSnack {
             return 0;
 
         std::size_t key = 0;
-        if (resourceManager->LoadSound(path, key, fmodSystem) == LOAD_SUCCESS)
+        if (resourceManager->LoadSound(path, key, fmodSystem.get()) == LOAD_SUCCESS)
         {
             FMOD::Sound* music = resourceManager->GetSound(key);
             if (music && loop)

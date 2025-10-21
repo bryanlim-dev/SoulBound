@@ -37,7 +37,7 @@ namespace NightSnack {
     private:
         static AudioSystem* instance;
 
-        FMOD::System* fmodSystem;
+        std::shared_ptr<FMOD::System> fmodSystem; //Shared with resource manager
         std::shared_ptr<ResourceManager> resourceManager;
 
         // Track active channels separately
@@ -190,13 +190,13 @@ namespace NightSnack {
         /************************************************************************/
         /*!
         \brief
-        Get FMOD system
+        Get FMOD system shared_ptr
 
         \return
-        Pointer to FMOD system
+        Shared Pointer to FMOD system
         */
         /************************************************************************/
-        FMOD::System* GetFMODSystem() { return fmodSystem; }
+        std::shared_ptr<FMOD::System> GetFMODSystem() { return  fmodSystem; }
 
 
         /************************************************************************/
