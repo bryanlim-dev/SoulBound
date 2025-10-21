@@ -238,8 +238,6 @@ int main()
 	{
 		NightSnack::CrashLogger::LogCrash(ex);
 		ex.print();
-		//std::shared_ptr<ResourceManager> rm = core.GetCoord().GetSystem<ResourceManager>();
-		//rm->DeleteRM();
 		NightSnack::AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}
@@ -247,8 +245,6 @@ int main()
 	{
 		NightSnack::CrashLogger::LogCrash(NightSnack::IException(ex.what(), NightSnack::ExceptionType::General, __FILE__));
 		std::cerr << "[Exception][std::exception] " << ex.what() << std::endl;
-		//std::shared_ptr<ResourceManager> rm = core.GetCoord().GetSystem<ResourceManager>();
-		//rm->DeleteRM();
 		NightSnack::AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}
@@ -256,8 +252,6 @@ int main()
 	{
 		NightSnack::CrashLogger::LogCrash(NightSnack::IException("Unknown exception", NightSnack::ExceptionType::General, __FILE__));
 		std::cerr << "[Exception][Unknown]" << std::endl;
-		//std::shared_ptr<ResourceManager> rm = core.GetCoord().GetSystem<ResourceManager>();
-		//rm->DeleteRM();
 		NightSnack::AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}

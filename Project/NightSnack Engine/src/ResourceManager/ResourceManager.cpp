@@ -71,7 +71,7 @@ namespace NightSnack {
 
 		deletionVec.clear();
 
-		//fModSystem deletion code is a lamba function created within Init();
+		//fModSystem deletion code is a lamba function created	 within Init();
 
 	}
 

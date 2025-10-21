@@ -65,14 +65,20 @@ namespace NightSnack {
                 // Load existing log file if it exists
                 std::size_t txtKey = 0;
                 std::vector<std::string> logVec;
-                //ResourceManager* rm = ResourceManager::GetInstance();
-                //if (rm->LoadTxtFile(filePath, txtKey) == LOAD_SUCCESS) {
-                //    logVec = rm->GetTxtFile(txtKey);
-                //}
+
+                //Make a NEW resource manager to save files
+                //At this point in the scope core no longer exists
+                //So the RM within core odsnt exist, so we need to make a new one to save the crash file
+                std::unique_ptr<ResourceManager> rm =  std::make_unique<ResourceManager>(); 
+
+                if (rm->LoadTxtFile(filePath, txtKey) == LOAD_SUCCESS) {
+                    logVec = rm->GetTxtFile(txtKey);
+                }
                 logVec.push_back(logEntry);
 
                 // Save updated log file
-                //rm->SaveTxtFile(filePath, logVec);
+                rm->SaveTxtFile(filePath, logVec);
+
             }
             catch (...)
             {
