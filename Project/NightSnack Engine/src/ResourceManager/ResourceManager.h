@@ -10,8 +10,12 @@
  * When unloading Resources, it flags the Resource with a bool within the that class and unloads them all within update.
  * Each Resource has its own functions to interact with it (get/load/unload/etc.)
  *
+ * This class must be able to be function inderpendently of system do not add additional dependcies onto it.
+ * This is as ErrorLog calls it outside of CoreEngine to save files, it must remain functuional by itself
+ *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
+ *************************
  ******************************************************************************/
 #pragma once
 #include <iostream>
