@@ -29,6 +29,21 @@ namespace NightSnack {
 			// Iterate through all Entities this system can access;
 			for (auto const& e : m_entities) {
 
+				RigidBody& rig = m_coord.ModifyComponent<RigidBody>(e);
+
+				// compute velocities;
+				ApplyForces(rig);
+				Gravity(rig);
+				DragFriction(rig);
+				UpdateForce(force);
+
+				// resolve collisions;
+
+				// update transforms;
+
+
+
+
 				// First obtain references to components of interest;
 				auto& force = m_coord.ModifyComponent<Force>(e);
 				auto& vel = m_coord.ModifyComponent<RigidBody>(e).vel;
