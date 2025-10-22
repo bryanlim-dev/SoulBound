@@ -85,6 +85,7 @@ namespace NightSnack {
 		std::unique_ptr<HierarchyPanel> m_hierarchyPanel;
 		std::unique_ptr<InspectorPanel> m_inspectorPanel;
 		std::unique_ptr<ScenePanel> m_scenePanel;
+		std::unique_ptr<OptionsPanel> m_optionsPanel;
 
 		void SetupDockspace();
 		void DrawMenuBar();
@@ -133,6 +134,7 @@ namespace NightSnack {
 		m_hierarchyPanel = std::make_unique<HierarchyPanel>(m_coord, m_selectedEntity);
 		m_inspectorPanel = std::make_unique<InspectorPanel>(m_coord, m_selectedEntity);
 		m_scenePanel	 = std::make_unique<ScenePanel>(m_coord);
+		m_optionsPanel	 = std::make_unique<OptionsPanel>(m_coord);
 	}
 
 	inline void ImguiSystem::Update(float dt, Coordinator& coord) {
@@ -151,6 +153,7 @@ namespace NightSnack {
 		if (m_hierarchyPanel) m_hierarchyPanel->Draw();
 		if (m_inspectorPanel) m_inspectorPanel->Draw();
 		if (m_scenePanel) m_scenePanel->Draw();
+		if (m_optionsPanel) m_optionsPanel->Draw();
 
 
 		// render
@@ -178,6 +181,7 @@ namespace NightSnack {
 		m_hierarchyPanel.reset();
 		m_inspectorPanel.reset();
 		m_scenePanel.reset();
+		m_optionsPanel.reset();
 		m_selectedEntity.reset();
 	}
 
@@ -212,12 +216,16 @@ namespace NightSnack {
 
 			// Split the dockspace into 4 regions
 			ImGuiID dock_id_left, dock_id_right, dock_id_top, dock_id_center;
+			ImGuiID dock_id_left_top, dock_id_left_bottom;
+
 			ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.20f, &dock_id_left, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Right, 0.20f, &dock_id_right, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Up, 0.25f, &dock_id_top, &dock_id_center);
+			ImGui::DockBuilderSplitNode(dock_id_left, ImGuiDir_Down, 1.0f / 3.0f, &dock_id_left_bottom, &dock_id_left_top);
 
 			// Dock panels to regions
-			ImGui::DockBuilderDockWindow("Hierarchy", dock_id_left);
+			ImGui::DockBuilderDockWindow("Hierarchy", dock_id_left_top);
+			ImGui::DockBuilderDockWindow("Options", dock_id_left_bottom);
 			ImGui::DockBuilderDockWindow("Inspector", dock_id_right);
 			ImGui::DockBuilderDockWindow("Scene", dock_id_center);
 
@@ -244,6 +252,17 @@ namespace NightSnack {
 			}
 			if (ImGui::BeginMenu("View"))
 			{
+				if (ImGui::MenuItem("Hierarchy")) {}
+				if (ImGui::MenuItem("Inspector")) {}
+				if (ImGui::MenuItem("Scene")) {}
+
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Game"))
+			{
+				if (ImGui::MenuItem("Play")) {}
+				if (ImGui::MenuItem("Pause")) {}
+				if (ImGui::MenuItem("Stop")) {}
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();

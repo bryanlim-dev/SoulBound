@@ -21,6 +21,7 @@
 #include "HierarchyPanel.h"
 #include "InspectorPanel.h"
 #include "ScenePanel.h"
+#include "OptionsPanel.h"
 
 #endif // ALLPANEL_HPP
 
