@@ -256,7 +256,7 @@ namespace NightSnack {
         }
 
         m_bgmPaused = false;
-        std::cout << "[AudioSystem] Playing BGM: " << bgmID << "\n";
+        //std::cout << "[AudioSystem] Playing BGM: " << bgmID << "\n";
     }
 
     void AudioSystem::StopBGM()
@@ -268,7 +268,7 @@ namespace NightSnack {
             if (isPlaying)
             {
                 m_bgmChannel->stop();
-                std::cout << "[AudioSystem] BGM stopped.\n";
+                //std::cout << "[AudioSystem] BGM stopped.\n";
             }
         }
         m_bgmPaused = false;
@@ -284,7 +284,7 @@ namespace NightSnack {
             {
                 m_bgmChannel->setPaused(true);
                 m_bgmPaused = true;
-                std::cout << "[AudioSystem] BGM paused.\n";
+                //std::cout << "[AudioSystem] BGM paused.\n";
             }
         }
     }
@@ -295,7 +295,7 @@ namespace NightSnack {
         {
             m_bgmChannel->setPaused(false);
             m_bgmPaused = false;
-            std::cout << "[AudioSystem] BGM resumed.\n";
+            //std::cout << "[AudioSystem] BGM resumed.\n";
         }
     }
 
