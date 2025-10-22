@@ -102,6 +102,11 @@ namespace NightSnack {
 			++numberOfSteps;
 		}
 
+		if (m_paused) {
+			numberOfSteps = 0;
+			return;
+		}
+
 		// Iterate through Systems and Update them through Coordinator;
 		for (auto& System : m_systems) {
 
