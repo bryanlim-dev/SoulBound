@@ -47,6 +47,7 @@ namespace NightSnack {
 		// i.e: Input-> Movement -> Collision -> Graphics;
 		AddSystem<ApplicationSystem>(windowWidth, windowHeight, std::move(windowTitle), m_coord, core_dispatcher);
 		AddSystem<InputSystem>(m_coord, core_dispatcher);
+		AddSystem<AudioSystem>(m_coord, core_dispatcher);
 		AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json");
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
