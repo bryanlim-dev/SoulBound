@@ -115,7 +115,7 @@ namespace NightSnack {
         // ========================================
         // LOAD BGM
         // ========================================
-        LoadSoundFile("assets/Sound/Music/LevelCompleteMusic.wav", m_audioKeys.mainMenu);
+        LoadSoundFile("assets/Sound/Music/MansionTheme.wav", m_audioKeys.mainMenu);
 
         // Add more BGM here as needed:
         // LoadSoundFile("assets/Sound/BGM/boss_battle.mp3", m_audioKeys.bossBattle);
