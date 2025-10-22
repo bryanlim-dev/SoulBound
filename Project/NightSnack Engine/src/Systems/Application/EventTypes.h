@@ -53,7 +53,7 @@ namespace NightSnack {
             ChangePlayer,       // Down arrow;
 
             // Debug tests
-            ToggleSystemTimers, // TAB
+            //ToggleSystemTimers, // TAB
             ToggleDebugDraw,    // T
             CrashTest,          // C
             PhysicsDebugStep,   // P

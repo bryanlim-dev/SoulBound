@@ -126,7 +126,7 @@ namespace NightSnack {
 		case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJump;
 
 			// Debug tests
-		case GLFW_KEY_TAB: return InputEvent::InputAction::ToggleSystemTimers;
+		//case GLFW_KEY_TAB: return InputEvent::InputAction::ToggleSystemTimers;
 		case GLFW_KEY_T: return InputEvent::InputAction::ToggleDebugDraw;
 		case GLFW_KEY_C: return InputEvent::InputAction::CrashTest;
 		case GLFW_KEY_BACKSLASH: return InputEvent::InputAction::ToggleUIEditor;

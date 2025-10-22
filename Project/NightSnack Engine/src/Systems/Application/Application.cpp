@@ -90,12 +90,12 @@ namespace NightSnack {
 		// Subscribe to input events
 		m_dispatcher->Subscribe<InputEvent>([this, &Coord](const InputEvent& event) {
 			if (event.pressed == InputEvent::InputActionState::Pressed) {
-				switch (event.inputAction) {
-				case InputEvent::InputAction::ToggleSystemTimers:
+				//switch (event.inputAction) {
+				//case InputEvent::InputAction::ToggleSystemTimers:
 					// Toggle switch for System Timers Debug Mode
-					systemTimersEnabled = !systemTimersEnabled;
-					break;
-				}
+					//systemTimersEnabled = !systemTimersEnabled;
+					//break;
+				//}
 			}
 			});
 	}
