@@ -10,8 +10,8 @@
  * All rights reserved.
  ******************************************************************************/
 
-#include "ECS/Coordinator.h"
-#include "./Systems/Graphics.h"
+#include "Coordinator.h"
+#include "Systems/Graphics.h"
 
 namespace NightSnack {
 
@@ -34,6 +34,8 @@ namespace NightSnack {
 
 	// Destroy an Entity, remove it from all Systems and ComponentArrays;
 	void Coordinator::DestroyEntity(Entity e) {
+		if (e == INVALID_ENTITY) { return; }
+
 		if (HasComponent<Renderable>(e)) {
 			GetSystem<GraphicsSystem>()->RemoveCache(e);
 		}

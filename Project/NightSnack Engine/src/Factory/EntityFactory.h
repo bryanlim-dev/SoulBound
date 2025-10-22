@@ -19,13 +19,10 @@
 #include <json.hpp>
 #include <fstream>
 
-#include "ECS/Entity.h"
-#include "ECS/ISystem.h"
-#include "ECS/Coordinator.h"
-#include "ECS/Component.h"
+#include "Core/ECS/Coordinator.h"
 #include "Factory/PrefabManager.h"
-#include "Systems/Input.h"
-#include "Systems/IEvent.h"
+#include "Systems/Application/Input.h"
+#include "Systems/Application/IEvent.h"
 
 namespace NightSnack {
 
@@ -78,7 +75,11 @@ namespace NightSnack {
 						HalfEntities();
 						//std::cout << "Removed Entities!\n";
 						break;
+					case InputEvent::InputAction::CheckEntityNum:
+						std::cout << "Entity Num: " << coord.GetLivingEntityCount() << '\n';
+						break;
 					}
+						
 				}
 
 				});
@@ -186,7 +187,7 @@ namespace NightSnack {
 		/************************************************************************/
 		void Remove(Entity e);
 
-		std::vector<Entity> m_toBeDestroyed;
+		std::set<Entity> m_toBeDestroyed;
 
 	private:
 		Coordinator& m_coord;

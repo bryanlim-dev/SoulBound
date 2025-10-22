@@ -15,7 +15,7 @@
  ******************************************************************************/
 
 #include "Graphics.h"
-#include "CrashLogger.h"
+#include "Core/CrashLogger.h"
 #include "MathLibrary/Math.h"
 
 namespace NightSnack {

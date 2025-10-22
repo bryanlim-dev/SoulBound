@@ -63,29 +63,48 @@ namespace NightSnack {
         \brief
         Dispatches an event to all subscribed listeners of that event type.
 
-        \param[in] event
-        The event instance to be dispatched.
-        */
-        /************************************************************************/
-        template<typename EventType>
-        void Dispatch(const EventType& event)
+    \param[in] event
+	The event instance to be dispatched.
+    */
+    /************************************************************************/
+    template<typename EventType>
+    void Dispatch(const EventType& event) 
+    {
+        auto it = m_listeners.find(std::type_index(typeid(event)));
+        if (it != m_listeners.end())
         {
-            auto it = m_listeners.find(std::type_index(typeid(EventType)));
-            if (it != m_listeners.end())
+            for (auto& listener : it->second)
             {
-                for (auto& listener : it->second)
-                {
-                    listener(&event);
-                }
+                listener(&event);
             }
         }
+    }
 
-        // unordered_map of event type to vector of listener functions
-    private:
-        std::unordered_map<std::type_index, std::vector<std::function<void(const void*)>>> m_listeners;
-    };
+	// Queue of unique_ptr to events for deferred processing
+    void QueueEvent(std::unique_ptr<IEvent> event)
+    {
+        m_eventQueue.push_back(std::move(event));
+    }
+
+    // Process all queued events
+    void ProcessEvents()
+    {
+        for (const auto& event : m_eventQueue)
+        {
+            Dispatch(*event);
+        }
+        m_eventQueue.clear();
+    }
+
+	
+private:
+    // unordered_map of event type to vector of listener functions
+    std::unordered_map<std::type_index, std::vector<std::function<void(const void*)>>> m_listeners;
+	// Queue to hold events for deferred processing
+    std::vector<std::unique_ptr<IEvent>> m_eventQueue;
+};
 
 }   // NightSnack
 
 // placed here to avoid circular dependency
-#include "Systems/EventTypes.h"
+#include "Systems/Application/EventTypes.h"

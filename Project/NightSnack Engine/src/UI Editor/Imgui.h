@@ -17,8 +17,8 @@
 #include <imgui_impl_opengl3.h>
 #include <GLFW/glfw3.h>
 
-#include "ECS/ISystem.h"
-#include "Systems/Application.h"
+#include "Core/ECS/Coordinator.h"
+#include "Systems/Application/Application.h"
 
 namespace NightSnack {
 

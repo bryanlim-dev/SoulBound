@@ -19,10 +19,10 @@
 #include <iostream>
 
 #include "MathLibrary/Math.h"
-#include "Systems/Collision.h"
+#include "Systems/Physics/Collision.h"
 
-#include "Core.h"
-#include "ECS/ISystem.h"
+#include "Core/Core.h"
+#include "Core/ECS/ISystem.h"
 #include "Factory/EntityFactory.h"
 #include "Systems/AllSystems.h"
 

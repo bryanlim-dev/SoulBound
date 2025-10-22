@@ -25,7 +25,7 @@
 #include <cassert>
 #include <string>
 
-#include "ECS/Entity.h"
+#include "Entity.h"
 
 namespace NightSnack {
 

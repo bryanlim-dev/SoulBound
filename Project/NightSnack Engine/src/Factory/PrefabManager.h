@@ -19,9 +19,7 @@
 #include <unordered_map>
 #include <iostream>
 
-#include "ECS/Entity.h"
-#include "ECS/Coordinator.h"
-#include "ECS/Component.h"
+#include "Core/ECS/Coordinator.h"
 
 namespace NightSnack {
 
@@ -81,6 +79,8 @@ namespace NightSnack {
 		Entity CreateFromPrefab(std::string const& prefabName, json const& archetypes) {
 			// Create a new entity using coordinator;
 			Entity e = m_coord.CreateEntity();
+
+			if (e == INVALID_ENTITY) { return e; }
 
 			// Adds all components from prefab definition;
 			for (auto& [compName, compData] : archetypes[prefabName].items()) {
