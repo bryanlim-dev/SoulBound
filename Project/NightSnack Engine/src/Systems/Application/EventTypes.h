@@ -64,6 +64,7 @@ namespace NightSnack {
             // Modifier events
             Save,               // CTRL + S
             PhysicsDebugMode,   // CTRL + P
+			ToggleUIEditor,     // Backslash ( \ )
 
             NumTotalInputAction
         };

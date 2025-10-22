@@ -53,7 +53,7 @@ namespace NightSnack {
 		AddSystem<CollisionSystem>(core_dispatcher);
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
-		AddSystem<ImguiSystem>(m_coord);
+		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
 
 		// Call this only after the OpenGL context has been created, which is after ApplicationSystem::Init()
 		// TEMP; By right this will be handled by Graphics system and will be removed;
