@@ -19,7 +19,8 @@
 namespace NightSnack {
 
     AudioSystem::AudioSystem(Coordinator& coordinator, EventDispatcher& dispatcher)
-        : m_resourceMgr(coordinator.GetResourceManager()),
+        : m_coord(coordinator),
+        m_resourceMgr(ResourceManager::GetInstance()),
         m_dispatcher(&dispatcher),
         m_fmodSystem(nullptr),
         m_bgmChannel(nullptr),

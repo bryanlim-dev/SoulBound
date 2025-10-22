@@ -87,6 +87,7 @@ namespace NightSnack {
         // Resource management
         ResourceManager* m_resourceMgr;
         EventDispatcher* m_dispatcher;
+        Coordinator& m_coord;
 
         // FMOD
         FMOD::System* m_fmodSystem;
