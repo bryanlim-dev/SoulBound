@@ -14,9 +14,9 @@
 #ifndef AUDIOSYSTEM_H
 #define AUDIOSYSTEM_H
 
-#include "ECS/ISystem.h"
-#include "ECS/Coordinator.h"
-#include "Systems/IEvent.h"
+#include "Core/ECS/ISystem.h"
+#include "Core/ECS/Coordinator.h"
+#include "Systems/Application/IEvent.h"
 #include "ResourceManager/ResourceManager.h"
 #include <fmod.hpp>
 #include <unordered_map>
