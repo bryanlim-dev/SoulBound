@@ -498,7 +498,7 @@ namespace NightSnack {
 	class ResourceSound : public Resource
 	{
 	private:
-		FMOD::Sound* soundData = nullptr;
+		FMOD::Sound* m_soundData = nullptr;
 
 	public:
 		//Default constructor deleted
@@ -522,7 +522,7 @@ namespace NightSnack {
 		/*!
 		\brief
 		Destructor of ResourceSound.
-		Frees soundData if loaded
+		Frees m_soundData if loaded
 		*/
 		/************************************************************************/
 		~ResourceSound();

@@ -385,19 +385,19 @@ namespace NightSnack {
 	}
 	ResourceSound::~ResourceSound()
 	{
-		if (soundData)
+		if (m_soundData)
 		{
-			soundData->release();
-			//delete soundData;
-			soundData = nullptr;
+			m_soundData->release();
+			//delete m_soundData;
+			m_soundData = nullptr;
 		}
 
-		soundData = nullptr;
+		m_soundData = nullptr;
 	}
 
 	void ResourceSound::LoadFile(FMOD::System* system)
 	{
-		FMOD_RESULT result = system->createSound(m_path.c_str(), FMOD_DEFAULT, nullptr, &soundData);
+		FMOD_RESULT result = system->createSound(m_path.c_str(), FMOD_DEFAULT, nullptr, &m_soundData);
 
 		if (result != FMOD_OK)
 		{
@@ -410,7 +410,7 @@ namespace NightSnack {
 
 	FMOD::Sound* ResourceSound::Sound() const
 	{
-		return soundData;
+		return m_soundData;
 	}
 
 #pragma endregion
