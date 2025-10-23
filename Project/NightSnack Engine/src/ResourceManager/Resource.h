@@ -245,7 +245,7 @@ namespace NightSnack {
 	{
 	protected:
 		//vector of strings of the txt file
-		std::vector<std::string> txtStringVec;
+		std::vector<std::string> m_txtStringVec;
 
 	public:
 		//Default constructor deleted

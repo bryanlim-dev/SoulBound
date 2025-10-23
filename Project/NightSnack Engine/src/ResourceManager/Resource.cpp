@@ -118,7 +118,7 @@ namespace NightSnack {
 	{
 		m_resourceType = RESOURCE_TXTFILE;
 
-		txtStringVec = txtVec;
+		m_txtStringVec = txtVec;
 		m_path = newPath;
 	}
 
@@ -139,7 +139,7 @@ namespace NightSnack {
 		std::string fileLine{};
 		while (std::getline(inFile, fileLine))
 		{
-			txtStringVec.push_back(fileLine);
+			m_txtStringVec.push_back(fileLine);
 		}
 
 		inFile.close();
@@ -153,7 +153,7 @@ namespace NightSnack {
 
 		if (outFile.is_open())
 		{
-			for (std::string str : txtStringVec)
+			for (std::string str : m_txtStringVec)
 			{
 				outFile << str << std::endl;
 			}
@@ -166,13 +166,13 @@ namespace NightSnack {
 
 	void ResourceTxtFile::EditResource(std::vector<std::string>& txtVec, std::string newPath)
 	{
-		txtStringVec = txtVec;
+		m_txtStringVec = txtVec;
 		m_path = newPath;
 	}
 
 	std::vector<std::string> ResourceTxtFile::TextStringVec() const
 	{
-		return txtStringVec;
+		return m_txtStringVec;
 	}
 
 #pragma endregion
