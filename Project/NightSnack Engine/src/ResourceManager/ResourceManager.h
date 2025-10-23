@@ -26,7 +26,7 @@
 #include <fmod.hpp>
 
 #include "ResourceManager/Resource.h"
-#include "ECS/ISystem.h"
+#include "Core/ECS/ISystem.h"
 
 //PNG file formats, file bytes/critical chunks
 //https://en.wikipedia.org/wiki/PNG#File_format

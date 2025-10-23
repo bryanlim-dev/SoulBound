@@ -85,12 +85,12 @@ namespace NightSnack {
 
     private:
         // Resource management
-        ResourceManager* m_resourceMgr;
+        std::weak_ptr<ResourceManager> m_resourceMgr;
         EventDispatcher* m_dispatcher;
         Coordinator& m_coord;
 
         // FMOD
-        std::shared_ptr<FMOD::System> fmodSystem;
+        std::weak_ptr<FMOD::System> m_fmodSystem;
         FMOD::Channel* m_bgmChannel;
 
         // Sound caches

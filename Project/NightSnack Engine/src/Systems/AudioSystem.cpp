@@ -1,4 +1,4 @@
-/******************************************************************************
+ /******************************************************************************
  * File:        AudioSystem.cpp
  * Project:     NightSnack
  * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Audio system with channels to play audio
@@ -20,9 +20,9 @@ namespace NightSnack {
 
     AudioSystem::AudioSystem(Coordinator& coordinator, EventDispatcher& dispatcher)
         : m_coord(coordinator),
-        m_resourceMgr(ResourceManager::GetInstance()),
+        m_resourceMgr(coordinator.GetSystem<ResourceManager>()),
         m_dispatcher(&dispatcher),
-        m_fmodSystem(nullptr),
+        m_fmodSystem(coordinator.GetSystem<ResourceManager>()->FmodSystem()),
         m_bgmChannel(nullptr),
         m_initialized(false),
         m_bgmPaused(false),
@@ -45,41 +45,22 @@ namespace NightSnack {
 
     AudioSystem::~AudioSystem()
     {
-        if (m_fmodSystem)
+        if (!m_fmodSystem.expired())
         {
             // Note: Don't release sounds here - ResourceManager handles that
             m_loadedSFX.clear();
             m_loadedBGM.clear();
 
-            m_fmodSystem->close();
-            m_fmodSystem->release();
-            m_fmodSystem = nullptr;
+            m_fmodSystem.lock()->close();
+            m_fmodSystem.lock()->release();
+            m_fmodSystem.reset();
         }
     }
 
     bool AudioSystem::Init()
     {
-        //FMOD_RESULT result = FMOD::System_Create(&fmodSystem);
-        //if (result != FMOD_OK)
-        //{
-        //    std::cout << "AudioSystem: Failed to create FMOD system - "
-        //        << FMOD_ErrorString(result) << std::endl;
-        //    return false;
-        //}
-        //
-        //result = fmodSystem->init(32, FMOD_INIT_NORMAL, nullptr);
-        //if (result != FMOD_OK)
-        //{
-        //    std::cout << "AudioSystem: Failed to initialize FMOD system - "
-        //        << FMOD_ErrorString(result) << std::endl;
-        //    return false;
-        //}
-        //
-        //initialized = true;
-        //std::cout << "AudioSystem: Initialized successfully with 32 channels" << std::endl;
-
-        fmodSystem = resourceManager->FmodSystem();
-        if (fmodSystem)
+        m_fmodSystem = m_resourceMgr.lock()->FmodSystem();
+        if (!m_fmodSystem.expired())
         {
             m_initialized = true;
             std::cout << "[AudioSystem] Initialized successfully.\n";
@@ -96,8 +77,8 @@ namespace NightSnack {
         (void)dt;
         (void)coord;
 
-        if (m_fmodSystem)
-            m_fmodSystem->update();
+        if (!m_fmodSystem.expired())
+            m_fmodSystem.lock()->update();
     }
 
     // ============================================================================
@@ -131,12 +112,12 @@ namespace NightSnack {
 
     bool AudioSystem::LoadSoundFile(const std::string& filepath, size_t& outKey)
     {
-        if (!m_resourceMgr || !m_fmodSystem) {
+        if (m_resourceMgr.expired() || m_fmodSystem.expired()) {
             std::cerr << "[AudioSystem] Cannot load sound - system not ready.\n";
             return false;
         }
 
-        LOAD_RESULT result = m_resourceMgr->LoadSound(filepath, outKey, m_fmodSystem);
+        LOAD_RESULT result = m_resourceMgr.lock()->LoadSound(filepath, outKey, m_fmodSystem.lock().get());
 
         if (result == LOAD_SUCCESS || result == LOAD_SUCCESS_STOPPED_UNLOAD) {
             std::cout << "[AudioSystem] Loaded: " << filepath << " (key: " << outKey << ")\n";
@@ -158,7 +139,7 @@ namespace NightSnack {
 
     void AudioSystem::PlaySFX(const size_t soundID)
     {
-        if (!m_initialized || !m_fmodSystem || !m_resourceMgr)
+        if (!m_initialized || m_resourceMgr.expired() || m_fmodSystem.expired())
             return;
 
         FMOD::Sound* sound = nullptr;
@@ -166,7 +147,7 @@ namespace NightSnack {
         auto it = m_loadedSFX.find(soundID);
         if (it == m_loadedSFX.end())
         {
-            sound = m_resourceMgr->GetSound(soundID);
+            sound = m_resourceMgr.lock()->GetSound(soundID);
             if (!sound)
             {
                 std::cerr << "[AudioSystem] SFX not found: " << soundID << "\n";
@@ -180,7 +161,7 @@ namespace NightSnack {
         }
 
         FMOD::Channel* channel = nullptr;
-        m_fmodSystem->playSound(sound, nullptr, false, &channel);
+        m_fmodSystem.lock()->playSound(sound, nullptr, false, &channel);
 
         if (channel) {
             channel->setVolume(m_sfxVolume * m_masterVolume);
@@ -189,7 +170,7 @@ namespace NightSnack {
 
     void AudioSystem::PlaySFXWithVolume(const size_t soundID, float volume)
     {
-        if (!m_initialized || !m_fmodSystem || !m_resourceMgr)
+        if (!m_initialized || m_resourceMgr.expired() || m_fmodSystem.expired())
             return;
 
         FMOD::Sound* sound = nullptr;
@@ -197,7 +178,7 @@ namespace NightSnack {
         auto it = m_loadedSFX.find(soundID);
         if (it == m_loadedSFX.end())
         {
-            sound = m_resourceMgr->GetSound(soundID);
+            sound = m_resourceMgr.lock()->GetSound(soundID);
             if (!sound)
             {
                 std::cerr << "[AudioSystem] SFX not found: " << soundID << "\n";
@@ -211,7 +192,7 @@ namespace NightSnack {
         }
 
         FMOD::Channel* channel = nullptr;
-        m_fmodSystem->playSound(sound, nullptr, false, &channel);
+        m_fmodSystem.lock()->playSound(sound, nullptr, false, &channel);
 
         if (channel) {
             channel->setVolume(volume * m_masterVolume);
@@ -224,7 +205,7 @@ namespace NightSnack {
 
     void AudioSystem::PlayBGM(const size_t bgmID)
     {
-        if (!m_initialized || !m_fmodSystem || !m_resourceMgr)
+        if (!m_initialized || m_resourceMgr.expired() || m_fmodSystem.expired())
             return;
 
         FMOD::Sound* bgm = nullptr;
@@ -232,7 +213,7 @@ namespace NightSnack {
         auto it = m_loadedBGM.find(bgmID);
         if (it == m_loadedBGM.end())
         {
-            bgm = m_resourceMgr->GetSound(bgmID);
+            bgm = m_resourceMgr.lock()->GetSound(bgmID);
             if (!bgm)
             {
                 std::cerr << "[AudioSystem] BGM not found: " << bgmID << "\n";
@@ -254,7 +235,7 @@ namespace NightSnack {
                 m_bgmChannel->stop();
         }
 
-        m_fmodSystem->playSound(bgm, nullptr, false, &m_bgmChannel);
+        m_fmodSystem.lock()->playSound(bgm, nullptr, false, &m_bgmChannel);
 
         if (m_bgmChannel) {
             m_bgmChannel->setVolume(m_bgmVolume * m_masterVolume);
