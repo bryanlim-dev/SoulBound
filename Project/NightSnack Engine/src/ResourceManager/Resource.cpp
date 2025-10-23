@@ -189,7 +189,7 @@ namespace NightSnack {
 	{
 		m_resourceType = RESOURCE_JSON;
 
-		archetypeMap = newArchtypeMap;
+		m_archetypeMap = newArchtypeMap;
 	}
 
 	ResourceJson::~ResourceJson()
@@ -207,7 +207,7 @@ namespace NightSnack {
 			return;
 		}
 
-		inFile >> jsonData;
+		inFile >> m_jsonData;
 
 		ConvertJsonToArchtypeMap();
 
@@ -228,7 +228,7 @@ namespace NightSnack {
 
 		if (outFile.is_open())
 		{
-			outFile << jsonData;
+			outFile << m_jsonData;
 			outFile.close();
 		}
 	}
@@ -236,12 +236,12 @@ namespace NightSnack {
 
 	std::unordered_map<std::string, Archtype> ResourceJson::GetJson()
 	{
-		return archetypeMap;
+		return m_archetypeMap;
 	}
 
 	nlohmann::json& ResourceJson::GetJsonRaw()
 	{
-		return jsonData;
+		return m_jsonData;
 	}
 	void ResourceJson::ConvertJsonToArchtypeMap()
 	{
@@ -252,10 +252,10 @@ namespace NightSnack {
 
 		//This loop is for the section heading/names 
 		 //structured bindings again whoo 
-		for (auto& [sectionName, sectionData] : jsonData.items()) {
+		for (auto& [sectionName, sectionData] : m_jsonData.items()) {
 
 			Archtype archTypeData = SplitJsonSectionData(sectionData);
-			archetypeMap.insert(std::pair(sectionName, archTypeData));
+			m_archetypeMap.insert(std::pair(sectionName, archTypeData));
 
 		}
 	}
@@ -274,9 +274,9 @@ namespace NightSnack {
 			{
 				//Splits strings and other types
 				if (value.is_string())
-					archTypeData.componentMap.insert(std::pair(keyInput, value.get<std::string>()));
+					archTypeData.m_componentMap.insert(std::pair(keyInput, value.get<std::string>()));
 				else
-					archTypeData.componentMap.insert(std::pair(keyInput, value.dump()));
+					archTypeData.m_componentMap.insert(std::pair(keyInput, value.dump()));
 			}
 			else if (value.is_array())
 			{
@@ -293,7 +293,7 @@ namespace NightSnack {
 						arrStr += ", ";
 				}
 
-				archTypeData.componentMap[keyInput] = arrStr;
+				archTypeData.m_componentMap[keyInput] = arrStr;
 			}
 			//It's a nested section
 			else if (value.is_object())
@@ -301,7 +301,7 @@ namespace NightSnack {
 				//This loop is for the section heading/names 
 				//Insert it into sub map
 				Archtype subArchTypeData = SplitJsonSectionData(value);
-				archTypeData.subArchtype.insert(std::pair(keyInput, std::move(subArchTypeData)));
+				archTypeData.m_subArchtype.insert(std::pair(keyInput, std::move(subArchTypeData)));
 			}
 		}
 
@@ -315,7 +315,7 @@ namespace NightSnack {
 		//Loops through all top level sections
 		//Then calls function to print data stored within
 		//Auto resolves to whatever map type is being used, it might change in the future so auto type 
-		for (const auto& kv : archetypeMap) {
+		for (const auto& kv : m_archetypeMap) {
 			std::cout << "Section: " << kv.first << std::endl << " {" << std::endl;
 			PrintMapSubArchtypeData(kv.second, 2);
 			std::cout << "}" << std::endl << std::endl;
@@ -329,12 +329,12 @@ namespace NightSnack {
 
 		//Print all components frst
 		//Auto resolves to whatever map type is being used, it might change in the future so auto type 
-		for (const auto& data : arch.componentMap) {
+		for (const auto& data : arch.m_componentMap) {
 			std::cout << strIndents << data.first << " : " << data.second << std::endl;
 		}
 
 		//Then print all nested data "D
-		for (const auto& subData : arch.subArchtype) {
+		for (const auto& subData : arch.m_subArchtype) {
 			std::cout << strIndents << subData.first << " : " << std::endl;
 			std::cout << strIndents << "{" << std::endl;
 			PrintMapSubArchtypeData(subData.second, indents + 2);
@@ -344,30 +344,30 @@ namespace NightSnack {
 
 	void ResourceJson::ConvertArchtypeToJson()
 	{
-		jsonData.clear();
+		m_jsonData.clear();
 
 		//structured bindings round 3
 		//Save top level section  and sub section as its data
-		for (const auto& [archTypeKey, archtypeStructData] : archetypeMap)
+		for (const auto& [archTypeKey, archtypeStructData] : m_archetypeMap)
 		{
-			jsonData.emplace(archTypeKey, ConvertSubArchtypeToJson(archtypeStructData));
+			m_jsonData.emplace(archTypeKey, ConvertSubArchtypeToJson(archtypeStructData));
 		}
 	}
 
-	nlohmann::json ResourceJson::ConvertSubArchtypeToJson(Archtype const& subArchtype)
+	nlohmann::json ResourceJson::ConvertSubArchtypeToJson(Archtype const& m_subArchtype)
 	{
 		nlohmann::json subArch;
 		//Save all the components first
 		//Then recurrsive call this function to save sub section componenets
 
 		//Basic key-value components saved
-		for (auto const& [subArchTypeKey, subArchTypeData] : subArchtype.componentMap)
+		for (auto const& [subArchTypeKey, subArchTypeData] : m_subArchtype.m_componentMap)
 		{
 			subArch.emplace(subArchTypeKey, subArchTypeData);
 		}
 
 		//Now save all further key-seciton components
-		for (auto const& [subSectionArchKey, subSectionArchTypeData] : subArchtype.subArchtype)
+		for (auto const& [subSectionArchKey, subSectionArchTypeData] : m_subArchtype.m_subArchtype)
 		{
 			subArch.emplace(subSectionArchKey, ConvertSubArchtypeToJson(subSectionArchTypeData));
 		}

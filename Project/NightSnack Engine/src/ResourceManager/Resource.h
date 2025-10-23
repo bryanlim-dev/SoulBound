@@ -337,15 +337,15 @@ namespace NightSnack {
 
 	struct Archtype
 	{
-		std::unordered_map<std::string, std::string> componentMap;
-		std::unordered_map<std::string, Archtype> subArchtype;
+		std::unordered_map<std::string, std::string> m_componentMap;
+		std::unordered_map<std::string, Archtype> m_subArchtype;
 	};
 
 	class ResourceJson : public Resource
 	{
 	private:
-		nlohmann::json jsonData;
-		std::unordered_map<std::string, Archtype> archetypeMap;
+		nlohmann::json m_jsonData;
+		std::unordered_map<std::string, Archtype> m_archetypeMap;
 
 	public:
 		//Default constructor deleted

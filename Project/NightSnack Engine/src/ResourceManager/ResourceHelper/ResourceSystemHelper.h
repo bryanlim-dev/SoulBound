@@ -27,9 +27,9 @@ namespace ResourceSystemHelper
 
 		if (rm->ResourceLoaded(NightSnack::RESOURCE_JSON, configKey))
 		{
-			windowTitle = (rm->GetJson(configKey)["WindowConfig"].componentMap["WindowTitle"]);
-			winWidth = std::stoi(rm->GetJson(configKey)["WindowConfig"].componentMap["Width"]);
-			winHeight = std::stoi(rm->GetJson(configKey)["WindowConfig"].componentMap["Height"]);
+			windowTitle = (rm->GetJson(configKey)["WindowConfig"].m_componentMap["WindowTitle"]);
+			winWidth = std::stoi(rm->GetJson(configKey)["WindowConfig"].m_componentMap["Width"]);
+			winHeight = std::stoi(rm->GetJson(configKey)["WindowConfig"].m_componentMap["Height"]);
 			rm->UnloadJson(configKey);
 			return true;
 		}
