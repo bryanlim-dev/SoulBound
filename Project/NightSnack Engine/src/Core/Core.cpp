@@ -36,7 +36,6 @@ namespace NightSnack {
 		m_coord.RegisterComponent<Transform>();
 		m_coord.RegisterComponent<RigidBody>();		// Physics;
 		m_coord.RegisterComponent<Force>();
-
 		m_coord.RegisterComponent<Collider>();		// Collision;
 
 		m_coord.RegisterComponent<Color>();
@@ -58,10 +57,6 @@ namespace NightSnack {
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord);
-
-		// Call this only after the OpenGL context has been created, which is after ApplicationSystem::Init()
-		// TEMP; By right this will be handled by Graphics system and will be removed;
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 	}
 
 	// Function should be called upon termination of program;
@@ -73,23 +68,16 @@ namespace NightSnack {
 		return 0;
 	}
 
+	void CoreEngine::Run() {
+
+		while (m_coord.GetSystem<ApplicationSystem>()->ShouldClose()) {
+			Update();
+		}
+	}
+
 	void CoreEngine::Update() {
 		// Start frame timing;
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartFrame();
-
-		//// Obtain dt from Timer;
-		//float deltaTime = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();
-
-		//// Clamp dt to prevent giant steps when window is dragged / unfocused
-		//if (deltaTime > 0.02f)
-		//	deltaTime = 0.02f;
-
-		//// If paused, skip updating systems that rely on dt
-		//if (m_paused) {
-		//	// Reset timer so dt doesn't accumulate during pause
-		//	deltaTime = 0.0f;
-		//	return;
-		//}
 
 		// Fixed DT with Accumulated time implementation;
 		numberOfSteps = 0;	// reset step count per frame;

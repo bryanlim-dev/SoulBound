@@ -38,11 +38,12 @@ namespace NightSnack {
 		will help with entity creation.
 		*/
 		/************************************************************************/
-		EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& archetypes_filename)
+		EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& archetypes_filename, std::string const& level0_file)
 			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord } {
 
 			m_prefabManager.Initialize();
-			LoadJsonFile(archetypes_filename);
+			LoadArchetypes(archetypes_filename);
+			LoadLevel(level0_file);
 
 			// Setup input events;
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
@@ -60,11 +61,11 @@ namespace NightSnack {
 						//std::cout << "Create Circle!\n";
 						break;
 
-					case InputEvent::InputAction::CreateBananaCircle:
-						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
-						Create("Player");
-						//std::cout << "Create Banana!\n";
-						break;
+					//case InputEvent::InputAction::CreateBananaCircle:
+					//	if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
+					//	Create("Player");
+					//	//std::cout << "Create Banana!\n";
+					//	break;
 
 					case InputEvent::InputAction::DoubleEntities:
 						DoubleEntities();
@@ -86,7 +87,7 @@ namespace NightSnack {
 		}
 
 		// For now the Factory will read the json file by itself, in M2 will transfer responsibility to ResourceManager;
-		void LoadJsonFile(std::string const& filename) {
+		void LoadArchetypes(std::string const& filename) {
 			std::ifstream file(filename);
 			if (!file.is_open()) {
 				throw std::runtime_error("Failed to open archetypes file: " + filename);
@@ -97,6 +98,25 @@ namespace NightSnack {
 			}
 			catch (json::parse_error& e) {
 				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
+			}
+		}
+
+		// Read a Level file and creates Entities from prefabs in m_archetypes;
+		void LoadLevel(std::string const& levelfile) {
+			std::ifstream file(levelfile);
+			if (!file.is_open()) {
+				throw std::runtime_error("Failed to open level file: " + levelfile);
+			}
+
+			try {
+				file >> m_currentLevel;
+			}
+			catch (json::parse_error& e) {
+				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
+			}
+
+			for (auto const& item : m_currentLevel["Entities"]) {
+				Create(item["prefab"], item["Transform"]);
 			}
 		}
 
@@ -193,7 +213,9 @@ namespace NightSnack {
 		Coordinator& m_coord;
 		PrefabManager m_prefabManager;
 		EventDispatcher* m_dispatcher;
+
 		json m_archetypes{};
+		json m_currentLevel{};
 
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;

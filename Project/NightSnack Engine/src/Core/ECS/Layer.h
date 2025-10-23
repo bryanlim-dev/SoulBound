@@ -5,18 +5,24 @@
 #include <memory>
 #include <set>
 #include <optional>
+#include <list>
+#include <algorithm>
 
 #include "Component.h"
 #include "Entity.h"
 
 namespace NightSnack {
 
+	// Should layers contain systems themselves? additionally to entities...
+
 	enum class LayerType : std::uint8_t {
+		_ENGINE,
 		BACKGROUND,
 		FOREGROUND,
 		GAMELAYER,
 		GAMEUI,
 		EDITOR,
+		_ENGINE_POST,
 
 		NOLAYER
 	};
@@ -28,14 +34,22 @@ namespace NightSnack {
 		Layer(LayerType t, std::string const& n)
 			: m_name{ n }, m_type{ t }, isVisible { true } {}
 
-		void Insert(Entity e) { m_entities.insert(e); }
-		void Remove(Entity e) { m_entities.erase(e); }
+		void Insert(Entity e) { m_entities.insert(e); m_entityOrder.push_back(e); }
+		void Remove(Entity e) { 
+			m_entities.erase(e); 
+			std::list<Entity>::iterator it = std::find(m_entityOrder.begin(), m_entityOrder.end(), e);
+			m_entityOrder.erase(it);
+		}
 
 		void ChangeName(std::string const& n) { m_name = n; }
 		void ToggleVisibility() { isVisible = isVisible ? false : true; }
 
 	private:
+		// 
 		std::set<Entity> m_entities;
+		// order of entities to perform actions -> should be based on hierarchy panel in UI editor;
+		std::list<Entity> m_entityOrder;
+
 		std::string m_name;
 		LayerType m_type;
 		bool isVisible{};
@@ -55,7 +69,8 @@ namespace NightSnack {
 		void AddToLayer(Entity e, LayerID);
 		void RemoveFromLayer(Entity e, LayerID);
 
-		Layer const& GetLayer(LayerID id) const;
+		std::optional<Layer const&> GetLayer(LayerID id) const;
+		std::optional<Layer&> GetLayer(LayerID id);
 
 	private:
 		struct LayerData {
@@ -73,6 +88,14 @@ namespace NightSnack {
 
 		size_t m_layerCount{};
 	};
+
+
+
+	class CoreLayer : public Layer {
+
+	};
+
+
 
 	inline void LayerManager::CreateLayer(LayerType type, std::optional<std::string> const& name) {
 
@@ -123,11 +146,20 @@ namespace NightSnack {
 		m_nameToID[n] = id;
 	}
 
-	inline Layer const& LayerManager::GetLayer(LayerID id) const {
+	inline std::optional<Layer const&> LayerManager::GetLayer(LayerID id) const {
 
 		if (m_layers.find(id) == m_layers.end()) {
-			std::cerr << "Error: Layer not found, cannot be removed!\n";
-			return;
+			std::cerr << "Error: Layer not found!\n";
+			return std::nullopt;
+		}
+		return *(m_layers.at(id));
+	}
+
+	inline std::optional<Layer&> LayerManager::GetLayer(LayerID id) {
+
+		if (m_layers.find(id) == m_layers.end()) {
+			std::cerr << "Error: Layer not found!\n";
+			return std::nullopt;
 		}
 		return *(m_layers.at(id));
 	}

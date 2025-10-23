@@ -65,6 +65,14 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Calls Update() in a while loop until application ShouldClose.
+		*/
+		/************************************************************************/
+		void Run();
+
+		/************************************************************************/
+		/*!
+		\brief
 		Registers a system and adds it into m_systems container.
 		Arguments are forwarded to individual system constructors.
 		*/

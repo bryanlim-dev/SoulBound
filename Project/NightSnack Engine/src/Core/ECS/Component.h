@@ -134,6 +134,11 @@ namespace NightSnack {
         j.at("Rotation").get_to(t.rot);
         j.at("Scale").get_to(t.scale);
     }
+    
+    inline void from_json(const json& j, PlayerController& p) {
+        j.at("moveSpeed").get_to(p.moveSpeed);
+        j.at("jumpSpeed").get_to(p.jumpSpeed);
+    }
 
     // PHYSICS ====================================================
 
@@ -177,6 +182,12 @@ namespace NightSnack {
         else
             r.isWireframe = false;
 
+        if (j.contains("renderLayer")) {
+            r.renderLayer = RenderLayer::BACKGROUND;
+        }
+        else
+            r.renderLayer = RenderLayer::DEFAULT;
+
         r.wasModified = true;
 
     }
@@ -199,6 +210,7 @@ namespace NightSnack {
         else if (shapeStr == "Circle") c.shape = ShapeType::Circle;
 
         if (typeStr == "Solid") c.type = ColliderType::Solid;
+        if (typeStr == "Ground") c.type = ColliderType::Ground;
         else if (typeStr == "Trigger") c.type = ColliderType::Trigger;
 
         j.at("isStatic").get_to(c.isStatic);
