@@ -1,7 +1,7 @@
 /******************************************************************************
  * File:        AssetsPanel.h
  * Project:     NightSnack
- * Author(s):	
+ * Author(s):	Bryan Lim Jun Jie (Primary, 90%)
  *
  * Description:
  * Assets panel displaying and handling all game assets.
