@@ -44,19 +44,19 @@ namespace NightSnack {
 	protected:
 
 		//Key to the map in resourcemanager
-		std::size_t mapKey = 0;
+		std::size_t m_mapKey = 0;
 
 		//Path of the file
-		std::string path = "";
+		std::string m_path = "";
 
 		//Type of resource
-		RESOURCE_TYPE resourceType = RESOURCE_NONE;
+		RESOURCE_TYPE m_resourceType = RESOURCE_NONE;
 
 		//Is this resource loaded
-		bool resourceLoaded = false;
+		bool m_resourceLoaded = false;
 
 		//This flag is to check if it will be deleted next cycle
-		bool flaggedForDeletion = false;
+		bool m_flaggedForDeletion = false;
 
 	public:
 		//Default constructor deleted
@@ -73,7 +73,7 @@ namespace NightSnack {
 		std::size_t const ref of the key that is used in the map to store it
 		*/
 		/************************************************************************/
-		Resource(const std::string& inFilePath, const std::size_t& inMapKey) : path(inFilePath), mapKey(inMapKey)
+		Resource(const std::string& inFilePath, const std::size_t& inMapKey) : m_path(inFilePath), m_mapKey(inMapKey)
 		{
 		};
 
@@ -124,7 +124,7 @@ namespace NightSnack {
 		Returns refrence to the bool of is the Resource is flagged for deletion next cycle
 
 		\return
-		bool refrennce of vara flaggedForDeletion
+		bool refrennce of vara m_flaggedForDeletion
 		*/
 		/************************************************************************/
 		bool& FlaggedForDeletion();

@@ -27,34 +27,34 @@ namespace NightSnack {
 	Resource::~Resource()
 	{
 #if RESOURCE_DEBUG_MODE
-		std::cout << path << " is deleted!" << std::endl;
+		std::cout << m_path << " is deleted!" << std::endl;
 #endif
 	}
 
 
 	bool Resource::Loaded() const
 	{
-		return resourceLoaded;
+		return m_resourceLoaded;
 	}
 
 	std::string Resource::Path() const
 	{
-		return path;
+		return m_path;
 	}
 
 	std::size_t Resource::MapKey() const
 	{
-		return mapKey;
+		return m_mapKey;
 	}
 
 	RESOURCE_TYPE Resource::FileType() const
 	{
-		return resourceType;
+		return m_resourceType;
 	}
 
 	bool& Resource::FlaggedForDeletion()
 	{
-		return flaggedForDeletion;
+		return m_flaggedForDeletion;
 	}
 #pragma endregion
 
@@ -65,7 +65,7 @@ namespace NightSnack {
 		: Resource(inFilePath, inMapKey)
 	{
 		//Set file path
-		resourceType = RESOURCE_IMAGE;
+		m_resourceType = RESOURCE_IMAGE;
 	}
 
 
@@ -77,20 +77,20 @@ namespace NightSnack {
 			delete imageData;
 			imageData = NULL;
 
-			resourceLoaded = false;
+			m_resourceLoaded = false;
 		}
 	}
 
 	void ResourceImage::LoadFile()
 	{
 		//Load file
-		imageData = stbi_load(path.c_str(), &width, &height, &channels, 0);
+		imageData = stbi_load(m_path.c_str(), &width, &height, &channels, 0);
 
 
 		if (imageData)
-			resourceLoaded = true;
+			m_resourceLoaded = true;
 		else
-			resourceLoaded = false;
+			m_resourceLoaded = false;
 	}
 
 	//void ResourceImage::SaveFile() {
@@ -110,16 +110,16 @@ namespace NightSnack {
 	ResourceTxtFile::ResourceTxtFile(const std::string& inFilePath, const std::size_t& inMapKey)
 		: Resource(inFilePath, inMapKey)
 	{
-		resourceType = RESOURCE_TXTFILE;
+		m_resourceType = RESOURCE_TXTFILE;
 	}
 
 	ResourceTxtFile::ResourceTxtFile(std::vector<std::string>& txtVec, std::string newPath)
 		: Resource(newPath, 0)
 	{
-		resourceType = RESOURCE_TXTFILE;
+		m_resourceType = RESOURCE_TXTFILE;
 
 		txtStringVec = txtVec;
-		path = newPath;
+		m_path = newPath;
 	}
 
 	ResourceTxtFile::~ResourceTxtFile()
@@ -129,10 +129,10 @@ namespace NightSnack {
 	void ResourceTxtFile::LoadFile()
 	{
 		//Open filepath
-		std::fstream inFile(path.c_str());
+		std::fstream inFile(m_path.c_str());
 		if (!inFile.is_open())
 		{
-			resourceLoaded = false;
+			m_resourceLoaded = false;
 			return;
 		}
 
@@ -144,12 +144,12 @@ namespace NightSnack {
 
 		inFile.close();
 
-		resourceLoaded = true;
+		m_resourceLoaded = true;
 	}
 
 	void ResourceTxtFile::SaveFile()
 	{
-		std::ofstream outFile(path.c_str());
+		std::ofstream outFile(m_path.c_str());
 
 		if (outFile.is_open())
 		{
@@ -167,7 +167,7 @@ namespace NightSnack {
 	void ResourceTxtFile::EditResource(std::vector<std::string>& txtVec, std::string newPath)
 	{
 		txtStringVec = txtVec;
-		path = newPath;
+		m_path = newPath;
 	}
 
 	std::vector<std::string> ResourceTxtFile::TextStringVec() const
@@ -181,13 +181,13 @@ namespace NightSnack {
 	ResourceJson::ResourceJson(const std::string& inFilePath, const std::size_t& inMapKey)
 		: Resource(inFilePath, inMapKey)
 	{
-		resourceType = RESOURCE_JSON;
+		m_resourceType = RESOURCE_JSON;
 	}
 
 	ResourceJson::ResourceJson(std::unordered_map<std::string, Archtype> const& newArchtypeMap, std::string newPath)
 		: Resource(newPath, 0)
 	{
-		resourceType = RESOURCE_JSON;
+		m_resourceType = RESOURCE_JSON;
 
 		archetypeMap = newArchtypeMap;
 	}
@@ -199,11 +199,11 @@ namespace NightSnack {
 
 	void ResourceJson::LoadFile()
 	{
-		std::ifstream inFile(path);
+		std::ifstream inFile(m_path);
 
 		if (!inFile.is_open())
 		{
-			resourceLoaded = false;
+			m_resourceLoaded = false;
 			return;
 		}
 
@@ -211,7 +211,7 @@ namespace NightSnack {
 
 		ConvertJsonToArchtypeMap();
 
-		resourceLoaded = true;
+		m_resourceLoaded = true;
 
 #if RESOURCE_DEBUG_MODE
 
@@ -224,7 +224,7 @@ namespace NightSnack {
 	{
 		ConvertArchtypeToJson();
 
-		std::ofstream outFile(path.c_str());
+		std::ofstream outFile(m_path.c_str());
 
 		if (outFile.is_open())
 		{
@@ -381,7 +381,7 @@ namespace NightSnack {
 	ResourceSound::ResourceSound(const std::string& inFilePath, const std::size_t& inMapKey)
 		: Resource(inFilePath, inMapKey)
 	{
-		resourceType = RESOURCE_SOUND;
+		m_resourceType = RESOURCE_SOUND;
 	}
 	ResourceSound::~ResourceSound()
 	{
@@ -397,15 +397,15 @@ namespace NightSnack {
 
 	void ResourceSound::LoadFile(FMOD::System* system)
 	{
-		FMOD_RESULT result = system->createSound(path.c_str(), FMOD_DEFAULT, nullptr, &soundData);
+		FMOD_RESULT result = system->createSound(m_path.c_str(), FMOD_DEFAULT, nullptr, &soundData);
 
 		if (result != FMOD_OK)
 		{
-			resourceLoaded = false;
+			m_resourceLoaded = false;
 			return;
 		}
 
-		resourceLoaded = true;
+		m_resourceLoaded = true;
 	}
 
 	FMOD::Sound* ResourceSound::Sound() const
@@ -419,7 +419,7 @@ namespace NightSnack {
 	ResourceFont::ResourceFont(const std::string& inFilePath, const std::size_t& inMapKey)
 		: Resource(inFilePath, inMapKey)
 	{
-		resourceType = RESOURCE_FONT;
+		m_resourceType = RESOURCE_FONT;
 	}
 
 	ResourceFont::~ResourceFont()
@@ -429,7 +429,7 @@ namespace NightSnack {
 
 		fontFace = nullptr;
 
-		resourceLoaded = false;
+		m_resourceLoaded = false;
 	}
 
 	FT_Face ResourceFont::Font()
@@ -440,22 +440,22 @@ namespace NightSnack {
 	void ResourceFont::LoadFile(FT_Library& fontLib)
 	{
 		//Load font based on file path using system
-		FT_Error error = FT_New_Face(fontLib, path.c_str(), 0, &fontFace);
+		FT_Error error = FT_New_Face(fontLib, m_path.c_str(), 0, &fontFace);
 
 		if (error)
 		{
-			resourceLoaded = false;
+			m_resourceLoaded = false;
 
 #if RESOURCE_DEBUG_MODE
-			std::cout << path << " font type cannot be loaded!" << std::endl;
+			std::cout << m_path << " font type cannot be loaded!" << std::endl;
 			if (error == FT_Err_Unknown_File_Format)
 			{
-				std::cout << path << " font type is unnsupported and cannot be loaded!" << std::endl;
+				std::cout << m_path << " font type is unnsupported and cannot be loaded!" << std::endl;
 			}
 #endif
 		}
 		else
-			resourceLoaded = true;
+			m_resourceLoaded = true;
 	}
 #pragma endregion
 
