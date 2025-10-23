@@ -76,20 +76,20 @@ namespace NightSnack {
 
 		//Key, Value
 		//Maps of resources
-		std::map<std::size_t, std::unique_ptr<ResourceImage>> resourceImageMap;
-		std::map<std::size_t, std::unique_ptr<ResourceTxtFile>> resourceTxtFileMap;
-		std::map<std::size_t, std::unique_ptr<ResourceJson>> resourceJsonMap;
-		std::map<std::size_t, std::unique_ptr<ResourceSound>> resourceSoundMap;
-		std::map<std::size_t, std::unique_ptr<ResourceFont>> resourceFontMap;
+		std::map<std::size_t, std::unique_ptr<ResourceImage>> m_resourceImageMap;
+		std::map<std::size_t, std::unique_ptr<ResourceTxtFile>> m_resourceTxtFileMap;
+		std::map<std::size_t, std::unique_ptr<ResourceJson>> m_resourceJsonMap;
+		std::map<std::size_t, std::unique_ptr<ResourceSound>> m_resourceSoundMap;
+		std::map<std::size_t, std::unique_ptr<ResourceFont>> m_resourceFontMap;
 
 		//List of resources to track to delete
 		//pair of enum type <-> resource key
-		std::vector<std::pair<RESOURCE_TYPE, std::size_t>> deletionVec;
+		std::vector<std::pair<RESOURCE_TYPE, std::size_t>> m_deletionVec;
 
 		//Font system
-		FT_Library fontLibrary;
+		FT_Library m_fontLibrary;
 
-		std::shared_ptr<FMOD::System> fmodSystem; //Shared with audio system
+		std::shared_ptr<FMOD::System> m_fmodSystem; //Shared with audio system
 
 		Signature m_systemSignature{};
 
