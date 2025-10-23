@@ -158,9 +158,9 @@ namespace NightSnack {
 	{
 	protected:
 		//Data ptr of the obj
-		unsigned char* imageData = NULL;
+		unsigned char* m_imageData = NULL;
 		//Image imageData
-		int width = 0, height = 0, channels = 0;
+		int m_width = 0, m_height = 0, m_channels = 0;
 
 	public:
 		//Default constructor deleted
@@ -213,7 +213,7 @@ namespace NightSnack {
 		int of width of image
 		*/
 		/************************************************************************/
-		int Width() const { return width; }
+		int Width() const { return m_width; }
 		/************************************************************************/
 		/*!
 		\brief
@@ -223,7 +223,7 @@ namespace NightSnack {
 		int of height of image
 		*/
 		/************************************************************************/
-		int Height() const { return height; }
+		int Height() const { return m_height; }
 		/************************************************************************/
 		/*!
 		\brief
@@ -233,7 +233,7 @@ namespace NightSnack {
 		int of channels of image
 		*/
 		/************************************************************************/
-		int Channels() const { return channels; }
+		int Channels() const { return m_channels; }
 
 	private:
 

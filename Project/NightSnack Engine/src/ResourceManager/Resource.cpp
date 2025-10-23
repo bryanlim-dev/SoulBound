@@ -72,10 +72,10 @@ namespace NightSnack {
 	ResourceImage::~ResourceImage()
 	{
 		//Check if the imageData exists incase
-		if (imageData)
+		if (m_imageData)
 		{
-			delete imageData;
-			imageData = NULL;
+			delete m_imageData;
+			m_imageData = NULL;
 
 			m_resourceLoaded = false;
 		}
@@ -84,10 +84,10 @@ namespace NightSnack {
 	void ResourceImage::LoadFile()
 	{
 		//Load file
-		imageData = stbi_load(m_path.c_str(), &width, &height, &channels, 0);
+		m_imageData = stbi_load(m_path.c_str(), &m_width, &m_height, &m_channels, 0);
 
 
-		if (imageData)
+		if (m_imageData)
 			m_resourceLoaded = true;
 		else
 			m_resourceLoaded = false;
@@ -99,7 +99,7 @@ namespace NightSnack {
 
 	unsigned char* ResourceImage::Image() const
 	{
-		return imageData;
+		return m_imageData;
 	}
 #pragma endregion
 
