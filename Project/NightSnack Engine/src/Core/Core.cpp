@@ -17,6 +17,8 @@
 #include "Core.h"
 #include "Systems/AllSystems.h"
 
+#include "ResourceManager/ResourceHelper/ResourceSystemHelper.h"
+
 namespace NightSnack {
 
 	constexpr float fixedDeltaTime = 0.016f;
@@ -27,7 +29,7 @@ namespace NightSnack {
 	// CORE
 	// ------------------------------------------------------------------------------------------------
 
-	void CoreEngine::Initialize(int windowWidth, int windowHeight, std::string&& windowTitle) {
+	void CoreEngine::Initialize(std::string&& configFilePath) {
 
 		// Initialize ECS Coordinator and Managers;
 		m_coord.Initialize();
@@ -48,8 +50,15 @@ namespace NightSnack {
 
 		// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
 		// i.e: Input-> Movement -> Collision -> Graphics;
-		AddSystem<ApplicationSystem>(windowWidth, windowHeight, std::move(windowTitle), m_coord, core_dispatcher);
+		AddSystem<ResourceManager>(); //RM first, so app can load values from it
+		std::string windowTitle = "";
+		int winWidth = 0, winHeight = 0;
+		//Get window data
+		ResourceSystemHelper::GetResourceSystemWindowData(m_coord.GetSystem<ResourceManager>(), configFilePath, winHeight, winWidth, windowTitle);
+
+		AddSystem<ApplicationSystem>(winWidth, winHeight, std::move(windowTitle), m_coord, core_dispatcher);
 		AddSystem<InputSystem>(m_coord, core_dispatcher);
+		AddSystem<AudioSystem>(m_coord, core_dispatcher);
 		AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json");
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);

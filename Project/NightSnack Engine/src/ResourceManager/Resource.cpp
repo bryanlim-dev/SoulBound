@@ -27,34 +27,34 @@ namespace NightSnack {
 	Resource::~Resource()
 	{
 #if RESOURCE_DEBUG_MODE
-		std::cout << path << " is deleted!" << std::endl;
+		std::cout << m_path << " is deleted!" << std::endl;
 #endif
 	}
 
 
 	bool Resource::Loaded() const
 	{
-		return resourceLoaded;
+		return m_resourceLoaded;
 	}
 
 	std::string Resource::Path() const
 	{
-		return path;
+		return m_path;
 	}
 
 	std::size_t Resource::MapKey() const
 	{
-		return mapKey;
+		return m_mapKey;
 	}
 
 	RESOURCE_TYPE Resource::FileType() const
 	{
-		return resourceType;
+		return m_resourceType;
 	}
 
 	bool& Resource::FlaggedForDeletion()
 	{
-		return flaggedForDeletion;
+		return m_flaggedForDeletion;
 	}
 #pragma endregion
 
@@ -65,32 +65,32 @@ namespace NightSnack {
 		: Resource(inFilePath, inMapKey)
 	{
 		//Set file path
-		resourceType = RESOURCE_IMAGE;
+		m_resourceType = RESOURCE_IMAGE;
 	}
 
 
 	ResourceImage::~ResourceImage()
 	{
 		//Check if the imageData exists incase
-		if (imageData)
+		if (m_imageData)
 		{
-			delete imageData;
-			imageData = NULL;
+			delete m_imageData;
+			m_imageData = NULL;
 
-			resourceLoaded = false;
+			m_resourceLoaded = false;
 		}
 	}
 
 	void ResourceImage::LoadFile()
 	{
 		//Load file
-		imageData = stbi_load(path.c_str(), &width, &height, &channels, 0);
+		m_imageData = stbi_load(m_path.c_str(), &m_width, &m_height, &m_channels, 0);
 
 
-		if (imageData)
-			resourceLoaded = true;
+		if (m_imageData)
+			m_resourceLoaded = true;
 		else
-			resourceLoaded = false;
+			m_resourceLoaded = false;
 	}
 
 	//void ResourceImage::SaveFile() {
@@ -99,7 +99,7 @@ namespace NightSnack {
 
 	unsigned char* ResourceImage::Image() const
 	{
-		return imageData;
+		return m_imageData;
 	}
 #pragma endregion
 
@@ -110,16 +110,16 @@ namespace NightSnack {
 	ResourceTxtFile::ResourceTxtFile(const std::string& inFilePath, const std::size_t& inMapKey)
 		: Resource(inFilePath, inMapKey)
 	{
-		resourceType = RESOURCE_TXTFILE;
+		m_resourceType = RESOURCE_TXTFILE;
 	}
 
 	ResourceTxtFile::ResourceTxtFile(std::vector<std::string>& txtVec, std::string newPath)
 		: Resource(newPath, 0)
 	{
-		resourceType = RESOURCE_TXTFILE;
+		m_resourceType = RESOURCE_TXTFILE;
 
-		txtStringVec = txtVec;
-		path = newPath;
+		m_txtStringVec = txtVec;
+		m_path = newPath;
 	}
 
 	ResourceTxtFile::~ResourceTxtFile()
@@ -129,31 +129,31 @@ namespace NightSnack {
 	void ResourceTxtFile::LoadFile()
 	{
 		//Open filepath
-		std::fstream inFile(path.c_str());
+		std::fstream inFile(m_path.c_str());
 		if (!inFile.is_open())
 		{
-			resourceLoaded = false;
+			m_resourceLoaded = false;
 			return;
 		}
 
 		std::string fileLine{};
 		while (std::getline(inFile, fileLine))
 		{
-			txtStringVec.push_back(fileLine);
+			m_txtStringVec.push_back(fileLine);
 		}
 
 		inFile.close();
 
-		resourceLoaded = true;
+		m_resourceLoaded = true;
 	}
 
 	void ResourceTxtFile::SaveFile()
 	{
-		std::ofstream outFile(path.c_str());
+		std::ofstream outFile(m_path.c_str());
 
 		if (outFile.is_open())
 		{
-			for (std::string str : txtStringVec)
+			for (std::string str : m_txtStringVec)
 			{
 				outFile << str << std::endl;
 			}
@@ -166,13 +166,13 @@ namespace NightSnack {
 
 	void ResourceTxtFile::EditResource(std::vector<std::string>& txtVec, std::string newPath)
 	{
-		txtStringVec = txtVec;
-		path = newPath;
+		m_txtStringVec = txtVec;
+		m_path = newPath;
 	}
 
 	std::vector<std::string> ResourceTxtFile::TextStringVec() const
 	{
-		return txtStringVec;
+		return m_txtStringVec;
 	}
 
 #pragma endregion
@@ -181,15 +181,15 @@ namespace NightSnack {
 	ResourceJson::ResourceJson(const std::string& inFilePath, const std::size_t& inMapKey)
 		: Resource(inFilePath, inMapKey)
 	{
-		resourceType = RESOURCE_JSON;
+		m_resourceType = RESOURCE_JSON;
 	}
 
 	ResourceJson::ResourceJson(std::unordered_map<std::string, Archtype> const& newArchtypeMap, std::string newPath)
 		: Resource(newPath, 0)
 	{
-		resourceType = RESOURCE_JSON;
+		m_resourceType = RESOURCE_JSON;
 
-		archetypeMap = newArchtypeMap;
+		m_archetypeMap = newArchtypeMap;
 	}
 
 	ResourceJson::~ResourceJson()
@@ -199,19 +199,19 @@ namespace NightSnack {
 
 	void ResourceJson::LoadFile()
 	{
-		std::ifstream inFile(path);
+		std::ifstream inFile(m_path);
 
 		if (!inFile.is_open())
 		{
-			resourceLoaded = false;
+			m_resourceLoaded = false;
 			return;
 		}
 
-		inFile >> jsonData;
+		inFile >> m_jsonData;
 
 		ConvertJsonToArchtypeMap();
 
-		resourceLoaded = true;
+		m_resourceLoaded = true;
 
 #if RESOURCE_DEBUG_MODE
 
@@ -224,11 +224,11 @@ namespace NightSnack {
 	{
 		ConvertArchtypeToJson();
 
-		std::ofstream outFile(path.c_str());
+		std::ofstream outFile(m_path.c_str());
 
 		if (outFile.is_open())
 		{
-			outFile << jsonData;
+			outFile << m_jsonData;
 			outFile.close();
 		}
 	}
@@ -236,12 +236,12 @@ namespace NightSnack {
 
 	std::unordered_map<std::string, Archtype> ResourceJson::GetJson()
 	{
-		return archetypeMap;
+		return m_archetypeMap;
 	}
 
 	nlohmann::json& ResourceJson::GetJsonRaw()
 	{
-		return jsonData;
+		return m_jsonData;
 	}
 	void ResourceJson::ConvertJsonToArchtypeMap()
 	{
@@ -252,10 +252,10 @@ namespace NightSnack {
 
 		//This loop is for the section heading/names 
 		 //structured bindings again whoo 
-		for (auto& [sectionName, sectionData] : jsonData.items()) {
+		for (auto& [sectionName, sectionData] : m_jsonData.items()) {
 
 			Archtype archTypeData = SplitJsonSectionData(sectionData);
-			archetypeMap.insert(std::pair(sectionName, archTypeData));
+			m_archetypeMap.insert(std::pair(sectionName, archTypeData));
 
 		}
 	}
@@ -274,9 +274,9 @@ namespace NightSnack {
 			{
 				//Splits strings and other types
 				if (value.is_string())
-					archTypeData.componentMap.insert(std::pair(keyInput, value.get<std::string>()));
+					archTypeData.m_componentMap.insert(std::pair(keyInput, value.get<std::string>()));
 				else
-					archTypeData.componentMap.insert(std::pair(keyInput, value.dump()));
+					archTypeData.m_componentMap.insert(std::pair(keyInput, value.dump()));
 			}
 			else if (value.is_array())
 			{
@@ -293,7 +293,7 @@ namespace NightSnack {
 						arrStr += ", ";
 				}
 
-				archTypeData.componentMap[keyInput] = arrStr;
+				archTypeData.m_componentMap[keyInput] = arrStr;
 			}
 			//It's a nested section
 			else if (value.is_object())
@@ -301,7 +301,7 @@ namespace NightSnack {
 				//This loop is for the section heading/names 
 				//Insert it into sub map
 				Archtype subArchTypeData = SplitJsonSectionData(value);
-				archTypeData.subArchtype.insert(std::pair(keyInput, std::move(subArchTypeData)));
+				archTypeData.m_subArchtype.insert(std::pair(keyInput, std::move(subArchTypeData)));
 			}
 		}
 
@@ -315,7 +315,7 @@ namespace NightSnack {
 		//Loops through all top level sections
 		//Then calls function to print data stored within
 		//Auto resolves to whatever map type is being used, it might change in the future so auto type 
-		for (const auto& kv : archetypeMap) {
+		for (const auto& kv : m_archetypeMap) {
 			std::cout << "Section: " << kv.first << std::endl << " {" << std::endl;
 			PrintMapSubArchtypeData(kv.second, 2);
 			std::cout << "}" << std::endl << std::endl;
@@ -329,12 +329,12 @@ namespace NightSnack {
 
 		//Print all components frst
 		//Auto resolves to whatever map type is being used, it might change in the future so auto type 
-		for (const auto& data : arch.componentMap) {
+		for (const auto& data : arch.m_componentMap) {
 			std::cout << strIndents << data.first << " : " << data.second << std::endl;
 		}
 
 		//Then print all nested data "D
-		for (const auto& subData : arch.subArchtype) {
+		for (const auto& subData : arch.m_subArchtype) {
 			std::cout << strIndents << subData.first << " : " << std::endl;
 			std::cout << strIndents << "{" << std::endl;
 			PrintMapSubArchtypeData(subData.second, indents + 2);
@@ -344,30 +344,30 @@ namespace NightSnack {
 
 	void ResourceJson::ConvertArchtypeToJson()
 	{
-		jsonData.clear();
+		m_jsonData.clear();
 
 		//structured bindings round 3
 		//Save top level section  and sub section as its data
-		for (const auto& [archTypeKey, archtypeStructData] : archetypeMap)
+		for (const auto& [archTypeKey, archtypeStructData] : m_archetypeMap)
 		{
-			jsonData.emplace(archTypeKey, ConvertSubArchtypeToJson(archtypeStructData));
+			m_jsonData.emplace(archTypeKey, ConvertSubArchtypeToJson(archtypeStructData));
 		}
 	}
 
-	nlohmann::json ResourceJson::ConvertSubArchtypeToJson(Archtype const& subArchtype)
+	nlohmann::json ResourceJson::ConvertSubArchtypeToJson(Archtype const& m_subArchtype)
 	{
 		nlohmann::json subArch;
 		//Save all the components first
 		//Then recurrsive call this function to save sub section componenets
 
 		//Basic key-value components saved
-		for (auto const& [subArchTypeKey, subArchTypeData] : subArchtype.componentMap)
+		for (auto const& [subArchTypeKey, subArchTypeData] : m_subArchtype.m_componentMap)
 		{
 			subArch.emplace(subArchTypeKey, subArchTypeData);
 		}
 
 		//Now save all further key-seciton components
-		for (auto const& [subSectionArchKey, subSectionArchTypeData] : subArchtype.subArchtype)
+		for (auto const& [subSectionArchKey, subSectionArchTypeData] : m_subArchtype.m_subArchtype)
 		{
 			subArch.emplace(subSectionArchKey, ConvertSubArchtypeToJson(subSectionArchTypeData));
 		}
@@ -381,36 +381,36 @@ namespace NightSnack {
 	ResourceSound::ResourceSound(const std::string& inFilePath, const std::size_t& inMapKey)
 		: Resource(inFilePath, inMapKey)
 	{
-		resourceType = RESOURCE_SOUND;
+		m_resourceType = RESOURCE_SOUND;
 	}
 	ResourceSound::~ResourceSound()
 	{
-		if (soundData)
+		if (m_soundData)
 		{
-			soundData->release();
-			//delete soundData;
-			soundData = nullptr;
+			m_soundData->release();
+			//delete m_soundData;
+			m_soundData = nullptr;
 		}
 
-		soundData = nullptr;
+		m_soundData = nullptr;
 	}
 
 	void ResourceSound::LoadFile(FMOD::System* system)
 	{
-		FMOD_RESULT result = system->createSound(path.c_str(), FMOD_DEFAULT, nullptr, &soundData);
+		FMOD_RESULT result = system->createSound(m_path.c_str(), FMOD_DEFAULT, nullptr, &m_soundData);
 
 		if (result != FMOD_OK)
 		{
-			resourceLoaded = false;
+			m_resourceLoaded = false;
 			return;
 		}
 
-		resourceLoaded = true;
+		m_resourceLoaded = true;
 	}
 
 	FMOD::Sound* ResourceSound::Sound() const
 	{
-		return soundData;
+		return m_soundData;
 	}
 
 #pragma endregion
@@ -419,7 +419,7 @@ namespace NightSnack {
 	ResourceFont::ResourceFont(const std::string& inFilePath, const std::size_t& inMapKey)
 		: Resource(inFilePath, inMapKey)
 	{
-		resourceType = RESOURCE_FONT;
+		m_resourceType = RESOURCE_FONT;
 	}
 
 	ResourceFont::~ResourceFont()
@@ -429,7 +429,7 @@ namespace NightSnack {
 
 		fontFace = nullptr;
 
-		resourceLoaded = false;
+		m_resourceLoaded = false;
 	}
 
 	FT_Face ResourceFont::Font()
@@ -440,22 +440,22 @@ namespace NightSnack {
 	void ResourceFont::LoadFile(FT_Library& fontLib)
 	{
 		//Load font based on file path using system
-		FT_Error error = FT_New_Face(fontLib, path.c_str(), 0, &fontFace);
+		FT_Error error = FT_New_Face(fontLib, m_path.c_str(), 0, &fontFace);
 
 		if (error)
 		{
-			resourceLoaded = false;
+			m_resourceLoaded = false;
 
 #if RESOURCE_DEBUG_MODE
-			std::cout << path << " font type cannot be loaded!" << std::endl;
+			std::cout << m_path << " font type cannot be loaded!" << std::endl;
 			if (error == FT_Err_Unknown_File_Format)
 			{
-				std::cout << path << " font type is unnsupported and cannot be loaded!" << std::endl;
+				std::cout << m_path << " font type is unnsupported and cannot be loaded!" << std::endl;
 			}
 #endif
 		}
 		else
-			resourceLoaded = true;
+			m_resourceLoaded = true;
 	}
 #pragma endregion
 

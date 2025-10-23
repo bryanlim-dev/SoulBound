@@ -10,8 +10,12 @@
  * When unloading Resources, it flags the Resource with a bool within the that class and unloads them all within update.
  * Each Resource has its own functions to interact with it (get/load/unload/etc.)
  *
+ * This class must be able to be function inderpendently of system do not add additional dependcies onto it.
+ * This is as ErrorLog calls it outside of CoreEngine to save files, it must remain functuional by itself
+ *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
+ *************************
  ******************************************************************************/
 #pragma once
 #include <iostream>
@@ -19,9 +23,10 @@
 #include <map>
 #include <typeindex>
 #include <vector>
+#include <fmod.hpp>
 
 #include "ResourceManager/Resource.h"
-#include "../Singleton.h"
+#include "Core/ECS/ISystem.h"
 
 //PNG file formats, file bytes/critical chunks
 //https://en.wikipedia.org/wiki/PNG#File_format
@@ -52,7 +57,7 @@ namespace NightSnack {
 		LOAD_FAIL_BADPATH,	//Resource fails to load due to bad file bath
 	};
 
-	class ResourceManager : public Singleton<ResourceManager>
+	class ResourceManager : public ISystem
 	{
 	private:
 		unsigned int totalResourcesLoaded = 0;
@@ -67,27 +72,32 @@ namespace NightSnack {
 		//Get<Resource>
 		//Get<Resource>Class
 		//ResouceLoaded -> switch case
-		//DebugTestEverything
+		//DebugTestEverything - No longer in use
 
 		//Key, Value
 		//Maps of resources
-		std::map<std::size_t, ResourceImage*> resourceImageMap;
-		std::map<std::size_t, ResourceTxtFile*> resourceTxtFileMap;
-		std::map<std::size_t, ResourceJson*> resourceJsonMap;
-		std::map<std::size_t, ResourceSound*> resourceSoundMap;
-		std::map<std::size_t, ResourceFont*> resourceFontMap;
+		std::map<std::size_t, std::unique_ptr<ResourceImage>> m_resourceImageMap;
+		std::map<std::size_t, std::unique_ptr<ResourceTxtFile>> m_resourceTxtFileMap;
+		std::map<std::size_t, std::unique_ptr<ResourceJson>> m_resourceJsonMap;
+		std::map<std::size_t, std::unique_ptr<ResourceSound>> m_resourceSoundMap;
+		std::map<std::size_t, std::unique_ptr<ResourceFont>> m_resourceFontMap;
 
 		//List of resources to track to delete
-		std::vector<Resource*> deletionVec;
+		//pair of enum type <-> resource key
+		std::vector<std::pair<RESOURCE_TYPE, std::size_t>> m_deletionVec;
 
 		//Font system
-		FT_Library fontLibrary;
+		FT_Library m_fontLibrary;
 
+		std::shared_ptr<FMOD::System> m_fmodSystem; //Shared with audio system
+
+		Signature m_systemSignature{};
+
+	public:
 		/************************************************************************/
 		/*!
 		\brief
 		Default Constructor for Resource Manager
-		Hidden due to singleton pattern
 		*/
 		/************************************************************************/
 		ResourceManager();
@@ -96,14 +106,9 @@ namespace NightSnack {
 		/*!
 		\brief
 		Destructor for Resource Manager
-		Hidden due eto singleton pattern
 		*/
 		/************************************************************************/
 		~ResourceManager();
-		friend class Singleton<ResourceManager>;
-
-	public:
-
 
 		/************************************************************************/
 		/*!
@@ -121,9 +126,12 @@ namespace NightSnack {
 
 		\param[in] dt
 		delta time in float of time passed
+
+		\param[in] coord
+		Reference to Coordinator.
 		*/
 		/************************************************************************/
-		void Update(float dt);
+		void Update(float dt, Coordinator& Coord) override;
 
 
 #pragma region Image Functions
@@ -379,6 +387,16 @@ namespace NightSnack {
 #pragma region Sound Functions
 		/************************************************************************/
 		/*!
+		/brief Gets the sharhed_tr of fmod system
+
+		/return 
+		FMOD::System shared_ptr
+		*/
+		/************************************************************************/
+		std::shared_ptr<FMOD::System> FmodSystem();
+
+		/************************************************************************/
+		/*!
 		\brief
 		Load an sound based on the file path.
 
@@ -533,22 +551,29 @@ namespace NightSnack {
 		/************************************************************************/
 		bool ResourceLoaded(RESOURCE_TYPE type, size_t resourceKey);
 
-
 		/************************************************************************/
 		/*!
 		\brief
-		Destory the Resource Manager and cleans up data withtin
+		Returns name of system (overridden from ISystem)
+		Required by ISystem base class;
+
+		\return
+		Returns name of system (ResourceManager)
 		*/
 		/************************************************************************/
-		void DeleteRM();
-
+		std::string GetName() const override;
 		/************************************************************************/
 		/*!
 		\brief
-		Test all resources and prints result to std::cout
+		Returns signature of system (overridden from ISystem)
+		Required by ISystem base class;
+
+		\return
+		Returns name of system (ResourceManager)
 		*/
 		/************************************************************************/
-		void DebugTestEverything();
+		Signature GetSignature() const override;
+		//void DebugTestEverything(); 
 
 	private:
 
