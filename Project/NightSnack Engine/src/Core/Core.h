@@ -35,15 +35,11 @@ namespace NightSnack {
 		\brief
 		Registers all Components and Systems and initializes Coordinator.
 
-		\param windowWidth
-		Application window width.
-		\param windowHeight
-		Application window height.
 		\param windowTitle
-		Application window title.
+		Application config file path.
 		*/
 		/************************************************************************/
-		void Initialize(int windowWidth, int windowHeight, std::string&& windowTitle);
+		void Initialize(std::string&& configFilePath);
 
 		/************************************************************************/
 		/*!

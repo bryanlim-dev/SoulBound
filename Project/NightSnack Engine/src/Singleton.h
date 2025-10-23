@@ -23,12 +23,12 @@ namespace NightSnack {
 	public:
 		static T* GetInstance()
 		{
-			static T* instance; //The only instance allowed
+			static T* m_instance; //The only m_instance allowed
 
-			if (!instance)
-				instance = new T();
+			if (!m_instance)
+				m_instance = new T();
 
-			return instance;
+			return m_instance;
 		}
 
 	protected:

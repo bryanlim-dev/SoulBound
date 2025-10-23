@@ -25,12 +25,13 @@ namespace NightSnack {
 		auto shader = std::make_unique<Shader>("assets/shaders/vertex_shader.vert", "assets/shaders/fragment_shader.frag");
 		AddShader("default", std::move(shader));
 
+		std::shared_ptr<ResourceManager> rm = coord.GetSystem<ResourceManager>();
 		// Textures;
-		auto bananaTex = std::make_unique<Texture>("assets/banana.jpg");
+		auto bananaTex = std::make_unique<Texture>("assets/banana.jpg", rm);
 		AddTexture("banana", std::move(bananaTex));
-		auto targetTex = std::make_unique<Texture>("assets/image_UI_target.png");
+		auto targetTex = std::make_unique<Texture>("assets/image_UI_target.png", rm);
 		AddTexture("target", std::move(targetTex));
-		auto bgTex = std::make_unique<Texture>("assets/background.png");
+		auto bgTex = std::make_unique<Texture>("assets/background.png", rm);
 		AddTexture("background", std::move(bgTex));
 
 		// Meshes;
