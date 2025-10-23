@@ -16,20 +16,7 @@
 #include <cstdlib>
 #include <crtdbg.h>
 
-#include <iostream>
-
-#include "MathLibrary/Math.h"
-#include "Systems/Physics/Collision.h"
-
 #include "Core/Core.h"
-#include "Core/ECS/ISystem.h"
-#include "Factory/EntityFactory.h"
-#include "Systems/AllSystems.h"
-
-#include "ResourceManager/ResourceManager.h"
-#include "Systems/AudioSystem.h"
-
-#include <fmod.hpp>
 
 int main()
 {
