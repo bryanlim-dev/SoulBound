@@ -41,9 +41,13 @@ namespace NightSnack
                     ImGui::EndTabItem();
                 }
 
+                if (ImGui::BeginTabItem("Files"))
+                {
+                    DrawAllFilesTab();
+                    ImGui::EndTabItem();
+                }
                 ImGui::EndTabBar();
             }
-
             ImGui::End();
         }
 
@@ -65,7 +69,9 @@ namespace NightSnack
             float panelWidth = ImGui::GetContentRegionAvail().x;
             int columnCount = (int)(panelWidth / cellSize);
             if (columnCount < 1)
+            {
                 columnCount = 1;
+            }
 
             // Create columns to layout thumbnails in a grid
             ImGui::Columns(columnCount, 0, false);
@@ -75,12 +81,16 @@ namespace NightSnack
             {
                 // Skip folders; we only want image files
                 if (!entry.is_regular_file())
+                {
                     continue;
+                }
 
                 // Get file extension (e.g., ".png", ".jpg")
                 std::string ext = entry.path().extension().string();
                 if (!IsImageFile(ext))
+                {
                     continue; // Skip non-image files
+                }
 
                 // Convert full path to string
                 std::string pathStr = entry.path().string();
@@ -88,7 +98,9 @@ namespace NightSnack
                 // Load the texture (cached if already loaded)
                 ImTextureID texID = GetOrLoadTexture(pathStr);
                 if (!texID)
+                {
                     continue; // Skip if texture loading failed or not implemented yet
+                }
 
                 // Each image has its own ImGui ID to avoid conflicts
                 ImGui::PushID(pathStr.c_str());
@@ -116,6 +128,49 @@ namespace NightSnack
             // End the columns layout
             ImGui::Columns(1);
         }
+
+        /**********************************************************************
+         * Function: DrawAllFilesTab()
+         * Purpose : Displays *all* files (any type) inside the assets folder.
+         **********************************************************************/
+        void DrawAllFilesTab()
+        {
+            // Use a tree view to show folders & files
+            DrawDirectoryRecursive(m_assetsRoot);
+        }
+
+        /**********************************************************************
+         * Function: DrawDirectoryRecursive()
+         * Purpose : Recursively displays folders and their files as a tree.
+         **********************************************************************/
+        void DrawDirectoryRecursive(const fs::path& dir)
+        {
+            for (const auto& entry : fs::directory_iterator(dir))
+            {
+                const auto& path = entry.path();
+                std::string name = path.filename().string();
+
+                if (entry.is_directory())
+                {
+                    // Create a collapsible tree node for folders
+                    if (ImGui::TreeNode(name.c_str()))
+                    {
+                        DrawDirectoryRecursive(path); // recurse into subfolder
+                        ImGui::TreePop();
+                    }
+                }
+                else if (entry.is_regular_file())
+                {
+                    std::string ext = path.extension().string();
+                    if (IsImageFile(ext))
+                    {
+                        continue;
+                    }
+                    ImGui::BulletText("%s", name.c_str());
+                }
+            }
+        }
+
 
         /**********************************************************************
         * Function: IsImageFile()
