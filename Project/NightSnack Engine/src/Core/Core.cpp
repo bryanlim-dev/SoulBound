@@ -29,6 +29,30 @@ namespace NightSnack {
 	// CORE
 	// ------------------------------------------------------------------------------------------------
 
+	void CoreEngine::StartUp(std::string&& configFilePath) {
+		try {
+			Initialize(std::move(configFilePath));
+		}
+		catch (const NightSnack::IException ex)
+		{
+			NightSnack::CrashLogger::LogCrash(ex);
+			ex.print();
+			exit(EXIT_FAILURE);
+		}
+		catch (const std::exception& ex)
+		{
+			NightSnack::CrashLogger::LogCrash(NightSnack::IException(ex.what(), NightSnack::ExceptionType::General, __FILE__));
+			std::cerr << "[Exception][std::exception] " << ex.what() << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		catch (...)
+		{
+			NightSnack::CrashLogger::LogCrash(NightSnack::IException("Unknown exception", NightSnack::ExceptionType::General, __FILE__));
+			std::cerr << "[Exception][Unknown]" << std::endl;
+			exit(EXIT_FAILURE);
+		}
+	}
+
 	void CoreEngine::Initialize(std::string&& configFilePath) {
 
 		// Initialize ECS Coordinator and Managers;
@@ -59,13 +83,18 @@ namespace NightSnack {
 		AddSystem<ApplicationSystem>(winWidth, winHeight, std::move(windowTitle), m_coord, core_dispatcher);
 		AddSystem<InputSystem>(m_coord, core_dispatcher);
 		AddSystem<AudioSystem>(m_coord, core_dispatcher);
-		AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json");
+		AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json", "assets/GameData/DefaultLevel.json");
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
 		AddSystem<CollisionSystem>(m_coord, core_dispatcher);
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord);
+
+
+		for (Entity e : m_coord.GetLivingEntities()) {
+			m_coord.BufferEntitySignature(e);
+		}
 	}
 
 	// Function should be called upon termination of program;
@@ -78,9 +107,28 @@ namespace NightSnack {
 	}
 
 	void CoreEngine::Run() {
-
-		while (m_coord.GetSystem<ApplicationSystem>()->ShouldClose()) {
-			Update();
+		try {
+			while (!m_coord.GetSystem<ApplicationSystem>()->ShouldClose()) {
+				Update();
+			}
+		}
+		catch (const NightSnack::IException ex)
+		{
+			NightSnack::CrashLogger::LogCrash(ex);
+			ex.print();
+			exit(EXIT_FAILURE);
+		}
+		catch (const std::exception& ex)
+		{
+			NightSnack::CrashLogger::LogCrash(NightSnack::IException(ex.what(), NightSnack::ExceptionType::General, __FILE__));
+			std::cerr << "[Exception][std::exception] " << ex.what() << std::endl;
+			exit(EXIT_FAILURE);
+		}
+		catch (...)
+		{
+			NightSnack::CrashLogger::LogCrash(NightSnack::IException("Unknown exception", NightSnack::ExceptionType::General, __FILE__));
+			std::cerr << "[Exception][Unknown]" << std::endl;
+			exit(EXIT_FAILURE);
 		}
 	}
 

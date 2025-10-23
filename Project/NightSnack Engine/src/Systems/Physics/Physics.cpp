@@ -32,10 +32,10 @@ namespace NightSnack {
 				RigidBody& rig = m_coord.ModifyComponent<RigidBody>(e);
 
 				// compute velocities;
-				ApplyForces(rig);
-				Gravity(rig);
-				DragFriction(rig);
-				UpdateForce(force);
+				//ApplyForces(rig);
+				//Gravity(rig);
+				//DragFriction(rig);
+				//UpdateForce(force);
 
 				// resolve collisions;
 

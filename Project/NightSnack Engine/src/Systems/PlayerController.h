@@ -147,7 +147,7 @@ namespace NightSnack {
                     return e;
                 }
             }
-            std::cerr << "Error: No Player Entity found in scene!\n";
+            //std::cerr << "Error: No Player Entity found in scene!\n";
             return INVALID_ENTITY;
         }
 

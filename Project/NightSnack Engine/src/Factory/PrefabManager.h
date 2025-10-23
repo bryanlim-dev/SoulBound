@@ -47,6 +47,8 @@ namespace NightSnack {
 			RegisterComponentLoader<Color>("Color");
 			RegisterComponentLoader<Renderable>("Renderable");
 			RegisterComponentLoader<Camera>("Camera");
+
+			RegisterComponentLoader<PlayerController>("PlayerController");
 		}
 
 		// Helper template function which adds component with data loaded from json;
@@ -82,6 +84,8 @@ namespace NightSnack {
 
 			if (e == INVALID_ENTITY) { return e; }
 
+			m_coord.AddComponent<Transform>(e, Transform{});	// All entities should have a transform;
+
 			// Adds all components from prefab definition;
 			for (auto& [compName, compData] : archetypes[prefabName].items()) {
 				// Look for component loader with std::string component name;
@@ -89,6 +93,7 @@ namespace NightSnack {
 				// If found, use lambda function to insert data;
 				if (it != m_componentLoaders.end()) {
 					it->second(e, compData, m_coord);
+
 				}
 				else {
 					std::cerr << "Unknown component: " << compName << "\n";

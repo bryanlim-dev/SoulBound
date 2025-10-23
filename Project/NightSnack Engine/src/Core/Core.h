@@ -30,6 +30,9 @@ namespace NightSnack {
 	class CoreEngine {
 
 	public:
+
+		void StartUp(std::string&& configFilePath);
+
 		/************************************************************************/
 		/*!
 		\brief

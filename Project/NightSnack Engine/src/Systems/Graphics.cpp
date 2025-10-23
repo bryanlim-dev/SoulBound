@@ -24,7 +24,7 @@ namespace NightSnack {
 		auto shader = std::make_unique<Shader>("assets/shaders/vertex_shader.vert", "assets/shaders/fragment_shader.frag");
 		AddShader("default", std::move(shader));
 
-		std::shared_ptr<ResourceManager> rm = coord.GetSystem<ResourceManager>();
+		std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
 		// Textures;
 		auto bananaTex = std::make_unique<Texture>("assets/banana.jpg", rm);
 		AddTexture("banana", std::move(bananaTex));
@@ -76,15 +76,14 @@ namespace NightSnack {
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
 		for (Entity e : m_entities) {
+			
 			// Obtain entity components;
 			auto& ren = m_coord.GetComponent<Renderable>(e);
 			auto& pos = m_coord.GetComponent<Transform>(e).pos;
 			auto& rot = m_coord.GetComponent<Transform>(e).rot;
 			auto& scl = m_coord.GetComponent<Transform>(e).scale;
 
-			// @TODO: Event-Driven check whether e's renderable was changed...
-			// if (renderable was changed) { ResolveRenderable(e, renderable); }
-
+			if (ren.wasModified) { ResolveRenderable(e, ren); }
 			// Find entity's renderCache;
 			auto it = m_renderCache.find(e);
 			if (it == m_renderCache.end() || !it->second.valid) {

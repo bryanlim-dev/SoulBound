@@ -72,10 +72,9 @@ namespace NightSnack {
         }
     }
 
-    void AudioSystem::Update(float dt, Coordinator& coord)
+    void AudioSystem::Update(int steps)
     {
-        (void)dt;
-        (void)coord;
+        (void)steps;
 
         if (!m_fmodSystem.expired())
             m_fmodSystem.lock()->update();

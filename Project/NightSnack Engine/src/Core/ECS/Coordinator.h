@@ -179,6 +179,8 @@ namespace NightSnack {
 
 		size_t GetLivingEntityCount() const { return m_entityManager->GetLivingEntityCount(); }
 
+		void BufferEntitySignature(Entity e) { m_systemManager->EntitySignatureChanged(e, GetEntitySignature(e)); }
+
 		/************************************************************************/
 		/*!
 		\brief
@@ -250,6 +252,12 @@ namespace NightSnack {
 	// making sure to also inform the ComponentManager and SystemManager;
 	template <typename T>
 	void Coordinator::AddComponent(Entity e, T component) {
+
+		if (HasComponent<T>(e)) {
+			std::cerr << "Error: Entity " << e << "already has this component!!\n";
+			return;
+		}
+
 		// Add component
 		m_componentManager->AddComponent(e, component);
 
@@ -267,6 +275,12 @@ namespace NightSnack {
 
 	template <typename T>
 	void Coordinator::RemoveComponent(Entity e) {
+
+		if (!HasComponent<T>(e)) {
+			std::cerr << "Error: Entity " << e << "does not have this component, cannot remove!!\n";
+			return;
+		}
+
 		// Remove component;
 		m_componentManager->RemoveComponent(e);
 

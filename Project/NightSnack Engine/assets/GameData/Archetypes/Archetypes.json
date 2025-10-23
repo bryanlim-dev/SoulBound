@@ -1,5 +1,5 @@
 {
-  "Camera": {
+  "Cam": {
     "Camera": {
       "isMainCam": true,
       "zoom": 1.0,
@@ -11,8 +11,7 @@
   "Backdrop": {
     "Renderable": {
       "meshName": "square",
-      "materialName": "backgroundMat",
-      "renderLayer": ""
+      "materialName": "backgroundMat"
     }
   },
 
@@ -153,7 +152,7 @@
 
   "Player": {
     "Transform": {
-      "Position": { "x": -500.0, "y": 400.0, "z": -7.0 },
+      "Position": { "x": -500.0, "y": 400.0, "z": 1.0 },
       "Rotation": 0.0,
       "Scale": { "x": 30.0, "y": 30.0 }
     },

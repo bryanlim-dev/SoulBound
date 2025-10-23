@@ -129,10 +129,12 @@ namespace NightSnack {
         j.at("y").get_to(s.y);
     }
 
-    inline void from_json(const json& j, Transform& t) {
-        j.at("Position").get_to(t.pos);
-        j.at("Rotation").get_to(t.rot);
-        j.at("Scale").get_to(t.scale);
+    inline void from_json(json const& j, Transform& t) {
+        auto pos = j.at("Position");
+        auto scl = j.at("Scale");
+        t.pos = { pos.value("x", 0.0f), pos.value("y", 0.0f), pos.value("z", 0.0f) };
+        t.rot = j.value("Rotation", 0.0f);
+        t.scale = { scl.value("x", 1.0f), scl.value("y", 1.0f) };
     }
     
     inline void from_json(const json& j, PlayerController& p) {

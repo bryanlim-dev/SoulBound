@@ -15,6 +15,21 @@ namespace NightSnack {
 
 	// Should layers contain systems themselves? additionally to entities...
 
+	class BackgroundLayer : public Layer {
+
+	};
+
+
+
+
+
+
+
+
+
+
+
+
 	enum class LayerType : std::uint8_t {
 		_ENGINE,
 		BACKGROUND,
@@ -89,9 +104,11 @@ namespace NightSnack {
 		size_t m_layerCount{};
 	};
 
+	class GameLayer : public Layer {
 
+	};
 
-	class CoreLayer : public Layer {
+	class EngineLayer : public Layer {
 
 	};
 
