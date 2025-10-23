@@ -13,10 +13,17 @@
 
 #pragma once
 
-#include "./ECS/Coordinator.h"
-#include "./ECS/Component.h"
-#include "./ECS/ISystem.h"
-#include "./Systems/Input.h"
+#include "Core/ECS/Coordinator.h"
+#include "Systems/Application/Input.h"
+
+struct PlayerFlags {
+    bool movingLeft = false;
+    bool movingRight = false;
+    bool jumpRequested = false;
+
+    bool playerChange = false;
+    // add more flags if needed
+};
 
 namespace NightSnack {
 
@@ -52,25 +59,25 @@ namespace NightSnack {
                     case InputEvent::InputAction::PlayerMoveLeft:
                         if (event.pressed == InputEvent::InputActionState::Pressed ||
                             event.pressed == InputEvent::InputActionState::Repeat) {
-                            movingLeft = true;
+                            m_flags.movingLeft = true;
                         }
                         else if (event.pressed == InputEvent::InputActionState::Released) {
-                            movingLeft = false;
+                            m_flags.movingLeft = false;
                         }
                         break;
                     case InputEvent::InputAction::PlayerMoveRight:
                         if (event.pressed == InputEvent::InputActionState::Pressed ||
                             event.pressed == InputEvent::InputActionState::Repeat) {
-                            movingRight = true;
+                            m_flags.movingRight = true;
                         }
                         else if (event.pressed == InputEvent::InputActionState::Released) {
-                            movingRight = false;
+                            m_flags.movingRight = false;
                         }
                         break;
                     case InputEvent::InputAction::PlayerJump:
                         if (event.pressed == InputEvent::InputActionState::Pressed ||
                             event.pressed == InputEvent::InputActionState::Repeat) {
-                            jumpRequested = true;
+                            m_flags.jumpRequested = true;
                         }
                         break;
                     }
@@ -97,17 +104,17 @@ namespace NightSnack {
             PlayerController const& pcont = coord.GetComponent<PlayerController>(m_player);
             Vec2& vel = coord.ModifyComponent<RigidBody>(m_player).vel;
 
-            if ((movingRight && !movingLeft) && !coord.GetComponent<Collider>(m_player).colliding) {
+            if ((m_flags.movingRight && !m_flags.movingLeft) && !coord.GetComponent<Collider>(m_player).colliding) {
                 vel.x = pcont.moveSpeed;
             }
-            else if ((movingLeft && !movingRight) && !coord.GetComponent<Collider>(m_player).colliding) {
+            else if ((m_flags.movingLeft && !m_flags.movingRight) && !coord.GetComponent<Collider>(m_player).colliding) {
                 vel.x = -pcont.moveSpeed;
             }
-            if (jumpRequested && coord.GetComponent<Collider>(m_player).isGrounded) {
+            if (m_flags.jumpRequested && coord.GetComponent<Collider>(m_player).isGrounded) {
                 vel.y = pcont.jumpSpeed;
                 coord.ModifyComponent<Collider>(m_player).isGrounded = false;
             }
-            jumpRequested = false;
+            m_flags.jumpRequested = false;
         }
 
         /************************************************************************/
@@ -144,6 +151,10 @@ namespace NightSnack {
             return INVALID_ENTITY;
         }
 
+        void ResetFlags() {
+            m_flags = PlayerFlags{};
+        }
+
         // Required by ISystem base class.
         std::string GetName() const override { return "PlayerController"; }
         Signature GetSignature() const override { return m_systemSignature; }
@@ -153,11 +164,9 @@ namespace NightSnack {
         EventDispatcher* m_dispatcher = nullptr;
 
         Entity m_player;
-        bool m_playerChange{ false };
 
-        bool movingLeft = false;
-        bool movingRight = false;
-        bool jumpRequested = false;
+        // Accumulates states
+        PlayerFlags m_flags{};
     };
 
-}   // NightSnack
+}   // namespace NightSnack

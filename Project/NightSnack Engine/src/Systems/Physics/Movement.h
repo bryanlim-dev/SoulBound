@@ -18,11 +18,8 @@
 #ifndef MOVEMENT_HPP
 #define MOVEMENT_HPP
 
-#include "ECS/Entity.h"
-#include "ECS/ISystem.h"
-#include "ECS/Coordinator.h"
-#include "ECS/Component.h"
-#include "./Systems/Physics.h"
+#include "Core/ECS/Coordinator.h"
+#include "Physics.h"
 
 namespace NightSnack {
 

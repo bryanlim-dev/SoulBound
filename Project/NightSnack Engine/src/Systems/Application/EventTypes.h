@@ -44,6 +44,7 @@ namespace NightSnack {
             CreateBananaCircle, // 3 -> texture entity;
             DoubleEntities,     // Space
             HalfEntities,       // Backspace
+            CheckEntityNum,
 
             // Player movement
             PlayerMoveLeft,     // Player controller with Arrow keys;

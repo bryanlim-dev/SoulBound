@@ -19,10 +19,10 @@
 #include <iostream>
 
 #include "MathLibrary/Math.h"
-#include "Systems/Collision.h"
+#include "Systems/Physics/Collision.h"
 
-#include "Core.h"
-#include "ECS/ISystem.h"
+#include "Core/Core.h"
+#include "Core/ECS/ISystem.h"
 #include "Factory/EntityFactory.h"
 #include "Systems/AllSystems.h"
 
@@ -44,7 +44,7 @@ int main()
 		CoreEngine core;
 
 #ifdef _DEBUG
-		(void)FMOD_ErrorString(FMOD_OK);
+		//(void)FMOD_ErrorString(FMOD_OK);
 #endif
 
 		// Will register all components;
@@ -52,6 +52,11 @@ int main()
 		core.Initialize("assets/Data/WindowConfig.json");
 		Coordinator& coord = core.GetCoord();
 
+		auto audioSystem = coord.GetSystem<AudioSystem>();
+
+		//audioSystem->PlaySound("click");
+		//audioSystem->PlaySound("bgm");
+		/*
 		// Get singletons
 		NightSnack::AudioSystem* audioSystem = NightSnack::AudioSystem::GetInstance();
 
@@ -79,6 +84,7 @@ int main()
 		// Play sounds
 		audioSystem->PlaySound(sfxKey);   // play button click once
 		audioSystem->PlaySound(musicKey); // play looping background music
+		*/
 
 		// ECS test --------------------------------------------------------------------------------------
 		// -----------------------------------------------------------------------------------------------
@@ -168,7 +174,7 @@ int main()
 		Renderable r4{ "circle", "ColorMat", RenderLayer::DEFAULT };
 		coord.AddComponent<Renderable>(gravityBall, r4);
 		coord.AddComponent<Color>(gravityBall, Color{ 0.2f, 0.2f, 0.6f, 1.f });
-		coord.AddComponent<PlayerController>(gravityBall, PlayerController{300.f, 600.f});
+		coord.AddComponent<PlayerController>(gravityBall, PlayerController{ 300.f, 600.f });
 		// -------------------------------
 
 		// Right side wall ---------------
@@ -179,7 +185,7 @@ int main()
 		coord.AddComponent<Force>(RightWall, Force{ 0.f,0.f });
 		Collider c4{ ShapeType::AABB, ColliderType::Solid, true, 100.f, 800.f, 0.f, true };
 		coord.AddComponent<Collider>(RightWall, c4);
-		Renderable r7{ "square", "ColorMat", RenderLayer::DEFAULT};
+		Renderable r7{ "square", "ColorMat", RenderLayer::DEFAULT };
 		coord.AddComponent<Renderable>(RightWall, r7);
 		coord.AddComponent<Color>(RightWall, Color{ 1.f, 1.f, 0.f, 1.f });
 		// -------------------------------
@@ -210,7 +216,7 @@ int main()
 		while (!core.ShouldClose()) {
 			core.Update();
 			// Update AudioSystem every frame
-			audioSystem->Update();
+			//audioSystem->Update();
 
 			// Temporary test code for music sound
 			// To be moved once audio system has been fully integrated into the ECS
@@ -230,7 +236,7 @@ int main()
 		//rm->DeleteRM();
 		//fmodSystem->close();
 		// Clean up when game exits
-		NightSnack::AudioSystem::DestroyInstance();
+		//NightSnack::AudioSystem::DestroyInstance();
 
 		return 0;
 	}
@@ -238,21 +244,19 @@ int main()
 	{
 		NightSnack::CrashLogger::LogCrash(ex);
 		ex.print();
-		NightSnack::AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}
 	catch (const std::exception& ex)
 	{
 		NightSnack::CrashLogger::LogCrash(NightSnack::IException(ex.what(), NightSnack::ExceptionType::General, __FILE__));
 		std::cerr << "[Exception][std::exception] " << ex.what() << std::endl;
-		NightSnack::AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}
 	catch (...)
 	{
 		NightSnack::CrashLogger::LogCrash(NightSnack::IException("Unknown exception", NightSnack::ExceptionType::General, __FILE__));
 		std::cerr << "[Exception][Unknown]" << std::endl;
-		NightSnack::AudioSystem::DestroyInstance();
 		return EXIT_FAILURE;
 	}
+
 }

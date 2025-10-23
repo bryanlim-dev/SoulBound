@@ -14,12 +14,12 @@
 #ifndef COORD_HPP
 #define COORD_HPP
 
-#include "ECS/Entity.h"
-#include "ECS/Component.h"
-#include "ECS/EntityManager.h"
-#include "ECS/ComponentManager.h"
-#include "ECS/ISystem.h"
-#include "./Systems/Application.h"
+#include "Entity.h"
+#include "Component.h"
+#include "EntityManager.h"
+#include "ComponentManager.h"
+#include "ISystem.h"
+#include "Systems/Application/Application.h"
 
 namespace NightSnack {
 
@@ -176,6 +176,8 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		std::set<Entity> const& GetLivingEntities() const { return m_entityManager->GetLivingEntities(); }
+
+		size_t GetLivingEntityCount() const { return m_entityManager->GetLivingEntityCount(); }
 
 		/************************************************************************/
 		/*!

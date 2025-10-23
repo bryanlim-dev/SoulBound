@@ -18,11 +18,8 @@
 
 #include <iostream>
 
-#include "ECS/Entity.h"
-#include "ECS/ISystem.h"
-#include "ECS/Coordinator.h"
-#include "ECS/Component.h"
-#include "Systems/IEvent.h"
+#include "Core/ECS/Coordinator.h"
+#include "Systems/Application/IEvent.h"
 
 #include "Graphics/Mesh.h"
 #include "Graphics/Material.h"

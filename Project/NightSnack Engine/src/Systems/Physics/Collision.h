@@ -15,11 +15,11 @@
 
 #ifndef COLLISION_HPP
 #define COLLISION_HPP
-#include "ECS/Entity.h"
-#include "ECS/ISystem.h"
-#include "ECS/Coordinator.h"
-#include "ECS/Component.h"
-#include "Systems/IEvent.h"
+#include "Core/ECS/Entity.h"
+#include "Core/ECS/ISystem.h"
+#include "Core/ECS/Coordinator.h"
+#include "Core/ECS/Component.h"
+#include "Systems/Application/IEvent.h"
 #include <iostream>
 
 namespace NightSnack {

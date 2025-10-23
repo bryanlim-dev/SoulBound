@@ -12,7 +12,7 @@
 
 #include <iostream>
 
-#include "ECS/EntityManager.h"
+#include "EntityManager.h"
 
 namespace NightSnack {
 
@@ -53,6 +53,10 @@ namespace NightSnack {
 	void EntityManager::DestroyEntity(Entity e) {
 
 		// Validate entity ID
+		if (e == INVALID_ENTITY) { 
+			std::cerr << "Error: Trying to destroy Invalid Entity.\n";
+			return; 
+		}
 		if (e >= MAX_ENTITIES) {
 			std::cerr << "Error: Invalid entity ID: " << e << ", unable to destroy Entity.\n";
 			return;

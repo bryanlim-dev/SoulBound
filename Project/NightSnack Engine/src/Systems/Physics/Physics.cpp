@@ -12,8 +12,8 @@
  * All rights reserved.
  ******************************************************************************/
 
-#include "Systems/Physics.h"
-#include "Systems/Input.h"
+#include "Systems/Physics/Physics.h"
+#include "Systems/Application/Input.h"
 
 namespace NightSnack {
 

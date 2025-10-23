@@ -55,6 +55,7 @@ namespace NightSnack {
 
 		AddSystem<ApplicationSystem>(winWidth, winHeight, std::move(windowTitle), m_coord, core_dispatcher);
 		AddSystem<InputSystem>(m_coord, core_dispatcher);
+		AddSystem<AudioSystem>(m_coord, core_dispatcher);
 		AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json");
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
@@ -104,12 +105,11 @@ namespace NightSnack {
 
 			m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(System->GetName());
 		}
-		m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<EntityFactory>()->GetName());
-		for (Entity e : m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed) {
-			m_coord.DestroyEntity(e);
-		}
+		//m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<EntityFactory>()->GetName());
+		// Destroy all entities scheduled to be removed;
+		for (Entity e : m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed) { m_coord.DestroyEntity(e); }
 		m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed.clear();
-		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(m_coord.GetSystem<EntityFactory>()->GetName());
+		//m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(m_coord.GetSystem<EntityFactory>()->GetName());
 
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(102.f); // Cap frame rate to 102 FPS;

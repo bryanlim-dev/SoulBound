@@ -16,7 +16,7 @@
  ******************************************************************************/
 
 #include "Input.h"
-#include "Graphics.h"
+#include "Systems/Graphics.h"
 
 // Define static variables
 //std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysDown;
@@ -57,12 +57,15 @@ namespace NightSnack {
 		m_mouseWorldPosX = (-Wvp / 2.f) + m_mousePosX + coord.GetComponent<Transform>(cam).pos.x;
 		m_mouseWorldPosY = (Hvp / 2.f) - m_mousePosY + coord.GetComponent<Transform>(cam).pos.y;
 
-		// Compute mouse delta - the relative movement since the last frame
-		m_deltaWorldPosX = m_mouseWorldPosX - m_prevMouseWorldPosX;
-		m_deltaWorldPosY = m_mouseWorldPosY - m_prevMouseWorldPosY;
-		m_prevMouseWorldPosX = m_mousePosX;
-		m_prevMouseWorldPosY = m_mousePosY;
-	}
+	// Compute mouse delta - the relative movement since the last frame
+	m_deltaWorldPosX = m_mouseWorldPosX - m_prevMouseWorldPosX;
+	m_deltaWorldPosY = m_mouseWorldPosY - m_prevMouseWorldPosY;
+	m_prevMouseWorldPosX = m_mousePosX;
+	m_prevMouseWorldPosY = m_mousePosY;
+
+	// Process all queued events after input update and before the other systems
+	m_dispatcher->ProcessEvents();
+}
 
 	//void InputSystem::ResetInputStates() {
 	//	// Reset states back to false
@@ -115,6 +118,7 @@ namespace NightSnack {
 		case GLFW_KEY_3: return InputEvent::InputAction::CreateBananaCircle;
 		case GLFW_KEY_SPACE: return InputEvent::InputAction::DoubleEntities;
 		case GLFW_KEY_BACKSPACE: return InputEvent::InputAction::HalfEntities;
+		case GLFW_KEY_L: return InputEvent::InputAction::CheckEntityNum;
 
 			// Player movement
 		case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
@@ -163,11 +167,11 @@ namespace NightSnack {
 
 		InputEvent::InputActionState mappedActionState = TranslateGLFWKeyStateToAction(action);
 
-		// Dispatch InputEvent when key is pressed
-		if (m_dispatcher)
-		{
-			m_dispatcher->Dispatch(InputEvent(mappedAction, mappedActionState));
-		}
+	// Dispatch InputEvent when key is pressed
+	if (m_dispatcher)
+	{
+		m_dispatcher->QueueEvent(std::make_unique<InputEvent>(mappedAction, mappedActionState));
+	}
 
 		// Update the modifier state
 		//m_currentModifiers = mods;
@@ -196,11 +200,11 @@ namespace NightSnack {
 
 		InputEvent::InputActionState mappedActionState = TranslateGLFWKeyStateToAction(action);
 
-		// Dispatch InputEvent when key is pressed
-		if (m_dispatcher)
-		{
-			m_dispatcher->Dispatch(InputEvent(mappedAction, mappedActionState));
-		}
+	// Dispatch InputEvent when key is pressed
+	if (m_dispatcher)
+	{
+		m_dispatcher->QueueEvent(std::make_unique<InputEvent>(mappedAction, mappedActionState));
+	}
 
 		// Update the modifier state
 		//m_currentModifiers = mods;

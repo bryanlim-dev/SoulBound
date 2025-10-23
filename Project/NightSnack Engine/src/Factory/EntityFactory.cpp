@@ -25,6 +25,7 @@ namespace NightSnack {
 
 	Entity EntityFactory::Create(std::string const& name) {
 		Entity e = m_prefabManager.CreateFromPrefab(name, m_archetypes);
+		if (e == INVALID_ENTITY) { return e; }
 
 		// Make spawned entity be at mouse position;
 		Transform trans{};
@@ -39,6 +40,7 @@ namespace NightSnack {
 	// For creating entities at specific locations, scaling etc...
 	Entity EntityFactory::Create(std::string const& name, Transform trans) {
 		Entity e = m_prefabManager.CreateFromPrefab(name, m_archetypes);
+		if (e == INVALID_ENTITY) { return e; }
 
 		m_coord.ModifyComponent<Transform>(e) = trans;
 
@@ -50,6 +52,7 @@ namespace NightSnack {
 		std::string name = entityToPrefab[e];
 
 		Entity clone = m_prefabManager.CreateFromPrefab(name, m_archetypes);
+		if (clone == INVALID_ENTITY) { return clone; }
 
 		m_coord.ModifyComponent<Transform>(e) = trans;
 
@@ -81,7 +84,7 @@ namespace NightSnack {
 	}
 
 	void EntityFactory::Remove(Entity e) {
-		m_toBeDestroyed.push_back(e);
+		m_toBeDestroyed.insert(e);
 	}
 
 	void EntityFactory::HalfEntities() {
