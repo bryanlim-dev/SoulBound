@@ -22,6 +22,7 @@
 #include "InspectorPanel.h"
 #include "ScenePanel.h"
 #include "OptionsPanel.h"
+#include "AssetsPanel.h"
 
 #endif // ALLPANEL_HPP
 
