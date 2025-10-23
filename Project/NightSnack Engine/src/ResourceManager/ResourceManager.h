@@ -76,14 +76,15 @@ namespace NightSnack {
 
 		//Key, Value
 		//Maps of resources
-		std::map<std::size_t, ResourceImage*> resourceImageMap;
-		std::map<std::size_t, ResourceTxtFile*> resourceTxtFileMap;
-		std::map<std::size_t, ResourceJson*> resourceJsonMap;
-		std::map<std::size_t, ResourceSound*> resourceSoundMap;
-		std::map<std::size_t, ResourceFont*> resourceFontMap;
+		std::map<std::size_t, std::unique_ptr<ResourceImage>> resourceImageMap;
+		std::map<std::size_t, std::unique_ptr<ResourceTxtFile>> resourceTxtFileMap;
+		std::map<std::size_t, std::unique_ptr<ResourceJson>> resourceJsonMap;
+		std::map<std::size_t, std::unique_ptr<ResourceSound>> resourceSoundMap;
+		std::map<std::size_t, std::unique_ptr<ResourceFont>> resourceFontMap;
 
 		//List of resources to track to delete
-		std::vector<Resource*> deletionVec;
+		//pair of enum type <-> resource key
+		std::vector<std::pair<RESOURCE_TYPE, std::size_t>> deletionVec;
 
 		//Font system
 		FT_Library fontLibrary;

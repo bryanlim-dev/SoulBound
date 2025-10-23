@@ -30,51 +30,57 @@ namespace NightSnack {
 
 	ResourceManager::~ResourceManager()
 	{
-		//Delete all resources
+		//Delete all resources 
 
 		//Loop through entire image map AND DELETE IT MUHAHA
-		std::map<std::size_t, ResourceImage*>::iterator itImg;
-		for (itImg = resourceImageMap.begin(); itImg != resourceImageMap.end(); itImg++)
-		{
-			delete itImg->second;
-		}
+		//std::map<std::size_t, ResourceImage*>::iterator itImg;
+		//for (itImg = resourceImageMap.begin(); itImg != resourceImageMap.end(); itImg++)
+		//{
+		//	delete itImg->second;
+		//}
+		//resourceImageMap.clear();
+
+		////Delete txt map
+		//std::map<std::size_t, ResourceTxtFile*>::iterator itTxt;
+		//for (itTxt = resourceTxtFileMap.begin(); itTxt != resourceTxtFileMap.end(); itTxt++)
+		//{
+		//	delete itTxt->second;
+		//}
+		//resourceTxtFileMap.clear();
+
+		////Delete json map
+		//std::map<std::size_t, ResourceJson*>::iterator itJson;
+		//for (itJson = resourceJsonMap.begin(); itJson != resourceJsonMap.end(); itJson++)
+		//{
+		//	delete itJson->second;
+		//}
+		//resourceJsonMap.clear();
+
+		////Delete Sound map
+		//std::map<std::size_t, ResourceSound*>::iterator itSound;
+		//for (itSound = resourceSoundMap.begin(); itSound != resourceSoundMap.end(); itSound++)
+		//{
+		//	delete itSound->second;
+		//}
+		//resourceSoundMap.clear();
+
+		////Delete Font map
+		//std::map<std::size_t, ResourceFont*>::iterator itFont;
+		//for (itFont = resourceFontMap.begin(); itFont != resourceFontMap.end(); itFont++)
+		//{
+		//	delete itFont->second;
+		//}
+		//resourceFontMap.clear();
+		
 		resourceImageMap.clear();
-
-		//Delete txt map
-		std::map<std::size_t, ResourceTxtFile*>::iterator itTxt;
-		for (itTxt = resourceTxtFileMap.begin(); itTxt != resourceTxtFileMap.end(); itTxt++)
-		{
-			delete itTxt->second;
-		}
 		resourceTxtFileMap.clear();
-
-		//Delete json map
-		std::map<std::size_t, ResourceJson*>::iterator itJson;
-		for (itJson = resourceJsonMap.begin(); itJson != resourceJsonMap.end(); itJson++)
-		{
-			delete itJson->second;
-		}
 		resourceJsonMap.clear();
-
-		//Delete Sound map
-		std::map<std::size_t, ResourceSound*>::iterator itSound;
-		for (itSound = resourceSoundMap.begin(); itSound != resourceSoundMap.end(); itSound++)
-		{
-			delete itSound->second;
-		}
 		resourceSoundMap.clear();
-
-		//Delete Font map
-		std::map<std::size_t, ResourceFont*>::iterator itFont;
-		for (itFont = resourceFontMap.begin(); itFont != resourceFontMap.end(); itFont++)
-		{
-			delete itFont->second;
-		}
 		resourceFontMap.clear();
 
 		deletionVec.clear();
 
-		//fModSystem deletion code is a lamba function created	 within Init();
+		//fModSystem deletion code is a lamba function created within Init();
 
 	}
 
@@ -158,16 +164,13 @@ namespace NightSnack {
 		}
 
 		//This loads the image via the ResourceImage class
-		ResourceImage* newResource = new ResourceImage(filePath, imageKey);
+		std::unique_ptr<ResourceImage> newResource = std::unique_ptr<ResourceImage>(new ResourceImage(filePath, imageKey));
 		newResource->LoadFile();
 
 		//This checks if it is loaded or now
 		if (!newResource->Loaded())
 		{
 			std::cout << "Failed to load image" << std::endl;
-
-			if (newResource)
-				delete newResource;
 
 			return LOAD_FAIL_BADPATH;
 		}
@@ -176,7 +179,7 @@ namespace NightSnack {
 			std::cout << "Loaded image " << newResource->Path() << std::endl;
 
 			//Insert the loaded image into the map only if managed to load
-			resourceImageMap.insert({ imageKey, newResource });
+			resourceImageMap.insert({imageKey, std::move(newResource) });
 			totalResourcesLoaded++;
 			return LOAD_SUCCESS;
 		}
@@ -196,9 +199,9 @@ namespace NightSnack {
 
 		//Change this to a queue system
 		//Check if it exists witin the vec alr tho
-		auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceImageMap[imageKey]);
+		auto it = std::find(deletionVec.begin(), deletionVec.end(), std::make_pair(resourceImageMap[imageKey]->FileType(), imageKey));
 		if (it == deletionVec.end())
-			deletionVec.push_back(resourceImageMap[imageKey]);
+			deletionVec.push_back({ resourceImageMap[imageKey]->FileType(), resourceImageMap[imageKey]->MapKey() });
 
 		//delete resourceImageMap[filePath];
 		//resourceImageMap[filePath] = nullptr;
@@ -232,7 +235,7 @@ namespace NightSnack {
 		//Does the resource exist?
 		if (resourceImageMap.find(imageKey) != resourceImageMap.end())
 		{
-			return resourceImageMap[imageKey];
+			return resourceImageMap[imageKey].get();
 		}
 		//Try to load the image if not loaded yet
 		//else if (LoadImage(filePath))
@@ -274,16 +277,13 @@ namespace NightSnack {
 		}
 
 		//This loads the image via the ResourceImage class
-		ResourceTxtFile* newResource = new ResourceTxtFile(filePath, txtKey);
+		std::unique_ptr<ResourceTxtFile> newResource = std::unique_ptr<ResourceTxtFile>(new ResourceTxtFile(filePath, txtKey));
 		newResource->LoadFile();
 
 		//This checks if it is loaded or now
 		if (!newResource->Loaded())
 		{
 			std::cout << "Failed to load txt" << std::endl;
-
-			if (newResource)
-				delete newResource;
 
 			return LOAD_FAIL_BADPATH;
 		}
@@ -292,7 +292,7 @@ namespace NightSnack {
 			std::cout << "Loaded txt " << newResource->Path() << std::endl;
 
 			//Insert the loaded image into the map only if managed to load
-			resourceTxtFileMap.insert({ txtKey, newResource });
+			resourceTxtFileMap.insert({ txtKey, std::move(newResource) });
 			totalResourcesLoaded++;
 			return LOAD_SUCCESS;
 		}
@@ -313,9 +313,9 @@ namespace NightSnack {
 
 		//Change this to a queue system
 		//Check if it exists witin the vec alr tho
-		auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceTxtFileMap[txtKey]);
+		auto it = std::find(deletionVec.begin(), deletionVec.end(), std::make_pair(resourceTxtFileMap[txtKey]->FileType(), txtKey));
 		if (it == deletionVec.end())
-			deletionVec.push_back(resourceTxtFileMap[txtKey]);
+			deletionVec.push_back({ resourceTxtFileMap[txtKey]->FileType(), resourceTxtFileMap[txtKey]->MapKey() });
 		//deletionVec.push_back(resourceTxtFileMap[txtKey]);
 	}
 
@@ -330,7 +330,7 @@ namespace NightSnack {
 		//Does the resource exist?
 		if (resourceTxtFileMap.find(txtKey) != resourceTxtFileMap.end())
 		{
-			return resourceTxtFileMap[txtKey];
+			return resourceTxtFileMap[txtKey].get();
 		}
 
 		return nullptr;
@@ -367,16 +367,13 @@ namespace NightSnack {
 		}
 
 		//This loads the image via the ResourceImage class
-		ResourceJson* newResource = new ResourceJson(filePath, jsonKey);
+		std::unique_ptr<ResourceJson> newResource = std::unique_ptr<ResourceJson>(new ResourceJson(filePath, jsonKey));
 		newResource->LoadFile();
 
 		//This checks if it is loaded or now
 		if (!newResource->Loaded())
 		{
 			std::cout << "Failed to load json" << std::endl;
-
-			if (newResource)
-				delete newResource;
 
 			return LOAD_FAIL_BADPATH;
 		}
@@ -385,7 +382,7 @@ namespace NightSnack {
 			std::cout << "Loaded json " << newResource->Path() << std::endl;
 
 			//Insert the loaded image into the map only if managed to load
-			resourceJsonMap.insert({ jsonKey, newResource });
+			resourceJsonMap.insert({ jsonKey, std::move(newResource) });
 			totalResourcesLoaded++;
 			return LOAD_SUCCESS;
 		}
@@ -405,9 +402,10 @@ namespace NightSnack {
 
 		//Change this to a queue system
 		//Check if it exists witin the vec alr tho
-		auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceJsonMap[jsonKey]);
+		auto it = std::find(deletionVec.begin(), deletionVec.end(), std::make_pair(resourceJsonMap[jsonKey]->FileType(), jsonKey));
 		if (it == deletionVec.end())
-			deletionVec.push_back(resourceJsonMap[jsonKey]);
+			deletionVec.push_back({ resourceJsonMap[jsonKey]->FileType(), resourceJsonMap[jsonKey]->MapKey() });
+
 	}
 	std::unordered_map<std::string, Archtype> ResourceManager::GetJson(const std::size_t jsonKey)
 	{
@@ -426,7 +424,7 @@ namespace NightSnack {
 		//Does the resource exist?
 		if (resourceJsonMap.find(jsonKey) != resourceJsonMap.end())
 		{
-			return resourceJsonMap[jsonKey];
+			return resourceJsonMap[jsonKey].get();
 		}
 
 		return nullptr;
@@ -470,16 +468,13 @@ namespace NightSnack {
 		}
 
 		//This loads the image via the ResourceImage class
-		ResourceSound* newResource = new ResourceSound(filePath, soundKey);
+		std::unique_ptr<ResourceSound> newResource = std::unique_ptr<ResourceSound>(new ResourceSound(filePath, soundKey));
 		newResource->LoadFile(system);
 
 		//This checks if it is loaded or now
 		if (!newResource->Loaded())
 		{
 			std::cout << "Failed to load sound" << std::endl;
-
-			if (newResource)
-				delete newResource;
 
 			return LOAD_FAIL_BADPATH;
 		}
@@ -488,7 +483,7 @@ namespace NightSnack {
 			std::cout << "Loaded sound " << newResource->Path() << std::endl;
 
 			//Insert the loaded image into the map only if managed to load
-			resourceSoundMap.insert({ soundKey, newResource });
+			resourceSoundMap.insert({ soundKey, std::move(newResource) });
 			totalResourcesLoaded++;
 			return LOAD_SUCCESS;
 		}
@@ -509,9 +504,10 @@ namespace NightSnack {
 
 		//Change this to a queue system
 		//Check if it exists witin the vec alr tho
-		auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceSoundMap[soundKey]);
+		auto it = std::find(deletionVec.begin(), deletionVec.end(), std::make_pair(resourceSoundMap[soundKey]->FileType(), soundKey));
 		if (it == deletionVec.end())
-			deletionVec.push_back(resourceSoundMap[soundKey]);
+			deletionVec.push_back({ resourceSoundMap[soundKey]->FileType(), resourceSoundMap[soundKey]->MapKey() });
+
 		//deletionVec.push_back(resourceSoundMap[txtKey]);
 	}
 
@@ -526,7 +522,7 @@ namespace NightSnack {
 		//Does the resource exist?
 		if (resourceSoundMap.find(soundKey) != resourceSoundMap.end())
 		{
-			return resourceSoundMap[soundKey];
+			return resourceSoundMap[soundKey].get();
 		}
 
 		return nullptr;
@@ -563,16 +559,13 @@ namespace NightSnack {
 		}
 
 		//This loads the image via the ResourceImage class
-		ResourceFont* newResource = new ResourceFont(filePath, fontKey);
+		std::unique_ptr<ResourceFont> newResource = std::unique_ptr<ResourceFont>(new ResourceFont(filePath, fontKey));
 		newResource->LoadFile(fontLibrary);
 
 		//This checks if it is loaded or now
 		if (!newResource->Loaded())
 		{
 			std::cout << "Failed to load sound" << std::endl;
-
-			if (newResource)
-				delete newResource;
 
 			return LOAD_FAIL_BADPATH;
 		}
@@ -581,7 +574,7 @@ namespace NightSnack {
 			std::cout << "Loaded sound " << newResource->Path() << std::endl;
 
 			//Insert the loaded image into the map only if managed to load
-			resourceFontMap.insert({ fontKey, newResource });
+			resourceFontMap.insert({ fontKey, std::move(newResource) });
 			totalResourcesLoaded++;
 			return LOAD_SUCCESS;
 		}
@@ -602,9 +595,10 @@ namespace NightSnack {
 
 		//Change this to a queue system
 		//Check if it exists witin the vec alr tho
-		auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceFontMap[fontKey]);
+		auto it = std::find(deletionVec.begin(), deletionVec.end(), std::make_pair(resourceFontMap[fontKey]->FileType(), fontKey));
 		if (it == deletionVec.end())
-			deletionVec.push_back(resourceFontMap[fontKey]);
+			deletionVec.push_back({ resourceFontMap[fontKey]->FileType(), resourceFontMap[fontKey]->MapKey() });
+
 	}
 
 	FT_Face ResourceManager::GetFont(const std::size_t fontKey)
@@ -619,7 +613,7 @@ namespace NightSnack {
 		//Does the resource exist?
 		if (resourceFontMap.find(fontKey) != resourceFontMap.end())
 		{
-			return resourceFontMap[fontKey];
+			return resourceFontMap[fontKey].get();
 		}
 
 		return nullptr;
@@ -884,32 +878,38 @@ namespace NightSnack {
 
 	void ResourceManager::DeleteFlaggedResources()
 	{
-		for (Resource* resource : deletionVec)
+		//This keeps changing so auto of the vec
+		for (auto resourcePair : deletionVec)
 		{
-			//If it was unflagged somewhere inbetween
-			if (!resource->FlaggedForDeletion())
-				continue;
+			//If it was unflagged somewhere inbetween do not delete
 
-			switch (resource->FileType())
+			switch (resourcePair.second)
 			{
 			case RESOURCE_IMAGE:
-				resourceImageMap.erase(resource->MapKey());
+				if (resourceImageMap[resourcePair.first]->FlaggedForDeletion())
+					resourceImageMap.erase(resourcePair.first);
 				break;
 			case RESOURCE_TXTFILE:
-				resourceTxtFileMap.erase(resource->MapKey());
+				if (resourceTxtFileMap[resourcePair.first]->FlaggedForDeletion())
+					resourceTxtFileMap.erase(resourcePair.first);
 				break;
 			case RESOURCE_JSON:
-				resourceJsonMap.erase(resource->MapKey());
+				if (resourceJsonMap[resourcePair.first]->FlaggedForDeletion())
+					resourceJsonMap.erase(resourcePair.first);
 				break;
 			case RESOURCE_SOUND:
-				resourceSoundMap.erase(resource->MapKey());
+				if (resourceSoundMap[resourcePair.first]->FlaggedForDeletion())
+					resourceSoundMap.erase(resourcePair.first);
 				break;
 			case RESOURCE_FONT:
-				resourceFontMap.erase(resource->MapKey());
+				if (resourceFontMap[resourcePair.first]->FlaggedForDeletion())
+					resourceFontMap.erase(resourcePair.first);
 				break;
 
 			}
-			delete resource;
+
+			//DO NOT DELETED IT IS A UNIQUE PTR NOW
+			//delete resource;
 		}
 
 		deletionVec.clear();
