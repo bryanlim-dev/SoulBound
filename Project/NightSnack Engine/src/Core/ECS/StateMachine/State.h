@@ -4,6 +4,7 @@
 #include <string>
 #include "Core/ECS/Entity.h"
 #include <functional>
+#include <iostream>
 
 
 namespace NightSnack
@@ -11,30 +12,30 @@ namespace NightSnack
 
 	class StateBase
 	{
-	private:
-		std::shared_ptr<StateBase> nextState;
-		Entity entityID;
-		std::string stateKey; //Can double as the state name
+	protected:
+		std::shared_ptr<StateBase> m_nextState;
+		Entity m_entityID;
+		std::string m_stateKey; //Can double as the state name
 
 		std::function<bool(Entity)> transitionFunction;
 
-		bool isExit = false;
+		bool m_isExit = false;
 
 	public:
 		StateBase(Entity id, std::string stateKeyName) 
-			:entityID(id), stateKey(stateKeyName) {}
+			:m_entityID(id), m_stateKey(stateKeyName) {}
 
 		virtual ~StateBase() {
 			//Not needed now cause shared ptr but just incase
-			if (nextState)
+			if (m_nextState)
 			{
-				nextState.reset();
-				nextState = nullptr;
+				m_nextState.reset();
+				m_nextState = nullptr;
 			}
 		}
 
 		void SetNextState(std::shared_ptr<StateBase> newNextState) {
-			nextState = newNextState;
+			m_nextState = newNextState;
 		}
 
 		void SetTransitionCheck(std::function<bool(Entity)> transition)
@@ -42,31 +43,67 @@ namespace NightSnack
 			transitionFunction = transition;
 		}
 
-		virtual void Enter() { isExit = false; }
-
-		virtual void Update(float dt) {
-			if (transitionFunction(entityID))
-			{
-				isExit = true;
-			}
-
+		virtual void Enter() {
+			m_isExit = false; 
+			std::cout << "State Enter " << std::endl;
 		}
-		virtual void Exit() { isExit = false; }
+
+		virtual void Update(float /*dt*/) {
+			if (transitionFunction && transitionFunction(m_entityID))
+			{
+				m_isExit = true;
+			}
+		}
+
+		virtual void Exit() { 
+			m_isExit = false; 
+			std::cout << "State Exit " << std::endl;
+		}
 
 
 		std::string StateKey() const
 		{
-			return stateKey;
+			return m_stateKey;
 		}
 
 		std::shared_ptr<StateBase> NextState() const
 		{
-			return nextState;
+			return m_nextState;
 		}
 
 		bool IsExit() const
 		{
-			return isExit;
+			return m_isExit;
 		}
 	};
-}
+
+	class StateCountDown : public StateBase
+	{
+	private:
+		float m_maxTimer;
+		float m_currTimer;
+
+	public:
+		StateCountDown(Entity id, std::string stateKeyName, float maxTime);
+
+		void Enter() override;
+
+		void Update(float dt) override;
+
+		void Exit() override;
+	};
+
+	class StateRandomChance : public StateBase
+	{
+	private:
+
+
+	public:
+		void Enter() override;
+
+		void Update(float dt) override;
+
+		void Exit() override;
+	};
+
+} //End of namesapce

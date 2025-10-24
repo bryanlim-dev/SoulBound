@@ -1,23 +1,57 @@
 #pragma once
 #include "State.h"
+#include "../Component.h"
 #include <map>
+#include <Core/ECS/Coordinator.h>
 
 namespace NightSnack
 {
-	class FiniteStateMachine
+	//Finite State Machine dosnt belong to a single entity.
+	//It takes in the component struct States and a entity ID,
+	//then uses the executes the logic for each state within it.
+	class FiniteStateMachine : public ISystem
 	{
 	private:
-		Entity entityID;
-		std::map<std::string, std::shared_ptr<StateBase>> stateMap;
+		std::list<Entity> m_entityList;
 
-		std::shared_ptr<StateBase> activeState;
+		Signature m_systemSignature{};
 
 	public:
-		FiniteStateMachine(Entity entity);
+		FiniteStateMachine();
 		~FiniteStateMachine();
 
-		void Update(float dt);
+		void Update(float dt, Coordinator& coord) override;
 
-		void DebugTestStates();
+		void AddEntity(Entity id);
+		void RemoveEntity(Entity id);
+
+		static States CreateDebugTestStates(Entity entityId) ;
+
+
+		/************************************************************************/
+		/*!
+		\brief
+		Returns name of system (overridden from ISystem)
+		Required by ISystem base class;
+
+		\return
+		Returns name of system (FiniteStateMachine)
+		*/
+		/************************************************************************/
+		std::string GetName() const override;
+		/************************************************************************/
+		/*!
+		\brief
+		Returns signature of system (overridden from ISystem)
+		Required by ISystem base class;
+
+		\return
+		Returns name of system (FiniteStateMachine)
+		*/
+		/************************************************************************/
+		Signature GetSignature() const override;
+
+	private:
+		void UpdateEntityState(float dt, Coordinator& coord, Entity id, const States& states);
 	};
 }

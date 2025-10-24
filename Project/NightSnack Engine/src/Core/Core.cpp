@@ -18,6 +18,7 @@
 #include "Systems/AllSystems.h"
 
 #include "ResourceManager/ResourceHelper/ResourceSystemHelper.h"
+#include "ECS/StateMachine/FiniteStateMachine.h"
 
 namespace NightSnack {
 
@@ -41,6 +42,7 @@ namespace NightSnack {
 		m_coord.RegisterComponent<Camera>();
 
 		m_coord.RegisterComponent<PlayerController>();
+		m_coord.RegisterComponent<States>();
 		m_coord.RegisterComponent<Renderable>();	// Graphics;
 
 		// Add more Components here...
@@ -61,6 +63,7 @@ namespace NightSnack {
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
 		AddSystem<CollisionSystem>(core_dispatcher);
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
+		AddSystem<FiniteStateMachine>();
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord);
 

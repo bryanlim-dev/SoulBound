@@ -17,6 +17,7 @@
 #define COMPONENT_HPP
 
 #include <json.hpp>
+#include "StateMachine/State.h"
 #include "MathLibrary/Math.h"
 
 namespace NightSnack {
@@ -77,6 +78,16 @@ namespace NightSnack {
         float moveSpeed;
         float jumpSpeed;
         // maybe can add abilities etc...
+    };
+
+    //A component to hold data for states
+    struct States
+    {
+        std::map<std::string, std::shared_ptr<StateBase>> stateMap;
+        StateBase* currState;
+        //Is this the first time running any state?
+        //(Used to detect and call Enter on first state)
+        bool isFirstState = true; 
     };
 
     // ================================================================================================
