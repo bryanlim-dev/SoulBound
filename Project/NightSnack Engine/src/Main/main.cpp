@@ -30,6 +30,7 @@
 #include "Systems/AudioSystem.h"
 
 #include <fmod.hpp>
+#include <Systems/StateMachine/FiniteStateMachine.h>
 
 int main()
 {
@@ -212,9 +213,14 @@ int main()
 		coord.AddComponent<Renderable>(ground, r5);
 		coord.AddComponent<Color>(ground, Color{ 0.2f, 0.1f, 0.3f, 1.f });
 
+		Entity test = coord.CreateEntity();
+		coord.AddComponent<States>(test, FiniteStateMachine::CreateDebugTestStates(test));
+		coord.GetSystem<FiniteStateMachine>()->AddEntity(test);
+
 		// Core Application Loop;
 		while (!core.ShouldClose()) {
 			core.Update();
+			//stateMachine.Update(1);
 			// Update AudioSystem every frame
 			//audioSystem->Update();
 

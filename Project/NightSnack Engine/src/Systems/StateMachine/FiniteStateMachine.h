@@ -1,6 +1,6 @@
 #pragma once
 #include "State.h"
-#include "../Component.h"
+#include "../../Core/ECS/Component.h"
 #include <map>
 #include <Core/ECS/Coordinator.h>
 

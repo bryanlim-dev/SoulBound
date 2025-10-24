@@ -18,7 +18,7 @@
 #include "Systems/AllSystems.h"
 
 #include "ResourceManager/ResourceHelper/ResourceSystemHelper.h"
-#include "ECS/StateMachine/FiniteStateMachine.h"
+#include "../Systems/StateMachine/FiniteStateMachine.h"
 
 namespace NightSnack {
 

@@ -17,7 +17,7 @@
 #define COMPONENT_HPP
 
 #include <json.hpp>
-#include "StateMachine/State.h"
+#include "../../Systems/StateMachine/State.h"
 #include "MathLibrary/Math.h"
 
 namespace NightSnack {
