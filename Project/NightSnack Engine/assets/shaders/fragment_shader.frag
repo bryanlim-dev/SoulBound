@@ -18,9 +18,11 @@
 layout (location=0) out vec4 fFragColor;
 
 in vec2 vTexCoord;
+in vec3 vInstanceColor;
 
 uniform vec3 uBaseColor;
 uniform vec3 uEntityColor;
+uniform bool uUseInstancing;
 
 uniform sampler2D uTex2d; // bound in Material::ApplyUniforms()
 
@@ -29,9 +31,13 @@ uniform bool uHasTexture;
 void main() {
 
     if (uHasTexture){
+        // Both non-instanced and instanced rendering will use uBaseColor
         fFragColor = texture(uTex2d, vTexCoord) * vec4(uBaseColor, 1.0);
     } else{
-        fFragColor = vec4(uEntityColor, 1.0);
+        if (uUseInstancing){
+            fFragColor = vec4(vInstanceColor, 1.0);
+        } else {
+            fFragColor = vec4(uEntityColor, 1.0);
+        }
     }
-
 }

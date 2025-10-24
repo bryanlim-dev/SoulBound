@@ -78,12 +78,24 @@ namespace NightSnack {
 					case InputEvent::InputAction::ToggleDebugDraw:
 						m_enableDebugDraw = !m_enableDebugDraw;
 						break;
+					case InputEvent::InputAction::ToggleInstancedRendering:
+						m_enableInstancedRendering = !m_enableInstancedRendering;
+						break;
 					case InputEvent::InputAction::CrashTest:
 						CrashLogger::ForceCrash("Forced crash from GraphicsSystem for testing");
 						break;
 					}
 				}
 			});
+
+		// Initialise buffer for Instanced Rendering
+		if (m_globalInstanceSSBO == 0) {
+			glCreateBuffers(1, &m_globalInstanceSSBO);
+			m_globalInstanceSSBOSize = sizeof(Mesh::InstanceData) * NightSnack::MAX_ENTITIES;
+			glNamedBufferStorage(m_globalInstanceSSBO, m_globalInstanceSSBOSize, nullptr, GL_DYNAMIC_STORAGE_BIT);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
+			//std::cout << "Size of InstanceData: " << sizeof(Mesh::InstanceData);
+		}
 	}
 
 	void GraphicsSystem::Update(float dt, Coordinator& coord) {
@@ -103,6 +115,8 @@ namespace NightSnack {
 
 		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
+
+		m_meshBatches.clear();
 
 		for (Entity e : m_entities) {
 			// Obtain entity components;
@@ -128,35 +142,77 @@ namespace NightSnack {
 			}
 
 			glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl, ren.renderLayer);
-			glm::mat4 mvp = proj * view * model;
+			//glm::mat4 mvp = proj * view * model;
+
 
 			Shader* shader = data.material->GetShader();
 			Mesh* mesh = data.mesh;
-			shader->Use();
-			shader->SetMat4("uMVP", mvp);
+
+			
+
+			// Creation of Instance Data for Instanced Rendering
+			if (m_enableInstancedRendering) {
+
+				// Prepare instance data
+				Mesh::InstanceData instance{};
+				instance.position = glm::vec3(pos.x, pos.y, pos.z);
+				instance.rotation = glm::radians(rot);
+				instance.scale = glm::vec2(scl.x, scl.y);
+				instance.padding = 0.f;
+
+				std::string key;
+
+				if (m_coord.HasComponent<Color>(e)) {
+					auto& col = m_coord.GetComponent<Color>(e);
+					//shader->SetVec3("uEntityColor", { col.r, col.g, col.b });
+					instance.color = glm::vec3(col.r, col.g, col.b);
+					key = ren.meshName + "_color";
+				} else {
+					instance.color = glm::vec3(1.f, 1.f, 1.f);
+					key = ren.meshName + "_textured_" + ren.materialName;
+				}
+
+				//m_allInstances.push_back(instance);
+				//meshInstanceGroup[key].push_back(instance);
+				//meshMaterials[key] = data.material;
+
+				m_meshBatches[key].instances.push_back(instance);
+				//m_meshBatches[key].mesh = GetMesh(ren.meshName);
+				m_meshBatches[key].mesh = data.mesh;
+				m_meshBatches[key].material = data.material;
+
+				continue;
+			}
+
+			data.material->ApplyUniforms(ren.isWireframe);
+
+			//shader->Use();
+			shader->SetMat4("uProj", proj);
+			shader->SetMat4("uView", view);
+			shader->SetMat4("uModelToWorld", model);
+			shader->SetBool("uUseInstancing", m_enableInstancedRendering);
 
 			if (m_coord.HasComponent<Color>(e)) {
 				auto& col = m_coord.GetComponent<Color>(e);
 				shader->SetVec3("uEntityColor", { col.r, col.g, col.b });
 			}
 
-			data.material->ApplyUniforms(ren.isWireframe);
-
-			//GLint loc = glGetUniformLocation(data.material->GetShader()->GetID(), "uMVP");
-			//std::cout << "uMVP loc=" << loc << "\n";
-
 			// Change the polygon mode to wireframe
 			if (ren.isWireframe) {
 				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 				mesh->Draw();
 				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			}
-			else {
+			} else {
 				mesh->Draw();
 			}
 
 			GLenum err = glGetError();
 			if (err != GL_NO_ERROR) std::cerr << "GL ERROR: " << err << "\n";
+			glEnable(GL_DEBUG_OUTPUT);
+			glDebugMessageCallback([](GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar* message, const void*) {
+				std::cerr << "[GL] " << message << "\n";
+				}, nullptr);
+
 
 			// Debug Drawing, for entities with no texture
 			if (m_enableDebugDraw) {
@@ -169,8 +225,11 @@ namespace NightSnack {
 					{
 						// Model matrix according to its collider's scale
 						glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.width, col.height }, RenderLayer::DEBUG);
-						glm::mat4 debugmvp = proj * view * debugmodel;
-						shader->SetMat4("uMVP", debugmvp);
+						//glm::mat4 debugmvp = proj * view * debugmodel;
+						shader->SetMat4("uProj", proj);
+						shader->SetMat4("uView", view);
+						shader->SetMat4("uModelToWorld", debugmodel);
+						//shader->SetMat4("uMVP", debugmvp);
 						shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
 						shader->SetVec3("uBaseColor", glm::vec3(0.f, 1.f, 0.f));
 						GetMesh("AABBColliderMesh")->Draw();
@@ -181,8 +240,11 @@ namespace NightSnack {
 					{
 						// Model matrix according to its collider's scale
 						glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.radius, col.radius }, RenderLayer::DEBUG);
-						glm::mat4 debugmvp = proj * view * debugmodel;
-						shader->SetMat4("uMVP", debugmvp);
+						//glm::mat4 debugmvp = proj * view * debugmodel;
+						shader->SetMat4("uProj", proj);
+						shader->SetMat4("uView", view);
+						shader->SetMat4("uModelToWorld", debugmodel);
+						//shader->SetMat4("uMVP", debugmvp);
 						shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
 						shader->SetVec3("uBaseColor", glm::vec3(0.f, 1.f, 0.f));
 						GetMesh("CircleColliderMesh")->Draw();
@@ -213,15 +275,45 @@ namespace NightSnack {
 
 						// Model matrix according to its new rotation, and y-scale so line size reflects speed
 						glm::mat4 debugModel = GetModelToWorldMatrix(pos, angle, Vec2{ 1.f, length }, RenderLayer::DEBUG);
-						glm::mat4 debugMvp = proj * view * debugModel;
+						//glm::mat4 debugMvp = proj * view * debugModel;
 
-						shader->SetMat4("uMVP", debugMvp);
+						shader->SetMat4("uProj", proj);
+						shader->SetMat4("uView", view);
+						shader->SetMat4("uModelToWorld", debugModel);
+						//shader->SetMat4("uMVP", debugMvp);
 						shader->SetVec3("uEntityColor", glm::vec3(0.1f, 0.9f, 0.9f));
 						shader->SetVec3("uBaseColor", glm::vec3(0.1f, 0.9f, 0.9f));
 						// Points upwards by default, will be rotated accordingly
 						GetMesh("line")->Draw();
 					}
 				}
+			}
+		}
+
+		// Uploading and Drawing for Instanced Rendering
+		if (m_enableInstancedRendering) {
+			size_t globalOffset = 0;
+
+			//std::cout << "Num unique instances total: " << m_meshBatches.size() << std::endl;
+
+			// Upload once per mesh type
+			for (auto& [key, instanceBatch] : m_meshBatches) {
+				//std::cout << "uploading unique mesh with name: " << meshName;
+				//std::cout << " with its instance count: " << instances.size() << std::endl;
+
+				Mesh* mesh = instanceBatch.mesh;
+				Material* material = instanceBatch.material;
+				material->ApplyUniforms(false);
+				Shader* shader = material->GetShader();
+				shader->SetMat4("uProj", proj);
+				shader->SetMat4("uView", view);
+				shader->SetBool("uUseInstancing", true);
+
+				size_t size = instanceBatch.instances.size() * sizeof(Mesh::InstanceData);
+				glNamedBufferSubData(m_globalInstanceSSBO, 0, size, instanceBatch.instances.data());
+				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
+
+				mesh->DrawInstanced(instanceBatch.instances.size());
 			}
 		}
 	}

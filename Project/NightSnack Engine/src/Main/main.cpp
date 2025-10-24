@@ -123,7 +123,7 @@ int main()
 		// Background image --------------
 		// -------------------------------
 		Entity background = coord.CreateEntity();
-		Transform tbackground = { NightSnack::Vec3{ 0.f, 0.f, posIndexBackgroundLayer++ * NightSnack::Z_EPSILON }, {},  NightSnack::Vec2{ 1920.f, 1080.f } };
+		Transform tbackground = { NightSnack::Vec3{ 0.f, 0.f, posIndexBackgroundLayer++ * NightSnack::Z_EPSILON }, {},  NightSnack::Vec2{ 960.f, 540.f } };
 		coord.AddComponent<Transform>(background, tbackground);
 		Renderable r6{ "square", "backgroundMat", RenderLayer::BACKGROUND };
 		coord.AddComponent<Renderable>(background, r6);
@@ -131,7 +131,7 @@ int main()
 		// Dynamic Red ball --------------
 		// -------------------------------
 		Entity redBallDynamic = coord.CreateEntity();
-		Transform tredball = { NightSnack::Vec3{ 0.f, 0.f, posIndexDefaultLayer++ * NightSnack::Z_EPSILON }, {},  NightSnack::Vec2{ 100.f, 100.f } };
+		Transform tredball = { NightSnack::Vec3{ -700.f, 0.f, posIndexDefaultLayer++ * NightSnack::Z_EPSILON }, {},  NightSnack::Vec2{ 100.f, 100.f } };
 		coord.AddComponent<Transform>(redBallDynamic, tredball);
 		RigidBody rredball = { 1.f, NightSnack::Vec2{}, NightSnack::Vec2{} };
 		coord.AddComponent<RigidBody>(redBallDynamic, rredball);
@@ -146,7 +146,7 @@ int main()
 		// Dynamic ball 2 ----------------
 		// -------------------------------
 		Entity bananaBallDynamic = coord.CreateEntity();
-		Transform tbananaball = { NightSnack::Vec3{ 500.f, 0.f, posIndexDefaultLayer++ * NightSnack::Z_EPSILON }, {},  NightSnack::Vec2{ 100.f, 100.f } };
+		Transform tbananaball = { NightSnack::Vec3{ 700.f, 0.f, posIndexDefaultLayer++ * NightSnack::Z_EPSILON }, {},  NightSnack::Vec2{ 100.f, 100.f } };
 		coord.AddComponent<Transform>(bananaBallDynamic, tbananaball);
 		RigidBody rbananaball = { 1.f, NightSnack::Vec2{}, NightSnack::Vec2{} };
 		coord.AddComponent<RigidBody>(bananaBallDynamic, rbananaball);
