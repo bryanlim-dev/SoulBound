@@ -297,6 +297,7 @@ namespace NightSnack {
 		struct InstanceBatch {
 			Mesh* mesh{ nullptr };
 			Material* material{ nullptr };
+			bool isWireframe{ false };
 			std::vector<Mesh::InstanceData> instances;
 		};
 

@@ -1,7 +1,7 @@
 /******************************************************************************
  * File:        vertex_shader.vert
  * Project:     NightSnack
- * Author(s):	Goh Bei Lai (Primary, 100%) - Created Vertex Shader
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Default Vertex Shader
  *
  * Description:
  * Vertex shader is responsible for transforming vertices from model space to 
@@ -10,7 +10,7 @@
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
-// Vertex shader
+// Default Vertex shader
 #version 450 core
 
 layout (location=0) in vec3 aVertexPosition;
@@ -67,7 +67,7 @@ void main(void) {
     if (uUseInstancing) {
         InstanceData data = instances[gl_InstanceID];
         model = computeModelMatrix(data);
-        gl_Position = vec4(vec2(uProj * uView * model * vec4(aVertexPosition, 1.0)), 0.0, 1.0);
+        gl_Position = vec4(vec3(uProj * uView * model * vec4(aVertexPosition, 1.0)), 1.0);
         vInstanceColor = data.color;
     } else {
         model = uModelToWorld;

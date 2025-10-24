@@ -1,7 +1,7 @@
 /******************************************************************************
  * File:        fragment_shader.frag
  * Project:     NightSnack
- * Author(s):	Goh Bei Lai (Primary, 100%) - Created Fragment Shader
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Default Fragment Shader
  *
  * Description:
  * Fragment shader is responsible for determining the final color of each pixel.
@@ -12,7 +12,7 @@
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
-// Fragment shader
+// Default Fragment shader
 #version 450 core
 
 layout (location=0) out vec4 fFragColor;
