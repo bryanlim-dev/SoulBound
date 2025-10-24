@@ -16,7 +16,7 @@
 
 namespace NightSnack {
 
-	Texture::Texture(std::string textureImage) {
+	Texture::Texture(std::string textureImage, std::shared_ptr<ResourceManager> rm) {
 
 		if (textureImage.empty()) {
 			std::cerr << "Error: Texture filename where??\n";
@@ -26,7 +26,6 @@ namespace NightSnack {
 
 		// ResourceManager stuff
 		size_t key = 0;
-		ResourceManager* rm = ResourceManager::GetInstance();
 		rm->LoadImage(textureImage, key);
 
 		// Texture parameters

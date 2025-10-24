@@ -38,7 +38,7 @@ namespace NightSnack {
 		File path to the texture image
 		*/
 		/************************************************************************/
-		Texture(std::string textureImage);
+		Texture(std::string textureImage, std::shared_ptr<ResourceManager> rm);
 
 		/************************************************************************/
 		/*!

@@ -44,19 +44,19 @@ namespace NightSnack {
 	protected:
 
 		//Key to the map in resourcemanager
-		std::size_t mapKey = 0;
+		std::size_t m_mapKey = 0;
 
 		//Path of the file
-		std::string path = "";
+		std::string m_path = "";
 
 		//Type of resource
-		RESOURCE_TYPE resourceType = RESOURCE_NONE;
+		RESOURCE_TYPE m_resourceType = RESOURCE_NONE;
 
 		//Is this resource loaded
-		bool resourceLoaded = false;
+		bool m_resourceLoaded = false;
 
 		//This flag is to check if it will be deleted next cycle
-		bool flaggedForDeletion = false;
+		bool m_flaggedForDeletion = false;
 
 	public:
 		//Default constructor deleted
@@ -73,7 +73,7 @@ namespace NightSnack {
 		std::size_t const ref of the key that is used in the map to store it
 		*/
 		/************************************************************************/
-		Resource(const std::string& inFilePath, const std::size_t& inMapKey) : path(inFilePath), mapKey(inMapKey)
+		Resource(const std::string& inFilePath, const std::size_t& inMapKey) : m_path(inFilePath), m_mapKey(inMapKey)
 		{
 		};
 
@@ -124,7 +124,7 @@ namespace NightSnack {
 		Returns refrence to the bool of is the Resource is flagged for deletion next cycle
 
 		\return
-		bool refrennce of vara flaggedForDeletion
+		bool refrennce of vara m_flaggedForDeletion
 		*/
 		/************************************************************************/
 		bool& FlaggedForDeletion();
@@ -158,9 +158,9 @@ namespace NightSnack {
 	{
 	protected:
 		//Data ptr of the obj
-		unsigned char* imageData = NULL;
+		unsigned char* m_imageData = NULL;
 		//Image imageData
-		int width = 0, height = 0, channels = 0;
+		int m_width = 0, m_height = 0, m_channels = 0;
 
 	public:
 		//Default constructor deleted
@@ -213,7 +213,7 @@ namespace NightSnack {
 		int of width of image
 		*/
 		/************************************************************************/
-		int Width() const { return width; }
+		int Width() const { return m_width; }
 		/************************************************************************/
 		/*!
 		\brief
@@ -223,7 +223,7 @@ namespace NightSnack {
 		int of height of image
 		*/
 		/************************************************************************/
-		int Height() const { return height; }
+		int Height() const { return m_height; }
 		/************************************************************************/
 		/*!
 		\brief
@@ -233,7 +233,7 @@ namespace NightSnack {
 		int of channels of image
 		*/
 		/************************************************************************/
-		int Channels() const { return channels; }
+		int Channels() const { return m_channels; }
 
 	private:
 
@@ -245,7 +245,7 @@ namespace NightSnack {
 	{
 	protected:
 		//vector of strings of the txt file
-		std::vector<std::string> txtStringVec;
+		std::vector<std::string> m_txtStringVec;
 
 	public:
 		//Default constructor deleted
@@ -337,15 +337,15 @@ namespace NightSnack {
 
 	struct Archtype
 	{
-		std::unordered_map<std::string, std::string> componentMap;
-		std::unordered_map<std::string, Archtype> subArchtype;
+		std::unordered_map<std::string, std::string> m_componentMap;
+		std::unordered_map<std::string, Archtype> m_subArchtype;
 	};
 
 	class ResourceJson : public Resource
 	{
 	private:
-		nlohmann::json jsonData;
-		std::unordered_map<std::string, Archtype> archetypeMap;
+		nlohmann::json m_jsonData;
+		std::unordered_map<std::string, Archtype> m_archetypeMap;
 
 	public:
 		//Default constructor deleted
@@ -498,7 +498,7 @@ namespace NightSnack {
 	class ResourceSound : public Resource
 	{
 	private:
-		FMOD::Sound* soundData = nullptr;
+		FMOD::Sound* m_soundData = nullptr;
 
 	public:
 		//Default constructor deleted
@@ -522,7 +522,7 @@ namespace NightSnack {
 		/*!
 		\brief
 		Destructor of ResourceSound.
-		Frees soundData if loaded
+		Frees m_soundData if loaded
 		*/
 		/************************************************************************/
 		~ResourceSound();
