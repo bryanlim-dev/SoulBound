@@ -22,7 +22,7 @@ namespace NightSnack
 
         void Draw()
         {
-            ImGui::SetNextWindowSize(ImVec2(300, 400), ImGuiCond_Once);
+            //ImGui::SetNextWindowSize(ImVec2(300, 400), ImGuiCond_Once);
             ImGui::Begin("Inspector");
 
             if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY)

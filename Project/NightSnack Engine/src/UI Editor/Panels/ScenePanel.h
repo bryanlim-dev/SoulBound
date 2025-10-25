@@ -43,27 +43,26 @@ namespace NightSnack
             ImGui::Begin("Scene");
             ImVec2 avail = ImGui::GetContentRegionAvail();
 
-			// Get window dimensions from Coordinator
-            int windowWidth = m_coord.GetWindowWidth();
-            int windowHeight = m_coord.GetWindowHeight();
+            int panelWidth = static_cast<int>(avail.x);
+            int panelHeight = static_cast<int>(avail.y);
 
             // Only recreate/resize if needed
             static int lastWidth = 0, lastHeight = 0;
-            if (windowWidth != lastWidth || windowHeight != lastHeight) {
-                CreateOrResizeTexture(windowWidth, windowHeight);
-                lastWidth = windowWidth;
-                lastHeight = windowHeight;
+            if (panelWidth != lastWidth || panelHeight != lastHeight) {
+                CreateOrResizeTexture(panelWidth, panelHeight);
+                lastWidth = panelWidth;
+                lastHeight = panelHeight;
             }
 
             // Always copy the full window framebuffer
             if (!m_sceneTexture)
             {
-                CreateOrResizeTexture(windowWidth, windowHeight);
+                CreateOrResizeTexture(panelWidth, panelHeight);
             }
-            UpdateTextureFromFramebuffer(windowWidth, windowHeight);
+            UpdateTextureFromFramebuffer(panelWidth, panelHeight);
 
             // Calculate aspect-correct size
-            float windowAspect = (float)windowWidth / (float)windowHeight;
+            float windowAspect = (float)panelWidth / (float)panelHeight;
             float panelAspect = avail.x / avail.y;
             ImVec2 imageSize;
             if (panelAspect > windowAspect)

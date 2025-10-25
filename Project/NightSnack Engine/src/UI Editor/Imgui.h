@@ -118,8 +118,11 @@ namespace NightSnack {
 		ImGui::CreateContext();
 
 		ImGuiIO& io = ImGui::GetIO();
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+		io.ConfigFlags |=
+			ImGuiConfigFlags_DockingEnable |
+			ImGuiConfigFlags_ViewportsEnable |
+			ImGuiConfigFlags_DpiEnableScaleFonts;
+
 		ImGui::StyleColorsDark();
 
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
@@ -207,17 +210,21 @@ namespace NightSnack {
 
 		// Set next window to cover entire viewport
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		static ImVec2 lastViewportSize = ImVec2(0, 0);
+		bool viewportResized = (lastViewportSize.x != viewport->Size.x || lastViewportSize.y != viewport->Size.y);
+
 		ImGui::SetNextWindowPos(viewport->Pos);
 		ImGui::SetNextWindowSize(viewport->Size);
 		ImGui::SetNextWindowViewport(viewport->ID);
 
 		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 		ImGuiDockNode* node = ImGui::DockBuilderGetNode(dockspace_id);
-		if (!node || node->IsEmpty()) {
+		if (!node || node->IsEmpty() || viewportResized) {
+			lastViewportSize = viewport->Size;
 			ImGui::DockBuilderRemoveNode(dockspace_id); // reset dockspace layout
 			ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
 			ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
-
+			
 			// Split the dockspace into 4 regions
 			ImGuiID dock_id_left, dock_id_right, dock_id_top, dock_id_bottom, dock_id_center;
 			ImGuiID dock_id_left_top, dock_id_left_bottom;

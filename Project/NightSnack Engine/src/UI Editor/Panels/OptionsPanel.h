@@ -22,7 +22,7 @@ namespace NightSnack
         void Draw()
         {
 			// Set initial window size and style
-            ImGui::SetNextWindowSize(ImVec2(320, 300), ImGuiCond_Always);
+            //ImGui::SetNextWindowSize(ImVec2(320, 300), ImGuiCond_Once);
 
 			// Options Window
             ImGui::Begin("Options");

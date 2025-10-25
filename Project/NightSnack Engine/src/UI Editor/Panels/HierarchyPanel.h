@@ -23,7 +23,7 @@ namespace NightSnack
         void Draw()
         {
 			// Set initial window size and style
-            ImGui::SetNextWindowSize(ImVec2(260, 300), ImGuiCond_Always);
+            //ImGui::SetNextWindowSize(ImVec2(260, 300), ImGuiCond_Once);
 
             ImGuiStyle& style = ImGui::GetStyle();
             style.Colors[ImGuiCol_WindowBg] = ImVec4(0.15f, 0.18f, 0.22f, 1.0f);
