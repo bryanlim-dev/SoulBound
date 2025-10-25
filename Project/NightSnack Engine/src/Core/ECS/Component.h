@@ -17,7 +17,6 @@
 #define COMPONENT_HPP
 
 #include <json.hpp>
-#include "../../Systems/StateMachine/State.h"
 #include "MathLibrary/Math.h"
 
 namespace NightSnack {
@@ -80,11 +79,14 @@ namespace NightSnack {
         // maybe can add abilities etc...
     };
 
+    //Forward declaration
+    class StateBase;
+
     //A component to hold data for states
     struct States
     {
         std::map<std::string, std::shared_ptr<StateBase>> stateMap;
-        StateBase* currState;
+        StateBase* currState = nullptr;
         //Is this the first time running any state?
         //(Used to detect and call Enter on first state)
         bool isFirstState = true; 

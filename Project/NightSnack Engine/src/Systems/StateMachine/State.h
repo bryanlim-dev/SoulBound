@@ -1,10 +1,16 @@
 #pragma once
 
+#ifndef State
+#define State
+
 #include <memory>
 #include <string>
-#include "Core/ECS/Entity.h"
 #include <functional>
 #include <iostream>
+#include "../../Core/ECS/Coordinator.h"
+//#include "../../Core/ECS/Entity.h"
+
+
 
 
 namespace NightSnack
@@ -13,51 +19,57 @@ namespace NightSnack
 	class StateBase
 	{
 	protected:
-		std::shared_ptr<StateBase> m_nextState;
+		std::list<std::pair<std::shared_ptr<StateBase>, std::function<bool(Entity)>>> m_transtitionStatesList;
+		StateBase* m_nextState = nullptr;
 		Entity m_entityID;
-		std::string m_stateKey; //Can double as the state name
+		Coordinator& m_coord;
 
-		std::function<bool(Entity)> transitionFunction;
+		std::string m_stateKey; //Can double as the state name
 
 		bool m_isExit = false;
 
 	public:
-		StateBase(Entity id, std::string stateKeyName) 
-			:m_entityID(id), m_stateKey(stateKeyName) {}
+		StateBase() = delete;
+
+		StateBase(Entity id, std::string stateKeyName, Coordinator& coord)
+			:m_entityID(id), m_stateKey(stateKeyName), m_coord(coord) {}
 
 		virtual ~StateBase() {
-			//Not needed now cause shared ptr but just incase
 			if (m_nextState)
 			{
-				m_nextState.reset();
 				m_nextState = nullptr;
 			}
 		}
 
-		void SetNextState(std::shared_ptr<StateBase> newNextState) {
-			m_nextState = newNextState;
+		void InsertStateTransition(std::shared_ptr<StateBase> state, std::function<bool(Entity)>transitionn)
+		{
+			m_transtitionStatesList.push_back({ state,transitionn });
 		}
 
-		void SetTransitionCheck(std::function<bool(Entity)> transition)
-		{
-			transitionFunction = transition;
+		void SetNextState(std::shared_ptr<StateBase> newNextState) {
+			m_nextState = newNextState.get();
 		}
 
 		virtual void Enter() {
 			m_isExit = false; 
-			std::cout << "State Enter " << std::endl;
+			std::cout << "ID: " << m_entityID << ", State Enter: " << m_stateKey << std::endl;
 		}
 
 		virtual void Update(float /*dt*/) {
-			if (transitionFunction && transitionFunction(m_entityID))
+			for (auto stateFuncPair : m_transtitionStatesList)
 			{
-				m_isExit = true;
+				if (stateFuncPair.second && stateFuncPair.second(m_entityID))
+				{
+					m_nextState = stateFuncPair.first.get();
+					m_isExit = true;
+					return;
+				}
 			}
 		}
 
 		virtual void Exit() { 
 			m_isExit = false; 
-			std::cout << "State Exit " << std::endl;
+			std::cout << "ID: " << m_entityID << ", State Exit: " << m_stateKey << std::endl;
 		}
 
 
@@ -66,7 +78,7 @@ namespace NightSnack
 			return m_stateKey;
 		}
 
-		std::shared_ptr<StateBase> NextState() const
+		StateBase* NextState() const
 		{
 			return m_nextState;
 		}
@@ -84,13 +96,15 @@ namespace NightSnack
 		float m_currTimer;
 
 	public:
-		StateCountDown(Entity id, std::string stateKeyName, float maxTime);
+		StateCountDown(Entity id, std::string stateKeyName, Coordinator& coord, float maxTime);
 
 		void Enter() override;
 
 		void Update(float dt) override;
 
 		void Exit() override;
+
+		bool Countdown(Entity id);
 	};
 
 	class StateRandomChance : public StateBase
@@ -107,3 +121,5 @@ namespace NightSnack
 	};
 
 } //End of namesapce
+
+#endif 

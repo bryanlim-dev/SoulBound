@@ -1,8 +1,8 @@
 #pragma once
-#include "State.h"
-#include "../../Core/ECS/Component.h"
 #include <map>
-#include <Core/ECS/Coordinator.h>
+#include "State.h"
+//#include "../../Core/ECS/Component.h"
+//#include "../../Core/ECS/Coordinator.h"
 
 namespace NightSnack
 {
@@ -25,7 +25,6 @@ namespace NightSnack
 		void AddEntity(Entity id);
 		void RemoveEntity(Entity id);
 
-		static States CreateDebugTestStates(Entity entityId) ;
 
 
 		/************************************************************************/
@@ -51,7 +50,10 @@ namespace NightSnack
 		/************************************************************************/
 		Signature GetSignature() const override;
 
+
+		static States CreateDebugTestStates(Entity entityId, Coordinator& coord) ;
+
 	private:
-		void UpdateEntityState(float dt, Coordinator& coord, Entity id, const States& states);
+		void UpdateEntityState(float dt, Coordinator& coord, Entity id, States& states);
 	};
 }

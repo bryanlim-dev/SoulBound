@@ -3,8 +3,8 @@
 
 namespace NightSnack
 {
-	StateCountDown::StateCountDown(Entity id, std::string stateKeyName, float maxTime)
-		:StateBase(id, stateKeyName), m_maxTimer(maxTime), m_currTimer(maxTime)
+	StateCountDown::StateCountDown(Entity id, std::string stateKeyName, Coordinator& coord, float maxTime)
+		:StateBase(id, stateKeyName, coord), m_maxTimer(maxTime), m_currTimer(maxTime)
 	{
 	}
 
@@ -22,16 +22,26 @@ namespace NightSnack
 		if (!m_isExit)
 		{
 			m_currTimer -= dt;
-			//std::cout << "Counter: " << m_currTimer << std::endl;
-			if (m_currTimer <= 0)
-			{
-				m_isExit = true;
-			}
+			std::cout << "Counter: " << m_currTimer << std::endl;
+			//State transition check done in base via list
 		}
 	}
 
 	void StateCountDown::Exit()
 	{
+		StateBase::Exit();
+	}
 
+	bool StateCountDown::Countdown(Entity id)
+	{
+		(void)id;
+
+		if (m_currTimer <= 0)
+		{
+			m_isExit = true;
+			return true;
+		}
+
+		return false;
 	}
 }

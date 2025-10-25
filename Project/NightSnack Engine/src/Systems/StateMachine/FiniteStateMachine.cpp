@@ -18,7 +18,7 @@ namespace NightSnack
 		for (Entity id : m_entityList)
 		{
 			if (coord.HasComponent<States>(id))
-				UpdateEntityState(dt, coord, id, coord.GetComponent<States>(id));
+				UpdateEntityState(dt, coord, id, coord.ModifyComponent<States>(id));
 			else
 				removalList.push_back(id);
 		}
@@ -41,7 +41,7 @@ namespace NightSnack
 	}
 
 
-	void FiniteStateMachine::UpdateEntityState(float dt, Coordinator& coord, Entity id, const States& states)
+	void FiniteStateMachine::UpdateEntityState(float dt, Coordinator& coord, Entity id, States& states)
 	{
 		if (!states.currState)
 		{
@@ -53,7 +53,7 @@ namespace NightSnack
 		if (states.isFirstState)
 		{
 			states.currState->Enter();
-			coord.ModifyComponent<States>(id).isFirstState = false;
+			states.isFirstState = false;
 			return;
 		}
 
@@ -63,10 +63,11 @@ namespace NightSnack
 		//Check if exiting
 		if (states.currState->IsExit())
 		{
-			std::shared_ptr<StateBase> nextState = states.currState->NextState();
+			StateBase* nextState = states.currState->NextState();
 			states.currState->Exit();
 
-			coord.ModifyComponent<States>(id).currState = nextState.get();
+			states.currState = nextState;
+			states.currState->Enter();
 		}
 
 		return;
@@ -84,22 +85,23 @@ namespace NightSnack
 	}
 
 
-	States FiniteStateMachine::CreateDebugTestStates(Entity entityId)
+	States FiniteStateMachine::CreateDebugTestStates(Entity entityId, Coordinator& coord)
 	{
 		std::map<std::string, std::shared_ptr<StateBase>> stateMap;
 
 		std::string stateName = "CounterState";
-		std::shared_ptr<StateBase> counterState = std::make_shared<StateCountDown>(StateCountDown(entityId, stateName, 5));
+		std::shared_ptr<StateCountDown> counterState = std::make_shared<StateCountDown>(StateCountDown(entityId, stateName, coord, 3));
 		stateMap.insert({ stateName, counterState });
 
 		stateName = "ChanceState";
-		std::shared_ptr<StateBase> chanceState = std::make_shared<StateBase>(StateBase(entityId, stateName));
+		std::shared_ptr<StateBase> chanceState = std::make_shared<StateBase>(StateBase(entityId, stateName, coord));
 		stateMap.insert({ stateName, chanceState });
 
 		counterState->SetNextState(chanceState);
+		counterState->InsertStateTransition(chanceState, std::bind(&StateCountDown::Countdown, counterState, std::placeholders::_1));
 		chanceState->SetNextState(counterState);
 
-
-		return States(stateMap, counterState.get());
+		States state(stateMap, counterState.get());
+		return state;
 	}
 }
