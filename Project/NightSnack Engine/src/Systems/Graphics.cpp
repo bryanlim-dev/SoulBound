@@ -10,7 +10,7 @@
  * It also provides debug drawing visualization (circle and AABB collider outlines, velocity vector)
  * and basic scaling and rotating of a specific object via input events from the event dispatcher.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -21,8 +21,10 @@ namespace NightSnack {
 
 	void GraphicsSystem::Init() {
 		// Default Shader;
-		auto shader = std::make_unique<Shader>("assets/shaders/vertex_shader.vert", "assets/shaders/fragment_shader.frag");
-		AddShader("default", std::move(shader));
+		auto defaultShader = std::make_unique<Shader>("assets/shaders/vertex_shader.vert", "assets/shaders/fragment_shader.frag");
+		AddShader("default", std::move(defaultShader));
+		auto debugShader = std::make_unique<Shader>("assets/shaders/debug_vertex_shader.vert", "assets/shaders/debug_fragment_shader.frag");
+		AddShader("debug", std::move(debugShader));
 
 		std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
 		// Textures;
@@ -55,6 +57,47 @@ namespace NightSnack {
 		colorMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
 		AddMaterial("ColorMat", std::move(colorMat));
 
+		// Dispatcher lambda
+		m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
+			{
+				// This input event currently only handles key inputs for
+				// - scaling of an object (A / D)
+				// - rotating of an object (R)
+				if (m_entities.empty())
+					return;
+
+				if (event.pressed == InputEvent::InputActionState::Pressed) {
+					switch (event.inputAction) {
+					case InputEvent::InputAction::ScaleUp:
+						ModifyEntityScale(coord, 1.1f);
+						break;
+					case InputEvent::InputAction::ScaleDown:
+						ModifyEntityScale(coord, 0.9f);
+						break;
+					case InputEvent::InputAction::Rotate:
+						ModifyEntityRotation(coord, 30.f);
+						break;
+					case InputEvent::InputAction::ToggleDebugDraw:
+						m_enableDebugDraw = !m_enableDebugDraw;
+						break;
+					case InputEvent::InputAction::ToggleInstancedRendering:
+						m_enableInstancedRendering = !m_enableInstancedRendering;
+						break;
+					case InputEvent::InputAction::CrashTest:
+						CrashLogger::ForceCrash("Forced crash from GraphicsSystem for testing");
+						break;
+					}
+				}
+			});
+
+		// Initialise buffer for Instanced Rendering
+		if (m_globalInstanceSSBO == 0) {
+			glCreateBuffers(1, &m_globalInstanceSSBO);
+			m_globalInstanceSSBOSize = sizeof(Mesh::InstanceData) * NightSnack::MAX_ENTITIES;
+			glNamedBufferStorage(m_globalInstanceSSBO, m_globalInstanceSSBOSize, nullptr, GL_DYNAMIC_STORAGE_BIT);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
+			//std::cout << "Size of InstanceData: " << sizeof(Mesh::InstanceData);
+		}
 	}
 
 	void GraphicsSystem::Update(int steps) {
@@ -74,6 +117,8 @@ namespace NightSnack {
 
 		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
+
+		m_meshBatches.clear();
 
 		for (Entity e : m_entities) {
 			
@@ -97,52 +142,96 @@ namespace NightSnack {
 				continue;
 			}
 
-			glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl, ren.renderLayer);
-			glm::mat4 mvp = proj * view * model;
+			// Creation of Instance Data for Instanced Rendering
+			if (m_enableInstancedRendering) {
 
-			Shader* shader = data.material->GetShader();
-			Mesh* mesh = data.mesh;
-			shader->Use();
-			shader->SetMat4("uMVP", mvp);
+				// Prepare instance data
+				Mesh::InstanceData instance{};
 
-			if (m_coord.HasComponent<Color>(e)) {
-				auto& col = m_coord.GetComponent<Color>(e);
-				shader->SetVec3("uEntityColor", { col.r, col.g, col.b });
+				// Base z offset from the RenderLayer
+				float layerZ = GetRenderLayerZPos(ren.renderLayer);
+				// Final z offset of this renderable
+				float z = layerZ + pos.z;
+				instance.position = glm::vec3(pos.x, pos.y, z);
+				instance.rotation = glm::radians(rot);
+				instance.scale = glm::vec2(scl.x, scl.y);
+				instance.padding = 0.f;
+				instance.pad = glm::vec2{};
+
+				std::string key = ren.meshName;
+
+				if (m_coord.HasComponent<Color>(e)) {
+					auto& col = m_coord.GetComponent<Color>(e);
+					instance.color = glm::vec3(col.r, col.g, col.b);
+					key += "_color";
+				} else {
+					key = key + "_textured_" + ren.materialName;
+				}
+
+				if (ren.isWireframe) {
+					key += "_wireframe";
+				} else {
+					key += "_solid";
+				}
+
+				m_meshBatches[key].instances.push_back(instance);
+				m_meshBatches[key].mesh = data.mesh;
+				m_meshBatches[key].material = data.material;
+				m_meshBatches[key].isWireframe = ren.isWireframe;
+
+			} else {
+				glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl, ren.renderLayer);
+
+				Shader* shader = data.material->GetShader();
+				Mesh* mesh = data.mesh;
+
+				data.material->ApplyUniforms(ren.isWireframe);
+
+				shader->SetMat4("uProj", proj);
+				shader->SetMat4("uView", view);
+				shader->SetMat4("uModelToWorld", model);
+				shader->SetBool("uUseInstancing", m_enableInstancedRendering);
+
+				if (m_coord.HasComponent<Color>(e)) {
+					auto& col = m_coord.GetComponent<Color>(e);
+					shader->SetVec3("uEntityColor", { col.r, col.g, col.b });
+				}
+
+				// Change the polygon mode to wireframe
+				if (ren.isWireframe) {
+					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+					mesh->Draw();
+					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+				} else {
+					mesh->Draw();
+				}
+
+				GLenum err = glGetError();
+				if (err != GL_NO_ERROR) std::cerr << "GL ERROR: " << err << "\n";
+				glEnable(GL_DEBUG_OUTPUT);
+				glDebugMessageCallback([](GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar* message, const void*) {
+					std::cerr << "[GL] " << message << "\n";
+					}, nullptr);
 			}
-
-			data.material->ApplyUniforms(ren.isWireframe);
-
-			//GLint loc = glGetUniformLocation(data.material->GetShader()->GetID(), "uMVP");
-			//std::cout << "uMVP loc=" << loc << "\n";
-
-			// Change the polygon mode to wireframe
-			if (ren.isWireframe) {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-				mesh->Draw();
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			}
-			else {
-				mesh->Draw();
-			}
-
-			GLenum err = glGetError();
-			if (err != GL_NO_ERROR) std::cerr << "GL ERROR: " << err << "\n";
 
 			// Debug Drawing, for entities with no texture
 			if (m_enableDebugDraw) {
+				// For Debug Drawing, debug shader will be used for simplicity
+				Shader* shader = GetShader("debug");
+				shader->Use();
+
 				// Drawing of colliders 
 				if (m_coord.HasComponent<Collider>(e)) {
 					Collider const& col = m_coord.GetComponent<Collider>(e);
-
+					
 					switch (col.shape) {
 					case ShapeType::AABB:
 					{
 						// Model matrix according to its collider's scale
 						glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.width, col.height }, RenderLayer::DEBUG);
-						glm::mat4 debugmvp = proj * view * debugmodel;
-						shader->SetMat4("uMVP", debugmvp);
+						glm::mat4 debugMVP = proj * view * debugmodel;
+						shader->SetMat4("uDebugMVP", debugMVP);
 						shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
-						shader->SetVec3("uBaseColor", glm::vec3(0.f, 1.f, 0.f));
 						GetMesh("AABBColliderMesh")->Draw();
 					}
 					break;
@@ -151,10 +240,9 @@ namespace NightSnack {
 					{
 						// Model matrix according to its collider's scale
 						glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.radius, col.radius }, RenderLayer::DEBUG);
-						glm::mat4 debugmvp = proj * view * debugmodel;
-						shader->SetMat4("uMVP", debugmvp);
+						glm::mat4 debugMVP = proj * view * debugmodel;
+						shader->SetMat4("uDebugMVP", debugMVP);
 						shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
-						shader->SetVec3("uBaseColor", glm::vec3(0.f, 1.f, 0.f));
 						GetMesh("CircleColliderMesh")->Draw();
 					}
 					break;
@@ -183,14 +271,46 @@ namespace NightSnack {
 
 						// Model matrix according to its new rotation, and y-scale so line size reflects speed
 						glm::mat4 debugModel = GetModelToWorldMatrix(pos, angle, Vec2{ 1.f, length }, RenderLayer::DEBUG);
-						glm::mat4 debugMvp = proj * view * debugModel;
-
-						shader->SetMat4("uMVP", debugMvp);
+						glm::mat4 debugMVP = proj * view * debugModel;
+						shader->SetMat4("uDebugMVP", debugMVP);
 						shader->SetVec3("uEntityColor", glm::vec3(0.1f, 0.9f, 0.9f));
-						shader->SetVec3("uBaseColor", glm::vec3(0.1f, 0.9f, 0.9f));
 						// Points upwards by default, will be rotated accordingly
 						GetMesh("line")->Draw();
 					}
+				}
+			}
+		}
+
+		// Uploading and Drawing for Instanced Rendering
+		if (m_enableInstancedRendering) {
+			//std::cout << "Num unique instances total: " << m_meshBatches.size() << std::endl;
+
+			// Upload once per mesh type
+			for (auto& [key, instanceBatch] : m_meshBatches) {
+				//std::cout << "uploading unique mesh with name: " << meshName;
+				//std::cout << " with its instance count: " << instances.size() << std::endl;
+
+				Mesh* mesh = instanceBatch.mesh;
+				Material* material = instanceBatch.material;
+				material->ApplyUniforms(instanceBatch.isWireframe);
+				Shader* shader = material->GetShader();
+				shader->SetMat4("uProj", proj);
+				shader->SetMat4("uView", view);
+				shader->SetBool("uUseInstancing", true);
+
+				size_t size = instanceBatch.instances.size() * sizeof(Mesh::InstanceData);
+				glNamedBufferSubData(m_globalInstanceSSBO, 0, size, instanceBatch.instances.data());
+				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
+
+				if (instanceBatch.isWireframe) {
+					glEnable(GL_POLYGON_OFFSET_LINE);
+					glPolygonOffset(-1.0f, -1.0f); // push lines slightly toward camera
+					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+					mesh->DrawInstanced(instanceBatch.instances.size());
+					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+					glDisable(GL_POLYGON_OFFSET_LINE);
+				} else {
+					mesh->DrawInstanced(instanceBatch.instances.size());
 				}
 			}
 		}
