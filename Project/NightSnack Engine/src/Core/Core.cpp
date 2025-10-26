@@ -2,7 +2,6 @@
  * File:        Core.cpp
  * Project:     NightSnack
  * Author(s):	Chewn Thing Kwan (Primary)
- *				<NAME> (Secondary, xx%) - <Comments>
  *				LIM Wei Jie (Secondary, 17%) - Tracking of game loop timer 
  *				and system timers, and capping of frame rate
  *				Bryan Lim Jun Jie (Secondary, 5%) - pause delta time when game paused
@@ -28,7 +27,6 @@ namespace NightSnack {
 	// ------------------------------------------------------------------------------------------------
 	// CORE
 	// ------------------------------------------------------------------------------------------------
-
 	void CoreEngine::StartUp(std::string&& configFilePath) {
 		try {
 			Initialize(std::move(configFilePath));
@@ -64,19 +62,18 @@ namespace NightSnack {
 		m_coord.RegisterComponent<Force>();
 		m_coord.RegisterComponent<Collider>();		// Collision;
 
+		m_coord.RegisterComponent<Renderable>();	// Graphics;
 		m_coord.RegisterComponent<Color>();
 		m_coord.RegisterComponent<Camera>();
 
 		m_coord.RegisterComponent<PlayerController>();
-		m_coord.RegisterComponent<Renderable>();	// Graphics;
 
 		// Add more Components here...
 
-		// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons;
+		// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons
 		// i.e: Input-> Movement -> Collision -> Graphics;
 		AddSystem<ResourceManager>(); //RM first, so app can load values from it
-		std::string windowTitle = "";
-		int winWidth = 0, winHeight = 0;
+		std::string windowTitle = ""; int winWidth = 0, winHeight = 0;
 		//Get window data
 		ResourceSystemHelper::GetResourceSystemWindowData(m_coord.GetSystem<ResourceManager>(), configFilePath, winHeight, winWidth, windowTitle);
 
@@ -88,10 +85,11 @@ namespace NightSnack {
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
 		AddSystem<CollisionSystem>(m_coord, core_dispatcher);
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
+
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord);
 
-
+		// Buffer all entities' signatures to properly initialize all systems' set of entities
 		for (Entity e : m_coord.GetLivingEntities()) {
 			m_coord.BufferEntitySignature(e);
 		}
@@ -134,19 +132,21 @@ namespace NightSnack {
 
 	void CoreEngine::Update() {
 		// Start frame timing;
-		m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartFrame();
+		m_coord.GetSystem<ApplicationSystem>()->StartFrame();
 
 		// Fixed DT with Accumulated time implementation;
 		numberOfSteps = 0;	// reset step count per frame;
 		float dt = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();	// compute actual game loop time;
 		accumulatedTime += dt;
 
+		static float time = 0;
+		time += dt;
+
 		// Obtain number of steps this loop;
 		while (accumulatedTime >= fixedDeltaTime) { 
 			accumulatedTime -= fixedDeltaTime;
 			++numberOfSteps;
 		}
-
 		if (m_paused) {
 			numberOfSteps = 0;
 			return;
@@ -159,13 +159,19 @@ namespace NightSnack {
 
 			System->Update(numberOfSteps);
 
+			//if (time > 1.f) {
+			//	Entity e = m_coord.GetSystem<GraphicsSystem>()->FindCamera();
+			//	std::cout << "Camera Signature: " << m_coord.GetEntitySignature(e) << '\n';
+			//	std::cout << "Other Signature: " << m_coord.GetEntitySignature(3) << '\n';
+			//}
+
 			m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(System->GetName());
 		}
-		//m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<EntityFactory>()->GetName());
+		m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<EntityFactory>()->GetName());
 		// Destroy all entities scheduled to be removed;
 		for (Entity e : m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed) { m_coord.DestroyEntity(e); }
 		m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed.clear();
-		//m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(m_coord.GetSystem<EntityFactory>()->GetName());
+		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(m_coord.GetSystem<EntityFactory>()->GetName());
 
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(102.f); // Cap frame rate to 102 FPS;
@@ -173,7 +179,7 @@ namespace NightSnack {
 		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
 
 		// End frame timing;
-		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndFrame();
+		m_coord.GetSystem<ApplicationSystem>()->EndFrame();
 	}
 
 }	// NightSnack

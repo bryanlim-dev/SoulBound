@@ -116,7 +116,16 @@ namespace NightSnack {
 			}
 
 			for (auto const& item : m_currentLevel["Entities"]) {
-				Create(item["prefab"], item["Transform"]);
+				Entity e = Create(item["prefab"], item["Transform"]);
+				if (item.contains("Layer")) {
+					if (item["Layer"] == "Background")
+					m_coord.ModifyComponent<Transform>(e).layer = LayerType::BACKGROUND;
+					if (item["Layer"] == "GameUI")
+					m_coord.ModifyComponent<Transform>(e).layer = LayerType::GAMEUI;
+				}
+				else {
+					m_coord.ModifyComponent<Transform>(e).layer = LayerType::GAMELAYER;
+				}
 			}
 		}
 

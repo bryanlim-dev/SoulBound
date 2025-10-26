@@ -4,15 +4,17 @@
     "Transform": {
       "Position": { "x": 0.0, "y": 0.0, "z": 2.0 },
       "Rotation": 0.0,
-      "Scale": { "x": 0.0, "y": 0.0 }
-    }},
+      "Scale": { "x": 0.0, "y": 0.0 }},
+    "Layer": "GameUI"
+    },
 
     { "prefab": "Backdrop",
     "Transform": {
       "Position": { "x": 0.0, "y": 0.0, "z": 0.0 },
       "Rotation": 0.0,
-      "Scale": { "x": 1920.0, "y": 1080.0 }
-    }},
+      "Scale": { "x": 1920.0, "y": 1080.0 }},
+    "Layer": "Background"
+    },
 
     { "prefab": "RedBall",
     "Transform": {

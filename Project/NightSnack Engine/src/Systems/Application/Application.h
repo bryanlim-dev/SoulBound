@@ -161,6 +161,9 @@ namespace NightSnack {
 		/************************************************************************/
 		Timer& GetTimer() { return m_timer; }
 
+		void StartFrame() { m_timer.StartFrame(); }
+		void EndFrame() { m_timer.EndFrame(); }
+
 		Signature GetSignature() const override { return m_systemSignature; }
 
 	private:

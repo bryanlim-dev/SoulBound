@@ -84,21 +84,26 @@ namespace NightSnack {
             }
 
             // Iterate through all Entities this system can access;
-            for (auto const& e : m_entities) {
+            for (Layer& l : m_layers) {
+                for (Entity e : l.entities()) {
+                    if (e == INVALID_ENTITY) { continue; }
+                    // uhhh for some reason camera colliding so... this is here xdd
+                    if (m_coord.HasComponent<Camera>(e)) { continue; }
 
-                // First obtain references to components of interest;
-                auto& pos = m_coord.ModifyComponent<Transform>(e).pos;
-                auto& velocity = m_coord.ModifyComponent<RigidBody>(e).vel;
+                    // First obtain references to components of interest;
+                    auto& pos = m_coord.ModifyComponent<Transform>(e).pos;
+                    auto& velocity = m_coord.ModifyComponent<RigidBody>(e).vel;
 
-                // Get more components here if necessary...
+                    // Get more components here if necessary...
 
-                  // Do stuff that you want to do with the components;
-                pos.x += velocity.x * dt;
-                pos.y += velocity.y * dt;
+                    // Do stuff that you want to do with the components;
+                    pos.x += velocity.x * dt;
+                    pos.y += velocity.y * dt;
 
-                // Do more stuff here if necessary...
+                    // Do more stuff here if necessary...
 
-                if (debugMode) stepRequest = false; // reset step request
+                    if (debugMode) stepRequest = false; // reset step request
+                }
             }
         }
 

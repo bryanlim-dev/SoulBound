@@ -26,10 +26,19 @@ namespace NightSnack {
     // ================================================================================================
     // COMPONENTS
     // ================================================================================================
+    enum class LayerType : std::uint8_t {
+        _ENGINE,
+        BACKGROUND,
+        GAMELAYER,
+        FOREGROUND,
+        GAMEUI
+    };
     struct Transform {
         Vec3 pos;
         float rot;
         Vec2 scale;
+
+        LayerType layer{ LayerType::GAMELAYER };
     };
 
     struct RigidBody {
@@ -143,7 +152,6 @@ namespace NightSnack {
     }
 
     // PHYSICS ====================================================
-
     inline void from_json(const json& j, Force& f) {
         j.value("fx", 0.0f); // optional default
         j.value("fy", 0.0f);
