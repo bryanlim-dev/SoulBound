@@ -230,7 +230,7 @@ namespace NightSnack {
 			ImGuiID dock_id_left_top, dock_id_left_bottom;
 
 			ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.20f, &dock_id_left, &dock_id_center);
-			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Right, 0.20f, &dock_id_right, &dock_id_center);
+			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Right, 0.25f, &dock_id_right, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Up, 0.25f, &dock_id_top, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Down, 1.0f / 3.0f, &dock_id_bottom, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_left, ImGuiDir_Down, 1.0f / 3.0f, &dock_id_left_bottom, &dock_id_left_top);
@@ -275,7 +275,6 @@ namespace NightSnack {
 			if (ImGui::BeginMenu("Game"))
 			{
 				if (ImGui::MenuItem("Play")) {}
-				if (ImGui::MenuItem("Pause")) {}
 				if (ImGui::MenuItem("Stop")) {}
 				ImGui::EndMenu();
 			}

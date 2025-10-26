@@ -41,47 +41,51 @@ namespace NightSnack
         {
             // Scene Panel
             ImGui::Begin("Scene");
-            ImVec2 avail = ImGui::GetContentRegionAvail();
+            ImVec2 panelSize = ImGui::GetContentRegionAvail();
 
-            int panelWidth = static_cast<int>(avail.x);
-            int panelHeight = static_cast<int>(avail.y);
+            // Set your target aspect ratio (e.g., 16:9)
+            constexpr float targetAspect = 16.0f / 9.0f;
 
-            // Only recreate/resize if needed
-            static int lastWidth = 0, lastHeight = 0;
-            if (panelWidth != lastWidth || panelHeight != lastHeight) {
-                CreateOrResizeTexture(panelWidth, panelHeight);
-                lastWidth = panelWidth;
-                lastHeight = panelHeight;
-            }
-
-            // Always copy the full window framebuffer
-            if (!m_sceneTexture)
-            {
-                CreateOrResizeTexture(panelWidth, panelHeight);
-            }
-            UpdateTextureFromFramebuffer(panelWidth, panelHeight);
-
-            // Calculate aspect-correct size
-            float windowAspect = (float)panelWidth / (float)panelHeight;
-            float panelAspect = avail.x / avail.y;
+            // Calculate the largest size that fits in the panel while maintaining aspect ratio
+            float panelAspect = panelSize.x / panelSize.y;
             ImVec2 imageSize;
-            if (panelAspect > windowAspect)
+            if (panelAspect > targetAspect)
             {
-                imageSize.y = avail.y;
-                imageSize.x = avail.y * windowAspect;
+                imageSize.y = panelSize.y;
+                imageSize.x = panelSize.y * targetAspect;
             }
             else
             {
-                imageSize.x = avail.x;
-                imageSize.y = avail.x / windowAspect;
+                imageSize.x = panelSize.x;
+                imageSize.y = panelSize.x / targetAspect;
             }
+
+            // Set the OpenGL viewport to the aspect-corrected size
+            glViewport(0, 0, (int)imageSize.x, (int)imageSize.y);
+
+            // Only recreate/resize if needed
+            static ImVec2 lastSize = ImVec2(0, 0);
+            if (imageSize.x != lastSize.x || imageSize.y != lastSize.y)
+            {
+                CreateOrResizeTexture((int)imageSize.x, (int)imageSize.y);
+                lastSize = imageSize;
+            }
+
+            if (!m_sceneTexture)
+            {
+                CreateOrResizeTexture((int)imageSize.x, (int)imageSize.y);
+            }
+            UpdateTextureFromFramebuffer((int)imageSize.x, (int)imageSize.y);
 
             // Center the image in the panel
             ImVec2 cursorPos = ImGui::GetCursorPos();
-            ImVec2 offset = ImVec2((avail.x - imageSize.x) * 0.5f, (avail.y - imageSize.y) * 0.5f);
+            ImVec2 offset = ImVec2((panelSize.x - imageSize.x) * 0.5f, (panelSize.y - imageSize.y) * 0.5f);
             ImGui::SetCursorPos(ImVec2(cursorPos.x + offset.x, cursorPos.y + offset.y));
 
-            ImGui::Image(reinterpret_cast<void*>(static_cast<intptr_t>(m_sceneTexture)), imageSize, ImVec2(0, 1), ImVec2(1, 0));
+            if (m_sceneTexture && imageSize.x > 0 && imageSize.y > 0)
+            {
+                ImGui::Image((ImTextureID)m_sceneTexture, imageSize, ImVec2(0, 1), ImVec2(1, 0));
+            }
             ImGui::End();
         }
 
