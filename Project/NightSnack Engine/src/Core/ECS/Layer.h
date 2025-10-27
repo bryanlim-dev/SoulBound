@@ -28,7 +28,11 @@ namespace NightSnack {
 		bool Has(Entity e) const noexcept;
 		bool Empty() const noexcept { return m_size == 0; }
 
+		bool IsActive() const noexcept { return m_isActive; }
+		bool IsVisible() const noexcept { return m_isVisible; }
+
 		void ToggleVisibility() { m_isVisible = m_isVisible ? false : true; }
+		void ToggleActive() { m_isActive = m_isActive ? false : true; }
 		LayerType Type() const { return m_type; }
 		LayerID ID() const { return m_id; }
 

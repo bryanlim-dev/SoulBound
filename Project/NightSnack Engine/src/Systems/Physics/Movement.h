@@ -85,10 +85,12 @@ namespace NightSnack {
 
             // Iterate through all Entities this system can access;
             for (Layer& l : m_layers) {
+                if (!l.IsActive()) { continue; }
+
                 for (Entity e : l.entities()) {
                     if (e == INVALID_ENTITY) { continue; }
                     // uhhh for some reason camera colliding so... this is here xdd
-                    if (m_coord.HasComponent<Camera>(e)) { continue; }
+                    //if (m_coord.HasComponent<Camera>(e)) { continue; }
 
                     // First obtain references to components of interest;
                     auto& pos = m_coord.ModifyComponent<Transform>(e).pos;
@@ -99,6 +101,11 @@ namespace NightSnack {
                     // Do stuff that you want to do with the components;
                     pos.x += velocity.x * dt;
                     pos.y += velocity.y * dt;
+
+                    if (pos.y > 450.f) { pos.y = 450.f; }
+                    if (pos.y < -450.f) { pos.y = -450.f; }
+                    if (pos.x > 800.f) { pos.x = 800.f; }
+                    if (pos.x < -800.f) { pos.x = -800.f; }
 
                     // Do more stuff here if necessary...
 
