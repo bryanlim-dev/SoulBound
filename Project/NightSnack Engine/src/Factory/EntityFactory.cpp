@@ -63,7 +63,7 @@ namespace NightSnack {
 
 	void EntityFactory::DoubleEntities() {
 		// seed for rand;
-		srand(69);
+		srand(69 * glfwGetTime());
 		// current number of live entities;
 		size_t currNum = m_coord.GetLivingEntities().size();
 		int Hvp = m_coord.GetWindowHeight();

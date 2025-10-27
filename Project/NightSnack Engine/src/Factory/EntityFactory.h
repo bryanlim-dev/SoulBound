@@ -61,11 +61,11 @@ namespace NightSnack {
 						//std::cout << "Create Circle!\n";
 						break;
 
-					//case InputEvent::InputAction::CreateBananaCircle:
-					//	if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
-					//	Create("Player");
-					//	//std::cout << "Create Banana!\n";
-					//	break;
+					case InputEvent::InputAction::CreateBananaCircle:
+						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
+						Create("Player");
+						//std::cout << "Create Banana!\n";
+						break;
 
 					case InputEvent::InputAction::DoubleEntities:
 						DoubleEntities();

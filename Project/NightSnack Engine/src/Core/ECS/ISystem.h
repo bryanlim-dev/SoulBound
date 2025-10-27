@@ -125,7 +125,7 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Obtains
+		Obtains a shared pointer to a system of type T.
 		*/
 		/************************************************************************/
 		template <typename T>
@@ -175,6 +175,12 @@ namespace NightSnack {
 	inline void ISystem::AddLayer(Layer&& l) {
 		m_layers.emplace_back(l);
 		std::sort(m_layers.begin(), m_layers.end());
+
+		// update mappings;
+		for (size_t idx{}; idx < m_layers.size(); ++idx) {
+			m_idToIndex[m_layers[idx].ID()] = idx;
+			m_indexToId[idx] = m_layers[idx].ID();
+		}
 	}
 	inline void ISystem::RemoveLayer(LayerID id) {
 		// iterate through Layers to find matching ID to erase;
@@ -183,6 +189,11 @@ namespace NightSnack {
 				m_layers.erase(it);
 				return;
 			}
+		}
+		// update mappings;
+		for (size_t idx{}; idx < m_layers.size(); ++idx) {
+			m_idToIndex[m_layers[idx].ID()] = idx;
+			m_indexToId[idx] = m_layers[idx].ID();
 		}
 	}
 
@@ -195,14 +206,14 @@ namespace NightSnack {
 		}
 	}
 	inline void ISystem::RemoveFromLayers(Entity e) {
-		int cnt{};
+		//int cnt{};
 		for (Layer& l : m_layers) {
 			if (l.Has(e)) {
 				l.Remove(e);
-				++cnt;
+				//++cnt;
 			}
 		}
-		if (!cnt) { std::cerr << "No Layers in " << GetName() << " contained Entity: " << e << '\n'; }
+		//if (!cnt) { std::cerr << "No Layers in " << GetName() << " contained Entity: " << e << '\n'; }
 	}
 
 
@@ -235,6 +246,7 @@ namespace NightSnack {
 		// Entities that the Systems can access, so they do not work on destroyed Entities;
 		for (auto& pair : m_systems) {
 			pair.second->entities().erase(e);
+			pair.second->RemoveFromLayers(e);
 		}
 
 	}

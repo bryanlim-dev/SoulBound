@@ -161,8 +161,17 @@ namespace NightSnack {
 		/************************************************************************/
 		Timer& GetTimer() { return m_timer; }
 
+		/************************************************************************/
+		/*!
+		\brief
+		Timer interface.
+		*/
+		/************************************************************************/
 		void StartFrame() { m_timer.StartFrame(); }
 		void EndFrame() { m_timer.EndFrame(); }
+		void StartSystemTimer(std::string&& s) { m_timer.StartSystemTimer(s); }
+		void EndSystemTimer(std::string&& s) { m_timer.EndSystemTimer(s); }
+		float GetDT() { return m_timer.GetDT(); }
 
 		Signature GetSignature() const override { return m_systemSignature; }
 

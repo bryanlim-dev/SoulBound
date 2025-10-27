@@ -21,7 +21,10 @@ namespace NightSnack {
 	public:
 		Layer(LayerType t)
 			: m_type{ t }, m_id{ ++layerCount }, m_isVisible { true }, m_isActive{ true }
-		{ /* Does nothing... */ }
+		{
+			std::fill(m_entities.begin(), m_entities.end(), INVALID_ENTITY);
+			m_entityToIndex.reserve(MAX_ENTITIES);
+		}
 
 		void Insert(Entity e);
 		void Remove(Entity e);
@@ -31,22 +34,20 @@ namespace NightSnack {
 		bool IsActive() const noexcept { return m_isActive; }
 		bool IsVisible() const noexcept { return m_isVisible; }
 
-		void ToggleVisibility() { m_isVisible = m_isVisible ? false : true; }
-		void ToggleActive() { m_isActive = m_isActive ? false : true; }
+		void ToggleVisibility() { m_isVisible = !m_isVisible; }
+		void ToggleActive() { m_isActive = !m_isActive; }
 		LayerType Type() const { return m_type; }
 		LayerID ID() const { return m_id; }
 
 		bool operator<(Layer const& rhs);
-		std::array<Entity, MAX_ENTITIES>& entities() { return m_entities; }
+		std::array<Entity, MAX_ENTITIES>& Entities() { return m_entities; }
 
 		inline static std::uint32_t layerCount = 0;
 
 	private:
 		// Actual storage of Entities.
-		std::array<Entity, MAX_ENTITIES> m_entities{ INVALID_ENTITY };
-
-		// mapping to order entities within Layer;
-		std::unordered_map<size_t, Entity> m_indexToEntity;
+		std::array<Entity, MAX_ENTITIES> m_entities;
+		// Mapping to order entities within Layer;
 		std::unordered_map<Entity, size_t> m_entityToIndex;
 
 		size_t m_size{};

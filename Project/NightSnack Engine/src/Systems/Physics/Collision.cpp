@@ -135,12 +135,12 @@ namespace NightSnack {
                                     velA.y = 0.0f;
                                     colA.isGrounded = true;
                                     bounceCount[*itA] = 0; // Reset counter
-                                    std::cout << "ball stopped after " << bounceCount[*itA] << " bounces" << std::endl;
+                                    //std::cout << "ball stopped after " << bounceCount[*itA] << " bounces" << std::endl;
                                 }
                                 else
                                 {
                                     colA.isGrounded = false;
-                                    std::cout << "ball bounced #" << bounceCount[*itA] << " with velocity: " << velA.y << std::endl;
+                                    //std::cout << "ball bounced #" << bounceCount[*itA] << " with velocity: " << velA.y << std::endl;
                                 }
                             }
                         }

@@ -136,11 +136,8 @@ namespace NightSnack {
 
 		// Fixed DT with Accumulated time implementation;
 		numberOfSteps = 0;	// reset step count per frame;
-		float dt = m_coord.GetSystem<ApplicationSystem>()->GetTimer().GetDT();	// compute actual game loop time;
+		float dt = m_coord.GetSystem<ApplicationSystem>()->GetDT();	// compute actual game loop time;
 		accumulatedTime += dt;
-
-		static float time = 0;
-		time += dt;
 
 		// Obtain number of steps this loop;
 		while (accumulatedTime >= fixedDeltaTime) { 
@@ -155,28 +152,21 @@ namespace NightSnack {
 		// Iterate through Systems and Update them through Coordinator;
 		for (auto& System : m_systems) {
 
-			m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(System->GetName());
-
+			m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer(System->GetName());
 			System->Update(numberOfSteps);
-
-			//if (time > 1.f) {
-			//	Entity e = m_coord.GetSystem<GraphicsSystem>()->FindCamera();
-			//	std::cout << "Camera Signature: " << m_coord.GetEntitySignature(e) << '\n';
-			//	std::cout << "Other Signature: " << m_coord.GetEntitySignature(3) << '\n';
-			//}
-
-			m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(System->GetName());
+			m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer(System->GetName());
 		}
-		m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<EntityFactory>()->GetName());
+
 		// Destroy all entities scheduled to be removed;
+		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("EntityFactory");
 		for (Entity e : m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed) { m_coord.DestroyEntity(e); }
 		m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed.clear();
-		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(m_coord.GetSystem<EntityFactory>()->GetName());
+		m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer("EntityFactory");
 
-		m_coord.GetSystem<ApplicationSystem>()->GetTimer().StartSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
-		m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(102.f); // Cap frame rate to 102 FPS;
+		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("ApplicationSystem");
+		m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(102.f);
 		m_coord.GetSystem<ApplicationSystem>()->SwapBuffers();
-		m_coord.GetSystem<ApplicationSystem>()->GetTimer().EndSystemTimer(m_coord.GetSystem<ApplicationSystem>()->GetName());
+		m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer("ApplicationSystem");
 
 		// End frame timing;
 		m_coord.GetSystem<ApplicationSystem>()->EndFrame();

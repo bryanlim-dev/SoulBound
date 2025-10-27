@@ -87,10 +87,8 @@ namespace NightSnack {
             for (Layer& l : m_layers) {
                 if (!l.IsActive()) { continue; }
 
-                for (Entity e : l.entities()) {
-                    if (e == INVALID_ENTITY) { continue; }
-                    // uhhh for some reason camera colliding so... this is here xdd
-                    //if (m_coord.HasComponent<Camera>(e)) { continue; }
+                for (Entity e : l.Entities()) {
+                    if (e == INVALID_ENTITY) { break; }
 
                     // First obtain references to components of interest;
                     auto& pos = m_coord.ModifyComponent<Transform>(e).pos;
@@ -116,7 +114,7 @@ namespace NightSnack {
 
         // Required by ISystem base class;
         Signature GetSignature() const override { return m_systemSignature; }
-        std::string GetName() const override { return "Movement"; }
+        std::string GetName() const override { return "MovementSystem"; }
 
     private:
         Signature m_systemSignature{};

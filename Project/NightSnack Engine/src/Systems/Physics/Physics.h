@@ -53,12 +53,6 @@ namespace NightSnack {
                     case InputEvent::InputAction::DynamicBallTest:
                         ApplyForce(coord, 2, 80.f, 0.f);
                         break;
-                        //case InputEvent::InputAction::GravityBallTest:
-                        //    if (coord.GetComponent<Collider>(6).isGrounded) {
-                        //    coord.ModifyComponent<Collider>(6).isGrounded = false;
-                        //    ApplyForce(coord, 6, 0.f, 60.f);
-                        //    }
-                        //    break;
                     case InputEvent::InputAction::PhysicsDebugMode:
                         debugMode = !debugMode;
                         break;

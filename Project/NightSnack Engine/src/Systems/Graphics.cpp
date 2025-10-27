@@ -87,9 +87,10 @@ namespace NightSnack {
 
 		m_meshBatches.clear();
 
-		for (Layer& L : m_layers) {
-			for (Entity e : m_entities) {
-				if (e == INVALID_ENTITY) { continue; }
+		for (Layer& l : m_layers) {
+			if (l.Empty() || !l.IsVisible()) { continue; }
+			for (Entity e : l.Entities()) {
+				if (e == INVALID_ENTITY) { break; }
 
 				// Obtain entity components;
 				auto& ren = m_coord.GetComponent<Renderable>(e);

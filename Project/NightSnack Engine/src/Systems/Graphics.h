@@ -57,8 +57,6 @@ namespace NightSnack {
 			Hvp = static_cast<float>(coord.GetWindowHeight());
 			Wvp = static_cast<float>(coord.GetWindowWidth());
 
-			std::cout << m_systemSignature << "\n";
-
 			Init();
 
 			// Dispatcher lambda
