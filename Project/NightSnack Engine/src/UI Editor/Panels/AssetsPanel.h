@@ -1,7 +1,8 @@
 /******************************************************************************
  * File:        AssetsPanel.h
  * Project:     NightSnack
- * Author(s):	Bryan Lim Jun Jie (Primary, 90%)
+ * Author(s):	Bryan Lim Jun Jie (Primary, 95%)
+ *              Lim Wei Jie (Secondary, 5%)
  *
  * Description:
  * Assets panel displaying and handling all game assets.
@@ -21,7 +22,14 @@ namespace NightSnack
 {
     class AssetsPanel {
     public:
-        AssetsPanel(Coordinator& coord) : m_coord(coord) , m_assetsRoot("../../NightSnack Engine/assets") {}
+        AssetsPanel(Coordinator& coord) : 
+            m_coord(coord), 
+            m_assetsRoot("../../NightSnack Engine/assets"),
+            m_thumbnailSize(96.0f),
+            //m_searchFilter(""),
+            m_selectedAssetPath(""),
+            m_showAssetProperties(false)
+        {}
 
         void Draw()
         {
@@ -54,78 +62,184 @@ namespace NightSnack
     private:
         Coordinator& m_coord;
         fs::path m_assetsRoot;// Root directory of the assets folder
+
         std::unordered_map<std::string, GLuint> m_loadedTextures; // Cache of loaded textures
         std::unordered_map<std::string, std::shared_ptr<Texture>> m_textureObjects;
 
+        float m_thumbnailSize;                   // Size of thumbnail images
+        std::string m_searchFilter;              // Current search text
+        std::string m_selectedAssetPath;         // Currently selected asset
+        bool m_showAssetProperties;              // Show properties window?
+
+        void DrawToolbar()
+        {
+            // ----------------------------------------------------------------
+            // SEARCH BAR - Filter assets by name (Unity has this)
+            // ----------------------------------------------------------------
+            static char searchBuffer[256] = "";
+            ImGui::SetNextItemWidth(200.0f);
+            if (ImGui::InputTextWithHint("##Search", "Search assets...", searchBuffer, 256))
+            {
+                m_searchFilter = std::string(searchBuffer);
+            }
+
+            ImGui::SameLine();
+
+            // ----------------------------------------------------------------
+            // THUMBNAIL SIZE SLIDER - Adjust icon size (Unity feature)
+            // ----------------------------------------------------------------
+            ImGui::SetNextItemWidth(100.0f);
+            ImGui::SliderFloat("##Size", &m_thumbnailSize, 64.0f, 128.0f, "Size: %.0f");
+
+            ImGui::SameLine();
+
+            // ----------------------------------------------------------------
+            // REFRESH BUTTON - Rescan assets folder
+            // ----------------------------------------------------------------
+            if (ImGui::Button("Refresh"))
+            {
+                // Clear texture cache to force reload
+                m_loadedTextures.clear();
+                m_textureObjects.clear();
+                std::cout << "[Assets] Refreshed asset cache\n";
+            }
+        }
 
         void DrawImagesTab()
         {
-            // Define thumbnail appearance
-            static float thumbnailSize = 96.0f;   // Size of each image preview square
-            static float padding = 12.0f;         // Space between thumbnails
-            float cellSize = thumbnailSize + padding;
-
-            // Compute how many thumbnails fit per row based on available panel width
+            // ----------------------------------------------------------------
+            // CALCULATE GRID LAYOUT
+            // Determine how many thumbnails fit per row
+            // ----------------------------------------------------------------
+            static float padding = 12.0f;
+            float cellSize = m_thumbnailSize + padding;
             float panelWidth = ImGui::GetContentRegionAvail().x;
-            int columnCount = (int)(panelWidth / cellSize);
-            if (columnCount < 1)
-            {
-                columnCount = 1;
-            }
+            int columnCount = std::max(1, (int)(panelWidth / cellSize));
 
-            // Create columns to layout thumbnails in a grid
+            // Create column layout for grid
             ImGui::Columns(columnCount, 0, false);
 
-            // Iterate through all files inside the assets folder (recursively)
+            // ----------------------------------------------------------------
+            // ITERATE THROUGH ALL IMAGE FILES
+            // Scan assets folder recursively for images
+            // ----------------------------------------------------------------
             for (auto const& entry : fs::recursive_directory_iterator(m_assetsRoot))
             {
-                // Skip folders; we only want image files
+                // Skip directories - only process files
                 if (!entry.is_regular_file())
-                {
                     continue;
-                }
 
-                // Get file extension (e.g., ".png", ".jpg")
+                // Check if file is an image (png, jpg, etc.)
                 std::string ext = entry.path().extension().string();
                 if (!IsImageFile(ext))
-                {
-                    continue; // Skip non-image files
-                }
+                    continue;
 
-                // Convert full path to string
+                // Get full path as string
                 std::string pathStr = entry.path().string();
 
-                // Load the texture (cached if already loaded)
-                ImTextureID texID = GetOrLoadTexture(pathStr);
-                if (!texID)
+                // ----------------------------------------------------------------
+                // SEARCH FILTER - Skip if doesn't match search
+                // ----------------------------------------------------------------
+                if (!m_searchFilter.empty())
                 {
-                    continue; // Skip if texture loading failed or not implemented yet
+                    std::string filename = entry.path().filename().string();
+                    std::string lowerFilename = filename;
+                    std::string lowerFilter = m_searchFilter;
+
+                    // Convert to lowercase for case-insensitive search
+                    std::transform(lowerFilename.begin(), lowerFilename.end(),
+                        lowerFilename.begin(), ::tolower);
+                    std::transform(lowerFilter.begin(), lowerFilter.end(),
+                        lowerFilter.begin(), ::tolower);
+
+                    // Skip if filename doesn't contain search term
+                    if (lowerFilename.find(lowerFilter) == std::string::npos)
+                        continue;
                 }
 
-                // Each image has its own ImGui ID to avoid conflicts
+                // ----------------------------------------------------------------
+                // LOAD TEXTURE - Get or load thumbnail from cache
+                // ----------------------------------------------------------------
+                ImTextureID texID = GetOrLoadTexture(pathStr);
+                if (!texID)
+                    continue; // Skip if failed to load
+
+                // Push unique ID for this asset (prevents ImGui conflicts)
                 ImGui::PushID(pathStr.c_str());
 
-                // Render the image as a clickable button (thumbnail)
-                ImGui::ImageButton(pathStr.c_str(), texID, ImVec2(thumbnailSize, thumbnailSize));
+                // ----------------------------------------------------------------
+                // HIGHLIGHT IF SELECTED (Unity blue highlight)
+                // ----------------------------------------------------------------
+                if (m_selectedAssetPath == pathStr)
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.5f, 0.8f, 1.0f));
+                }
 
-                // If hovered, show a tooltip with the file name
+                // ----------------------------------------------------------------
+                // RENDER THUMBNAIL - Clickable image button
+                // ----------------------------------------------------------------
+                ImGui::ImageButton(pathStr.c_str(), texID,
+                    ImVec2(m_thumbnailSize, m_thumbnailSize));
+
+                // Pop highlight color if was selected
+                if (m_selectedAssetPath == pathStr)
+                {
+                    ImGui::PopStyleColor();
+                }
+
+                // ----------------------------------------------------------------
+                // CLICK TO SELECT - Single click selects the asset
+                // ----------------------------------------------------------------
+                if (ImGui::IsItemClicked())
+                {
+                    m_selectedAssetPath = pathStr;
+                    m_showAssetProperties = true;
+                    std::cout << "[Assets] Selected: " << pathStr << "\n";
+                }
+
+                // ================================================================
+                // DRAG SOURCE - ENABLE DRAGGING (MOST IMPORTANT FEATURE!)
+                // This allows dragging the image to Scene panel
+                // ================================================================
+                if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+                {
+                    // ----------------------------------------------------------------
+                    // SET PAYLOAD - Store the asset path as drag data
+                    // "ASSET_IMAGE" is the identifier for this drag type
+                    // ----------------------------------------------------------------
+                    ImGui::SetDragDropPayload("ASSET_IMAGE", pathStr.c_str(), pathStr.size() + 1);
+
+                    // ----------------------------------------------------------------
+                    // DRAG PREVIEW - Show thumbnail while dragging
+                    // ----------------------------------------------------------------
+                    ImGui::Image(texID, ImVec2(64, 64));
+                    ImGui::Text("%s", entry.path().filename().string().c_str());
+
+                    ImGui::EndDragDropSource();
+                }
+
+                // ----------------------------------------------------------------
+                // TOOLTIP - Show info on hover
+                // ----------------------------------------------------------------
                 if (ImGui::IsItemHovered())
                 {
                     ImGui::BeginTooltip();
-                    ImGui::Text("%s", entry.path().filename().string().c_str());
+                    ImGui::Text("Drag to Scene to add");
+                    ImGui::Text("File: %s", entry.path().filename().string().c_str());
+                    ImGui::Text("Path: %s", pathStr.c_str());
                     ImGui::EndTooltip();
                 }
 
-                // Display filename text below the image
+                // Display filename text below thumbnail
                 ImGui::TextWrapped("%s", entry.path().filename().string().c_str());
 
-                // Move to the next column in the grid layout
+                // Move to next column in grid
                 ImGui::NextColumn();
 
                 ImGui::PopID();
             }
 
-            // End the columns layout
+            // End grid layout
             ImGui::Columns(1);
         }
 
