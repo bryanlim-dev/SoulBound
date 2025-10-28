@@ -22,7 +22,9 @@ namespace NightSnack
 		std::list<std::pair<std::shared_ptr<StateBase>, std::function<bool(Entity)>>> m_transtitionStatesList;
 
 		//Function returns nothing an takes in a EntityID and float (dt)
+		std::function<void (Entity, Coordinator&)> m_enterFunction;
 		std::function<void (float, Entity)> m_updateFunction;
+		std::function<void (Entity, Coordinator&)> m_exitFunction;
 
 		std::shared_ptr<StateBase> m_nextState = nullptr;
 		Entity m_entityID;
@@ -48,6 +50,16 @@ namespace NightSnack
 			}
 		}
 
+		void SetEnterFunction(std::function<void(float, Coordinator&)> enterFunc)
+		{
+			m_enterFunction = enterFunc;
+		}
+
+		void SetExitFunction(std::function<void(float, Coordinator&)> exitFunc)
+		{
+			m_exitFunction = exitFunc;
+		}
+
 		void InsertStateTransition(std::shared_ptr<StateBase> state, std::function<bool(Entity)>transitionn)
 		{
 			m_transtitionStatesList.push_back({ state,transitionn });
@@ -60,6 +72,9 @@ namespace NightSnack
 		virtual void Enter() {
 			m_isExit = false; 
 			std::cout << "ID: " << m_entityID << ", State Enter: " << m_stateKey << std::endl;
+
+			if (m_enterFunction)
+				m_enterFunction(m_entityID, m_coord);
 		}
 
 		virtual void Update(float dt) {
@@ -80,6 +95,9 @@ namespace NightSnack
 		virtual void Exit() { 
 			m_isExit = false; 
 			std::cout << "ID: " << m_entityID << ", State Exit: " << m_stateKey << std::endl;
+
+			if (m_exitFunction)
+				m_exitFunction(m_entityID, m_coord);
 		}
 
 
@@ -97,6 +115,12 @@ namespace NightSnack
 		{
 			return m_isExit;
 		}
+
+		struct StateDecisionFuncionHelper
+		{
+			//Insert update functions here
+			//bool CheeckPlayerLeft(Entity ownerID, Coordinator& coord);
+		};
 	};
 
 	class StateCountDown : public StateBase
@@ -120,17 +144,16 @@ namespace NightSnack
 		bool CountdownCheck(Entity id);
 	};
 
-	class StateRandomChance : public StateBase
+	class StateMovment : public StateBase
 	{
 	private:
-
+		Vec2 m_Speed;
 
 	public:
-		void Enter() override;
+		StateMovment(Entity id, std::string stateKeyName, Coordinator& coord, Vec2 moveSpeedAcc);
 
-		void Update(float dt) override;
-
-		void Exit() override;
+		void MovementEnter();
+		void MovementExit();
 	};
 
 } //End of namesapce

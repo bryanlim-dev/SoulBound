@@ -44,4 +44,23 @@ namespace NightSnack
 
 		return false;
 	}
+
+	StateMovment::StateMovment(Entity id, std::string stateKeyName, Coordinator& coord, Vec2 moveSpeedAcc)
+		:StateBase(id, stateKeyName, coord, [this](float dt, Entity e) { /* Empty by Design*/ }),
+		m_Speed(moveSpeedAcc)
+	{
+		SetEnterFunction(std::bind( & StateMovment::MovementEnter, this));
+		SetExitFunction(std::bind( & StateMovment::MovementExit, this));
+	}
+
+	void StateMovment::MovementEnter()
+	{
+		m_coord.ModifyComponent<RigidBody>(m_entityID).vel = m_Speed;
+	}
+
+	void StateMovment::MovementExit()
+	{
+		m_coord.ModifyComponent<RigidBody>(m_entityID).vel = Vec2();
+	}
+
 }

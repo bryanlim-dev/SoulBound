@@ -1,11 +1,18 @@
 #include "FiniteStateMachine.h"
+#include <Factory/EntityFactory.h>
 
 namespace NightSnack
 {
 	FiniteStateMachine::FiniteStateMachine(Coordinator& coord) : m_coord(coord)
 	{
-		Entity test = m_coord.CreateEntity();
-		(FiniteStateMachine::CreateDebugTestStates(test, m_coord));
+		m_systemSignature.set(GetComponentTypeID<Transform>());
+
+		Entity test = m_coord.GetSystem<EntityFactory>()->Create("BananaBall");
+
+ 		(FiniteStateMachine::CreateDebugTestStates(test, m_coord));
+		m_coord.ModifyComponent<Transform>(test).pos.x = 100;
+		m_coord.ModifyComponent<Transform>(test).pos.y = 250;
+
 		/*m_coord.GetSystem<FiniteStateMachine>()->*/
 		AddEntity(test);
 	}
@@ -99,25 +106,21 @@ namespace NightSnack
 	{
 		std::map<std::string, std::shared_ptr<StateBase>> stateMap;
 
-		//Do NOT use std::make_shared<StateCountDown>(StateCountDown(entityId, stateName, coord, 3))
-		//Apprently that messes up the pointer and makes a new uninitalized one??
-
 		std::string stateName = "CounterState";
-		std::shared_ptr<StateCountDown> stateCountdownShared = std::make_shared<StateCountDown>(entityId, stateName, coord, 30);
+		std::shared_ptr<StateCountDown> stateCountdownShared = std::make_shared<StateCountDown>(entityId, stateName, coord, 5);
 		stateMap.insert({ stateName, stateCountdownShared });
 
-		stateName = "ChanceState";
-		std::shared_ptr<StateBase> chanceState = std::make_shared<StateBase>(entityId, stateName, coord, [](float, Entity) {
-			});
-		stateMap.insert({ stateName, chanceState });
+		stateName = "MoveState";
+		//std::shared_ptr<StateBase> moveState = std::make_shared<StateBase>(entityId, stateName, coord, [](float, Entity) {
+		//	});
+		std::shared_ptr<StateMovment> moveState = std::make_shared<StateMovment>(entityId, stateName, coord, Vec2(100, 0));
+		stateMap.insert({ stateName, moveState});
 
-		stateCountdownShared->SetNextState(chanceState);
-		stateCountdownShared->InsertStateTransition(chanceState, std::bind(&StateCountDown::CountdownCheck, stateCountdownShared, std::placeholders::_1));
-		chanceState->SetNextState(stateCountdownShared);
-		//std::cout << "State adresss in debug states: " << stateCountdownShared << "\n";
+		stateCountdownShared->SetNextState(moveState);
+		stateCountdownShared->InsertStateTransition(moveState, std::bind(&StateCountDown::CountdownCheck, stateCountdownShared, std::placeholders::_1));
+		moveState->SetNextState(stateCountdownShared);
+
 		coord.AddComponent<States>(entityId, States(stateMap, stateCountdownShared));
-		//std::cout << "State adresss in compionents: " << coord.GetComponent<States>(entityId).currState << "\n";
-		//std::cout << "State adresss in commponent map: " << coord.ModifyComponent<States>(entityId).stateMap[stateName].get() << "\n";
 		return;
 	}
 }
