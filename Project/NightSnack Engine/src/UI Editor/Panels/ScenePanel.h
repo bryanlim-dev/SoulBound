@@ -180,7 +180,7 @@ namespace NightSnack
         void CreateEntityFromAsset(const std::string& assetPath, float mouseX, float mouseY)
         {
             // STEP 1: Load image through ResourceManager
-            auto resourceMgr = ResourceManager::GetInstance();
+            auto resourceMgr = m_coord.GetSystem<ResourceManager>();
             if (!resourceMgr)
             {
                 std::cerr << "[Scene] ResourceManager not available!\n";

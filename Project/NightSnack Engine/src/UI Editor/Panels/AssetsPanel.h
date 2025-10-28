@@ -582,7 +582,7 @@ namespace NightSnack
             stbi_set_flip_vertically_on_load(false);
 
             // --- Use your Texture class to load the image --- //
-            std::shared_ptr<Texture> tex = std::make_shared<Texture>(path); 
+            std::shared_ptr<Texture> tex = std::make_shared<Texture>(path, m_coord.GetSystem<ResourceManager>()); 
 
             // Cache the texture (store both Texture and ImGui ID)
             m_textureObjects[path] = tex;
