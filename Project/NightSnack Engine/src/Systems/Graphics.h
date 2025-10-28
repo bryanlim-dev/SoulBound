@@ -91,16 +91,6 @@ namespace NightSnack {
 			AddLayer(LayerType::GAMELAYER);
 			AddLayer(LayerType::FOREGROUND);
 			AddLayer(LayerType::GAMEUI);
-
-			std::cout << "Graphics Entities: \n";
-			for (Layer& l : m_layers) {
-				std::cout << "Layer " << l.ID() << ": ";
-				for (Entity e : l.Entities()) {
-					if (e == INVALID_ENTITY) { continue; }
-					std::cout << e << " ";
-				}
-			}
-			std::cout << '\n';
 		}
 
 		/************************************************************************/

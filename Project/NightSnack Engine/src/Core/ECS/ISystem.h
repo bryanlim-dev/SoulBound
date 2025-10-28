@@ -252,6 +252,9 @@ namespace NightSnack {
 		for (auto const& pair : m_systems) {
 			// Signature of System in current iteration;
 			auto const& systemSig = m_signatures[pair.first];
+			// Skip if System has no Signature;
+			if (systemSig == 0) { continue; }
+
 			// Pointer to System stored in unordered map, of current iteration;
 			auto& system = pair.second;
 
