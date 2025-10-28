@@ -2,32 +2,41 @@
 
 namespace NightSnack
 {
-	FiniteStateMachine::FiniteStateMachine()
+	FiniteStateMachine::FiniteStateMachine(Coordinator& coord) : m_coord(coord)
 	{
+		Entity test = m_coord.CreateEntity();
+		(FiniteStateMachine::CreateDebugTestStates(test, m_coord));
+		/*m_coord.GetSystem<FiniteStateMachine>()->*/
+		AddEntity(test);
 	}
 
 	FiniteStateMachine::~FiniteStateMachine()
 	{
 	}
 
-	void FiniteStateMachine::Update(float dt, Coordinator& coord)
+	void FiniteStateMachine::Update(int steps)
 	{
-		//Find and update each entity state machine
-		std::list<Entity> removalList;
-		removalList.clear();
-
-		for (Entity& id : m_entityList)
+		for (int stepCount = 0; stepCount < steps; ++stepCount)
 		{
-			if (coord.HasComponent<States>(id))
-				UpdateEntityState(dt, coord, id, coord.ModifyComponent<States>(id));
-			else
-				removalList.push_back(id);
-		}
+			float dt = m_coord.GetSystem<ApplicationSystem>()->GetDT();
 
-		//Dont delete partway thru loop
-		for (Entity& id : removalList)
-		{
-			RemoveEntity(id);
+			//Find and update each entity state machine
+			std::list<Entity> removalList;
+			removalList.clear();
+
+			for (Entity& id : m_entityList)
+			{
+				if (m_coord.HasComponent<States>(id))
+					UpdateEntityState(dt, m_coord, id, m_coord.ModifyComponent<States>(id));
+				else
+					removalList.push_back(id);
+			}
+
+			//Dont delete partway thru loop
+			for (Entity& id : removalList)
+			{
+				RemoveEntity(id);
+			}
 		}
 	}
 
@@ -94,7 +103,7 @@ namespace NightSnack
 		//Apprently that messes up the pointer and makes a new uninitalized one??
 
 		std::string stateName = "CounterState";
-		std::shared_ptr<StateCountDown> stateCountdownShared = std::make_shared<StateCountDown>(entityId, stateName, coord, 3);
+		std::shared_ptr<StateCountDown> stateCountdownShared = std::make_shared<StateCountDown>(entityId, stateName, coord, 30);
 		stateMap.insert({ stateName, stateCountdownShared });
 
 		stateName = "ChanceState";

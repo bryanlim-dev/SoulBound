@@ -15,12 +15,13 @@ namespace NightSnack
 		std::list<Entity> m_entityList;
 
 		Signature m_systemSignature{};
+		Coordinator& m_coord;
 
 	public:
-		FiniteStateMachine();
+		FiniteStateMachine(Coordinator& coord);
 		~FiniteStateMachine();
 
-		void Update(float dt, Coordinator& coord) override;
+		void Update(int steps) override;
 
 		void AddEntity(Entity id);
 		void RemoveEntity(Entity id);

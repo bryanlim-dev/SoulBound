@@ -87,7 +87,7 @@ namespace NightSnack {
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
 		AddSystem<CollisionSystem>(m_coord, core_dispatcher);
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
-		AddSystem<FiniteStateMachine>();
+		AddSystem<FiniteStateMachine>(m_coord);
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord);
 
