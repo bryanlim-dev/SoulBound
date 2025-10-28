@@ -27,7 +27,7 @@ namespace NightSnack
 			for (Entity& id : m_entityList)
 			{
 				if (m_coord.HasComponent<States>(id))
-					UpdateEntityState(dt, m_coord, id, m_coord.ModifyComponent<States>(id));
+					UpdateEntityState(dt, id, m_coord.ModifyComponent<States>(id));
 				else
 					removalList.push_back(id);
 			}
@@ -51,7 +51,7 @@ namespace NightSnack
 	}
 
 
-	void FiniteStateMachine::UpdateEntityState(float dt, Coordinator& coord, Entity id, States& states)
+	void FiniteStateMachine::UpdateEntityState(float dt, Entity id, States& states)
 	{
 		if (!states.currState)
 		{

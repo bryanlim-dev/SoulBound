@@ -28,7 +28,7 @@ namespace NightSnack
 	void StateCountDown::CountdownUpdate(float dt, Entity id)
 	{
 		m_currTimer -= dt;
-		std::cout << "Counter: " << m_currTimer << std::endl;
+		//std::cout << "Counter: " << m_currTimer << std::endl;
 	}
 
 	bool StateCountDown::CountdownCheck(Entity id)

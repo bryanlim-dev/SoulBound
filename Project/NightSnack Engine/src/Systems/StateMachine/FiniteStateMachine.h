@@ -55,6 +55,6 @@ namespace NightSnack
 		static void CreateDebugTestStates(Entity entityId, Coordinator& coord) ;
 
 	private:
-		void UpdateEntityState(float dt, Coordinator& coord, Entity id, States& states);
+		void UpdateEntityState(float dt, Entity id, States& states);
 	};
 }
