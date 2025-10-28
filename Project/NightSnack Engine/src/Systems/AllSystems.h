@@ -23,6 +23,7 @@
 #include "UI Editor/Imgui.h"
 #include "./ResourceManager/ResourceManager.h"
 #include "AudioSystem.h"
+#include "Graphics/Camera.h"
 
 // Add System header files here...
 

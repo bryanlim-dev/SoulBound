@@ -82,6 +82,7 @@ namespace NightSnack {
 		AddSystem<AudioSystem>(m_coord, core_dispatcher);
 		AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json", "assets/GameData/DefaultLevel.json");
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
+		AddSystem<CameraSystem>(m_coord, core_dispatcher);
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
 		AddSystem<CollisionSystem>(m_coord, core_dispatcher);
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
