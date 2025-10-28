@@ -187,6 +187,8 @@ namespace NightSnack {
 		/************************************************************************/
 		void Remove(Entity e);
 
+		std::vector<std::string> const& GetPrefabNames();
+
 		std::set<Entity> m_toBeDestroyed;
 
 	private:

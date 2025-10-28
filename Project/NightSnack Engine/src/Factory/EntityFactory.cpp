@@ -110,4 +110,8 @@ namespace NightSnack {
 		}
 	}
 
+	std::vector<std::string> const& EntityFactory::GetPrefabNames() {
+		return std::vector<std::string>{};
+	}
+
 }	// NightSnack

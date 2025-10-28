@@ -14,6 +14,8 @@
 #pragma once
 #include "AllPanels.h"
 #include "Graphics/Texture.h"
+#include "Factory/EntityFactory.h"
+#include "PrefabsPanel.h"
 #include <stb_image.h>
 
 namespace fs = std::filesystem;
@@ -28,9 +30,14 @@ namespace NightSnack
             m_thumbnailSize(96.0f),
             //m_searchFilter(""),
             m_selectedAssetPath(""),
-            m_showAssetProperties(false)
-            //m_showImportDialog(false)
-        {}
+            m_showAssetProperties(false),
+            m_showImportDialog(false)
+        {
+            //m_prefabs.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
+            //for (std::string const& s : coord.GetSystem<EntityFactory>()->GetPrefabNames()) {
+            //    m_prefabs.emplace_back(s);
+            //}
+        }
 
         void Draw()
         {
@@ -68,6 +75,12 @@ namespace NightSnack
                     DrawAllFilesTab();
                     ImGui::EndTabItem();
                 }
+                
+                if (ImGui::BeginTabItem("Prefabs"))
+                {
+                    //DrawPrefabsPanel(m_prefabs);
+                    ImGui::EndTabItem();
+                }
                 ImGui::EndTabBar();
             }
             ImGui::End();
@@ -100,6 +113,7 @@ namespace NightSnack
 
         bool m_showImportDialog;      
         std::vector<std::string> m_pendingImports;
+        //std::vector<std::string> m_prefabs;
         std::string m_importDestination;
 
         void HandleExternalFileDrop()
@@ -354,13 +368,13 @@ namespace NightSnack
             {
                 // TODO: In future, open file dialog to select files
                 // For now, just show instructions
-                std::cout << "[Assets] Manual import clicked\n";
-                std::cout << "[Assets] Drag files from desktop onto the window to import\n";
+                //std::cout << "[Assets] Manual import clicked\n";
+                //std::cout << "[Assets] Drag files from desktop onto the window to import\n";
             }
 
             ImGui::SameLine();
             ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
-                "| Drag files onto window to import");
+                "");
         }
 
         void DrawImagesTab()
@@ -454,7 +468,7 @@ namespace NightSnack
                 {
                     m_selectedAssetPath = pathStr;
                     m_showAssetProperties = true;
-                    std::cout << "[Assets] Selected: " << pathStr << "\n";
+                    //std::cout << "[Assets] Selected: " << pathStr << "\n";
                 }
 
                 // ================================================================
