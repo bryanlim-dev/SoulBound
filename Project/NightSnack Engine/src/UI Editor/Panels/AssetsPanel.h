@@ -339,24 +339,16 @@ namespace NightSnack
         void DrawToolbar()
         {
             // ----------------------------------------------------------------
-            // SEARCH BAR - Filter assets by name (Unity has this)
+            // SEARCH BAR - Filter assets by name
             // ----------------------------------------------------------------
-            static char searchBuffer[256] = "";
+            /*static char searchBuffer[256] = "";
             ImGui::SetNextItemWidth(200.0f);
             if (ImGui::InputTextWithHint("##Search", "Search assets...", searchBuffer, 256))
             {
                 m_searchFilter = std::string(searchBuffer);
             }
 
-            ImGui::SameLine();
-
-            //// ----------------------------------------------------------------
-            //// THUMBNAIL SIZE SLIDER - Adjust icon size (Unity feature)
-            //// ----------------------------------------------------------------
-            //ImGui::SetNextItemWidth(100.0f);
-            //ImGui::SliderFloat("##Size", &m_thumbnailSize, 64.0f, 128.0f, "Size: %.0f");
-
-            //ImGui::SameLine();
+            ImGui::SameLine();*/
 
             //// ----------------------------------------------------------------
             //// REFRESH BUTTON - Rescan assets folder
@@ -369,17 +361,14 @@ namespace NightSnack
             //    std::cout << "[Assets] Refreshed asset cache\n";
             //}
 
-            if (ImGui::Button("Import Files..."))
-            {
-                // TODO: In future, open file dialog to select files
-                // For now, just show instructions
-                //std::cout << "[Assets] Manual import clicked\n";
-                //std::cout << "[Assets] Drag files from desktop onto the window to import\n";
-            }
+            //if (ImGui::Button("Import Files..."))
+            //{
+            //    // import window
+            //}
 
-            ImGui::SameLine();
-            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
-                "");
+            //ImGui::SameLine();
+            //ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
+            //    "");
         }
 
         void DrawImagesTab()
