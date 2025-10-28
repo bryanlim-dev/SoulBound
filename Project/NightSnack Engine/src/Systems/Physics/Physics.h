@@ -43,7 +43,6 @@ namespace NightSnack {
             // Physics components of interest;
             m_systemSignature.set(GetComponentTypeID<Transform>());
             m_systemSignature.set(GetComponentTypeID<RigidBody>());
-            m_systemSignature.set(GetComponentTypeID<Force>());
             m_systemSignature.set(GetComponentTypeID<Collider>());
 
             // Event dispatcher initialisations

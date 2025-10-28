@@ -59,7 +59,6 @@ namespace NightSnack {
 		// Register all Components;
 		m_coord.RegisterComponent<Transform>();
 		m_coord.RegisterComponent<RigidBody>();		// Physics;
-		m_coord.RegisterComponent<Force>();
 		m_coord.RegisterComponent<Collider>();		// Collision;
 
 		m_coord.RegisterComponent<Renderable>();	// Graphics;

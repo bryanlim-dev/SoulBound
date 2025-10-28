@@ -31,6 +31,8 @@ namespace NightSnack {
 
 				RigidBody& rig = m_coord.ModifyComponent<RigidBody>(e);
 
+				
+
 				// compute velocities;
 				//ApplyForces(rig);
 				//Gravity(rig);
@@ -45,7 +47,6 @@ namespace NightSnack {
 
 
 				// First obtain references to components of interest;
-				auto& force = m_coord.ModifyComponent<Force>(e);
 				auto& vel = m_coord.ModifyComponent<RigidBody>(e).vel;
 				auto& accel = m_coord.ModifyComponent<RigidBody>(e).accel;
 				auto& mass = m_coord.ModifyComponent<RigidBody>(e).mass;

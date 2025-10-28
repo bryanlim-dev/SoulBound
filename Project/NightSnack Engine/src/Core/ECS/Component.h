@@ -41,11 +41,24 @@ namespace NightSnack {
         LayerType layer{ LayerType::GAMELAYER };
     };
 
+    struct Force {
+        // Direction force
+        Vec2 direction;
+        float magnitude;
+        // Rotational force
+        float rotation;
+
+        float lifetime;
+        bool isActive;
+    };
+
     struct RigidBody {
-        float mass;
+
+        Force force;
         Vec2 vel;
         Vec2 accel;
         bool useGravity;
+        float mass;
     };
 
     enum class ShapeType { AABB, Circle };
@@ -67,11 +80,6 @@ namespace NightSnack {
         // Collision state
         bool isGrounded{ false };
         bool colliding{ false };
-    };
-
-    struct Force {
-        float fx{ 0.0 };
-        float fy{ 0.0 };
     };
 
     struct Sprite {
