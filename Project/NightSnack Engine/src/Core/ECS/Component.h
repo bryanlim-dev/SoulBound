@@ -21,6 +21,9 @@
 
 namespace NightSnack {
 
+    constexpr float FixedDT = 0.016f;
+
+
     using json = nlohmann::json;
 
     // ================================================================================================
@@ -42,11 +45,12 @@ namespace NightSnack {
     };
 
     struct Force {
+
         // Direction force
         Vec2 direction;
         float magnitude;
         // Rotational force
-        float rotation;
+        float torque;
 
         float lifetime;
         bool isActive;
@@ -57,8 +61,12 @@ namespace NightSnack {
         Force force;
         Vec2 vel;
         Vec2 accel;
+
+        float invMass;
+        float invInertia;
+
         bool useGravity;
-        float mass;
+        bool useRotate; 
     };
 
     enum class ShapeType { AABB, Circle };
@@ -173,16 +181,18 @@ namespace NightSnack {
     }
 
     // PHYSICS ====================================================
-    inline void from_json(const json& j, Force& f) {
-        j.value("fx", 0.0f); // optional default
-        j.value("fy", 0.0f);
-        j.at("fx").get_to(f.fx);
-        j.at("fy").get_to(f.fy);
-    }
-
     inline void from_json(const json& j, RigidBody& r) {
-        j.at("mass").get_to(r.mass);
+        float mass{};
+        j.at("mass").get_to(mass);
+        r.invMass = 1.f / mass;
 
+        float inertia{ mass };
+        if (j.contains("inertia")) {
+            j.at("inertia").get_to(inertia);
+        }
+        r.invInertia = 1.f / inertia;
+
+        r.force = Force{};
         r.accel = Vec2{};
         r.vel = Vec2{};
         r.useGravity = false;

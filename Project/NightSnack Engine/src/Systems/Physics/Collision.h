@@ -15,14 +15,16 @@
 
 #ifndef COLLISION_HPP
 #define COLLISION_HPP
-#include "Core/ECS/Entity.h"
-#include "Core/ECS/ISystem.h"
+
 #include "Core/ECS/Coordinator.h"
-#include "Core/ECS/Component.h"
-#include "Systems/Application/IEvent.h"
-#include <iostream>
 
 namespace NightSnack {
+
+    void CheckCollisions(std::array<Entity, MAX_ENTITIES> const&);
+
+    bool CheckCollision(Entity e1, Entity e2);
+
+    void ResolveCollisions(Entity e1, Entity e2);
 
     /******************************************************************************/
     /*!

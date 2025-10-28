@@ -19,7 +19,9 @@
 
 namespace NightSnack {
 
-    static float dt = 0.016f;
+    bool CheckCollision(Entity e1, Entity e2) {
+
+    }
 
     // Initializing Collision System
     void CollisionSystem::Init(EventDispatcher& dispatcher)
@@ -39,6 +41,7 @@ namespace NightSnack {
     // Update loop (runs each frame)
     void CollisionSystem::Update(int steps)
     {
+        (void)steps;
 
         // Step 1: Reset collision flags
         for (auto const& e : m_entities)

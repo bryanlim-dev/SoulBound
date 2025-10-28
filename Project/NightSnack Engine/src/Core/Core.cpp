@@ -21,7 +21,6 @@
 
 namespace NightSnack {
 
-	constexpr float fixedDeltaTime = 0.016f;
 	static float accumulatedTime = 0.0f;
 	static int numberOfSteps = 0;
 
@@ -80,12 +79,14 @@ namespace NightSnack {
 
 		AddSystem<ApplicationSystem>(winWidth, winHeight, std::move(windowTitle), m_coord, core_dispatcher);
 		AddSystem<InputSystem>(m_coord, core_dispatcher);
+
 		AddSystem<AudioSystem>(m_coord, core_dispatcher);
 		AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json", "assets/GameData/DefaultLevel.json");
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
+
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
-		AddSystem<CollisionSystem>(m_coord, core_dispatcher);
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
+
 		AddSystem<FiniteStateMachine>(m_coord);
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
@@ -144,8 +145,8 @@ namespace NightSnack {
 		accumulatedTime += dt;
 
 		// Obtain number of steps this loop;
-		while (accumulatedTime >= fixedDeltaTime) { 
-			accumulatedTime -= fixedDeltaTime;
+		while (accumulatedTime >= FixedDT) { 
+			accumulatedTime -= FixedDT;
 			++numberOfSteps;
 		}
 		if (m_paused) {

@@ -17,7 +17,6 @@ namespace NightSnack {
 
 	// unused for now...
 	void EntityFactory::Update(int steps) {
-
 		(void)steps;
 		
 		static bool printed = false;

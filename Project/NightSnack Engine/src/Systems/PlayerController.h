@@ -144,6 +144,8 @@ namespace NightSnack {
             return INVALID_ENTITY;
         }
 
+        Entity GetPlayer() const noexcept { return m_player; }
+
         void ResetFlags() {
             m_flags = PlayerFlags{};
         }

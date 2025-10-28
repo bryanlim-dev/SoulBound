@@ -19,6 +19,18 @@ namespace NightSnack {
     // Vec2
     Vec2::Vec2(float x, float y) : x(x), y(y) {}
 
+    Vec2& Vec2::operator+=(Vec2 const& rhs)
+    {
+        x += rhs.x; y += rhs.y;
+        return *this;
+    }
+
+    Vec2& Vec2::operator-=(Vec2 const& rhs)
+    {
+        x -= rhs.x; y -= rhs.y;
+        return *this;
+    }
+
     // Dot product
     float Vec2::dot(const Vec2& other) const
     {
@@ -98,6 +110,19 @@ namespace NightSnack {
 
     // Vec3
     Vec3::Vec3(float x, float y, float z) : x(x), y(y), z(z) {}
+
+
+    Vec3& Vec3::operator+=(Vec3 const& rhs) 
+    {
+        x += rhs.x; y += rhs.y; z += rhs.z;
+        return *this;
+    }
+
+    Vec3& Vec3::operator-=(Vec3 const& rhs)
+    {
+        x -= rhs.x; y -= rhs.y; z -= rhs.z;
+        return *this;
+    }
 
     // Dot product
     float Vec3::dot(const Vec3& other) const

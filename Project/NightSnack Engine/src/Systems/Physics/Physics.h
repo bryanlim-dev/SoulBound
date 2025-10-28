@@ -16,10 +16,15 @@
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/IEvent.h"
 
+#include <bitset>
+#include <array>
+
 namespace NightSnack {
 
     // Minimum velocity threshold to consider an object at rest;
     constexpr float velocityCutoff = 0.2f;
+    static constexpr int GRID_W = 60;
+    static constexpr int GRID_H = 40;
 
     class PhysicsSystem : public ISystem {
 
@@ -87,11 +92,20 @@ namespace NightSnack {
         bool IsStepRequested() const { return stepRequest; }
 
         void ApplyForce(Coordinator& coord, Entity e, float fx, float fy);
+        void ComputeVelocities(std::array<Entity, MAX_ENTITIES> const&);
+        void ComputeVelocity(RigidBody& rig, Collider const& col) const;
+        std::pair<int, int> GetCell(Vec2 const& pos) const;
+        void CollisionGridInsert(Entity, Collider const&, Transform const&);
 
     private:
         Signature m_systemSignature{};
         EventDispatcher* m_dispatcher{ nullptr };
         Coordinator& m_coord;
+
+        // Collision stuff;
+        std::array<std::array<std::bitset<MAX_ENTITIES>, GRID_H>, GRID_W> m_grid;
+        Vec2 m_gridCenter;
+        float m_cellSize = 50.f;
 
         // Physics parameters;
         float gravity = -980.f;

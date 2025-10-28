@@ -41,7 +41,6 @@ namespace NightSnack {
 			RegisterComponentLoader<Transform>("Transform");
 			RegisterComponentLoader<RigidBody>("RigidBody");
 			RegisterComponentLoader<Collider>("Collider");
-			RegisterComponentLoader<Force>("Force");
 
 			RegisterComponentLoader<Sprite>("Sprite");
 			RegisterComponentLoader<Color>("Color");

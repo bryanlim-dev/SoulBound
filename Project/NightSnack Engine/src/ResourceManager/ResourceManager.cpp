@@ -133,6 +133,7 @@ namespace NightSnack {
 
 	void ResourceManager::Update(int steps)
 	{
+		(void)steps;
 		DeleteFlaggedResources();
 	}
 
