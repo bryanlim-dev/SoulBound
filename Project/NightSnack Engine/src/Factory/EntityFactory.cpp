@@ -136,7 +136,7 @@ namespace NightSnack {
 		return names;
 	}
 
-	std::unordered_map<std::string, std::string> const& EntityFactory::GetPrefabMaterials() const {
+	std::unordered_map<std::string, std::string> EntityFactory::GetPrefabMaterials() const {
 		std::unordered_map<std::string, std::string> materials;
 
 		for (auto& [name, data] : m_archetypes.items()) {

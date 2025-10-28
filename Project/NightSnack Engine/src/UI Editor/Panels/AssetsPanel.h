@@ -39,7 +39,7 @@ namespace NightSnack
             }
             m_prefabMats.reserve(coord.GetSystem<EntityFactory>()->GetPrefabMaterials().size());
             for (auto const& [n, m] : coord.GetSystem<EntityFactory>()->GetPrefabMaterials()) {
-                m_prefabMats.insert(n, m);
+                m_prefabMats.insert({ n, m });
             }
         }
 
