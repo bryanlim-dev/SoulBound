@@ -9,7 +9,7 @@
  * Description:
  * Defines member functions of CoreEngine class.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -17,6 +17,7 @@
 #include "Systems/AllSystems.h"
 
 #include "ResourceManager/ResourceHelper/ResourceSystemHelper.h"
+#include "../Systems/StateMachine/FiniteStateMachine.h"
 
 namespace NightSnack {
 
@@ -67,6 +68,7 @@ namespace NightSnack {
 		m_coord.RegisterComponent<Camera>();
 
 		m_coord.RegisterComponent<PlayerController>();
+		m_coord.RegisterComponent<States>();
 
 		// Add more Components here...
 
@@ -85,7 +87,7 @@ namespace NightSnack {
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
 		AddSystem<CollisionSystem>(m_coord, core_dispatcher);
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
-
+		AddSystem<FiniteStateMachine>(m_coord);
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
 
