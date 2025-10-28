@@ -9,7 +9,7 @@
  * Description:
  * Defines member functions of CoreEngine class.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -17,6 +17,7 @@
 #include "Systems/AllSystems.h"
 
 #include "ResourceManager/ResourceHelper/ResourceSystemHelper.h"
+#include "../Systems/StateMachine/FiniteStateMachine.h"
 
 namespace NightSnack {
 
@@ -67,6 +68,7 @@ namespace NightSnack {
 		m_coord.RegisterComponent<Camera>();
 
 		m_coord.RegisterComponent<PlayerController>();
+		m_coord.RegisterComponent<States>();
 
 		// Add more Components here...
 
@@ -85,14 +87,17 @@ namespace NightSnack {
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
 		AddSystem<CollisionSystem>(m_coord, core_dispatcher);
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
-
+		AddSystem<FiniteStateMachine>(m_coord);
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
 
+		std::cout << "Buffering Living Entities: ";
 		// Buffer all entities' signatures to properly initialize all systems' set of entities
 		for (Entity e : m_coord.GetLivingEntities()) {
 			m_coord.BufferEntitySignature(e);
+			std::cout << e << " ";
 		}
+		std::cout << '\n';
 	}
 
 	// Function should be called upon termination of program;
@@ -164,9 +169,9 @@ namespace NightSnack {
 		m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer("EntityFactory");
 
 		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("ApplicationSystem");
-		m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(102.f);
 		m_coord.GetSystem<ApplicationSystem>()->SwapBuffers();
-		m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer("ApplicationSystem");
+		m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(102.0f);
+		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("ApplicationSystem");
 
 		// End frame timing;
 		m_coord.GetSystem<ApplicationSystem>()->EndFrame();
