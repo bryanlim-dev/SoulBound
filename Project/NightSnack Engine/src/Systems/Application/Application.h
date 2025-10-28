@@ -7,7 +7,7 @@
  * Description: This file contains the declarations of the Application System,
  *				which manages the application window, OpenGL context, and timing.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -175,6 +175,9 @@ namespace NightSnack {
 
 		Signature GetSignature() const override { return m_systemSignature; }
 
+		const std::vector<std::string>& GetDroppedFiles() const { return s_droppedFiles; }
+		void ClearDroppedFiles() { s_droppedFiles.clear(); }
+
 	private:
 		/************************************************************************/
 		/*!
@@ -198,6 +201,10 @@ namespace NightSnack {
 
 		// System event dispatcher
 		EventDispatcher* m_dispatcher = nullptr;
+
+		static std::vector<std::string> s_droppedFiles;
+
+		static void FileDropCallback(GLFWwindow* window, int count, const char** paths);
 		// Reference to ECS coordinator
 		Coordinator& m_coord;
 	};

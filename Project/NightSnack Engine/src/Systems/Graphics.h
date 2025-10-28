@@ -64,9 +64,6 @@ namespace NightSnack {
 				// This input event currently only handles key inputs for
 				// - scaling of an object (A / D)
 				// - rotating of an object (R)
-				if (m_entities.empty())
-					return;
-
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
 					case InputEvent::InputAction::ScaleUp:
@@ -90,6 +87,10 @@ namespace NightSnack {
 					}
 				}
 			});
+			AddLayer(LayerType::BACKGROUND);
+			AddLayer(LayerType::GAMELAYER);
+			AddLayer(LayerType::FOREGROUND);
+			AddLayer(LayerType::GAMEUI);
 		}
 
 		/************************************************************************/

@@ -61,6 +61,7 @@ namespace NightSnack {
 
                 });
             // Add more Components here if necessary...
+            AddLayer(LayerType::GAMELAYER);
         }
 
         /************************************************************************/

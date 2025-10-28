@@ -11,6 +11,7 @@
  ******************************************************************************/
 
 #include "Timer.h"
+#include <imgui.h>
 #include <GLFW/glfw3.h>
 
 namespace NightSnack {
@@ -84,15 +85,43 @@ namespace NightSnack {
             return;
         }
 
-        // Display formatted table of system times
+        ImGui::BeginChild("SystemTimers", ImVec2(0, 0), false);
+
+        // Max label length for alignment
+        std::string label;
+        size_t maxLabelLen = 0;       
+        for (const auto& [name, _] : m_systemsTimes)
+        {
+            label = name + " :";
+            size_t len = (label).length();
+            if (len > maxLabelLen) { maxLabelLen = len; }
+        }
+
+        // Print system timers
         for (const auto& [name, time] : m_systemsTimes)
+        {
+            float percent = (time / m_totalSystemTime) * 100.f;
+            label = name + " :";
+            std::ostringstream oss;
+            oss << std::fixed << std::setw(8) << std::setprecision(4) << percent << "% |";
+
+            // Pad label to max length
+            std::string paddedLabel = label + std::string(maxLabelLen - label.length(), ' ');
+
+            ImGui::Text("%s%s", paddedLabel.c_str(), oss.str().c_str());
+        }
+
+        ImGui::EndChild();
+
+        // Display formatted table of system times to console
+        /*for (const auto& [name, time] : m_systemsTimes)
         {
             float percent = (time / m_totalSystemTime) * 100.f;
             std::cout << std::left << std::setw(36) << (name + " Time Consumption :")
                 << std::right << std::setw(8) << std::fixed << std::setprecision(4) << percent
                 << "% |" << std::endl;
         }
-        std::cout << std::endl;
+        std::cout << std::endl;*/
     }
 
     // Resets all system timers and total system time

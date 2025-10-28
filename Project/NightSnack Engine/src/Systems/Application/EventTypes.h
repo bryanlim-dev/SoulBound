@@ -53,7 +53,7 @@ namespace NightSnack {
             ChangePlayer,       // Down arrow;
 
             // Debug tests
-            ToggleSystemTimers, // TAB
+            //ToggleSystemTimers, // TAB
             ToggleDebugDraw,    // T
             ToggleInstancedRendering, // I
             CrashTest,          // C
@@ -65,6 +65,7 @@ namespace NightSnack {
             // Modifier events
             Save,               // CTRL + S
             PhysicsDebugMode,   // CTRL + P
+			ToggleUIEditor,     // Backslash ( \ )
 
             NumTotalInputAction
         };

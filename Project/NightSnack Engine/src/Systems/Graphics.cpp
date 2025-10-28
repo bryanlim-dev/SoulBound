@@ -70,6 +70,8 @@ namespace NightSnack {
 	void GraphicsSystem::Update(int steps) {
 		(void)steps; // dt is unused for now...
 
+		if (m_entities.empty()) return;
+
 		// Update viewport dimensions;
 		Hvp = static_cast<float>(m_coord.GetWindowHeight());
 		Wvp = static_cast<float>(m_coord.GetWindowWidth());
@@ -90,9 +92,10 @@ namespace NightSnack {
 		for (Layer& l : m_layers) {
 			if (l.Empty() || !l.IsVisible()) { continue; }
 			for (Entity e : l.Entities()) {
+				// Reached the end of Valid Entities
 				if (e == INVALID_ENTITY) { break; }
 
-				// Obtain entity components;
+				// Obtain entity components
 				auto& ren = m_coord.GetComponent<Renderable>(e);
 				auto& pos = m_coord.GetComponent<Transform>(e).pos;
 				auto& rot = m_coord.GetComponent<Transform>(e).rot;
