@@ -61,7 +61,7 @@ namespace NightSnack {
 		Reference to ECS Coordinator.
 		*/
 		/************************************************************************/
-		void Update(float dt, Coordinator& coord) override;
+		void Update(int steps) override;
 
 		/************************************************************************/
 		/*!
@@ -142,9 +142,8 @@ namespace NightSnack {
 		m_assetsPanel	 = std::make_unique<AssetsPanel>(m_coord);
 	}
 
-	inline void ImguiSystem::Update(float dt, Coordinator& coord) {
-		(void)coord;
-		(void)dt;
+	inline void ImguiSystem::Update(int steps) {
+		(void)steps;
 
 		if (!m_toggleEditor) { return; }
 

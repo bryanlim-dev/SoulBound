@@ -1,7 +1,8 @@
 /******************************************************************************
  * File:        ResourceManager.cpp
  * Project:     NightSnack
- * Author(s):	Clement Ang Yang Ying (Primary, 100%) - Created manager class and logic
+ * Author(s):	Clement Ang Yang Ying (Primary, 99%) - Created manager class and logic
+ *				Bryan Lim Jun Jie (Secondary, 1%) - Created orginal fmod system init code logic
  *
  * Description:
  * This file contains the definition of a ResourceManager class, that manages Resouorce pointers
@@ -9,11 +10,15 @@
  * The key to the pointers made using the string of the file path and returning it to the caller.
  * When unloading Resources, it flags the Resource with a bool within the that class and unloads them all within update.
  * Each Resource has its own functions to interact with it (get/load/unload/etc.)
+ * 
+ * This class must be able to be function inderpendently of system do not add additional dependcies onto it.
+ * This is as ErrorLog calls it outside of CoreEngine to save files, it must remain functuional by itself
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 #include "ResourceManager.h"
+#include <fmod_errors.h>
 #include <stb_image.h>
 
 namespace NightSnack {
@@ -25,49 +30,57 @@ namespace NightSnack {
 
 	ResourceManager::~ResourceManager()
 	{
-		//Delete all resources
+		//Delete all resources 
 
 		//Loop through entire image map AND DELETE IT MUHAHA
-		std::map<std::size_t, ResourceImage*>::iterator itImg;
-		for (itImg = resourceImageMap.begin(); itImg != resourceImageMap.end(); itImg++)
-		{
-			delete itImg->second;
-		}
-		resourceImageMap.clear();
+		//std::map<std::size_t, ResourceImage*>::iterator itImg;
+		//for (itImg = m_resourceImageMap.begin(); itImg != m_resourceImageMap.end(); itImg++)
+		//{
+		//	delete itImg->second;
+		//}
+		//m_resourceImageMap.clear();
 
-		//Delete txt map
-		std::map<std::size_t, ResourceTxtFile*>::iterator itTxt;
-		for (itTxt = resourceTxtFileMap.begin(); itTxt != resourceTxtFileMap.end(); itTxt++)
-		{
-			delete itTxt->second;
-		}
-		resourceTxtFileMap.clear();
+		////Delete txt map
+		//std::map<std::size_t, ResourceTxtFile*>::iterator itTxt;
+		//for (itTxt = m_resourceTxtFileMap.begin(); itTxt != m_resourceTxtFileMap.end(); itTxt++)
+		//{
+		//	delete itTxt->second;
+		//}
+		//m_resourceTxtFileMap.clear();
 
-		//Delete json map
-		std::map<std::size_t, ResourceJson*>::iterator itJson;
-		for (itJson = resourceJsonMap.begin(); itJson != resourceJsonMap.end(); itJson++)
-		{
-			delete itJson->second;
-		}
-		resourceJsonMap.clear();
+		////Delete json map
+		//std::map<std::size_t, ResourceJson*>::iterator itJson;
+		//for (itJson = m_resourceJsonMap.begin(); itJson != m_resourceJsonMap.end(); itJson++)
+		//{
+		//	delete itJson->second;
+		//}
+		//m_resourceJsonMap.clear();
 
-		//Delete Sound map
-		std::map<std::size_t, ResourceSound*>::iterator itSound;
-		for (itSound = resourceSoundMap.begin(); itSound != resourceSoundMap.end(); itSound++)
-		{
-			delete itSound->second;
-		}
-		resourceSoundMap.clear();
+		////Delete Sound map
+		//std::map<std::size_t, ResourceSound*>::iterator itSound;
+		//for (itSound = m_resourceSoundMap.begin(); itSound != m_resourceSoundMap.end(); itSound++)
+		//{
+		//	delete itSound->second;
+		//}
+		//m_resourceSoundMap.clear();
 
-		//Delete Font map
-		std::map<std::size_t, ResourceFont*>::iterator itFont;
-		for (itFont = resourceFontMap.begin(); itFont != resourceFontMap.end(); itFont++)
-		{
-			delete itFont->second;
-		}
-		resourceFontMap.clear();
+		////Delete Font map
+		//std::map<std::size_t, ResourceFont*>::iterator itFont;
+		//for (itFont = m_resourceFontMap.begin(); itFont != m_resourceFontMap.end(); itFont++)
+		//{
+		//	delete itFont->second;
+		//}
+		//m_resourceFontMap.clear();
+		
+		m_resourceImageMap.clear();
+		m_resourceTxtFileMap.clear();
+		m_resourceJsonMap.clear();
+		m_resourceSoundMap.clear();
+		m_resourceFontMap.clear();
 
-		deletionVec.clear();
+		m_deletionVec.clear();
+
+		//fModSystem deletion code is a lamba function created within Init();
 
 	}
 
@@ -76,16 +89,49 @@ namespace NightSnack {
 		totalResourcesLoaded = 0;
 		stbi_set_flip_vertically_on_load(true); // Flip the y-axis of the images loaded
 
-		FT_Init_FreeType(&fontLibrary);
+		FT_Init_FreeType(&m_fontLibrary);
 
-		resourceImageMap.clear();
-		resourceTxtFileMap.clear();
-		resourceJsonMap.clear();
-		resourceSoundMap.clear();
-		resourceFontMap.clear();
+		//Init Fmod
+		//Orginal code from Audio System.Init() changed to shared ptr now :D
+
+		//Just incase
+		if (!m_fmodSystem)
+		{
+			m_fmodSystem.reset();
+			m_fmodSystem = nullptr;
+		}
+
+		FMOD::System* systemPtr = nullptr;
+		FMOD_RESULT result = FMOD::System_Create(&systemPtr);
+		if (result != FMOD_OK)
+		{
+			std::cout << "AudioSystem: Failed to create FMOD system - "
+				<< FMOD_ErrorString(result) << std::endl;
+		}
+		else
+		{
+			result = systemPtr->init(32, FMOD_INIT_NORMAL, nullptr);
+			if (result != FMOD_OK)
+			{
+				std::cout << "AudioSystem: Failed to initialize FMOD system - "
+					<< FMOD_ErrorString(result) << std::endl;
+			}
+
+			std::cout << "AudioSystem: Initialized successfully with 32 channels" << std::endl;
+
+			//Move the pointer into shared ptr;
+			//Make a lamba func to rlease it when destoryed (turns out it crashes if i do i manually :( )
+			m_fmodSystem = std::shared_ptr<FMOD::System>(systemPtr, [](FMOD::System* system) { if (system) system->release(); }); 
+		}
+
+		m_resourceImageMap.clear();
+		m_resourceTxtFileMap.clear();
+		m_resourceJsonMap.clear();
+		m_resourceSoundMap.clear();
+		m_resourceFontMap.clear();
 	}
 
-	void ResourceManager::Update(float /*dt*/)
+	void ResourceManager::Update(int steps)
 	{
 		DeleteFlaggedResources();
 	}
@@ -101,16 +147,16 @@ namespace NightSnack {
 		imageKey = ConstructMapKey(filePath);
 
 		//Check if resource alr exists
-		if (resourceImageMap.find(imageKey) != resourceImageMap.end())
+		if (m_resourceImageMap.find(imageKey) != m_resourceImageMap.end())
 		{
 			std::cout << filePath << " already exists" << std::endl;
 
 			//Check if it was flagged for deletion
-			if (resourceImageMap[imageKey]->FlaggedForDeletion())
+			if (m_resourceImageMap[imageKey]->FlaggedForDeletion())
 			{
 				//Remove the flag if it was flagged for deletion
 				//(This will cause it to not delete in update)
-				resourceImageMap[imageKey]->FlaggedForDeletion() = false;
+				m_resourceImageMap[imageKey]->FlaggedForDeletion() = false;
 				return LOAD_SUCCESS_STOPPED_UNLOAD;
 			}
 			else
@@ -118,16 +164,13 @@ namespace NightSnack {
 		}
 
 		//This loads the image via the ResourceImage class
-		ResourceImage* newResource = new ResourceImage(filePath, imageKey);
+		std::unique_ptr<ResourceImage> newResource = std::unique_ptr<ResourceImage>(new ResourceImage(filePath, imageKey));
 		newResource->LoadFile();
 
 		//This checks if it is loaded or now
 		if (!newResource->Loaded())
 		{
 			std::cout << "Failed to load image" << std::endl;
-
-			if (newResource)
-				delete newResource;
 
 			return LOAD_FAIL_BADPATH;
 		}
@@ -136,7 +179,7 @@ namespace NightSnack {
 			std::cout << "Loaded image " << newResource->Path() << std::endl;
 
 			//Insert the loaded image into the map only if managed to load
-			resourceImageMap.insert({ imageKey, newResource });
+			m_resourceImageMap.insert({imageKey, std::move(newResource) });
 			totalResourcesLoaded++;
 			return LOAD_SUCCESS;
 		}
@@ -146,23 +189,23 @@ namespace NightSnack {
 	void ResourceManager::UnloadImage(std::size_t imageKey)
 	{
 		//Check if resource alr exists
-		if (resourceImageMap.find(imageKey) == resourceImageMap.end())
+		if (m_resourceImageMap.find(imageKey) == m_resourceImageMap.end())
 		{
 			std::cout << "Resource does not exist, cannot unload" << std::endl;
 			return;
 		}
 
-		resourceImageMap[imageKey]->FlaggedForDeletion() = true;
+		m_resourceImageMap[imageKey]->FlaggedForDeletion() = true;
 
 		//Change this to a queue system
 		//Check if it exists witin the vec alr tho
-		auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceImageMap[imageKey]);
-		if (it == deletionVec.end())
-			deletionVec.push_back(resourceImageMap[imageKey]);
+		auto it = std::find(m_deletionVec.begin(), m_deletionVec.end(), std::make_pair(m_resourceImageMap[imageKey]->FileType(), imageKey));
+		if (it == m_deletionVec.end())
+			m_deletionVec.push_back({ m_resourceImageMap[imageKey]->FileType(), m_resourceImageMap[imageKey]->MapKey() });
 
-		//delete resourceImageMap[filePath];
-		//resourceImageMap[filePath] = nullptr;
-		//resourceImageMap.erase(filePath);
+		//delete m_resourceImageMap[filePath];
+		//m_resourceImageMap[filePath] = nullptr;
+		//m_resourceImageMap.erase(filePath);
 	}
 
 
@@ -190,14 +233,14 @@ namespace NightSnack {
 	ResourceImage* ResourceManager::GetImageResource(const std::size_t imageKey)
 	{
 		//Does the resource exist?
-		if (resourceImageMap.find(imageKey) != resourceImageMap.end())
+		if (m_resourceImageMap.find(imageKey) != m_resourceImageMap.end())
 		{
-			return resourceImageMap[imageKey];
+			return m_resourceImageMap[imageKey].get();
 		}
 		//Try to load the image if not loaded yet
 		//else if (LoadImage(filePath))
 		//{
-		//	return resourceImageMap[filePath];
+		//	return m_resourceImageMap[filePath];
 		//}
 
 		//Return nullptr if failed to load
@@ -217,16 +260,16 @@ namespace NightSnack {
 		txtKey = ConstructMapKey(filePath);
 
 		//Check if resource alr exists
-		if (resourceTxtFileMap.find(txtKey) != resourceTxtFileMap.end())
+		if (m_resourceTxtFileMap.find(txtKey) != m_resourceTxtFileMap.end())
 		{
 			std::cout << filePath << " already exists" << std::endl;
 
 			//Check if it was flagged for deletion
-			if (resourceTxtFileMap[txtKey]->FlaggedForDeletion())
+			if (m_resourceTxtFileMap[txtKey]->FlaggedForDeletion())
 			{
 				//Remove the flag if it was flagged for deletion
 				//(This will cause it to not delete in update)
-				resourceTxtFileMap[txtKey]->FlaggedForDeletion() = false;
+				m_resourceTxtFileMap[txtKey]->FlaggedForDeletion() = false;
 				return LOAD_SUCCESS_STOPPED_UNLOAD;
 			}
 			else
@@ -234,16 +277,13 @@ namespace NightSnack {
 		}
 
 		//This loads the image via the ResourceImage class
-		ResourceTxtFile* newResource = new ResourceTxtFile(filePath, txtKey);
+		std::unique_ptr<ResourceTxtFile> newResource = std::unique_ptr<ResourceTxtFile>(new ResourceTxtFile(filePath, txtKey));
 		newResource->LoadFile();
 
 		//This checks if it is loaded or now
 		if (!newResource->Loaded())
 		{
 			std::cout << "Failed to load txt" << std::endl;
-
-			if (newResource)
-				delete newResource;
 
 			return LOAD_FAIL_BADPATH;
 		}
@@ -252,7 +292,7 @@ namespace NightSnack {
 			std::cout << "Loaded txt " << newResource->Path() << std::endl;
 
 			//Insert the loaded image into the map only if managed to load
-			resourceTxtFileMap.insert({ txtKey, newResource });
+			m_resourceTxtFileMap.insert({ txtKey, std::move(newResource) });
 			totalResourcesLoaded++;
 			return LOAD_SUCCESS;
 		}
@@ -263,20 +303,20 @@ namespace NightSnack {
 	void ResourceManager::UnloadTxtFile(std::size_t txtKey)
 	{
 		//Check if resource alr exists
-		if (resourceTxtFileMap.find(txtKey) == resourceTxtFileMap.end())
+		if (m_resourceTxtFileMap.find(txtKey) == m_resourceTxtFileMap.end())
 		{
 			std::cout << "Resource does not exist, cannot unload" << std::endl;
 			return;
 		}
 
-		resourceTxtFileMap[txtKey]->FlaggedForDeletion() = true;
+		m_resourceTxtFileMap[txtKey]->FlaggedForDeletion() = true;
 
 		//Change this to a queue system
 		//Check if it exists witin the vec alr tho
-		auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceTxtFileMap[txtKey]);
-		if (it == deletionVec.end())
-			deletionVec.push_back(resourceTxtFileMap[txtKey]);
-		//deletionVec.push_back(resourceTxtFileMap[txtKey]);
+		auto it = std::find(m_deletionVec.begin(), m_deletionVec.end(), std::make_pair(m_resourceTxtFileMap[txtKey]->FileType(), txtKey));
+		if (it == m_deletionVec.end())
+			m_deletionVec.push_back({ m_resourceTxtFileMap[txtKey]->FileType(), m_resourceTxtFileMap[txtKey]->MapKey() });
+		//m_deletionVec.push_back(m_resourceTxtFileMap[txtKey]);
 	}
 
 	std::vector<std::string> ResourceManager::GetTxtFile(const std::size_t txtKey)
@@ -288,9 +328,9 @@ namespace NightSnack {
 	ResourceTxtFile* ResourceManager::GetTxtFileResource(const std::size_t txtKey)
 	{
 		//Does the resource exist?
-		if (resourceTxtFileMap.find(txtKey) != resourceTxtFileMap.end())
+		if (m_resourceTxtFileMap.find(txtKey) != m_resourceTxtFileMap.end())
 		{
-			return resourceTxtFileMap[txtKey];
+			return m_resourceTxtFileMap[txtKey].get();
 		}
 
 		return nullptr;
@@ -310,16 +350,16 @@ namespace NightSnack {
 		jsonKey = ConstructMapKey(filePath);
 
 		//Check if resource alr exists
-		if (resourceJsonMap.find(jsonKey) != resourceJsonMap.end())
+		if (m_resourceJsonMap.find(jsonKey) != m_resourceJsonMap.end())
 		{
 			std::cout << filePath << " already exists" << std::endl;
 
 			//Check if it was flagged for deletion
-			if (resourceJsonMap[jsonKey]->FlaggedForDeletion())
+			if (m_resourceJsonMap[jsonKey]->FlaggedForDeletion())
 			{
 				//Remove the flag if it was flagged for deletion
 				//(This will cause it to not delete in update)
-				resourceJsonMap[jsonKey]->FlaggedForDeletion() = false;
+				m_resourceJsonMap[jsonKey]->FlaggedForDeletion() = false;
 				return LOAD_SUCCESS_STOPPED_UNLOAD;
 			}
 			else
@@ -327,16 +367,13 @@ namespace NightSnack {
 		}
 
 		//This loads the image via the ResourceImage class
-		ResourceJson* newResource = new ResourceJson(filePath, jsonKey);
+		std::unique_ptr<ResourceJson> newResource = std::unique_ptr<ResourceJson>(new ResourceJson(filePath, jsonKey));
 		newResource->LoadFile();
 
 		//This checks if it is loaded or now
 		if (!newResource->Loaded())
 		{
 			std::cout << "Failed to load json" << std::endl;
-
-			if (newResource)
-				delete newResource;
 
 			return LOAD_FAIL_BADPATH;
 		}
@@ -345,7 +382,7 @@ namespace NightSnack {
 			std::cout << "Loaded json " << newResource->Path() << std::endl;
 
 			//Insert the loaded image into the map only if managed to load
-			resourceJsonMap.insert({ jsonKey, newResource });
+			m_resourceJsonMap.insert({ jsonKey, std::move(newResource) });
 			totalResourcesLoaded++;
 			return LOAD_SUCCESS;
 		}
@@ -355,19 +392,20 @@ namespace NightSnack {
 	void ResourceManager::UnloadJson(std::size_t jsonKey)
 	{
 		//Check if resource alr exists
-		if (resourceJsonMap.find(jsonKey) == resourceJsonMap.end())
+		if (m_resourceJsonMap.find(jsonKey) == m_resourceJsonMap.end())
 		{
 			std::cout << "Resource does not exist, cannot unload" << std::endl;
 			return;
 		}
 
-		resourceJsonMap[jsonKey]->FlaggedForDeletion() = true;
+		m_resourceJsonMap[jsonKey]->FlaggedForDeletion() = true;
 
 		//Change this to a queue system
 		//Check if it exists witin the vec alr tho
-		auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceJsonMap[jsonKey]);
-		if (it == deletionVec.end())
-			deletionVec.push_back(resourceJsonMap[jsonKey]);
+		auto it = std::find(m_deletionVec.begin(), m_deletionVec.end(), std::make_pair(m_resourceJsonMap[jsonKey]->FileType(), jsonKey));
+		if (it == m_deletionVec.end())
+			m_deletionVec.push_back({ m_resourceJsonMap[jsonKey]->FileType(), m_resourceJsonMap[jsonKey]->MapKey() });
+
 	}
 	std::unordered_map<std::string, Archtype> ResourceManager::GetJson(const std::size_t jsonKey)
 	{
@@ -384,9 +422,9 @@ namespace NightSnack {
 	ResourceJson* ResourceManager::GetJsonResource(const std::size_t jsonKey)
 	{
 		//Does the resource exist?
-		if (resourceJsonMap.find(jsonKey) != resourceJsonMap.end())
+		if (m_resourceJsonMap.find(jsonKey) != m_resourceJsonMap.end())
 		{
-			return resourceJsonMap[jsonKey];
+			return m_resourceJsonMap[jsonKey].get();
 		}
 
 		return nullptr;
@@ -395,6 +433,11 @@ namespace NightSnack {
 	{
 		ResourceJson jsonResouce(newArchtypeMap, filePath);
 		jsonResouce.SaveFile();
+	}
+
+	std::shared_ptr<FMOD::System> ResourceManager::FmodSystem()
+	{
+		return m_fmodSystem;
 	}
 
 #pragma endregion
@@ -408,16 +451,16 @@ namespace NightSnack {
 		soundKey = ConstructMapKey(filePath);
 
 		//Check if resource alr exists
-		if (resourceSoundMap.find(soundKey) != resourceSoundMap.end())
+		if (m_resourceSoundMap.find(soundKey) != m_resourceSoundMap.end())
 		{
 			std::cout << filePath << " already exists" << std::endl;
 
 			//Check if it was flagged for deletion
-			if (resourceSoundMap[soundKey]->FlaggedForDeletion())
+			if (m_resourceSoundMap[soundKey]->FlaggedForDeletion())
 			{
 				//Remove the flag if it was flagged for deletion
 				//(This will cause it to not delete in update)
-				resourceSoundMap[soundKey]->FlaggedForDeletion() = false;
+				m_resourceSoundMap[soundKey]->FlaggedForDeletion() = false;
 				return LOAD_SUCCESS_STOPPED_UNLOAD;
 			}
 			else
@@ -425,16 +468,13 @@ namespace NightSnack {
 		}
 
 		//This loads the image via the ResourceImage class
-		ResourceSound* newResource = new ResourceSound(filePath, soundKey);
+		std::unique_ptr<ResourceSound> newResource = std::unique_ptr<ResourceSound>(new ResourceSound(filePath, soundKey));
 		newResource->LoadFile(system);
 
 		//This checks if it is loaded or now
 		if (!newResource->Loaded())
 		{
 			std::cout << "Failed to load sound" << std::endl;
-
-			if (newResource)
-				delete newResource;
 
 			return LOAD_FAIL_BADPATH;
 		}
@@ -443,7 +483,7 @@ namespace NightSnack {
 			std::cout << "Loaded sound " << newResource->Path() << std::endl;
 
 			//Insert the loaded image into the map only if managed to load
-			resourceSoundMap.insert({ soundKey, newResource });
+			m_resourceSoundMap.insert({ soundKey, std::move(newResource) });
 			totalResourcesLoaded++;
 			return LOAD_SUCCESS;
 		}
@@ -454,20 +494,21 @@ namespace NightSnack {
 	void ResourceManager::UnloadSound(std::size_t soundKey)
 	{
 		//Check if resource alr exists
-		if (resourceSoundMap.find(soundKey) == resourceSoundMap.end())
+		if (m_resourceSoundMap.find(soundKey) == m_resourceSoundMap.end())
 		{
 			std::cout << "Resource does not exist, cannot unload" << std::endl;
 			return;
 		}
 
-		resourceSoundMap[soundKey]->FlaggedForDeletion() = true;
+		m_resourceSoundMap[soundKey]->FlaggedForDeletion() = true;
 
 		//Change this to a queue system
 		//Check if it exists witin the vec alr tho
-		auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceSoundMap[soundKey]);
-		if (it == deletionVec.end())
-			deletionVec.push_back(resourceSoundMap[soundKey]);
-		//deletionVec.push_back(resourceSoundMap[txtKey]);
+		auto it = std::find(m_deletionVec.begin(), m_deletionVec.end(), std::make_pair(m_resourceSoundMap[soundKey]->FileType(), soundKey));
+		if (it == m_deletionVec.end())
+			m_deletionVec.push_back({ m_resourceSoundMap[soundKey]->FileType(), m_resourceSoundMap[soundKey]->MapKey() });
+
+		//m_deletionVec.push_back(m_resourceSoundMap[txtKey]);
 	}
 
 	FMOD::Sound* ResourceManager::GetSound(const std::size_t soundKey)
@@ -479,9 +520,9 @@ namespace NightSnack {
 	ResourceSound* ResourceManager::GetSoundResource(const std::size_t soundKey)
 	{
 		//Does the resource exist?
-		if (resourceSoundMap.find(soundKey) != resourceSoundMap.end())
+		if (m_resourceSoundMap.find(soundKey) != m_resourceSoundMap.end())
 		{
-			return resourceSoundMap[soundKey];
+			return m_resourceSoundMap[soundKey].get();
 		}
 
 		return nullptr;
@@ -491,7 +532,7 @@ namespace NightSnack {
 #pragma region Fonts
 	FT_Library& ResourceManager::GetFontLibrary()
 	{
-		return fontLibrary;
+		return m_fontLibrary;
 	}
 
 	LOAD_RESULT ResourceManager::LoadFont(std::string filePath, std::size_t& fontKey)
@@ -501,16 +542,16 @@ namespace NightSnack {
 		fontKey = ConstructMapKey(filePath);
 
 		//Check if resource alr exists
-		if (resourceFontMap.find(fontKey) != resourceFontMap.end())
+		if (m_resourceFontMap.find(fontKey) != m_resourceFontMap.end())
 		{
 			std::cout << filePath << " already exists" << std::endl;
 
 			//Check if it was flagged for deletion
-			if (resourceFontMap[fontKey]->FlaggedForDeletion())
+			if (m_resourceFontMap[fontKey]->FlaggedForDeletion())
 			{
 				//Remove the flag if it was flagged for deletion
 				//(This will cause it to not delete in update)
-				resourceFontMap[fontKey]->FlaggedForDeletion() = false;
+				m_resourceFontMap[fontKey]->FlaggedForDeletion() = false;
 				return LOAD_SUCCESS_STOPPED_UNLOAD;
 			}
 			else
@@ -518,16 +559,13 @@ namespace NightSnack {
 		}
 
 		//This loads the image via the ResourceImage class
-		ResourceFont* newResource = new ResourceFont(filePath, fontKey);
-		newResource->LoadFile(fontLibrary);
+		std::unique_ptr<ResourceFont> newResource = std::unique_ptr<ResourceFont>(new ResourceFont(filePath, fontKey));
+		newResource->LoadFile(m_fontLibrary);
 
 		//This checks if it is loaded or now
 		if (!newResource->Loaded())
 		{
 			std::cout << "Failed to load sound" << std::endl;
-
-			if (newResource)
-				delete newResource;
 
 			return LOAD_FAIL_BADPATH;
 		}
@@ -536,7 +574,7 @@ namespace NightSnack {
 			std::cout << "Loaded sound " << newResource->Path() << std::endl;
 
 			//Insert the loaded image into the map only if managed to load
-			resourceFontMap.insert({ fontKey, newResource });
+			m_resourceFontMap.insert({ fontKey, std::move(newResource) });
 			totalResourcesLoaded++;
 			return LOAD_SUCCESS;
 		}
@@ -547,19 +585,20 @@ namespace NightSnack {
 	void ResourceManager::UnloadFont(std::size_t fontKey)
 	{
 		//Check if resource alr exists
-		if (resourceFontMap.find(fontKey) == resourceFontMap.end())
+		if (m_resourceFontMap.find(fontKey) == m_resourceFontMap.end())
 		{
 			std::cout << "Resource does not exist, cannot unload" << std::endl;
 			return;
 		}
 
-		resourceFontMap[fontKey]->FlaggedForDeletion() = true;
+		m_resourceFontMap[fontKey]->FlaggedForDeletion() = true;
 
 		//Change this to a queue system
 		//Check if it exists witin the vec alr tho
-		auto it = std::find(deletionVec.begin(), deletionVec.end(), resourceFontMap[fontKey]);
-		if (it == deletionVec.end())
-			deletionVec.push_back(resourceFontMap[fontKey]);
+		auto it = std::find(m_deletionVec.begin(), m_deletionVec.end(), std::make_pair(m_resourceFontMap[fontKey]->FileType(), fontKey));
+		if (it == m_deletionVec.end())
+			m_deletionVec.push_back({ m_resourceFontMap[fontKey]->FileType(), m_resourceFontMap[fontKey]->MapKey() });
+
 	}
 
 	FT_Face ResourceManager::GetFont(const std::size_t fontKey)
@@ -572,9 +611,9 @@ namespace NightSnack {
 	ResourceFont* ResourceManager::GetFontResource(const std::size_t fontKey)
 	{
 		//Does the resource exist?
-		if (resourceFontMap.find(fontKey) != resourceFontMap.end())
+		if (m_resourceFontMap.find(fontKey) != m_resourceFontMap.end())
 		{
-			return resourceFontMap[fontKey];
+			return m_resourceFontMap[fontKey].get();
 		}
 
 		return nullptr;
@@ -617,252 +656,263 @@ namespace NightSnack {
 			return false;
 	}
 
-	void ResourceManager::DeleteRM()
+
+	std::string ResourceManager::GetName() const
 	{
-		delete this;
+		return "ResourceManager"; 
 	}
 
-	void ResourceManager::DebugTestEverything()
-	{
-		ResourceManager* rm = this;
-
-		//--------------------IMAGE FILE--------------------
-		//Testing a loading jpg
-		std::size_t bananaKey = 0;
-		std::cout << "<<<Test Load Images (Png/JPG)>>>" << std::endl;
-		rm->LoadImage("assets/Banana.jpg", bananaKey);
-
-		if (rm->GetImage(bananaKey) != nullptr)
-			std::cout << "Load Image(JPG) test: SUCCESS" << std::endl;
-		else
-			std::cout << "Load Image(JPG) test: FAIL" << std::endl;
-
-		//Testing loading png
-		std::size_t targetKey = 0;
-		rm->LoadImage("assets/image_UI_target.png", targetKey);
-		if (ResourceLoaded(RESOURCE_IMAGE, targetKey))
-			std::cout << "Load Image(PNG) test: SUCCESS" << std::endl;
-		else
-			std::cout << "Load Image(PNG) test: FAIL" << std::endl;
-
-		rm->UnloadImage(targetKey);
-		switch (rm->LoadImage("assets/image_UI_target.png", targetKey))
-		{
-		case LOAD_SUCCESS_STOPPED_UNLOAD:
-			std::cout << "Stop unload Image(PNG) test: SUCCESS" << std::endl;
-			break;
-		case LOAD_SUCCESS:
-			std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_SUCCESS" << std::endl;
-			break;
-		case LOAD_FAIL_BADPATH:
-			std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_FAIL_BADPATH" << std::endl;
-			break;
-		case LOAD_FAIL_PREEXIST:
-			std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_FAIL_PREEXIST" << std::endl;
-			break;
-		default:
-			std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: UNKOWN (Swicth case default check)" << std::endl;
-			break;
-		}
-
-		rm->UnloadImage(targetKey);
-		rm->Update(0);
-		if (rm->GetImage(targetKey) == nullptr)
-			std::cout << "Unload Image(PNG): SUCCESS" << std::endl;
-		else
-			std::cout << "Unload Image(PNG): FAIL" << std::endl;
-
-		rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading a loaded image with deletion flagged
-		rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading same image
-		rm->Update(0); //Run unload code
-		rm->UnloadImage(targetKey); //Actual unloading test
-		rm->Update(0); //Run unload code
-		rm->LoadImage("assets/image_UI_target.png", targetKey); //Reloading a unloaded image test
-		rm->GetImage(targetKey);
-		rm->GetImage(bananaKey);
-		if (ResourceLoaded(RESOURCE_IMAGE, targetKey))
-		{
-			std::cout << "Get Image found target resource" << std::endl;
-		}
-		if (ResourceLoaded(RESOURCE_IMAGE, bananaKey))
-		{
-			std::cout << "Get Image found banana resource" << std::endl;
-		}
-
-		std::cout << std::endl;
-		std::cout << std::endl;
+	Signature ResourceManager::GetSignature() const
+	{ return m_systemSignature; }
 
 
-		//--------------------TXT FILE--------------------
-		std::cout << "<<<Test Txt File>>>" << std::endl;
-		std::cout << "Test Load Txt File" << std::endl;
+	//void ResourceManager::DebugTestEverything()
+	//{
+	//	ResourceManager* rm = this;
 
-		std::size_t txtKey = 0;
-		rm->LoadTxtFile("assets/data/TestTxt.txt", txtKey);
-		std::vector<std::string> txtVec = rm->GetTxtFile(txtKey);
-		if (ResourceLoaded(RESOURCE_TXTFILE, txtKey))
-		{
-			std::cout << "Load TXT: SUCCESS" << std::endl;
-			for (std::string strTest : txtVec)
-			{
-				std::cout << strTest << std::endl;
-			}
-		}
-		else
-			std::cout << "Load TXT: FAIL" << std::endl;
+	//	//--------------------IMAGE FILE--------------------
+	//	//Testing a loading jpg
+	//	std::size_t bananaKey = 0;
+	//	std::cout << "<<<Test Load Images (Png/JPG)>>>" << std::endl;
+	//	rm->LoadImage("assets/Banana.jpg", bananaKey);
 
-		rm->UnloadTxtFile(txtKey); //Actual unloading test
-		rm->Update(0); //Run unload code
-		std::cout << std::endl;
+	//	if (rm->GetImage(bananaKey) != nullptr)
+	//		std::cout << "Load Image(JPG) test: SUCCESS" << std::endl;
+	//	else
+	//		std::cout << "Load Image(JPG) test: FAIL" << std::endl;
 
+	//	//Testing loading png
+	//	std::size_t targetKey = 0;
+	//	rm->LoadImage("assets/image_UI_target.png", targetKey);
+	//	if (ResourceLoaded(RESOURCE_IMAGE, targetKey))
+	//		std::cout << "Load Image(PNG) test: SUCCESS" << std::endl;
+	//	else
+	//		std::cout << "Load Image(PNG) test: FAIL" << std::endl;
 
-		std::cout << "Test: Save Txt File" << std::endl;
-		std::vector<std::string> newTxt = {
-			"This is a new txt file",
-			"Newwww file",
-			"THIS is line 4",
-			"I lied it was 3",
-			"This is 5 tho"
-		};
-		SaveTxtFile("assets/data/savedNewTxt.txt", newTxt);
-		std::cout << "Attempted save to Txt File" << std::endl;
+	//	rm->UnloadImage(targetKey);
+	//	switch (rm->LoadImage("assets/image_UI_target.png", targetKey))
+	//	{
+	//	case LOAD_SUCCESS_STOPPED_UNLOAD:
+	//		std::cout << "Stop unload Image(PNG) test: SUCCESS" << std::endl;
+	//		break;
+	//	case LOAD_SUCCESS:
+	//		std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_SUCCESS" << std::endl;
+	//		break;
+	//	case LOAD_FAIL_BADPATH:
+	//		std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_FAIL_BADPATH" << std::endl;
+	//		break;
+	//	case LOAD_FAIL_PREEXIST:
+	//		std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: LOAD_FAIL_PREEXIST" << std::endl;
+	//		break;
+	//	default:
+	//		std::cout << "Stop unload Image(PNG) test: FAILED => Load Result: UNKOWN (Swicth case default check)" << std::endl;
+	//		break;
+	//	}
 
-		std::cout << std::endl;
-		std::cout << std::endl;
+	//	rm->UnloadImage(targetKey);
+	//	rm->Update(0);
+	//	if (rm->GetImage(targetKey) == nullptr)
+	//		std::cout << "Unload Image(PNG): SUCCESS" << std::endl;
+	//	else
+	//		std::cout << "Unload Image(PNG): FAIL" << std::endl;
 
-		//--------------------JSON FILE--------------------
-		std::cout << "<<<Test Json File>>>" << std::endl;
-		std::cout << "Test: Load Json File" << std::endl;
-		std::size_t jsonKey = 0;
-		rm->LoadJson("assets/data/jsonTestFile.json", jsonKey);
-		if (ResourceLoaded(RESOURCE_JSON, jsonKey))
-		{
-			std::cout << "Load JSON: SUCCESS" << std::endl;
-			//Riskier is there is a typo or something, it WILL crash if cannot find
-			std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey)["testJson"]["boolean"] ? "true" : "false") << std::endl;
-			std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey).at("testJson").at("boolean") ? "true" : "false") << std::endl;
-			std::cout << "interger: " << rm->GetJsonRaw(jsonKey).at("testJson").at("interger") << std::endl;
-			//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
-			//	std::cout << key << " : " << value << std::endl;
-			//}
-		}
-		else
-			std::cout << "Load JSON: FAIL" << std::endl;
+	//	rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading a loaded image with deletion flagged
+	//	rm->LoadImage("assets/image_UI_target.png", targetKey); //Testing loading same image
+	//	rm->Update(0); //Run unload code
+	//	rm->UnloadImage(targetKey); //Actual unloading test
+	//	rm->Update(0); //Run unload code
+	//	rm->LoadImage("assets/image_UI_target.png", targetKey); //Reloading a unloaded image test
+	//	rm->GetImage(targetKey);
+	//	rm->GetImage(bananaKey);
+	//	if (ResourceLoaded(RESOURCE_IMAGE, targetKey))
+	//	{
+	//		std::cout << "Get Image found target resource" << std::endl;
+	//	}
+	//	if (ResourceLoaded(RESOURCE_IMAGE, bananaKey))
+	//	{
+	//		std::cout << "Get Image found banana resource" << std::endl;
+	//	}
 
-		rm->UnloadJson(jsonKey);
-		rm->Update(0); //Run unload code
-		std::cout << std::endl;
-
-		rm->LoadJson("assets/data/jsonTestFile2.json", jsonKey);
-		if (ResourceLoaded(RESOURCE_JSON, jsonKey))
-		{
-			std::cout << "Load JSON: SUCCESS" << std::endl;
-		}
-		else
-			std::cout << "Load JSON: FAIL" << std::endl;
-
-		//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
-		//	std::cout << key << " : " << value << std::endl;
-		//}
-
-		std::cout << "Test: Save Json File" << std::endl;
-		rm->SaveJsonFile("assets/data/savedJsonTest2.json", rm->GetJson(jsonKey));
+	//	std::cout << std::endl;
+	//	std::cout << std::endl;
 
 
-		rm->UnloadJson(jsonKey);
-		rm->Update(0); //Run unload code
-		std::cout << std::endl;
-		std::cout << std::endl;
+	//	//--------------------TXT FILE--------------------
+	//	std::cout << "<<<Test Txt File>>>" << std::endl;
+	//	std::cout << "Test Load Txt File" << std::endl;
 
-		//--------------------SOUND FILE--------------------
-		std::cout << "<<<Test FMOD/Sound File>>>" << std::endl;
-		FMOD::System* fSys = nullptr;
-		FMOD::Channel* channel = nullptr;
-		size_t soundKey = 0;
-		FMOD_RESULT fResult = FMOD::System_Create(&fSys);
-		if (fResult != FMOD_OK)
-			std::cout << "FMOD SYSTEM create: FAILED" << std::endl;
-		else
-		{
-			fSys->init(512, FMOD_INIT_NORMAL, nullptr);
-			std::cout << "FMOD SYSTEM create: SUCCESS" << std::endl;
-			if (rm->LoadSound("assets/Sound/SFX/sound_button_temp.wav", soundKey, fSys) == LOAD_SUCCESS)
-			{
-				std::cout << "Load Sound test: SUCCESS" << std::endl;
-				fResult = fSys->playSound(rm->GetSound(soundKey), nullptr, false, &channel);
-				fSys->update();
-				bool isPlaying = true;
-				do {
-					channel->isPlaying(&isPlaying);
-					fSys->update();
-				} while (isPlaying);
-			}
-			else
-				std::cout << "Load Sound test: FAIL" << std::endl;
-		}
+	//	std::size_t txtKey = 0;
+	//	rm->LoadTxtFile("assets/data/TestTxt.txt", txtKey);
+	//	std::vector<std::string> txtVec = rm->GetTxtFile(txtKey);
+	//	if (ResourceLoaded(RESOURCE_TXTFILE, txtKey))
+	//	{
+	//		std::cout << "Load TXT: SUCCESS" << std::endl;
+	//		for (std::string strTest : txtVec)
+	//		{
+	//			std::cout << strTest << std::endl;
+	//		}
+	//	}
+	//	else
+	//		std::cout << "Load TXT: FAIL" << std::endl;
+
+	//	rm->UnloadTxtFile(txtKey); //Actual unloading test
+	//	rm->Update(0); //Run unload code
+	//	std::cout << std::endl;
 
 
-		rm->UnloadSound(soundKey);
-		rm->Update(0);
+	//	std::cout << "Test: Save Txt File" << std::endl;
+	//	std::vector<std::string> newTxt = {
+	//		"This is a new txt file",
+	//		"Newwww file",
+	//		"THIS is line 4",
+	//		"I lied it was 3",
+	//		"This is 5 tho"
+	//	};
+	//	SaveTxtFile("assets/data/savedNewTxt.txt", newTxt);
+	//	std::cout << "Attempted save to Txt File" << std::endl;
 
-		if (fSys)
-		{
-			fSys->release();
-			fSys = nullptr;
-		}
+	//	std::cout << std::endl;
+	//	std::cout << std::endl;
 
-		std::cout << std::endl;
-		std::cout << std::endl;
+	//	//--------------------JSON FILE--------------------
+	//	std::cout << "<<<Test Json File>>>" << std::endl;
+	//	std::cout << "Test: Load Json File" << std::endl;
+	//	std::size_t jsonKey = 0;
+	//	rm->LoadJson("assets/data/jsonTestFile.json", jsonKey);
+	//	if (ResourceLoaded(RESOURCE_JSON, jsonKey))
+	//	{
+	//		std::cout << "Load JSON: SUCCESS" << std::endl;
+	//		//Riskier is there is a typo or something, it WILL crash if cannot find
+	//		std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey)["testJson"]["boolean"] ? "true" : "false") << std::endl;
+	//		std::cout << "boolean: " << (rm->GetJsonRaw(jsonKey).at("testJson").at("boolean") ? "true" : "false") << std::endl;
+	//		std::cout << "interger: " << rm->GetJsonRaw(jsonKey).at("testJson").at("interger") << std::endl;
+	//		//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
+	//		//	std::cout << key << " : " << value << std::endl;
+	//		//}
+	//	}
+	//	else
+	//		std::cout << "Load JSON: FAIL" << std::endl;
 
-		//--------------------FONT FILE--------------------
-		std::cout << "<<<Test FreeType/Font File>>>" << std::endl;
+	//	rm->UnloadJson(jsonKey);
+	//	rm->Update(0); //Run unload code
+	//	std::cout << std::endl;
 
-		size_t fontKey = 0;
-		std::cout << "Font Load Test" << std::endl;
-		rm->LoadFont("assets/Font/liberation-mono.ttf", fontKey);
-		//ResourceFont* recFont = rm->GetFontResource(fontKey);
-		if (ResourceLoaded(RESOURCE_FONT, fontKey))
-			std::cout << "Font Load Test: SUCCESS" << std::endl;
-		else
-			std::cout << "Font Load Test: FAILED" << std::endl;
-		rm->UnloadFont(fontKey);
-		rm->Update(0);
+	//	rm->LoadJson("assets/data/jsonTestFile2.json", jsonKey);
+	//	if (ResourceLoaded(RESOURCE_JSON, jsonKey))
+	//	{
+	//		std::cout << "Load JSON: SUCCESS" << std::endl;
+	//	}
+	//	else
+	//		std::cout << "Load JSON: FAIL" << std::endl;
 
-		std::cout << std::endl;
-		std::cout << std::endl;
-	}
+	//	//for (auto& [key, value] : rm->GetJsonRaw(jsonKey).items()) {
+	//	//	std::cout << key << " : " << value << std::endl;
+	//	//}
+
+	//	std::cout << "Test: Save Json File" << std::endl;
+	//	rm->SaveJsonFile("assets/data/savedJsonTest2.json", rm->GetJson(jsonKey));
+
+
+	//	rm->UnloadJson(jsonKey);
+	//	rm->Update(0); //Run unload code
+	//	std::cout << std::endl;
+	//	std::cout << std::endl;
+
+	//	//--------------------SOUND FILE--------------------
+	//	std::cout << "<<<Test FMOD/Sound File>>>" << std::endl;
+	//	FMOD::System* fSys = nullptr;
+	//	FMOD::Channel* channel = nullptr;
+	//	size_t soundKey = 0;
+	//	FMOD_RESULT fResult = FMOD::System_Create(&fSys);
+	//	if (fResult != FMOD_OK)
+	//		std::cout << "FMOD SYSTEM create: FAILED" << std::endl;
+	//	else
+	//	{
+	//		fSys->init(512, FMOD_INIT_NORMAL, nullptr);
+	//		std::cout << "FMOD SYSTEM create: SUCCESS" << std::endl;
+	//		if (rm->LoadSound("assets/Sound/SFX/sound_button_temp.wav", soundKey, fSys) == LOAD_SUCCESS)
+	//		{
+	//			std::cout << "Load Sound test: SUCCESS" << std::endl;
+	//			fResult = fSys->playSound(rm->GetSound(soundKey), nullptr, false, &channel);
+	//			fSys->update();
+	//			bool isPlaying = true;
+	//			do {
+	//				channel->isPlaying(&isPlaying);
+	//				fSys->update();
+	//			} while (isPlaying);
+	//		}
+	//		else
+	//			std::cout << "Load Sound test: FAIL" << std::endl;
+	//	}
+
+
+	//	rm->UnloadSound(soundKey);
+	//	rm->Update(0);
+
+	//	if (fSys)
+	//	{
+	//		fSys->release();
+	//		fSys = nullptr;
+	//	}
+
+	//	std::cout << std::endl;
+	//	std::cout << std::endl;
+
+	//	//--------------------FONT FILE--------------------
+	//	std::cout << "<<<Test FreeType/Font File>>>" << std::endl;
+
+	//	size_t fontKey = 0;
+	//	std::cout << "Font Load Test" << std::endl;
+	//	rm->LoadFont("assets/Font/liberation-mono.ttf", fontKey);
+	//	//ResourceFont* recFont = rm->GetFontResource(fontKey);
+	//	if (ResourceLoaded(RESOURCE_FONT, fontKey))
+	//		std::cout << "Font Load Test: SUCCESS" << std::endl;
+	//	else
+	//		std::cout << "Font Load Test: FAILED" << std::endl;
+	//	rm->UnloadFont(fontKey);
+	//	rm->Update(0);
+
+	//	std::cout << std::endl;
+	//	std::cout << std::endl;
+	//}
 
 	void ResourceManager::DeleteFlaggedResources()
 	{
-		for (Resource* resource : deletionVec)
+		//This keeps changing so auto of the vec
+		for (auto resourcePair : m_deletionVec)
 		{
-			//If it was unflagged somewhere inbetween
-			if (!resource->FlaggedForDeletion())
-				continue;
+			//If it was unflagged somewhere inbetween do not delete
 
-			switch (resource->FileType())
+			switch (resourcePair.second)
 			{
 			case RESOURCE_IMAGE:
-				resourceImageMap.erase(resource->MapKey());
+				if (m_resourceImageMap[resourcePair.first]->FlaggedForDeletion())
+					m_resourceImageMap.erase(resourcePair.first);
 				break;
 			case RESOURCE_TXTFILE:
-				resourceTxtFileMap.erase(resource->MapKey());
+				if (m_resourceTxtFileMap[resourcePair.first]->FlaggedForDeletion())
+					m_resourceTxtFileMap.erase(resourcePair.first);
 				break;
 			case RESOURCE_JSON:
-				resourceJsonMap.erase(resource->MapKey());
+				if (m_resourceJsonMap[resourcePair.first]->FlaggedForDeletion())
+					m_resourceJsonMap.erase(resourcePair.first);
 				break;
 			case RESOURCE_SOUND:
-				resourceSoundMap.erase(resource->MapKey());
+				if (m_resourceSoundMap[resourcePair.first]->FlaggedForDeletion())
+					m_resourceSoundMap.erase(resourcePair.first);
 				break;
 			case RESOURCE_FONT:
-				resourceFontMap.erase(resource->MapKey());
+				if (m_resourceFontMap[resourcePair.first]->FlaggedForDeletion())
+					m_resourceFontMap.erase(resourcePair.first);
 				break;
 
 			}
-			delete resource;
+
+			//DO NOT DELETED IT IS A UNIQUE PTR NOW
+			//delete resource;
 		}
 
-		deletionVec.clear();
+		m_deletionVec.clear();
 	}
 
 

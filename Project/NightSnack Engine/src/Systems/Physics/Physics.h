@@ -39,7 +39,7 @@ namespace NightSnack {
         Reference to Event Dispatcher.
         */
         /************************************************************************/
-        PhysicsSystem(Coordinator& coord, EventDispatcher& disp) : m_dispatcher{ &disp } {
+        PhysicsSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord }, m_dispatcher{ &disp } {
             // Physics components of interest;
             m_systemSignature.set(GetComponentTypeID<Transform>());
             m_systemSignature.set(GetComponentTypeID<RigidBody>());
@@ -53,12 +53,6 @@ namespace NightSnack {
                     case InputEvent::InputAction::DynamicBallTest:
                         ApplyForce(coord, 2, 80.f, 0.f);
                         break;
-                        //case InputEvent::InputAction::GravityBallTest:
-                        //    if (coord.GetComponent<Collider>(6).isGrounded) {
-                        //    coord.ModifyComponent<Collider>(6).isGrounded = false;
-                        //    ApplyForce(coord, 6, 0.f, 60.f);
-                        //    }
-                        //    break;
                     case InputEvent::InputAction::PhysicsDebugMode:
                         debugMode = !debugMode;
                         break;
@@ -83,7 +77,7 @@ namespace NightSnack {
         Reference to Coordinator.
         */
         /************************************************************************/
-        void Update(float dt, Coordinator& coord) override;
+        void Update(int steps) override;
 
         // Required by ISystem base class;
         Signature GetSignature() const override { return m_systemSignature; }
@@ -97,6 +91,7 @@ namespace NightSnack {
     private:
         Signature m_systemSignature{};
         EventDispatcher* m_dispatcher{ nullptr };
+        Coordinator& m_coord;
 
         // Physics parameters;
         float gravity = -980.f;

@@ -32,6 +32,17 @@ namespace NightSnack {
 			glm::vec2 texCoord;
 		};
 
+		// Aligned according to OpenGL std430 rules
+		// Total size is a multiple of the largest alignment (16)
+		struct alignas(16) InstanceData {
+			glm::vec3 position; // 0 to 12 bytes
+			float rotation; // 12 to 16 bytes
+			glm::vec2 scale; // 16 to 24 bytes
+			glm::vec2 pad; // 24 to 32 bytes
+			glm::vec3 color; // 32 to 44 bytes
+			float padding; // 44 to 48 bytes
+		};
+
 		/************************************************************************/
 		/*!
 		\brief
@@ -70,6 +81,7 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void Draw() const;
+		void DrawInstanced(size_t instanceCount) const;
 
 		/************************************************************************/
 		/*!
@@ -141,14 +153,12 @@ namespace NightSnack {
 		/************************************************************************/
 		static std::unique_ptr<Mesh> CreateCircleMesh();
 
-		GLsizei m_indexCount{ 0 }, m_vertexCount{ 0 };
-
 	private:
-		GLuint m_vao{ 0 };
+		GLsizei m_indexCount{ 0 }, m_vertexCount{ 0 };
 		GLenum m_primitiveType = GL_TRIANGLES;
+		GLuint m_vao{ 0 };
 		GLuint m_vbo{ 0 };
 		GLuint m_ebo{ 0 };
-
 	};
 
 }	// NightSnack

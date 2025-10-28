@@ -10,27 +10,29 @@
  * It also provides debug drawing visualization (circle and AABB collider outlines, velocity vector)
  * and basic scaling and rotating of a specific object via input events from the event dispatcher.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
 #include "Graphics.h"
-#include "Core/CrashLogger.h"
 #include "MathLibrary/Math.h"
 
 namespace NightSnack {
 
-	void GraphicsSystem::Init(Coordinator& coord) {
+	void GraphicsSystem::Init() {
 		// Default Shader;
-		auto shader = std::make_unique<Shader>("assets/shaders/vertex_shader.vert", "assets/shaders/fragment_shader.frag");
-		AddShader("default", std::move(shader));
+		auto defaultShader = std::make_unique<Shader>("assets/shaders/vertex_shader.vert", "assets/shaders/fragment_shader.frag");
+		AddShader("default", std::move(defaultShader));
+		auto debugShader = std::make_unique<Shader>("assets/shaders/debug_vertex_shader.vert", "assets/shaders/debug_fragment_shader.frag");
+		AddShader("debug", std::move(debugShader));
 
+		std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
 		// Textures;
-		auto bananaTex = std::make_unique<Texture>("assets/banana.jpg");
+		auto bananaTex = std::make_unique<Texture>("assets/banana.jpg", rm);
 		AddTexture("banana", std::move(bananaTex));
-		auto targetTex = std::make_unique<Texture>("assets/image_UI_target.png");
+		auto targetTex = std::make_unique<Texture>("assets/image_UI_target.png", rm);
 		AddTexture("target", std::move(targetTex));
-		auto bgTex = std::make_unique<Texture>("assets/background.png");
+		auto bgTex = std::make_unique<Texture>("assets/background.png", rm);
 		AddTexture("background", std::move(bgTex));
 
 		// Meshes;
@@ -55,172 +57,235 @@ namespace NightSnack {
 		colorMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
 		AddMaterial("ColorMat", std::move(colorMat));
 
-		// Dispatcher lambda
-		m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
-			{
-				// This input event currently only handles key inputs for
-				// - scaling of an object (A / D)
-				// - rotating of an object (R)
-				if (m_entities.empty())
-					return;
-
-				if (event.pressed == InputEvent::InputActionState::Pressed) {
-					switch (event.inputAction) {
-					case InputEvent::InputAction::ScaleUp:
-						ModifyEntityScale(coord, 1.1f);
-						break;
-					case InputEvent::InputAction::ScaleDown:
-						ModifyEntityScale(coord, 0.9f);
-						break;
-					case InputEvent::InputAction::Rotate:
-						ModifyEntityRotation(coord, 30.f);
-						break;
-					case InputEvent::InputAction::ToggleDebugDraw:
-						m_enableDebugDraw = !m_enableDebugDraw;
-						break;
-					case InputEvent::InputAction::CrashTest:
-						CrashLogger::ForceCrash("Forced crash from GraphicsSystem for testing");
-						break;
-					}
-				}
-			});
+		// Initialise buffer for Instanced Rendering
+		if (m_globalInstanceSSBO == 0) {
+			glCreateBuffers(1, &m_globalInstanceSSBO);
+			m_globalInstanceSSBOSize = sizeof(Mesh::InstanceData) * NightSnack::MAX_ENTITIES;
+			glNamedBufferStorage(m_globalInstanceSSBO, m_globalInstanceSSBOSize, nullptr, GL_DYNAMIC_STORAGE_BIT);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
+			//std::cout << "Size of InstanceData: " << sizeof(Mesh::InstanceData);
+		}
 	}
 
-	void GraphicsSystem::Update(float dt, Coordinator& coord) {
-		(void)dt; // dt is unused for now...
+	void GraphicsSystem::Update(int steps) {
+		(void)steps; // dt is unused for now...
 
 		// Update viewport dimensions;
-		Hvp = static_cast<float>(coord.GetWindowHeight());
-		Wvp = static_cast<float>(coord.GetWindowWidth());
+		Hvp = static_cast<float>(m_coord.GetWindowHeight());
+		Wvp = static_cast<float>(m_coord.GetWindowWidth());
 
 		// Camera stuff...
 		Entity mainCam = FindCamera();
 		if (mainCam == INVALID_ENTITY) return;
 
 		// Get camera components
-		auto& camPos = coord.GetComponent<Transform>(mainCam).pos;
-		auto& camInfo = coord.GetComponent<Camera>(mainCam);
+		auto& camPos = m_coord.GetComponent<Transform>(mainCam).pos;
+		auto& camInfo = m_coord.GetComponent<Camera>(mainCam);
 
 		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
-		for (Entity e : m_entities) {
-			// Obtain entity components;
-			auto& ren = coord.GetComponent<Renderable>(e);
-			auto& pos = coord.GetComponent<Transform>(e).pos;
-			auto& rot = coord.GetComponent<Transform>(e).rot;
-			auto& scl = coord.GetComponent<Transform>(e).scale;
+		m_meshBatches.clear();
 
-			// @TODO: Event-Driven check whether e's renderable was changed...
-			// if (renderable was changed) { ResolveRenderable(e, renderable); }
+		for (Layer& l : m_layers) {
+			if (l.Empty() || !l.IsVisible()) { continue; }
+			for (Entity e : l.Entities()) {
+				if (e == INVALID_ENTITY) { break; }
 
-			// Find entity's renderCache;
-			auto it = m_renderCache.find(e);
-			if (it == m_renderCache.end() || !it->second.valid) {
-				ResolveRenderable(e, ren);
-				it = m_renderCache.find(e);
-			}
+				// Obtain entity components;
+				auto& ren = m_coord.GetComponent<Renderable>(e);
+				auto& pos = m_coord.GetComponent<Transform>(e).pos;
+				auto& rot = m_coord.GetComponent<Transform>(e).rot;
+				auto& scl = m_coord.GetComponent<Transform>(e).scale;
 
-			CachedRenderData& data = it->second;
-			if (!data.valid) {
-				std::cout << "Entity " << e << " skipped (invalid renderable)\n";
-				continue;
-			}
-
-			glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl, ren.renderLayer);
-			glm::mat4 mvp = proj * view * model;
-
-			Shader* shader = data.material->GetShader();
-			Mesh* mesh = data.mesh;
-			shader->Use();
-			shader->SetMat4("uMVP", mvp);
-
-			if (m_coord.HasComponent<Color>(e)) {
-				auto& col = m_coord.GetComponent<Color>(e);
-				shader->SetVec3("uEntityColor", { col.r, col.g, col.b });
-			}
-
-			data.material->ApplyUniforms(ren.isWireframe);
-
-			//GLint loc = glGetUniformLocation(data.material->GetShader()->GetID(), "uMVP");
-			//std::cout << "uMVP loc=" << loc << "\n";
-
-			// Change the polygon mode to wireframe
-			if (ren.isWireframe) {
-				glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-				mesh->Draw();
-				glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-			}
-			else {
-				mesh->Draw();
-			}
-
-			GLenum err = glGetError();
-			if (err != GL_NO_ERROR) std::cerr << "GL ERROR: " << err << "\n";
-
-			// Debug Drawing, for entities with no texture
-			if (m_enableDebugDraw) {
-				// Drawing of colliders 
-				if (m_coord.HasComponent<Collider>(e)) {
-					Collider const& col = m_coord.GetComponent<Collider>(e);
-
-					switch (col.shape) {
-					case ShapeType::AABB:
-					{
-						// Model matrix according to its collider's scale
-						glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.width, col.height }, RenderLayer::DEBUG);
-						glm::mat4 debugmvp = proj * view * debugmodel;
-						shader->SetMat4("uMVP", debugmvp);
-						shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
-						shader->SetVec3("uBaseColor", glm::vec3(0.f, 1.f, 0.f));
-						GetMesh("AABBColliderMesh")->Draw();
-					}
-					break;
-
-					case ShapeType::Circle:
-					{
-						// Model matrix according to its collider's scale
-						glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.radius, col.radius }, RenderLayer::DEBUG);
-						glm::mat4 debugmvp = proj * view * debugmodel;
-						shader->SetMat4("uMVP", debugmvp);
-						shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
-						shader->SetVec3("uBaseColor", glm::vec3(0.f, 1.f, 0.f));
-						GetMesh("CircleColliderMesh")->Draw();
-					}
-					break;
-
-					}
+				if (ren.wasModified) { ResolveRenderable(e, ren); }
+				// Find entity's renderCache;
+				auto it = m_renderCache.find(e);
+				if (it == m_renderCache.end() || !it->second.valid) {
+					ResolveRenderable(e, ren);
+					it = m_renderCache.find(e);
 				}
 
-				// Drawing of velocity direction for moving objects
-				if (m_coord.HasComponent<RigidBody>(e)) {
-					Vec2 const& vel = m_coord.GetComponent<RigidBody>(e).vel;
+				CachedRenderData& data = it->second;
+				if (!data.valid) {
+					std::cout << "Entity " << e << " skipped (invalid renderable)\n";
+					continue;
+				}
 
-					glm::vec3 velocity(vel.x, vel.y, 0.f);
-					float speed = glm::length(velocity); // Magnitude of the velocity vector
+				// Creation of Instance Data for Instanced Rendering
+				if (m_enableInstancedRendering) {
 
-					// Only draw the velocity line if it is moving
-					if (speed > 0.f) {
-						// Max length of the velocity line is slightly above the scale of the entity
-						float maxLength = std::max(scl.x, scl.y) * 1.4f;
-						float length = std::min(speed, maxLength);
+					// Prepare instance data
+					Mesh::InstanceData instance{};
 
-						glm::vec3 dir = glm::normalize(velocity); // Direction of the velocity vector
+					// Base z offset from the RenderLayer
+					float layerZ = GetRenderLayerZPos(ren.renderLayer);
+					// Final z offset of this renderable
+					float z = layerZ + pos.z;
+					instance.position = glm::vec3(pos.x, pos.y, z);
+					instance.rotation = glm::radians(rot);
+					instance.scale = glm::vec2(scl.x, scl.y);
+					instance.padding = 0.f;
+					instance.pad = glm::vec2{};
 
-						// Compute angle between +ve y-axis and the velocity direction
-						// atan2(y, x) gives angle relative to +ve x-axis, so subtract 90 degrees to align with +ve y-axis
-						float angle = glm::degrees(std::atan2(dir.y, dir.x) - glm::half_pi<float>());
+					std::string key = ren.meshName;
 
-						// Model matrix according to its new rotation, and y-scale so line size reflects speed
-						glm::mat4 debugModel = GetModelToWorldMatrix(pos, angle, Vec2{ 1.f, length }, RenderLayer::DEBUG);
-						glm::mat4 debugMvp = proj * view * debugModel;
-
-						shader->SetMat4("uMVP", debugMvp);
-						shader->SetVec3("uEntityColor", glm::vec3(0.1f, 0.9f, 0.9f));
-						shader->SetVec3("uBaseColor", glm::vec3(0.1f, 0.9f, 0.9f));
-						// Points upwards by default, will be rotated accordingly
-						GetMesh("line")->Draw();
+					if (m_coord.HasComponent<Color>(e)) {
+						auto& col = m_coord.GetComponent<Color>(e);
+						instance.color = glm::vec3(col.r, col.g, col.b);
+						key += "_color";
 					}
+					else {
+						key = key + "_textured_" + ren.materialName;
+					}
+
+					if (ren.isWireframe) {
+						key += "_wireframe";
+					}
+					else {
+						key += "_solid";
+					}
+
+					m_meshBatches[key].instances.push_back(instance);
+					m_meshBatches[key].mesh = data.mesh;
+					m_meshBatches[key].material = data.material;
+					m_meshBatches[key].isWireframe = ren.isWireframe;
+
+				}
+				else {
+					glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl, ren.renderLayer);
+
+					Shader* shader = data.material->GetShader();
+					Mesh* mesh = data.mesh;
+
+					data.material->ApplyUniforms(ren.isWireframe);
+
+					shader->SetMat4("uProj", proj);
+					shader->SetMat4("uView", view);
+					shader->SetMat4("uModelToWorld", model);
+					shader->SetBool("uUseInstancing", m_enableInstancedRendering);
+
+					if (m_coord.HasComponent<Color>(e)) {
+						auto& col = m_coord.GetComponent<Color>(e);
+						shader->SetVec3("uEntityColor", { col.r, col.g, col.b });
+					}
+
+					// Change the polygon mode to wireframe
+					if (ren.isWireframe) {
+						glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+						mesh->Draw();
+						glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+					}
+					else {
+						mesh->Draw();
+					}
+
+					GLenum err = glGetError();
+					if (err != GL_NO_ERROR) std::cerr << "GL ERROR: " << err << "\n";
+					glEnable(GL_DEBUG_OUTPUT);
+					glDebugMessageCallback([](GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar* message, const void*) {
+						std::cerr << "[GL] " << message << "\n";
+						}, nullptr);
+				}
+
+				// Debug Drawing, for entities with no texture
+				if (m_enableDebugDraw) {
+					// For Debug Drawing, debug shader will be used for simplicity
+					Shader* shader = GetShader("debug");
+					shader->Use();
+
+					// Drawing of colliders 
+					if (m_coord.HasComponent<Collider>(e)) {
+						Collider const& col = m_coord.GetComponent<Collider>(e);
+
+						switch (col.shape) {
+						case ShapeType::AABB:
+						{
+							// Model matrix according to its collider's scale
+							glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.width, col.height }, RenderLayer::DEBUG);
+							glm::mat4 debugMVP = proj * view * debugmodel;
+							shader->SetMat4("uDebugMVP", debugMVP);
+							shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
+							GetMesh("AABBColliderMesh")->Draw();
+						}
+						break;
+
+						case ShapeType::Circle:
+						{
+							// Model matrix according to its collider's scale
+							glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.radius, col.radius }, RenderLayer::DEBUG);
+							glm::mat4 debugMVP = proj * view * debugmodel;
+							shader->SetMat4("uDebugMVP", debugMVP);
+							shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
+							GetMesh("CircleColliderMesh")->Draw();
+						}
+						break;
+
+						}
+					}
+
+					// Drawing of velocity direction for moving objects
+					if (m_coord.HasComponent<RigidBody>(e)) {
+						Vec2 const& vel = m_coord.GetComponent<RigidBody>(e).vel;
+
+						glm::vec3 velocity(vel.x, vel.y, 0.f);
+						float speed = glm::length(velocity); // Magnitude of the velocity vector
+
+						// Only draw the velocity line if it is moving
+						if (speed > 0.f) {
+							// Max length of the velocity line is slightly above the scale of the entity
+							float maxLength = std::max(scl.x, scl.y) * 1.4f;
+							float length = std::min(speed, maxLength);
+
+							glm::vec3 dir = glm::normalize(velocity); // Direction of the velocity vector
+
+							// Compute angle between +ve y-axis and the velocity direction
+							// atan2(y, x) gives angle relative to +ve x-axis, so subtract 90 degrees to align with +ve y-axis
+							float angle = glm::degrees(std::atan2(dir.y, dir.x) - glm::half_pi<float>());
+
+							// Model matrix according to its new rotation, and y-scale so line size reflects speed
+							glm::mat4 debugModel = GetModelToWorldMatrix(pos, angle, Vec2{ 1.f, length }, RenderLayer::DEBUG);
+							glm::mat4 debugMVP = proj * view * debugModel;
+							shader->SetMat4("uDebugMVP", debugMVP);
+							shader->SetVec3("uEntityColor", glm::vec3(0.1f, 0.9f, 0.9f));
+							// Points upwards by default, will be rotated accordingly
+							GetMesh("line")->Draw();
+						}
+					}
+				}
+			}
+		}
+
+		// Uploading and Drawing for Instanced Rendering
+		if (m_enableInstancedRendering) {
+			//std::cout << "Num unique instances total: " << m_meshBatches.size() << std::endl;
+
+			// Upload once per mesh type
+			for (auto& [key, instanceBatch] : m_meshBatches) {
+				//std::cout << "uploading unique mesh with name: " << meshName;
+				//std::cout << " with its instance count: " << instances.size() << std::endl;
+
+				Mesh* mesh = instanceBatch.mesh;
+				Material* material = instanceBatch.material;
+				material->ApplyUniforms(instanceBatch.isWireframe);
+				Shader* shader = material->GetShader();
+				shader->SetMat4("uProj", proj);
+				shader->SetMat4("uView", view);
+				shader->SetBool("uUseInstancing", true);
+
+				size_t size = instanceBatch.instances.size() * sizeof(Mesh::InstanceData);
+				glNamedBufferSubData(m_globalInstanceSSBO, 0, size, instanceBatch.instances.data());
+				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
+
+				if (instanceBatch.isWireframe) {
+					glEnable(GL_POLYGON_OFFSET_LINE);
+					glPolygonOffset(-1.0f, -1.0f); // push lines slightly toward camera
+					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+					mesh->DrawInstanced(instanceBatch.instances.size());
+					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+					glDisable(GL_POLYGON_OFFSET_LINE);
+				} else {
+					mesh->DrawInstanced(instanceBatch.instances.size());
 				}
 			}
 		}

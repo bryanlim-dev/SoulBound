@@ -7,7 +7,7 @@
  * Description: This file contains the declarations of the Application System,
  *				which manages the application window, OpenGL context, and timing.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -81,7 +81,7 @@ namespace NightSnack {
 		Reference to the ECS Coordinator
 		*/
 		/************************************************************************/
-		void Update(float dt, Coordinator& coord) override;
+		void Update(int steps) override;
 
 		/************************************************************************/
 		/*!
@@ -161,6 +161,18 @@ namespace NightSnack {
 		/************************************************************************/
 		Timer& GetTimer() { return m_timer; }
 
+		/************************************************************************/
+		/*!
+		\brief
+		Timer interface.
+		*/
+		/************************************************************************/
+		void StartFrame() { m_timer.StartFrame(); }
+		void EndFrame() { m_timer.EndFrame(); }
+		void StartSystemTimer(std::string&& s) { m_timer.StartSystemTimer(s); }
+		void EndSystemTimer(std::string&& s) { m_timer.EndSystemTimer(s); }
+		float GetDT() { return m_timer.GetDT(); }
+
 		Signature GetSignature() const override { return m_systemSignature; }
 
 		const std::vector<std::string>& GetDroppedFiles() const { return s_droppedFiles; }
@@ -193,6 +205,8 @@ namespace NightSnack {
 		static std::vector<std::string> s_droppedFiles;
 
 		static void FileDropCallback(GLFWwindow* window, int count, const char** paths);
+		// Reference to ECS coordinator
+		Coordinator& m_coord;
 	};
 
 }	// NightSnack

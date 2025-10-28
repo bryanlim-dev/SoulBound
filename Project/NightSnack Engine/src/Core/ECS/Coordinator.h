@@ -16,10 +16,11 @@
 
 #include "Entity.h"
 #include "Component.h"
+#include "Layer.h"
 #include "EntityManager.h"
 #include "ComponentManager.h"
 #include "ISystem.h"
-#include "Systems/Application/Application.h"
+#include "Systems/Application/Application.h""
 
 namespace NightSnack {
 
@@ -177,7 +178,22 @@ namespace NightSnack {
 		/************************************************************************/
 		std::set<Entity> const& GetLivingEntities() const { return m_entityManager->GetLivingEntities(); }
 
+		/************************************************************************/
+		/*!
+		\brief
+		Obtains the living Entity Count of the Entity Manager;
+		*/
+		/************************************************************************/
 		size_t GetLivingEntityCount() const { return m_entityManager->GetLivingEntityCount(); }
+
+		/************************************************************************/
+		/*!
+		\brief
+		Get all systems to update their set of entities by buffering an Entity's
+		signature;
+		*/
+		/************************************************************************/
+		void BufferEntitySignature(Entity e) { m_systemManager->EntitySignatureChanged(e, GetEntitySignature(e), GetComponent<Transform>(e).layer); }
 
 		/************************************************************************/
 		/*!
@@ -228,9 +244,6 @@ namespace NightSnack {
 		std::unique_ptr<EntityManager> m_entityManager;
 		std::unique_ptr<ComponentManager> m_componentManager;
 		std::unique_ptr<SystemManager> m_systemManager;
-
-		// Event Dispatcher;
-		// EventDispatcher& m_dispather;
 	};
 
 	// ------------------------------------------------------------------------------------------------
@@ -250,6 +263,12 @@ namespace NightSnack {
 	// making sure to also inform the ComponentManager and SystemManager;
 	template <typename T>
 	void Coordinator::AddComponent(Entity e, T component) {
+
+		if (HasComponent<T>(e)) {
+			std::cerr << "Error: Entity " << e << " already has this component!!\n";
+			return;
+		}
+
 		// Add component
 		m_componentManager->AddComponent(e, component);
 
@@ -261,12 +280,18 @@ namespace NightSnack {
 		// Update the actual Signature of Entity e;
 		m_entityManager->SetSignature(e, sig);
 		// Inform the SystemManager that Entity e's Signature has changed;
-		m_systemManager->EntitySignatureChanged(e, sig);
+		m_systemManager->EntitySignatureChanged(e, sig, GetComponent<Transform>(e).layer);
 
 	}
 
 	template <typename T>
 	void Coordinator::RemoveComponent(Entity e) {
+
+		if (!HasComponent<T>(e)) {
+			std::cerr << "Error: Entity " << e << " does not have this component, cannot remove!!\n";
+			return;
+		}
+
 		// Remove component;
 		m_componentManager->RemoveComponent(e);
 
