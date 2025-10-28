@@ -290,6 +290,15 @@ namespace NightSnack {
 		else if (!enabled && ImGui::GetCurrentContext()) {
 			// Properly shutdown backends before destroying context
 			ImguiSystem::ResetAll();
+
+			// Update application viewport on editor close
+			auto appSystem = m_coord.GetSystem<ApplicationSystem>();
+			if (appSystem)
+			{
+				int width = 0, height = 0;
+				glfwGetFramebufferSize(appSystem->GetNativeHandle(), &width, &height);
+				appSystem->OnResize(width, height);
+			}
 		}
 		m_toggleEditor = enabled;
 	}

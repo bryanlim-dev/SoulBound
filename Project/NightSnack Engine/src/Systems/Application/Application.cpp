@@ -137,6 +137,12 @@ namespace NightSnack {
 		glfwSetWindowTitle(window, title);
 	}
 
+	void ApplicationSystem::OnResize(int width, int height) {
+		m_appWidth = width;
+		m_appHeight = height;
+		glViewport(0, 0, width, height);
+	}
+
 	// Check if window should close
 	bool ApplicationSystem::ShouldClose() const {
 		return glfwWindowShouldClose(m_windowHandle);

@@ -132,6 +132,20 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Trigger when the window is resized.
+
+		\param[in] width
+		New width of the application window
+
+		\param[in] height
+		New height of the application window
+		*/
+		/************************************************************************/
+		void OnResize(int width, int height);
+
+		/************************************************************************/
+		/*!
+		\brief
 		Gets the current width of the application window.
 		*/
 		/************************************************************************/
