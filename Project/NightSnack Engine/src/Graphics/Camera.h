@@ -40,5 +40,4 @@ namespace NightSnack {
 
 		Entity FindPlayer(Coordinator& coord);
 	};
-
 }
