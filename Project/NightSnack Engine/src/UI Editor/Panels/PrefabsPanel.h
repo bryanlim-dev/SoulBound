@@ -4,14 +4,12 @@
 
 namespace NightSnack {
 
-	struct Prefab {
-		std::string prefabName;
+	inline void DrawPrefabsPanel(std::vector<std::string> const& names, std::unordered_map<std::string, std::string> materials) {
 
-	};
-
-	inline void DrawPrefabsPanel(std::vector<std::string> const& prefabs) {
-
-		//for (std::string const& s : prefabs);
+		for (std::string const& n : names) {
+			std::string mat = materials[n];
+		}
+		
 	}
 
 }	// NightSnack

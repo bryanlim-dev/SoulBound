@@ -33,10 +33,14 @@ namespace NightSnack
             m_showAssetProperties(false),
             m_showImportDialog(false)
         {
-            //m_prefabs.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
-            //for (std::string const& s : coord.GetSystem<EntityFactory>()->GetPrefabNames()) {
-            //    m_prefabs.emplace_back(s);
-            //}
+            m_prefabNames.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
+            for (std::string const& s : coord.GetSystem<EntityFactory>()->GetPrefabNames()) {
+                m_prefabNames.emplace_back(s);
+            }
+            m_prefabMats.reserve(coord.GetSystem<EntityFactory>()->GetPrefabMaterials().size());
+            for (auto const& [n, m] : coord.GetSystem<EntityFactory>()->GetPrefabMaterials()) {
+                m_prefabMats.insert(n, m);
+            }
         }
 
         void Draw()
@@ -113,7 +117,8 @@ namespace NightSnack
 
         bool m_showImportDialog;      
         std::vector<std::string> m_pendingImports;
-        //std::vector<std::string> m_prefabs;
+        std::vector<std::string> m_prefabNames;
+        std::unordered_map<std::string, std::string> m_prefabMats;
         std::string m_importDestination;
 
         void HandleExternalFileDrop()

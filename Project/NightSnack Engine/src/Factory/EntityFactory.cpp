@@ -19,6 +19,13 @@ namespace NightSnack {
 	void EntityFactory::Update(int steps) {
 
 		(void)steps;
+		
+		static bool printed = false;
+
+		if (!printed) {
+			PrintPrefabNames();
+			printed = true;
+		}
 
 	}
 
@@ -112,8 +119,33 @@ namespace NightSnack {
 		}
 	}
 
-	std::vector<std::string> const& EntityFactory::GetPrefabNames() {
-		return std::vector<std::string>{};
+	void EntityFactory::PrintPrefabNames() const {
+
+		std::cout << "Prefabs: ";
+		for (auto& [name, data] : m_archetypes.items()) {
+			std::cout << name << " ";
+		}
+		std::cout << '\n';
+	}
+
+	std::vector<std::string> const& EntityFactory::GetPrefabNames() const {
+		std::vector<std::string> names;
+		for (auto& [name, data] : m_archetypes.items()) {
+			names.emplace_back(name);
+		}
+		return names;
+	}
+
+	std::unordered_map<std::string, std::string> const& EntityFactory::GetPrefabMaterials() const {
+		std::unordered_map<std::string, std::string> materials;
+
+		for (auto& [name, data] : m_archetypes.items()) {
+			if (data.contains("Renderable")) {
+				std::string mat = data["Renderable"]["materialName"];
+				materials.insert({ name, mat });
+			}
+		}
+		return materials;
 	}
 
 }	// NightSnack
