@@ -29,6 +29,7 @@ namespace NightSnack
             //m_searchFilter(""),
             m_selectedAssetPath(""),
             m_showAssetProperties(false)
+            //m_showImportDialog(false)
         {}
 
         void Draw()
@@ -36,13 +37,26 @@ namespace NightSnack
 			// Set initial window size and style
             //ImGui::SetNextWindowSize(ImVec2(600, 300), ImGuiCond_Once);
 
+            static bool firstFrame = true;
+            if (firstFrame)
+            {
+                // Clear any leftover dropped files on first frame
+                auto appSystem = m_coord.GetSystem<ApplicationSystem>();
+                if (appSystem) appSystem->ClearDroppedFiles();
+                firstFrame = false;
+            }
+            else
+            {
+                // Normal operation: check for dropped files
+                HandleExternalFileDrop();
+            }
+
 			// Options Window
             ImGui::Begin("Assets");
+            DrawToolbar();
 
             if (ImGui::BeginTabBar("AssetsTabs"))
             {
-                // Code here
-                // Currently, we only have one tab: "Images"
                 if (ImGui::BeginTabItem("Images"))
                 {
                     DrawImagesTab(); // Render all image thumbnails
@@ -57,6 +71,19 @@ namespace NightSnack
                 ImGui::EndTabBar();
             }
             ImGui::End();
+
+            if (m_showImportDialog)
+            {
+                DrawImportDialog();
+            }
+
+            // ================================================================
+            // STEP 4: DRAW ASSET PROPERTIES (if asset selected)
+            // ================================================================
+            if (m_showAssetProperties && !m_selectedAssetPath.empty())
+            {
+                DrawAssetProperties();
+            }
         }
 
     private:
@@ -69,7 +96,226 @@ namespace NightSnack
         float m_thumbnailSize;                   // Size of thumbnail images
         std::string m_searchFilter;              // Current search text
         std::string m_selectedAssetPath;         // Currently selected asset
-        bool m_showAssetProperties;              // Show properties window?
+        bool m_showAssetProperties;              // Show properties window
+
+        bool m_showImportDialog;      
+        std::vector<std::string> m_pendingImports;
+        std::string m_importDestination;
+
+        void HandleExternalFileDrop()
+        {
+            // Get the application system
+            auto appSystem = m_coord.GetSystem<ApplicationSystem>();
+            if (!appSystem) return;
+
+            // Check if any files were dropped
+            const auto& droppedFiles = appSystem->GetDroppedFiles();
+
+            if (!droppedFiles.empty())
+            {
+                // Files were dropped! Store them and show import dialog
+                m_pendingImports = droppedFiles;
+                m_showImportDialog = true;
+                m_importDestination = m_assetsRoot.string();
+
+                std::cout << "[Assets] Received " << droppedFiles.size()
+                    << " dropped file(s)\n";
+
+                // Clear the application's dropped files list
+                appSystem->ClearDroppedFiles();
+            }
+        }
+
+        void DrawImportDialog()
+        {
+            if (!ImGui::IsPopupOpen("Import Files"))
+            {
+                ImGui::OpenPopup("Import Files");
+            }
+
+            // Center the dialog
+            ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+            ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+            ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_Appearing);
+
+            if (ImGui::BeginPopupModal("Import Files", &m_showImportDialog))
+            {
+                ImGui::Text("Import %zu file(s) to Assets folder", m_pendingImports.size());
+                ImGui::Separator();
+
+                // ----------------------------------------------------------------
+                // Show list of files to import
+                // ----------------------------------------------------------------
+                ImGui::Text("Files:");
+                ImGui::BeginChild("FileList", ImVec2(0, 150), true);
+
+                for (size_t i = 0; i < m_pendingImports.size(); i++)
+                {
+                    fs::path filePath(m_pendingImports[i]);
+                    std::string filename = filePath.filename().string();
+                    std::string ext = filePath.extension().string();
+
+                    // Color code by file type
+                    if (IsImageFile(ext))
+                    {
+                        ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f),
+                            "[Image] %s", filename.c_str());
+                    }
+                    else
+                    {
+                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.4f, 1.0f),
+                            "[Other] %s", filename.c_str());
+                    }
+
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::BeginTooltip();
+                        ImGui::Text("Source: %s", m_pendingImports[i].c_str());
+                        ImGui::EndTooltip();
+                    }
+                }
+
+                ImGui::EndChild();
+                ImGui::Separator();
+
+                // ----------------------------------------------------------------
+                // Destination folder
+                // ----------------------------------------------------------------
+                ImGui::Text("Import to: %s", m_importDestination.c_str());
+                ImGui::Separator();
+
+                // ----------------------------------------------------------------
+                // Import options
+                // ----------------------------------------------------------------
+                static bool copyFiles = true;
+                static bool overwriteExisting = false;
+
+                ImGui::Checkbox("Copy files to project", &copyFiles);
+                ImGui::Checkbox("Overwrite existing files", &overwriteExisting);
+                ImGui::Separator();
+
+                // ----------------------------------------------------------------
+                // Action buttons
+                // ----------------------------------------------------------------
+                float buttonWidth = 100.0f;
+
+                if (ImGui::Button("Import", ImVec2(buttonWidth, 0)))
+                {
+                    ImportFiles(copyFiles, overwriteExisting);
+                    m_showImportDialog = false;
+                    m_pendingImports.clear();
+                }
+
+                ImGui::SameLine();
+
+                if (ImGui::Button("Cancel", ImVec2(buttonWidth, 0)))
+                {
+                    m_showImportDialog = false;
+                    m_pendingImports.clear();
+                }
+
+                ImGui::EndPopup();
+            }
+        }
+
+        void ImportFiles(bool copyFiles, bool overwriteExisting)
+        {
+            std::cout << "[Assets] Importing " << m_pendingImports.size() << " files...\n";
+
+            int successCount = 0;
+            int failCount = 0;
+
+            for (const auto& sourcePath : m_pendingImports)
+            {
+                try
+                {
+                    fs::path source(sourcePath);
+                    fs::path destination = fs::path(m_importDestination) / source.filename();
+
+                    // Check if file exists
+                    if (fs::exists(destination) && !overwriteExisting)
+                    {
+                        std::cout << "[Assets] Skipped (already exists): "
+                            << destination.string() << "\n";
+                        failCount++;
+                        continue;
+                    }
+
+                    // Copy file
+                    if (copyFiles)
+                    {
+                        fs::copy_file(source, destination,
+                            fs::copy_options::overwrite_existing);
+                        std::cout << "[Assets] Copied: " << source.filename().string()
+                            << " -> " << destination.string() << "\n";
+                    }
+
+                    // Clear texture cache to reload
+                    if (IsImageFile(source.extension().string()))
+                    {
+                        m_loadedTextures.erase(destination.string());
+                        m_textureObjects.erase(destination.string());
+                    }
+
+                    successCount++;
+                }
+                catch (const std::exception& e)
+                {
+                    std::cerr << "[Assets] Failed to import " << sourcePath
+                        << ": " << e.what() << "\n";
+                    failCount++;
+                }
+            }
+
+            std::cout << "[Assets] Import complete: " << successCount
+                << " success, " << failCount << " failed\n";
+        }
+
+        void DrawAssetProperties()
+        {
+            ImGui::Begin("Asset Properties", &m_showAssetProperties);
+
+            if (!m_selectedAssetPath.empty())
+            {
+                fs::path selectedPath(m_selectedAssetPath);
+
+                ImGui::Text("Asset Inspector");
+                ImGui::Separator();
+
+                ImGui::Text("Name: %s", selectedPath.filename().string().c_str());
+                ImGui::Text("Type: %s", selectedPath.extension().string().c_str());
+                ImGui::Text("Path: %s", m_selectedAssetPath.c_str());
+
+                if (fs::exists(selectedPath))
+                {
+                    auto fileSize = fs::file_size(selectedPath);
+                    ImGui::Text("Size: %.2f KB", fileSize / 1024.0f);
+                }
+
+                ImGui::Separator();
+
+                // Preview for images
+                if (IsImageFile(selectedPath.extension().string()))
+                {
+                    ImGui::Text("Preview:");
+                    ImTextureID texID = GetOrLoadTexture(m_selectedAssetPath);
+                    if (texID)
+                    {
+                        ImGui::Image(texID, ImVec2(200, 200));
+                    }
+                }
+
+                ImGui::Separator();
+
+                if (ImGui::Button("Close"))
+                {
+                    m_showAssetProperties = false;
+                    m_selectedAssetPath = "";
+                }
+            }
+
+            ImGui::End();
+        }
 
         void DrawToolbar()
         {
@@ -85,24 +331,36 @@ namespace NightSnack
 
             ImGui::SameLine();
 
-            // ----------------------------------------------------------------
-            // THUMBNAIL SIZE SLIDER - Adjust icon size (Unity feature)
-            // ----------------------------------------------------------------
-            ImGui::SetNextItemWidth(100.0f);
-            ImGui::SliderFloat("##Size", &m_thumbnailSize, 64.0f, 128.0f, "Size: %.0f");
+            //// ----------------------------------------------------------------
+            //// THUMBNAIL SIZE SLIDER - Adjust icon size (Unity feature)
+            //// ----------------------------------------------------------------
+            //ImGui::SetNextItemWidth(100.0f);
+            //ImGui::SliderFloat("##Size", &m_thumbnailSize, 64.0f, 128.0f, "Size: %.0f");
+
+            //ImGui::SameLine();
+
+            //// ----------------------------------------------------------------
+            //// REFRESH BUTTON - Rescan assets folder
+            //// ----------------------------------------------------------------
+            //if (ImGui::Button("Refresh"))
+            //{
+            //    // Clear texture cache to force reload
+            //    m_loadedTextures.clear();
+            //    m_textureObjects.clear();
+            //    std::cout << "[Assets] Refreshed asset cache\n";
+            //}
+
+            if (ImGui::Button("Import Files..."))
+            {
+                // TODO: In future, open file dialog to select files
+                // For now, just show instructions
+                std::cout << "[Assets] Manual import clicked\n";
+                std::cout << "[Assets] Drag files from desktop onto the window to import\n";
+            }
 
             ImGui::SameLine();
-
-            // ----------------------------------------------------------------
-            // REFRESH BUTTON - Rescan assets folder
-            // ----------------------------------------------------------------
-            if (ImGui::Button("Refresh"))
-            {
-                // Clear texture cache to force reload
-                m_loadedTextures.clear();
-                m_textureObjects.clear();
-                std::cout << "[Assets] Refreshed asset cache\n";
-            }
+            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
+                "| Drag files onto window to import");
         }
 
         void DrawImagesTab()
@@ -137,6 +395,7 @@ namespace NightSnack
                 // Get full path as string
                 std::string pathStr = entry.path().string();
 
+                /*
                 // ----------------------------------------------------------------
                 // SEARCH FILTER - Skip if doesn't match search
                 // ----------------------------------------------------------------
@@ -156,6 +415,7 @@ namespace NightSnack
                     if (lowerFilename.find(lowerFilter) == std::string::npos)
                         continue;
                 }
+                */
 
                 // ----------------------------------------------------------------
                 // LOAD TEXTURE - Get or load thumbnail from cache

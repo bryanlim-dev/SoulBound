@@ -163,6 +163,9 @@ namespace NightSnack {
 
 		Signature GetSignature() const override { return m_systemSignature; }
 
+		const std::vector<std::string>& GetDroppedFiles() const { return s_droppedFiles; }
+		void ClearDroppedFiles() { s_droppedFiles.clear(); }
+
 	private:
 		/************************************************************************/
 		/*!
@@ -186,6 +189,10 @@ namespace NightSnack {
 
 		// System event dispatcher
 		EventDispatcher* m_dispatcher = nullptr;
+
+		static std::vector<std::string> s_droppedFiles;
+
+		static void FileDropCallback(GLFWwindow* window, int count, const char** paths);
 	};
 
 }	// NightSnack
