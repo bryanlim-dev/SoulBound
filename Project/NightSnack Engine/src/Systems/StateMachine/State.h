@@ -19,7 +19,7 @@ namespace NightSnack
 	class StateBase
 	{
 	protected:
-		std::list<std::pair<std::shared_ptr<StateBase>, std::function<bool(Entity)>>> m_transtitionStatesList;
+		std::list<std::pair<std::shared_ptr<StateBase>, std::function<bool(Entity, Coordinator&)>>> m_transtitionStatesList;
 
 		//Function returns nothing an takes in a EntityID and float (dt)
 		std::function<void (Entity, Coordinator&)> m_enterFunction;
@@ -37,7 +37,8 @@ namespace NightSnack
 	public:
 		StateBase() = delete;
 
-		StateBase(Entity id, std::string stateKeyName, Coordinator& coord, std::function<void(float, Entity)> updateFunction)
+		StateBase(Entity id, std::string stateKeyName, Coordinator& coord,
+			std::function<void(float, Entity)> updateFunction = [](float, Entity) { /* Default is empty by Design*/ })
 			:m_entityID(id), m_stateKey(stateKeyName), m_coord(coord){
 			m_updateFunction = updateFunction;
 			//std::cout << "State adresss in constructor: " << this << "\n";
@@ -60,9 +61,9 @@ namespace NightSnack
 			m_exitFunction = exitFunc;
 		}
 
-		void InsertStateTransition(std::shared_ptr<StateBase> state, std::function<bool(Entity)>transitionn)
+		void InsertStateTransition(std::shared_ptr<StateBase> state, std::function<bool(Entity, Coordinator&)>transition)
 		{
-			m_transtitionStatesList.push_back({ state,transitionn });
+			m_transtitionStatesList.emplace_back(state, transition);
 		}
 
 		void SetNextState(std::shared_ptr<StateBase> newNextState) {
@@ -83,7 +84,7 @@ namespace NightSnack
 
 			for (auto& stateFuncPair : m_transtitionStatesList)
 			{
-				if (stateFuncPair.second && stateFuncPair.second(m_entityID))
+				if (stateFuncPair.second && stateFuncPair.second(m_entityID, m_coord))
 				{
 					m_nextState = stateFuncPair.first;
 					m_isExit = true;
@@ -119,7 +120,10 @@ namespace NightSnack
 		struct StateDecisionFuncionHelper
 		{
 			//Insert update functions here
-			//bool CheeckPlayerLeft(Entity ownerID, Coordinator& coord);
+			static bool CheckPlayerIsLeftSide(Entity ownerID, Coordinator& coord);
+			static bool CheckPlayerIsRightSide(Entity ownerID, Coordinator& coord);
+
+			static bool EntityIsColliding(Entity ownerID, Coordinator& coord);
 		};
 	};
 
@@ -139,9 +143,13 @@ namespace NightSnack
 
 		void Exit() override;
 
+		void InsertEndCountdownState(std::shared_ptr<StateBase> nextState);
+
 		void CountdownUpdate(float dt, Entity id);
 
 		bool CountdownCheck(Entity id);
+
+
 	};
 
 	class StateMovment : public StateBase
@@ -153,6 +161,7 @@ namespace NightSnack
 		StateMovment(Entity id, std::string stateKeyName, Coordinator& coord, Vec2 moveSpeedAcc);
 
 		void MovementEnter();
+		void MovementUpdate();
 		void MovementExit();
 	};
 
