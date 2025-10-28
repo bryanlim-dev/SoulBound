@@ -152,6 +152,18 @@ namespace NightSnack {
         std::string GetName() const override { return "PlayerController"; }
         Signature GetSignature() const override { return m_systemSignature; }
 
+
+        /************************************************************************/
+        /*!
+        \brief
+        Return the player entity
+
+        \return
+        The ID of the current Player Entity.
+        */
+        /************************************************************************/
+        Entity GetPlayer() { return m_player; }
+
     private:
         Signature m_systemSignature{};
         EventDispatcher* m_dispatcher = nullptr;

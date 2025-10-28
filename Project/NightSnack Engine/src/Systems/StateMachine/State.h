@@ -19,10 +19,12 @@ namespace NightSnack
 	class StateBase
 	{
 	protected:
-		std::list<std::pair<std::shared_ptr<StateBase>, std::function<bool(Entity)>>> m_transtitionStatesList;
+		std::list<std::pair<std::shared_ptr<StateBase>, std::function<bool(Entity, Coordinator&)>>> m_transtitionStatesList;
 
 		//Function returns nothing an takes in a EntityID and float (dt)
+		std::function<void (Entity, Coordinator&)> m_enterFunction;
 		std::function<void (float, Entity)> m_updateFunction;
+		std::function<void (Entity, Coordinator&)> m_exitFunction;
 
 		std::shared_ptr<StateBase> m_nextState = nullptr;
 		Entity m_entityID;
@@ -35,7 +37,8 @@ namespace NightSnack
 	public:
 		StateBase() = delete;
 
-		StateBase(Entity id, std::string stateKeyName, Coordinator& coord, std::function<void(float, Entity)> updateFunction)
+		StateBase(Entity id, std::string stateKeyName, Coordinator& coord,
+			std::function<void(float, Entity)> updateFunction = [](float, Entity) { /* Default is empty by Design*/ })
 			:m_entityID(id), m_stateKey(stateKeyName), m_coord(coord){
 			m_updateFunction = updateFunction;
 			//std::cout << "State adresss in constructor: " << this << "\n";
@@ -48,9 +51,19 @@ namespace NightSnack
 			}
 		}
 
-		void InsertStateTransition(std::shared_ptr<StateBase> state, std::function<bool(Entity)>transitionn)
+		void SetEnterFunction(std::function<void(float, Coordinator&)> enterFunc)
 		{
-			m_transtitionStatesList.push_back({ state,transitionn });
+			m_enterFunction = enterFunc;
+		}
+
+		void SetExitFunction(std::function<void(float, Coordinator&)> exitFunc)
+		{
+			m_exitFunction = exitFunc;
+		}
+
+		void InsertStateTransition(std::shared_ptr<StateBase> state, std::function<bool(Entity, Coordinator&)>transition)
+		{
+			m_transtitionStatesList.emplace_back(state, transition);
 		}
 
 		void SetNextState(std::shared_ptr<StateBase> newNextState) {
@@ -60,6 +73,9 @@ namespace NightSnack
 		virtual void Enter() {
 			m_isExit = false; 
 			std::cout << "ID: " << m_entityID << ", State Enter: " << m_stateKey << std::endl;
+
+			if (m_enterFunction)
+				m_enterFunction(m_entityID, m_coord);
 		}
 
 		virtual void Update(float dt) {
@@ -68,7 +84,7 @@ namespace NightSnack
 
 			for (auto& stateFuncPair : m_transtitionStatesList)
 			{
-				if (stateFuncPair.second && stateFuncPair.second(m_entityID))
+				if (stateFuncPair.second && stateFuncPair.second(m_entityID, m_coord))
 				{
 					m_nextState = stateFuncPair.first;
 					m_isExit = true;
@@ -80,6 +96,9 @@ namespace NightSnack
 		virtual void Exit() { 
 			m_isExit = false; 
 			std::cout << "ID: " << m_entityID << ", State Exit: " << m_stateKey << std::endl;
+
+			if (m_exitFunction)
+				m_exitFunction(m_entityID, m_coord);
 		}
 
 
@@ -97,6 +116,15 @@ namespace NightSnack
 		{
 			return m_isExit;
 		}
+
+		struct StateDecisionFuncionHelper
+		{
+			//Insert update functions here
+			static bool CheckPlayerIsLeftSide(Entity ownerID, Coordinator& coord);
+			static bool CheckPlayerIsRightSide(Entity ownerID, Coordinator& coord);
+
+			static bool EntityIsColliding(Entity ownerID, Coordinator& coord);
+		};
 	};
 
 	class StateCountDown : public StateBase
@@ -115,22 +143,26 @@ namespace NightSnack
 
 		void Exit() override;
 
+		void InsertEndCountdownState(std::shared_ptr<StateBase> nextState);
+
 		void CountdownUpdate(float dt, Entity id);
 
 		bool CountdownCheck(Entity id);
+
+
 	};
 
-	class StateRandomChance : public StateBase
+	class StateMovment : public StateBase
 	{
 	private:
-
+		Vec2 m_Speed;
 
 	public:
-		void Enter() override;
+		StateMovment(Entity id, std::string stateKeyName, Coordinator& coord, Vec2 moveSpeedAcc);
 
-		void Update(float dt) override;
-
-		void Exit() override;
+		void MovementEnter();
+		void MovementUpdate();
+		void MovementExit();
 	};
 
 } //End of namesapce

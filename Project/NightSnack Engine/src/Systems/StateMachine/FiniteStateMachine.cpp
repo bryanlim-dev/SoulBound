@@ -1,11 +1,21 @@
 #include "FiniteStateMachine.h"
+#include <Factory/EntityFactory.h>
 
 namespace NightSnack
 {
 	FiniteStateMachine::FiniteStateMachine(Coordinator& coord) : m_coord(coord)
 	{
-		Entity test = m_coord.CreateEntity();
-		(FiniteStateMachine::CreateDebugTestStates(test, m_coord));
+		m_systemSignature.set(GetComponentTypeID<Transform>());
+
+		Entity test = m_coord.GetSystem<EntityFactory>()->Create("BananaBall");
+
+ 		(FiniteStateMachine::CreateDebugTestStates(test, m_coord));
+		m_coord.ModifyComponent<Transform>(test).pos.x = 100;
+		m_coord.ModifyComponent<Transform>(test).pos.y = -225;
+
+		m_coord.ModifyComponent<Transform>(test).scale = {20, 20};
+		m_coord.ModifyComponent<Collider>(test).radius = 20;
+
 		/*m_coord.GetSystem<FiniteStateMachine>()->*/
 		AddEntity(test);
 	}
@@ -76,8 +86,8 @@ namespace NightSnack
 			std::shared_ptr<StateBase> nextState = states.currState->NextState();
 			states.currState->Exit();
 
+			nextState->Enter();
 			states.currState = nextState;
-			states.currState->Enter();
 		}
 
 		return;
@@ -99,25 +109,45 @@ namespace NightSnack
 	{
 		std::map<std::string, std::shared_ptr<StateBase>> stateMap;
 
-		//Do NOT use std::make_shared<StateCountDown>(StateCountDown(entityId, stateName, coord, 3))
-		//Apprently that messes up the pointer and makes a new uninitalized one??
+		//Descision State -> Movement (Left/Right) -> Countdown State -> Desicion
 
-		std::string stateName = "CounterState";
-		std::shared_ptr<StateCountDown> stateCountdownShared = std::make_shared<StateCountDown>(entityId, stateName, coord, 30);
-		stateMap.insert({ stateName, stateCountdownShared });
+		std::string desisionName = "Descision State";
+		std::shared_ptr<StateBase> desicionState = std::make_shared<StateBase>(entityId, desisionName, coord);
+		stateMap.insert({ desisionName, desicionState });
 
-		stateName = "ChanceState";
-		std::shared_ptr<StateBase> chanceState = std::make_shared<StateBase>(entityId, stateName, coord, [](float, Entity) {
-			});
-		stateMap.insert({ stateName, chanceState });
 
-		stateCountdownShared->SetNextState(chanceState);
-		stateCountdownShared->InsertStateTransition(chanceState, std::bind(&StateCountDown::CountdownCheck, stateCountdownShared, std::placeholders::_1));
-		chanceState->SetNextState(stateCountdownShared);
-		//std::cout << "State adresss in debug states: " << stateCountdownShared << "\n";
-		coord.AddComponent<States>(entityId, States(stateMap, stateCountdownShared));
-		//std::cout << "State adresss in compionents: " << coord.GetComponent<States>(entityId).currState << "\n";
-		//std::cout << "State adresss in commponent map: " << coord.ModifyComponent<States>(entityId).stateMap[stateName].get() << "\n";
+		std::string leftMovementName = "Left Movement State"; 
+		std::shared_ptr<StateMovment> movmenetLeftState = std::make_shared<StateMovment>(entityId, leftMovementName, coord, Vec2(-350,0));
+		stateMap.insert({ leftMovementName, movmenetLeftState });
+
+		std::string rightMovementName = "Right Movmenet State";
+		std::shared_ptr<StateMovment> movemementRightState = std::make_shared<StateMovment>(entityId, rightMovementName, coord, Vec2(350, 0));
+		stateMap.insert({ rightMovementName, movemementRightState });
+
+
+		std::string cooldownName = "CooldownState";
+		std::shared_ptr<StateCountDown> stateCountdown = std::make_shared<StateCountDown>(entityId, cooldownName, coord, 2);
+		stateMap.insert({ cooldownName, stateCountdown });
+
+
+		//Now make the connections
+		//Decision can move left or right
+		desicionState->InsertStateTransition(movmenetLeftState, (&StateBase::StateDecisionFuncionHelper::CheckPlayerIsLeftSide)); //Player to the left, move left
+		desicionState->InsertStateTransition(movemementRightState, (&StateBase::StateDecisionFuncionHelper::CheckPlayerIsRightSide)); //Player to the right, move right
+		
+		//Movement stops when colliding or when player is in wrong dir
+		movmenetLeftState->InsertStateTransition(stateCountdown, (&StateBase::StateDecisionFuncionHelper::EntityIsColliding)); //Entity collided, wait
+		//movmenetLeftState->InsertStateTransition(movemementRightState, (&StateBase::StateDecisionFuncionHelper::CheckPlayerIsRightSide)); //Player going other dir
+
+		movemementRightState->InsertStateTransition(stateCountdown, (&StateBase::StateDecisionFuncionHelper::EntityIsColliding)); //Entity Collided wait
+		//movemementRightState->InsertStateTransition(movmenetLeftState, (&StateBase::StateDecisionFuncionHelper::CheckPlayerIsLeftSide)); //Pllayer going other dir
+
+		//Countdown ends into decision
+		stateCountdown->InsertEndCountdownState(desicionState);
+
+
+
+		coord.AddComponent<States>(entityId, States(stateMap, desicionState));
 		return;
 	}
 }
