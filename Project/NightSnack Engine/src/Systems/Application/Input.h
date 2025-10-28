@@ -66,7 +66,7 @@ namespace NightSnack {
 		Reference to the Event Dispatcher
 		*/
 		/************************************************************************/
-		InputSystem(Coordinator& coord, EventDispatcher& disp) {
+		InputSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord } {
 			Init(coord.GetSystem<ApplicationSystem>()->GetNativeHandle(), disp);
 		}
 
@@ -100,7 +100,7 @@ namespace NightSnack {
 		Reference to the ECS Coordinator
 		*/
 		/************************************************************************/
-		void Update(float dt, Coordinator& coord) override;
+		void Update(int steps) override;
 
 		/************************************************************************/
 		/*!
@@ -449,6 +449,8 @@ namespace NightSnack {
 
 		// System event dispatcher
 		static EventDispatcher* m_dispatcher;
+		// Reference to ECS coordinator
+		Coordinator& m_coord;
 	};
 
 }	// NightSnack

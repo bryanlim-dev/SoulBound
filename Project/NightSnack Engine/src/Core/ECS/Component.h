@@ -26,10 +26,19 @@ namespace NightSnack {
     // ================================================================================================
     // COMPONENTS
     // ================================================================================================
+    enum class LayerType : std::uint8_t {
+        _ENGINE,
+        BACKGROUND,
+        GAMELAYER,
+        FOREGROUND,
+        GAMEUI
+    };
     struct Transform {
         Vec3 pos;
         float rot;
         Vec2 scale;
+
+        LayerType layer{ LayerType::GAMELAYER };
     };
 
     struct RigidBody {
@@ -129,14 +138,20 @@ namespace NightSnack {
         j.at("y").get_to(s.y);
     }
 
-    inline void from_json(const json& j, Transform& t) {
-        j.at("Position").get_to(t.pos);
-        j.at("Rotation").get_to(t.rot);
-        j.at("Scale").get_to(t.scale);
+    inline void from_json(json const& j, Transform& t) {
+        auto pos = j.at("Position");
+        auto scl = j.at("Scale");
+        t.pos = { pos.value("x", 0.0f), pos.value("y", 0.0f), pos.value("z", 0.0f) };
+        t.rot = j.value("Rotation", 0.0f);
+        t.scale = { scl.value("x", 1.0f), scl.value("y", 1.0f) };
+    }
+    
+    inline void from_json(const json& j, PlayerController& p) {
+        j.at("moveSpeed").get_to(p.moveSpeed);
+        j.at("jumpSpeed").get_to(p.jumpSpeed);
     }
 
     // PHYSICS ====================================================
-
     inline void from_json(const json& j, Force& f) {
         j.value("fx", 0.0f); // optional default
         j.value("fy", 0.0f);
@@ -177,6 +192,12 @@ namespace NightSnack {
         else
             r.isWireframe = false;
 
+        if (j.contains("renderLayer")) {
+            r.renderLayer = RenderLayer::BACKGROUND;
+        }
+        else
+            r.renderLayer = RenderLayer::DEFAULT;
+
         r.wasModified = true;
 
     }
@@ -199,6 +220,7 @@ namespace NightSnack {
         else if (shapeStr == "Circle") c.shape = ShapeType::Circle;
 
         if (typeStr == "Solid") c.type = ColliderType::Solid;
+        if (typeStr == "Ground") c.type = ColliderType::Ground;
         else if (typeStr == "Trigger") c.type = ColliderType::Trigger;
 
         j.at("isStatic").get_to(c.isStatic);

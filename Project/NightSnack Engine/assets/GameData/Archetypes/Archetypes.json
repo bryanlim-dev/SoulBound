@@ -1,4 +1,127 @@
 {
+  "Cam": {
+    "Camera": {
+      "isMainCam": true,
+      "zoom": 1.0,
+      "width": 1600,
+      "height": 900
+    }
+  },
+
+  "Backdrop": {
+    "Renderable": {
+      "meshName": "square",
+      "materialName": "backgroundMat"
+    }
+  },
+
+  "RedBall": {
+    "RigidBody": {
+      "mass": 1.0,
+      "useGravity": false
+    },
+    "Force": { "fx": 0.0, "fy": 0.0 },
+    "Collider": {
+      "shape": "AABB",
+      "type": "Solid",
+      "isStatic": false,
+      "width": 200.0,
+      "height": 200.0
+    },
+    "Renderable": {
+      "meshName": "circle",
+      "materialName": "ColorMat",
+      "isWireframe" : false
+    },
+    "Color": { "r": 1.0, "g": 0.0, "b": 0.0, "a": 1.0 }
+  },
+
+  "BananaBall": {
+    "RigidBody": {
+      "mass": 1.0,
+      "useGravity": false
+    },
+    "Force": { "fx": 0.0, "fy": 0.0 },
+    "Collider": {
+      "shape": "Circle",
+      "type": "Solid",
+      "isStatic": false,
+      "radius": 100.0
+    },
+    "Renderable": {
+      "meshName": "circle",
+      "materialName": "bananaMat",
+      "isWireframe" : false
+    }
+  },
+
+  "Control": {
+    "Renderable": {
+      "meshName": "square",
+      "materialName": "targetMat"
+    }
+  },
+
+  "WireframeWall": {
+    "RigidBody": {
+      "mass": 1.0,
+      "useGravity": false
+    },
+    "Force": { "fx": 0.0, "fy": 0.0 },
+    "Collider": {
+      "shape": "AABB",
+      "type": "Solid",
+      "isStatic": true,
+      "width": 100.0,
+      "height": 400.0
+    },
+    "Renderable": {
+      "meshName": "square",
+      "materialName": "ColorMat",
+      "isWireframe": true
+    },
+    "Color": { "r": 1.0, "g": 1.0, "b": 0.0, "a": 1.0 }
+  },
+
+  "Wall": {
+    "RigidBody": {
+      "mass": 1.0,
+      "useGravity": false
+    },
+    "Force": { "fx": 0.0, "fy": 0.0 },
+    "Collider": {
+      "shape": "AABB",
+      "type": "Solid",
+      "isStatic": true,
+      "width": 100.0,
+      "height": 800.0
+    },
+    "Renderable": {
+      "meshName": "square",
+      "materialName": "ColorMat"
+    },
+    "Color": { "r": 1.0, "g": 1.0, "b": 0.0, "a": 1.0 }
+  },
+
+  "Ground": {
+    "RigidBody": {
+      "mass": 1.0,
+      "useGravity": false
+    },
+    "Collider": {
+      "shape": "AABB",
+      "type": "Ground",
+      "isStatic": true,
+      "width": 1600.0,
+      "height": 100.0 
+    },
+    "Renderable": {
+      "meshName": "square",
+      "materialName": "ColorMat"
+    },
+    "Color": { "r": 0.2, "g": 0.1, "b": 0.3, "a": 1.0 }
+  },
+
   "Square": {
     "Transform": {
       "Position": { "x": 0.0, "y": 0.0, "z": 1.0 },
@@ -10,7 +133,7 @@
       "materialName": "ColorMat",
       "isWireframe" : false
     },
-    "Color": { "r": 0.1, "g": 0.7, "b": 0.7, "a": 1.0}
+    "Color": { "r": 0.1, "g": 0.7, "b": 0.7, "a": 1.0 }
   },
 
   "Circle": {
@@ -24,14 +147,14 @@
       "materialName": "ColorMat",
       "isWireframe" : false
     },
-    "Color": { "r": 0.8, "g": 0.1, "b": 0.7, "a": 1.0}
+    "Color": { "r": 0.8, "g": 0.1, "b": 0.7, "a": 1.0 }
   },
 
   "Player": {
     "Transform": {
-      "Position": { "x": 0.0, "y": 0.0, "z": 1.0 },
+      "Position": { "x": -500.0, "y": 400.0, "z": 1.0 },
       "Rotation": 0.0,
-      "Scale": { "x": 50.0, "y": 50.0 }
+      "Scale": { "x": 30.0, "y": 30.0 }
     },
     "RigidBody": {
       "mass": 1.0,
@@ -41,13 +164,18 @@
       "shape": "Circle",
       "type": "Solid",
       "isStatic": false,
-      "radius": 50.0
+      "radius": 30.0
     },
     "Force": { "fx": 0.0, "fy": 0.0 },
     "Renderable": {
       "meshName": "circle",
-      "materialName": "bananaMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
+    },
+    "Color": { "r": 0.2, "g": 0.2, "b": 0.6, "a": 1.0 },
+    "PlayerController": {
+      "moveSpeed": 300.0,
+      "jumpSpeed": 600.0
     }
   }
 }

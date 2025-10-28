@@ -22,7 +22,8 @@ namespace NightSnack {
 	static constexpr int REQUIRED_GL_MINOR = 5;
 
 	// Default constructor to create a window with given width, height and title.
-	ApplicationSystem::ApplicationSystem(int width, int height, std::string const& title, Coordinator& coord, EventDispatcher& dispatcher) {
+	ApplicationSystem::ApplicationSystem(int width, int height, std::string const& title, Coordinator& coord, EventDispatcher& dispatcher)
+		: m_coord{ coord }, m_appWidth{ width }, m_appHeight{ height }, m_appTitle{ title } {
 		// Initialize GLFW;
 		if (!glfwInit())
 		{
@@ -43,9 +44,6 @@ namespace NightSnack {
 		glfwWindowHint(GLFW_BLUE_BITS, 8); glfwWindowHint(GLFW_ALPHA_BITS, 8);
 
 		// Create window;
-		m_appWidth = width;
-		m_appHeight = height;
-		m_appTitle = title;
 		m_windowHandle = glfwCreateWindow(m_appWidth, m_appHeight, m_appTitle.c_str(), nullptr, nullptr);
 		if (!m_windowHandle)
 		{
@@ -107,13 +105,12 @@ namespace NightSnack {
 	}
 
 	// Update function called every frame
-	void ApplicationSystem::Update(float dt, Coordinator& coord) {
-		(void)dt;
+	void ApplicationSystem::Update(int steps) {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		PollEvents();
 
-		size_t livingEntities = coord.GetEntityNum();
+		size_t livingEntities = m_coord.GetEntityNum();
 
 		std::string title = "NightSnack Engine | FPS: " + std::to_string(static_cast<int>(GetTimer().GetFPS()))
 			+ " | Game Time: " + std::to_string(static_cast<int>(GetTimer().GetTotalSystemTime()))

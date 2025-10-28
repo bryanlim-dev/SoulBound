@@ -38,11 +38,12 @@ namespace NightSnack {
 		will help with entity creation.
 		*/
 		/************************************************************************/
-		EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& archetypes_filename)
+		EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& archetypes_filename, std::string const& level0_file)
 			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord } {
 
 			m_prefabManager.Initialize();
-			LoadJsonFile(archetypes_filename);
+			LoadArchetypes(archetypes_filename);
+			LoadLevel(level0_file);
 
 			// Setup input events;
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
@@ -86,7 +87,7 @@ namespace NightSnack {
 		}
 
 		// For now the Factory will read the json file by itself, in M2 will transfer responsibility to ResourceManager;
-		void LoadJsonFile(std::string const& filename) {
+		void LoadArchetypes(std::string const& filename) {
 			std::ifstream file(filename);
 			if (!file.is_open()) {
 				throw std::runtime_error("Failed to open archetypes file: " + filename);
@@ -100,13 +101,41 @@ namespace NightSnack {
 			}
 		}
 
+		// Read a Level file and creates Entities from prefabs in m_archetypes;
+		void LoadLevel(std::string const& levelfile) {
+			std::ifstream file(levelfile);
+			if (!file.is_open()) {
+				throw std::runtime_error("Failed to open level file: " + levelfile);
+			}
+
+			try {
+				file >> m_currentLevel;
+			}
+			catch (json::parse_error& e) {
+				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
+			}
+
+			for (auto const& item : m_currentLevel["Entities"]) {
+				Entity e = Create(item["prefab"], item["Transform"]);
+				if (item.contains("Layer")) {
+					if (item["Layer"] == "Background")
+					m_coord.ModifyComponent<Transform>(e).layer = LayerType::BACKGROUND;
+					if (item["Layer"] == "GameUI")
+					m_coord.ModifyComponent<Transform>(e).layer = LayerType::GAMEUI;
+				}
+				else {
+					m_coord.ModifyComponent<Transform>(e).layer = LayerType::GAMELAYER;
+				}
+			}
+		}
+
 		/************************************************************************/
 		/*!
 		\brief
 		Currently does not do anything, but is required to be defined by ISystem
 		*/
 		/************************************************************************/
-		void Update(float dt, Coordinator& coord) override;
+		void Update(int steps) override;
 
 		// Required functions from base class ISystem.
 		Signature GetSignature() const override { return Signature{}; }
@@ -195,7 +224,9 @@ namespace NightSnack {
 		Coordinator& m_coord;
 		PrefabManager m_prefabManager;
 		EventDispatcher* m_dispatcher;
+
 		json m_archetypes{};
+		json m_currentLevel{};
 
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;

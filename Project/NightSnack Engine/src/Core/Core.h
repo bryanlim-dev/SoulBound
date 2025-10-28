@@ -30,20 +30,19 @@ namespace NightSnack {
 	class CoreEngine {
 
 	public:
+
+		void StartUp(std::string&& configFilePath);
+
 		/************************************************************************/
 		/*!
 		\brief
 		Registers all Components and Systems and initializes Coordinator.
 
-		\param windowWidth
-		Application window width.
-		\param windowHeight
-		Application window height.
 		\param windowTitle
-		Application window title.
+		Application config file path.
 		*/
 		/************************************************************************/
-		void Initialize(int windowWidth, int windowHeight, std::string&& windowTitle);
+		void Initialize(std::string&& configFilePath);
 
 		/************************************************************************/
 		/*!
@@ -61,6 +60,14 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void Update();
+
+		/************************************************************************/
+		/*!
+		\brief
+		Calls Update() in a while loop until application ShouldClose.
+		*/
+		/************************************************************************/
+		void Run();
 
 		/************************************************************************/
 		/*!
