@@ -255,20 +255,20 @@ namespace NightSnack
                         transform.scale.x, transform.scale.y);
                 }
 
-                // Button to remove background
-                if (ImGui::Button("Remove Background"))
-                {
-                    m_coord.DestroyEntity(m_backgroundEntity);
-                    m_backgroundEntity = INVALID_ENTITY;
-                    std::cout << "[Scene] Background removed\n";
-                }
+                //// Button to remove background
+                //if (ImGui::Button("Remove Background"))
+                //{
+                //    m_coord.DestroyEntity(m_backgroundEntity);
+                //    m_backgroundEntity = INVALID_ENTITY;
+                //    std::cout << "[Scene] Background removed\n";
+                //}
             }
-            else
-            {
-                // Show hint when no background
-                ImGui::TextColored(ImVec4(1, 1, 0, 1),
-                    "Drag an image from Assets panel to add background");
-            }
+            //else
+            //{
+            //    // Show hint when no background
+            //    ImGui::TextColored(ImVec4(1, 1, 0, 1),
+            //        "Drag an image from Assets panel to add background");
+            //}
         }
     };
 
