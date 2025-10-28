@@ -86,7 +86,7 @@ namespace NightSnack {
     struct States
     {
         std::map<std::string, std::shared_ptr<StateBase>> stateMap;
-        StateBase* currState = nullptr;
+        std::shared_ptr<StateBase> currState = nullptr;
         //Is this the first time running any state?
         //(Used to detect and call Enter on first state)
         bool isFirstState = true; 

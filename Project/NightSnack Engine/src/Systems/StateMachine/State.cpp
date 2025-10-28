@@ -4,8 +4,13 @@
 namespace NightSnack
 {
 	StateCountDown::StateCountDown(Entity id, std::string stateKeyName, Coordinator& coord, float maxTime)
-		:StateBase(id, stateKeyName, coord), m_maxTimer(maxTime), m_currTimer(maxTime)
+		:StateBase(id, stateKeyName, coord, std::bind(&StateCountDown::CountdownUpdate, this, std::placeholders::_1, std::placeholders::_2)),
+		m_maxTimer(maxTime), m_currTimer(maxTime)
 	{
+		//Can replace
+		//std::bind(&StateCountDown::CountdownUpdate, this, std::placeholders::_1, std::placeholders::_2)
+		//with
+		//[this](float dt, Entity e) { CountdownUpdate(dt, e); }
 	}
 
 	void StateCountDown::Enter()
@@ -15,26 +20,21 @@ namespace NightSnack
 		m_currTimer = m_maxTimer;
 	}
 
-	void StateCountDown::Update(float dt) 
-	{
-		StateBase::Update(dt);
-
-		if (!m_isExit)
-		{
-			m_currTimer -= dt;
-			std::cout << "Counter: " << m_currTimer << std::endl;
-			//State transition check done in base via list
-		}
-	}
-
 	void StateCountDown::Exit()
 	{
 		StateBase::Exit();
 	}
 
-	bool StateCountDown::Countdown(Entity id)
+	void StateCountDown::CountdownUpdate(float dt, Entity id)
+	{
+		m_currTimer -= dt;
+		//std::cout << "Counter: " << m_currTimer << std::endl;
+	}
+
+	bool StateCountDown::CountdownCheck(Entity id)
 	{
 		(void)id;
+		//std::cout << "State adresss in CountdownUpdate: " << this << "\n";
 
 		if (m_currTimer <= 0)
 		{

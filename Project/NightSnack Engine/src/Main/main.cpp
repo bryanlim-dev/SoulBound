@@ -214,7 +214,7 @@ int main()
 		coord.AddComponent<Color>(ground, Color{ 0.2f, 0.1f, 0.3f, 1.f });
 
 		Entity test = coord.CreateEntity();
-		coord.AddComponent<States>(test, FiniteStateMachine::CreateDebugTestStates(test, coord));
+		(FiniteStateMachine::CreateDebugTestStates(test, coord));
 		coord.GetSystem<FiniteStateMachine>()->AddEntity(test);
 
 		// Core Application Loop;

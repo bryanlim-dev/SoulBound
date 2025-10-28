@@ -14,8 +14,9 @@ namespace NightSnack
 	{
 		//Find and update each entity state machine
 		std::list<Entity> removalList;
+		removalList.clear();
 
-		for (Entity id : m_entityList)
+		for (Entity& id : m_entityList)
 		{
 			if (coord.HasComponent<States>(id))
 				UpdateEntityState(dt, coord, id, coord.ModifyComponent<States>(id));
@@ -24,7 +25,7 @@ namespace NightSnack
 		}
 
 		//Dont delete partway thru loop
-		for (Entity id : removalList)
+		for (Entity& id : removalList)
 		{
 			RemoveEntity(id);
 		}
@@ -63,7 +64,7 @@ namespace NightSnack
 		//Check if exiting
 		if (states.currState->IsExit())
 		{
-			StateBase* nextState = states.currState->NextState();
+			std::shared_ptr<StateBase> nextState = states.currState->NextState();
 			states.currState->Exit();
 
 			states.currState = nextState;
@@ -85,23 +86,29 @@ namespace NightSnack
 	}
 
 
-	States FiniteStateMachine::CreateDebugTestStates(Entity entityId, Coordinator& coord)
+	void FiniteStateMachine::CreateDebugTestStates(Entity entityId, Coordinator& coord)
 	{
 		std::map<std::string, std::shared_ptr<StateBase>> stateMap;
 
+		//Do NOT use std::make_shared<StateCountDown>(StateCountDown(entityId, stateName, coord, 3))
+		//Apprently that messes up the pointer and makes a new uninitalized one??
+
 		std::string stateName = "CounterState";
-		std::shared_ptr<StateCountDown> counterState = std::make_shared<StateCountDown>(StateCountDown(entityId, stateName, coord, 3));
-		stateMap.insert({ stateName, counterState });
+		std::shared_ptr<StateCountDown> stateCountdownShared = std::make_shared<StateCountDown>(entityId, stateName, coord, 3);
+		stateMap.insert({ stateName, stateCountdownShared });
 
 		stateName = "ChanceState";
-		std::shared_ptr<StateBase> chanceState = std::make_shared<StateBase>(StateBase(entityId, stateName, coord));
+		std::shared_ptr<StateBase> chanceState = std::make_shared<StateBase>(entityId, stateName, coord, [](float, Entity) {
+			});
 		stateMap.insert({ stateName, chanceState });
 
-		counterState->SetNextState(chanceState);
-		counterState->InsertStateTransition(chanceState, std::bind(&StateCountDown::Countdown, counterState, std::placeholders::_1));
-		chanceState->SetNextState(counterState);
-
-		States state(stateMap, counterState.get());
-		return state;
+		stateCountdownShared->SetNextState(chanceState);
+		stateCountdownShared->InsertStateTransition(chanceState, std::bind(&StateCountDown::CountdownCheck, stateCountdownShared, std::placeholders::_1));
+		chanceState->SetNextState(stateCountdownShared);
+		//std::cout << "State adresss in debug states: " << stateCountdownShared << "\n";
+		coord.AddComponent<States>(entityId, States(stateMap, stateCountdownShared));
+		//std::cout << "State adresss in compionents: " << coord.GetComponent<States>(entityId).currState << "\n";
+		//std::cout << "State adresss in commponent map: " << coord.ModifyComponent<States>(entityId).stateMap[stateName].get() << "\n";
+		return;
 	}
 }

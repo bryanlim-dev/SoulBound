@@ -51,7 +51,7 @@ namespace NightSnack
 		Signature GetSignature() const override;
 
 
-		static States CreateDebugTestStates(Entity entityId, Coordinator& coord) ;
+		static void CreateDebugTestStates(Entity entityId, Coordinator& coord) ;
 
 	private:
 		void UpdateEntityState(float dt, Coordinator& coord, Entity id, States& states);
