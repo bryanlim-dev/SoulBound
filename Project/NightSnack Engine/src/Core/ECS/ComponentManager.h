@@ -61,6 +61,10 @@ namespace NightSnack {
 	class ComponentArray : public IComponentArray {
 
 	public:
+		ComponentArray() {
+			m_entityToIndex.reserve(MAX_ENTITIES);
+			m_indexToEntity.reserve(MAX_ENTITIES);
+		}
 		/************************************************************************/
 		/*!
 		\brief

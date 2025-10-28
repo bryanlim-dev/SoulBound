@@ -118,6 +118,36 @@ namespace NightSnack {
 		glBindVertexArray(0);
 	}
 
+	void Mesh::DrawInstanced(size_t instanceCount) const {
+		glBindVertexArray(m_vao);
+
+		// Call the correct draw call based on the primitive type
+		switch (m_primitiveType) {
+		case GL_POINTS:
+			glPointSize(10.f);
+			glDrawArraysInstanced(GL_POINTS, 0, m_vertexCount, instanceCount);
+			glPointSize(1.f);
+			break;
+
+		case GL_LINES:
+			glDrawArraysInstanced(GL_LINES, 0, m_vertexCount, instanceCount);
+			break;
+
+		case GL_TRIANGLES:
+			if (m_ebo)
+				glDrawElementsInstanced(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, nullptr, instanceCount);
+			else
+				glDrawArraysInstanced(GL_TRIANGLES, 0, m_vertexCount, instanceCount);
+			break;
+
+		case GL_TRIANGLE_FAN:
+			glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, m_vertexCount, instanceCount);
+			break;
+		}
+
+		glBindVertexArray(0);
+	}
+
 	std::unique_ptr<Mesh> Mesh::CreatePoint() {
 		// Default position is at the center of the screen
 		std::vector<Vertex> vertices{

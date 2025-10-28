@@ -131,7 +131,7 @@ namespace NightSnack {
 		Reference to Coordinator.
 		*/
 		/************************************************************************/
-		void Update(float dt, Coordinator& Coord) override;
+		void Update(int steps) override;
 
 
 #pragma region Image Functions

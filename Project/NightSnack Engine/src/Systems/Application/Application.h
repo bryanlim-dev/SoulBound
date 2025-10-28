@@ -81,7 +81,7 @@ namespace NightSnack {
 		Reference to the ECS Coordinator
 		*/
 		/************************************************************************/
-		void Update(float dt, Coordinator& coord) override;
+		void Update(int steps) override;
 
 		/************************************************************************/
 		/*!
@@ -161,6 +161,18 @@ namespace NightSnack {
 		/************************************************************************/
 		Timer& GetTimer() { return m_timer; }
 
+		/************************************************************************/
+		/*!
+		\brief
+		Timer interface.
+		*/
+		/************************************************************************/
+		void StartFrame() { m_timer.StartFrame(); }
+		void EndFrame() { m_timer.EndFrame(); }
+		void StartSystemTimer(std::string&& s) { m_timer.StartSystemTimer(s); }
+		void EndSystemTimer(std::string&& s) { m_timer.EndSystemTimer(s); }
+		float GetDT() { return m_timer.GetDT(); }
+
 		Signature GetSignature() const override { return m_systemSignature; }
 
 	private:
@@ -186,6 +198,8 @@ namespace NightSnack {
 
 		// System event dispatcher
 		EventDispatcher* m_dispatcher = nullptr;
+		// Reference to ECS coordinator
+		Coordinator& m_coord;
 	};
 
 }	// NightSnack

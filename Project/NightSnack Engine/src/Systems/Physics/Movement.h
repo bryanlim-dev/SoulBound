@@ -23,6 +23,8 @@
 
 namespace NightSnack {
 
+    static float dt = 0.016f;
+
     class MovementSystem : public ISystem {
 
     public:
@@ -38,7 +40,7 @@ namespace NightSnack {
         Reference to Event Dispatcher.
         */
         /************************************************************************/
-        MovementSystem(Coordinator& coord, EventDispatcher& dispatcher) {
+        MovementSystem(Coordinator& coord, EventDispatcher& dispatcher) : m_coord{ coord } {
             // Input all components you want access to...
             m_systemSignature.set(GetComponentTypeID<Transform>());
             m_systemSignature.set(GetComponentTypeID<RigidBody>());
@@ -73,38 +75,51 @@ namespace NightSnack {
         Reference to Coordinator.
         */
         /************************************************************************/
-        void Update(float dt, Coordinator& coord) override {
+        void Update(int steps) override {
+            (void)steps;
+
             // Pause movement updates if in Physics debug mode
             if (debugMode && !stepRequest) {
                 return;
             }
 
             // Iterate through all Entities this system can access;
-            for (auto const& e : m_entities) {
+            for (Layer& l : m_layers) {
+                if (!l.IsActive()) { continue; }
 
-                // First obtain references to components of interest;
-                auto& pos = coord.ModifyComponent<Transform>(e).pos;
-                auto& velocity = coord.ModifyComponent<RigidBody>(e).vel;
+                for (Entity e : l.Entities()) {
+                    if (e == INVALID_ENTITY) { break; }
 
-                // Get more components here if necessary...
+                    // First obtain references to components of interest;
+                    auto& pos = m_coord.ModifyComponent<Transform>(e).pos;
+                    auto& velocity = m_coord.ModifyComponent<RigidBody>(e).vel;
 
-                  // Do stuff that you want to do with the components;
-                pos.x += velocity.x * dt;
-                pos.y += velocity.y * dt;
+                    // Get more components here if necessary...
 
-                // Do more stuff here if necessary...
+                    // Do stuff that you want to do with the components;
+                    pos.x += velocity.x * dt;
+                    pos.y += velocity.y * dt;
 
-                if (debugMode) stepRequest = false; // reset step request
+                    if (pos.y > 450.f) { pos.y = 450.f; }
+                    if (pos.y < -450.f) { pos.y = -450.f; }
+                    if (pos.x > 800.f) { pos.x = 800.f; }
+                    if (pos.x < -800.f) { pos.x = -800.f; }
+
+                    // Do more stuff here if necessary...
+
+                    if (debugMode) stepRequest = false; // reset step request
+                }
             }
         }
 
         // Required by ISystem base class;
         Signature GetSignature() const override { return m_systemSignature; }
-        std::string GetName() const override { return "Movement"; }
+        std::string GetName() const override { return "MovementSystem"; }
 
     private:
         Signature m_systemSignature{};
         EventDispatcher* m_dispatcher = nullptr;
+        Coordinator& m_coord;
 
         // DebugMode for Physics;
         bool debugMode = false;

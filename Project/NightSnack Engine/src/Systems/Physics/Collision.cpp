@@ -19,6 +19,8 @@
 
 namespace NightSnack {
 
+    static float dt = 0.016f;
+
     // Initializing Collision System
     void CollisionSystem::Init(EventDispatcher& dispatcher)
     {
@@ -35,13 +37,13 @@ namespace NightSnack {
     }
 
     // Update loop (runs each frame)
-    void CollisionSystem::Update(float dt, Coordinator& coord)
+    void CollisionSystem::Update(int steps)
     {
 
         // Step 1: Reset collision flags
         for (auto const& e : m_entities)
         {
-            auto& col = coord.ModifyComponent<Collider>(e);
+            auto& col = m_coord.ModifyComponent<Collider>(e);
             col.colliding = false;
         }
 
@@ -52,13 +54,13 @@ namespace NightSnack {
             {
                 if (itB == itA) continue;
 
-                auto& posA = coord.GetComponent<Transform>(*itA).pos;
-                auto& velA = coord.ModifyComponent<RigidBody>(*itA).vel;
-                auto& colA = coord.ModifyComponent<Collider>(*itA);
+                auto& posA = m_coord.GetComponent<Transform>(*itA).pos;
+                auto& velA = m_coord.ModifyComponent<RigidBody>(*itA).vel;
+                auto& colA = m_coord.ModifyComponent<Collider>(*itA);
 
-                auto& posB = coord.GetComponent<Transform>(*itB).pos;
-                auto& velB = coord.ModifyComponent<RigidBody>(*itB).vel;
-                auto& colB = coord.ModifyComponent<Collider>(*itB);
+                auto& posB = m_coord.GetComponent<Transform>(*itB).pos;
+                auto& velB = m_coord.ModifyComponent<RigidBody>(*itB).vel;
+                auto& colB = m_coord.ModifyComponent<Collider>(*itB);
 
                 // Skip if both are static
                 if (colA.isStatic) continue;
@@ -133,12 +135,12 @@ namespace NightSnack {
                                     velA.y = 0.0f;
                                     colA.isGrounded = true;
                                     bounceCount[*itA] = 0; // Reset counter
-                                    std::cout << "ball stopped after " << bounceCount[*itA] << " bounces" << std::endl;
+                                    //std::cout << "ball stopped after " << bounceCount[*itA] << " bounces" << std::endl;
                                 }
                                 else
                                 {
                                     colA.isGrounded = false;
-                                    std::cout << "ball bounced #" << bounceCount[*itA] << " with velocity: " << velA.y << std::endl;
+                                    //std::cout << "ball bounced #" << bounceCount[*itA] << " with velocity: " << velA.y << std::endl;
                                 }
                             }
                         }

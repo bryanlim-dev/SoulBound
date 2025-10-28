@@ -51,7 +51,7 @@ namespace NightSnack {
         bool Init();
 
         // System update
-        void Update(float dt, Coordinator& coord) override;
+        void Update(int steps) override;
 
         // Get audio keys for playing sounds
         const AudioKeys& GetAudioKeys() const { return m_audioKeys; }

@@ -52,7 +52,7 @@ namespace NightSnack {
 		Reference to ECS Coordinator.
 		*/
 		/************************************************************************/
-		void Update(float dt, Coordinator& coord) override;
+		void Update(int steps) override;
 
 		// Required by ISystem base class.
 		Signature GetSignature() const override { return m_systemSignature; }
@@ -90,9 +90,8 @@ namespace NightSnack {
 		ImGui::DestroyContext();
 	}
 
-	inline void ImguiSystem::Update(float dt, Coordinator& coord) {
-		(void)coord;
-		(void)dt;
+	inline void ImguiSystem::Update(int steps) {
+		(void)steps;
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();

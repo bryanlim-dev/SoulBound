@@ -23,7 +23,6 @@ namespace NightSnack {
 		for (Entity e = 0; e < MAX_ENTITIES; ++e) {
 			m_availableEntities.push(e);
 		}
-
 	}
 
 	// Create a new Entity by obtaining an ID from the queue of available entities;
@@ -69,7 +68,6 @@ namespace NightSnack {
 		m_availableEntities.push(e);
 		m_livingEntities.erase(e);
 		--m_livingEntityCount;
-
 	}
 
 	// Set signature for an entity with bounds checking;

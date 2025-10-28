@@ -16,10 +16,9 @@
 namespace NightSnack {
 
 	// unused for now...
-	void EntityFactory::Update(float dt, Coordinator& coord) {
+	void EntityFactory::Update(int steps) {
 
-		(void)coord;
-		(void)dt;
+		(void)steps;
 
 	}
 
@@ -27,12 +26,15 @@ namespace NightSnack {
 		Entity e = m_prefabManager.CreateFromPrefab(name, m_archetypes);
 		if (e == INVALID_ENTITY) { return e; }
 
-		// Make spawned entity be at mouse position;
 		Transform trans{};
+
 		trans.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
 		trans.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
+		trans.pos.z = 1.f;
 
-		m_coord.ModifyComponent<Transform>(e).pos = trans.pos;
+		trans.scale = Vec2{ 50.f, 50.f };	// default scale...
+		
+		m_coord.ModifyComponent<Transform>(e) = trans;
 
 		return e;
 	}
@@ -61,7 +63,7 @@ namespace NightSnack {
 
 	void EntityFactory::DoubleEntities() {
 		// seed for rand;
-		srand(69);
+		srand(69 * glfwGetTime());
 		// current number of live entities;
 		size_t currNum = m_coord.GetLivingEntities().size();
 		int Hvp = m_coord.GetWindowHeight();
@@ -72,7 +74,7 @@ namespace NightSnack {
 		// double the number of living entities with random transforms;
 		for (size_t i{}; i < currNum && (currNum + i) < MAX_ENTITIES; ++i) {
 			Vec3 pos = { static_cast<float>(rand() % Wvp - Wvp / 2),
-			static_cast<float>(rand() % Hvp - Hvp / 2) };
+			static_cast<float>(rand() % Hvp - Hvp / 2), 1.f };
 			float rot = { static_cast<float>(rand() % 360) };
 			Vec2 scale = { static_cast<float>(rand() % 50 + 15), static_cast<float>(rand() % 50 + 15) };
 
