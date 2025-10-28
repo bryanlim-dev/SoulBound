@@ -32,13 +32,6 @@ namespace NightSnack {
 	class ISystem {
 
 	public:
-		ISystem() {
-			m_layers.emplace_back(LayerType::_ENGINE);
-			m_layers.emplace_back(LayerType::BACKGROUND);
-			m_layers.emplace_back(LayerType::GAMELAYER);
-			m_layers.emplace_back(LayerType::FOREGROUND);
-			m_layers.emplace_back(LayerType::GAMEUI);
-		}
 
 		virtual std::set<Entity>& entities() { return m_entities; }
 		// Every system must define an Update function;

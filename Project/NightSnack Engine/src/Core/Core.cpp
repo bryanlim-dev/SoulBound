@@ -89,10 +89,13 @@ namespace NightSnack {
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
 
+		std::cout << "Buffering Living Entities: ";
 		// Buffer all entities' signatures to properly initialize all systems' set of entities
 		for (Entity e : m_coord.GetLivingEntities()) {
 			m_coord.BufferEntitySignature(e);
+			std::cout << e << " ";
 		}
+		std::cout << '\n';
 	}
 
 	// Function should be called upon termination of program;
@@ -164,9 +167,8 @@ namespace NightSnack {
 		m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer("EntityFactory");
 
 		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("ApplicationSystem");
-		m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(102.f);
 		m_coord.GetSystem<ApplicationSystem>()->SwapBuffers();
-		m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer("ApplicationSystem");
+		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("ApplicationSystem");
 
 		// End frame timing;
 		m_coord.GetSystem<ApplicationSystem>()->EndFrame();
