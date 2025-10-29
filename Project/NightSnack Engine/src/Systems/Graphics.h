@@ -293,6 +293,8 @@ namespace NightSnack {
 		/************************************************************************/
 		void RemoveCache(Entity e);
 
+		const std::unordered_map<std::string, std::unique_ptr<Texture>>& GetTexturesMap() const { return m_textures; }
+
 		/************************************************************************/
 		/*!
 		\brief

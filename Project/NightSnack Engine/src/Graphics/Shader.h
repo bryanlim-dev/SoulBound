@@ -110,6 +110,8 @@ namespace NightSnack {
 		/************************************************************************/
 		void SetVec3(const std::string& name, const glm::vec3& value) const;
 
+		void SetVec4(const std::string& name, const glm::vec4& value) const;
+
 		/************************************************************************/
 		/*!
 		\brief

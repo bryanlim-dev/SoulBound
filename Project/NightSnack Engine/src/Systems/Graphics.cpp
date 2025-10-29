@@ -28,12 +28,16 @@ namespace NightSnack {
 
 		std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
 		// Textures;
-		auto bananaTex = std::make_unique<Texture>("assets/banana.jpg", rm);
+		auto bananaTex = std::make_unique<Texture>("assets/banana.jpg", rm, 4, 1);
 		AddTexture("banana", std::move(bananaTex));
-		auto targetTex = std::make_unique<Texture>("assets/image_UI_target.png", rm);
+		auto targetTex = std::make_unique<Texture>("assets/image_UI_target.png", rm, 4, 1);
 		AddTexture("target", std::move(targetTex));
 		auto bgTex = std::make_unique<Texture>("assets/background.png", rm);
 		AddTexture("background", std::move(bgTex));
+		auto ghostTex = std::make_unique<Texture>("assets/ghost.png", rm, 4, 1);
+		AddTexture("ghost", std::move(ghostTex));
+		auto slimeTex = std::make_unique<Texture>("assets/slime.png", rm, 4, 1);
+		AddTexture("slime", std::move(slimeTex));
 
 		// Meshes;
 		AddMesh("point", Mesh::CreatePoint());
@@ -51,6 +55,10 @@ namespace NightSnack {
 		AddMaterial("targetMat", std::move(targetMat));
 		auto backgroundMat = std::make_unique<Material>(GetShader("default"), GetTexture("background"));
 		AddMaterial("backgroundMat", std::move(backgroundMat));
+		auto ghostMat = std::make_unique<Material>(GetShader("default"), GetTexture("ghost"));
+		AddMaterial("ghostMat", std::move(ghostMat));
+		auto slimeMat = std::make_unique<Material>(GetShader("default"), GetTexture("slime"));
+		AddMaterial("slimeMat", std::move(slimeMat));
 
 		// Materials with solid color
 		auto colorMat = std::make_unique<Material>(GetShader("default"));
@@ -68,7 +76,7 @@ namespace NightSnack {
 	}
 
 	void GraphicsSystem::Update(int steps) {
-		(void)steps; // dt is unused for now...
+		(void)steps; 
 
 		// Update viewport dimensions;
 		Hvp = static_cast<float>(m_coord.GetWindowHeight());
@@ -91,7 +99,7 @@ namespace NightSnack {
 			if (l.Empty() || !l.IsVisible()) { continue; }
 			for (Entity e : l.Entities()) {
 				if (e == INVALID_ENTITY) { break; }
-
+				
 				// Obtain entity components;
 				auto& ren = m_coord.GetComponent<Renderable>(e);
 				auto& pos = m_coord.GetComponent<Transform>(e).pos;
@@ -127,6 +135,13 @@ namespace NightSnack {
 					instance.scale = glm::vec2(scl.x, scl.y);
 					instance.padding = 0.f;
 					instance.pad = glm::vec2{};
+					if (m_coord.HasComponent<Animator>(e)) {
+						auto& animator = m_coord.GetComponent<Animator>(e);
+						instance.uvRect = glm::vec4{ animator.uvTopLeft.x, animator.uvTopLeft.y,
+							animator.uvBottomRight.x, animator.uvBottomRight.y };
+					} else {
+						instance.uvRect = glm::vec4{ 0.f, 0.f, 1.f, 1.f };
+					}
 
 					std::string key = ren.meshName;
 
@@ -152,7 +167,7 @@ namespace NightSnack {
 					m_meshBatches[key].isWireframe = ren.isWireframe;
 
 				}
-				else {
+				else { // Non-Instanced Rendering
 					glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl, ren.renderLayer);
 
 					Shader* shader = data.material->GetShader();
@@ -168,6 +183,14 @@ namespace NightSnack {
 					if (m_coord.HasComponent<Color>(e)) {
 						auto& col = m_coord.GetComponent<Color>(e);
 						shader->SetVec3("uEntityColor", { col.r, col.g, col.b });
+					}
+
+					if (m_coord.HasComponent<Animator>(e)) {
+						auto& animator = m_coord.GetComponent<Animator>(e);
+						shader->SetVec4("uUVRect", { animator.uvTopLeft.x, animator.uvTopLeft.y, 
+							animator.uvBottomRight.x, animator.uvBottomRight.y });
+					} else {
+						shader->SetVec4("uUVRect", { 0.f, 0.f, 1.f, 1.f });
 					}
 
 					// Change the polygon mode to wireframe
@@ -272,6 +295,7 @@ namespace NightSnack {
 				shader->SetMat4("uProj", proj);
 				shader->SetMat4("uView", view);
 				shader->SetBool("uUseInstancing", true);
+				//shader->SetBool("uUseAnimation", false);
 
 				size_t size = instanceBatch.instances.size() * sizeof(Mesh::InstanceData);
 				glNamedBufferSubData(m_globalInstanceSSBO, 0, size, instanceBatch.instances.data());

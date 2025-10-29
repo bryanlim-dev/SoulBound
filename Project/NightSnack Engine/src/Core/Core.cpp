@@ -68,6 +68,8 @@ namespace NightSnack {
 
 		m_coord.RegisterComponent<PlayerController>();
 
+		m_coord.RegisterComponent<Animator>();
+
 		// Add more Components here...
 
 		// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons
@@ -87,6 +89,7 @@ namespace NightSnack {
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
 
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
+		AddSystem<AnimationSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord);
 
 		// Buffer all entities' signatures to properly initialize all systems' set of entities
