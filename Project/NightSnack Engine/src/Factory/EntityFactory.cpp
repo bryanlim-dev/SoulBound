@@ -43,6 +43,8 @@ namespace NightSnack {
 		
 		m_coord.ModifyComponent<Transform>(e) = trans;
 
+		entityToPrefab[e] = name;
+
 		return e;
 	}
 
@@ -52,6 +54,8 @@ namespace NightSnack {
 		if (e == INVALID_ENTITY) { return e; }
 
 		m_coord.ModifyComponent<Transform>(e) = trans;
+		
+		entityToPrefab[e] = name;
 
 		return e;
 	}
@@ -64,6 +68,8 @@ namespace NightSnack {
 		if (clone == INVALID_ENTITY) { return clone; }
 
 		m_coord.ModifyComponent<Transform>(e) = trans;
+
+		entityToPrefab[e] = name;
 
 		return clone;
 	}
@@ -146,6 +152,15 @@ namespace NightSnack {
 			}
 		}
 		return materials;
+	}
+
+	std::string EntityFactory::GetEntityPrefabName(Entity e) const
+	{
+		auto it = entityToPrefab.find(e);
+		if (it != entityToPrefab.end()) {
+			return it->second;
+		}
+		return "UnknownPrefab";
 	}
 
 }	// NightSnack

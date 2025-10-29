@@ -89,6 +89,14 @@ namespace NightSnack {
 
         void ApplyForce(Coordinator& coord, Entity e, float fx, float fy);
 
+        float GetGravity() const { return gravity; }
+        float GetDrag() const { return drag; }
+        float GetFriction() const { return friction; }
+
+        void SetGravity(float g) { gravity = g; }
+        void SetDrag(float d) { drag = d; }
+        void SetFriction(float f) { friction = f; }
+
     private:
         Signature m_systemSignature{};
         EventDispatcher* m_dispatcher{ nullptr };

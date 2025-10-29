@@ -16,7 +16,8 @@
 
 namespace NightSnack {
 
-	Texture::Texture(std::string textureImage, std::shared_ptr<ResourceManager> rm) {
+	Texture::Texture(std::string textureImage, std::shared_ptr<ResourceManager> rm, int cols, int rows) 
+		: m_textureName{ textureImage }, m_columns { cols }, m_rows{ rows } {
 
 		if (textureImage.empty()) {
 			std::cerr << "Error: Texture filename where??\n";
@@ -67,6 +68,14 @@ namespace NightSnack {
 
 	bool Texture::HasAlpha() const {
 		return m_hasAlphaComponent;
+	}
+
+	int Texture::GetColumns() const {
+		return m_columns;
+	}
+
+	int Texture::GetRows() const {
+		return m_rows;
 	}
 
 }	// NightSnack

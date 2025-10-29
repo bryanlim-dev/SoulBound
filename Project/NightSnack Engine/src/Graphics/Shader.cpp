@@ -115,6 +115,12 @@ namespace NightSnack {
 		glUniform3fv(location, 1, &value[0]);
 	}
 
+	void Shader::SetVec4(const std::string& name, const glm::vec4& value) const {
+		GLint location = glGetUniformLocation(programID, name.c_str());
+		glUniform4fv(location, 1, &value[0]);
+	}
+
+
 	void Shader::SetInt(const std::string& name, int value) const {
 		GLint location = glGetUniformLocation(programID, name.c_str());
 		glUniform1i(location, value);

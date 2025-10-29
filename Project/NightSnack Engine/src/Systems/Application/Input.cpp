@@ -47,6 +47,7 @@ namespace NightSnack {
 	}
 
 	void InputSystem::Update(int steps) {
+		(void)steps;
 
 		// Find current mouse position (World)
 		float Hvp = static_cast<float>(m_coord.GetWindowHeight());
@@ -55,15 +56,15 @@ namespace NightSnack {
 		m_mouseWorldPosX = (-Wvp / 2.f) + m_mousePosX + m_coord.GetComponent<Transform>(cam).pos.x;
 		m_mouseWorldPosY = (Hvp / 2.f) - m_mousePosY + m_coord.GetComponent<Transform>(cam).pos.y;
 
-	// Compute mouse delta - the relative movement since the last frame
-	m_deltaWorldPosX = m_mouseWorldPosX - m_prevMouseWorldPosX;
-	m_deltaWorldPosY = m_mouseWorldPosY - m_prevMouseWorldPosY;
-	m_prevMouseWorldPosX = m_mousePosX;
-	m_prevMouseWorldPosY = m_mousePosY;
+		// Compute mouse delta - the relative movement since the last frame
+		m_deltaWorldPosX = m_mouseWorldPosX - m_prevMouseWorldPosX;
+		m_deltaWorldPosY = m_mouseWorldPosY - m_prevMouseWorldPosY;
+		m_prevMouseWorldPosX = m_mouseWorldPosX;
+		m_prevMouseWorldPosY = m_mouseWorldPosY;
 
-	// Process all queued events after input update and before the other systems
-	m_dispatcher->ProcessEvents();
-}
+		// Process all queued events after input update and before the other systems
+		m_dispatcher->ProcessEvents();
+	}
 
 	//void InputSystem::ResetInputStates() {
 	//	// Reset states back to false
