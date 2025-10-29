@@ -43,18 +43,11 @@ namespace NightSnack {
         */
         /************************************************************************/
         PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord }, m_dispatcher { &disp } {
-            // Physics components of interest;
-            m_systemSignature.set(GetComponentTypeID<PlayerController>());
-            m_systemSignature.set(GetComponentTypeID<Transform>());
-            m_systemSignature.set(GetComponentTypeID<RigidBody>());
 
             m_player = FindPlayer(coord);
 
             m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
                 {
-                    if (m_entities.empty())
-                        return;
-
                     switch (event.inputAction) {
                     case InputEvent::InputAction::PlayerMoveLeft:
                         if (event.pressed == InputEvent::InputActionState::Pressed ||
@@ -158,6 +151,18 @@ namespace NightSnack {
         // Required by ISystem base class.
         std::string GetName() const override { return "PlayerController"; }
         Signature GetSignature() const override { return m_systemSignature; }
+
+
+        /************************************************************************/
+        /*!
+        \brief
+        Return the player entity
+
+        \return
+        The ID of the current Player Entity.
+        */
+        /************************************************************************/
+        Entity GetPlayer() { return m_player; }
 
     private:
         Signature m_systemSignature{};

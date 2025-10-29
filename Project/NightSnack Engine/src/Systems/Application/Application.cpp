@@ -15,6 +15,8 @@
 
 namespace NightSnack {
 
+	std::vector<std::string> ApplicationSystem::s_droppedFiles;
+
 	// Required OpenGL version;
 	static constexpr int REQUIRED_GL_MAJOR = 4;
 	static constexpr int REQUIRED_GL_MINOR = 5;
@@ -64,6 +66,10 @@ namespace NightSnack {
 		glViewport(0, 0, m_appWidth, m_appHeight);
 		glfwSetFramebufferSizeCallback(m_windowHandle, FramebufferSizeCallback);
 
+		// file drop callback
+		glfwSetDropCallback(m_windowHandle, FileDropCallback);
+		// std::cout << "[Application] File drop callback initialized\n";
+
 		// Depth testing
 		glEnable(GL_DEPTH_TEST);
 		// Depth buffer stores values in NDC [0,1], render the fragment if z is lesser/closer
@@ -88,12 +94,12 @@ namespace NightSnack {
 		// Subscribe to input events
 		m_dispatcher->Subscribe<InputEvent>([this, &Coord](const InputEvent& event) {
 			if (event.pressed == InputEvent::InputActionState::Pressed) {
-				switch (event.inputAction) {
-				case InputEvent::InputAction::ToggleSystemTimers:
+				//switch (event.inputAction) {
+				//case InputEvent::InputAction::ToggleSystemTimers:
 					// Toggle switch for System Timers Debug Mode
-					systemTimersEnabled = !systemTimersEnabled;
-					break;
-				}
+					//systemTimersEnabled = !systemTimersEnabled;
+					//break;
+				//}
 			}
 			});
 	}
@@ -131,6 +137,12 @@ namespace NightSnack {
 		glfwSetWindowTitle(window, title);
 	}
 
+	void ApplicationSystem::OnResize(int width, int height) {
+		m_appWidth = width;
+		m_appHeight = height;
+		glViewport(0, 0, width, height);
+	}
+
 	// Check if window should close
 	bool ApplicationSystem::ShouldClose() const {
 		return glfwWindowShouldClose(m_windowHandle);
@@ -140,6 +152,21 @@ namespace NightSnack {
 	void ApplicationSystem::FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
 		(void)window;
 		glViewport(0, 0, width, height);
+	}
+
+	// file drop call back
+	void ApplicationSystem::FileDropCallback(GLFWwindow* window, int count, const char** paths) 
+	{
+		(void)window;
+
+		s_droppedFiles.clear();
+		std::cout << "[FileDrop] Received " << count << " file(s):\n";
+
+		for (int i = 0; i < count; i++) 
+		{
+			s_droppedFiles.push_back(std::string(paths[i]));
+			std::cout << "[FileDrop]   [" << i << "] " << paths[i] << "\n";
+		}
 	}
 
 }	// NightSnack

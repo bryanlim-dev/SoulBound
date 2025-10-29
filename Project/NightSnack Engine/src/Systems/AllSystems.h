@@ -24,6 +24,7 @@
 #include "./ResourceManager/ResourceManager.h"
 #include "AudioSystem.h"
 #include "AnimationSystem.h"
+#include "Graphics/Camera.h"
 
 // Add System header files here...
 

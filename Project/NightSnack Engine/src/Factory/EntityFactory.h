@@ -216,6 +216,10 @@ namespace NightSnack {
 		/************************************************************************/
 		void Remove(Entity e);
 
+		void PrintPrefabNames() const;
+		std::unordered_map<std::string, std::string> GetPrefabMaterials() const;
+		std::vector<std::string> const& GetPrefabNames() const;
+
 		std::set<Entity> m_toBeDestroyed;
 
 	private:
