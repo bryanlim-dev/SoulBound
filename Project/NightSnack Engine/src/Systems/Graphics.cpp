@@ -28,6 +28,9 @@ namespace NightSnack {
 
 		std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
 		// Textures;
+		// The number of columns and rows passed in here
+		// determines the number of AnimationClips and AnimationFrames
+		// [if the entity has an Animator component]
 		auto bananaTex = std::make_unique<Texture>("assets/banana.jpg", rm, 4, 1);
 		AddTexture("banana", std::move(bananaTex));
 		auto targetTex = std::make_unique<Texture>("assets/image_UI_target.png", rm, 4, 1);
