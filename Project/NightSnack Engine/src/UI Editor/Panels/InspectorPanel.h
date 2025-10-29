@@ -17,8 +17,8 @@ namespace NightSnack
 {
     class InspectorPanel {
     public:
-        InspectorPanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity)
-            : m_coord(coord), m_selectedEntity(selectedEntity) {}
+        InspectorPanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity, std::unordered_map<Entity, std::string>& uiNames)
+            : m_coord(coord), m_selectedEntity(selectedEntity), m_uiNames(uiNames) {}
 
         void Draw()
         {
@@ -27,9 +27,12 @@ namespace NightSnack
 
             if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY)
             {
-                ImGui::Text("Entity: %u", *m_selectedEntity);
+                DrawEntityInfo(*m_selectedEntity); // Draw name/layer section
+                ImGui::Separator();
 
 				TransformComponent();
+
+                PhysicsComponent();
 
                 RigidBodyComponent();
 
@@ -49,19 +52,56 @@ namespace NightSnack
     private:
         Coordinator& m_coord;
         std::shared_ptr<Entity> m_selectedEntity;
+		std::unordered_map<Entity, std::string>& m_uiNames;
 
+        void DrawEntityInfo(Entity entity);
         void TransformComponent();
+        void PhysicsComponent();
 		void RigidBodyComponent();
 		void ColliderComponent();
 		void RendererComponent();
     };
 
+    inline void InspectorPanel::DrawEntityInfo(Entity entity)
+    {
+        auto factory = m_coord.GetSystem<EntityFactory>();
+
+        if (m_uiNames.find(entity) == m_uiNames.end()) {
+            m_uiNames[entity] = factory ? factory->GetEntityPrefabName(entity) : "Entity " + std::to_string(entity);
+        }
+
+        char nameBuffer[128];
+        strncpy_s(nameBuffer, m_uiNames[entity].c_str(), sizeof(nameBuffer));
+        nameBuffer[sizeof(nameBuffer) - 1] = 0;
+
+        ImGui::PushID("EntityNameField");
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 80.0f);
+        if (ImGui::InputText("##EntityName", nameBuffer, sizeof(nameBuffer))) {
+            m_uiNames[entity] = std::string(nameBuffer);
+        }
+        ImGui::SameLine();
+        ImGui::TextDisabled("ID: %u", entity);
+        ImGui::PopID();
+
+        if (m_coord.HasComponent<Transform>(entity))
+        {
+            auto& t = m_coord.ModifyComponent<Transform>(entity);
+            const char* layerNames[] = { "ENGINE", "BACKGROUND", "GAMELAYER", "FOREGROUND", "GAMEUI" };
+            int currentLayer = static_cast<int>(t.layer);
+
+            ImGui::Text("Layer");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(120.0f);
+            if (ImGui::Combo("##LayerCombo", &currentLayer, layerNames, IM_ARRAYSIZE(layerNames))) {
+                t.layer = static_cast<LayerType>(currentLayer);
+            }
+        }
+    }
 
     inline void InspectorPanel::TransformComponent()
     {
         auto& t = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
 
-        ImGui::Separator();
         if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
         {
             if (ImGui::BeginTable("TransformTable", 3, ImGuiTableFlags_SizingFixedFit))
@@ -101,7 +141,54 @@ namespace NightSnack
                 ImGui::EndTable();
             }
         }
+        ImGui::Separator();
 	}
+
+    inline void InspectorPanel::PhysicsComponent()
+    {
+        auto ps = m_coord.GetSystem<PhysicsSystem>();
+        if (!ps)
+            return;
+
+        if (ImGui::CollapsingHeader("Physics Settings", ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            if (ImGui::BeginTable("PhysicsSettingsTable", 2, ImGuiTableFlags_SizingFixedFit))
+            {
+                ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+                ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+
+                // Gravity row
+                float gravity = ps->GetGravity();
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0); ImGui::Text("Gravity");
+                ImGui::TableSetColumnIndex(1);
+                ImGui::SetNextItemWidth(-FLT_MIN);
+                if (ImGui::InputFloat("##gravity", &gravity, 0.0f, 0.0f, "%.2f"))
+                    ps->SetGravity(gravity);
+
+                // Drag row
+                float drag = ps->GetDrag();
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0); ImGui::Text("Drag");
+                ImGui::TableSetColumnIndex(1);
+                ImGui::SetNextItemWidth(-FLT_MIN);
+                if (ImGui::InputFloat("##drag", &drag, 0.0f, 0.0f, "%.2f"))
+                    ps->SetDrag(drag);
+
+                // Friction row
+                float friction = ps->GetFriction();
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0); ImGui::Text("Friction");
+                ImGui::TableSetColumnIndex(1);
+                ImGui::SetNextItemWidth(-FLT_MIN);
+                if (ImGui::InputFloat("##friction", &friction, 0.0f, 0.0f, "%.2f"))
+                    ps->SetFriction(friction);
+
+                ImGui::EndTable();
+            }
+        }
+        ImGui::Separator();
+    }
 
     inline void InspectorPanel::RigidBodyComponent()
     {
@@ -110,7 +197,6 @@ namespace NightSnack
 
         auto& rb = m_coord.ModifyComponent<RigidBody>(*m_selectedEntity);
 
-        ImGui::Separator();
         if (ImGui::CollapsingHeader("Rigidbody", ImGuiTreeNodeFlags_DefaultOpen))
         {
             // Mass
@@ -145,6 +231,7 @@ namespace NightSnack
             ImGui::SameLine();
             ImGui::Checkbox("##useGravity", &rb.useGravity);
         }
+        ImGui::Separator();
 	}
 
     inline void InspectorPanel::ColliderComponent()
@@ -154,7 +241,6 @@ namespace NightSnack
 
         auto& c = m_coord.ModifyComponent<Collider>(*m_selectedEntity);
 
-        ImGui::Separator();
         if (ImGui::CollapsingHeader("Collider", ImGuiTreeNodeFlags_DefaultOpen))
         {
             // Shape type
@@ -191,6 +277,7 @@ namespace NightSnack
             ImGui::Text("Is Grounded: %s", c.isGrounded ? "True" : "False");
             ImGui::Text("Colliding: %s", c.colliding ? "True" : "False");
         }
+        ImGui::Separator();
     }
 
     inline void InspectorPanel::RendererComponent()
@@ -200,7 +287,6 @@ namespace NightSnack
 
         auto& r = m_coord.ModifyComponent<Renderable>(*m_selectedEntity);
 
-        ImGui::Separator();
         if (ImGui::CollapsingHeader("Renderer", ImGuiTreeNodeFlags_DefaultOpen))
         {
             // Mesh Name (read-only for now)
@@ -213,22 +299,13 @@ namespace NightSnack
             ImGui::SameLine(100);
             ImGui::TextDisabled("%s", r.materialName.c_str());
 
-            // Render Layer dropdown
-            const char* renderLayers[] = { "BACKGROUND", "DEFAULT", "DEBUG", "UI" };
-            int layerIdx = static_cast<int>(r.renderLayer);
-            ImGui::Text("Render Layer");
-            ImGui::SameLine(100);
-            if (ImGui::Combo("##renderLayer", &layerIdx, renderLayers, IM_ARRAYSIZE(renderLayers)))
-            {
-                r.renderLayer = static_cast<RenderLayer>(layerIdx);
-            }
-
             // isWireframe checkbox
             ImGui::Checkbox("Wireframe", &r.isWireframe);
 
             // wasModified checkbox
             ImGui::Checkbox("Was Modified", &r.wasModified);
         }
+        ImGui::Separator();
 	}
 
 } // NightSnack

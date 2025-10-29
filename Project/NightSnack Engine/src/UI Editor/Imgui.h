@@ -81,6 +81,7 @@ namespace NightSnack {
 		EventDispatcher* m_dispatcher = nullptr;
 		bool m_toggleEditor = false;
 
+		std::unordered_map<Entity, std::string> uiNames;
 		std::shared_ptr<Entity> m_selectedEntity;
 		std::unique_ptr<HierarchyPanel> m_hierarchyPanel;
 		std::unique_ptr<InspectorPanel> m_inspectorPanel;
@@ -135,8 +136,8 @@ namespace NightSnack {
 		ImGui_ImplOpenGL3_Init("#version 450");
 
 		m_selectedEntity = std::make_shared<Entity>(INVALID_ENTITY);
-		m_hierarchyPanel = std::make_unique<HierarchyPanel>(m_coord, m_selectedEntity);
-		m_inspectorPanel = std::make_unique<InspectorPanel>(m_coord, m_selectedEntity);
+		m_hierarchyPanel = std::make_unique<HierarchyPanel>(m_coord, m_selectedEntity, uiNames);
+		m_inspectorPanel = std::make_unique<InspectorPanel>(m_coord, m_selectedEntity, uiNames);
 		m_scenePanel	 = std::make_unique<ScenePanel>(m_coord);
 		m_optionsPanel	 = std::make_unique<OptionsPanel>(m_coord);
 		m_assetsPanel	 = std::make_unique<AssetsPanel>(m_coord);
