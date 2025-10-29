@@ -123,6 +123,14 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Render the scene using the specified camera
+		*/
+		/************************************************************************/
+		void RenderWithCamera(Entity Camera);
+
+		/************************************************************************/
+		/*!
+		\brief
 		Adds a new shader resource to the Graphics System
 
 		\param[in] name
