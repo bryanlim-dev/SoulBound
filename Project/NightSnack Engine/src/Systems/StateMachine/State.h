@@ -49,6 +49,13 @@ namespace NightSnack
 			{
 				m_nextState = nullptr;
 			}
+
+			m_enterFunction = nullptr;
+			m_updateFunction = nullptr;
+			m_exitFunction = nullptr;
+
+			m_transtitionStatesList.clear();
+
 		}
 
 		void SetEnterFunction(std::function<void(float, Coordinator&)> enterFunc)
