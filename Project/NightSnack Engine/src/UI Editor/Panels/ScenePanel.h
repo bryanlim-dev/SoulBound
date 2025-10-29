@@ -18,27 +18,37 @@ namespace NightSnack
 {
     class ScenePanel {
     public:
-        ScenePanel(Coordinator& coord) : 
-            m_coord(coord) 
-        {}
-
-		// Create or resize the texture used for rendering the scene
-        void CreateOrResizeTexture(int width, int height)
+        ScenePanel(Coordinator& coord) : m_coord(coord) 
         {
-            if (m_sceneTexture) glDeleteTextures(1, &m_sceneTexture);
-            glGenTextures(1, &m_sceneTexture);
-            glBindTexture(GL_TEXTURE_2D, m_sceneTexture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			// Create a dedicated editor camera entity for Scene Panel
+            m_editorCameraEntity = m_coord.CreateEntity();
+
+            Transform editorTransform;
+            editorTransform.pos = { 0.f, 0.f, 0.f };
+            editorTransform.rot = 0.f;
+            editorTransform.scale = { 1.f, 1.f };
+            m_coord.AddComponent(m_editorCameraEntity, editorTransform);
+
+            Camera editorCamera;
+            editorCamera.isMainCam = false;
+            editorCamera.zoom = 1.f;
+            editorCamera.width = 1600.f;
+            editorCamera.height = 900.f;
+            m_coord.AddComponent(m_editorCameraEntity, editorCamera);
+
+            // Create framebuffer and color/depth attachments
+            CreateFramebuffer(1600, 900);
         }
 
-		// Update the texture with the current framebuffer content
-        void UpdateTextureFromFramebuffer(int width, int height) const
+        ~ScenePanel()
         {
-            glBindTexture(GL_TEXTURE_2D, m_sceneTexture);
-            glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, width, height, 0);
+            CleanupFramebuffer();
+            if (m_sceneTexture)
+            {
+                glDeleteTextures(1, &m_sceneTexture);
+            }
         }
+
 
         void Draw()
         {
@@ -71,34 +81,36 @@ namespace NightSnack
                 imageSize.y = panelSize.x / targetAspect;
             }
 
-            // Set the OpenGL viewport to the aspect-corrected size
-            glViewport(0, 0, (int)imageSize.x, (int)imageSize.y);
-
-            // Only recreate/resize if needed
-            static ImVec2 lastSize = ImVec2(0, 0);
-            if (imageSize.x != lastSize.x || imageSize.y != lastSize.y)
-            {
-                CreateOrResizeTexture((int)imageSize.x, (int)imageSize.y);
-                lastSize = imageSize;
+            // Resize framebuffer if needed
+            if ((int)imageSize.x != m_width || (int)imageSize.y != m_height) {
+                CleanupFramebuffer();
+                CreateFramebuffer((int)imageSize.x, (int)imageSize.y);
             }
 
-            if (!m_sceneTexture)
-            {
-                CreateOrResizeTexture((int)imageSize.x, (int)imageSize.y);
+            // Render scene to framebuffer using editor camera
+            glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+            glViewport(0, 0, m_width, m_height);
+            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            auto graphics = m_coord.GetSystem<GraphicsSystem>();
+            if (graphics) {
+                graphics->RenderWithCamera(m_editorCameraEntity);
             }
-            UpdateTextureFromFramebuffer((int)imageSize.x, (int)imageSize.y);
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             // Center the image in the panel
             ImVec2 cursorPos = ImGui::GetCursorPos();
             ImVec2 offset = ImVec2((panelSize.x - imageSize.x) * 0.5f, (panelSize.y - imageSize.y) * 0.5f);
             ImGui::SetCursorPos(ImVec2(cursorPos.x + offset.x, cursorPos.y + offset.y));
 
-            if (m_sceneTexture && imageSize.x > 0 && imageSize.y > 0)
+            if (m_colorTex && imageSize.x > 0 && imageSize.y > 0)
             {
                 // Store cursor position for drop zone
                 ImVec2 imageTopLeft = ImGui::GetCursorScreenPos();
 
-                ImGui::Image((ImTextureID)m_sceneTexture, imageSize, ImVec2(0, 1), ImVec2(1, 0));
+                ImGui::Image((ImTextureID)m_colorTex, imageSize, ImVec2(0, 1), ImVec2(1, 0));
 
                 // ================================================================
                 // DRAG & DROP TARGET - Accept images dropped from Assets panel
@@ -172,6 +184,65 @@ namespace NightSnack
         GLuint m_sceneTexture = 0;
         Coordinator& m_coord;
         Entity m_backgroundEntity;      // Current background entity ID
+		Entity m_editorCameraEntity;
+
+        Transform m_editorTransform;
+        Camera m_editorCamera;
+
+        GLuint m_fbo = 0, m_colorTex = 0, m_rbo = 0;
+        int m_width = 1600, m_height = 900;
+
+        // Create or resize the texture used for rendering the scene
+        void CreateOrResizeTexture(int width, int height)
+        {
+            if (m_sceneTexture) glDeleteTextures(1, &m_sceneTexture);
+            glGenTextures(1, &m_sceneTexture);
+            glBindTexture(GL_TEXTURE_2D, m_sceneTexture);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        }
+
+        // Update the texture with the current framebuffer content
+        void UpdateTextureFromFramebuffer(int width, int height) const
+        {
+            glBindTexture(GL_TEXTURE_2D, m_sceneTexture);
+            glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, width, height, 0);
+        }
+
+		// Create framebuffer with color and depth attachments
+        void CreateFramebuffer(int width, int height) {
+            m_width = width;
+            m_height = height;
+
+            glGenFramebuffers(1, &m_fbo);
+            glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+
+            glGenTextures(1, &m_colorTex);
+            glBindTexture(GL_TEXTURE_2D, m_colorTex);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_colorTex, 0);
+
+            glGenRenderbuffers(1, &m_rbo);
+            glBindRenderbuffer(GL_RENDERBUFFER, m_rbo);
+            glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+            glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_rbo);
+
+            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+                printf("[ScenePanel] Framebuffer not complete!\n");
+
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        }
+
+		// Cleanup framebuffer resources
+        void CleanupFramebuffer() {
+            if (m_fbo) glDeleteFramebuffers(1, &m_fbo);
+            if (m_colorTex) glDeleteTextures(1, &m_colorTex);
+            if (m_rbo) glDeleteRenderbuffers(1, &m_rbo);
+            m_fbo = m_colorTex = m_rbo = 0;
+        }
 
         // ====================================================================
        // CREATE ENTITY FROM ASSET

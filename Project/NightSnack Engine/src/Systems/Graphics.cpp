@@ -91,9 +91,13 @@ namespace NightSnack {
 		Entity mainCam = FindCamera();
 		if (mainCam == INVALID_ENTITY) return;
 
+		RenderWithCamera(mainCam);
+	}
+
+	void GraphicsSystem::RenderWithCamera(Entity camera) {
 		// Get camera components
-		auto& camPos = m_coord.GetComponent<Transform>(mainCam).pos;
-		auto& camInfo = m_coord.GetComponent<Camera>(mainCam);
+		auto& camPos = m_coord.GetComponent<Transform>(camera).pos;
+		auto& camInfo = m_coord.GetComponent<Camera>(camera);
 
 		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
@@ -105,7 +109,7 @@ namespace NightSnack {
 			for (Entity e : l.Entities()) {
 				// Reached the end of Valid Entities
 				if (e == INVALID_ENTITY) { break; }
-				
+
 				// Obtain entity components
 				auto& ren = m_coord.GetComponent<Renderable>(e);
 				auto& pos = m_coord.GetComponent<Transform>(e).pos;
@@ -145,7 +149,8 @@ namespace NightSnack {
 						auto& animator = m_coord.GetComponent<Animator>(e);
 						instance.uvRect = glm::vec4{ animator.uvTopLeft.x, animator.uvTopLeft.y,
 							animator.uvBottomRight.x, animator.uvBottomRight.y };
-					} else {
+					}
+					else {
 						instance.uvRect = glm::vec4{ 0.f, 0.f, 1.f, 1.f };
 					}
 
@@ -193,9 +198,10 @@ namespace NightSnack {
 
 					if (m_coord.HasComponent<Animator>(e)) {
 						auto& animator = m_coord.GetComponent<Animator>(e);
-						shader->SetVec4("uUVRect", { animator.uvTopLeft.x, animator.uvTopLeft.y, 
+						shader->SetVec4("uUVRect", { animator.uvTopLeft.x, animator.uvTopLeft.y,
 							animator.uvBottomRight.x, animator.uvBottomRight.y });
-					} else {
+					}
+					else {
 						shader->SetVec4("uUVRect", { 0.f, 0.f, 1.f, 1.f });
 					}
 
@@ -314,7 +320,8 @@ namespace NightSnack {
 					mesh->DrawInstanced(instanceBatch.instances.size());
 					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 					glDisable(GL_POLYGON_OFFSET_LINE);
-				} else {
+				}
+				else {
 					mesh->DrawInstanced(instanceBatch.instances.size());
 				}
 			}
