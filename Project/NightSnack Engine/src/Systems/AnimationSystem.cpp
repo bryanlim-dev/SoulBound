@@ -81,7 +81,7 @@ namespace NightSnack {
 			if (animator.currentAnimationClip.empty()) {
 				// Set the first Animation Clip to be the default clip
 				animator.currentAnimationClip = m_animationClips[animator.spriteSheetName].begin()->first;
-				std::cout << "Empty current clip changed to: " << animator.currentAnimationClip << std::endl;
+				//std::cout << "Empty current clip changed to: " << animator.currentAnimationClip << std::endl;
 			} 
 
 			// Here, there is a current Animation Clip being played
