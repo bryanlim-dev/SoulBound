@@ -20,6 +20,7 @@
 #include <string>
 
 #include "ResourceManager/ResourceManager.h"
+#include <glm/ext/vector_float4.hpp>
 
 namespace NightSnack {
 
@@ -38,7 +39,7 @@ namespace NightSnack {
 		File path to the texture image
 		*/
 		/************************************************************************/
-		Texture(std::string textureImage, std::shared_ptr<ResourceManager> rm);
+		Texture(std::string textureImage, std::shared_ptr<ResourceManager> rm, int cols = 1, int rows = 1);
 
 		/************************************************************************/
 		/*!
@@ -60,6 +61,8 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void Bind(GLuint unit = 0) const;
+
+		const std::string GetTextureName() const { return m_textureName; }
 
 		/************************************************************************/
 		/*!
@@ -83,10 +86,17 @@ namespace NightSnack {
 		/************************************************************************/
 		bool HasAlpha() const;
 
+		int GetColumns() const;
+
+		int GetRows() const;
+
 	private:
 
+		std::string m_textureName{};
 		GLuint m_texID{};
 		bool m_hasAlphaComponent{ false };
+		int m_columns{}, m_rows{};
+		int m_width{}, m_height{};
 
 	};
 

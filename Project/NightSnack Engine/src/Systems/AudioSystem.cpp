@@ -40,7 +40,7 @@ namespace NightSnack {
         LoadAllGameAudio();
 
         // Start playing main menu music by default
-        PlayBGM(m_audioKeys.mainMenu);
+        //PlayBGM(m_audioKeys.mainMenu);
     }
 
     AudioSystem::~AudioSystem()

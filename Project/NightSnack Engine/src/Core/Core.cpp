@@ -70,6 +70,8 @@ namespace NightSnack {
 		m_coord.RegisterComponent<PlayerController>();
 		m_coord.RegisterComponent<States>();
 
+		m_coord.RegisterComponent<Animator>();
+
 		// Add more Components here...
 
 		// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons
@@ -84,11 +86,13 @@ namespace NightSnack {
 		AddSystem<AudioSystem>(m_coord, core_dispatcher);
 		AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json", "assets/GameData/DefaultLevel.json");
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
+		AddSystem<CameraSystem>(m_coord, core_dispatcher);
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
 		AddSystem<CollisionSystem>(m_coord, core_dispatcher);
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
 		AddSystem<FiniteStateMachine>(m_coord);
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
+		AddSystem<AnimationSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
 
 		std::cout << "Buffering Living Entities: ";

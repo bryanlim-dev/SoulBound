@@ -125,6 +125,20 @@ namespace NightSnack {
 
     };
 
+    // An entity will have 1 Animator, comprising of many animations
+    struct Animator {
+        std::string currentAnimationClip{};
+        std::string spriteSheetName{};
+        int currentFrameIndex{ 0 };
+        float currentTime{ 0.f };
+        float playbackSpeed{ 1.f };
+        bool isPlaying{ true };
+        bool isLooping{ true };
+        // The active region of the texture to sample from
+        Vec2 uvTopLeft{ 0.f, 0.f };
+        Vec2 uvBottomRight{ 1.f, 1.f };
+    };
+
     // Only camera objects will have this component
     struct Camera {
         bool isMainCam{ true };
@@ -213,6 +227,14 @@ namespace NightSnack {
 
         r.wasModified = true;
 
+    }
+
+    // Animator ===================================================
+    inline void from_json(const json& j, Animator& a) {
+        j.at("spriteSheetName").get_to(a.spriteSheetName);
+        j.at("playbackSpeed").get_to(a.playbackSpeed);
+        j.at("isPlaying").get_to(a.isPlaying);
+        j.at("isLooping").get_to(a.isLooping);
     }
 
     // Camera =====================================================
