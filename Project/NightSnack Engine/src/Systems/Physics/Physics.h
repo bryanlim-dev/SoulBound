@@ -101,7 +101,7 @@ namespace NightSnack {
         using GRID = std::vector<std::vector<std::bitset<MAX_ENTITIES>>>;
         void CollisionGridInsert(Entity, Collider const&, Transform const&);
         void ResolveCollisions();
-        bool CheckCollision(Entity e1, Entity e2);
+        bool CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2);
 
     private:
         Signature m_systemSignature{};

@@ -19,10 +19,7 @@
 
 namespace NightSnack {
 
-    bool CheckCollision(Entity e1, Entity e2) {
-
-    }
-
+    
     // Update loop (runs each frame)
     void Update(int steps)
     {
