@@ -1,0 +1,137 @@
+#include "StateComponents.h"
+#include "../AllSystems.h"
+
+namespace NightSnack
+{
+	//Forward decleration
+	class StateBase;
+
+	namespace StateFunctionChecker
+	{
+
+		bool EntityCountdownComponentFinish(Entity ownerID, Coordinator& coord)
+		{
+			//Check if componet exists
+			if (coord.GetComponent<States>(ownerID).currState->HasStateComponent("CooldownComponent"))
+			{
+				//Check curr timer <= 0
+				StateComponentCountdown* cooldown = static_cast<StateComponentCountdown*>(coord.GetComponent<States>(ownerID).currState->GetStateComponent("CooldownComponent").get());
+				if (cooldown->GetCurrTime() <= 0)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		bool CheckPlayerIsLeftSide(Entity ownerID, Coordinator& coord)
+		{
+			Entity player = coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+			if (coord.HasComponent<Transform>(player) && coord.HasComponent<Transform>(ownerID))
+			{
+				//Player x pos smaller than entity's
+				if (coord.GetComponent<Transform>(player).pos.x <= coord.GetComponent<Transform>(ownerID).pos.x)
+				{
+					//std::cout << "Player Left Side: Player.x : " << coord.GetComponent<Transform>(player).pos.x << ", Entity: " << coord.GetComponent<Transform>(ownerID).pos.x << std::endl;
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		bool CheckPlayerIsRightSide(Entity ownerID, Coordinator& coord)
+		{
+			Entity player = coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+			if (coord.HasComponent<Transform>(player) && coord.HasComponent<Transform>(ownerID))
+			{
+				if (coord.GetComponent<Transform>(player).pos.x >= coord.GetComponent<Transform>(ownerID).pos.x)
+				{
+					//std::cout << "Player Right Side: Player.x : " << coord.GetComponent<Transform>(player).pos.x << ", Entity: " << coord.GetComponent<Transform>(ownerID).pos.x << std::endl;
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		bool EntityIsColliding(Entity ownerID, Coordinator& coord)
+		{
+			if (coord.HasComponent<Collider>(ownerID))
+			{
+				if (coord.GetComponent<Collider>(ownerID).colliding)
+				{
+					//std::cout << "Entity Colliding!" << std::endl;
+					return true;
+				}
+				//return coord.GetComponent<Collider>(ownerID).colliding;
+			}
+
+			return false;
+		}
+	} //End of 
+
+	StateComponentCountdown::StateComponentCountdown(float maxTime)
+		: m_maxTime(maxTime), m_currTime(maxTime)
+	{
+	}
+
+	void StateComponentCountdown::OnEnter(Entity, Coordinator&)
+	{
+		m_currTime = m_maxTime;
+	}
+	void StateComponentCountdown::OnUpdate(float dt, Entity, Coordinator&)
+	{
+		m_currTime -= dt;
+
+		//Prevent underflow incase something cathastropic
+		if (m_currTime < 0)
+			m_currTime = 0;
+	}
+
+	void StateComponentCountdown::OnExit(Entity, Coordinator&)
+	{
+		m_currTime = 0;
+	}
+
+	float StateComponentCountdown::GetCurrTime() const
+	{
+		return m_currTime;
+	}
+
+
+
+	StateComponentMovement::StateComponentMovement(Vec2 spd) : m_spd(spd)
+	{
+	}
+
+	void StateComponentMovement::OnEnter(Entity idOwner, Coordinator& coord)
+	{
+		coord.ModifyComponent<RigidBody>(idOwner).vel = m_spd;
+	}
+	void StateComponentMovement::OnUpdate(float dt, Entity idOwner, Coordinator& coord)
+	{
+		//NOTE CHANGE THIS TO ACCEL
+		//Vec2 newSpd = m_coord.GetComponent<RigidBody>(m_entityID).vel + m_Speed; //This one becomes a missle heheh
+		Vec2 newSpd = m_spd;
+		coord.ModifyComponent<RigidBody>(idOwner).vel = newSpd;
+
+		//Vec2 newAccel = m_coord.GetComponent<RigidBody>(m_entityID).accel + m_Speed;
+		//m_coord.ModifyComponent<RigidBody>(m_entityID).accel = newAccel;
+	}
+
+	void StateComponentMovement::OnExit(Entity idOwner, Coordinator& coord)
+	{
+		coord.ModifyComponent<RigidBody>(idOwner).vel = Vec2(0, 0);
+	}
+
+	Vec2 StateComponentMovement::GetSpd() const
+	{
+		return m_spd;
+	}
+
+
+
+}
+
