@@ -16,7 +16,7 @@ namespace NightSnack
 	class StateBase
 	{
 	protected:
-		std::list<std::pair<std::shared_ptr<StateBase>, std::function<bool(Entity, Coordinator&)>>> m_transtitionStatesList;
+		std::list<std::pair<std::weak_ptr<StateBase>, std::function<bool(Entity, Coordinator&)>>> m_transtitionStatesList;
 		
 		//Using any allows more data types to be store, just check if it can be converted before using
 		//Components are shared ptrs to allow for casting
@@ -29,7 +29,7 @@ namespace NightSnack
 		std::function<void (float, Entity)> m_updateFunction;
 		std::function<void (Entity, Coordinator&)> m_exitFunction;
 
-		std::shared_ptr<StateBase> m_nextState = nullptr;
+		std::weak_ptr<StateBase> m_nextState;
 		Entity m_entityID;
 		Coordinator& m_coord;
 
@@ -48,9 +48,9 @@ namespace NightSnack
 		}
 
 		virtual ~StateBase() {
-			if (m_nextState)
+			if (!m_nextState.expired())
 			{
-				m_nextState = nullptr;
+				m_nextState.reset();
 			}
 
 			m_enterFunction = nullptr;
@@ -71,7 +71,7 @@ namespace NightSnack
 			m_exitFunction = exitFunc;
 		}
 
-		void InsertStateTransition(std::shared_ptr<StateBase> state, std::function<bool(Entity, Coordinator&)>transition)
+		void InsertStateTransition(std::weak_ptr<StateBase> state, std::function<bool(Entity, Coordinator&)>transition)
 		{
 			m_transtitionStatesList.emplace_back(state, transition);
 		}
@@ -128,6 +128,11 @@ namespace NightSnack
 			{
 				component->OnExit(m_entityID, m_coord);
 			}
+
+			if (!m_nextState.expired())
+			{
+				m_nextState.reset();
+			}
 		}
 
 
@@ -136,7 +141,7 @@ namespace NightSnack
 			return m_stateKey;
 		}
 
-		std::shared_ptr<StateBase> NextState() const
+		std::weak_ptr<StateBase> NextState() const
 		{
 			return m_nextState;
 		}

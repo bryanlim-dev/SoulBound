@@ -118,6 +118,7 @@ namespace NightSnack
 	{
 		m_currTime -= dt;
 
+		//std::cout << "Time: " << m_currTime << std::endl;
 		//Prevent underflow incase something cathastropic
 		if (m_currTime < 0)
 			m_currTime = 0;

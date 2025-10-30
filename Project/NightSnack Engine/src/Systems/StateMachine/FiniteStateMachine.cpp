@@ -84,11 +84,11 @@ namespace NightSnack
 		//Check if exiting
 		if (states.currState->IsExit())
 		{
-			std::shared_ptr<StateBase> nextState = states.currState->NextState();
+			std::weak_ptr<StateBase> nextState = states.currState->NextState().lock();
 			states.currState->Exit();
 
-			nextState->Enter();
-			states.currState = nextState;
+			nextState.lock()->Enter();
+			states.currState = nextState.lock();
 		}
 
 		return;
@@ -147,11 +147,16 @@ namespace NightSnack
 
 		//Countdown ends into decision
 		stateCountdown->InsertStateTransition(desicionState, StateFunctionChecker::EntityCountdownComponentFinish);
-		stateCountdown->InsertStateComponent("CooldownComponent", std::make_shared<StateComponentCountdown>(5));
+		stateCountdown->InsertStateComponent("CooldownComponent", std::make_shared<StateComponentCountdown>(2.5));
 
 		//stateCountdown->InsertStateComponent("Int", std::make_shared<int>(3));
 		//int* x = (stateCountdown->GetStateComponent<int>("Int").get());
 		//std::cout << "Int checker: " << x << std::endl;
+
+		movmenetLeftState.reset();
+		movemementRightState.reset();
+		desicionState.reset();
+
 
 		coord.AddComponent<States>(entityId, States(stateMap, stateCountdown));
 
