@@ -65,6 +65,8 @@ namespace NightSnack {
         float invMass;
         float invInertia;
 
+        float restitution;
+
         bool useGravity;
         bool useRotate; 
     };
@@ -192,6 +194,7 @@ namespace NightSnack {
         }
         r.invInertia = 1.f / inertia;
 
+        r.restitution = 0.5f;
         r.force = Force{};
         r.accel = Vec2{};
         r.vel = Vec2{};

@@ -62,18 +62,6 @@ namespace NightSnack {
 				}
 				ResolveCollisions();
 			}
-
-
-
-			//for (Entity e2 : l.Entities()) {
-			//	if (e == INVALID_ENTITY) { break; }
-			//	if (e == e2) { continue; }
-
-			//	if (CheckCollision(e, e2)) {
-			//		ResolveCollisions(e, e2);
-			//	}
-			//}
-
 		}
 		if (debugMode) stepRequest = false; // reset step request
 	}
@@ -94,6 +82,7 @@ namespace NightSnack {
 
 		for (int x = 0; x < m_gridCols; ++x) {
 			for (int y = 0; y < m_gridRows; ++y) {
+
 				std::bitset<MAX_ENTITIES>& cell = m_collisionGrid[x][y];
 
 				for (size_t e1 = FindFirst(cell); e1 < MAX_ENTITIES; e1 = FindNext(cell, e1)) {
@@ -102,8 +91,8 @@ namespace NightSnack {
 						Collider& col1 = m_coord.ModifyComponent<Collider>(e1);
 						Collider& col2 = m_coord.ModifyComponent<Collider>(e2);
 
-						// Skip if both entities are static bodies;
-						if (col1.isStatic && col2.isStatic) { continue; }
+						// Skip if first entity is a static body;
+						if (col1.isStatic) { continue; }
 
 						Transform& trans1 = m_coord.ModifyComponent<Transform>(e1);
 						Transform& trans2 = m_coord.ModifyComponent<Transform>(e2);
@@ -111,7 +100,24 @@ namespace NightSnack {
 						if (!CheckCollision(trans1, trans2, col1, col2)) { continue; }
 
 						// perform resolutions;
-						
+						RigidBody& r1 = m_coord.ModifyComponent<RigidBody>(e1);
+						RigidBody& r2 = m_coord.ModifyComponent<RigidBody>(e2);
+
+						Vec3 dir = Vec3(trans1.pos - trans2.pos);
+						float dist = dir.magnitude();
+						dir.normalize();
+						// Find point of intersection;
+						if (col2.shape == ShapeType::AABB) {
+
+						}
+						else if (col2.shape == ShapeType::Circle) {
+
+						}
+
+						// Flip velocity with respect to interPT;
+
+						// Multiply by restitution;
+
 					}
 				}
 			}
@@ -199,13 +205,24 @@ namespace NightSnack {
 		rig.vel += rig.accel * FixedDT;
 		rig.vel.x *= 1.f - drag * FixedDT;
 
-		// Apply friction if on the ground;
-		if (col.isGrounded) {
+		static float time = 0.f;
+
+		// Apply friction if colliding with object;
+		if (col.colliding) {
+			time += FixedDT;
+
 			rig.vel.x *= 1.f - friction * FixedDT;
+			rig.vel.y *= 1.f - friction * FixedDT;
 
 			if (std::abs(rig.vel.x) < velocityCutoff) {
 				rig.vel.x = 0.0;
 			}
+			if (std::abs(rig.vel.y) < velocityCutoff) {
+				rig.vel.x = 0.0;
+			}
+		}
+		else {
+			time = 0.f;
 		}
 	}
 
