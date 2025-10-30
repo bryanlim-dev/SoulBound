@@ -39,13 +39,29 @@ namespace NightSnack
 	{
 	public:
 		StateComponent() {};
-		virtual ~StateComponent() {};
+		virtual ~StateComponent() { std::cout << "Component Deletd" << std::endl; };
 
 		virtual void OnEnter(Entity idOwner, Coordinator& coord) { (void)idOwner; (void)coord; };
 		virtual void OnUpdate(float dt, Entity idOwner, Coordinator& coord) { (void)idOwner; (void)coord; };
 		virtual void OnExit(Entity idOwner, Coordinator& coord) { (void)idOwner; (void)coord; };
 		
 		//bool TransitionCheck(Entity idOwner, Coordinator& coord) { (void)idOwner; (void)coord; return false; };
+	};
+
+	//This class is to store various types (int, bool, structs, etc)
+	template<typename T>
+	class StateComponentVariable
+	{
+	private:
+		T m_variable;
+
+	public:
+		StateComponentVariable(T var);
+		~StateComponentVariable();
+
+		T GetVariable() const;
+		T& GetVariable();
+		void SetVariable(T newVar);
 	};
 
 	class StateComponentCountdown : public StateComponent 
@@ -56,7 +72,7 @@ namespace NightSnack
 
 	public:
 		StateComponentCountdown(float maxTime);
-		//Default destructor
+		~StateComponentCountdown();
 
 		void OnEnter(Entity idOwner, Coordinator& coord) override;
 		void OnUpdate(float dt, Entity idOwner, Coordinator& coord) override;
@@ -72,7 +88,7 @@ namespace NightSnack
 
 	public:
 		StateComponentMovement(Vec2 spd);
-		//Default destructor
+		StateComponentMovement();
 
 		void OnEnter(Entity idOwner, Coordinator& coord) override;
 		void OnUpdate(float dt, Entity idOwner, Coordinator& coord) override;
@@ -81,4 +97,6 @@ namespace NightSnack
 		Vec2 GetSpd() const;
 
 	};
+
+
 }

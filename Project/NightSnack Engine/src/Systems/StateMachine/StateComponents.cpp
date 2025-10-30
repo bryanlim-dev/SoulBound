@@ -70,10 +70,43 @@ namespace NightSnack
 
 			return false;
 		}
-	} //End of 
+	} //End of StateFunctionChecker namespace
+
+	template<typename T>
+	StateComponentVariable<T>::StateComponentVariable(T var) : m_variable(var)
+	{
+	}
+
+	template<typename T>
+	StateComponentVariable<T>::~StateComponentVariable()
+	{
+	}
+
+	template<typename T>
+	T StateComponentVariable<T>::GetVariable() const
+	{
+		return m_variable;
+	}
+
+	template<typename T>
+	T& StateComponentVariable<T>::GetVariable()
+	{
+		return m_variable;
+	}
+
+	template<typename T>
+	void StateComponentVariable<T>::SetVariable(T newVar)
+	{
+		m_variable = newVar;
+	}
+
 
 	StateComponentCountdown::StateComponentCountdown(float maxTime)
 		: m_maxTime(maxTime), m_currTime(maxTime)
+	{
+	}
+
+	StateComponentCountdown::~StateComponentCountdown()
 	{
 	}
 
@@ -103,6 +136,10 @@ namespace NightSnack
 
 
 	StateComponentMovement::StateComponentMovement(Vec2 spd) : m_spd(spd)
+	{
+	}
+
+	StateComponentMovement::StateComponentMovement()
 	{
 	}
 
