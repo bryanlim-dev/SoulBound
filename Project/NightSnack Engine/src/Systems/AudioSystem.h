@@ -1,61 +1,115 @@
-#pragma once
+/******************************************************************************
+ * File:        AudioSystem.h
+ * Project:     NightSnack
+ * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Audio system with channels to play audio
+ *
+ * Description:
+ * This file declares the AudioSystem class, which manages all game audio using FMOD.
+ * Works with ResourceManager to load and cache sounds. Handles playing, pausing, stopping
+ * and updating audio. Logs messages to cout for debug purposes.
+ *
+ * Copyright � 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+#ifndef AUDIOSYSTEM_H
+#define AUDIOSYSTEM_H
+
+#include "Core/ECS/ISystem.h"
+#include "Core/ECS/Coordinator.h"
+#include "Systems/Application/IEvent.h"
+#include "ResourceManager/ResourceManager.h"
 #include <fmod.hpp>
-#include <fmod_errors.h>
-#include <iostream>
 #include <unordered_map>
 #include <string>
+#include <iostream>
 
-// Forward declaration
-class ResourceManager;
+namespace NightSnack {
 
-enum AUDIO_RESULT
-{
-    AUDIO_SUCCESS,
-    AUDIO_FAIL_INIT,
-    AUDIO_FAIL_SOUND_NOT_FOUND,
-    AUDIO_FAIL_ERROR
-};
+    // Audio keys for easy access throughout the game
+    struct AudioKeys {
+        // SFX
+        size_t buttonClick = 0;
 
-class AudioSystem
-{
-private:
-    static AudioSystem* instance;
+        // BGM
+        size_t mainMenu = 0;
 
-    FMOD::System* fmodSystem;
-    ResourceManager* resourceManager;
+    };
 
-    // Track active channels separately
-    std::unordered_map<std::size_t, FMOD::Channel*> sfxChannels;
-    std::unordered_map<std::size_t, FMOD::Channel*> musicChannels;
+    enum AUDIO_RESULT {
+        AUDIO_SUCCESS,
+        AUDIO_FAIL_INIT,
+        AUDIO_FAIL_SOUND_NOT_FOUND,
+        AUDIO_FAIL_ERROR
+    };
 
-    bool initialized;
+    class AudioSystem : public ISystem {
+    public:
+        AudioSystem(Coordinator& coordinator, EventDispatcher& dispatcher);
+        ~AudioSystem();
 
-    // Private constructor for singleton
-    AudioSystem();
+        // Initialization - loads all game audio
+        bool Init();
 
-public:
-    ~AudioSystem();
+        // System update
+        void Update(int steps) override;
 
-    // Singleton methods
-    static AudioSystem* GetInstance();
-    static void DestroyInstance();
+        // Get audio keys for playing sounds
+        const AudioKeys& GetAudioKeys() const { return m_audioKeys; }
 
-    // Core methods
-    bool Initialize();
-    void Update();
-    void SetResourceManager(ResourceManager* rm);
+        // Loading (called internally by Init, but can be called manually too)
+        bool LoadSoundFile(const std::string& filepath, size_t& outKey);
+        void LoadAllGameAudio(); // Loads all audio files at once
 
-    // Loading
-    std::size_t LoadSFX(const std::string& path);
-    std::size_t LoadMusic(const std::string& path, bool loop = true);
+        // SFX Functions
+        void PlaySFX(const size_t soundID);
+        void PlaySFXWithVolume(const size_t soundID, float volume);
 
-    // Playback control
-    bool PlaySound(std::size_t soundKey);
-    bool StopSound(std::size_t soundKey);
-    void StopAllSounds();
-    bool PauseSound(std::size_t soundKey, bool pause);
+        // BGM Functions
+        void PlayBGM(const size_t bgmID);
+        void StopBGM();
+        void PauseBGM();
+        void ResumeBGM();
+        bool IsBGMPlaying() const;
 
-    // Getters
-    FMOD::System* GetFMODSystem() { return fmodSystem; }
-    bool IsInitialized() { return initialized; }
-};
+        // Volume Control (0.0 to 1.0)
+        void SetMasterVolume(float volume);
+        void SetBGMVolume(float volume);
+        void SetSFXVolume(float volume);
+        float GetMasterVolume() const;
+        float GetBGMVolume() const;
+        float GetSFXVolume() const;
+
+        // ISystem overrides
+        Signature GetSignature() const override;
+        std::string GetName() const override;
+
+    private:
+        // Resource management
+        std::weak_ptr<ResourceManager> m_resourceMgr;
+        EventDispatcher* m_dispatcher;
+        Coordinator& m_coord;
+
+        // FMOD
+        std::weak_ptr<FMOD::System> m_fmodSystem;
+        FMOD::Channel* m_bgmChannel;
+
+        // Sound caches
+        std::unordered_map<size_t, FMOD::Sound*> m_loadedSFX;
+        std::unordered_map<size_t, FMOD::Sound*> m_loadedBGM;
+
+        // Audio keys for all game sounds
+        AudioKeys m_audioKeys;
+
+        // State
+        bool m_initialized;
+        bool m_bgmPaused;
+
+        // Volume levels
+        float m_masterVolume;
+        float m_bgmVolume;
+        float m_sfxVolume;
+    };
+
+} // namespace NightSnack
+
+#endif // AUDIOSYSTEM_H

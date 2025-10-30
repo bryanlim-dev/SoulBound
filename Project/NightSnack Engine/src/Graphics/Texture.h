@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        Texture.h
+ * Project:     NightSnack
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Texture class
+ *
+ * Description:
+ * This Texture class loads image data from the ResourceManager.
+ * It then creates an OpenGL 2D texture and configures default parameters.
+ * There are helper functions for binding and getting texture properties.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #ifndef TEXTURE_H
 #define TEXTURE_H
 
@@ -6,26 +20,86 @@
 #include <string>
 
 #include "ResourceManager/ResourceManager.h"
+#include <glm/ext/vector_float4.hpp>
 
-class Texture {
+namespace NightSnack {
 
-public:
+	class Texture {
 
-	// Constructor to create an OpenGL texture
-	Texture(std::string);
-	~Texture();
+	public:
 
-	// Binds the texture to the specified texture unit
-	void Bind(GLuint unit = 0) const;
+		/************************************************************************/
+		/*!
+		\brief
+		Constructor for the Texture class.
+		Loads an image from the ResourceManager and creates a 2D OpenGL texture.
+		Sets up default texture parameters.
 
-	GLuint GetID() const;
-	bool HasAlpha() const;
+		\param[in] textureImage
+		File path to the texture image
+		*/
+		/************************************************************************/
+		Texture(std::string textureImage, std::shared_ptr<ResourceManager> rm, int cols = 1, int rows = 1);
 
-private:
+		/************************************************************************/
+		/*!
+		\brief
+		Destructor for the Texture class.
+		Deletes the OpenGL texture object
+		*/
+		/************************************************************************/
+		~Texture();
 
-	GLuint m_texID{};
-	bool m_hasAlphaComponent{ false };
+		/************************************************************************/
+		/*!
+		\brief
+		Binds the texture to a specified OpenGL texture unit, for the shader files
+		to sample from it.
 
-};
+		\param[in] unit
+		The texture unit index
+		*/
+		/************************************************************************/
+		void Bind(GLuint unit = 0) const;
+
+		const std::string GetTextureName() const { return m_textureName; }
+
+		/************************************************************************/
+		/*!
+		\brief
+		Retrieves the OpenGL texture ID of this Texture object
+
+		\return
+		The OpenGL texture ID
+		*/
+		/************************************************************************/
+		GLuint GetID() const;
+
+		/************************************************************************/
+		/*!
+		\brief
+		Checks whether this texture has an alpha component
+
+		\return
+		True if the texture has an alpha component
+		*/
+		/************************************************************************/
+		bool HasAlpha() const;
+
+		int GetColumns() const;
+
+		int GetRows() const;
+
+	private:
+
+		std::string m_textureName{};
+		GLuint m_texID{};
+		bool m_hasAlphaComponent{ false };
+		int m_columns{}, m_rows{};
+		int m_width{}, m_height{};
+
+	};
+
+}	// NightSnack
 
 #endif // TEXTURE_H

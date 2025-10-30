@@ -1,94 +1,166 @@
+/******************************************************************************
+ * File:        EntityFactory.cpp
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan
+ *
+ * Description:
+ * Defines member functions of EntityFactory class.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "EntityFactory.h"
 #include "Systems/Graphics.h"
 
-void EntityFactory::Update(float dt, Coordinator& coord) {
+namespace NightSnack {
 
-	(void)coord;
-	static float time{};
-	time += dt;
+	// unused for now...
+	void EntityFactory::Update(int steps) {
 
-}
+		(void)steps;
+		
+		static bool printed = false;
 
-Entity EntityFactory::Create(std::string const& name) {
-	Entity e = m_prefabManager.CreateFromPrefab(name, m_archetypes);
+		if (!printed) {
+			PrintPrefabNames();
+			printed = true;
+		}
 
-	// Make spawned entity be at mouse position;
-	Transform trans{};
-	trans.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
-	trans.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
-
-	m_coord.ModifyComponent<Position>(e) = trans.pos;
-
-	return e;
-}
-
-// For creating entities at specific locations, scaling etc...
-Entity EntityFactory::Create(std::string const& name, Transform trans) {
-	Entity e = m_prefabManager.CreateFromPrefab(name, m_archetypes);
-	
-	m_coord.ModifyComponent<Position>(e) = trans.pos;
-	m_coord.ModifyComponent<Rotation>(e) = trans.rot;
-	m_coord.ModifyComponent<Scale>(e) = trans.scale;
-
-	return e;
-}
-
-// Clone an entity prefab at specific locations, scaling etc...
-Entity EntityFactory::Clone(Entity e, Transform trans) {
-	std::string name = entityToPrefab[e];
-
-	Entity clone = m_prefabManager.CreateFromPrefab(name, m_archetypes);
-
-	m_coord.ModifyComponent<Position>(clone) = trans.pos;
-	m_coord.ModifyComponent<Rotation>(clone) = trans.rot;
-	m_coord.ModifyComponent<Scale>(clone) = trans.scale;
-
-	return clone;
-}
-
-void EntityFactory::DoubleEntities() {
-	srand(69);
-
-	size_t currNum = m_coord.GetLivingEntities().size();
-	int Hvp = m_coord.GetWindowHeight();
-	int Wvp = m_coord.GetWindowWidth();
-
-	std::vector<std::string> prefabs{ "Square", "Circle", "Player"};
-
-	for (size_t i{}; i < currNum && (currNum + i) < MAX_ENTITIES; ++i) {
-		Position pos = { static_cast<float>(rand() % Wvp - Wvp / 2),
-		static_cast<float>(rand() % Hvp - Hvp / 2) };
-		Rotation rot = { static_cast<float>(rand() % 360) };
-		Scale scale = { static_cast<float>(rand() % 50 + 15), static_cast<float>(rand() % 50 + 15) };
-
-		Transform trans{ pos, rot, scale };
-
-		Create(prefabs[i%3], trans);
-	}
-}
-
-void EntityFactory::Remove(Entity e) {
-	m_toBeDestroyed.push_back(e);
-}
-
-void EntityFactory::HalfEntities() {
-	std::set<Entity> entities = m_coord.GetLivingEntities();
-
-	// count only eligible entities (skip default scene)
-	size_t eligibleCount = 0;
-	for (Entity e : entities) {
-		if (e >= 9) ++eligibleCount;
 	}
 
-	size_t toDestroy = eligibleCount / 2;
-	size_t destroyed = 0;
+	Entity EntityFactory::Create(std::string const& name) {
+		Entity e = m_prefabManager.CreateFromPrefab(name, m_archetypes);
+		if (e == INVALID_ENTITY) { return e; }
 
-	for (Entity e : entities) {
-		if (e < 9) continue; // skip default scene
+		Transform trans{};
 
-		Remove(e);
-		if (++destroyed >= toDestroy) {
-			break;
+		trans.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
+		trans.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
+		trans.pos.z = 1.f;
+
+		trans.scale = Vec2{ 50.f, 50.f };	// default scale...
+		
+		m_coord.ModifyComponent<Transform>(e) = trans;
+
+		entityToPrefab[e] = name;
+
+		return e;
+	}
+
+	// For creating entities at specific locations, scaling etc...
+	Entity EntityFactory::Create(std::string const& name, Transform trans) {
+		Entity e = m_prefabManager.CreateFromPrefab(name, m_archetypes);
+		if (e == INVALID_ENTITY) { return e; }
+
+		m_coord.ModifyComponent<Transform>(e) = trans;
+		
+		entityToPrefab[e] = name;
+
+		return e;
+	}
+
+	// Clone an entity prefab at specific locations, scaling etc...
+	Entity EntityFactory::Clone(Entity e, Transform trans) {
+		std::string name = entityToPrefab[e];
+
+		Entity clone = m_prefabManager.CreateFromPrefab(name, m_archetypes);
+		if (clone == INVALID_ENTITY) { return clone; }
+
+		m_coord.ModifyComponent<Transform>(e) = trans;
+
+		entityToPrefab[e] = name;
+
+		return clone;
+	}
+
+	void EntityFactory::DoubleEntities() {
+		// seed for rand;
+		srand(69 * glfwGetTime());
+		// current number of live entities;
+		size_t currNum = m_coord.GetLivingEntities().size();
+		int Hvp = m_coord.GetWindowHeight();
+		int Wvp = m_coord.GetWindowWidth();
+
+		std::vector<std::string> prefabs{ "Square", "Circle", "Player" };
+
+		// double the number of living entities with random transforms;
+		for (size_t i{}; i < currNum && (currNum + i) < MAX_ENTITIES; ++i) {
+			Vec3 pos = { static_cast<float>(rand() % Wvp - Wvp / 2),
+			static_cast<float>(rand() % Hvp - Hvp / 2), 1.f };
+			float rot = { static_cast<float>(rand() % 360) };
+			Vec2 scale = { static_cast<float>(rand() % 50 + 15), static_cast<float>(rand() % 50 + 15) };
+
+			Transform trans{ pos, rot, scale };
+
+			// create from a random prefab;
+			Create(prefabs[i % 3], trans);
 		}
 	}
-}
+
+	void EntityFactory::Remove(Entity e) {
+		m_toBeDestroyed.insert(e);
+	}
+
+	void EntityFactory::HalfEntities() {
+		std::set<Entity> entities = m_coord.GetLivingEntities();
+
+		// count only eligible entities (skip default scene)
+		size_t eligibleCount = 0;
+		for (Entity e : entities) {
+			// entities 0-10 are the default scene, which we do not want to remove for testing purposes...
+			if (e >= 10) ++eligibleCount;
+		}
+
+		size_t toDestroy = eligibleCount / 2;
+		size_t destroyed = 0;
+
+		for (Entity e : entities) {
+			if (e < 10) continue; // skip default scene
+
+			Remove(e);
+			if (++destroyed >= toDestroy) {
+				break;
+			}
+		}
+	}
+
+	void EntityFactory::PrintPrefabNames() const {
+
+		std::cout << "Prefabs: ";
+		for (auto& [name, data] : m_archetypes.items()) {
+			std::cout << name << " ";
+		}
+		std::cout << '\n';
+	}
+
+	std::vector<std::string> const& EntityFactory::GetPrefabNames() const {
+		std::vector<std::string> names;
+		for (auto& [name, data] : m_archetypes.items()) {
+			names.emplace_back(name);
+		}
+		return names;
+	}
+
+	std::unordered_map<std::string, std::string> EntityFactory::GetPrefabMaterials() const {
+		std::unordered_map<std::string, std::string> materials;
+
+		for (auto& [name, data] : m_archetypes.items()) {
+			if (data.contains("Renderable")) {
+				std::string mat = data["Renderable"]["materialName"];
+				materials.insert({ name, mat });
+			}
+		}
+		return materials;
+	}
+
+	std::string EntityFactory::GetEntityPrefabName(Entity e) const
+	{
+		auto it = entityToPrefab.find(e);
+		if (it != entityToPrefab.end()) {
+			return it->second;
+		}
+		return "UnknownPrefab";
+	}
+
+}	// NightSnack

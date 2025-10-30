@@ -1,3 +1,16 @@
+/******************************************************************************
+ * File:        PrefabManager.h
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan
+ *
+ * Description:
+ * Defines PrefabManager class that stores component loaders that assist in
+ * creation of entities from prefabs.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #pragma once
 
 #include <functional>
@@ -6,67 +19,96 @@
 #include <unordered_map>
 #include <iostream>
 
-#include "ECS/Entity.h"
-#include "ECS/Coordinator.h"
-#include "ECS/Component.h"
+#include "Core/ECS/Coordinator.h"
 
-using json = nlohmann::json;
+namespace NightSnack {
 
-using ComponentLoader = std::function<void(Entity, json const&, Coordinator&)>;
+	using ComponentLoader = std::function<void(Entity, json const&, Coordinator&)>;
 
-class PrefabManager {
-public:
-	PrefabManager(Coordinator& coord) : m_coord{ coord } { Initialize(); }
+	class PrefabManager {
+	public:
+		/************************************************************************/
+		/*!
+		\brief
+		Constructor that calls Initialize() to register all component loaders and
+		stores them in m_componentLoaders.
+		They are mapped from string to component loader type ("Position" -> <Postion>).
+		*/
+		/************************************************************************/
+		PrefabManager(Coordinator& coord) : m_coord{ coord } { Initialize(); }
 
-	void Initialize() {
-		RegisterComponentLoader<Position>("Position");
-		RegisterComponentLoader<Rotation>("Rotation");
-		RegisterComponentLoader<Scale>("Scale");
+		void Initialize() {
+			RegisterComponentLoader<Transform>("Transform");
+			RegisterComponentLoader<RigidBody>("RigidBody");
+			RegisterComponentLoader<Collider>("Collider");
+			RegisterComponentLoader<Force>("Force");
 
-		RegisterComponentLoader<Velocity>("Velocity");
-		RegisterComponentLoader<Acceleration>("Acceleration");
-		RegisterComponentLoader<Force>("Force");
-		RegisterComponentLoader<Mass>("Mass");
+			RegisterComponentLoader<Sprite>("Sprite");
+			RegisterComponentLoader<Color>("Color");
+			RegisterComponentLoader<Renderable>("Renderable");
+			RegisterComponentLoader<Animator>("Animator");
+			RegisterComponentLoader<Camera>("Camera");
 
-		RegisterComponentLoader<Collider>("Collider");
-
-		RegisterComponentLoader<Sprite>("Sprite");
-		RegisterComponentLoader<Color>("Color");
-		RegisterComponentLoader<Renderable>("Renderable");
-		RegisterComponentLoader<Camera>("Camera");
-	}
-
-	// Helper template function which adds component with data loaded from json;
-	template <typename T>
-	void RegisterComponentLoader(std::string const& name) {
-		m_componentLoaders[name] = [](Entity e, json const& data, Coordinator& coord) {
-			T component{};
-			from_json(data, component);
-			coord.AddComponent<T>(e, component);
-			};
-	}
-
-	// Create entity with prefabname and json of archetypes; CreateFromPrefab("Player", archetypes);
-	Entity CreateFromPrefab(std::string const& prefabName, json const& archetypes) {
-		// Create a new entity using coordinator;
-		Entity e = m_coord.CreateEntity();
-
-		// Adds all components from prefab definition;
-	for (auto& [compName, compData] : archetypes[prefabName].items()) {
-			// Look for component loader with std::string component name;
-			auto it = m_componentLoaders.find(compName);
-			// If found, use lambda function to insert data;
-			if (it != m_componentLoaders.end()) {
-				it->second(e, compData, m_coord);
-			}
-			else {
-				std::cerr << "Unknown component: " << compName << "\n";
-			}
+			RegisterComponentLoader<PlayerController>("PlayerController");
 		}
-		return e;
-	}
 
-private:
-	Coordinator& m_coord;
-	std::unordered_map<std::string, ComponentLoader> m_componentLoaders;
-};
+		// Helper template function which adds component with data loaded from json;
+		template <typename T>
+		void RegisterComponentLoader(std::string const& name) {
+			m_componentLoaders[name] = [](Entity e, json const& data, Coordinator& coord) {
+				T component{};
+				from_json(data, component);
+				coord.AddComponent<T>(e, component);
+				};
+		}
+
+		/************************************************************************/
+		/*!
+		\brief
+		Create entity with prefabname and json of archetypes
+		e.g: CreateFromPrefab("Player", archetypes)
+		Adds all components of prefab to created entity with the usage of component
+		loaders.
+
+		\param prefabName
+		Name of desired prefab.
+		\param archetypes
+		Container of prefabs.
+
+		\return
+		ID of created entity.
+		*/
+		/************************************************************************/
+		Entity CreateFromPrefab(std::string const& prefabName, json const& archetypes) {
+			// Create a new entity using coordinator;
+			Entity e = m_coord.CreateEntity();
+			//std::cerr << "Created Entity: " << e << '\n';
+
+			if (e == INVALID_ENTITY) { return e; }
+
+			m_coord.AddComponent<Transform>(e, Transform{});	// All entities should have a transform;
+			//std::cerr << "Added Transform to Entity\n";
+
+			// Adds all components from prefab definition;
+			for (auto& [compName, compData] : archetypes[prefabName].items()) {
+				// Look for component loader with std::string component name;
+				auto it = m_componentLoaders.find(compName);
+				// If found, use lambda function to insert data;
+				if (it != m_componentLoaders.end()) {
+					it->second(e, compData, m_coord);
+					//std::cerr << "Added Component [" << compName << "] to Entity: " << e << '\n';
+
+				}
+				else {
+					std::cerr << "Unknown component: " << compName << "\n";
+				}
+			}
+			return e;
+		}
+
+	private:
+		Coordinator& m_coord;
+		std::unordered_map<std::string, ComponentLoader> m_componentLoaders;
+	};
+
+}	// NightSnack

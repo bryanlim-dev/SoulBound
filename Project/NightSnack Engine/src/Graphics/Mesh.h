@@ -1,3 +1,19 @@
+/******************************************************************************
+ * File:        Mesh.h
+ * Project:     NightSnack
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Mesh class
+ *
+ * Description:
+ * This Mesh class represents renderable geometry data.
+ * A Mesh stores vertex, index and primitive information and sets up the OpenGL 
+ * VAO, VBO, and optional EBO. 
+ * It also provides helper functions for creating shapes such as points, lines, 
+ * rectangles, circles. 
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #pragma once
 
 #include <glad/glad.h>
@@ -5,76 +21,145 @@
 #include <vector>
 #include <memory>
 
-class Mesh {
+namespace NightSnack {
 
-public:
-	// Contains geometry data
-	struct Vertex {
-		glm::vec3 position;
-		glm::vec2 texCoord;
+	class Mesh {
+
+	public:
+		// Contains geometry data
+		struct Vertex {
+			glm::vec3 position;
+			glm::vec2 texCoord;
+		};
+
+		// Aligned according to OpenGL std430 rules
+		// Total size is a multiple of the largest alignment (16)
+		struct alignas(16) InstanceData {
+			glm::vec3 position; // 0 to 12 bytes
+			float rotation; // 12 to 16 bytes
+			glm::vec2 scale; // 16 to 24 bytes
+			glm::vec2 pad; // 24 to 32 bytes
+			glm::vec3 color; // 32 to 44 bytes
+			float padding; // 44 to 48 bytes
+			glm::vec4 uvRect;
+		};
+
+		/************************************************************************/
+		/*!
+		\brief
+		Constructor for the Mesh class.
+		Initializes a mesh with given vertices, indices, and primitive type.
+		Creates VAO, VBO, EBO.
+
+		\param[in] primitiveType
+		The OpenGL primitive type used for rendering (GL_TRIANGLES etc)
+
+		\param[in] vertices
+		Vector of Vertex structs containing position and texCoord attributes
+
+		\param[in] indices
+		Vector of unsigned int representing the indices that define mesh element order
+		*/
+		/************************************************************************/
+		Mesh(GLenum primitiveType,
+			std::vector<Vertex> const& vertices,
+			std::vector<unsigned int> const& indices);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Destructor for the Mesh class.
+		Deletes the VAO, VBO, EBO associated with this Mesh
+		*/
+		/************************************************************************/
+		~Mesh();
+
+		/************************************************************************/
+		/*!
+		\brief
+		Renders the mesh.
+		Calls the correct draw call based on the mesh's primitive type
+		*/
+		/************************************************************************/
+		void Draw() const;
+		void DrawInstanced(size_t instanceCount) const;
+
+		/************************************************************************/
+		/*!
+		\brief
+		Helper function to create a mesh consisting of a single point at the center
+		of the screen, of unit length.
+
+		\return
+		Unique pointer to a Mesh configured as a GL_POINTS primitive
+		*/
+		/************************************************************************/
+		static std::unique_ptr<Mesh> CreatePoint();
+
+		/************************************************************************/
+		/*!
+		\brief
+		Helper function to create a mesh consisting of a line between 2 positions.
+
+		\return
+		Unique pointer to a Mesh configured as a GL_LINES primitive
+		*/
+		/************************************************************************/
+		static std::unique_ptr<Mesh> CreateLine(const glm::vec3& startPos, const glm::vec3& endPos);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Helper function to create a mesh consisting of a square, consisting of 2
+		triangles, at the center of the screen, of unit length.
+		Includes texture coordinates too.
+
+		\return
+		Unique pointer to a Mesh configured as a GL_TRIANGLES primitive
+		*/
+		/************************************************************************/
+		static std::unique_ptr<Mesh> CreateSquare();
+
+		/************************************************************************/
+		/*!
+		\brief
+		Helper function to create a mesh consisting of a circle, using a triangle fan,
+		at the center of the screen, of unit length.
+
+		\return
+		Unique pointer to a Mesh configured as a GL_TRIANGLE_FAN primitive
+		*/
+		/************************************************************************/
+		static std::unique_ptr<Mesh> CreateCircle();
+
+		/************************************************************************/
+		/*!
+		\brief
+		Helper function to create a mesh that represents the outline of an AABB collider.
+
+		\return
+		Unique pointer to a Mesh configured as a GL_LINES primitive
+		*/
+		/************************************************************************/
+		static std::unique_ptr<Mesh> CreateAABBMesh();
+
+		/************************************************************************/
+		/*!
+		\brief
+		Helper function to create a mesh that represents the outline of a circle collider.
+
+		\return
+		Unique pointer to a Mesh configured as a GL_LINES primitive
+		*/
+		/************************************************************************/
+		static std::unique_ptr<Mesh> CreateCircleMesh();
+
+	private:
+		GLsizei m_indexCount{ 0 }, m_vertexCount{ 0 };
+		GLenum m_primitiveType = GL_TRIANGLES;
+		GLuint m_vao{ 0 };
+		GLuint m_vbo{ 0 };
+		GLuint m_ebo{ 0 };
 	};
 
-	// Disallow copy;
-	Mesh(const Mesh&) = delete;
-	Mesh& operator=(const Mesh&) = delete;
-
-	// Move Semantics;
-	Mesh(Mesh&& other) noexcept
-		: m_primitiveType(other.m_primitiveType),
-		m_vao(other.m_vao),
-		m_vbo(other.m_vbo),
-		m_ebo(other.m_ebo),
-		m_vertexCount(other.m_vertexCount),
-		m_indexCount(other.m_indexCount)
-	{
-		// zero out source so its destructor won't delete handles
-		other.m_vao = 0;
-		other.m_vbo = 0;
-		other.m_ebo = 0;
-	}
-
-	Mesh& operator=(Mesh&& other) noexcept {
-		if (this != &other) {
-			// delete existing
-			if (m_ebo) glDeleteBuffers(1, &m_ebo);
-			if (m_vbo) glDeleteBuffers(1, &m_vbo);
-			if (m_vao) glDeleteVertexArrays(1, &m_vao);
-
-			// steal
-			m_primitiveType = other.m_primitiveType;
-			m_vao = other.m_vao;
-			m_vbo = other.m_vbo;
-			m_ebo = other.m_ebo;
-			m_vertexCount = other.m_vertexCount;
-			m_indexCount = other.m_indexCount;
-
-			other.m_vao = 0;
-			other.m_vbo = 0;
-			other.m_ebo = 0;
-		}
-		return *this;
-	}
-
-	// Constructs mesh and sets up vertex array and buffer objects for rendering
-	Mesh(GLenum primitiveType, 
-		std::vector<Vertex> const& vertices,
-		std::vector<unsigned int> const& indices);
-	~Mesh();
-
-	void Draw() const;
-
-	// Helper functions to create basic debug shapes of unit length
-	static std::unique_ptr<Mesh> CreatePoint();
-	static std::unique_ptr<Mesh> CreateLine(const glm::vec3& startPos, const glm::vec3& endPos);
-	static std::unique_ptr<Mesh> CreateSquare();
-	static std::unique_ptr<Mesh> CreateCircle();
-
-	GLsizei m_indexCount{ 0 }, m_vertexCount{ 0 };
-
-private:
-	GLuint m_vao{ 0 };
-	GLenum m_primitiveType = GL_TRIANGLES;
-	GLuint m_vbo{ 0 };
-	GLuint m_ebo{ 0 };
-
-};
+}	// NightSnack

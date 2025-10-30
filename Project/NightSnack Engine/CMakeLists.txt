@@ -5,7 +5,7 @@
 # ------------------------------------------------------------ #
 
 # Minimum version of CMake required
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.30.3)
 
 # ------------------------------------------------------------
 # Project Setup
@@ -17,6 +17,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Use static MSVC runtime (/MT or /MTd)
 if (MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
+if (MSVC)
+    set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT NightSnack)
 endif()
 
 # ------------------------------------------------------------
@@ -46,17 +50,21 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src"
 # ------------------------------------------------------------
 # Assets Handling
 # ------------------------------------------------------------
-# Define resource path relative to executable
 target_compile_definitions(${PROJECT_NAME} PUBLIC RESOURCE_PATH=\"./assets/\")
 
-# Copy assets folder to output directory (per config: Debug/Release)
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets
-    $<TARGET_FILE_DIR:${PROJECT_NAME}>/assets
+# Gather all asset files (for dependency tracking)
+file(GLOB_RECURSE ASSET_FILES "${CMAKE_CURRENT_SOURCE_DIR}/assets/*")
 
-# Copy to build/assets
-  COMMAND ${CMAKE_COMMAND} -E copy_directory
+# copy only modified assets and DLLs
+add_custom_target(copy_assets ALL
+
+# mirror assets folder to build output (only new files are copied)
+  COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets"
+    "$<TARGET_FILE_DIR:${PROJECT_NAME}>/assets"
+
+# mirror to build/assets (for convenience)
+  COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
     "${CMAKE_CURRENT_SOURCE_DIR}/assets"
     "${CMAKE_BINARY_DIR}/assets"
 
@@ -74,9 +82,12 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
    COMMAND ${CMAKE_COMMAND} -E copy_if_different
      "${CMAKE_CURRENT_SOURCE_DIR}/extern/freetype/freetype.dll"
      "$<TARGET_FILE_DIR:${PROJECT_NAME}>"
+
+  DEPENDS ${ASSET_FILES}
 )
 
-
+# make sure assets are copied before building/running the main target
+add_dependencies(${PROJECT_NAME} copy_assets)
 
 # ------------------------------------------------------------
 # External Dependencies
@@ -90,11 +101,11 @@ target_include_directories(glad PUBLIC extern/glad/include)
 
 # stb_image (header-only)
 add_library(stb_image INTERFACE)
-target_include_directories(stb_image INTERFACE extern/stb_image/include)
+target_include_directories(stb_image SYSTEM INTERFACE extern/stb_image/include)
 
 # fmod
 add_library(fmod INTERFACE)
-target_include_directories(fmod INTERFACE extern/fmod/inc)
+target_include_directories(fmod SYSTEM INTERFACE extern/fmod/inc)
 # diff fmod links based on config
 target_link_libraries(fmod INTERFACE
     debug "${CMAKE_CURRENT_SOURCE_DIR}/extern/fmod/lib/fmodL_vc.lib"
@@ -103,7 +114,7 @@ target_link_libraries(fmod INTERFACE
 
 # nlohmann_json
 add_library(nlohmann_json INTERFACE)
-target_include_directories(nlohmann_json INTERFACE extern/nlohmann)
+target_include_directories(nlohmann_json SYSTEM INTERFACE extern/nlohmann)
 
 # IMGui
 set(IMGUI_SRC
@@ -125,7 +136,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE imgui)
 
 #freetype
 add_library(freetype INTERFACE)
-target_include_directories(freetype INTERFACE extern/freetype)
+target_include_directories(freetype SYSTEM INTERFACE extern/freetype)
 target_link_libraries(freetype INTERFACE 
 	"${CMAKE_CURRENT_SOURCE_DIR}/extern/freetype/freetype.lib"
 )
@@ -139,6 +150,7 @@ set_target_properties(nlohmann_json PROPERTIES FOLDER "ThirdParty")
 set_target_properties(imgui PROPERTIES FOLDER "ThirdParty")
 set_target_properties(freetype PROPERTIES FOLDER "ThirdParty")
 
+#target_link_options(${PROJECT_NAME} PRIVATE /NODEFAULTLIB:LIBCMT)
 
 # ------------------------------------------------------------
 # Linking
@@ -169,4 +181,5 @@ target_include_directories(${PROJECT_NAME}
     extern/imgui
     extern/imgui/backends
     extern/freetype
+	extern/nlohmann
 )
