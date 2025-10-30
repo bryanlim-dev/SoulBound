@@ -23,23 +23,8 @@ namespace NightSnack {
 
     }
 
-    // Initializing Collision System
-    void CollisionSystem::Init(EventDispatcher& dispatcher)
-    {
-        m_dispatcher = &dispatcher;
-
-        // Testing code for collision event subscibtion (subscribe only in init)
-        m_dispatcher->Subscribe<CollisionEvent>([](const CollisionEvent& event)
-            {
-                (void)event; // temp unreferenced;
-
-                //Play sound, spawn particles, update score, etc.
-                //std::cout << "Collision event: Entity " << event.entityA << " collided with Entity " << event.entityB << std::endl;
-            });
-    }
-
     // Update loop (runs each frame)
-    void CollisionSystem::Update(int steps)
+    void Update(int steps)
     {
         (void)steps;
 
@@ -171,7 +156,7 @@ namespace NightSnack {
     }
 
     // Checks if velocity needs to be flipped;
-    bool CollisionSystem::ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt)
+    bool ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt)
     {
         float newpos = pos1 + vel1 * dt;
         float distsq = (pos2 - pos1) * (pos2 - pos1);
@@ -191,7 +176,7 @@ namespace NightSnack {
     // Helper Functions
 
     // Axis-Aligned Bounding Box vs AABB
-    bool CollisionSystem::CheckAABBvsAABB(const Vec3& aPos, const Collider& a,
+    bool CheckAABBvsAABB(const Vec3& aPos, const Collider& a,
         const Vec3& bPos, const Collider& b)
     {
         return (std::abs(aPos.x - bPos.x) * 2 < (a.width + b.width)) &&
@@ -199,7 +184,7 @@ namespace NightSnack {
     }
 
     // Circle vs Circle
-    bool CollisionSystem::CheckCirclevsCircle(const Vec3& aPos, const Collider& a,
+    bool CheckCirclevsCircle(const Vec3& aPos, const Collider& a,
         const Vec3& bPos, const Collider& b)
     {
         float dx = aPos.x - bPos.x;
@@ -211,7 +196,7 @@ namespace NightSnack {
     }
 
     // Circle vs AABB
-    bool CollisionSystem::CheckCirclevsAABB(const Vec3& circlePos, const Collider& circle,
+    bool CheckCirclevsAABB(const Vec3& circlePos, const Collider& circle,
         const Vec3& aabbPos, const Collider& aabb)
     {
         float halfW = aabb.width / 2.0f;
@@ -240,7 +225,7 @@ namespace NightSnack {
     }
 
     // Clamp helper
-    float CollisionSystem::Clamp(float value, float min, float max)
+    float Clamp(float value, float min, float max)
     {
         return std::max(min, std::min(value, max));
     }

@@ -23,8 +23,6 @@ namespace NightSnack {
 
     // Minimum velocity threshold to consider an object at rest;
     constexpr float velocityCutoff = 0.2f;
-    static constexpr int GRID_W = 60;
-    static constexpr int GRID_H = 40;
 
     class PhysicsSystem : public ISystem {
 
@@ -44,7 +42,9 @@ namespace NightSnack {
         Reference to Event Dispatcher.
         */
         /************************************************************************/
-        PhysicsSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord }, m_dispatcher{ &disp } {
+        PhysicsSystem(Coordinator& coord, EventDispatcher& disp) 
+            : m_coord{ coord }, m_dispatcher{ &disp } {
+
             // Physics components of interest;
             m_systemSignature.set(GetComponentTypeID<Transform>());
             m_systemSignature.set(GetComponentTypeID<RigidBody>());
@@ -54,9 +54,6 @@ namespace NightSnack {
             m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
                 if (event.pressed == InputEvent::InputActionState::Pressed) {
                     switch (event.inputAction) {
-                    case InputEvent::InputAction::DynamicBallTest:
-                        ApplyForce(coord, 2, 80.f, 0.f);
-                        break;
                     case InputEvent::InputAction::PhysicsDebugMode:
                         debugMode = !debugMode;
                         break;
@@ -65,9 +62,15 @@ namespace NightSnack {
                         break;
                     }
                 }
-
-                });
+            });
+            // By default add 1 game layer;
             AddLayer(LayerType::GAMELAYER);
+
+            // Initialize collision grid;
+            m_gridCols = 60; m_gridRows = 40;
+            m_gridWidth = 2500.f; m_gridHeight = 1250.f;
+            m_cellSize.x = m_gridWidth / (float) m_gridCols;
+            m_cellSize.y = m_gridHeight / (float) m_gridRows;
         }
 
         /************************************************************************/
@@ -91,11 +94,14 @@ namespace NightSnack {
         bool IsDebugMode() const { return debugMode; }
         bool IsStepRequested() const { return stepRequest; }
 
-        void ApplyForce(Coordinator& coord, Entity e, float fx, float fy);
-        void ComputeVelocities(std::array<Entity, MAX_ENTITIES> const&);
+        void ManageForces(Force& f);
         void ComputeVelocity(RigidBody& rig, Collider const& col) const;
         std::pair<int, int> GetCell(Vec2 const& pos) const;
+
+        using GRID = std::vector<std::vector<std::bitset<MAX_ENTITIES>>>;
         void CollisionGridInsert(Entity, Collider const&, Transform const&);
+        void ResolveCollisions();
+        bool CheckCollision(Entity e1, Entity e2);
 
     private:
         Signature m_systemSignature{};
@@ -103,9 +109,11 @@ namespace NightSnack {
         Coordinator& m_coord;
 
         // Collision stuff;
-        std::array<std::array<std::bitset<MAX_ENTITIES>, GRID_H>, GRID_W> m_grid;
+        GRID m_collisionGrid;
         Vec2 m_gridCenter;
-        float m_cellSize = 50.f;
+        Vec2 m_cellSize;
+        float m_gridWidth, m_gridHeight;
+        int m_gridCols, m_gridRows;
 
         // Physics parameters;
         float gravity = -980.f;

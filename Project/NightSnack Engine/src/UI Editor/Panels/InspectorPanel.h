@@ -116,7 +116,9 @@ namespace NightSnack
             // Mass
             ImGui::Text("Mass");
             ImGui::SetNextItemWidth(120);
-            ImGui::InputFloat("##mass", &rb.mass, 0.0f, 0.0f, "%.2f");
+            float mass = 1.f / rb.invMass;
+            ImGui::InputFloat("##mass", &mass, 0.0f, 0.0f, "%.2f");
+            rb.invMass = 1.f / mass;
 
             // Velocity
             float vel[2] = { rb.vel.x, rb.vel.y };

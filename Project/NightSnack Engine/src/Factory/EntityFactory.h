@@ -137,6 +137,15 @@ namespace NightSnack {
 		/************************************************************************/
 		void Update(int steps) override;
 
+		//void EditPrefab(std::string const& s) {
+		//	if (m_archetypes[s].contains("RigidBody")) {
+
+		//	}
+		//	if (m_archetypes[s].contains("Renderable")) {
+
+		//	}
+		//}
+
 		// Required functions from base class ISystem.
 		Signature GetSignature() const override { return Signature{}; }
 		std::string GetName() const override { return "EntityFactory"; }
