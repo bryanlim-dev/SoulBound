@@ -16,12 +16,12 @@ namespace NightSnack {
 
 			Init();
 
-			// Dispatcher lambda
-			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
-				if (m_entities.empty())
-					return;
+			//// Dispatcher lambda
+			//m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
+			//	if (m_entities.empty())
+			//		return;
 
-				});
+			//	});
 		}
 
 		void Init();

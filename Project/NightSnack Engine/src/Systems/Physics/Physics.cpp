@@ -65,6 +65,44 @@ namespace NightSnack {
 		if (debugMode) stepRequest = false; // reset step request
 	}
 
+	std::pair<int, int> PhysicsSystem::GetCell(Vec2 const& pos) const {
+		Vec2 gridPos = pos - m_gridCenter;
+
+		// Map -> 0 <= cellX <= m_gridWidth;
+		int cellX = static_cast<int>(std::floor(gridPos.x / m_cellSize.x) + m_gridCols / 2.f);
+		int cellY = static_cast<int>(std::floor(gridPos.y / m_cellSize.y) + m_gridRows / 2.f);
+
+		return { cellX, cellY };
+	}
+	void PhysicsSystem::CollisionGridInsert(Entity e, Collider const& col, Transform const& t) {
+
+		Vec2 min, max;
+
+		if (col.shape == ShapeType::AABB) {
+			min = Vec2{ t.pos.x - (col.width / 2.f), t.pos.y - (col.height / 2.f) };
+			max = Vec2{ t.pos.x + (col.width / 2.f), t.pos.y + (col.height / 2.f) };
+		}
+		else if (col.shape == ShapeType::Circle) {
+			min = Vec2{ t.pos.x - (col.radius), t.pos.y - col.radius };
+			max = Vec2{ t.pos.x + (col.radius), t.pos.y + col.radius };
+		}
+		// find min and max cell;
+		std::pair<int, int> minCell = GetCell(min);
+		std::pair<int, int> maxCell = GetCell(max);
+
+		for (int x = minCell.first; x <= maxCell.first; ++x) {
+			if (x >= 0 && x < m_gridCols) {
+				if (e >= MAX_ENTITIES) { continue; }
+				m_grid1[x].set(static_cast<size_t>(e));
+			}
+		}
+		for (int y = minCell.second; y <= maxCell.second; ++y) {
+			if (y >= 0 && y < m_gridRows) {
+				if (e >= MAX_ENTITIES) { continue; }
+				m_grid2[y].set(static_cast<size_t>(e));
+			}
+		}
+	}
 	// Helper functions to iterate through Collision Bitsets;
 	static Entity FindFirst(const std::bitset<MAX_ENTITIES>& bits) {
 		for (Entity i = 0; i < static_cast<Entity>(bits.size()); ++i)
@@ -109,57 +147,68 @@ namespace NightSnack {
 						RigidBody& r2 = m_coord.ModifyComponent<RigidBody>(e2);
 
 						Transform& t1 = m_coord.ModifyComponent<Transform>(e1);
-						Transform next1;
-						next1.pos = Vec3{ t1.pos.x + r1.vel.x * FixedDT, t1.pos.y + r1.vel.y * FixedDT, t1.pos.z };
 						Transform& t2 = m_coord.ModifyComponent<Transform>(e2);
 
-						if (!CheckCollision(next1, t2, c1, c2)) { continue; }
+						Transform next = t1;
+						next.pos.x += r1.vel.x * FixedDT;
+						next.pos.y += r1.vel.y * FixedDT;
 
-						// Resolve collisions;
-						Vec2 half1 = (c1.shape == ShapeType::AABB) ? Vec2{ c1.width * 0.5f, c1.height * 0.5f }
-						: Vec2{ c1.radius, c1.radius };
-						Vec2 half2 = (c2.shape == ShapeType::AABB) ? Vec2{ c2.width * 0.5f, c2.height * 0.5f }
-						: Vec2{ c2.radius, c2.radius };
+						if (!CheckCollision(next, t2, c1, c2)) { continue; }
 
-						Vec2 move = { t2.pos.x - t1.pos.x, t2.pos.y - t1.pos.y };
-						Vec2 overlap = { half1.x + half2.x - std::fabs(move.x),
-										half1.y + half2.y - std::fabs(move.y) };
-
-						if (overlap.x < overlap.y) {
-							float sign = (move.x < 0.f ? -1.f : 1.f);
-
-							t1.pos.x -= (overlap.x + Z_EPSILON) * sign;
-							r1.vel.x = 0;
-							r2.vel.x = 0;
-						}
-						else {
-							float sign = (move.y < 0 ? -1.f : 1.f);
-
-							t1.pos.y -= (overlap.y + Z_EPSILON) * sign;
-							r1.vel.y = 0;
-							r2.vel.y = 0;
-
-							if (r1.vel.y <= 0.f && t1.pos.y > t2.pos.y) {
-								c1.isGrounded = true;
+						// Not colliding yet;
+						next.pos = t1.pos;
+						for (int i{}; i < 4; ++i) {
+							next.pos.x += r1.vel.x * FixedDT * 0.25f;
+							next.pos.y += r1.vel.y * FixedDT * 0.25f;
+							if (CheckCollision(next, t2, c1, c2)) {
+								next.pos.x -= r1.vel.x * FixedDT * 0.25f;
+								next.pos.y -= r1.vel.y * FixedDT * 0.25f;
+								break;
 							}
 						}
+						t1.pos = next.pos;
+
+						// Entities are already overlapping;
+						if (CheckCollision(t1, t2, c1, c2)) {
+							// Resolve overlaps;
+							ResolveOverlap(t1, t2, c1, c2, r1, r2);
+						}
+						// Apply force to collided target;
 						if (!c2.isStatic) {
-							Force f; Vec2 dir;
-							if (move.x != 0.f || move.y != 0.f)
-								dir = move.normalized();
-							f.direction.x = dir.x;
-							f.direction.y = dir.y;
-							f.lifetime = FixedDT * 2.f;	// impulse force;
-							f.magnitude = r1.accel.magnitude() / r1.invMass * 0.5f;
-							f.isActive = true;
-							ApplyForce(r2, f);
+							TransferForce(t1, t2, r1, r2);
 						}
 					}
 				}
 			}
 		}
 	}
+	void PhysicsSystem::ResolveOverlap(Transform& t1, Transform& t2, Collider& c1, Collider& c2, RigidBody& r1, RigidBody& r2) {
 
+		// Resolve collisions;
+		Vec2 half1 = (c1.shape == ShapeType::AABB) ? Vec2{ c1.width * 0.5f, c1.height * 0.5f } : Vec2{ c1.radius, c1.radius };
+		Vec2 half2 = (c2.shape == ShapeType::AABB) ? Vec2{ c2.width * 0.5f, c2.height * 0.5f } : Vec2{ c2.radius, c2.radius };
+
+		Vec2 move = { t2.pos.x - t1.pos.x, t2.pos.y - t1.pos.y };
+		Vec2 overlap = { half1.x + half2.x - std::fabs(move.x), half1.y + half2.y - std::fabs(move.y) };
+
+		// Shift outside of each other; 
+		Vec2 sign; 
+		sign.x = move.x < 0.f ? -1.f : 1.f;
+		sign.y = move.y < 0.f ? -1.f : 1.f;
+
+		if (overlap.x < overlap.y) {
+			t1.pos.x -= (overlap.x) * sign.x;
+			r1.vel.x = 0;
+		}
+		else {
+			t1.pos.y -= (overlap.y) * sign.y;
+			r1.vel.y = 0;
+
+			if (t1.pos.y > t2.pos.y) {
+				c1.isGrounded = true;
+			}
+		}
+	}
 	bool PhysicsSystem::CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2) {
 		
 		if (c1.shape == ShapeType::AABB && c2.shape == ShapeType::AABB) {
@@ -180,74 +229,84 @@ namespace NightSnack {
 
 	void PhysicsSystem::ManageForces(RigidBody& rig) {
 
-		if (rig.forces.empty()) { return; }
+		if (!rig.force.isActive) { return; }
 
-		for (std::vector<Force>::iterator it = std::begin(rig.forces); it != std::end(rig.forces); ) {
-			it->lifetime -= FixedDT;
-			if (it->lifetime <= 0.f) {
-				it = rig.forces.erase(it);  // erase() returns the next valid iterator
-			}
-			else {
-				++it;
-			}
+		rig.force.lifetime -= FixedDT;
+
+		if (rig.force.lifetime <= 0.f) {
+			ResetForce(rig.force);
 		}
 	}
+	void PhysicsSystem::TransferForce(Transform const& t1, Transform const& t2, RigidBody& r1, RigidBody& r2) {
+		if (!r1.force.isActive) { return; }
 
-	std::pair<int, int> PhysicsSystem::GetCell(Vec2 const& pos) const {
-		Vec2 gridPos = pos - m_gridCenter;
+		ApplyForce(r2, r1.force);
 
-		// Map -> 0 <= cellX <= m_gridWidth;
-		int cellX = static_cast<int>(std::floor(gridPos.x / m_cellSize.x) + m_gridCols / 2.f);
-		int cellY = static_cast<int>(std::floor(gridPos.y / m_cellSize.y) + m_gridRows / 2.f);
+		Vec3 dir = t1.pos - t2.pos;
+		if (dir.magnitude() != 0)
+		dir.normalize();
+		Force f;
+		f.direction = Vec2{ dir.x,dir.y };
+		f.magnitude = r1.force.magnitude * r1.restitution;
+		f.isActive = true;
 
-		return { cellX, cellY };
+		ApplyForce(r1, f);
+
+		/*r1.force.direction.x += dir.y;
+		r1.force.direction.y += -dir.x;
+		if (r1.force.direction.magnitude() != 0.f) {
+			r1.force.direction.normalize();
+			r1.force.magnitude = r1.force.magnitude * (1.f - r2.restitution);
+		}
+		else {
+			ResetForce(r1.force);
+		}*/
+
 	}
-
-	void PhysicsSystem::CollisionGridInsert(Entity e, Collider const& col, Transform const& t) {
-
-		Vec2 min, max;
-
-		if (col.shape == ShapeType::AABB) {
-			min = Vec2{ t.pos.x - (col.width / 2.f), t.pos.y - (col.height / 2.f) };
-			max = Vec2{ t.pos.x + (col.width / 2.f), t.pos.y + (col.height / 2.f) };
-		}
-		else if (col.shape == ShapeType::Circle) {
-			min = Vec2{ t.pos.x - (col.radius), t.pos.y - col.radius };
-			max = Vec2{ t.pos.x + (col.radius), t.pos.y + col.radius };
-		}
-		// find min and max cell;
-		std::pair<int, int> minCell = GetCell(min);
-		std::pair<int, int> maxCell = GetCell(max);
-
-		for (int x = minCell.first; x <= maxCell.first; ++x) {
-			if (x >= 0 && x < m_gridCols) {
-				if (e >= MAX_ENTITIES) { continue; }
-				m_grid1[x].set(static_cast<size_t>(e));
-			}
-		}
-		for (int y = minCell.second; y <= maxCell.second; ++y) {
-			if (y >= 0 && y < m_gridRows) {
-				if (e >= MAX_ENTITIES) { continue; }
-				m_grid2[y].set(static_cast<size_t>(e));
-			}
-		}
-	}
-
 	void PhysicsSystem::ApplyForce(RigidBody& r, Force const& f) {
-		r.forces.push_back(f);
+		
+		if (!f.isActive) { return; }
+
+		// Calculate new force;
+		Vec2 newforce = r.force.direction * r.force.magnitude;
+		Vec2 apply = f.direction * f.magnitude;
+		newforce += apply;
+		float newlife = std::max(r.force.lifetime, f.lifetime);
+
+		// Update newforce;
+		if (newforce.magnitude() != 0.f) {
+			r.force.direction = newforce.normalized();
+			r.force.magnitude = newforce.magnitude() * r.restitution;
+			r.force.lifetime = newlife;
+			r.force.isActive = true;
+		}
+		else {
+			r.force = Force{};
+		}
+
+	}
+	void PhysicsSystem::ResetForce(Force& f) {
+		f.direction = Vec2{};
+		f.lifetime = 0.f;
+		f.magnitude = 0.f;
+
+		f.isActive = false;
 	}
 
 	void PhysicsSystem::ComputeVelocity(RigidBody& rig, Collider const& col) const {
 
 		// Reset Accel each frame;
 		rig.accel = Vec2{ 0.f, 0.f };
+		if (col.isStatic) {
+			rig.vel = Vec2{};
+		}
 
 		// Compute Accel;
-		for (Force& f : rig.forces) {
-			if (f.isActive) {
-				rig.accel += (f.direction * f.magnitude) * rig.invMass;
-			}
+
+		if (rig.force.isActive) {
+			rig.accel += (rig.force.direction * rig.force.magnitude) * rig.invMass;
 		}
+
 		if (rig.useGravity && !col.isGrounded) {
 			rig.accel.y += gravity;
 		}

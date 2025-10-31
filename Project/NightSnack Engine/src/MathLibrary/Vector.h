@@ -40,6 +40,10 @@ namespace NightSnack {
 
         Vec2& operator-=(Vec2 const& rhs);
 
+        Vec2 operator-() {
+            return Vec2{ -x, -y };
+        }
+
         /************************************************************************/
         /*!
         \brief
@@ -225,6 +229,11 @@ namespace NightSnack {
         Vec3& operator+=(Vec3 const& rhs);
 
         Vec3& operator-=(Vec3 const& rhs);
+
+        Vec3 operator-() {
+            return Vec3{ -x, -y };
+        }
+
 
         /************************************************************************/
         /*!

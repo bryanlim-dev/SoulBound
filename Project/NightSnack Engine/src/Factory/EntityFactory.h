@@ -136,10 +136,14 @@ namespace NightSnack {
 					m_coord.ModifyComponent<Transform>(e).layer = LayerType::GAMELAYER;
 				}
 			}
+			for (Entity e : m_coord.GetLivingEntities()) {
+				m_coord.BufferEntitySignature(e);
+			}
 		}
 
 		void UnLoadLevel() {
 			for (Entity e : m_coord.GetLivingEntities()) {
+				if (m_coord.HasComponent<Camera>(e)) { continue; }
 				if (e == m_coord.GetSystem<GraphicsSystem>()->FindCamera()) { continue; }
 
 				RemoveEntity(e);

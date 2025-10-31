@@ -103,6 +103,9 @@ namespace NightSnack {
             else if ((m_flags.movingLeft && !m_flags.movingRight) && !m_coord.GetComponent<Collider>(m_player).colliding) {
                 vel.x = -pcont.moveSpeed;
             }
+            else if (!m_flags.movingLeft && !m_flags.movingRight) {
+                vel.x = 0.f; // Stop moving when no keys pressed
+            }
             if (m_flags.jumpRequested && m_coord.GetComponent<Collider>(m_player).isGrounded) {
                 vel.y = pcont.jumpSpeed;
                 m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;

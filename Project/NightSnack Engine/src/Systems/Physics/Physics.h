@@ -63,16 +63,34 @@ namespace NightSnack {
                     case InputEvent::InputAction::PhysicsDebugStep:
                         stepRequest = true;
                         break;
-                    //case InputEvent::InputAction::ToggleInstancedRendering:
-                    //    std::cout << "Entities: ";
-                    //    for (Entity e : m_coord.GetLivingEntities()) {
-                    //        std::cout << e << ' ';
-                    //    }
-                    //    std::cout << '\n';
-                    //    Entity p = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
-                    //    std::cout << "Player Entity: " << p << '\n';
-                    //    std::cout << "isGround: " << m_coord.GetComponent<Collider>(p).isGrounded << '\n';
-                    //    break;
+                    case InputEvent::InputAction::ToggleInstancedRendering:
+                        std::cout << "Entities Layers: ";
+                        for (Entity e : m_coord.GetLivingEntities()) {
+                            std::cout << e << ' ';
+
+                            LayerType l = m_coord.GetComponent<Transform>(e).layer;
+
+                            if (l == LayerType::GAMELAYER) {
+                                std::cout << "GameLayer";
+                            }
+                            if (l == LayerType::BACKGROUND) {
+                                std::cout << "Background";
+                            }
+                            if (l == LayerType::FOREGROUND) {
+                                std::cout << "Foreground";
+                            }
+                            if (l == LayerType::GAMEUI) {
+                                std::cout << "GameUI";
+                            }
+                            if (l == LayerType::_ENGINE) {
+                                std::cout << "Engine 1";
+                            }
+                            if (l == LayerType::_ENGINE2) {
+                                std::cout << "Engine 2";
+                            }
+                            std::cout << '\n';
+                        }
+                        break;
                     }
                 }
             });
@@ -110,13 +128,16 @@ namespace NightSnack {
         bool IsStepRequested() const { return stepRequest; }
 
         void ManageForces(RigidBody& f);
+        void TransferForce(Transform const& t1, Transform const& t2, RigidBody& from, RigidBody& to);
         void ApplyForce(RigidBody& r, Force const&);
-        void ComputeVelocity(RigidBody& rig, Collider const& col) const;
-        std::pair<int, int> GetCell(Vec2 const& pos) const;
+        void ResetForce(Force& f);
 
-        using GRID = std::vector<std::vector<std::bitset<MAX_ENTITIES>>>;
+        void ComputeVelocity(RigidBody& rig, Collider const& col) const;
+
+        std::pair<int, int> GetCell(Vec2 const& pos) const;
         void CollisionGridInsert(Entity, Collider const&, Transform const&);
         void ResolveCollisions();
+        void ResolveOverlap(Transform& t1, Transform& t2, Collider& c1, Collider& c2, RigidBody& r1, RigidBody& r2);
         bool CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2);
 
         float GetGravity() const { return gravity; }
@@ -144,8 +165,8 @@ namespace NightSnack {
 
         // Physics parameters;
         float gravity = -980.f;
-        float drag = 0.2f;
-        float friction = 0.8f;
+        float drag = 0.5f;
+        float friction = 0.98f;
 
         // DebugMode for Physics;
         bool debugMode = false;

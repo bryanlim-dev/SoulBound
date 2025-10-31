@@ -49,8 +49,6 @@ namespace NightSnack {
         // Direction force
         Vec2 direction;
         float magnitude;
-        // Rotational force
-        float torque;
 
         float lifetime;
         bool isActive;
@@ -58,7 +56,7 @@ namespace NightSnack {
 
     struct RigidBody {
 
-        std::vector<Force> forces;
+        Force force;
         Vec2 vel;
         Vec2 accel;
 

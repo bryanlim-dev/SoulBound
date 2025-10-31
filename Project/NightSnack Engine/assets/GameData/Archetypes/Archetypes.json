@@ -184,6 +184,7 @@
       "jumpSpeed": 600.0
     }
   },
+  
   "StressTest": {
     "RigidBody": {
       "mass": 1.0,

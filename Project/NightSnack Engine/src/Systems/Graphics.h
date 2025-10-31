@@ -91,7 +91,7 @@ namespace NightSnack {
 			AddLayer(LayerType::FOREGROUND);
 			AddLayer(LayerType::GAMEUI);
 
-			glClearColor(0.1f, 0.5f, 0.3f, 1.0f);
+			glClearColor(0.4f, 0.5f, 0.5f, 1.0f);
 		}
 
 		/************************************************************************/
