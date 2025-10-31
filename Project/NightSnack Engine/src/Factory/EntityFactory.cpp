@@ -76,14 +76,14 @@ namespace NightSnack {
 	}
 
 	// Create 1000 entities for stress test - Combination 1;
-	void EntityFactory::StressTestCreate(LayerType layer, std::string const& prefabName, int seed) {
+	void EntityFactory::StressTestCreate(LayerType layer, std::string const& prefabName, int seed, Vec2 const& scale) {
 
 		// seed for rand;
 		srand(seed * static_cast<unsigned>(glfwGetTime()));
 		int Hvp = m_coord.GetWindowHeight();
 		int Wvp = m_coord.GetWindowWidth();
 
-		Transform t{ Vec3{}, {}, Vec2{5.f,5.f}, layer };
+		Transform t{ Vec3{}, {}, scale, layer };
 
 		for (int i{}; i < 1000; ++i) {
 			Vec3 p = { static_cast<float>(rand() % Wvp - Wvp / 2),

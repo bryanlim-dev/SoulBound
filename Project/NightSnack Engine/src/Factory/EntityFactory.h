@@ -56,14 +56,14 @@ namespace NightSnack {
 					case InputEvent::InputAction::StressTest:
 						if (!m_stress) {
 							UnLoadLevel();
-							StressTestCreate(LayerType::GAMELAYER, "StressTest", 69);
+							StressTestCreate(LayerType::GAMELAYER, "StressTest", 69, Vec2{5.f, 5.f});
 							m_stress = true;
 						}
 						break;
 
 					case InputEvent::InputAction::LayerTest:
 						if (m_stress && !m_layer) {
-							StressTestCreate(LayerType::FOREGROUND, "LayerTest", 420);
+							StressTestCreate(LayerType::FOREGROUND, "LayerTest", 420, Vec2{ 10.f, 10.f });
 							m_layer = true;
 						}
 						break;
@@ -211,7 +211,7 @@ namespace NightSnack {
 		Create 1000 entities for stress test - Combination 1;
 		*/
 		/************************************************************************/
-		void StressTestCreate(LayerType, std::string const&, int);
+		void StressTestCreate(LayerType, std::string const&, int, Vec2 const&);
 		bool m_stress{ false };
 		bool m_layer{ false };
 

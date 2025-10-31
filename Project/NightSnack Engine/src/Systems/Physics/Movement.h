@@ -58,7 +58,6 @@ namespace NightSnack {
                 }
 
                 });
-            // Add more Components here if necessary...
             AddLayer(LayerType::BACKGROUND);
             AddLayer(LayerType::GAMELAYER);
             AddLayer(LayerType::FOREGROUND);
@@ -101,10 +100,11 @@ namespace NightSnack {
                     pos.x += velocity.x * FixedDT;
                     pos.y += velocity.y * FixedDT;
 
-                    if (pos.y > 450.f) { pos.y = 450.f; }
-                    if (pos.y < -450.f) { pos.y = -450.f; }
-                    if (pos.x > 800.f) { pos.x = 800.f; }
-                    if (pos.x < -800.f) { pos.x = -800.f; }
+                    // Limit movement to borders of screen;
+                    if (pos.y > m_coord.GetWindowHeight() / 2.f) { pos.y = m_coord.GetWindowHeight() / 2.f; }
+                    if (pos.y < -m_coord.GetWindowHeight() / 2.f) { pos.y = -m_coord.GetWindowHeight() / 2.f; }
+                    if (pos.x > m_coord.GetWindowWidth() / 2.f) { pos.x = m_coord.GetWindowWidth() / 2.f; }
+                    if (pos.x < -m_coord.GetWindowWidth() / 2.f) { pos.x = -m_coord.GetWindowWidth() / 2.f; }
 
                     // Do more stuff here if necessary...
 
