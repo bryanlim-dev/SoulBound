@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "Core/ECS/Coordinator.h"
-#include "ECS/Entity.h"
+#include "Core/ECS/Entity.h"
 
 namespace NightSnack {
 
