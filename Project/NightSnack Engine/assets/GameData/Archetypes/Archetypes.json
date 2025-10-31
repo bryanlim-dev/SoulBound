@@ -47,9 +47,15 @@
       "radius": 100.0
     },
     "Renderable": {
-      "meshName": "circle",
-      "materialName": "bananaMat",
+      "meshName": "square",
+      "materialName": "ghostMat",
       "isWireframe" : false
+    },
+    "Animator": {
+      "spriteSheetName": "ghost",
+      "playbackSpeed": 1.0,
+      "isPlaying": true,
+      "isLooping": true
     }
   },
 
@@ -163,11 +169,16 @@
       "radius": 30.0
     },
     "Renderable": {
-      "meshName": "circle",
-      "materialName": "ColorMat",
+      "meshName": "square",
+      "materialName": "slimeMat",
       "isWireframe" : false
     },
-    "Color": { "r": 0.2, "g": 0.2, "b": 0.6, "a": 1.0 },
+    "Animator": {
+      "spriteSheetName": "slime",
+      "playbackSpeed": 2.0,
+      "isPlaying": true,
+      "isLooping": true
+    },
     "PlayerController": {
       "moveSpeed": 300.0,
       "jumpSpeed": 600.0

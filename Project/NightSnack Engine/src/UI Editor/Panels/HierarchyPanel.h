@@ -17,8 +17,8 @@ namespace NightSnack
 {
     class HierarchyPanel {
     public:
-        HierarchyPanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity)
-            : m_coord(coord), m_selectedEntity(selectedEntity) {}
+        HierarchyPanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity, std::unordered_map<Entity, std::string>& uiNames)
+            : m_coord(coord), m_selectedEntity(selectedEntity), m_uiNames(uiNames) {}
 
         void Draw()
         {
@@ -42,11 +42,17 @@ namespace NightSnack
                     if (ImGui::TreeNodeEx("Scene", ImGuiTreeNodeFlags_DefaultOpen))
                     {
                         const auto& entities = m_coord.GetLivingEntities();
+                        auto factory = m_coord.GetSystem<NightSnack::EntityFactory>();
                         for (Entity e : entities)
                         {
+                            if (m_uiNames.find(e) == m_uiNames.end()) {
+                                m_uiNames[e] = factory ? factory->GetEntityPrefabName(e) : "Entity " + std::to_string(e);
+                            }
+
+                            std::string label = m_uiNames[e] + "##" + std::to_string(e);
+
                             bool selected = (m_selectedEntity && e == *m_selectedEntity);
-                            if (ImGui::Selectable(std::to_string(e).c_str(), selected))
-                            {
+                            if (ImGui::Selectable(label.c_str(), selected)) {
                                 *m_selectedEntity = e;
                             }
                         }
@@ -56,7 +62,7 @@ namespace NightSnack
                         if (ImGui::Button("Add Prefab"))
                         {
                             Entity newEntity = m_coord.CreateEntity();
-
+                            
                             Transform defaultTransform{
                                 Vec3(0.0f, 0.0f, 0.0f),
                                 0.0f,
@@ -96,5 +102,6 @@ namespace NightSnack
     private:
         Coordinator& m_coord;
         std::shared_ptr<Entity> m_selectedEntity;
+        std::unordered_map<Entity, std::string>& m_uiNames;
     };
 }

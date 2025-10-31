@@ -81,6 +81,7 @@ namespace NightSnack {
 		EventDispatcher* m_dispatcher = nullptr;
 		bool m_toggleEditor = false;
 
+		std::unordered_map<Entity, std::string> uiNames;
 		std::shared_ptr<Entity> m_selectedEntity;
 		std::unique_ptr<HierarchyPanel> m_hierarchyPanel;
 		std::unique_ptr<InspectorPanel> m_inspectorPanel;
@@ -135,8 +136,8 @@ namespace NightSnack {
 		ImGui_ImplOpenGL3_Init("#version 450");
 
 		m_selectedEntity = std::make_shared<Entity>(INVALID_ENTITY);
-		m_hierarchyPanel = std::make_unique<HierarchyPanel>(m_coord, m_selectedEntity);
-		m_inspectorPanel = std::make_unique<InspectorPanel>(m_coord, m_selectedEntity);
+		m_hierarchyPanel = std::make_unique<HierarchyPanel>(m_coord, m_selectedEntity, uiNames);
+		m_inspectorPanel = std::make_unique<InspectorPanel>(m_coord, m_selectedEntity, uiNames);
 		m_scenePanel	 = std::make_unique<ScenePanel>(m_coord);
 		m_optionsPanel	 = std::make_unique<OptionsPanel>(m_coord);
 		m_assetsPanel	 = std::make_unique<AssetsPanel>(m_coord);
@@ -226,13 +227,15 @@ namespace NightSnack {
 			
 			// Split the dockspace into 4 regions
 			ImGuiID dock_id_left, dock_id_right, dock_id_top, dock_id_bottom, dock_id_center;
-			ImGuiID dock_id_left_top, dock_id_left_bottom;
+			ImGuiID dock_id_left_top, dock_id_left_bottom, dock_id_center_right;
 
 			ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.20f, &dock_id_left, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Right, 0.25f, &dock_id_right, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Up, 0.25f, &dock_id_top, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Down, 1.0f / 3.0f, &dock_id_bottom, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_left, ImGuiDir_Down, 1.0f / 3.0f, &dock_id_left_bottom, &dock_id_left_top);
+			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Right, 0.3f, &dock_id_center_right, &dock_id_center);
+
 
 			// Dock panels to regions
 			ImGui::DockBuilderDockWindow("Hierarchy", dock_id_left_top);
@@ -240,6 +243,7 @@ namespace NightSnack {
 			ImGui::DockBuilderDockWindow("Inspector", dock_id_right);
 			ImGui::DockBuilderDockWindow("Scene", dock_id_center);
 			ImGui::DockBuilderDockWindow("Assets", dock_id_bottom);
+			ImGui::DockBuilderDockWindow("Asset Properties", dock_id_center_right);
 
 			ImGui::DockBuilderFinish(dockspace_id);
 		}
@@ -290,6 +294,15 @@ namespace NightSnack {
 		else if (!enabled && ImGui::GetCurrentContext()) {
 			// Properly shutdown backends before destroying context
 			ImguiSystem::ResetAll();
+
+			// Update application viewport on editor close
+			auto appSystem = m_coord.GetSystem<ApplicationSystem>();
+			if (appSystem)
+			{
+				int width = 0, height = 0;
+				glfwGetFramebufferSize(appSystem->GetNativeHandle(), &width, &height);
+				appSystem->OnResize(width, height);
+			}
 		}
 		m_toggleEditor = enabled;
 	}

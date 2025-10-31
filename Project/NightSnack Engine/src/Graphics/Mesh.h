@@ -41,6 +41,7 @@ namespace NightSnack {
 			glm::vec2 pad; // 24 to 32 bytes
 			glm::vec3 color; // 32 to 44 bytes
 			float padding; // 44 to 48 bytes
+			glm::vec4 uvRect;
 		};
 
 		/************************************************************************/

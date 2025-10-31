@@ -123,6 +123,14 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Render the scene using the specified camera
+		*/
+		/************************************************************************/
+		void RenderWithCamera(Entity Camera);
+
+		/************************************************************************/
+		/*!
+		\brief
 		Adds a new shader resource to the Graphics System
 
 		\param[in] name
@@ -293,6 +301,8 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void RemoveCache(Entity e);
+
+		const std::unordered_map<std::string, std::unique_ptr<Texture>>& GetTexturesMap() const { return m_textures; }
 
 		/************************************************************************/
 		/*!

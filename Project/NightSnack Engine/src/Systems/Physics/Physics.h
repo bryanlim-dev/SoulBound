@@ -103,6 +103,14 @@ namespace NightSnack {
         void ResolveCollisions();
         bool CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2);
 
+        float GetGravity() const { return gravity; }
+        float GetDrag() const { return drag; }
+        float GetFriction() const { return friction; }
+
+        void SetGravity(float g) { gravity = g; }
+        void SetDrag(float d) { drag = d; }
+        void SetFriction(float f) { friction = f; }
+
     private:
         Signature m_systemSignature{};
         EventDispatcher* m_dispatcher{ nullptr };

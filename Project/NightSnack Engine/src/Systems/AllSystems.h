@@ -23,6 +23,9 @@
 #include "UI Editor/Imgui.h"
 #include "./ResourceManager/ResourceManager.h"
 #include "AudioSystem.h"
+#include "AnimationSystem.h"
+#include "Graphics/Camera.h"
+#include "StateMachine/FiniteStateMachine.h"
 
 // Add System header files here...
 

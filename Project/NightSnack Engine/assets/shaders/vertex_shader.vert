@@ -20,6 +20,7 @@ layout (location=1) in vec2 aTexCoord;
 uniform mat4 uProj;
 uniform mat4 uView;
 uniform bool uUseInstancing;
+uniform vec4 uUVRect; 
 
 // Non-instanced rendering
 uniform mat4 uModelToWorld; // used for non-instancing rendering
@@ -30,7 +31,7 @@ struct InstanceData {
     float rotation;
     vec2 scale;
     vec3 color;
-    float padding;
+    vec4 uvRect;
 };
 layout(std430, binding = 0) buffer InstanceBuffer {    
     InstanceData instances[];
@@ -69,11 +70,11 @@ void main(void) {
         model = computeModelMatrix(data);
         gl_Position = vec4(vec3(uProj * uView * model * vec4(aVertexPosition, 1.0)), 1.0);
         vInstanceColor = data.color;
+        vTexCoord = mix(data.uvRect.xy, data.uvRect.zw, aTexCoord);
     } else {
         model = uModelToWorld;
         gl_Position = uProj * uView * model * vec4(aVertexPosition, 1.0); 
         vInstanceColor = vec3(1.0);
+        vTexCoord = mix(uUVRect.xy, uUVRect.zw, aTexCoord);
     }
-
-    vTexCoord = aTexCoord;
 }
