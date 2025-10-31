@@ -63,16 +63,16 @@ namespace NightSnack {
                     case InputEvent::InputAction::PhysicsDebugStep:
                         stepRequest = true;
                         break;
-                    case InputEvent::InputAction::ToggleInstancedRendering:
-                        std::cout << "Entities: ";
-                        for (Entity e : m_coord.GetLivingEntities()) {
-                            std::cout << e << ' ';
-                        }
-                        std::cout << '\n';
-                        Entity p = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
-                        std::cout << "Player Entity: " << p << '\n';
-                        std::cout << "isGround: " << m_coord.GetComponent<Collider>(p).isGrounded << '\n';
-                        break;
+                    //case InputEvent::InputAction::ToggleInstancedRendering:
+                    //    std::cout << "Entities: ";
+                    //    for (Entity e : m_coord.GetLivingEntities()) {
+                    //        std::cout << e << ' ';
+                    //    }
+                    //    std::cout << '\n';
+                    //    Entity p = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+                    //    std::cout << "Player Entity: " << p << '\n';
+                    //    std::cout << "isGround: " << m_coord.GetComponent<Collider>(p).isGrounded << '\n';
+                    //    break;
                     }
                 }
             });
