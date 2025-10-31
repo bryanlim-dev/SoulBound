@@ -63,34 +63,6 @@ namespace NightSnack {
                     case InputEvent::InputAction::PhysicsDebugStep:
                         stepRequest = true;
                         break;
-                    case InputEvent::InputAction::ToggleInstancedRendering:
-                        std::cout << "Entities Layers: ";
-                        for (Entity e : m_coord.GetLivingEntities()) {
-                            std::cout << e << ' ';
-
-                            LayerType l = m_coord.GetComponent<Transform>(e).layer;
-
-                            if (l == LayerType::GAMELAYER) {
-                                std::cout << "GameLayer";
-                            }
-                            if (l == LayerType::BACKGROUND) {
-                                std::cout << "Background";
-                            }
-                            if (l == LayerType::FOREGROUND) {
-                                std::cout << "Foreground";
-                            }
-                            if (l == LayerType::GAMEUI) {
-                                std::cout << "GameUI";
-                            }
-                            if (l == LayerType::_ENGINE) {
-                                std::cout << "Engine 1";
-                            }
-                            if (l == LayerType::_ENGINE2) {
-                                std::cout << "Engine 2";
-                            }
-                            std::cout << '\n';
-                        }
-                        break;
                     }
                 }
             });

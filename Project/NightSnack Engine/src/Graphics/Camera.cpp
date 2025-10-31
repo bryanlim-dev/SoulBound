@@ -70,7 +70,7 @@ namespace NightSnack {
                 auto& camera = coord.GetComponent<Camera>(entity);
                 if (camera.isMainCam)
                 {
-                    std::cout << "[CameraSystem] Found main camera: " << entity << "\n";
+                    //std::cout << "[CameraSystem] Found main camera: " << entity << "\n";
                     return entity;
                 }
             }

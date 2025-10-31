@@ -52,20 +52,6 @@ namespace NightSnack {
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
-					case InputEvent::InputAction::CreateSquare:
-						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
-						Create("Square");
-						break;
-
-					case InputEvent::InputAction::CreateCircle:
-						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
-						Create("Circle");
-						break;
-
-					case InputEvent::InputAction::CreateBananaCircle:
-						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
-						Create("Player");
-						break;
 
 					case InputEvent::InputAction::StressTest:
 						if (!m_stress) {

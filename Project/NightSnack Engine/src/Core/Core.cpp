@@ -96,13 +96,10 @@ namespace NightSnack {
 
 		AddSystem<FiniteStateMachine>(m_coord);
 
-		std::cout << "Buffering Living Entities: ";
 		// Buffer all entities' signatures to properly initialize all systems' set of entities
 		for (Entity e : m_coord.GetLivingEntities()) {
 			m_coord.BufferEntitySignature(e);
-			std::cout << e << " ";
 		}
-		std::cout << '\n';
 	}
 
 	// Function should be called upon termination of program;
