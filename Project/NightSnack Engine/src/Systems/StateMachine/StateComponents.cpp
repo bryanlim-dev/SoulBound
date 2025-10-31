@@ -1,5 +1,6 @@
 #include "StateComponents.h"
 #include "../AllSystems.h"
+#include <Core/ECS/Coordinator.h>
 
 namespace NightSnack
 {
@@ -170,6 +171,27 @@ namespace NightSnack
 	}
 
 
+
+	std::shared_ptr<StateComponent> CreateStateComponent(std::string componentName, json& paramJson)
+	{
+		std::shared_ptr<StateComponent> component = nullptr;
+
+		if (componentName == "countdown")
+		{
+			float maxTime;
+			paramJson.at("countdown").get_to(maxTime);
+			component = std::make_shared<StateComponentCountdown>(maxTime);
+		}
+		else if (componentName == "movment")
+		{
+			Vec2 speed;
+			paramJson.at("fx").get_to(speed.x);
+			paramJson.at("fy").get_to(speed.y);
+			component = std::make_shared<StateComponentMovement>(speed);
+		}
+
+		return component;
+	};
 
 }
 

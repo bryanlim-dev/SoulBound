@@ -18,10 +18,10 @@
 
 #include <json.hpp>
 #include "MathLibrary/Math.h"
-
 namespace NightSnack {
 
     using json = nlohmann::json;
+    class StateBase; //Forward decleration
 
     // ================================================================================================
     // COMPONENTS
@@ -88,8 +88,6 @@ namespace NightSnack {
         // maybe can add abilities etc...
     };
 
-    //Forward declaration
-    class StateBase;
 
     //A component to hold data for states
     struct States

@@ -1,9 +1,13 @@
 #pragma once
-
-#include <Core/ECS/Coordinator.h>
+#include "../../Core/ECS/Component.h"
+#include ".././../MathLibrary/Vector.h"
+#include "../../Core/ECS/Entity.h"
 
 namespace NightSnack
 {
+	//Foward delectration of coordinator 
+	class Coordinator;
+
 	//A namespace of checks for conditions and transitions
 	namespace StateFunctionChecker
 	{
@@ -33,6 +37,9 @@ namespace NightSnack
 		STATE_COMPONENT_COOLDOWN, 
 		STATE_COMPONENT_MOVEMENT, 
 	};
+
+
+
 
 	//This is a class instead of a template becuase it needs to udpate and reset its values on enter/exit
 	class StateComponent
@@ -99,4 +106,5 @@ namespace NightSnack
 	};
 
 
+	std::shared_ptr<StateComponent> CreateStateComponent(std::string componentName, json& paramJson);
 }

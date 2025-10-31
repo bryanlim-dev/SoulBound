@@ -73,21 +73,21 @@ namespace NightSnack
 		//First time using state machine, enter first state
 		if (states.isFirstState)
 		{
-			states.currState->Enter();
+			states.currState->Enter(id, m_coord);
 			states.isFirstState = false;
 			return;
 		}
 
 		//Not first time do regular state machine things
-		states.currState->Update(dt);
+		states.currState->Update(dt, id, m_coord);
 
 		//Check if exiting
 		if (states.currState->IsExit())
 		{
 			std::weak_ptr<StateBase> nextState = states.currState->NextState().lock();
-			states.currState->Exit();
+			states.currState->Exit(id, m_coord);
 
-			nextState.lock()->Enter();
+			nextState.lock()->Enter(id, m_coord);
 			states.currState = nextState.lock();
 		}
 
@@ -113,21 +113,21 @@ namespace NightSnack
 		//Descision State -> Movement (Left/Right) -> Countdown State -> Desicion
 
 		std::string desisionName = "Descision State";
-		std::shared_ptr<StateBase> desicionState = std::make_shared<StateBase>(entityId, desisionName, coord);
+		std::shared_ptr<StateBase> desicionState = std::make_shared<StateBase>(desisionName);
 		stateMap.insert({ desisionName, desicionState });
 
 
 		std::string leftMovementName = "Left Movement State"; 
-		std::shared_ptr<StateBase> movmenetLeftState = std::make_shared<StateBase>(entityId, leftMovementName, coord);
+		std::shared_ptr<StateBase> movmenetLeftState = std::make_shared<StateBase>(leftMovementName);
 		stateMap.insert({ leftMovementName, movmenetLeftState });
 
 		std::string rightMovementName = "Right Movmenet State";
-		std::shared_ptr<StateBase> movemementRightState = std::make_shared<StateBase>(entityId, rightMovementName, coord);
+		std::shared_ptr<StateBase> movemementRightState = std::make_shared<StateBase>(rightMovementName);
 		stateMap.insert({ rightMovementName, movemementRightState });
 
 
 		std::string cooldownName = "CooldownState";
-		std::shared_ptr<StateBase> stateCountdown = std::make_shared<StateBase>(entityId, cooldownName, coord);
+		std::shared_ptr<StateBase> stateCountdown = std::make_shared<StateBase>(cooldownName);
 		stateMap.insert({ cooldownName, stateCountdown });
 
 
