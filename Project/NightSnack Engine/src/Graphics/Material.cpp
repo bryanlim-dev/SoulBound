@@ -37,18 +37,10 @@ namespace NightSnack {
 
     void Material::ApplyUniforms(bool wireframe) {
 
-        m_shader->Use();
-
-        m_shader->SetVec3("uBaseColor", m_baseColor);
-
         // Textures will be binded if it is not in wireframe mode
         if (m_texture && !wireframe) {
             m_texture->Bind(); // calls glBindTexture(GL_TEXTURE_2D, m_id)
             m_shader->SetInt("uTex2d", 0);
-            m_shader->SetBool("uHasTexture", true);
-        }
-        else {
-            m_shader->SetBool("uHasTexture", false);
         }
 
         // Enable alpha blending for textures with .png format

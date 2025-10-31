@@ -19,6 +19,7 @@
 #include "Physics/Physics.h"
 #include "Physics/Collision.h"
 #include "./Factory/EntityFactory.h"
+#include "Text.h"
 #include "PlayerController.h"
 #include "UI Editor/Imgui.h"
 #include "./ResourceManager/ResourceManager.h"

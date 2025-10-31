@@ -8,17 +8,17 @@ namespace NightSnack
 	{
 		m_systemSignature.set(GetComponentTypeID<Transform>());
 
-		Entity test = m_coord.GetSystem<EntityFactory>()->Create("BananaBall");
+		//Entity test = m_coord.GetSystem<EntityFactory>()->Create("BananaBall");
 
- 		(FiniteStateMachine::CreateDebugTestStates(test, m_coord));
-		m_coord.ModifyComponent<Transform>(test).pos.x = 100;
-		m_coord.ModifyComponent<Transform>(test).pos.y = -225;
+ 		//(FiniteStateMachine::CreateDebugTestStates(test, m_coord));
+		//m_coord.ModifyComponent<Transform>(test).pos.x = 100;
+		//m_coord.ModifyComponent<Transform>(test).pos.y = -225;
 
-		m_coord.ModifyComponent<Transform>(test).scale = {20, 20};
-		m_coord.ModifyComponent<Collider>(test).radius = 20;
+		//m_coord.ModifyComponent<Transform>(test).scale = {20, 20};
+		//m_coord.ModifyComponent<Collider>(test).radius = 20;
 
 		/*m_coord.GetSystem<FiniteStateMachine>()->*/
-		AddEntity(test);
+		//AddEntity(test);
 	}
 
 	FiniteStateMachine::~FiniteStateMachine()

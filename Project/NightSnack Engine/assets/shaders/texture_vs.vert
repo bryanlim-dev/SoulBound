@@ -1,16 +1,17 @@
 /******************************************************************************
- * File:        vertex_shader.vert
+ * File:        texture_vs.vert
  * Project:     NightSnack
- * Author(s):	Goh Bei Lai (Primary, 100%) - Created Default Vertex Shader
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Texture Vertex Shader
  *
  * Description:
- * Vertex shader is responsible for transforming vertices from model space to 
+ * Texture Vertex shader is responsible for transforming vertices from model space to 
  * clip space, and passing texture coordinates to the fragment shader.
+ * This vertex shader will only take care of entities with textures.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
-// Default Vertex shader
+// Texture Vertex shader
 #version 450 core
 
 layout (location=0) in vec3 aVertexPosition;
@@ -25,20 +26,18 @@ uniform vec4 uUVRect;
 // Non-instanced rendering
 uniform mat4 uModelToWorld; // used for non-instancing rendering
 
-// Instanced rendering
 struct InstanceData {
-    vec3 position;
-    float rotation;
-    vec2 scale;
-    vec3 color;
+    vec4 pos_rot;
+    vec4 scale;
+    vec4 color;
     vec4 uvRect;
 };
+
 layout(std430, binding = 0) buffer InstanceBuffer {    
     InstanceData instances[];
 };
 
 out vec2 vTexCoord; // give texcoord to fragment shader
-out vec3 vInstanceColor; 
 
 mat4 computeModelMatrix(InstanceData data) {
     // scale
@@ -47,17 +46,17 @@ mat4 computeModelMatrix(InstanceData data) {
     S[1][1] = data.scale.y;
 
     // Rotation (Z-axis)
-    float c = cos(data.rotation);
-    float s = sin(data.rotation);
+    float c = cos(data.pos_rot.w);
+    float s = sin(data.pos_rot.w);
     mat4 R = mat4(1.0);
     R[0][0] = c;  R[0][1] = s;
     R[1][0] = -s; R[1][1] = c;
 
     // Translation
     mat4 T = mat4(1.0);
-    T[3][0] = data.position.x;
-    T[3][1] = data.position.y;
-    T[3][2] = data.position.z;
+    T[3][0] = data.pos_rot.x;
+    T[3][1] = data.pos_rot.y;
+    T[3][2] = data.pos_rot.z;
 
     return T * R * S;
 }
@@ -68,13 +67,11 @@ void main(void) {
     if (uUseInstancing) {
         InstanceData data = instances[gl_InstanceID];
         model = computeModelMatrix(data);
-        gl_Position = vec4(vec3(uProj * uView * model * vec4(aVertexPosition, 1.0)), 1.0);
-        vInstanceColor = data.color;
         vTexCoord = mix(data.uvRect.xy, data.uvRect.zw, aTexCoord);
     } else {
         model = uModelToWorld;
-        gl_Position = uProj * uView * model * vec4(aVertexPosition, 1.0); 
-        vInstanceColor = vec3(1.0);
         vTexCoord = mix(uUVRect.xy, uUVRect.zw, aTexCoord);
     }
+
+    gl_Position = uProj * uView * model * vec4(aVertexPosition, 1.0); 
 }
