@@ -37,15 +37,15 @@ namespace NightSnack {
 		// determines the number of AnimationClips and AnimationFrames
 		// [if the entity has an Animator component]
 		auto bananaTex = std::make_unique<Texture>("assets/banana.jpg", rm, 4, 1);
-		AddTexture("banana", std::move(bananaTex));
+		AddTexture("assets/banana.jpg", std::move(bananaTex));
 		//auto targetTex = std::make_unique<Texture>("assets/image_UI_target.png", rm, 4, 1);
-		//AddTexture("target", std::move(targetTex));
+		//AddTexture("assets/image_UI_target.png", std::move(targetTex));
 		auto bgTex = std::make_unique<Texture>("assets/background.png", rm);
-		AddTexture("background", std::move(bgTex));
+		AddTexture("assets/background.png", std::move(bgTex));
 		auto ghostTex = std::make_unique<Texture>("assets/ghost.png", rm, 4, 1);
 		AddTexture("assets/ghost.png", std::move(ghostTex));
 		//auto slimeTex = std::make_unique<Texture>("assets/slime.png", rm, 4, 1);
-		//AddTexture("slime", std::move(slimeTex));
+		//AddTexture("assets/slime.png", std::move(slimeTex));
 
 		// Meshes;
 		AddMesh("point", Mesh::CreatePoint());
@@ -56,16 +56,16 @@ namespace NightSnack {
 		AddMesh("CircleColliderMesh", Mesh::CreateCircleMesh());
 
 		// Materials with texture
-		auto bananaMat = std::make_unique<Material>(GetShader("texture"), GetTexture("banana"));
+		auto bananaMat = std::make_unique<Material>(GetShader("texture"), GetTexture("assets/banana.jpg"));
 		bananaMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
 		AddMaterial("bananaMat", std::move(bananaMat));
-		//auto targetMat = std::make_unique<Material>(GetShader("texture"), GetTexture("target"));
+		//auto targetMat = std::make_unique<Material>(GetShader("texture"), GetTexture("assets/image_UI_target.png"));
 		//AddMaterial("targetMat", std::move(targetMat));
-		auto backgroundMat = std::make_unique<Material>(GetShader("texture"), GetTexture("background"));
+		auto backgroundMat = std::make_unique<Material>(GetShader("texture"), GetTexture("assets/background.png"));
 		AddMaterial("backgroundMat", std::move(backgroundMat));
 		auto ghostMat = std::make_unique<Material>(GetShader("texture"), GetTexture("assets/ghost.png"));
 		AddMaterial("ghostMat", std::move(ghostMat));
-		//auto slimeMat = std::make_unique<Material>(GetShader("texture"), GetTexture("slime"));
+		//auto slimeMat = std::make_unique<Material>(GetShader("texture"), GetTexture("assets/slime.png"));
 		//AddMaterial("slimeMat", std::move(slimeMat));
 
 		/*auto bananaMat = std::make_unique<Material>(GetShader("color"));
@@ -403,21 +403,21 @@ namespace NightSnack {
 		}
 	}
 
-	void GraphicsSystem::UpdateTextureOfMaterial(const std::string& textureFileName, Entity e) {
+	void GraphicsSystem::UpdateTextureOfMaterial(const std::string& textureFilePath, Entity e) {
 		auto& ren = m_coord.ModifyComponent<Renderable>(e);
 
 		// Check whether the current texture exists
-		Texture* tex = GetTexture(textureFileName);
+		Texture* tex = GetTexture(textureFilePath);
 		if (!tex) {
 			// This is a new texture, add it to the resource map
 			// Create the Texture pointer
 			std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
-			auto newTex = std::make_unique<Texture>(textureFileName, rm, 4, 1);
-			AddTexture(textureFileName, std::move(newTex));
+			auto newTex = std::make_unique<Texture>(textureFilePath, rm, 4, 1);
+			AddTexture(textureFilePath, std::move(newTex));
 
 			// If it is a new texture, it means that there is no existing material for it
 			// Create new material with this texture combination
-			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(textureFileName));
+			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(textureFilePath));
 			std::string newName = GetNewMaterialName(ren.materialName);
 			// Name this new material to be a variant of the current material
 			AddMaterial(newName, std::move(newMat));
@@ -441,7 +441,7 @@ namespace NightSnack {
 
 				// If it exists already, change the name of this Renderable's material to the existing material name
 				//std::cout << "Checking for texture name: " << textureFileName << std::endl;
-				if (textureFileName == tex->GetTextureName()) {
+				if (textureFilePath == tex->GetTextureName()) {
 					ren.materialName = matName;
 					found = true;
 					//std::cout << "Material for this texture exists too!\n";
@@ -452,7 +452,7 @@ namespace NightSnack {
 			if (!found) {
 				//std::cout << "Material for this texture doesnt exist yet, creating one ...\n";
 				// if it does not exist, create new material with this texture combination
-				auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(textureFileName));
+				auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(textureFilePath));
 				std::string newName = GetNewMaterialName(ren.materialName);
 				// Name this new material to be a variant of the current material
 				AddMaterial(newName, std::move(newMat));
