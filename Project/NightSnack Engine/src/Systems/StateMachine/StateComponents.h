@@ -2,11 +2,14 @@
 #include "../../Core/ECS/Component.h"
 #include ".././../MathLibrary/Vector.h"
 #include "../../Core/ECS/Entity.h"
+#include <functional>
 
 namespace NightSnack
 {
 	//Foward delectration of coordinator 
 	class Coordinator;
+
+	using TransitionFunction = std::function<bool(Entity, Coordinator&)>;
 
 	//A namespace of checks for conditions and transitions
 	namespace StateFunctionChecker
@@ -107,4 +110,6 @@ namespace NightSnack
 
 
 	std::shared_ptr<StateComponent> CreateStateComponent(std::string componentName, json& paramJson);
+	TransitionFunction GetTransitionFunction(std::string transitonName);
+
 }

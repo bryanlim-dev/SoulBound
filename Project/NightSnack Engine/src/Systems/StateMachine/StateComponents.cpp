@@ -178,8 +178,7 @@ namespace NightSnack
 
 		if (componentName == "countdown")
 		{
-			float maxTime;
-			paramJson.at("countdown").get_to(maxTime);
+			float maxTime = paramJson.get<float>();
 			component = std::make_shared<StateComponentCountdown>(maxTime);
 		}
 		else if (componentName == "movment")
@@ -191,7 +190,21 @@ namespace NightSnack
 		}
 
 		return component;
-	};
+	}
+	TransitionFunction GetTransitionFunction(std::string transitonName)
+	{
+		if (transitonName == "IsPlayerLeftSide")
+			return StateFunctionChecker::CheckPlayerIsLeftSide;
+		else if (transitonName == "IsPlayerRightSide")
+			return StateFunctionChecker::CheckPlayerIsRightSide;
+		else if (transitonName == "IsCollided")
+			return StateFunctionChecker::EntityIsColliding;
+		else if (transitonName == "CountdownCompleted")
+			return StateFunctionChecker::EntityCountdownComponentFinish;
+
+		return TransitionFunction();
+	}
+	;
 
 }
 

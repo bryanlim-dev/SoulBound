@@ -1,5 +1,5 @@
 {
-  "FSMs": {
+
     "StatesEntityTest1": {
       "States": {
         "DecisionState": {
@@ -21,19 +21,18 @@
             "movment" : {"fx": -350.0, "fy": 0.0 }
           },
           "transitions": [
-            { "target": "CooldownState", "condition": "IsCollided" }
+            { "target": "CountdownState", "condition": "IsCollided" }
           ]
         },
         "CountdownState": {
           "componentTypes": { "countdown": 3.0 },
           "transitions": [
-            { "target": "CountdownState", "condition": "CountdownCompleted" }
+            { "target": "DecisionState", "condition": "CountdownCompleted" }
           ]
         }
       },
       "InitialState": "DecisionState"
     }
-  } 
 
 
 }

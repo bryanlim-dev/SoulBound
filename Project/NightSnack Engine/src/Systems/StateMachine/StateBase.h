@@ -13,11 +13,13 @@
 
 namespace NightSnack
 {
+	//Defined in StateComponets
+	//using TransitionFunction = std::function<bool(Entity, Coordinator&)>;
 
 	class StateBase
 	{
 	protected:
-		std::list<std::pair<std::weak_ptr<StateBase>, std::function<bool(Entity, Coordinator&)>>> m_transtitionStatesList;
+		std::list<std::pair<std::weak_ptr<StateBase>, TransitionFunction>> m_transtitionStatesList;
 		
 		//A map of components for states and thier names
 		//Refactor tracker: 8
@@ -68,7 +70,7 @@ namespace NightSnack
 			m_exitFunction = exitFunc;
 		}
 
-		void InsertStateTransition(std::weak_ptr<StateBase> state, std::function<bool(Entity, Coordinator&)>transition)
+		void InsertStateTransition(std::weak_ptr<StateBase> state, TransitionFunction transition)
 		{
 			m_transtitionStatesList.emplace_back(state, transition);
 		}
@@ -93,7 +95,8 @@ namespace NightSnack
 
 		virtual void Update(float dt, Entity entityID, Coordinator& coord) {
 			//Call update function
-			m_updateFunction(dt, entityID);
+			if (m_updateFunction)
+				m_updateFunction(dt, entityID);
 
 			//Structure bindings to iterate
 			for (auto& [name, component] : m_stateComponentMap)
@@ -175,9 +178,15 @@ namespace NightSnack
 		}
 	};
 
-	inline void from_json(const json& j, States& c);
+	States CreateStateFromArchetypeJson(std::string stateArchetype, std::string stateArchetypeFilePath);
 
-	States&& CreateStateFromArchetypeJson(std::string stateArchetype, std::string stateArchetypeFilePath);
+	inline void from_json(const json& j, States& c) {
+		std::string stateMachineStr;
+		j.at("StateMachine").get_to(stateMachineStr); //State Machine Archytype
+
+		c = CreateStateFromArchetypeJson(stateMachineStr, "assets/GameData/Archetypes/AIStatesArchetypes.json");
+	}
+
 
 } //End of namesapce
 

@@ -4,14 +4,9 @@
 
 namespace NightSnack
 {
-    inline void from_json(const json& j, States& c) {
-        std::string stateMachineStr;
-        j.at("StateMachine").get_to(stateMachineStr); //State Machine Archytype
 
-        c = CreateStateFromArchetypeJson(stateMachineStr, "assets/GameData/Archetypes/AIStatesArchetypes.json");
-    }
 
-    States&& CreateStateFromArchetypeJson(std::string stateArchetype, std::string stateArchetypeFilePath)
+    States CreateStateFromArchetypeJson(std::string stateArchetype, std::string stateArchetypeFilePath)
     {
         //Read json files
         std::ifstream file(stateArchetypeFilePath);
@@ -33,7 +28,7 @@ namespace NightSnack
 
         //For the archetype in the string
         //Loop through all states within the list
-        for (auto& [stateName, stateJson] : statesArchetypeJson[stateArchetype].items())
+        for (auto& [stateName, stateJson] : statesArchetypeJson[stateArchetype]["States"].items())
         {
             std::shared_ptr<StateBase> statePtr = std::make_shared<StateBase>(stateName);
 
@@ -50,9 +45,45 @@ namespace NightSnack
         } //End of base state create loop
 
         //Now add in all transitions
+        for (auto& [stateName, stateJson] : statesArchetypeJson[stateArchetype]["States"].items())
+        {
+            std::shared_ptr<StateBase> statePtr = states.stateMap[stateName];
 
+            //Loop through the all params in the list and create them
+            for (auto& [paramType, paramJsonInfo] : stateJson["transitions"].items())
+            {
+                std::string transitionTarget, transitionFunc; 
+                paramJsonInfo.at("target").get_to(transitionTarget);
+                paramJsonInfo.at("condition").get_to(transitionFunc);
 
-        return std::move(states);
+                //Check if actually in map
+                if (states.stateMap.find(transitionTarget) != states.stateMap.end())
+                {
+                    //Valid in map
+                    statePtr->InsertStateTransition(states.stateMap[transitionTarget], GetTransitionFunction(transitionFunc));
+                }
+                else
+                    std::cout << "INVALID Transition add attempted! State: " << stateName << " to " << transitionTarget << std::endl;
+            }
+
+            //Insert into map
+            states.stateMap.insert({ stateName, statePtr });
+
+        } //End of transition state create loop
+
+        //Input first state
+        std::string firstState;
+        statesArchetypeJson[stateArchetype].at("InitialState").get_to(firstState);
+
+        if (states.stateMap.find(firstState) != states.stateMap.end())
+        {
+            //Valid in map
+            states.currState = states.stateMap[firstState];
+        }
+        else
+            std::cout << "INVALID first state! State: " << firstState << std::endl;
+
+        return states;
     }
 
 }

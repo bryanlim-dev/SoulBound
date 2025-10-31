@@ -6,19 +6,19 @@ namespace NightSnack
 {
 	FiniteStateMachine::FiniteStateMachine(Coordinator& coord) : m_coord(coord)
 	{
-		m_systemSignature.set(GetComponentTypeID<Transform>());
+		m_systemSignature.set(GetComponentTypeID<States>());
 
-		Entity test = m_coord.GetSystem<EntityFactory>()->Create("BananaBall");
+		//Entity test = m_coord.GetSystem<EntityFactory>()->Create("BananaBall");
 
- 		(FiniteStateMachine::CreateDebugTestStates(test, m_coord));
-		m_coord.ModifyComponent<Transform>(test).pos.x = 100;
-		m_coord.ModifyComponent<Transform>(test).pos.y = -225;
+ 	//	(FiniteStateMachine::CreateDebugTestStates(test, m_coord));
+		//m_coord.ModifyComponent<Transform>(test).pos.x = 100;
+		//m_coord.ModifyComponent<Transform>(test).pos.y = -225;
 
-		m_coord.ModifyComponent<Transform>(test).scale = {20, 20};
-		m_coord.ModifyComponent<Collider>(test).radius = 20;
+		//m_coord.ModifyComponent<Transform>(test).scale = {20, 20};
+		//m_coord.ModifyComponent<Collider>(test).radius = 20;
 
-		/*m_coord.GetSystem<FiniteStateMachine>()->*/
-		AddEntity(test);
+		///*m_coord.GetSystem<FiniteStateMachine>()->*/
+		//AddEntity(test);
 	}
 
 	FiniteStateMachine::~FiniteStateMachine()
@@ -35,13 +35,17 @@ namespace NightSnack
 			std::list<Entity> removalList;
 			removalList.clear();
 
-			for (Entity& id : m_entityList)
-			{
-				if (m_coord.HasComponent<States>(id))
-					UpdateEntityState(dt, id, m_coord.ModifyComponent<States>(id));
-				else
-					removalList.push_back(id);
+			for (auto const& e : m_entities) {
+				if (m_coord.HasComponent<States>(e))
+					UpdateEntityState(dt, e, m_coord.ModifyComponent<States>(e));
 			}
+			//for (Entity& id : m_entityList)
+			//{
+			//	if (m_coord.HasComponent<States>(id))
+			//		UpdateEntityState(dt, id, m_coord.ModifyComponent<States>(id));
+			//	else
+			//		removalList.push_back(id);
+			//}
 
 			//Dont delete partway thru loop
 			for (Entity& id : removalList)
