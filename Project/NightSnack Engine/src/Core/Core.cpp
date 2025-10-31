@@ -90,10 +90,11 @@ namespace NightSnack {
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
 
-		AddSystem<FiniteStateMachine>(m_coord);
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<AnimationSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
+
+		AddSystem<FiniteStateMachine>(m_coord);
 
 		std::cout << "Buffering Living Entities: ";
 		// Buffer all entities' signatures to properly initialize all systems' set of entities
@@ -156,6 +157,9 @@ namespace NightSnack {
 		if (m_paused) {
 			numberOfSteps = 0;
 			return;
+		}
+		if (numberOfSteps > 15) {
+			numberOfSteps = 15;
 		}
 
 		// Iterate through Systems and Update them through Coordinator;

@@ -44,7 +44,7 @@ namespace NightSnack {
         /************************************************************************/
         PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord }, m_dispatcher { &disp } {
 
-            m_player = FindPlayer(coord);
+            m_player = 1;
 
             m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
                 {
@@ -128,14 +128,12 @@ namespace NightSnack {
 
             playerSig.set(GetComponentTypeID<PlayerController>());
             playerSig.set(GetComponentTypeID<Transform>());
-
-            playerSig.set(GetComponentTypeID<Force>());
             playerSig.set(GetComponentTypeID<RigidBody>());
             playerSig.set(GetComponentTypeID<Collider>());
 
             // Iterate through all living Entities in the COORDINATOR instead
             // Since the GraphicsSystem will not have a Camera Entity
-            for (Entity const& e : coord.GetLivingEntities()) {
+            for (Entity e : coord.GetLivingEntities()) {
                 if ((coord.GetEntitySignature(e) & playerSig) == playerSig) { // This camera Entity is the main camera
                     return e;
                 }

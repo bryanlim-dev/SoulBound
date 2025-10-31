@@ -42,8 +42,8 @@ namespace NightSnack {
             CreateSquare,       // 1
             CreateCircle,       // 2
             CreateBananaCircle, // 3 -> texture entity;
-            DoubleEntities,     // Space
-            HalfEntities,       // Backspace
+            StressTest,     // Space
+            EndStressTest,       // Backspace
             CheckEntityNum,
 
             // Player movement

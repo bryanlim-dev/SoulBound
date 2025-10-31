@@ -19,6 +19,72 @@
 
 namespace NightSnack {
 
+    
+	//void PhysicsSystem::ResolveCollisions() {
+
+	//	for (int x = 0; x < m_gridCols; ++x) {
+	//		for (int y = 0; y < m_gridRows; ++y) {
+
+	//			std::bitset<MAX_ENTITIES>& cell = m_collisionGrid[x][y];
+
+	//			for (Entity e1 = FindFirst(cell); e1 < MAX_ENTITIES; e1 = FindNext(cell, e1)) {
+	//				for (Entity e2 = FindNext(cell, e1); e2 < MAX_ENTITIES; e2 = FindNext(cell, e2)) {
+
+	//					Collider& c1 = m_coord.ModifyComponent<Collider>(e1);
+	//					Collider& c2 = m_coord.ModifyComponent<Collider>(e2);
+
+	//					// Skip if first entity is a static body;
+	//					if (c1.isStatic) { continue; }
+
+	//					Transform& t1 = m_coord.ModifyComponent<Transform>(e1);
+	//					Transform& t2 = m_coord.ModifyComponent<Transform>(e2);
+
+	//					if (!CheckCollision(t1, t2, c1, c2)) { continue; }
+
+	//					// perform resolutions;
+	//					RigidBody& r1 = m_coord.ModifyComponent<RigidBody>(e1);
+	//					RigidBody& r2 = m_coord.ModifyComponent<RigidBody>(e2);
+
+	//					// Find point of intersection;
+	//					Vec2 half1 = (c1.shape == ShapeType::AABB) ? Vec2{ c1.width * 0.5f, c1.height * 0.5f }
+	//																: Vec2{ c1.radius * 0.5f, c1.radius * 0.5f };
+	//					Vec2 half2 = (c2.shape == ShapeType::AABB) ? Vec2{ c2.width * 0.5f, c2.height * 0.5f }
+	//																: Vec2{ c2.radius * 0.5f, c2.radius * 0.5f };
+
+	//					Vec2 move = { t2.pos.x - t1.pos.x, t2.pos.y - t1.pos.y };
+	//					Vec2 overlap = { half1.x + half2.x - std::fabs(move.x),
+	//									half1.y + half1.y - std::fabs(move.y) };
+
+	//					if (overlap.x < overlap.y) {
+	//						float sign = (move.x < 0.f ? -1.f : 1.f);
+
+	//						if (c2.isStatic) { t1.pos.x -= overlap.x * sign; }
+	//						else {
+	//							t1.pos.x -= overlap.x * 0.5f * sign;
+	//							t2.pos.x += overlap.x * 0.5f * sign;
+	//						}
+	//						r1.vel.x = 0;
+	//						r2.vel.x = 0;
+	//					}
+	//					else {
+	//						float sign = (move.y < 0 ? -1.f : 1.f);
+
+	//						if (c2.isStatic) { t1.pos.y -= overlap.x * sign; }
+	//						else {
+	//							t1.pos.y -= overlap.y * 0.5f * sign;
+	//							t2.pos.y += overlap.y * 0.5f * sign;
+	//						}
+	//						r1.vel.y = 0;
+	//						r2.vel.y = 0;
+	//					}
+	//					if (r1.vel.y == 0.f) { c1.isGrounded = true; }
+	//					if (r2.vel.y == 0.f) { c2.isGrounded = true; }
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+
     Vec3 FindIntersectionPoint(Collider const& c1, Collider const& c2, Transform const& t1, Transform const& t2) {
         Vec3 interPT{ t1.pos };
         Vec3 dir = t2.pos - t1.pos;

@@ -23,6 +23,7 @@
 #include "Factory/PrefabManager.h"
 #include "Systems/Application/Input.h"
 #include "Systems/Application/IEvent.h"
+#include "Systems/Graphics.h"
 
 namespace NightSnack {
 
@@ -44,6 +45,8 @@ namespace NightSnack {
 			m_prefabManager.Initialize();
 			LoadArchetypes(archetypes_filename);
 			LoadLevel(level0_file);
+
+			m_stress = false;
 
 			// Setup input events;
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
@@ -67,13 +70,19 @@ namespace NightSnack {
 						//std::cout << "Create Banana!\n";
 						break;
 
-					case InputEvent::InputAction::DoubleEntities:
-						DoubleEntities();
+					case InputEvent::InputAction::StressTest:
+						if (!m_stress) {
+							StressTestCreate();
+							m_stress = true;
+						}
 						//std::cout << "Doubled Entities!\n";
 						break;
 
-					case InputEvent::InputAction::HalfEntities:
-						HalfEntities();
+					case InputEvent::InputAction::EndStressTest:
+						if (m_stress) {
+							StressTestEnd();
+							m_stress = false;
+						}
 						//std::cout << "Removed Entities!\n";
 						break;
 					case InputEvent::InputAction::CheckEntityNum:
@@ -126,6 +135,14 @@ namespace NightSnack {
 				else {
 					m_coord.ModifyComponent<Transform>(e).layer = LayerType::GAMELAYER;
 				}
+			}
+		}
+
+		void UnLoadLevel() {
+			for (Entity e : m_coord.GetLivingEntities()) {
+				if (e == m_coord.GetSystem<GraphicsSystem>()->FindCamera()) { continue; }
+
+				RemoveEntity(e);
 			}
 		}
 
@@ -201,20 +218,19 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Creates entites with random transforms. until the number of living entities
-		has doubled.
+		Create 1000 entities for stress test - Combination 1;
 		*/
 		/************************************************************************/
-		void DoubleEntities();
+		void StressTestCreate();
+		bool m_stress{ false };
 
 		/************************************************************************/
 		/*!
 		\brief
-		Removes entities until half the current living entities (except for default
-		testing scene).
+		Removes entities created for stress test;
 		*/
 		/************************************************************************/
-		void HalfEntities();
+		void StressTestEnd();
 
 		/************************************************************************/
 		/*!
@@ -223,7 +239,7 @@ namespace NightSnack {
 		end of the core loop).
 		*/
 		/************************************************************************/
-		void Remove(Entity e);
+		void RemoveEntity(Entity e);
 
 		void PrintPrefabNames() const;
 		std::unordered_map<std::string, std::string> GetPrefabMaterials() const;

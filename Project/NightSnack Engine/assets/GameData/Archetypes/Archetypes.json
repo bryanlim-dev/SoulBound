@@ -44,7 +44,7 @@
       "shape": "Circle",
       "type": "Solid",
       "isStatic": false,
-      "radius": 100.0
+      "radius": 50.0
     },
     "Renderable": {
       "meshName": "square",
@@ -166,7 +166,7 @@
       "shape": "Circle",
       "type": "Solid",
       "isStatic": false,
-      "radius": 30.0
+      "radius": 15.0
     },
     "Renderable": {
       "meshName": "square",
@@ -182,6 +182,23 @@
     "PlayerController": {
       "moveSpeed": 300.0,
       "jumpSpeed": 600.0
+    }
+  },
+  "StressTest": {
+    "RigidBody": {
+      "mass": 1.0,
+      "useGravity": false
+    },
+    "Collider": {
+      "shape": "Circle",
+      "type": "Solid",
+      "isStatic": false,
+      "radius": 5.0
+    },
+    "Renderable": {
+      "meshName": "circle",
+      "materialName": "bananaMat",
+      "isWireframe" : false
     }
   }
 }

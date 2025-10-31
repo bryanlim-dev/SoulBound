@@ -33,7 +33,8 @@ namespace NightSnack {
         BACKGROUND,
         GAMELAYER,
         FOREGROUND,
-        GAMEUI
+        GAMEUI,
+        _ENGINE2
     };
     struct Transform {
         Vec3 pos;
@@ -57,7 +58,7 @@ namespace NightSnack {
 
     struct RigidBody {
 
-        Force force;
+        std::vector<Force> forces;
         Vec2 vel;
         Vec2 accel;
 
@@ -208,7 +209,6 @@ namespace NightSnack {
         r.invInertia = 1.f / inertia;
 
         r.restitution = 0.5f;
-        r.force = Force{};
         r.accel = Vec2{};
         r.vel = Vec2{};
         r.useGravity = false;

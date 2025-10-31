@@ -15,9 +15,12 @@
 
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/IEvent.h"
+#include "Systems/PlayerController.h"
 
 #include <bitset>
+#include <unordered_set>
 #include <array>
+#include <iostream>
 
 namespace NightSnack {
 
@@ -60,17 +63,29 @@ namespace NightSnack {
                     case InputEvent::InputAction::PhysicsDebugStep:
                         stepRequest = true;
                         break;
+                    case InputEvent::InputAction::ToggleInstancedRendering:
+                        std::cout << "Entities: ";
+                        for (Entity e : m_coord.GetLivingEntities()) {
+                            std::cout << e << ' ';
+                        }
+                        std::cout << '\n';
+                        Entity p = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+                        std::cout << "Player Entity: " << p << '\n';
+                        std::cout << "isGround: " << m_coord.GetComponent<Collider>(p).isGrounded << '\n';
+                        break;
                     }
                 }
             });
             // By default add 1 game layer;
             AddLayer(LayerType::GAMELAYER);
+            AddLayer(LayerType::_ENGINE2);
 
             // Initialize collision grid;
             m_gridCols = 60; m_gridRows = 40;
             m_gridWidth = 2500.f; m_gridHeight = 1250.f;
             m_cellSize.x = m_gridWidth / (float) m_gridCols;
             m_cellSize.y = m_gridHeight / (float) m_gridRows;
+            m_gridCenter = {};
         }
 
         /************************************************************************/
@@ -94,7 +109,8 @@ namespace NightSnack {
         bool IsDebugMode() const { return debugMode; }
         bool IsStepRequested() const { return stepRequest; }
 
-        void ManageForces(Force& f);
+        void ManageForces(RigidBody& f);
+        void ApplyForce(RigidBody& r, Force const&);
         void ComputeVelocity(RigidBody& rig, Collider const& col) const;
         std::pair<int, int> GetCell(Vec2 const& pos) const;
 
@@ -117,7 +133,10 @@ namespace NightSnack {
         Coordinator& m_coord;
 
         // Collision stuff;
-        GRID m_collisionGrid;
+        std::vector<std::bitset<MAX_ENTITIES>> m_grid1;
+        std::vector<std::bitset<MAX_ENTITIES>> m_grid2;
+        std::unordered_set<std::uint64_t> m_testedEntityPairs;
+
         Vec2 m_gridCenter;
         Vec2 m_cellSize;
         float m_gridWidth, m_gridHeight;

@@ -23,8 +23,6 @@
 
 namespace NightSnack {
 
-    static float dt = 0.016f;
-
     class MovementSystem : public ISystem {
 
     public:

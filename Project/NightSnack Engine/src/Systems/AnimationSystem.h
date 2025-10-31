@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/ECS/Coordinator.h"
-#include "Systems/Application/IEvent.h""
+#include "Systems/Application/IEvent.h"
 #include <Graphics/Texture.h>
 
 namespace NightSnack {

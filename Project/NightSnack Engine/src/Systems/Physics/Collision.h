@@ -20,7 +20,7 @@
 
 namespace NightSnack {
 
-    void CheckCollisions(std::array<Entity, MAX_ENTITIES> const&);
+    //void CheckCollisions(std::array<Entity, MAX_ENTITIES> const&);
 
     bool CheckCollision(Entity e1, Entity e2);
 

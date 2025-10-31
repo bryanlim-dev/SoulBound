@@ -16,8 +16,6 @@
 
 #pragma once
 
-#include <iostream>
-
 #include "Core/ECS/Coordinator.h"
 #include "Core/CrashLogger.h"
 #include "Systems/Application/IEvent.h"
@@ -26,6 +24,7 @@
 #include "Graphics/Material.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 namespace NightSnack {
 
@@ -91,6 +90,8 @@ namespace NightSnack {
 			AddLayer(LayerType::GAMELAYER);
 			AddLayer(LayerType::FOREGROUND);
 			AddLayer(LayerType::GAMEUI);
+
+			glClearColor(0.1f, 0.5f, 0.3f, 1.0f);
 		}
 
 		/************************************************************************/
