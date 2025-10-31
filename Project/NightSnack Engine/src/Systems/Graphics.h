@@ -84,6 +84,9 @@ namespace NightSnack {
 					case InputEvent::InputAction::CrashTest:
 						CrashLogger::ForceCrash("Forced crash from GraphicsSystem for testing");
 						break;
+					case InputEvent::InputAction::TextureTest:
+						TestSwapTextures();
+						break;
 					}
 				}
 			});
@@ -105,7 +108,7 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void Init();
-
+		void TestSwapTextures();
 		/************************************************************************/
 		/*!
 		\brief
@@ -121,9 +124,6 @@ namespace NightSnack {
 		void Update(int steps) override;
 
 		void RenderText(FT_Face font, const std::string& text, glm::vec2 position, float size, glm::vec4 color, float rotation = 0.f);
-
-		glm::mat4 GetCameraProjectionMatrix(float width, float height);
-		glm::mat4 GetModelToWorldMatrix(Position position, Rotation rotation, Scale scale, RenderLayer layer);
 
 		/************************************************************************/
 		/*!
@@ -228,6 +228,10 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		glm::mat4 GetModelToWorldMatrix(Vec3 position, float rotation, Vec2 scale, RenderLayer layer);
+
+		void UpdateTextureOfMaterial(const std::string& textureFilePath, Entity e);
+
+		std::string GetNewMaterialName(std::string oldMatName);
 
 		/************************************************************************/
 		/*!
@@ -435,7 +439,7 @@ namespace NightSnack {
 		Vec3 ScreenToWorld(Vec3 const& screenPos);
 
 		bool m_enableDebugDraw{ false };
-		bool m_enableInstancedRendering{ true };
+		bool m_enableInstancedRendering{ false };
 		GLuint m_globalInstanceSSBO = 0;
 		GLsizeiptr m_globalInstanceSSBOSize = 0;
 

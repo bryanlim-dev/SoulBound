@@ -54,7 +54,7 @@
       "isWireframe" : false
     },
     "Animator": {
-      "spriteSheetName": "ghost",
+      "spriteSheetName": "assets/ghost.png",
       "playbackSpeed": 1.0,
       "isPlaying": true,
       "isLooping": true
@@ -64,7 +64,7 @@
   "Control": {
     "Renderable": {
       "meshName": "square",
-      "materialName": "targetMat"
+      "materialName": "ghostMat"
     }
   },
 
@@ -175,11 +175,11 @@
     "Force": { "fx": 0.0, "fy": 0.0 },
     "Renderable": {
       "meshName": "square",
-      "materialName": "slimeMat",
+      "materialName": "ghostMat",
       "isWireframe" : false
     },
     "Animator": {
-      "spriteSheetName": "slime",
+      "spriteSheetName": "assets/ghost.png",
       "playbackSpeed": 2.0,
       "isPlaying": true,
       "isLooping": true

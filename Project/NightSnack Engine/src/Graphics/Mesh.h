@@ -35,12 +35,9 @@ namespace NightSnack {
 		// Aligned according to OpenGL std430 rules
 		// Total size is a multiple of the largest alignment (16)
 		struct alignas(16) InstanceData {
-			glm::vec3 position; // 0 to 12 bytes
-			float rotation; // 12 to 16 bytes
-			glm::vec2 scale; // 16 to 24 bytes
-			glm::vec2 pad; // 24 to 32 bytes
-			glm::vec3 color; // 32 to 44 bytes
-			float padding; // 44 to 48 bytes
+			glm::vec4 pos_rot;
+			glm::vec4 scale;
+			glm::vec4 color;
 			glm::vec4 uvRect;
 		};
 

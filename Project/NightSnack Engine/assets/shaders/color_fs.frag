@@ -1,21 +1,23 @@
 /******************************************************************************
- * File:        debug_fragment_shader.frag
+ * File:        color_fs.frag
  * Project:     NightSnack
- * Author(s):	Goh Bei Lai (Primary, 100%) - Created Debug Fragment Shader
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Color Fragment Shader
  *
  * Description:
- * Fragment shader is responsible for determining the final color of each pixel.
+ * Color Fragment shader is responsible for determining the final color of each pixel.
+ * This fragment shader only supports entities with a solid color.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
-// Debug Fragment shader
+// Color Fragment shader
 #version 450 core
 
 layout (location=0) out vec4 fFragColor;
 
-uniform vec3 uEntityColor;
+in vec3 vColor;
 
 void main() {
-    fFragColor = vec4(uEntityColor, 1.0);
+
+    fFragColor = vec4(vColor, 1.0);
 }

@@ -139,6 +139,10 @@ namespace NightSnack {
         Vec2 uvBottomRight{ 1.f, 1.f };
     };
 
+    struct Font {
+
+    };
+
     // Only camera objects will have this component
     struct Camera {
         bool isMainCam{ true };
