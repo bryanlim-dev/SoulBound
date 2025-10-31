@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef State
-#define State
+#ifndef STATEBASE_H
+#define STATEBASE_H
 
 #include <memory>
 #include <string>
