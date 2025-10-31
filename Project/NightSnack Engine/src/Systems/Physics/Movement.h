@@ -98,8 +98,8 @@ namespace NightSnack {
                     // Get more components here if necessary...
 
                     // Do stuff that you want to do with the components;
-                    pos.x += velocity.x * dt;
-                    pos.y += velocity.y * dt;
+                    pos.x += velocity.x * FixedDT;
+                    pos.y += velocity.y * FixedDT;
 
                     if (pos.y > 450.f) { pos.y = 450.f; }
                     if (pos.y < -450.f) { pos.y = -450.f; }

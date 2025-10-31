@@ -23,7 +23,6 @@ namespace NightSnack {
 
     constexpr float FixedDT = 0.016f;
 
-
     using json = nlohmann::json;
 
     // ================================================================================================
