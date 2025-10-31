@@ -76,54 +76,21 @@ namespace NightSnack {
 	}
 
 	// Create 1000 entities for stress test - Combination 1;
-	void EntityFactory::StressTestCreate() {
-
-		UnLoadLevel();
+	void EntityFactory::StressTestCreate(LayerType layer, std::string const& prefabName, int seed) {
 
 		// seed for rand;
-		srand(69 * static_cast<unsigned>(glfwGetTime()));
+		srand(seed * static_cast<unsigned>(glfwGetTime()));
 		int Hvp = m_coord.GetWindowHeight();
 		int Wvp = m_coord.GetWindowWidth();
 
-		// CREATE WALLS ---------------------------------------------------
-		Transform w;
-		w.scale = Vec2{ 50.f, 900.f };
-		w.rot = 0.f;
-		w.layer = LayerType::_ENGINE2;
-		w.pos = Vec3{ -800.f, 0.f, 1.f };
-		Entity e = Create("Wall", w);
-		std::cout << "Wall 1: " << e << '\n';
-		m_coord.ModifyComponent<Collider>(e).width = 50.f;
-		m_coord.ModifyComponent<Collider>(e).height = 900.f;
+		Transform t{ Vec3{}, {}, Vec2{5.f,5.f}, layer };
 
-		w.pos = Vec3{ 800.f, 0.f, 1.f };
-		e = Create("Wall", w);
-		std::cout << "Wall 2: " << e << '\n';
-		m_coord.ModifyComponent<Collider>(e).width = 50.f;
-		m_coord.ModifyComponent<Collider>(e).height = 900.f;
-
-		w.scale = Vec2{ 1600.f, 50.f };
-		w.pos = Vec3{ 0.f, 450.f, 1.f };
-		e = Create("Wall", w);
-		std::cout << "Wall 3: " << e << '\n';
-		m_coord.ModifyComponent<Collider>(e).width = 1600.f;
-		m_coord.ModifyComponent<Collider>(e).height = 50.f;
-
-		w.pos = Vec3{ 0.f, -450.f, 1.f };
-		e = Create("Wall", w);
-		std::cout << "Wall 4: " << e << '\n';
-		m_coord.ModifyComponent<Collider>(e).width = 1600.f;
-		m_coord.ModifyComponent<Collider>(e).height = 50.f;
-		// ----------------------------------------------------------------
-
-		Transform t{ Vec3{}, {}, Vec2{5.f,5.f}, LayerType::_ENGINE2 };
-
-		for (int i{}; i < 1100; ++i) {
+		for (int i{}; i < 1000; ++i) {
 			Vec3 p = { static_cast<float>(rand() % Wvp - Wvp / 2),
 			static_cast<float>(rand() % Hvp - Hvp / 2), 1.f };
 
 			t.pos = p;
-			Entity e2 = Create("StressTest", t);
+			Entity e2 = Create(prefabName, t);
 
 			Vec2 v = { static_cast<float>(rand() % Wvp - Wvp / 2),
 			static_cast<float>(rand() % Hvp - Hvp / 2) };

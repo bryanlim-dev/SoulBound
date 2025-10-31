@@ -94,6 +94,8 @@ namespace NightSnack {
 
             m_player = FindPlayer(m_coord);
 
+            if (m_player == INVALID_ENTITY) { return; }
+
             PlayerController const& pcont = m_coord.GetComponent<PlayerController>(m_player);
             Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
 

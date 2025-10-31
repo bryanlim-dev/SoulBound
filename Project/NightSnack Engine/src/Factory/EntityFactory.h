@@ -55,41 +55,41 @@ namespace NightSnack {
 					case InputEvent::InputAction::CreateSquare:
 						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
 						Create("Square");
-						//std::cout << "Create Square!\n";
 						break;
 
 					case InputEvent::InputAction::CreateCircle:
 						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
 						Create("Circle");
-						//std::cout << "Create Circle!\n";
 						break;
 
 					case InputEvent::InputAction::CreateBananaCircle:
 						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
 						Create("Player");
-						//std::cout << "Create Banana!\n";
 						break;
 
 					case InputEvent::InputAction::StressTest:
 						if (!m_stress) {
-							StressTestCreate();
+							UnLoadLevel();
+							StressTestCreate(LayerType::GAMELAYER, "StressTest", 69);
 							m_stress = true;
 						}
-						//std::cout << "Doubled Entities!\n";
+						break;
+
+					case InputEvent::InputAction::LayerTest:
+						if (m_stress && !m_layer) {
+							StressTestCreate(LayerType::FOREGROUND, "LayerTest", 420);
+							m_layer = true;
+						}
 						break;
 
 					case InputEvent::InputAction::EndStressTest:
 						if (m_stress) {
 							StressTestEnd();
 							m_stress = false;
+							m_layer = false;
 						}
-						//std::cout << "Removed Entities!\n";
-						break;
-					case InputEvent::InputAction::CheckEntityNum:
-						std::cout << "Entity Num: " << coord.GetLivingEntityCount() << '\n';
 						break;
 					}
-						
 				}
 
 				});
@@ -225,8 +225,9 @@ namespace NightSnack {
 		Create 1000 entities for stress test - Combination 1;
 		*/
 		/************************************************************************/
-		void StressTestCreate();
+		void StressTestCreate(LayerType, std::string const&, int);
 		bool m_stress{ false };
+		bool m_layer{ false };
 
 		/************************************************************************/
 		/*!

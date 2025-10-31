@@ -238,31 +238,31 @@ namespace NightSnack {
 		}
 	}
 	void PhysicsSystem::TransferForce(Transform const& t1, Transform const& t2, RigidBody& r1, RigidBody& r2) {
+		
 		if (!r1.force.isActive) { return; }
 
-		ApplyForce(r2, r1.force);
+		// Vector from e1 to e2;
+		Vec3 dir = t2.pos - t1.pos;
+		if (dir.magnitude() != 0.f) { dir.normalize(); }
 
-		Vec3 dir = t1.pos - t2.pos;
-		if (dir.magnitude() != 0)
-		dir.normalize();
-		Force f;
-		f.direction = Vec2{ dir.x,dir.y };
-		f.magnitude = r1.force.magnitude * r1.restitution;
-		f.isActive = true;
+		// Apply force to collide target ----------------------------
+		r2.force.direction.x = dir.x;
+		r2.force.direction.y = dir.y;
+		r2.force.magnitude = (r2.force.magnitude * (1.f - r1.restitution) + r1.force.magnitude * r2.restitution);
 
-		ApplyForce(r1, f);
+		// Update this entity's force -------------------------------
+		r1.force.direction.x = -dir.x;
+		r1.force.direction.y = -dir.y;
+		r1.force.magnitude = (r1.force.magnitude * (1.f - r2.restitution) + r2.force.magnitude * r1.restitution);
 
-		/*r1.force.direction.x += dir.y;
-		r1.force.direction.y += -dir.x;
-		if (r1.force.direction.magnitude() != 0.f) {
-			r1.force.direction.normalize();
-			r1.force.magnitude = r1.force.magnitude * (1.f - r2.restitution);
-		}
-		else {
-			ResetForce(r1.force);
-		}*/
-
+		// Update Velocities ----------------------------------------
+		float mag = r1.vel.magnitude();
+		r1.vel = r1.force.direction * mag * 0.8f;
+		
+		mag = r2.vel.magnitude();
+		r2.vel = r2.force.direction * mag * 0.8f;
 	}
+
 	void PhysicsSystem::ApplyForce(RigidBody& r, Force const& f) {
 		
 		if (!f.isActive) { return; }
@@ -283,7 +283,6 @@ namespace NightSnack {
 		else {
 			r.force = Force{};
 		}
-
 	}
 	void PhysicsSystem::ResetForce(Force& f) {
 		f.direction = Vec2{};

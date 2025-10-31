@@ -201,5 +201,24 @@
       "materialName": "bananaMat",
       "isWireframe" : false
     }
+  },
+
+  "LayerTest": {
+    "RigidBody": {
+      "mass": 1.0,
+      "useGravity": false
+    },
+    "Collider": {
+      "shape": "Circle",
+      "type": "Solid",
+      "isStatic": false,
+      "radius": 5.0
+    },
+    "Renderable": {
+      "meshName": "circle",
+      "materialName": "ColorMat",
+      "isWireframe" : false
+    },
+    "Color": { "r": 1.0, "g": 0.0, "b": 0.0, "a": 1.0 }
   }
 }

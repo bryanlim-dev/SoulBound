@@ -262,7 +262,8 @@ namespace NightSnack {
 			if ((entitySig & systemSig) == systemSig) {
 				// Insert Entity into System set of Entities;
 				system->entities().insert(e);
-				// Insert Entity into appropriate Layer;
+				// Refresh Entity Layer;
+				system->RemoveFromLayers(e);
 				system->AddToLayer(e, l);
 			}
 			else {
