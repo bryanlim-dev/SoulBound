@@ -67,6 +67,7 @@ namespace NightSnack {
                 }
             });
             // By default add 1 game layer;
+            AddLayer(LayerType::BACKGROUND);
             AddLayer(LayerType::GAMELAYER);
             AddLayer(LayerType::FOREGROUND);
 
@@ -138,7 +139,7 @@ namespace NightSnack {
         // Physics parameters;
         float gravity = -980.f;
         float drag = 0.5f;
-        float friction = 0.98f;
+        float friction = 0.8f;
 
         // DebugMode for Physics;
         bool debugMode = false;

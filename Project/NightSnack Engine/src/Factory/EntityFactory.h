@@ -63,7 +63,7 @@ namespace NightSnack {
 
 					case InputEvent::InputAction::LayerTest:
 						if (m_stress && !m_layer) {
-							StressTestCreate(LayerType::FOREGROUND, "LayerTest", 420, Vec2{ 10.f, 10.f });
+							StressTestCreate(LayerType::BACKGROUND, "LayerTest", 420, Vec2{ 10.f, 10.f });
 							m_layer = true;
 						}
 						break;

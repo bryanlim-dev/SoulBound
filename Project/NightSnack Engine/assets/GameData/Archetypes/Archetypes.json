@@ -35,16 +35,17 @@
     "Color": { "r": 1.0, "g": 0.0, "b": 0.0, "a": 1.0 }
   },
 
-  "BananaBall": {
+  "Ghost": {
     "RigidBody": {
       "mass": 1.0,
       "useGravity": false
     },
     "Collider": {
-      "shape": "Circle",
+      "shape": "AABB",
       "type": "Solid",
       "isStatic": false,
-      "radius": 50.0
+      "width": 100.0,
+      "height": 100.0
     },
     "Renderable": {
       "meshName": "square",

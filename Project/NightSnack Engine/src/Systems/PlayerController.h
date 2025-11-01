@@ -98,11 +98,12 @@ namespace NightSnack {
 
             PlayerController const& pcont = m_coord.GetComponent<PlayerController>(m_player);
             Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
+            Collider& col = m_coord.ModifyComponent<Collider>(m_player);
 
-            if ((m_flags.movingRight && !m_flags.movingLeft) && !m_coord.GetComponent<Collider>(m_player).colliding) {
+            if (m_flags.movingRight && !m_flags.movingLeft) {
                 vel.x = pcont.moveSpeed;
             }
-            else if ((m_flags.movingLeft && !m_flags.movingRight) && !m_coord.GetComponent<Collider>(m_player).colliding) {
+            else if (m_flags.movingLeft && !m_flags.movingRight) {
                 vel.x = -pcont.moveSpeed;
             }
             else if (!m_flags.movingLeft && !m_flags.movingRight) {

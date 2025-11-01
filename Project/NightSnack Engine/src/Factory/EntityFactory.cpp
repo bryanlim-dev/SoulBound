@@ -86,12 +86,14 @@ namespace NightSnack {
 		Transform t{ Vec3{}, {}, scale, layer };
 
 		for (int i{}; i < 1000; ++i) {
-			Vec3 p = { static_cast<float>(rand() % Wvp - Wvp / 2),
+
+			// Random position within viewport;
+			t.pos = { static_cast<float>(rand() % Wvp - Wvp / 2),
 			static_cast<float>(rand() % Hvp - Hvp / 2), 1.f };
 
-			t.pos = p;
 			Entity e2 = Create(prefabName, t);
 
+			// Randomized vector for Force direction;
 			Vec2 v = { static_cast<float>(rand() % Wvp - Wvp / 2),
 			static_cast<float>(rand() % Hvp - Hvp / 2) };
 

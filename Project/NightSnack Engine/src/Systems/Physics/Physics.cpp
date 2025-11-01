@@ -52,6 +52,9 @@ namespace NightSnack {
 					RigidBody& rig = m_coord.ModifyComponent<RigidBody>(e);
 					Collider& col = m_coord.ModifyComponent<Collider>(e);
 
+					col.isGrounded = false;
+					col.colliding = false;
+
 					// Update force's lifetime;
 					ManageForces(rig);
 					// Update velocities in RigidBody;
@@ -120,6 +123,9 @@ namespace NightSnack {
 	}
 
 	void PhysicsSystem::ResolveCollisions() {
+
+		Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+
 		for (size_t x{}; x < m_grid1.size(); ++x) {
 			if (!m_grid1[x].any()) { continue; }
 
@@ -139,21 +145,21 @@ namespace NightSnack {
 						Collider& c1 = m_coord.ModifyComponent<Collider>(e1);
 						Collider& c2 = m_coord.ModifyComponent<Collider>(e2);
 
-						// Skip if first entity is a static body;
 						if (c1.isStatic) { continue; }
 
-						// Check for collision in e1's next position;
 						RigidBody& r1 = m_coord.ModifyComponent<RigidBody>(e1);
 						RigidBody& r2 = m_coord.ModifyComponent<RigidBody>(e2);
 
 						Transform& t1 = m_coord.ModifyComponent<Transform>(e1);
 						Transform& t2 = m_coord.ModifyComponent<Transform>(e2);
 
+						// Check for collision in e1's next position;
 						Transform next = t1;
 						next.pos.x += r1.vel.x * FixedDT;
 						next.pos.y += r1.vel.y * FixedDT;
 
 						if (!CheckCollision(next, t2, c1, c2)) { continue; }
+						c1.colliding = true;
 
 						// Not colliding yet;
 						next.pos = t1.pos;
@@ -174,7 +180,7 @@ namespace NightSnack {
 							ResolveOverlap(t1, t2, c1, c2, r1, r2);
 						}
 						// Apply force to collided target;
-						if (!c2.isStatic) {
+						if (!c2.isStatic && e2 != player) {
 							TransferForce(t1, t2, r1, r2);
 						}
 					}
