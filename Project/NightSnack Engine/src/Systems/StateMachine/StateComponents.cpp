@@ -12,11 +12,12 @@ namespace NightSnack
 
 		bool EntityCountdownComponentFinish(Entity ownerID, Coordinator& coord)
 		{
+			std::string componentName = "countdown";
 			//Check if componet exists
-			if (coord.GetComponent<States>(ownerID).currState->HasStateComponent("CooldownComponent"))
+			if (coord.GetComponent<States>(ownerID).currState->HasStateComponent(componentName))
 			{
 				//Check curr timer <= 0
-				StateComponentCountdown* cooldown = static_cast<StateComponentCountdown*>(coord.GetComponent<States>(ownerID).currState->GetStateComponent("CooldownComponent").get());
+				StateComponentCountdown* cooldown = static_cast<StateComponentCountdown*>(coord.GetComponent<States>(ownerID).currState->GetStateComponent(componentName).get());
 				if (cooldown->GetCurrTime() <= 0)
 				{
 					return true;
