@@ -102,7 +102,6 @@ namespace NightSnack
             if (m_hoveredEntity != INVALID_ENTITY)
             {
 				// Draw outline for hovered entity
-                auto graphics = m_coord.GetSystem<GraphicsSystem>();
                 if (graphics && m_coord.HasComponent<Transform>(m_hoveredEntity) && m_coord.HasComponent<Renderable>(m_hoveredEntity))
                 {
                     auto& t = m_coord.GetComponent<Transform>(m_hoveredEntity);
@@ -151,14 +150,13 @@ namespace NightSnack
                 float ndcY = 1.0f - (mousePosInImage.y / imageSize.y) * 2.0f;
 
 				// Convert NDC to world coordinates
-                auto& cam = m_coord.GetComponent<Camera>(m_editorCameraEntity);
-                auto& camTransform = m_coord.GetComponent<Transform>(m_editorCameraEntity);
-                float halfWidth = (cam.width * 0.5f) / cam.zoom;
-                float halfHeight = (cam.height * 0.5f) / cam.zoom;
+                auto& camInfoTransform = m_coord.GetComponent<Transform>(m_editorCameraEntity);
+                float halfWidth = (camInfo.width * 0.5f) / camInfo.zoom;
+                float halfHeight = (camInfo.height * 0.5f) / camInfo.zoom;
 
                 // Calculate world position
-                float mouseWorldX = camTransform.pos.x + ndcX * halfWidth;
-                float mouseWorldY = camTransform.pos.y + ndcY * halfHeight;
+                mouseWorldX = camInfoTransform.pos.x + ndcX * halfWidth;
+                mouseWorldY = camInfoTransform.pos.y + ndcY * halfHeight;
 
 				// Mouse Interaction within Scene Panel
                 if (ImGui::IsItemHovered() && ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))

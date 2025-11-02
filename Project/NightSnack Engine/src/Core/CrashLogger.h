@@ -17,6 +17,7 @@
 #include <string>
 #include <ctime>
 #include <filesystem>
+#include <fstream>
 #include "Exception.h"
 #include "ResourceManager/ResourceManager.h"
 
