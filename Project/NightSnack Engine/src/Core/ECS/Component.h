@@ -147,6 +147,20 @@ namespace NightSnack {
         float height{ 900.f };
     };
 
+    enum ButtonType {
+        GAMEMENU,
+        SETTINGS,
+        EXIT
+    };
+    enum ButtonAction {
+        PLAYAUDIO,
+        CHANGELEVELS
+    };
+    struct ButtonInfo {
+        ButtonAction action;
+        ButtonType type;
+    };
+
     // Add more Components here if necessary...
     // Ensure to add a Json overload below for your component to allow for Archetype Loading...
 
@@ -243,6 +257,19 @@ namespace NightSnack {
         j.at("zoom").get_to(c.zoom);
         j.at("width").get_to(c.width);
         j.at("height").get_to(c.height);
+    }
+
+    inline void from_json(const json& j, ButtonInfo& b) {
+        if (j["action"] == "PlayAudio") {
+            b.action = ButtonAction::PLAYAUDIO;
+        }
+        if (j["action"] == "ChangeLevel") {
+            b.action = ButtonAction::CHANGELEVELS;
+        }
+
+        if (j["type"] == "GameMenu") {
+            b.type = ButtonType::GAMEMENU;
+        }
     }
 
     // COLLISION ==================================================
