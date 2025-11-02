@@ -98,6 +98,38 @@ namespace NightSnack
                 graphics->RenderWithCamera(m_editorCameraEntity);
             }
 
+            auto& camInfo = m_coord.GetComponent<Camera>(m_editorCameraEntity);
+            if (m_hoveredEntity != INVALID_ENTITY)
+            {
+				// Draw outline for hovered entity
+                auto graphics = m_coord.GetSystem<GraphicsSystem>();
+                if (graphics && m_coord.HasComponent<Transform>(m_hoveredEntity) && m_coord.HasComponent<Renderable>(m_hoveredEntity))
+                {
+                    auto& t = m_coord.GetComponent<Transform>(m_hoveredEntity);
+                    auto& r = m_coord.GetComponent<Renderable>(m_hoveredEntity);
+
+					// Draw wireframe outline
+                    Shader* shader = graphics->GetShader("debug");
+                    Mesh* mesh = graphics->GetMesh(r.meshName);
+                    if (shader && mesh)
+                    {
+						// Calculate MVP matrix
+                        auto& camTransform = m_coord.GetComponent<Transform>(m_editorCameraEntity);
+                        glm::mat4 proj = graphics->GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
+                        glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camTransform.pos.x, -camTransform.pos.y, -camTransform.pos.z));
+                        glm::mat4 model = graphics->GetModelToWorldMatrix(t.pos, t.rot, t.scale, r.renderLayer);
+
+                        shader->Use();
+                        shader->SetMat4("uDebugMVP", proj * view * model);
+                        shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green
+
+                        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+                        mesh->Draw();
+                        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+                    }
+                }
+            }
+
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
             // Center the image in the panel
@@ -107,20 +139,36 @@ namespace NightSnack
 
             if (m_colorTex && imageSize.x > 0 && imageSize.y > 0)
             {
-                // Store cursor position for drop zone
-                ImVec2 imageTopLeft = ImGui::GetCursorScreenPos();
-
                 ImGui::Image((ImTextureID)m_colorTex, imageSize, ImVec2(0, 1), ImVec2(1, 0));
 
+                // Calculate mouse world position for the editor camera
+                ImVec2 imageTopLeft = ImGui::GetItemRectMin();
+                ImVec2 mousePosInPanel = ImGui::GetMousePos();
+                ImVec2 mousePosInImage = ImVec2(mousePosInPanel.x - imageTopLeft.x, mousePosInPanel.y - imageTopLeft.y);
+
+				// Convert to Normalized Coordinates
+                float ndcX = (mousePosInImage.x / imageSize.x) * 2.0f - 1.0f;
+                float ndcY = 1.0f - (mousePosInImage.y / imageSize.y) * 2.0f;
+
+				// Convert NDC to world coordinates
+                auto& cam = m_coord.GetComponent<Camera>(m_editorCameraEntity);
+                auto& camTransform = m_coord.GetComponent<Transform>(m_editorCameraEntity);
+                float halfWidth = (cam.width * 0.5f) / cam.zoom;
+                float halfHeight = (cam.height * 0.5f) / cam.zoom;
+
+                // Calculate world position
+                float mouseWorldX = camTransform.pos.x + ndcX * halfWidth;
+                float mouseWorldY = camTransform.pos.y + ndcY * halfHeight;
+
+				// Mouse Interaction within Scene Panel
                 if (ImGui::IsItemHovered() && ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
                 {
                     ImGuiIO& io = ImGui::GetIO();
-
+                    auto& cam = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
                     // Camera Zoom
                     float scroll = io.MouseWheel;
                     if (scroll != 0.0f)
                     {
-                        auto& cam = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
                         // Clamp scaling for smooth zoom
                         cam.zoom = std::clamp(cam.zoom * (scroll > 0 ? 1.1f : 0.9f), 0.05f, 10.0f);
                     }
@@ -132,11 +180,77 @@ namespace NightSnack
                         auto& camTransform = m_coord.ModifyComponent<Transform>(m_editorCameraEntity);
 
                         // Pan speed
-                        constexpr float panSpeed = 1.0f;
-                        camTransform.pos.x -= dragDelta.x * panSpeed;
-                        camTransform.pos.y += dragDelta.y * panSpeed;
-
+						constexpr float panSpeed = 1.65f;
+                        camTransform.pos.x -= dragDelta.x * (panSpeed / cam.zoom);
+                        camTransform.pos.y += dragDelta.y * (panSpeed / cam.zoom);
+						// Reset drag delta to avoid compounding movement
                         ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
+                    }
+
+
+                    // Detect left mouse press and pick entity
+                    if (!m_isDragging)
+                    {
+						// Find topmost entity under mouse
+                        Entity topEntity = INVALID_ENTITY;
+                        int topLayer = -1000;
+                        float topZ = -1e9f;
+
+						// Iterate through all entities to find which one is under the mouse
+                        for (Entity e : m_coord.GetLivingEntities())
+                        {
+							// Only consider entities with Transform and Renderable components
+                            if (!m_coord.HasComponent<Transform>(e) || !m_coord.HasComponent<Renderable>(e))
+                                continue;
+
+                            auto& t = m_coord.GetComponent<Transform>(e);
+                            auto& r = m_coord.GetComponent<Renderable>(e);
+
+							// AABB check
+                            float halfW = t.scale.x * 0.5f;
+                            float halfH = t.scale.y * 0.5f;
+                            if (mouseWorldX >= t.pos.x - halfW && mouseWorldX <= t.pos.x + halfW &&
+                                mouseWorldY >= t.pos.y - halfH && mouseWorldY <= t.pos.y + halfH)
+                            {
+								// Check if this entity is on top based on render layer and z-position
+                                int layer = static_cast<int>(r.renderLayer);
+                                float z = t.pos.z;
+                                if (layer > topLayer || (layer == topLayer && z > topZ))
+                                {
+                                    topEntity = e;
+                                    topLayer = layer;
+                                    topZ = z;
+                                }
+                            }
+                        }
+						// Set hovered entity
+                        m_hoveredEntity = topEntity;
+
+						// Start dragging on left mouse click
+                        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !m_isDragging && m_hoveredEntity != INVALID_ENTITY)
+                        {
+							// Calculate drag offset
+                            auto& t = m_coord.GetComponent<Transform>(m_hoveredEntity);
+                            m_dragOffset.x = t.pos.x - mouseWorldX;
+                            m_dragOffset.y = t.pos.y - mouseWorldY;
+                            m_isDragging = true;
+                        }
+                    }
+
+					// Handle dragging of entity
+                    if (m_isDragging && m_hoveredEntity != INVALID_ENTITY)
+                    {
+						// Update entity position while dragging
+                        if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
+                        {
+                            auto& t = m_coord.ModifyComponent<Transform>(m_hoveredEntity);
+                            t.pos.x = mouseWorldX + m_dragOffset.x;
+                            t.pos.y = mouseWorldY + m_dragOffset.y;
+                        }
+                        else if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+                        {
+                            m_isDragging = false;
+                        }
                     }
                 }
 
@@ -213,6 +327,10 @@ namespace NightSnack
         Coordinator& m_coord;
         Entity m_backgroundEntity;      // Current background entity ID
 		Entity m_editorCameraEntity;
+
+        Entity m_hoveredEntity = INVALID_ENTITY;
+        Vec3   m_dragOffset = { 0, 0, 0 };
+        bool   m_isDragging = false;
 
         Transform m_editorTransform;
         Camera m_editorCamera;

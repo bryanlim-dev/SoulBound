@@ -278,6 +278,7 @@ namespace NightSnack {
 			if (ImGui::BeginMenu("Game"))
 			{
 				if (ImGui::MenuItem("Play")) {}
+				if (ImGui::MenuItem("Pause")) {}
 				if (ImGui::MenuItem("Stop")) {}
 				ImGui::EndMenu();
 			}
