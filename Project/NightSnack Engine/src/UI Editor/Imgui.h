@@ -71,6 +71,14 @@ namespace NightSnack {
 		/************************************************************************/
 		void ResetAll();
 
+		/************************************************************************/
+		/*!
+		\brief
+		Resets the game to initial state.
+		*/
+		/************************************************************************/
+		void ResetGame();
+
 		// Required by ISystem base class.
 		Signature GetSignature() const override { return m_systemSignature; }
 		std::string GetName() const override { return "ImguiSystem"; }
@@ -80,6 +88,7 @@ namespace NightSnack {
 		Signature m_systemSignature{};
 		EventDispatcher* m_dispatcher = nullptr;
 		bool m_toggleEditor = false;
+		bool m_isPlaying = true;
 
 		std::unordered_map<Entity, std::string> uiNames;
 		std::shared_ptr<Entity> m_selectedEntity;
@@ -92,6 +101,7 @@ namespace NightSnack {
 		void SetupDockspace();
 		void DrawMenuBar();
 		void SetEditorEnabled(bool enabled);
+		void SetSimulationPaused(bool paused);
 	};
 
 	inline ImguiSystem::ImguiSystem(Coordinator& coord, EventDispatcher& dispatcher) : m_coord{ coord }, m_dispatcher{ &dispatcher } {
@@ -138,7 +148,7 @@ namespace NightSnack {
 		m_selectedEntity = std::make_shared<Entity>(INVALID_ENTITY);
 		m_hierarchyPanel = std::make_unique<HierarchyPanel>(m_coord, m_selectedEntity, uiNames);
 		m_inspectorPanel = std::make_unique<InspectorPanel>(m_coord, m_selectedEntity, uiNames);
-		m_scenePanel	 = std::make_unique<ScenePanel>(m_coord);
+		m_scenePanel	 = std::make_unique<ScenePanel>(m_coord, m_selectedEntity);
 		m_optionsPanel	 = std::make_unique<OptionsPanel>(m_coord);
 		m_assetsPanel	 = std::make_unique<AssetsPanel>(m_coord);
 	}
@@ -190,6 +200,15 @@ namespace NightSnack {
 		m_optionsPanel.reset();
 		m_assetsPanel.reset();
 		m_selectedEntity.reset();
+	}
+
+	inline void ImguiSystem::ResetGame() {
+		auto factory = m_coord.GetSystem<EntityFactory>();
+		if (factory)
+		{
+			factory->UnLoadLevel();
+			factory->LoadLevel("assets/GameData/DefaultLevel.json");
+		}
 	}
 
 	inline void ImguiSystem::SetupDockspace() {
@@ -272,14 +291,51 @@ namespace NightSnack {
 				if (ImGui::MenuItem("Inspector")) {}
 				if (ImGui::MenuItem("Scene")) {}
 				if (ImGui::MenuItem("Assets")) {}
-
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Game"))
 			{
-				if (ImGui::MenuItem("Play")) {}
-				if (ImGui::MenuItem("Pause")) {}
-				if (ImGui::MenuItem("Stop")) {}
+				// Play
+				if (!m_isPlaying) 
+				{
+					if (ImGui::MenuItem("Play"))
+					{
+						m_isPlaying = true;
+						SetSimulationPaused(false);
+					}
+				}
+				else
+				{
+					ImGui::BeginDisabled();
+					ImGui::MenuItem("Play");
+					ImGui::EndDisabled();
+				}
+
+				// Pause
+				auto physics = m_coord.GetSystem<PhysicsSystem>();
+				bool isPaused = physics && physics->IsDebugMode();
+				if (ImGui::MenuItem("Pause", nullptr, isPaused))
+				{
+					SetSimulationPaused(!isPaused);
+				}
+
+				// Stop
+				if (m_isPlaying)
+				{
+					if (ImGui::MenuItem("Stop"))
+					{
+						m_isPlaying = false;
+						SetSimulationPaused(true);
+						ResetGame();
+					}
+				}
+				else
+				{
+					ImGui::BeginDisabled();
+					ImGui::MenuItem("Stop");
+					ImGui::EndDisabled();
+				}
+
 				ImGui::EndMenu();
 			}
 			ImGui::EndMenuBar();
@@ -306,6 +362,16 @@ namespace NightSnack {
 			}
 		}
 		m_toggleEditor = enabled;
+	}
+
+	inline void ImguiSystem::SetSimulationPaused(bool paused) {
+		if (m_dispatcher) {
+			auto physics = m_coord.GetSystem<PhysicsSystem>();
+			if (physics && physics->IsDebugMode() != paused) {
+				m_dispatcher->QueueEvent(std::make_unique<InputEvent>
+					(InputEvent::InputAction::PhysicsDebugMode, InputEvent::InputActionState::Pressed));
+			}
+		}
 	}
 
 }	// NightSnack

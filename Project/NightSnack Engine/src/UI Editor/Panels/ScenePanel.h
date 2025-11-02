@@ -18,7 +18,8 @@ namespace NightSnack
 {
     class ScenePanel {
     public:
-        ScenePanel(Coordinator& coord) : m_coord(coord) 
+        ScenePanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity)
+            : m_coord(coord), m_selectedEntity(selectedEntity)
         {
 			// Create a dedicated editor camera entity for Scene Panel
             m_editorCameraEntity = m_coord.CreateEntity();
@@ -227,6 +228,7 @@ namespace NightSnack
 						// Start dragging on left mouse click
                         if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !m_isDragging && m_hoveredEntity != INVALID_ENTITY)
                         {
+                            *m_selectedEntity = m_hoveredEntity;
 							// Calculate drag offset
                             auto& t = m_coord.GetComponent<Transform>(m_hoveredEntity);
                             m_dragOffset.x = t.pos.x - mouseWorldX;
@@ -323,6 +325,8 @@ namespace NightSnack
     private:
         GLuint m_sceneTexture = 0;
         Coordinator& m_coord;
+
+        std::shared_ptr<Entity> m_selectedEntity;
         Entity m_backgroundEntity;      // Current background entity ID
 		Entity m_editorCameraEntity;
 
