@@ -112,6 +112,34 @@ namespace NightSnack
 
                 ImGui::Image((ImTextureID)m_colorTex, imageSize, ImVec2(0, 1), ImVec2(1, 0));
 
+                if (ImGui::IsItemHovered() && ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
+                {
+                    ImGuiIO& io = ImGui::GetIO();
+
+                    // Camera Zoom
+                    float scroll = io.MouseWheel;
+                    if (scroll != 0.0f)
+                    {
+                        auto& cam = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
+                        // Clamp scaling for smooth zoom
+                        cam.zoom = std::clamp(cam.zoom * (scroll > 0 ? 1.1f : 0.9f), 0.05f, 10.0f);
+                    }
+
+                    // Camera Pan (Right Mouse Drag)
+                    if (ImGui::IsMouseDragging(ImGuiMouseButton_Right))
+                    {
+                        ImVec2 dragDelta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
+                        auto& camTransform = m_coord.ModifyComponent<Transform>(m_editorCameraEntity);
+
+                        // Pan speed
+                        constexpr float panSpeed = 1.0f;
+                        camTransform.pos.x -= dragDelta.x * panSpeed;
+                        camTransform.pos.y += dragDelta.y * panSpeed;
+
+                        ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
+                    }
+                }
+
                 // ================================================================
                 // DRAG & DROP TARGET - Accept images dropped from Assets panel
                 // THIS IS WHERE THE MAGIC HAPPENS!

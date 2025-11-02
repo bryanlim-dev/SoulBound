@@ -116,7 +116,7 @@ namespace NightSnack {
 		auto& camPos = m_coord.GetComponent<Transform>(camera).pos;
 		auto& camInfo = m_coord.GetComponent<Camera>(camera);
 
-		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height);
+		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
 		m_meshBatches.clear();
@@ -508,9 +508,9 @@ namespace NightSnack {
 	// Compute the transformation matrices ------------------------------------------------------------------
 	// ------------------------------------------------------------------------------------------------------
 
-	glm::mat4 GraphicsSystem::GetCameraProjectionMatrix(float width, float height) {
-		float halfWidth = width * 0.5f;
-		float halfHeight = height * 0.5f;
+	glm::mat4 GraphicsSystem::GetCameraProjectionMatrix(float width, float height, float zoom) {
+		float halfWidth = (width * 0.5f) / zoom;
+		float halfHeight = (height * 0.5f) / zoom;
 		// Orthographic projection keeps objects the same size regardless of depth
 		// Arguments in the order of (left, right, bottom, top, near, far)
 		return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, Z_EPSILON, 10.f);

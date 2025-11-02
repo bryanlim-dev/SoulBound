@@ -12,6 +12,7 @@
 
 #pragma once
 #include "AllPanels.h"
+#include <stb_image.h>
 
 namespace NightSnack
 {
@@ -285,25 +286,55 @@ namespace NightSnack
         if (!m_coord.HasComponent<Renderable>(*m_selectedEntity))
             return;
 
-        auto& r = m_coord.ModifyComponent<Renderable>(*m_selectedEntity);
+        auto& renderable = m_coord.ModifyComponent<Renderable>(*m_selectedEntity);
+        auto graphics = m_coord.GetSystem<GraphicsSystem>();
 
         if (ImGui::CollapsingHeader("Renderer", ImGuiTreeNodeFlags_DefaultOpen))
         {
             // Mesh Name (read-only for now)
             ImGui::Text("Mesh");
             ImGui::SameLine(100);
-            ImGui::TextDisabled("%s", r.meshName.c_str());
+            ImGui::TextDisabled("%s", renderable.meshName.c_str());
 
-            // Material Name (read-only for now)
-            ImGui::Text("Material");
+            // Material Name with Drag and Drop
+            
+            const std::string& textureName = renderable.materialName.empty() ? std::string("None") : renderable.materialName;
+            
+            ImGui::Text("Texture");
             ImGui::SameLine(100);
-            ImGui::TextDisabled("%s", r.materialName.c_str());
+
+            // Use a selectable or button to mimic a non-editable text box
+            ImGui::PushID("TextureField");
+            ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetStyle().Colors[ImGuiCol_FrameBg]);
+            ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_Text]);
+            ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4.0f);
+
+            bool dummy = false;
+            ImGui::Selectable(textureName.c_str(), &dummy, ImGuiSelectableFlags_Disabled, ImVec2(180, 0));
+
+            ImGui::PopStyleVar();
+            ImGui::PopStyleColor(2);
+
+            // Accept drag-and-drop from AssetsPanel
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE")) {
+                    const char* droppedPath = static_cast<const char*>(payload->Data);
+                    if (graphics)
+                    {
+                        stbi_set_flip_vertically_on_load(true);
+                        graphics->UpdateTextureOfMaterial(droppedPath, *m_selectedEntity);
+                    }
+                }
+                ImGui::EndDragDropTarget();
+            }
+            ImGui::PopID();
 
             // isWireframe checkbox
-            ImGui::Checkbox("Wireframe", &r.isWireframe);
+            ImGui::Checkbox("Wireframe", &renderable.isWireframe);
 
             // wasModified checkbox
-            ImGui::Checkbox("Was Modified", &r.wasModified);
+            ImGui::Checkbox("Was Modified", &renderable.wasModified);
         }
         ImGui::Separator();
 	}

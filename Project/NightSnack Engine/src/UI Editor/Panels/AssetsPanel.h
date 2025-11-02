@@ -320,7 +320,7 @@ namespace NightSnack
                     ImTextureID texID = GetOrLoadTexture(m_selectedAssetPath);
                     if (texID)
                     {
-                        ImGui::Image(texID, ImVec2(200, 200));
+                        ImGui::Image(texID, ImVec2(200, 200), ImVec2(0, 1), ImVec2(1, 0));
                     }
                 }
 
@@ -494,8 +494,9 @@ namespace NightSnack
                 // ----------------------------------------------------------------
                 // RENDER THUMBNAIL - Clickable image button
                 // ----------------------------------------------------------------
-                ImGui::ImageButton(pathStr.c_str(), texID,
-                    ImVec2(m_thumbnailSize, m_thumbnailSize));
+                ImGui::ImageButton(pathStr.c_str(), texID, 
+                    ImVec2(m_thumbnailSize, m_thumbnailSize), ImVec2(0, 1), ImVec2(1, 0));
+
 
                 // Pop highlight color if was selected
                 if (m_selectedAssetPath == pathStr)
@@ -521,7 +522,7 @@ namespace NightSnack
                     ImGui::SetDragDropPayload("ASSET_IMAGE", pathStr.c_str(), pathStr.size() + 1);
 
                     // DRAG PREVIEW - Show thumbnail while dragging
-                    ImGui::Image(texID, ImVec2(64, 64));
+                    ImGui::Image(texID, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
                     ImGui::Text("%s", entry.path().filename().string().c_str());
 
                     ImGui::EndDragDropSource();
@@ -602,7 +603,7 @@ namespace NightSnack
                 return m_loadedTextures[path];
             }
 
-            stbi_set_flip_vertically_on_load(false);
+            //stbi_set_flip_vertically_on_load(false);
 
             // --- Use your Texture class to load the image --- //
             std::shared_ptr<Texture> tex = std::make_shared<Texture>(path, m_coord.GetSystem<ResourceManager>());
