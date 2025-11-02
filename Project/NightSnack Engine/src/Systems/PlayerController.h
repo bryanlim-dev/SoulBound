@@ -44,7 +44,7 @@ namespace NightSnack {
         /************************************************************************/
         PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord }, m_dispatcher { &disp } {
 
-            m_player = FindPlayer(coord);
+            m_player = 1;
 
             m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
                 {
@@ -94,14 +94,20 @@ namespace NightSnack {
 
             m_player = FindPlayer(m_coord);
 
+            if (m_player == INVALID_ENTITY) { return; }
+
             PlayerController const& pcont = m_coord.GetComponent<PlayerController>(m_player);
             Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
+            Collider& col = m_coord.ModifyComponent<Collider>(m_player);
 
-            if ((m_flags.movingRight && !m_flags.movingLeft) && !m_coord.GetComponent<Collider>(m_player).colliding) {
+            if (m_flags.movingRight && !m_flags.movingLeft) {
                 vel.x = pcont.moveSpeed;
             }
-            else if ((m_flags.movingLeft && !m_flags.movingRight) && !m_coord.GetComponent<Collider>(m_player).colliding) {
+            else if (m_flags.movingLeft && !m_flags.movingRight) {
                 vel.x = -pcont.moveSpeed;
+            }
+            else if (!m_flags.movingLeft && !m_flags.movingRight) {
+                vel.x = 0.f; // Stop moving when no keys pressed
             }
             if (m_flags.jumpRequested && m_coord.GetComponent<Collider>(m_player).isGrounded) {
                 vel.y = pcont.jumpSpeed;
@@ -128,14 +134,12 @@ namespace NightSnack {
 
             playerSig.set(GetComponentTypeID<PlayerController>());
             playerSig.set(GetComponentTypeID<Transform>());
-
-            playerSig.set(GetComponentTypeID<Force>());
             playerSig.set(GetComponentTypeID<RigidBody>());
             playerSig.set(GetComponentTypeID<Collider>());
 
             // Iterate through all living Entities in the COORDINATOR instead
             // Since the GraphicsSystem will not have a Camera Entity
-            for (Entity const& e : coord.GetLivingEntities()) {
+            for (Entity e : coord.GetLivingEntities()) {
                 if ((coord.GetEntitySignature(e) & playerSig) == playerSig) { // This camera Entity is the main camera
                     return e;
                 }
@@ -143,6 +147,8 @@ namespace NightSnack {
             //std::cerr << "Error: No Player Entity found in scene!\n";
             return INVALID_ENTITY;
         }
+
+        Entity GetPlayer() const noexcept { return m_player; }
 
         void ResetFlags() {
             m_flags = PlayerFlags{};

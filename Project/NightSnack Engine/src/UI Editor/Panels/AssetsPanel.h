@@ -662,7 +662,7 @@ namespace NightSnack
             }
             catch (const std::exception& e)
             {
-                //std::cerr << "[Assets] Error deleting asset: " << e.what() << "\n";
+                std::cerr << "[Assets] Error deleting asset: " << e.what() << "\n";
 
                 // close the window
                 m_showAssetProperties = false;

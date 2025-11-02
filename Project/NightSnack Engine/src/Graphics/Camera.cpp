@@ -35,10 +35,7 @@ namespace NightSnack {
         }
 
         // Find player if we don't have one
-        if (m_player == INVALID_ENTITY)
-        {
-            m_player = FindPlayer(coord);
-        }
+        m_player = FindPlayer(coord);
 
         // If we have both camera and player, make camera follow player
         if (m_mainCamera != INVALID_ENTITY && m_player != INVALID_ENTITY)
@@ -56,6 +53,11 @@ namespace NightSnack {
                 cameraTransform.pos.y = playerTransform.pos.y;
             }
         }
+        else {
+            // Set camera position to player position
+            auto& cameraTransform = coord.ModifyComponent<Transform>(m_mainCamera);
+            cameraTransform.pos = Vec3{0.f, 0.f, 2.f};
+        }
     }
 
     Entity CameraSystem::CameraComponent(Coordinator& coord)
@@ -68,7 +70,7 @@ namespace NightSnack {
                 auto& camera = coord.GetComponent<Camera>(entity);
                 if (camera.isMainCam)
                 {
-                    std::cout << "[CameraSystem] Found main camera: " << entity << "\n";
+                    //std::cout << "[CameraSystem] Found main camera: " << entity << "\n";
                     return entity;
                 }
             }

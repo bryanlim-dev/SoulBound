@@ -90,7 +90,7 @@ namespace NightSnack
             // Render scene to framebuffer using editor camera
             glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
             glViewport(0, 0, m_width, m_height);
-            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+            glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             auto graphics = m_coord.GetSystem<GraphicsSystem>();

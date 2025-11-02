@@ -23,6 +23,7 @@
 #include "Factory/PrefabManager.h"
 #include "Systems/Application/Input.h"
 #include "Systems/Application/IEvent.h"
+#include "Systems/Graphics.h"
 
 namespace NightSnack {
 
@@ -45,42 +46,36 @@ namespace NightSnack {
 			LoadArchetypes(archetypes_filename);
 			LoadLevel(level0_file);
 
+			m_stress = false;
+
 			// Setup input events;
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
-					case InputEvent::InputAction::CreateSquare:
-						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
-						Create("Square");
-						//std::cout << "Create Square!\n";
+
+					case InputEvent::InputAction::StressTest:
+						if (!m_stress) {
+							UnLoadLevel();
+							StressTestCreate(LayerType::GAMELAYER, "StressTest", 69, Vec2{5.f, 5.f});
+							m_stress = true;
+						}
 						break;
 
-					case InputEvent::InputAction::CreateCircle:
-						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
-						Create("Circle");
-						//std::cout << "Create Circle!\n";
+					case InputEvent::InputAction::LayerTest:
+						if (m_stress && !m_layer) {
+							StressTestCreate(LayerType::BACKGROUND, "LayerTest", 420, Vec2{ 10.f, 10.f });
+							m_layer = true;
+						}
 						break;
 
-					case InputEvent::InputAction::CreateBananaCircle:
-						if (coord.GetLivingEntities().size() >= MAX_ENTITIES) { break; }
-						Create("Player");
-						//std::cout << "Create Banana!\n";
-						break;
-
-					case InputEvent::InputAction::DoubleEntities:
-						DoubleEntities();
-						//std::cout << "Doubled Entities!\n";
-						break;
-
-					case InputEvent::InputAction::HalfEntities:
-						HalfEntities();
-						//std::cout << "Removed Entities!\n";
-						break;
-					case InputEvent::InputAction::CheckEntityNum:
-						std::cout << "Entity Num: " << coord.GetLivingEntityCount() << '\n';
+					case InputEvent::InputAction::EndStressTest:
+						if (m_stress) {
+							StressTestEnd();
+							m_stress = false;
+							m_layer = false;
+						}
 						break;
 					}
-						
 				}
 
 				});
@@ -127,6 +122,18 @@ namespace NightSnack {
 					m_coord.ModifyComponent<Transform>(e).layer = LayerType::GAMELAYER;
 				}
 			}
+			for (Entity e : m_coord.GetLivingEntities()) {
+				m_coord.BufferEntitySignature(e);
+			}
+		}
+
+		void UnLoadLevel() {
+			for (Entity e : m_coord.GetLivingEntities()) {
+				if (m_coord.HasComponent<Camera>(e)) { continue; }
+				if (e == m_coord.GetSystem<GraphicsSystem>()->FindCamera()) { continue; }
+
+				RemoveEntity(e);
+			}
 		}
 
 		/************************************************************************/
@@ -136,6 +143,15 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void Update(int steps) override;
+
+		//void EditPrefab(std::string const& s) {
+		//	if (m_archetypes[s].contains("RigidBody")) {
+
+		//	}
+		//	if (m_archetypes[s].contains("Renderable")) {
+
+		//	}
+		//}
 
 		// Required functions from base class ISystem.
 		Signature GetSignature() const override { return Signature{}; }
@@ -192,20 +208,20 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Creates entites with random transforms. until the number of living entities
-		has doubled.
+		Create 1000 entities for stress test - Combination 1;
 		*/
 		/************************************************************************/
-		void DoubleEntities();
+		void StressTestCreate(LayerType, std::string const&, int, Vec2 const&);
+		bool m_stress{ false };
+		bool m_layer{ false };
 
 		/************************************************************************/
 		/*!
 		\brief
-		Removes entities until half the current living entities (except for default
-		testing scene).
+		Removes entities created for stress test;
 		*/
 		/************************************************************************/
-		void HalfEntities();
+		void StressTestEnd();
 
 		/************************************************************************/
 		/*!
@@ -214,7 +230,7 @@ namespace NightSnack {
 		end of the core loop).
 		*/
 		/************************************************************************/
-		void Remove(Entity e);
+		void RemoveEntity(Entity e);
 
 		void PrintPrefabNames() const;
 		std::unordered_map<std::string, std::string> GetPrefabMaterials() const;

@@ -17,6 +17,9 @@
 #include <stdexcept>
 
 namespace NightSnack {
+    
+    struct Vec2;
+    struct Vec3;
 
     // Vec2
     struct Vec2 {
@@ -35,6 +38,18 @@ namespace NightSnack {
         */
         /************************************************************************/
         Vec2(float x = 0.0, float y = 0.0);
+
+        Vec2(Vec3 const&);
+        
+        Vec2& operator+=(Vec2 const& rhs);
+
+        Vec2& operator-=(Vec2 const& rhs);
+
+        Vec2& operator=(Vec3 const& rhs);
+
+        Vec2 operator-() {
+            return Vec2{ -x, -y };
+        }
 
         /************************************************************************/
         /*!
@@ -217,6 +232,15 @@ namespace NightSnack {
         */
         /************************************************************************/
         Vec3(float x = 0.0, float y = 0.0, float z = 0.0);
+
+        Vec3& operator+=(Vec3 const& rhs);
+
+        Vec3& operator-=(Vec3 const& rhs);
+
+        Vec3 operator-() {
+            return Vec3{ -x, -y };
+        }
+
 
         /************************************************************************/
         /*!
