@@ -96,7 +96,7 @@ namespace NightSnack {
             auto& camPos = m_coord.GetComponent<Transform>(mainCam).pos;
             auto& camInfo = m_coord.GetComponent<Camera>(mainCam);
 
-            glm::mat4 proj = m_coord.GetSystem<GraphicsSystem>()->GetCameraProjectionMatrix(camInfo.width, camInfo.height);
+            glm::mat4 proj = m_coord.GetSystem<GraphicsSystem>()->GetCameraProjectionMatrix(camInfo.width, camInfo.height, 1.f);
             glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
             RenderText(txt.text, pos.x, pos.y, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, proj, view, txt.fontType);
