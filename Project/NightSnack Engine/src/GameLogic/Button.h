@@ -12,6 +12,7 @@
  ******************************************************************************/
 
 #pragma once
+#include "Factory/EntityFactory.h"
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/IEvent.h"
 #include "Systems/Application/Input.h"
@@ -60,13 +61,13 @@ namespace NightSnack {
 		}
 	};
 
-	inline void OnPlayClick() {
-		//std::cout << "Play button clicked!\n";
-	}
+	//inline void OnPlayClick() {
+	//	//std::cout << "Play button clicked!\n";
+	//}
 
-	inline void OnPlayHover() {
-		//std::cout << "Play button hovered!\n";
-	}
+	//inline void OnPlayHover() {
+	//	//std::cout << "Play button hovered!\n";
+	//}
 
 	class GameUI : public ISystem {
 
@@ -86,8 +87,8 @@ namespace NightSnack {
 
 
 			// Create button behaviour
-			Button playSound(ButtonAction::PLAYAUDIO, &OnPlayClick, &OnPlayHover);
-			m_buttons[ButtonAction::PLAYAUDIO] = playSound;
+			//Button playSound(ButtonAction::PLAYAUDIO, &OnPlayClick, &OnPlayHover);
+			//m_buttons[ButtonAction::PLAYAUDIO] = playSound;
 
 			// Store into m_buttons;
 
@@ -100,7 +101,17 @@ namespace NightSnack {
 					mouseClickedThisFrame = true;
 				}
 
-				});
+				
+				//subscribe 
+				if (event.inputAction == InputEvent::InputAction::EndStressTest)
+				{
+					if (m_stress) {
+						m_coord.GetSystem<EntityFactory>()->StressTestEnd();
+						m_stress = false;
+						//m_layer = false;
+					}
+				}
+			});
 		}
 
 		void Update(int steps) override
@@ -161,6 +172,7 @@ namespace NightSnack {
 
 						// EXECUTE BUTTON ACTION
 						ExecuteButtonAction(buttonInfo.action, m_coord, audioSystem);
+						//m_coord.GetSystem<EntityFactory>()->StressTestCreate(LayerType::GAMELAYER, "StressTest", 69, Vec2{ 5.f, 5.f });
 
 						// Call click callback
 						auto it = m_buttons.find(buttonInfo.action);
@@ -218,6 +230,9 @@ namespace NightSnack {
 		bool mousePressed;
 		bool mouseClickedThisFrame;
 
+		bool m_stress{ false };
+
+
 		bool IsMouseOverButton(float mouseX, float mouseY, const Transform& transform,
 			const Collider& collider) {
 			// Calculate button bounds (centered AABB)
@@ -247,6 +262,22 @@ namespace NightSnack {
 				}
 				break;
 
+			case ButtonAction::PLAYSTRESSTEST:
+
+				if (!m_stress) {
+					m_coord.GetSystem<EntityFactory>()->UnLoadLevel();
+					m_coord.GetSystem<EntityFactory>()->StressTestCreate(LayerType::GAMELAYER, "StressTest", 69, Vec2{ 5.f, 5.f });
+					m_stress = true;
+				}
+				break;
+
+			case ButtonAction::ENDSTRESSTEST:
+				if (m_stress) {
+					m_coord.GetSystem<EntityFactory>()->StressTestEnd();
+					m_stress = false;
+					//m_layer = false;
+				}
+				break;
 			default:
 				break;
 			}

@@ -35,7 +35,7 @@
     "Color": { "r": 1.0, "g": 0.0, "b": 0.0, "a": 1.0 }
   },
 
-  "Button": {
+  "ButtonAudio": {
     "Collider": {
       "shape": "AABB",
       "type": "Trigger",
@@ -50,6 +50,26 @@
     },
     "ButtonInfo": {
       "action": "PlayAudio",
+      "type": "GameMenu"
+    },
+    "Color": { "r": 1.0, "g": 0.4, "b": 0.0, "a": 1.0 }
+  },
+
+   "ButtonStressTest": {
+    "Collider": {
+      "shape": "AABB",
+      "type": "Trigger",
+      "isStatic": true,
+      "width": 100.0,
+      "height": 100.0
+    },
+    "Renderable": {
+      "meshName": "square",
+      "materialName": "ColorMat",
+      "isWireframe" : false
+    },
+    "ButtonInfo": {
+      "action": "StressTest",
       "type": "GameMenu"
     },
     "Color": { "r": 1.0, "g": 0.4, "b": 0.0, "a": 1.0 }
