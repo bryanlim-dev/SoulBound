@@ -69,6 +69,8 @@ namespace NightSnack {
 		m_coord.RegisterComponent<States>();
 
 		m_coord.RegisterComponent<Animator>();
+		m_coord.RegisterComponent<Font>();
+		m_coord.RegisterComponent<ButtonInfo>();
 
 		// Add more Components here...
 
@@ -83,7 +85,11 @@ namespace NightSnack {
 		AddSystem<InputSystem>(m_coord, core_dispatcher);
 
 		AddSystem<AudioSystem>(m_coord, core_dispatcher);
+
+		AddSystem<GameUI>(m_coord, core_dispatcher);
+
 		AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json","assets/GameData/Archetypes/AIStatesArchetypes.json", "assets/GameData/DefaultLevel.json");
+
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
 
 		AddSystem<CameraSystem>(m_coord, core_dispatcher);
@@ -92,9 +98,11 @@ namespace NightSnack {
 
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<AnimationSystem>(m_coord, core_dispatcher);
+		AddSystem<TextSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
 
 		AddSystem<FiniteStateMachine>(m_coord);
+
 
 		// Buffer all entities' signatures to properly initialize all systems' set of entities
 		for (Entity e : m_coord.GetLivingEntities()) {
@@ -175,7 +183,7 @@ namespace NightSnack {
 
 		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("ApplicationSystem");
 		m_coord.GetSystem<ApplicationSystem>()->SwapBuffers();
-		m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(102.0f);
+		m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(62.0f);
 		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("ApplicationSystem");
 
 		// End frame timing;

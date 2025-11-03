@@ -80,26 +80,19 @@ namespace NightSnack {
             m_fmodSystem.lock()->update();
     }
 
-    // ============================================================================
     // CENTRALIZED AUDIO LOADING - ALL GAME AUDIO LOADED HERE
-    // ============================================================================
-
     void AudioSystem::LoadAllGameAudio()
     {
         //std::cout << "[AudioSystem] Loading all game audio...\n";
 
-        // ========================================
         // LOAD SFX
-        // ========================================
         LoadSoundFile("assets/Sound/SFX/sound_button_temp.wav", m_audioKeys.buttonClick);
 
         // Add more SFX here as needed:
         // LoadSoundFile("assets/Sound/SFX/explosion.wav", m_audioKeys.explosion);
         // LoadSoundFile("assets/Sound/SFX/powerup.wav", m_audioKeys.powerup);
 
-        // ========================================
         // LOAD BGM
-        // ========================================
         LoadSoundFile("assets/Sound/Music/MansionTheme.wav", m_audioKeys.mainMenu);
 
         // Add more BGM here as needed:
@@ -132,10 +125,7 @@ namespace NightSnack {
         }
     }
 
-    // ============================================================================
     // SFX FUNCTIONS
-    // ============================================================================
-
     void AudioSystem::PlaySFX(const size_t soundID)
     {
         if (!m_initialized || m_resourceMgr.expired() || m_fmodSystem.expired())

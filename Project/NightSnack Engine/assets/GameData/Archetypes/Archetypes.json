@@ -35,6 +35,26 @@
     "Color": { "r": 1.0, "g": 0.0, "b": 0.0, "a": 1.0 }
   },
 
+  "Button": {
+    "Collider": {
+      "shape": "AABB",
+      "type": "Trigger",
+      "isStatic": true,
+      "width": 100.0,
+      "height": 100.0
+    },
+    "Renderable": {
+      "meshName": "square",
+      "materialName": "ColorMat",
+      "isWireframe" : false
+    },
+    "ButtonInfo": {
+      "action": "PlayAudio",
+      "type": "GameMenu"
+    },
+    "Color": { "r": 1.0, "g": 0.4, "b": 0.0, "a": 1.0 }
+  },
+
   "Ghost": {
     "RigidBody": {
       "mass": 1.0,
@@ -57,6 +77,12 @@
       "playbackSpeed": 1.0,
       "isPlaying": true,
       "isLooping": true
+    },
+    "Font": {
+      "fontType": "liberation",
+      "text": "Hello World",
+      "fontSize": 0.5,
+      "textColor": { "r": 0.5, "g": 0.9, "b": 0.5 }
     }
   },
 
@@ -214,6 +240,12 @@
     "PlayerController": {
       "moveSpeed": 300.0,
       "jumpSpeed": 600.0
+    }, 
+    "Font": {
+      "fontType": "default",
+      "text": "Player",
+      "fontSize": 0.5,
+      "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 }
     }
   },
   
