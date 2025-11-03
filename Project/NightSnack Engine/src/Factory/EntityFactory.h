@@ -43,7 +43,7 @@ namespace NightSnack {
 			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord } {
 
 			m_prefabManager.Initialize();
-			LoadArchetypes(archetypes_filename);
+			LoadArchetypes(archetypes_filename, coord);
 			LoadLevel(level0_file);
 
 			m_stress = false;
@@ -82,18 +82,22 @@ namespace NightSnack {
 		}
 
 		// For now the Factory will read the json file by itself, in M2 will transfer responsibility to ResourceManager;
-		void LoadArchetypes(std::string const& filename) {
-			std::ifstream file(filename);
-			if (!file.is_open()) {
-				throw std::runtime_error("Failed to open archetypes file: " + filename);
-			}
+		void LoadArchetypes(std::string const& filename, Coordinator& coord) {
 
-			try {
-				file >> m_archetypes;
-			}
-			catch (json::parse_error& e) {
-				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
-			}
+			coord.GetSystem<ResourceManager>()->LoadJson(filename, m_archetypesKey);
+			m_archetypes = coord.GetSystem<ResourceManager>()->GetJsonRaw(m_archetypesKey);
+
+			//std::ifstream file(filename);
+			//if (!file.is_open()) {
+			//	throw std::runtime_error("Failed to open archetypes file: " + filename);
+			//}
+
+			//try {
+			//	file >> m_archetypes;
+			//}
+			//catch (json::parse_error& e) {
+			//	throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
+			//}
 		}
 
 		// Read a Level file and creates Entities from prefabs in m_archetypes;
@@ -247,6 +251,8 @@ namespace NightSnack {
 		json m_archetypes{};
 		json m_archetypesStates{};
 		json m_currentLevel{};
+
+		size_t m_archetypesKey{};
 
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;
