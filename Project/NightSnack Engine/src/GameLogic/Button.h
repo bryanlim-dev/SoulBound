@@ -138,7 +138,7 @@ namespace NightSnack {
 				buttonInfo.isHovered = false;
 				buttonInfo.wasClicked = false;
 
-				// STEP 5: Check if mouse is over button (AABB collision)
+				// check if mouse is over button (AABB collision)
 				if (IsMouseOverButton(mouseX, mouseY, transform, collider)) 
 				{
 					buttonInfo.isHovered = true;
