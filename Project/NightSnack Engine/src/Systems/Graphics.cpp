@@ -21,15 +21,14 @@ namespace NightSnack {
 
 	void GraphicsSystem::Init() {
 		// Default Shader;
-		//auto defaultShader = std::make_unique<Shader>("assets/shaders/vertex_shader.vert", "assets/shaders/fragment_shader.frag");
-		//AddShader("default", std::move(defaultShader));
 		auto debugShader = std::make_unique<Shader>("assets/shaders/debug_vertex_shader.vert", "assets/shaders/debug_fragment_shader.frag");
 		AddShader("debug", std::move(debugShader));
-
 		auto colorShader = std::make_unique<Shader>("assets/shaders/color_vs.vert", "assets/shaders/color_fs.frag");
 		AddShader("color", std::move(colorShader));
 		auto textureShader = std::make_unique<Shader>("assets/shaders/texture_vs.vert", "assets/shaders/texture_fs.frag");
 		AddShader("texture", std::move(textureShader));
+		auto textShader = std::make_unique<Shader>("assets/shaders/text_vs.vert", "assets/shaders/text_fs.frag");
+		AddShader("text", std::move(textShader));
 
 		std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
 		// Textures;
@@ -640,40 +639,6 @@ namespace NightSnack {
 
 	void GraphicsSystem::RemoveCache(Entity e) {
 		m_renderCache.erase(e);
-	}
-
-	void GraphicsSystem::RenderText(FT_Face font, const std::string& text, glm::vec2 position, float size, glm::vec4 color, float rotation)
-	{
-		//if (!font) return;
-
-		//glEnable(GL_BLEND);
-		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		//float x = position.x;
-		//float y = position.y;
-
-		//for (char c : text)
-		//{
-		//	if (FT_Load_Char(font, c, FT_LOAD_RENDER))
-		//		continue;
-
-		//	FT_GlyphSlot g = font->glyph;
-
-		//	float xpos = x + g->bitmap_left;
-		//	float ypos = y - g->bitmap_top;
-		//	float w = static_cast<float>(g->bitmap.width);
-		//	float h = static_cast<float>(g->bitmap.rows);
-
-		//	// Here you would generate a quad with texture g->bitmap.buffer
-		//	// And draw it using your default shader
-		//	// You can reuse your existing Mesh/Material pipeline or make a small textured quad renderer
-
-		//	// Advance cursor to next glyph
-		//	x += (g->advance.x >> 6); // 1/64th of a pixel
-		//	y += (g->advance.y >> 6);
-		//}
-
-		//glDisable(GL_BLEND);
 	}
 
 }	// NightSnack

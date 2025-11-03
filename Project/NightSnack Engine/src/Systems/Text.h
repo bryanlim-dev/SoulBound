@@ -6,66 +6,50 @@
 
 #include "Core/ECS/Coordinator.h"
 #include "Core/ECS/Entity.h"
+#include "ResourceManager/ResourceManager.h"
+#include <glm/ext/vector_int2.hpp>
+#include <Graphics/Shader.h>
 
 namespace NightSnack {
 
-    using FontKey = size_t;
-
-    // System responsible for drawing Text Entities (debug version)
     class TextSystem : public ISystem {
     public:
-        TextSystem() = default;
-
-        TextSystem(Coordinator& coord) : m_coord(&coord) {
-            //m_systemSignature.set(GetComponentTypeID<Position>());
-            //m_systemSignature.set(GetComponentTypeID<Rotation>());
-            //m_systemSignature.set(GetComponentTypeID<Text>());
+        TextSystem(Coordinator& coord, EventDispatcher& dispatcher) : m_coord{ coord }, m_dispatcher{ &dispatcher } {
+            m_systemSignature.set(GetComponentTypeID<Font>());
+            m_systemSignature.set(GetComponentTypeID<Transform>());
+            Init();
         }
 
-        void Init() {
-            std::cout << "[TextSystem] Init called\n";
-        }
+        void Init();
+        
+        void LoadFontGlyphs(size_t fontKey, const std::string& name);
 
-        //void Update(float, Coordinator&) override {
-        void Update(int steps) override {
-            /*for (auto entity : m_entities) {
-                auto& pos = m_coord->GetComponent<Position>(entity);
-                auto& rot = m_coord->GetComponent<Rotation>(entity);
-                auto& txt = m_coord->GetComponent<Text>(entity);
+        void Update(int steps) override;
 
-                std::cout << "[TextSystem] Entity " << entity
-                    << " | Text: \"" << txt.text
-                    << "\" | Pos(" << pos.x << ", " << pos.y << ")"
-                    << " | Rot: " << rot.degrees << " degrees"
-                    << " | Size: " << txt.size << "\n";
-            }*/
-
-            //for (Entity e : m_entities) {
-            //    //if (m_coord.HasComponent<Text>(e)) {
-            //    auto& pos = m_coord->GetComponent<Transform>(e).pos;
-            //    auto& rot = m_coord->GetComponent<Transform>(e).rot;
-            //    auto& txt = m_coord->GetComponent<Text>(e);
-
-            //    glm::vec4 clr{ txt.color.r, txt.color.g, txt.color.b, txt.color.a };
-
-            //    ResourceManager* rm = ResourceManager::GetInstance();
-            //    FT_Face face = rm->GetFont(m_coord->GetSystem<GraphicsSystem>()->GetFontKey(txt.fontName));
-
-            //    if (face) {
-            //        RenderText(face, txt.text, { pos.x, pos.y }, txt.size, clr, rot.degrees);
-            //        std::cout << "have face\n";
-            //    } else
-            //        std::cout << "no face\n";
-            //    //}
-            //}
-        }
+        void RenderText(std::string text, float x, float y, float scale, glm::vec3 color, 
+            const glm::mat4& proj, const glm::mat4& view, const std::string& fontName);
 
         // Required by ISystem
-        std::string GetName() const override { return "TextSystem"; }
+        std::string GetName() const override { return "FontSystem"; }
         Signature GetSignature() const override { return m_systemSignature; }
 
     private:
-        Coordinator* m_coord = nullptr;
+
+        struct Character {
+            GLuint textureID;
+            glm::ivec2 size;
+            glm::ivec2 bearing;
+            unsigned int advance;
+        };
+
+        std::unordered_map<std::string, size_t> m_fonts; // [fontName, fontKey]
+        std::unordered_map<std::string, std::unordered_map<char, Character>> m_fontCharacters;
+        Shader* m_shader = nullptr; // Only 1 text shader needed
+        float m_windowWidth{}, m_windowHeight{};
+        unsigned int m_vao{}, m_vbo{};
+
+        Coordinator& m_coord;
+        EventDispatcher* m_dispatcher = nullptr;
         Signature m_systemSignature{};
     };
 

@@ -156,7 +156,10 @@ namespace NightSnack {
     };
 
     struct Font {
-
+        std::string fontType{ "default" };
+        std::string text{};
+        float fontSize{ 1.f };
+        Vec3 textColor{ 1.f, 1.f, 1.f };
     };
 
     // Only camera objects will have this component
@@ -250,6 +253,15 @@ namespace NightSnack {
 
         r.wasModified = true;
 
+    }
+
+    // Font =======================================================
+    inline void from_json(const json& j, Font& f) {
+        j.at("fontType").get_to(f.fontType);
+        j.at("text").get_to(f.text);
+        j.at("fontSize").get_to(f.fontSize);
+        auto clr = j.at("textColor");
+        f.textColor = { clr.value("r", 0.0f), clr.value("g", 0.0f), clr.value("b", 0.0f) };
     }
 
     // Animator ===================================================

@@ -57,6 +57,12 @@
       "playbackSpeed": 1.0,
       "isPlaying": true,
       "isLooping": true
+    },
+    "Font": {
+      "fontType": "liberation",
+      "text": "Hello World",
+      "fontSize": 0.5,
+      "textColor": { "r": 0.5, "g": 0.9, "b": 0.5 }
     }
   },
 
@@ -183,6 +189,12 @@
     "PlayerController": {
       "moveSpeed": 300.0,
       "jumpSpeed": 600.0
+    }, 
+    "Font": {
+      "fontType": "default",
+      "text": "Player",
+      "fontSize": 0.5,
+      "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 }
     }
   },
   
