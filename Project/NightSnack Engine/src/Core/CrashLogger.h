@@ -17,6 +17,7 @@
 #include <string>
 #include <ctime>
 #include <filesystem>
+#include <fstream>
 #include "Exception.h"
 #include "ResourceManager/ResourceManager.h"
 
@@ -62,22 +63,13 @@ namespace NightSnack {
                     "Message: " + ex.message() + "\n" +
                     "------------------------------------";
 
-                // Load existing log file if it exists
-                std::size_t txtKey = 0;
-                std::vector<std::string> logVec;
-
-                //Make a NEW resource manager to save files
-                //At this point in the scope core no longer exists
-                //So the RM within core odsnt exist, so we need to make a new one to save the crash file
-                std::unique_ptr<ResourceManager> rm =  std::make_unique<ResourceManager>(); 
-
-                if (rm->LoadTxtFile(filePath, txtKey) == LOAD_SUCCESS) {
-                    logVec = rm->GetTxtFile(txtKey);
+                // Open file in append mode and write the log entry
+                std::ofstream logFile(filePath, std::ios::app);
+                if (logFile.is_open())
+                {
+                    logFile << logEntry;
+                    logFile.close();
                 }
-                logVec.push_back(logEntry);
-
-                // Save updated log file
-                rm->SaveTxtFile(filePath, logVec);
 
             }
             catch (...)

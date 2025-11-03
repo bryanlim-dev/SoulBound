@@ -199,11 +199,14 @@ namespace NightSnack {
 		\param[in] height
 		Viewport height
 
+		\param[in] zoom
+		Zoom level
+
 		\return
 		Orthographic projection matrix
 		*/
 		/************************************************************************/
-		glm::mat4 GetCameraProjectionMatrix(float width, float height);
+		glm::mat4 GetCameraProjectionMatrix(float width, float height, float zoom);
 
 		/************************************************************************/
 		/*!

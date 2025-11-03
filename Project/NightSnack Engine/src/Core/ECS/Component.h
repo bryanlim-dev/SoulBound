@@ -18,12 +18,12 @@
 
 #include <json.hpp>
 #include "MathLibrary/Math.h"
-
 namespace NightSnack {
 
     constexpr float FixedDT = 0.016f;
 
     using json = nlohmann::json;
+    class StateBase; //Forward decleration
 
     // ================================================================================================
     // COMPONENTS
@@ -104,8 +104,6 @@ namespace NightSnack {
         // maybe can add abilities etc...
     };
 
-    //Forward declaration
-    class StateBase;
 
     //A component to hold data for states
     struct States
@@ -168,6 +166,24 @@ namespace NightSnack {
         float zoom{ 1.f };
         float width{ 1600.f };
         float height{ 900.f };
+    };
+
+    enum ButtonType {
+        GAMEMENU,
+        SETTINGS,
+        EXIT
+    };
+    enum ButtonAction {
+        PLAYAUDIO,
+        CHANGELEVELS
+    };
+    struct ButtonInfo {
+        ButtonAction action;
+        ButtonType type;
+
+        bool isHovered{ false };
+        bool wasClicked{ false };
+  
     };
 
     // Add more Components here if necessary...
@@ -278,6 +294,19 @@ namespace NightSnack {
         j.at("zoom").get_to(c.zoom);
         j.at("width").get_to(c.width);
         j.at("height").get_to(c.height);
+    }
+
+    inline void from_json(const json& j, ButtonInfo& b) {
+        if (j["action"] == "PlayAudio") {
+            b.action = ButtonAction::PLAYAUDIO;
+        }
+        if (j["action"] == "ChangeLevel") {
+            b.action = ButtonAction::CHANGELEVELS;
+        }
+
+        if (j["type"] == "GameMenu") {
+            b.type = ButtonType::GAMEMENU;
+        }
     }
 
     // COLLISION ==================================================

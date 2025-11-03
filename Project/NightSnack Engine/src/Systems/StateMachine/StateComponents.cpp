@@ -1,5 +1,6 @@
 #include "StateComponents.h"
 #include "../AllSystems.h"
+#include <Core/ECS/Coordinator.h>
 
 namespace NightSnack
 {
@@ -11,11 +12,12 @@ namespace NightSnack
 
 		bool EntityCountdownComponentFinish(Entity ownerID, Coordinator& coord)
 		{
+			std::string componentName = "countdown";
 			//Check if componet exists
-			if (coord.GetComponent<States>(ownerID).currState->HasStateComponent("CooldownComponent"))
+			if (coord.GetComponent<States>(ownerID).currState->HasStateComponent(componentName))
 			{
 				//Check curr timer <= 0
-				StateComponentCountdown* cooldown = static_cast<StateComponentCountdown*>(coord.GetComponent<States>(ownerID).currState->GetStateComponent("CooldownComponent").get());
+				StateComponentCountdown* cooldown = static_cast<StateComponentCountdown*>(coord.GetComponent<States>(ownerID).currState->GetStateComponent(componentName).get());
 				if (cooldown->GetCurrTime() <= 0)
 				{
 					return true;
@@ -170,6 +172,40 @@ namespace NightSnack
 	}
 
 
+
+	std::shared_ptr<StateComponent> CreateStateComponent(std::string componentName, json& paramJson)
+	{
+		std::shared_ptr<StateComponent> component = nullptr;
+
+		if (componentName == "countdown")
+		{
+			float maxTime = paramJson.get<float>();
+			component = std::make_shared<StateComponentCountdown>(maxTime);
+		}
+		else if (componentName == "movment")
+		{
+			Vec2 speed;
+			paramJson.at("fx").get_to(speed.x);
+			paramJson.at("fy").get_to(speed.y);
+			component = std::make_shared<StateComponentMovement>(speed);
+		}
+
+		return component;
+	}
+	TransitionFunction GetTransitionFunction(std::string transitonName)
+	{
+		if (transitonName == "IsPlayerLeftSide")
+			return StateFunctionChecker::CheckPlayerIsLeftSide;
+		else if (transitonName == "IsPlayerRightSide")
+			return StateFunctionChecker::CheckPlayerIsRightSide;
+		else if (transitonName == "IsCollided")
+			return StateFunctionChecker::EntityIsColliding;
+		else if (transitonName == "CountdownCompleted")
+			return StateFunctionChecker::EntityCountdownComponentFinish;
+
+		return TransitionFunction();
+	}
+	;
 
 }
 
