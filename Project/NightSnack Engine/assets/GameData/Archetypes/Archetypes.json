@@ -116,6 +116,36 @@
     },
     "States": { "StateMachine" : "StatesEntityTest1"}
   },
+  "EntityStateBallType2": {
+    "RigidBody": {
+      "mass": 1.0,
+      "useGravity": true
+    },
+    "Transform": {
+      "Position": { "x": 0.0, "y": 0.0, "z": 1.0 },
+      "Rotation": 0.0,
+      "Scale": { "x": 20.0, "y": 20.0 }
+    },
+    "Force": { "fx": 0.0, "fy": 0.0 },
+    "Collider": {
+      "shape": "Circle",
+      "type": "Solid",
+      "isStatic": false,
+      "radius": 20.0
+    },
+    "Renderable": {
+      "meshName": "square",
+      "materialName": "ghostMat",
+      "isWireframe" : false
+    },
+    "Animator": {
+      "spriteSheetName": "assets/ghost.png",
+      "playbackSpeed": 1.0,
+      "isPlaying": true,
+      "isLooping": true
+    },
+    "States": { "StateMachine" : "StatesEntityTest2"}
+  },
 
   "Control": {
     "Renderable": {

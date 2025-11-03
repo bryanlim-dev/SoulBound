@@ -72,6 +72,18 @@ namespace NightSnack
 
 			return false;
 		}
+		bool EntityIsGrounded(Entity ownerID, Coordinator& coord)
+		{
+			if (coord.HasComponent<Collider>(ownerID))
+			{
+				if (coord.GetComponent<Collider>(ownerID).isGrounded)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
 	} //End of StateFunctionChecker namespace
 
 	template<typename T>
@@ -166,11 +178,23 @@ namespace NightSnack
 		coord.ModifyComponent<RigidBody>(idOwner).vel = Vec2(0, 0);
 	}
 
+
 	Vec2 StateComponentMovement::GetSpd() const
 	{
 		return m_spd;
 	}
 
+	StateComponentImpulse::StateComponentImpulse(Vec2 impulse) : m_impluse(impulse)
+	{
+	}
+
+	StateComponentImpulse::StateComponentImpulse()
+	{
+	}
+
+	void StateComponentImpulse::OnEnter(Entity idOwner, Coordinator& coord) {
+		coord.ModifyComponent<RigidBody>(idOwner).vel = coord.GetComponent<RigidBody>(idOwner).vel + m_impluse;
+	}
 
 
 	std::shared_ptr<StateComponent> CreateStateComponent(std::string componentName, json& paramJson)
@@ -189,6 +213,13 @@ namespace NightSnack
 			paramJson.at("fy").get_to(speed.y);
 			component = std::make_shared<StateComponentMovement>(speed);
 		}
+		else if (componentName == "impulse")
+		{
+			Vec2 impulse;
+			paramJson.at("fx").get_to(impulse.x);
+			paramJson.at("fy").get_to(impulse.y);
+			component = std::make_shared<StateComponentImpulse>(impulse);
+		}
 
 		return component;
 	}
@@ -200,6 +231,8 @@ namespace NightSnack
 			return StateFunctionChecker::CheckPlayerIsRightSide;
 		else if (transitonName == "IsCollided")
 			return StateFunctionChecker::EntityIsColliding;
+		else if (transitonName == "IsGrounded")
+			return StateFunctionChecker::EntityIsGrounded;
 		else if (transitonName == "CountdownCompleted")
 			return StateFunctionChecker::EntityCountdownComponentFinish;
 
