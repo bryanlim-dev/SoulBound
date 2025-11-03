@@ -20,6 +20,7 @@
 #include <iostream>
 
 #include "Core/ECS/Coordinator.h"
+#include "../Systems/StateMachine/StateBase.h"
 
 namespace NightSnack {
 
@@ -47,6 +48,7 @@ namespace NightSnack {
 			RegisterComponentLoader<Renderable>("Renderable");
 			RegisterComponentLoader<Animator>("Animator");
 			RegisterComponentLoader<Camera>("Camera");
+			RegisterComponentLoader<States>("States");
 
 			RegisterComponentLoader<PlayerController>("PlayerController");
 		}

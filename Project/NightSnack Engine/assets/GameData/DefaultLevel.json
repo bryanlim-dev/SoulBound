@@ -37,6 +37,13 @@
       "Scale": { "x": 100.0, "y": 100.0 }
     }},
 
+    { "prefab": "EntityStateBall",
+    "Transform": {
+      "Position": { "x": 100.0, "y": -255.0, "z": 1.0 },
+      "Rotation": 0.0,
+      "Scale": { "x": 20.0, "y": 20.0 }
+    }},
+
     { "prefab": "Control",
     "Transform": {
       "Position": { "x": 300.0, "y": 0.0, "z": 1.0 },

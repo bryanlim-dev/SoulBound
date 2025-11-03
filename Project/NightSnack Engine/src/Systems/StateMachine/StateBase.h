@@ -1,51 +1,50 @@
 #pragma once
 
-#ifndef State
-#define State
+#ifndef STATEBASE_H
+#define STATEBASE_H
 
 #include <memory>
 #include <string>
 #include <functional>
 #include <iostream>
+
 #include <Core/ECS/Coordinator.h>
 #include "StateComponents.h"
 
 namespace NightSnack
 {
+	//Defined in StateComponets
+	//using TransitionFunction = std::function<bool(Entity, Coordinator&)>;
 
 	class StateBase
 	{
 	protected:
-		std::list<std::pair<std::weak_ptr<StateBase>, std::function<bool(Entity, Coordinator&)>>> m_transtitionStatesList;
+		std::list<std::pair<std::weak_ptr<StateBase>, TransitionFunction>> m_transtitionStatesList;
 		
-		//Using any allows more data types to be store, just check if it can be converted before using
-		//Components are shared ptrs to allow for casting
-		//Maybe instead of making it too static i made it too dynamic this time?
+		//A map of components for states and thier names
 		//Refactor tracker: 8
 		std::unordered_map<std::string, std::shared_ptr<StateComponent>> m_stateComponentMap;
 
 		//Function returns nothing an takes in a EntityID and float (dt)
-		std::function<void (Entity, Coordinator&)> m_enterFunction;
-		std::function<void (float, Entity)> m_updateFunction;
-		std::function<void (Entity, Coordinator&)> m_exitFunction;
+		std::function<void (Entity, Coordinator&)> m_enterFunction = nullptr;
+		std::function<void (float, Entity)> m_updateFunction = nullptr;
+		std::function<void (Entity, Coordinator&)> m_exitFunction = nullptr;
 
 		std::weak_ptr<StateBase> m_nextState;
-		Entity m_entityID;
-		Coordinator& m_coord;
 
 		std::string m_stateKey; //Can double as the state name
 
 		bool m_isExit = false;
 
 	public:
-		StateBase() = delete;
+		StateBase(std::string keyName) : m_stateKey(keyName) {};
 
-		StateBase(Entity id, std::string stateKeyName, Coordinator& coord,
-			std::function<void(float, Entity)> updateFunction = [](float, Entity) { /* Default is empty by Design*/ })
-			:m_entityID(id), m_stateKey(stateKeyName), m_coord(coord){
-			m_updateFunction = updateFunction;
-			//std::cout << "State adresss in constructor: " << this << "\n";
-		}
+		//StateBase(Entity id, std::string stateKeyName, Coordinator& coord,
+		//	std::function<void(float, Entity)> updateFunction = [](float, Entity) { /* Default is empty by Design*/ })
+		//	:m_entityID(id), m_stateKey(stateKeyName), m_coord(coord){
+		//	m_updateFunction = updateFunction;
+		//	//std::cout << "State adresss in constructor: " << this << "\n";
+		//}
 
 		virtual ~StateBase() {
 			if (!m_nextState.expired())
@@ -71,7 +70,7 @@ namespace NightSnack
 			m_exitFunction = exitFunc;
 		}
 
-		void InsertStateTransition(std::weak_ptr<StateBase> state, std::function<bool(Entity, Coordinator&)>transition)
+		void InsertStateTransition(std::weak_ptr<StateBase> state, TransitionFunction transition)
 		{
 			m_transtitionStatesList.emplace_back(state, transition);
 		}
@@ -80,34 +79,35 @@ namespace NightSnack
 			m_nextState = newNextState;
 		}
 
-		virtual void Enter() {
+		virtual void Enter(Entity entityID, Coordinator& coord) {
 			m_isExit = false; 
-			std::cout << "ID: " << m_entityID << ", State Enter: " << m_stateKey << std::endl;
+			std::cout << "ID: " << entityID << ", State Enter: " << m_stateKey << std::endl;
 
 			if (m_enterFunction)
-				m_enterFunction(m_entityID, m_coord);
+				m_enterFunction(entityID, coord);
 
 			//Structure bindings to iterate
 			for (auto& [name, component] : m_stateComponentMap)
 			{
-				component->OnEnter(m_entityID, m_coord);
+				component->OnEnter(entityID, coord);
 			}
 		}
 
-		virtual void Update(float dt) {
+		virtual void Update(float dt, Entity entityID, Coordinator& coord) {
 			//Call update function
-			m_updateFunction(dt, m_entityID);
+			if (m_updateFunction)
+				m_updateFunction(dt, entityID);
 
 			//Structure bindings to iterate
 			for (auto& [name, component] : m_stateComponentMap)
 			{
-				component->OnUpdate(dt, m_entityID, m_coord);
+				component->OnUpdate(dt, entityID, coord);
 			}
 
 			//Check thru transition list
 			for (auto& stateFuncPair : m_transtitionStatesList)
 			{
-				if (stateFuncPair.second && stateFuncPair.second(m_entityID, m_coord))
+				if (stateFuncPair.second && stateFuncPair.second(entityID, coord))
 				{
 					m_nextState = stateFuncPair.first;
 					m_isExit = true;
@@ -116,17 +116,17 @@ namespace NightSnack
 			}
 		}
 
-		virtual void Exit() { 
+		virtual void Exit(Entity entityID, Coordinator& coord) {
 			m_isExit = false; 
-			std::cout << "ID: " << m_entityID << ", State Exit: " << m_stateKey << std::endl;
+			std::cout << "ID: " << entityID << ", State Exit: " << m_stateKey << std::endl;
 
 			if (m_exitFunction)
-				m_exitFunction(m_entityID, m_coord);
+				m_exitFunction(entityID, coord);
 
 			//Structure bindings to iterate
 			for (auto& [name, component] : m_stateComponentMap)
 			{
-				component->OnExit(m_entityID, m_coord);
+				component->OnExit(entityID, coord);
 			}
 
 			if (!m_nextState.expired())
@@ -152,7 +152,6 @@ namespace NightSnack
 		}
 
 		//State components
-
 		void InsertStateComponent(std::string const& name, std::shared_ptr<StateComponent> component)
 		{
 			m_stateComponentMap.insert(std::make_pair(name, component));
@@ -178,6 +177,17 @@ namespace NightSnack
 			return std::shared_ptr<StateComponent>(it->second);
 		}
 	};
+
+	States CreateStateFromArchetypeJson(std::string stateArchetype, std::string stateArchetypeFilePath);
+
+	inline void from_json(const json& j, States& c) {
+		std::string stateMachineStr;
+		j.at("StateMachine").get_to(stateMachineStr); //State Machine Archytype
+
+		c = CreateStateFromArchetypeJson(stateMachineStr, "assets/GameData/Archetypes/AIStatesArchetypes.json");
+	}
+
+
 } //End of namesapce
 
 #endif 
