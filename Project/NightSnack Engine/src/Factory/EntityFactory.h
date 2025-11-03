@@ -43,7 +43,7 @@ namespace NightSnack {
 			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord } {
 
 			m_prefabManager.Initialize();
-			LoadArchetypes(archetypes_filename, coord);
+			LoadArchetypes(archetypes_filename);
 			LoadLevel(level0_file);
 
 			m_stress = false;
@@ -82,9 +82,9 @@ namespace NightSnack {
 		}
 
 		// For now the Factory will read the json file by itself, in M2 will transfer responsibility to ResourceManager;
-		void LoadArchetypes(std::string const& filename, Coordinator& coord) {
+		void LoadArchetypes(std::string const& filename) {
 
-			coord.GetSystem<ResourceManager>()->LoadJson(filename, m_archetypesKey);
+			m_coord.GetSystem<ResourceManager>()->LoadJson(filename, m_archetypesKey);
 
 			//std::ifstream file(filename);
 			//if (!file.is_open()) {
@@ -101,17 +101,20 @@ namespace NightSnack {
 
 		// Read a Level file and creates Entities from prefabs in m_archetypes;
 		void LoadLevel(std::string const& levelfile) {
-			std::ifstream file(levelfile);
-			if (!file.is_open()) {
-				throw std::runtime_error("Failed to open level file: " + levelfile);
-			}
+			//std::ifstream file(levelfile);
+			//if (!file.is_open()) {
+			//	throw std::runtime_error("Failed to open level file: " + levelfile);
+			//}
 
-			try {
-				file >> m_currentLevel;
-			}
-			catch (json::parse_error& e) {
-				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
-			}
+			//try {
+			//	file >> m_currentLevel;
+			//}
+			//catch (json::parse_error& e) {
+			//	throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
+			//}
+			m_coord.GetSystem<ResourceManager>()->LoadJson(levelfile, m_currentLevelLey);
+			m_currentLevel = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelLey);
+
 
 			for (auto const& item : m_currentLevel["Entities"]) {
 				Entity e = Create(item["prefab"], item["Transform"]);
@@ -249,10 +252,12 @@ namespace NightSnack {
 		EventDispatcher* m_dispatcher;
 
 		//json m_archetypes{};
-		json m_archetypesStates{};
-		json m_currentLevel{};
+		//json m_archetypesStates{};
+		json m_currentLevel{}; //Copy yo not effect the orginal
 
 		size_t m_archetypesKey{};
+		//size_t m_archetypesStatesKey{};
+		size_t m_currentLevelLey{};
 
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;

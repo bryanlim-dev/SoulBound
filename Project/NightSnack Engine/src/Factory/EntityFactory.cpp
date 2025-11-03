@@ -167,5 +167,4 @@ namespace NightSnack {
 	{
 		return m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_archetypesKey);
 	}
-
 }	// NightSnack
