@@ -350,7 +350,7 @@ namespace NightSnack {
 		Pointer of nlohmann::json of the json resource
 		*/
 		/************************************************************************/
-		nlohmann::json GetJsonRaw(const std::size_t jsonKey);
+		nlohmann::json& GetJsonRaw(const std::size_t jsonKey);
 
 		/************************************************************************/
 		/*!

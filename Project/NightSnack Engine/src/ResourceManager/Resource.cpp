@@ -214,6 +214,7 @@ namespace NightSnack {
 
 		m_resourceLoaded = true;
 
+		inFile.close();
 #if RESOURCE_DEBUG_MODE
 
 		PrintJsonMapData();

@@ -85,7 +85,6 @@ namespace NightSnack {
 		void LoadArchetypes(std::string const& filename, Coordinator& coord) {
 
 			coord.GetSystem<ResourceManager>()->LoadJson(filename, m_archetypesKey);
-			m_archetypes = coord.GetSystem<ResourceManager>()->GetJsonRaw(m_archetypesKey);
 
 			//std::ifstream file(filename);
 			//if (!file.is_open()) {
@@ -240,6 +239,7 @@ namespace NightSnack {
 		std::unordered_map<std::string, std::string> GetPrefabMaterials() const;
 		std::vector<std::string> const& GetPrefabNames() const;
 		std::string GetEntityPrefabName(Entity e) const;
+		const json& GetArchetypes() const;
 
 		std::set<Entity> m_toBeDestroyed;
 
@@ -248,7 +248,7 @@ namespace NightSnack {
 		PrefabManager m_prefabManager;
 		EventDispatcher* m_dispatcher;
 
-		json m_archetypes{};
+		//json m_archetypes{};
 		json m_archetypesStates{};
 		json m_currentLevel{};
 
