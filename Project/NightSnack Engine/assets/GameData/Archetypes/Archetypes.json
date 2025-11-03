@@ -83,7 +83,7 @@
       "isWireframe" : false
     },
     "Animator": {
-      "spriteSheetName": "ghost",
+      "spriteSheetName": "assets/ghost.png",
       "playbackSpeed": 1.0,
       "isPlaying": true,
       "isLooping": true
