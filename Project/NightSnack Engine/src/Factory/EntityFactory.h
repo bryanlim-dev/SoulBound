@@ -39,7 +39,7 @@ namespace NightSnack {
 		will help with entity creation.
 		*/
 		/************************************************************************/
-		EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& archetypes_filename, std::string const& level0_file)
+		EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& archetypes_filename, std::string const& archetype_states_filename, std::string const& level0_file)
 			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord } {
 
 			m_prefabManager.Initialize();
@@ -245,6 +245,7 @@ namespace NightSnack {
 		EventDispatcher* m_dispatcher;
 
 		json m_archetypes{};
+		json m_archetypesStates{};
 		json m_currentLevel{};
 
 		// map of prefab name to entity;

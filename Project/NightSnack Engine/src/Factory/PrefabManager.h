@@ -7,7 +7,7 @@
  * Defines PrefabManager class that stores component loaders that assist in
  * creation of entities from prefabs.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -20,6 +20,7 @@
 #include <iostream>
 
 #include "Core/ECS/Coordinator.h"
+#include "../Systems/StateMachine/StateBase.h"
 
 namespace NightSnack {
 
@@ -47,7 +48,10 @@ namespace NightSnack {
 			RegisterComponentLoader<Renderable>("Renderable");
 			RegisterComponentLoader<Animator>("Animator");
 			RegisterComponentLoader<Camera>("Camera");
+
 			RegisterComponentLoader<ButtonInfo>("ButtonInfo");
+
+			RegisterComponentLoader<States>("States");
 
 			RegisterComponentLoader<PlayerController>("PlayerController");
 		}

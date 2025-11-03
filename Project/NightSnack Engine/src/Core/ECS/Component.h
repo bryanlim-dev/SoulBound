@@ -18,12 +18,12 @@
 
 #include <json.hpp>
 #include "MathLibrary/Math.h"
-
 namespace NightSnack {
 
     constexpr float FixedDT = 0.016f;
 
     using json = nlohmann::json;
+    class StateBase; //Forward decleration
 
     // ================================================================================================
     // COMPONENTS
@@ -104,8 +104,6 @@ namespace NightSnack {
         // maybe can add abilities etc...
     };
 
-    //Forward declaration
-    class StateBase;
 
     //A component to hold data for states
     struct States
