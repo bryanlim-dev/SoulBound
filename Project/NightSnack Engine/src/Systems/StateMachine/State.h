@@ -7,11 +7,8 @@
 #include <string>
 #include <functional>
 #include <iostream>
-#include "../../Core/ECS/Coordinator.h"
-//#include "../../Core/ECS/Entity.h"
-
-
-
+#include <Core/ECS/Coordinator.h>
+#include "StateComponents.h"
 
 namespace NightSnack
 {
@@ -19,14 +16,20 @@ namespace NightSnack
 	class StateBase
 	{
 	protected:
-		std::list<std::pair<std::shared_ptr<StateBase>, std::function<bool(Entity, Coordinator&)>>> m_transtitionStatesList;
+		std::list<std::pair<std::weak_ptr<StateBase>, std::function<bool(Entity, Coordinator&)>>> m_transtitionStatesList;
+		
+		//Using any allows more data types to be store, just check if it can be converted before using
+		//Components are shared ptrs to allow for casting
+		//Maybe instead of making it too static i made it too dynamic this time?
+		//Refactor tracker: 8
+		std::unordered_map<std::string, std::shared_ptr<StateComponent>> m_stateComponentMap;
 
 		//Function returns nothing an takes in a EntityID and float (dt)
 		std::function<void (Entity, Coordinator&)> m_enterFunction;
 		std::function<void (float, Entity)> m_updateFunction;
 		std::function<void (Entity, Coordinator&)> m_exitFunction;
 
-		std::shared_ptr<StateBase> m_nextState = nullptr;
+		std::weak_ptr<StateBase> m_nextState;
 		Entity m_entityID;
 		Coordinator& m_coord;
 
@@ -45,9 +48,9 @@ namespace NightSnack
 		}
 
 		virtual ~StateBase() {
-			if (m_nextState)
+			if (!m_nextState.expired())
 			{
-				m_nextState = nullptr;
+				m_nextState.reset();
 			}
 
 			m_enterFunction = nullptr;
@@ -55,7 +58,7 @@ namespace NightSnack
 			m_exitFunction = nullptr;
 
 			m_transtitionStatesList.clear();
-
+			m_stateComponentMap.clear();
 		}
 
 		void SetEnterFunction(std::function<void(float, Coordinator&)> enterFunc)
@@ -68,7 +71,7 @@ namespace NightSnack
 			m_exitFunction = exitFunc;
 		}
 
-		void InsertStateTransition(std::shared_ptr<StateBase> state, std::function<bool(Entity, Coordinator&)>transition)
+		void InsertStateTransition(std::weak_ptr<StateBase> state, std::function<bool(Entity, Coordinator&)>transition)
 		{
 			m_transtitionStatesList.emplace_back(state, transition);
 		}
@@ -83,12 +86,25 @@ namespace NightSnack
 
 			if (m_enterFunction)
 				m_enterFunction(m_entityID, m_coord);
+
+			//Structure bindings to iterate
+			for (auto& [name, component] : m_stateComponentMap)
+			{
+				component->OnEnter(m_entityID, m_coord);
+			}
 		}
 
 		virtual void Update(float dt) {
 			//Call update function
 			m_updateFunction(dt, m_entityID);
 
+			//Structure bindings to iterate
+			for (auto& [name, component] : m_stateComponentMap)
+			{
+				component->OnUpdate(dt, m_entityID, m_coord);
+			}
+
+			//Check thru transition list
 			for (auto& stateFuncPair : m_transtitionStatesList)
 			{
 				if (stateFuncPair.second && stateFuncPair.second(m_entityID, m_coord))
@@ -106,6 +122,17 @@ namespace NightSnack
 
 			if (m_exitFunction)
 				m_exitFunction(m_entityID, m_coord);
+
+			//Structure bindings to iterate
+			for (auto& [name, component] : m_stateComponentMap)
+			{
+				component->OnExit(m_entityID, m_coord);
+			}
+
+			if (!m_nextState.expired())
+			{
+				m_nextState.reset();
+			}
 		}
 
 
@@ -114,7 +141,7 @@ namespace NightSnack
 			return m_stateKey;
 		}
 
-		std::shared_ptr<StateBase> NextState() const
+		std::weak_ptr<StateBase> NextState() const
 		{
 			return m_nextState;
 		}
@@ -124,54 +151,33 @@ namespace NightSnack
 			return m_isExit;
 		}
 
-		struct StateDecisionFuncionHelper
+		//State components
+
+		void InsertStateComponent(std::string const& name, std::shared_ptr<StateComponent> component)
 		{
-			//Insert update functions here
-			static bool CheckPlayerIsLeftSide(Entity ownerID, Coordinator& coord);
-			static bool CheckPlayerIsRightSide(Entity ownerID, Coordinator& coord);
+			m_stateComponentMap.insert(std::make_pair(name, component));
+		}
 
-			static bool EntityIsColliding(Entity ownerID, Coordinator& coord);
-		};
+		//This only dcheck if its exists not the type
+		bool HasStateComponent(std::string const& stateName)
+		{
+			if (m_stateComponentMap.find(stateName) != m_stateComponentMap.end())
+				return true;
+
+			return false;
+		}
+
+		std::shared_ptr<StateComponent> GetStateComponent(std::string stateName)
+		{
+			//Find if it is in map
+			auto it = m_stateComponentMap.find(stateName);
+			if (it == m_stateComponentMap.end()) //It is not in map nullptr return
+				return nullptr;
+
+			//Cast it to a shared ptr, as this is how it is stored
+			return std::shared_ptr<StateComponent>(it->second);
+		}
 	};
-
-	class StateCountDown : public StateBase
-	{
-	private:
-		float m_maxTimer;
-		float m_currTimer;
-
-	public:
-		StateCountDown(Entity id, std::string stateKeyName, Coordinator& coord, float maxTime);
-
-		void Enter() override;
-
-		//Use default
-		//void Update(float dt) override;
-
-		void Exit() override;
-
-		void InsertEndCountdownState(std::shared_ptr<StateBase> nextState);
-
-		void CountdownUpdate(float dt, Entity id);
-
-		bool CountdownCheck(Entity id);
-
-
-	};
-
-	class StateMovment : public StateBase
-	{
-	private:
-		Vec2 m_Speed;
-
-	public:
-		StateMovment(Entity id, std::string stateKeyName, Coordinator& coord, Vec2 moveSpeedAcc);
-
-		void MovementEnter();
-		void MovementUpdate();
-		void MovementExit();
-	};
-
 } //End of namesapce
 
 #endif 

@@ -19,156 +19,101 @@
 
 namespace NightSnack {
 
-    static float dt = 0.016f;
+    
+	//void PhysicsSystem::ResolveCollisions() {
 
-    // Initializing Collision System
-    void CollisionSystem::Init(EventDispatcher& dispatcher)
-    {
-        m_dispatcher = &dispatcher;
+	//	for (int x = 0; x < m_gridCols; ++x) {
+	//		for (int y = 0; y < m_gridRows; ++y) {
 
-        // Testing code for collision event subscibtion (subscribe only in init)
-        m_dispatcher->Subscribe<CollisionEvent>([](const CollisionEvent& event)
-            {
-                (void)event; // temp unreferenced;
+	//			std::bitset<MAX_ENTITIES>& cell = m_collisionGrid[x][y];
 
-                //Play sound, spawn particles, update score, etc.
-                //std::cout << "Collision event: Entity " << event.entityA << " collided with Entity " << event.entityB << std::endl;
-            });
-    }
+	//			for (Entity e1 = FindFirst(cell); e1 < MAX_ENTITIES; e1 = FindNext(cell, e1)) {
+	//				for (Entity e2 = FindNext(cell, e1); e2 < MAX_ENTITIES; e2 = FindNext(cell, e2)) {
 
-    // Update loop (runs each frame)
-    void CollisionSystem::Update(int steps)
-    {
+	//					Collider& c1 = m_coord.ModifyComponent<Collider>(e1);
+	//					Collider& c2 = m_coord.ModifyComponent<Collider>(e2);
 
-        // Step 1: Reset collision flags
-        for (auto const& e : m_entities)
-        {
-            auto& col = m_coord.ModifyComponent<Collider>(e);
-            col.colliding = false;
-        }
+	//					// Skip if first entity is a static body;
+	//					if (c1.isStatic) { continue; }
 
-        // Step 3: Check for collisions and resolve them
-        for (auto itA = m_entities.begin(); itA != m_entities.end(); ++itA)
-        {
-            for (auto itB = m_entities.begin(); itB != m_entities.end(); ++itB)
-            {
-                if (itB == itA) continue;
+	//					Transform& t1 = m_coord.ModifyComponent<Transform>(e1);
+	//					Transform& t2 = m_coord.ModifyComponent<Transform>(e2);
 
-                auto& posA = m_coord.GetComponent<Transform>(*itA).pos;
-                auto& velA = m_coord.ModifyComponent<RigidBody>(*itA).vel;
-                auto& colA = m_coord.ModifyComponent<Collider>(*itA);
+	//					if (!CheckCollision(t1, t2, c1, c2)) { continue; }
 
-                auto& posB = m_coord.GetComponent<Transform>(*itB).pos;
-                auto& velB = m_coord.ModifyComponent<RigidBody>(*itB).vel;
-                auto& colB = m_coord.ModifyComponent<Collider>(*itB);
+	//					// perform resolutions;
+	//					RigidBody& r1 = m_coord.ModifyComponent<RigidBody>(e1);
+	//					RigidBody& r2 = m_coord.ModifyComponent<RigidBody>(e2);
 
-                // Skip if both are static
-                if (colA.isStatic) continue;
+	//					// Find point of intersection;
+	//					Vec2 half1 = (c1.shape == ShapeType::AABB) ? Vec2{ c1.width * 0.5f, c1.height * 0.5f }
+	//																: Vec2{ c1.radius * 0.5f, c1.radius * 0.5f };
+	//					Vec2 half2 = (c2.shape == ShapeType::AABB) ? Vec2{ c2.width * 0.5f, c2.height * 0.5f }
+	//																: Vec2{ c2.radius * 0.5f, c2.radius * 0.5f };
 
-                bool collision = false;
-                Vec3 nextPosA{ posA.x + velA.x * dt, posA.y + velA.y * dt };
+	//					Vec2 move = { t2.pos.x - t1.pos.x, t2.pos.y - t1.pos.y };
+	//					Vec2 overlap = { half1.x + half2.x - std::fabs(move.x),
+	//									half1.y + half1.y - std::fabs(move.y) };
 
-                // Check collision
-                if (colA.shape == ShapeType::AABB && colB.shape == ShapeType::AABB)
-                {
-                    collision = CheckAABBvsAABB(nextPosA, colA, posB, colB);
-                }
-                else if (colA.shape == ShapeType::Circle && colB.shape == ShapeType::Circle)
-                {
-                    collision = CheckCirclevsCircle(nextPosA, colA, posB, colB);
-                }
-                else if (colA.shape == ShapeType::Circle && colB.shape == ShapeType::AABB)
-                {
-                    collision = CheckCirclevsAABB(nextPosA, colA, posB, colB);
-                }
-                else if (colA.shape == ShapeType::AABB && colB.shape == ShapeType::Circle)
-                {
-                    collision = CheckCirclevsAABB(posB, colB, nextPosA, colA);
-                }
+	//					if (overlap.x < overlap.y) {
+	//						float sign = (move.x < 0.f ? -1.f : 1.f);
 
-                if (collision)
-                {
-                    colA.colliding = true;
-                    colB.colliding = true;
+	//						if (c2.isStatic) { t1.pos.x -= overlap.x * sign; }
+	//						else {
+	//							t1.pos.x -= overlap.x * 0.5f * sign;
+	//							t2.pos.x += overlap.x * 0.5f * sign;
+	//						}
+	//						r1.vel.x = 0;
+	//						r2.vel.x = 0;
+	//					}
+	//					else {
+	//						float sign = (move.y < 0 ? -1.f : 1.f);
 
-                    //std::cout << "Collision detected between Entity " << *itA << " and Entity " << *itB << std::endl;
+	//						if (c2.isStatic) { t1.pos.y -= overlap.x * sign; }
+	//						else {
+	//							t1.pos.y -= overlap.y * 0.5f * sign;
+	//							t2.pos.y += overlap.y * 0.5f * sign;
+	//						}
+	//						r1.vel.y = 0;
+	//						r2.vel.y = 0;
+	//					}
+	//					if (r1.vel.y == 0.f) { c1.isGrounded = true; }
+	//					if (r2.vel.y == 0.f) { c2.isGrounded = true; }
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
 
-                    // Dispatch collision event between entity A & entity B
-                    if (m_dispatcher)
-                    {
-                        m_dispatcher->QueueEvent(std::make_unique<CollisionEvent>(*itA, *itB));
-                    }
+    Vec3 FindIntersectionPoint(Collider const& c1, Collider const& c2, Transform const& t1, Transform const& t2) {
+        Vec3 interPT{ t1.pos };
+        Vec3 dir = t2.pos - t1.pos;
+        dir.normalize();
 
-                    // Separate objects first
-                    // SeparateObjects(posA, colA, posB, colB, velA, velB);
+        if (c2.shape == ShapeType::AABB) {
+            if (dir.x < 0) {
 
-
-                    bool flipVelx = ShouldFlipVelocity(posA.x, posB.x, velA.x, dt);
-                    bool flipVely = ShouldFlipVelocity(posA.y, posB.y, velA.y, dt);
-
-                    // Handle collision response
-                    if (!colA.isStatic && !colB.isStatic)
-                    {
-                        // Dynamic vs Dynamic - both bounce with 30% energy loss
-
-                        velA.x = flipVelx ? -velA.x * 0.7f : velA.x;
-                        velA.y = flipVely ? -velA.y * 0.7f : velA.y;
-                        velB.x = -velA.x * 0.7f;
-                        velB.y = -velB.y * 0.7f;
-
-                    }
-                    else if (!colA.isStatic && colB.isStatic)
-                    {
-                        if (colB.type == ColliderType::Ground)
-                        {
-                            if (velA.y < 0.0f)  // Moving downward
-                            {
-                                // Progressive damping - reduce bounciness with each bounce
-                                static std::unordered_map<Entity, int> bounceCount;
-                                bounceCount[*itA]++;
-
-                                float dynamicBounciness = bounciness * static_cast<float>(std::pow(0.8f, bounceCount[*itA]));
-                                velA.y = -velA.y * dynamicBounciness;
-
-                                if (std::abs(velA.y) < minBounceSpeed)
-                                {
-                                    velA.y = 0.0f;
-                                    colA.isGrounded = true;
-                                    bounceCount[*itA] = 0; // Reset counter
-                                    //std::cout << "ball stopped after " << bounceCount[*itA] << " bounces" << std::endl;
-                                }
-                                else
-                                {
-                                    colA.isGrounded = false;
-                                    //std::cout << "ball bounced #" << bounceCount[*itA] << " with velocity: " << velA.y << std::endl;
-                                }
-                            }
-                        }
-                        else {
-                            // A is dynamic, B is static (wall/other) - bounce with damping
-                            velA.x = flipVelx ? -velA.x * 0.7f : velA.x;
-                            velA.y = flipVely ? -velA.y * 0.7f : velA.y;
-                        }
-                    }
-                    //else if (colA.isStatic && !colB.isStatic)             // <- technically not necessary;
-                    //{
-                    //    // A is static, B is dynamic - B bounces with 30% energy loss
-                    //    velB.dx = -velB.dx * 0.7;
-                    //    velB.dy = -velB.dy * 0.7;
-                    //}
-
-                    // Check velocities after collision response
-                    if (*itA == 0)
-                    {
-                        //std::cout << "P1 velocity after response: (" << velA.dx << ", " << velA.dy << ")" << std::endl;
-                    }
-                }
             }
         }
+        
+        if (c2.shape == ShapeType::Circle) {
+            interPT = t2.pos - (dir * (c2.radius + Z_EPSILON));
+        }
+        if (c1.shape == ShapeType::Circle) {
+            interPT = t1.pos + (dir * (c1.radius - Z_EPSILON));
+        }
+        else if (c2.shape == ShapeType::AABB) {
+            if (c1.shape == ShapeType::AABB) {
+                interPT.x = std::clamp(t2.pos.x, (t1.pos.x - c1.width / 2.f), (t1.pos.x + c1.width / 2.f)) - Z_EPSILON;
+                interPT.y = std::clamp(t2.pos.y, (t1.pos.y - c1.height / 2.f), (t1.pos.y + c1.height / 2.f)) - Z_EPSILON;
+                interPT.z = t1.pos.z;
+            }
+        }
+        return interPT;
     }
 
     // Checks if velocity needs to be flipped;
-    bool CollisionSystem::ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt)
+    bool ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt)
     {
         float newpos = pos1 + vel1 * dt;
         float distsq = (pos2 - pos1) * (pos2 - pos1);
@@ -188,7 +133,7 @@ namespace NightSnack {
     // Helper Functions
 
     // Axis-Aligned Bounding Box vs AABB
-    bool CollisionSystem::CheckAABBvsAABB(const Vec3& aPos, const Collider& a,
+    bool CheckAABBvsAABB(const Vec3& aPos, const Collider& a,
         const Vec3& bPos, const Collider& b)
     {
         return (std::abs(aPos.x - bPos.x) * 2 < (a.width + b.width)) &&
@@ -196,7 +141,7 @@ namespace NightSnack {
     }
 
     // Circle vs Circle
-    bool CollisionSystem::CheckCirclevsCircle(const Vec3& aPos, const Collider& a,
+    bool CheckCirclevsCircle(const Vec3& aPos, const Collider& a,
         const Vec3& bPos, const Collider& b)
     {
         float dx = aPos.x - bPos.x;
@@ -208,7 +153,7 @@ namespace NightSnack {
     }
 
     // Circle vs AABB
-    bool CollisionSystem::CheckCirclevsAABB(const Vec3& circlePos, const Collider& circle,
+    bool CheckCirclevsAABB(const Vec3& circlePos, const Collider& circle,
         const Vec3& aabbPos, const Collider& aabb)
     {
         float halfW = aabb.width / 2.0f;
@@ -237,7 +182,7 @@ namespace NightSnack {
     }
 
     // Clamp helper
-    float CollisionSystem::Clamp(float value, float min, float max)
+    float Clamp(float value, float min, float max)
     {
         return std::max(min, std::min(value, max));
     }

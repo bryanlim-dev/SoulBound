@@ -17,7 +17,6 @@ namespace NightSnack {
 
 	// unused for now...
 	void EntityFactory::Update(int steps) {
-
 		(void)steps;
 		
 		static bool printed = false;
@@ -38,6 +37,8 @@ namespace NightSnack {
 		trans.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
 		trans.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
 		trans.pos.z = 1.f;
+		// default layer...
+		trans.layer = LayerType::GAMELAYER;
 
 		trans.scale = Vec2{ 50.f, 50.f };	// default scale...
 		
@@ -74,55 +75,54 @@ namespace NightSnack {
 		return clone;
 	}
 
-	void EntityFactory::DoubleEntities() {
+	// Create 1000 entities for stress test - Combination 1;
+	void EntityFactory::StressTestCreate(LayerType layer, std::string const& prefabName, int seed, Vec2 const& scale) {
+
 		// seed for rand;
-		srand(69 * glfwGetTime());
-		// current number of live entities;
-		size_t currNum = m_coord.GetLivingEntities().size();
+		srand(seed * static_cast<unsigned>(glfwGetTime()));
 		int Hvp = m_coord.GetWindowHeight();
 		int Wvp = m_coord.GetWindowWidth();
 
-		std::vector<std::string> prefabs{ "Square", "Circle", "Player" };
+		Transform t{ Vec3{}, {}, scale, layer };
 
-		// double the number of living entities with random transforms;
-		for (size_t i{}; i < currNum && (currNum + i) < MAX_ENTITIES; ++i) {
-			Vec3 pos = { static_cast<float>(rand() % Wvp - Wvp / 2),
+		for (int i{}; i < 1000; ++i) {
+
+			// Random position within viewport;
+			t.pos = { static_cast<float>(rand() % Wvp - Wvp / 2),
 			static_cast<float>(rand() % Hvp - Hvp / 2), 1.f };
-			float rot = { static_cast<float>(rand() % 360) };
-			Vec2 scale = { static_cast<float>(rand() % 50 + 15), static_cast<float>(rand() % 50 + 15) };
 
-			Transform trans{ pos, rot, scale };
+			Entity e2 = Create(prefabName, t);
 
-			// create from a random prefab;
-			Create(prefabs[i % 3], trans);
+			// Randomized vector for Force direction;
+			Vec2 v = { static_cast<float>(rand() % Wvp - Wvp / 2),
+			static_cast<float>(rand() % Hvp - Hvp / 2) };
+
+			Force f; 
+			RigidBody& r = m_coord.ModifyComponent<RigidBody>(e2);
+			if (v.x != 0.f || v.y != 0.f) {
+				f.direction = v.normalized();
+				f.magnitude = 25.f;
+				f.lifetime = 1000000.f;
+				f.isActive = true;
+				
+				r.force = f;
+			}
+			r.useGravity = false;
+		}
+		for (Entity e : m_coord.GetLivingEntities()) {
+			m_coord.BufferEntitySignature(e);
 		}
 	}
 
-	void EntityFactory::Remove(Entity e) {
+	void EntityFactory::RemoveEntity(Entity e) {
 		m_toBeDestroyed.insert(e);
 	}
 
-	void EntityFactory::HalfEntities() {
-		std::set<Entity> entities = m_coord.GetLivingEntities();
+	void EntityFactory::StressTestEnd() {
 
-		// count only eligible entities (skip default scene)
-		size_t eligibleCount = 0;
-		for (Entity e : entities) {
-			// entities 0-10 are the default scene, which we do not want to remove for testing purposes...
-			if (e >= 10) ++eligibleCount;
-		}
+		UnLoadLevel();
 
-		size_t toDestroy = eligibleCount / 2;
-		size_t destroyed = 0;
-
-		for (Entity e : entities) {
-			if (e < 10) continue; // skip default scene
-
-			Remove(e);
-			if (++destroyed >= toDestroy) {
-				break;
-			}
-		}
+		LoadLevel("assets/GameData/DefaultLevel.json");
 	}
 
 	void EntityFactory::PrintPrefabNames() const {

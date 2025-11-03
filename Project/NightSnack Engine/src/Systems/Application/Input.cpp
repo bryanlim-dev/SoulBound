@@ -115,9 +115,9 @@ namespace NightSnack {
 		case GLFW_KEY_1: return InputEvent::InputAction::CreateSquare;
 		case GLFW_KEY_2: return InputEvent::InputAction::CreateCircle;
 		case GLFW_KEY_3: return InputEvent::InputAction::CreateBananaCircle;
-		case GLFW_KEY_SPACE: return InputEvent::InputAction::DoubleEntities;
-		case GLFW_KEY_BACKSPACE: return InputEvent::InputAction::HalfEntities;
-		case GLFW_KEY_L: return InputEvent::InputAction::CheckEntityNum;
+		case GLFW_KEY_SPACE: return InputEvent::InputAction::StressTest;
+		case GLFW_KEY_BACKSPACE: return InputEvent::InputAction::EndStressTest;
+		case GLFW_KEY_L: return InputEvent::InputAction::LayerTest;
 
 			// Player movement
 		case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
@@ -130,7 +130,7 @@ namespace NightSnack {
 		case GLFW_KEY_I: return InputEvent::InputAction::ToggleInstancedRendering;
 		case GLFW_KEY_C: return InputEvent::InputAction::CrashTest;
 		case GLFW_KEY_BACKSLASH: return InputEvent::InputAction::ToggleUIEditor;
-
+		case GLFW_KEY_K: return InputEvent::InputAction::TextureTest;
 			// Mouse events
 		case GLFW_MOUSE_BUTTON_LEFT: return InputEvent::InputAction::ClickLMB;
 

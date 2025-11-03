@@ -1,10 +1,10 @@
 /******************************************************************************
- * File:        debug_vertex_shader.vert
+ * File:        debug_vs.vert
  * Project:     NightSnack
  * Author(s):	Goh Bei Lai (Primary, 100%) - Created Debug Vertex Shader
  *
  * Description:
- * Vertex shader is responsible for transforming vertices from model space to 
+ * Debug Vertex shader is responsible for transforming vertices from model space to 
  * clip space.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.

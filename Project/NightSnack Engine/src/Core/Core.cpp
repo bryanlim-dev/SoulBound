@@ -21,7 +21,6 @@
 
 namespace NightSnack {
 
-	constexpr float fixedDeltaTime = 0.016f;
 	static float accumulatedTime = 0.0f;
 	static int numberOfSteps = 0;
 
@@ -60,7 +59,6 @@ namespace NightSnack {
 		// Register all Components;
 		m_coord.RegisterComponent<Transform>();
 		m_coord.RegisterComponent<RigidBody>();		// Physics;
-		m_coord.RegisterComponent<Force>();
 		m_coord.RegisterComponent<Collider>();		// Collision;
 
 		m_coord.RegisterComponent<Renderable>();	// Graphics;
@@ -84,25 +82,25 @@ namespace NightSnack {
 
 		AddSystem<ApplicationSystem>(winWidth, winHeight, std::move(windowTitle), m_coord, core_dispatcher);
 		AddSystem<InputSystem>(m_coord, core_dispatcher);
+
 		AddSystem<AudioSystem>(m_coord, core_dispatcher);
 		AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json", "assets/GameData/DefaultLevel.json");
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
+
 		AddSystem<CameraSystem>(m_coord, core_dispatcher);
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
-		AddSystem<CollisionSystem>(m_coord, core_dispatcher);
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
-		AddSystem<FiniteStateMachine>(m_coord);
+
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<AnimationSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
 
-		std::cout << "Buffering Living Entities: ";
+		AddSystem<FiniteStateMachine>(m_coord);
+
 		// Buffer all entities' signatures to properly initialize all systems' set of entities
 		for (Entity e : m_coord.GetLivingEntities()) {
 			m_coord.BufferEntitySignature(e);
-			std::cout << e << " ";
 		}
-		std::cout << '\n';
 	}
 
 	// Function should be called upon termination of program;
@@ -150,13 +148,16 @@ namespace NightSnack {
 		accumulatedTime += dt;
 
 		// Obtain number of steps this loop;
-		while (accumulatedTime >= fixedDeltaTime) { 
-			accumulatedTime -= fixedDeltaTime;
+		while (accumulatedTime >= FixedDT) { 
+			accumulatedTime -= FixedDT;
 			++numberOfSteps;
 		}
 		if (m_paused) {
 			numberOfSteps = 0;
 			return;
+		}
+		if (numberOfSteps > 15) {
+			numberOfSteps = 15;
 		}
 
 		// Iterate through Systems and Update them through Coordinator;

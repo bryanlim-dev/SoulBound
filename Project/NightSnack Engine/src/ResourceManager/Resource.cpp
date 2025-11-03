@@ -83,6 +83,7 @@ namespace NightSnack {
 
 	void ResourceImage::LoadFile()
 	{
+		stbi_set_flip_vertically_on_load(true);
 		//Load file
 		m_imageData = stbi_load(m_path.c_str(), &m_width, &m_height, &m_channels, 0);
 
