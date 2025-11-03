@@ -179,6 +179,10 @@ namespace NightSnack {
     struct ButtonInfo {
         ButtonAction action;
         ButtonType type;
+
+        bool isHovered{ false };
+        bool wasClicked{ false };
+  
     };
 
     // Add more Components here if necessary...

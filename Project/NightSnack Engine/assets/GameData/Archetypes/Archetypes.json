@@ -48,7 +48,7 @@
       "materialName": "ColorMat",
       "isWireframe" : false
     },
-    "Button": {
+    "ButtonInfo": {
       "action": "PlayAudio",
       "type": "GameMenu"
     },
