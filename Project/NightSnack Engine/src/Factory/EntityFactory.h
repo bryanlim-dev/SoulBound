@@ -81,10 +81,18 @@ namespace NightSnack {
 				});
 		}
 
-		// For now the Factory will read the json file by itself, in M2 will transfer responsibility to ResourceManager;
 		void LoadArchetypes(std::string const& filename) {
 
-			m_coord.GetSystem<ResourceManager>()->LoadJson(filename, m_archetypesKey);
+			try {
+				LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(filename, m_archetypesKey);
+				if (result == LOAD_RESULT::LOAD_SUCCESS || result == LOAD_RESULT::LOAD_SUCCESS_STOPPED_UNLOAD)
+					return;
+				else if (result == LOAD_FAIL_BADPATH)
+					throw std::runtime_error("Failed to open archetypes file due to bad file path: " + filename);
+			}
+			catch (json::parse_error& e) {
+				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
+			}
 
 			//std::ifstream file(filename);
 			//if (!file.is_open()) {
@@ -112,7 +120,17 @@ namespace NightSnack {
 			//catch (json::parse_error& e) {
 			//	throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
 			//}
-			m_coord.GetSystem<ResourceManager>()->LoadJson(levelfile, m_currentLevelLey);
+
+			try {
+				LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(levelfile, m_currentLevelLey);
+				if (result == LOAD_RESULT::LOAD_SUCCESS || result == LOAD_RESULT::LOAD_SUCCESS_STOPPED_UNLOAD) {/* Empty by design*/}
+				else if (result == LOAD_FAIL_BADPATH)
+					throw std::runtime_error("Failed to open archetypes file due to bad file path: " + levelfile);
+			}
+			catch (json::parse_error& e) {
+				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
+			}
+
 			m_currentLevel = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelLey);
 
 
