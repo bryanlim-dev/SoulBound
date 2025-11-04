@@ -81,34 +81,58 @@ namespace NightSnack {
 				});
 		}
 
-		// For now the Factory will read the json file by itself, in M2 will transfer responsibility to ResourceManager;
 		void LoadArchetypes(std::string const& filename) {
-			std::ifstream file(filename);
-			if (!file.is_open()) {
-				throw std::runtime_error("Failed to open archetypes file: " + filename);
-			}
 
 			try {
-				file >> m_archetypes;
+				LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(filename, m_archetypesKey);
+				if (result == LOAD_RESULT::LOAD_SUCCESS || result == LOAD_RESULT::LOAD_SUCCESS_STOPPED_UNLOAD)
+					return;
+				else if (result == LOAD_FAIL_BADPATH)
+					throw std::runtime_error("Failed to open archetypes file due to bad file path: " + filename);
 			}
 			catch (json::parse_error& e) {
 				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
 			}
+
+			//std::ifstream file(filename);
+			//if (!file.is_open()) {
+			//	throw std::runtime_error("Failed to open archetypes file: " + filename);
+			//}
+
+			//try {
+			//	file >> m_archetypes;
+			//}
+			//catch (json::parse_error& e) {
+			//	throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
+			//}
 		}
 
 		// Read a Level file and creates Entities from prefabs in m_archetypes;
 		void LoadLevel(std::string const& levelfile) {
-			std::ifstream file(levelfile);
-			if (!file.is_open()) {
-				throw std::runtime_error("Failed to open level file: " + levelfile);
-			}
+			//std::ifstream file(levelfile);
+			//if (!file.is_open()) {
+			//	throw std::runtime_error("Failed to open level file: " + levelfile);
+			//}
+
+			//try {
+			//	file >> m_currentLevel;
+			//}
+			//catch (json::parse_error& e) {
+			//	throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
+			//}
 
 			try {
-				file >> m_currentLevel;
+				LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(levelfile, m_currentLevelLey);
+				if (result == LOAD_RESULT::LOAD_SUCCESS || result == LOAD_RESULT::LOAD_SUCCESS_STOPPED_UNLOAD) {/* Empty by design*/}
+				else if (result == LOAD_FAIL_BADPATH)
+					throw std::runtime_error("Failed to open archetypes file due to bad file path: " + levelfile);
 			}
 			catch (json::parse_error& e) {
 				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
 			}
+
+			m_currentLevel = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelLey);
+
 
 			for (auto const& item : m_currentLevel["Entities"]) {
 				Entity e = Create(item["prefab"], item["Transform"]);
@@ -236,6 +260,7 @@ namespace NightSnack {
 		std::unordered_map<std::string, std::string> GetPrefabMaterials() const;
 		std::vector<std::string> const& GetPrefabNames() const;
 		std::string GetEntityPrefabName(Entity e) const;
+		const json& GetArchetypes() const;
 
 		std::set<Entity> m_toBeDestroyed;
 
@@ -244,9 +269,13 @@ namespace NightSnack {
 		PrefabManager m_prefabManager;
 		EventDispatcher* m_dispatcher;
 
-		json m_archetypes{};
-		json m_archetypesStates{};
-		json m_currentLevel{};
+		//json m_archetypes{};
+		//json m_archetypesStates{};
+		json m_currentLevel{}; //Copy yo not effect the orginal
+
+		size_t m_archetypesKey{};
+		//size_t m_archetypesStatesKey{};
+		size_t m_currentLevelLey{};
 
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;

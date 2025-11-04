@@ -124,8 +124,6 @@ namespace NightSnack {
 		/************************************************************************/
 		void Update(int steps) override;
 
-		void RenderText(FT_Face font, const std::string& text, glm::vec2 position, float size, glm::vec4 color, float rotation = 0.f);
-
 		/************************************************************************/
 		/*!
 		\brief
@@ -316,6 +314,7 @@ namespace NightSnack {
 		void RemoveCache(Entity e);
 
 		const std::unordered_map<std::string, std::unique_ptr<Texture>>& GetTexturesMap() const { return m_textures; }
+		const std::unordered_map<std::string, std::unique_ptr<Shader>>& GetShadersMap() const { return m_shaders; }
 
 		/************************************************************************/
 		/*!
@@ -443,7 +442,7 @@ namespace NightSnack {
 		Vec3 ScreenToWorld(Vec3 const& screenPos);
 
 		bool m_enableDebugDraw{ false };
-		bool m_enableInstancedRendering{ false };
+		bool m_enableInstancedRendering{ true };
 		GLuint m_globalInstanceSSBO = 0;
 		GLsizeiptr m_globalInstanceSSBOSize = 0;
 

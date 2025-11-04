@@ -39,7 +39,14 @@
 
     { "prefab": "EntityStateBall",
     "Transform": {
-      "Position": { "x": 100.0, "y": -255.0, "z": 1.0 },
+      "Position": { "x": 100.0, "y": -245.0, "z": 1.0 },
+      "Rotation": 0.0,
+      "Scale": { "x": 20.0, "y": 20.0 }
+    }},
+
+    { "prefab": "EntityStateBallType2",
+    "Transform": {
+      "Position": { "x": -250.0, "y": -255.0, "z": 1.0 },
       "Rotation": 0.0,
       "Scale": { "x": 20.0, "y": 20.0 }
     }},

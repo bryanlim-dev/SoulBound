@@ -32,7 +32,28 @@
         }
       },
       "InitialState": "DecisionState"
+    },
+
+    "StatesEntityTest2": {
+      "States": {
+          "CooldownState": {
+            "componentTypes": { "countdown": 1.5 },
+            "transitions": [
+              { "target": "JumpState", "condition": "CountdownCompleted" }
+            ]
+        },
+          "JumpState": {
+            "componentTypes": { "impulse" : {"fx": 0.0, "fy": 500.0 } },
+            "transitions": [
+              { "target": "CooldownState", "condition": "IsGrounded" }
+            ]
+        },
+          "StartingState": {
+            "transitions": [
+              { "target": "JumpState", "condition": "IsGrounded" }
+            ]
+        }       
+      },
+      "InitialState": "StartingState"
     }
-
-
 }

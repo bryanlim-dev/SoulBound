@@ -97,6 +97,12 @@
       "playbackSpeed": 1.0,
       "isPlaying": true,
       "isLooping": true
+    },
+    "Font": {
+      "fontType": "liberation",
+      "text": "Hello World",
+      "fontSize": 0.5,
+      "textColor": { "r": 0.5, "g": 0.9, "b": 0.5 }
     }
   },
 
@@ -129,6 +135,36 @@
       "isLooping": true
     },
     "States": { "StateMachine" : "StatesEntityTest1"}
+  },
+  "EntityStateBallType2": {
+    "RigidBody": {
+      "mass": 1.0,
+      "useGravity": true
+    },
+    "Transform": {
+      "Position": { "x": 0.0, "y": 0.0, "z": 1.0 },
+      "Rotation": 0.0,
+      "Scale": { "x": 20.0, "y": 20.0 }
+    },
+    "Force": { "fx": 0.0, "fy": 0.0 },
+    "Collider": {
+      "shape": "Circle",
+      "type": "Solid",
+      "isStatic": false,
+      "radius": 20.0
+    },
+    "Renderable": {
+      "meshName": "square",
+      "materialName": "ghostMat",
+      "isWireframe" : false
+    },
+    "Animator": {
+      "spriteSheetName": "assets/ghost.png",
+      "playbackSpeed": 1.0,
+      "isPlaying": true,
+      "isLooping": true
+    },
+    "States": { "StateMachine" : "StatesEntityTest2"}
   },
 
   "Control": {
@@ -254,6 +290,12 @@
     "PlayerController": {
       "moveSpeed": 300.0,
       "jumpSpeed": 600.0
+    }, 
+    "Font": {
+      "fontType": "default",
+      "text": "Player",
+      "fontSize": 0.5,
+      "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 }
     }
   },
   

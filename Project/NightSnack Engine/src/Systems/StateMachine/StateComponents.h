@@ -21,7 +21,8 @@ namespace NightSnack
 			STATE_FUNCTION_PLAYER_LEFTSIDE,
 			STATE_FUNCTION_PLAYER_RIGHTSIDE,
 
-			STATE_FUNCTION_ENTITY_COLLIDING
+			STATE_FUNCTION_ENTITY_COLLIDING,
+			STATE_FUNCTION_ENTITY_ISGROUNDED
 
 		};
 
@@ -32,6 +33,7 @@ namespace NightSnack
 		bool CheckPlayerIsRightSide(Entity ownerID, Coordinator& coord);
 
 		bool EntityIsColliding(Entity ownerID, Coordinator& coord);
+		bool EntityIsGrounded(Entity ownerID, Coordinator& coord);
 	};
 
 	enum STATE_COMPONENT_TYPE
@@ -106,6 +108,18 @@ namespace NightSnack
 
 		Vec2 GetSpd() const;
 
+	};
+
+	class StateComponentImpulse : public StateComponent
+	{
+	private:
+		Vec2 m_impluse = Vec2();
+
+	public:
+		StateComponentImpulse(Vec2 impulse);
+		StateComponentImpulse();
+
+		void OnEnter(Entity idOwner, Coordinator& coord) override;
 	};
 
 

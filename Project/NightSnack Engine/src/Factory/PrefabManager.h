@@ -47,6 +47,7 @@ namespace NightSnack {
 			RegisterComponentLoader<Color>("Color");
 			RegisterComponentLoader<Renderable>("Renderable");
 			RegisterComponentLoader<Animator>("Animator");
+			RegisterComponentLoader<Font>("Font");
 			RegisterComponentLoader<Camera>("Camera");
 
 			RegisterComponentLoader<ButtonInfo>("ButtonInfo");

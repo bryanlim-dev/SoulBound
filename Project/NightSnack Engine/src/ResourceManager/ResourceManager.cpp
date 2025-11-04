@@ -414,7 +414,7 @@ namespace NightSnack {
 		return jsn->GetJson();
 	}
 
-	nlohmann::json ResourceManager::GetJsonRaw(const std::size_t jsonKey)
+	nlohmann::json& ResourceManager::GetJsonRaw(const std::size_t jsonKey)
 	{
 		ResourceJson* jsn = GetJsonResource(jsonKey);
 		return jsn->GetJsonRaw();

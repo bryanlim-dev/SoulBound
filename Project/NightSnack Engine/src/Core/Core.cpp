@@ -69,6 +69,7 @@ namespace NightSnack {
 		m_coord.RegisterComponent<States>();
 
 		m_coord.RegisterComponent<Animator>();
+		m_coord.RegisterComponent<Font>();
 		m_coord.RegisterComponent<ButtonInfo>();
 
 		// Add more Components here...
@@ -97,6 +98,7 @@ namespace NightSnack {
 
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<AnimationSystem>(m_coord, core_dispatcher);
+		AddSystem<TextSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
 
 		AddSystem<FiniteStateMachine>(m_coord);
@@ -181,7 +183,7 @@ namespace NightSnack {
 
 		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("ApplicationSystem");
 		m_coord.GetSystem<ApplicationSystem>()->SwapBuffers();
-		m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(102.0f);
+		m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(62.0f);
 		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("ApplicationSystem");
 
 		// End frame timing;

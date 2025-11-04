@@ -29,7 +29,7 @@ namespace NightSnack {
 	}
 
 	Entity EntityFactory::Create(std::string const& name) {
-		Entity e = m_prefabManager.CreateFromPrefab(name, m_archetypes);
+		Entity e = m_prefabManager.CreateFromPrefab(name, GetArchetypes());
 		if (e == INVALID_ENTITY) { return e; }
 
 		Transform trans{};
@@ -51,7 +51,7 @@ namespace NightSnack {
 
 	// For creating entities at specific locations, scaling etc...
 	Entity EntityFactory::Create(std::string const& name, Transform trans) {
-		Entity e = m_prefabManager.CreateFromPrefab(name, m_archetypes);
+		Entity e = m_prefabManager.CreateFromPrefab(name, GetArchetypes());
 		if (e == INVALID_ENTITY) { return e; }
 
 		m_coord.ModifyComponent<Transform>(e) = trans;
@@ -65,7 +65,7 @@ namespace NightSnack {
 	Entity EntityFactory::Clone(Entity e, Transform trans) {
 		std::string name = entityToPrefab[e];
 
-		Entity clone = m_prefabManager.CreateFromPrefab(name, m_archetypes);
+		Entity clone = m_prefabManager.CreateFromPrefab(name, GetArchetypes());
 		if (clone == INVALID_ENTITY) { return clone; }
 
 		m_coord.ModifyComponent<Transform>(e) = trans;
@@ -128,7 +128,7 @@ namespace NightSnack {
 	void EntityFactory::PrintPrefabNames() const {
 
 		std::cout << "Prefabs: ";
-		for (auto& [name, data] : m_archetypes.items()) {
+		for (auto& [name, data] : GetArchetypes().items()) {
 			std::cout << name << " ";
 		}
 		std::cout << '\n';
@@ -136,7 +136,7 @@ namespace NightSnack {
 
 	std::vector<std::string> const& EntityFactory::GetPrefabNames() const {
 		std::vector<std::string> names;
-		for (auto& [name, data] : m_archetypes.items()) {
+		for (auto& [name, data] : GetArchetypes().items()) {
 			names.emplace_back(name);
 		}
 		return names;
@@ -145,7 +145,7 @@ namespace NightSnack {
 	std::unordered_map<std::string, std::string> EntityFactory::GetPrefabMaterials() const {
 		std::unordered_map<std::string, std::string> materials;
 
-		for (auto& [name, data] : m_archetypes.items()) {
+		for (auto& [name, data] : GetArchetypes().items()) {
 			if (data.contains("Renderable")) {
 				std::string mat = data["Renderable"]["materialName"];
 				materials.insert({ name, mat });
@@ -163,4 +163,8 @@ namespace NightSnack {
 		return "UnknownPrefab";
 	}
 
+	const json& EntityFactory::GetArchetypes() const
+	{
+		return m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_archetypesKey);
+	}
 }	// NightSnack

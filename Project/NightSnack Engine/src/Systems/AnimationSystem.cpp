@@ -114,8 +114,33 @@ namespace NightSnack {
 			const AnimationFrame& frame = clip.frames[animator.currentFrameIndex];
 
 			// Update the UV coordinates, to be retrieved on the Graphics System side
-			animator.uvTopLeft = { frame.U0, frame.V0 };
-			animator.uvBottomRight = { frame.U1, frame.V1 };
+			if (m_coord.HasComponent<RigidBody>(e)) {
+				auto& rb = m_coord.GetComponent<RigidBody>(e);
+				
+				if (rb.vel.x < 0.f) {
+					animator.lastFacingRight = false;
+				} else if (rb.vel.x > 0.f) {
+					animator.lastFacingRight = true;
+				}
+
+				if (!animator.lastFacingRight) {
+					// Entity is currently facing the left direction
+					// Set the UV coordinates as default state, facing to the left
+					animator.uvTopLeft = { frame.U0, frame.V0 };
+					animator.uvBottomRight = { frame.U1, frame.V1 };
+				} else {
+					// Entity is currently facing the right direction
+					// Face to the right
+					animator.uvTopLeft = { frame.U1, frame.V0 };
+					animator.uvBottomRight = { frame.U0, frame.V1 };
+				}
+
+			} else { 
+				// No RigidBody component, set the UV coordinates as default state
+				// Default is looking to the left
+				animator.uvTopLeft = { frame.U0, frame.V0 };
+				animator.uvBottomRight = { frame.U1, frame.V1 };
+			}
 		}
 	}
 } // NightSnack
