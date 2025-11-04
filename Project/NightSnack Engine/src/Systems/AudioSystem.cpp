@@ -40,7 +40,7 @@ namespace NightSnack {
         LoadAllGameAudio();
 
         // Start playing main menu music by default
-        //PlayBGM(m_audioKeys.mainMenu);
+        PlayBGM(m_audioKeys.mainMenu);
     }
 
     AudioSystem::~AudioSystem()
@@ -231,7 +231,7 @@ namespace NightSnack {
         }
 
         m_bgmPaused = false;
-        //std::cout << "[AudioSystem] Playing BGM: " << bgmID << "\n";
+        std::cout << "[AudioSystem] Playing BGM: " << bgmID << "\n";
     }
 
     void AudioSystem::StopBGM()
