@@ -1,15 +1,15 @@
 /******************************************************************************
  * File:        Camera.cpp
  * Project:     NightSnack
- * Author(s):	Bryan Lim Jun Jie (Primary, 100%)
+ * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Camera System
  *
  * Description:
-
+ * This file defines the CameraSystem class, which manages the camera entity.
+ * The system ensures the camera follows the player as it is moved around the scene.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
-
 #include "Camera.h"
 #include <iostream>
 
@@ -28,32 +28,33 @@ namespace NightSnack {
         // use local reference to the coordinator
         Coordinator& coord = *m_coord;
 
-        // Find camera if we don't have one
+        // find camera if we don't have one
         if (m_mainCamera == INVALID_ENTITY)
         {
             m_mainCamera = CameraComponent(coord);
         }
 
-        // Find player if we don't have one
+        // find player if we don't have one
         m_player = FindPlayer(coord);
 
-        // If we have both camera and player, make camera follow player
+        // make camera follow player
         if (m_mainCamera != INVALID_ENTITY && m_player != INVALID_ENTITY)
         {
-            // Check if both entities still have transforms
+			// check if both entities have Transform component
             if (coord.HasComponent<Transform>(m_mainCamera) &&
                 coord.HasComponent<Transform>(m_player))
             {
-                // Get player position
+                // get player position
                 const auto& playerTransform = coord.GetComponent<Transform>(m_player);
 
-                // Set camera position to player position
+                // set camera position to player position
                 auto& cameraTransform = coord.ModifyComponent<Transform>(m_mainCamera);
                 cameraTransform.pos.x = playerTransform.pos.x;
                 cameraTransform.pos.y = playerTransform.pos.y;
             }
         }
-        else {
+        else 
+        {
             // Set camera position to player position
             auto& cameraTransform = coord.ModifyComponent<Transform>(m_mainCamera);
             cameraTransform.pos = Vec3{0.f, 0.f, 2.f};
@@ -78,14 +79,14 @@ namespace NightSnack {
 
         Entity cameraEntity = coord.CreateEntity();
 
-        // Add Transform
+        // add Transform
         Transform transform;
         transform.pos = Vec3{ 0.0f, 0.0f, 0.0f };
         transform.rot = 0.0f;
         transform.scale = Vec2{ 1.0f, 1.0f };
         coord.AddComponent(cameraEntity, transform);
 
-        // Add Camera
+        // add Camera
         Camera camera;
         camera.isMainCam = true;
         camera.zoom = 1.0f;
@@ -99,7 +100,7 @@ namespace NightSnack {
 
     Entity CameraSystem::FindPlayer(Coordinator& coord)
     {
-        // Find entity with PlayerController component
+        // find entity with PlayerController component
         const auto& entities = coord.GetLivingEntities();
 
         for (Entity entity : entities)
@@ -114,6 +115,7 @@ namespace NightSnack {
         return INVALID_ENTITY;
     }
 
+    // signature
     Signature CameraSystem::GetSignature() const
     {
         Signature sig;
@@ -122,9 +124,9 @@ namespace NightSnack {
         return sig;
     }
 
+    // get system name
     std::string CameraSystem::GetName() const
     {
         return "CameraSystem";
     }
-
 }
