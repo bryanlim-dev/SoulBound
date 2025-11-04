@@ -276,7 +276,8 @@ namespace NightSnack {
 	inline void ImguiSystem::DrawMenuBar() {
 		if (ImGui::BeginMenuBar())
 		{
-			if (ImGui::BeginMenu("File"))
+			// Implemented at later date
+			/*if (ImGui::BeginMenu("File"))
 			{
 				if (ImGui::MenuItem("New")) {}
 				if (ImGui::MenuItem("Open")) {}
@@ -284,7 +285,7 @@ namespace NightSnack {
 				ImGui::Separator();
 				if (ImGui::MenuItem("Exit")) {}
 				ImGui::EndMenu();
-			}
+			}*/
 			if (ImGui::BeginMenu("View"))
 			{
 				if (ImGui::MenuItem("Hierarchy")) {}
