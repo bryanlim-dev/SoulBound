@@ -18,6 +18,7 @@
 
 namespace NightSnack {
 
+    // constructor initializes the audio system and loads all game audio
     AudioSystem::AudioSystem(Coordinator& coordinator, EventDispatcher& dispatcher)
         : m_coord(coordinator),
         m_resourceMgr(coordinator.GetSystem<ResourceManager>()),
@@ -30,24 +31,25 @@ namespace NightSnack {
         m_bgmVolume(0.7f),
         m_sfxVolume(1.0f)
     {
-        // Initialize FMOD first
+        // initialize fmod first
         if (!Init()) {
             std::cerr << "[AudioSystem] Failed to initialize FMOD!\n";
             return;
         }
 
-        // Load all game audio
+        // load all game audio
         LoadAllGameAudio();
 
-        // Start playing main menu music by default
+        // start playing main menu music by default
         PlayBGM(m_audioKeys.mainMenu);
     }
 
+    // destructor cleans up resources and releases fmod system
     AudioSystem::~AudioSystem()
     {
         if (!m_fmodSystem.expired())
         {
-            // Note: Don't release sounds here - ResourceManager handles that
+            // note: don't release sounds here - resource manager handles that
             m_loadedSFX.clear();
             m_loadedBGM.clear();
 
@@ -57,21 +59,23 @@ namespace NightSnack {
         }
     }
 
+    // initializes the fmod system
     bool AudioSystem::Init()
     {
         m_fmodSystem = m_resourceMgr.lock()->FmodSystem();
         if (!m_fmodSystem.expired())
         {
             m_initialized = true;
-            std::cout << "[AudioSystem] Initialized successfully.\n";
+            //std::cout << "[AudioSystem] Initialized successfully.\n";
             return true;
         }
-        else //It assigned to nullptr if it wasnt loaded properly
+        else // it is assigned to nullptr if it wasn't loaded properly
         {
             return false;
         }
     }
 
+    // updates the fmod system
     void AudioSystem::Update(int steps)
     {
         (void)steps;
@@ -80,52 +84,49 @@ namespace NightSnack {
             m_fmodSystem.lock()->update();
     }
 
-    // CENTRALIZED AUDIO LOADING - ALL GAME AUDIO LOADED HERE
+    // loads all game audio files
     void AudioSystem::LoadAllGameAudio()
     {
-        //std::cout << "[AudioSystem] Loading all game audio...\n";
-
-        // LOAD SFX
+        // load sfx
         LoadSoundFile("assets/Sound/SFX/sound_button_temp.wav", m_audioKeys.buttonClick);
 
-        // Add more SFX here as needed:
-        // LoadSoundFile("assets/Sound/SFX/explosion.wav", m_audioKeys.explosion);
-        // LoadSoundFile("assets/Sound/SFX/powerup.wav", m_audioKeys.powerup);
+        // add more sfx here as needed
 
-        // LOAD BGM
+        // load bgm
         LoadSoundFile("assets/Sound/Music/MansionTheme.wav", m_audioKeys.mainMenu);
 
-        // Add more BGM here as needed:
-        // LoadSoundFile("assets/Sound/BGM/boss_battle.mp3", m_audioKeys.bossBattle);
-        // LoadSoundFile("assets/Sound/BGM/credits.mp3", m_audioKeys.credits);
-
-        //std::cout << "[AudioSystem] All game audio loaded.\n";
+        // add more bgm here as needed
     }
 
+    // loads a single sound file and assigns it a key
     bool AudioSystem::LoadSoundFile(const std::string& filepath, size_t& outKey)
     {
-        if (m_resourceMgr.expired() || m_fmodSystem.expired()) {
-            std::cerr << "[AudioSystem] Cannot load sound - system not ready.\n";
+        if (m_resourceMgr.expired() || m_fmodSystem.expired()) 
+        {
+            //std::cerr << "[AudioSystem] Cannot load sound - system not ready.\n";
             return false;
         }
 
         LOAD_RESULT result = m_resourceMgr.lock()->LoadSound(filepath, outKey, m_fmodSystem.lock().get());
 
-        if (result == LOAD_SUCCESS || result == LOAD_SUCCESS_STOPPED_UNLOAD) {
-            std::cout << "[AudioSystem] Loaded: " << filepath << " (key: " << outKey << ")\n";
+        if (result == LOAD_SUCCESS || result == LOAD_SUCCESS_STOPPED_UNLOAD) 
+        {
+            //std::cout << "[AudioSystem] Loaded: " << filepath << " (key: " << outKey << ")\n";
             return true;
         }
-        else if (result == LOAD_FAIL_PREEXIST) {
-            std::cout << "[AudioSystem] Already loaded: " << filepath << "\n";
+        else if (result == LOAD_FAIL_PREEXIST) 
+        {
+            //std::cout << "[AudioSystem] Already loaded: " << filepath << "\n";
             return true;
         }
-        else {
+        else 
+        {
             std::cerr << "[AudioSystem] Failed to load: " << filepath << "\n";
             return false;
         }
     }
 
-    // SFX FUNCTIONS
+    // plays a sound effect using the default sfx volume
     void AudioSystem::PlaySFX(const size_t soundID)
     {
         if (!m_initialized || m_resourceMgr.expired() || m_fmodSystem.expired())
@@ -152,11 +153,13 @@ namespace NightSnack {
         FMOD::Channel* channel = nullptr;
         m_fmodSystem.lock()->playSound(sound, nullptr, false, &channel);
 
-        if (channel) {
+        if (channel) 
+        {
             channel->setVolume(m_sfxVolume * m_masterVolume);
         }
     }
 
+    // plays a sound effect with a specified volume
     void AudioSystem::PlaySFXWithVolume(const size_t soundID, float volume)
     {
         if (!m_initialized || m_resourceMgr.expired() || m_fmodSystem.expired())
@@ -183,15 +186,13 @@ namespace NightSnack {
         FMOD::Channel* channel = nullptr;
         m_fmodSystem.lock()->playSound(sound, nullptr, false, &channel);
 
-        if (channel) {
+        if (channel) 
+        {
             channel->setVolume(volume * m_masterVolume);
         }
     }
 
-    // ============================================================================
-    // BGM FUNCTIONS
-    // ============================================================================
-
+    // plays background music by ID
     void AudioSystem::PlayBGM(const size_t bgmID)
     {
         if (!m_initialized || m_resourceMgr.expired() || m_fmodSystem.expired())
@@ -226,14 +227,16 @@ namespace NightSnack {
 
         m_fmodSystem.lock()->playSound(bgm, nullptr, false, &m_bgmChannel);
 
-        if (m_bgmChannel) {
+        if (m_bgmChannel) 
+        {
             m_bgmChannel->setVolume(m_bgmVolume * m_masterVolume);
         }
 
         m_bgmPaused = false;
-        std::cout << "[AudioSystem] Playing BGM: " << bgmID << "\n";
+        //std::cout << "[AudioSystem] Playing BGM: " << bgmID << "\n";
     }
 
+    // stops the currently playing background music
     void AudioSystem::StopBGM()
     {
         if (m_bgmChannel)
@@ -243,12 +246,12 @@ namespace NightSnack {
             if (isPlaying)
             {
                 m_bgmChannel->stop();
-                //std::cout << "[AudioSystem] BGM stopped.\n";
             }
         }
         m_bgmPaused = false;
     }
 
+    // pauses the currently playing background music
     void AudioSystem::PauseBGM()
     {
         if (m_bgmChannel && !m_bgmPaused)
@@ -259,21 +262,21 @@ namespace NightSnack {
             {
                 m_bgmChannel->setPaused(true);
                 m_bgmPaused = true;
-                //std::cout << "[AudioSystem] BGM paused.\n";
             }
         }
     }
 
+    // resumes the paused background music
     void AudioSystem::ResumeBGM()
     {
         if (m_bgmChannel && m_bgmPaused)
         {
             m_bgmChannel->setPaused(false);
             m_bgmPaused = false;
-            //std::cout << "[AudioSystem] BGM resumed.\n";
         }
     }
 
+    // checks if background music is currently playing
     bool AudioSystem::IsBGMPlaying() const
     {
         if (m_bgmChannel)
@@ -285,10 +288,7 @@ namespace NightSnack {
         return false;
     }
 
-    // ============================================================================
-    // VOLUME CONTROL
-    // ============================================================================
-
+    // sets the master volume for all audio
     void AudioSystem::SetMasterVolume(float volume)
     {
         m_masterVolume = std::clamp(volume, 0.0f, 1.0f);
@@ -299,6 +299,7 @@ namespace NightSnack {
         }
     }
 
+    // sets the volume for background music
     void AudioSystem::SetBGMVolume(float volume)
     {
         m_bgmVolume = std::clamp(volume, 0.0f, 1.0f);
@@ -309,29 +310,29 @@ namespace NightSnack {
         }
     }
 
+    // sets the volume for sound effects
     void AudioSystem::SetSFXVolume(float volume)
     {
         m_sfxVolume = std::clamp(volume, 0.0f, 1.0f);
     }
 
+    // gets the master volume
     float AudioSystem::GetMasterVolume() const
     {
         return m_masterVolume;
     }
 
+    // gets the background music volume
     float AudioSystem::GetBGMVolume() const
     {
         return m_bgmVolume;
     }
 
+    // gets the sound effects volume
     float AudioSystem::GetSFXVolume() const
     {
         return m_sfxVolume;
     }
-
-    // ============================================================================
-    // SYSTEM REQUIRED
-    // ============================================================================
 
     Signature AudioSystem::GetSignature() const
     {
