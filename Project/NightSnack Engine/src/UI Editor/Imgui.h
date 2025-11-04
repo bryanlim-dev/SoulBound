@@ -98,6 +98,12 @@ namespace NightSnack {
 		std::unique_ptr<OptionsPanel> m_optionsPanel;
 		std::unique_ptr<AssetsPanel> m_assetsPanel;
 
+		bool m_showHierarchy = true;
+		bool m_showInspector = true;
+		bool m_showScene = true;
+		bool m_showOptions = true;
+		bool m_showAssets = true;
+
 		void SetupDockspace();
 		void DrawMenuBar();
 		void SetEditorEnabled(bool enabled);
@@ -165,11 +171,11 @@ namespace NightSnack {
 		// DockSpace setup
 		SetupDockspace();
 		// Panels Drawing
-		if (m_hierarchyPanel) m_hierarchyPanel->Draw();
-		if (m_inspectorPanel) m_inspectorPanel->Draw();
-		if (m_scenePanel) m_scenePanel->Draw();
-		if (m_optionsPanel) m_optionsPanel->Draw();
-		if (m_assetsPanel) m_assetsPanel->Draw();
+		if (m_showHierarchy && m_hierarchyPanel) m_hierarchyPanel->Draw();
+		if (m_showInspector && m_inspectorPanel) m_inspectorPanel->Draw();
+		if (m_showScene && m_scenePanel) m_scenePanel->Draw();
+		if (m_showOptions && m_optionsPanel) m_optionsPanel->Draw();
+		if (m_showAssets && m_assetsPanel) m_assetsPanel->Draw();
 
 
 		// render
@@ -288,10 +294,12 @@ namespace NightSnack {
 			}*/
 			if (ImGui::BeginMenu("View"))
 			{
-				if (ImGui::MenuItem("Hierarchy")) {}
-				if (ImGui::MenuItem("Inspector")) {}
-				if (ImGui::MenuItem("Scene")) {}
-				if (ImGui::MenuItem("Assets")) {}
+				ImGui::MenuItem("Hierarchy", nullptr, &m_showHierarchy);
+				ImGui::MenuItem("Options", nullptr, &m_showOptions);
+				ImGui::MenuItem("Inspector", nullptr, &m_showInspector);
+				ImGui::MenuItem("Scene", nullptr, &m_showScene);
+				ImGui::MenuItem("Assets", nullptr, &m_showAssets);
+
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Game"))
