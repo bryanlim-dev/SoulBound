@@ -462,17 +462,17 @@ namespace NightSnack
             // Display background entity info
             if (m_backgroundEntity != INVALID_ENTITY)
             {
-                ImGui::Text("Background Entity: %u", m_backgroundEntity);
+                //ImGui::Text("Background Entity: %u", m_backgroundEntity);
 
                 // Show transform if exists
-                if (m_coord.HasComponent<Transform>(m_backgroundEntity))
+                /*if (m_coord.HasComponent<Transform>(m_backgroundEntity))
                 {
                     auto& transform = m_coord.GetComponent<Transform>(m_backgroundEntity);
                     ImGui::Text("Position: (%.1f, %.1f, %.1f)",
                         transform.pos.x, transform.pos.y, transform.pos.z);
                     ImGui::Text("Scale: (%.1f, %.1f)",
                         transform.scale.x, transform.scale.y);
-                }
+                }*/
 
                 //// Button to remove background
                 //if (ImGui::Button("Remove Background"))
