@@ -4,6 +4,7 @@
  * Author(s):	Chewn Thing Kwan (Primary) - Created basic components | Defined json 
                 overloads for reading components
  *				Goh Bei Lai (Secondary, 15%) - Created Graphics components (RenderLayer, Renderable, Camera)
+ *              Bryan Lim Jun Jie (Secondary, 5%) - Created Button components (ButtonType, ButtonAction, ButtonInfo)
  *
  * Description:
  * This file defines all components for this project, it also defines a specific
@@ -173,7 +174,7 @@ namespace NightSnack {
     enum ButtonAction {
         PLAYAUDIO,
         PLAYSTRESSTEST,
-        ENDSTRESSTEST,
+        //ENDSTRESSTEST,
         CHANGELEVELS
     };
     struct ButtonInfo {
@@ -295,9 +296,9 @@ namespace NightSnack {
             b.action = ButtonAction::PLAYSTRESSTEST;
         }
 
-        if (j["action"] == "EndStressTest") {
+        /*if (j["action"] == "EndStressTest") {
             b.action = ButtonAction::ENDSTRESSTEST;
-        }
+        }*/
 
         if (j["action"] == "ChangeLevel") {
             b.action = ButtonAction::CHANGELEVELS;
