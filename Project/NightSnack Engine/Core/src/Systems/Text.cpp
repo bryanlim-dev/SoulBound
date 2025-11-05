@@ -8,11 +8,11 @@ namespace NightSnack {
 
 		// Use the Resource Manager to load the fonts
 		size_t fontKeyDefault = 0;
-		rm->LoadFont("assets/Font/buggy-font.ttf", fontKeyDefault);
+		rm->LoadFont("../assets/Font/buggy-font.ttf", fontKeyDefault);
 		m_fonts["default"] = fontKeyDefault;
 
 		size_t fontKeyLiberation = 0;
-		rm->LoadFont("assets/Font/liberation-mono.ttf", fontKeyLiberation);
+		rm->LoadFont("../assets/Font/liberation-mono.ttf", fontKeyLiberation);
 		m_fonts["liberation"] = fontKeyLiberation;
 
 		LoadFontGlyphs(fontKeyDefault, "default");

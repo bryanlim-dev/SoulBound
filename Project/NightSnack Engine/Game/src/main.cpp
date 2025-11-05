@@ -25,7 +25,7 @@ int main()
 
 	// Create Core engine
 	NightSnack::CoreEngine core;
-	core.StartUp("assets/Data/WindowConfig.json");
+	core.StartUp("../assets/Data/WindowConfig.json");
 	core.Run();
 	core.Terminate();
 

@@ -88,12 +88,12 @@ namespace NightSnack {
     void AudioSystem::LoadAllGameAudio()
     {
         // load sfx
-        LoadSoundFile("assets/Sound/SFX/sound_button_temp.wav", m_audioKeys.buttonClick);
+        LoadSoundFile("../assets/Sound/SFX/sound_button_temp.wav", m_audioKeys.buttonClick);
 
         // add more sfx here as needed
 
         // load bgm
-        LoadSoundFile("assets/Sound/Music/MansionTheme.wav", m_audioKeys.mainMenu);
+        LoadSoundFile("../assets/Sound/Music/MansionTheme.wav", m_audioKeys.mainMenu);
 
         // add more bgm here as needed
     }

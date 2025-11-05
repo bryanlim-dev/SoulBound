@@ -197,7 +197,8 @@ namespace NightSnack {
     /************************************************************************/
     /*!
     \brief
-    Overloaded output stream operator for printing Vec2.
+    Overloaded output stream operator for 
+    Vec2.
 
     \param os
     Output stream.

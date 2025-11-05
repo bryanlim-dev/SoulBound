@@ -217,7 +217,7 @@ namespace NightSnack {
 		inFile.close();
 #if RESOURCE_DEBUG_MODE
 
-		PrintJsonMapData();
+		//PrintJsonMapData();
 
 #endif
 	}

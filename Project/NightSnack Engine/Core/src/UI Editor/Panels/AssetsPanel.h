@@ -26,7 +26,7 @@ namespace NightSnack
     public:
         AssetsPanel(Coordinator& coord) :
             m_coord(coord),
-            m_assetsRoot("../../NightSnack Engine/assets"),
+            m_assetsRoot("../../../NightSnack Engine/assets"),
             m_thumbnailSize(96.0f),
             //m_searchFilter(""),
             m_selectedAssetPath(""),

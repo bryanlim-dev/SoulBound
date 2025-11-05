@@ -116,7 +116,6 @@
       "Rotation": 0.0,
       "Scale": { "x": 20.0, "y": 20.0 }
     },
-    "Force": { "fx": 0.0, "fy": 0.0 },
     "Collider": {
       "shape": "Circle",
       "type": "Solid",
@@ -146,7 +145,6 @@
       "Rotation": 0.0,
       "Scale": { "x": 20.0, "y": 20.0 }
     },
-    "Force": { "fx": 0.0, "fy": 0.0 },
     "Collider": {
       "shape": "Circle",
       "type": "Solid",

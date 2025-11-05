@@ -66,6 +66,7 @@ namespace NightSnack {
 			// User either did not properly initialized Texture[cols, rows] or
 			// User added an Animator component to a static texture
 			Texture* tex = m_coord.GetSystem<GraphicsSystem>()->GetTexture(animator.spriteSheetName);
+			if (tex == nullptr) { continue; }
 			if (tex->GetColumns() == 1 && tex->GetRows() == 1) {
 				std::cerr << "[AnimationSystem] Current Entity texture is treated as static. Initialize Texture[cols, rows] or remove Entity's Animator Component!\n";
 				continue;

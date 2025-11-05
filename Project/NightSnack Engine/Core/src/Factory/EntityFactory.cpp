@@ -122,7 +122,7 @@ namespace NightSnack {
 
 		UnLoadLevel();
 
-		LoadLevel("assets/GameData/DefaultLevel.json");
+		LoadLevel("../assets/GameData/DefaultLevel.json");
 	}
 
 	void EntityFactory::PrintPrefabNames() const {

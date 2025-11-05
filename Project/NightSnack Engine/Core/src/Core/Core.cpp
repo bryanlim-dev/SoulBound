@@ -88,7 +88,7 @@ namespace NightSnack {
 
 		AddSystem<GameUI>(m_coord, core_dispatcher);
 
-		AddSystem<EntityFactory>(m_coord, core_dispatcher, "assets/GameData/Archetypes/Archetypes.json","assets/GameData/Archetypes/AIStatesArchetypes.json", "assets/GameData/DefaultLevel.json");
+		AddSystem<EntityFactory>(m_coord, core_dispatcher, "../assets/GameData/Archetypes/Archetypes.json","../assets/GameData/Archetypes/AIStatesArchetypes.json", "../assets/GameData/DefaultLevel.json");
 
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
 

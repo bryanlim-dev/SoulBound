@@ -213,7 +213,7 @@ namespace NightSnack {
 		if (factory)
 		{
 			factory->UnLoadLevel();
-			factory->LoadLevel("assets/GameData/DefaultLevel.json");
+			factory->LoadLevel("../assets/GameData/DefaultLevel.json");
 		}
 	}
 
