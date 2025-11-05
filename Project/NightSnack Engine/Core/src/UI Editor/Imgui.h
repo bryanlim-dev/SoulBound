@@ -1,10 +1,12 @@
 /******************************************************************************
  * File:        Imgui.h
  * Project:     NightSnack
- * Author(s):	Chewn Thing Kwan (Primary, 100%)
+ * Author(s):	Wei Jie Lim (Primary, %)
+ *				Chewn Thing Kwan (Secondary, %)
  *
- * Description:
- * UI system that will be the foundation of UI editor, makes use of Imgui library.
+ * Description: 
+ * This file contains the definition of ImguiSystem which handles the 
+ * ImGui user interface for the editor.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -29,7 +31,7 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Creates imgui context and initializes OpenGL for imgui panel.
+			Creates imgui context and initializes OpenGL for imgui panel.
 		*/
 		/************************************************************************/
 		ImguiSystem(Coordinator& coord, EventDispatcher& dispatcher);
@@ -37,7 +39,7 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Destroys imgui constext and shuts down OpenGL and GLFW for imgui.
+			Destroys imgui context and shuts down OpenGL and GLFW for imgui.
 		*/
 		/************************************************************************/
 		~ImguiSystem();
@@ -45,7 +47,7 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Initializes ImGui context and configures settings.
+			Initializes ImGui context and configures settings.
 		*/
 		/************************************************************************/
 		void Init();
@@ -53,12 +55,10 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Called in Core update, sets up and draws UI panels.
+			Called in Core update, sets up and draws UI panels.
 
-		\param dt
-		delta time
-		\param coord
-		Reference to ECS Coordinator.
+		\param steps
+			Number of steps to update.
 		*/
 		/************************************************************************/
 		void Update(int steps) override;
@@ -66,7 +66,7 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Destroys and resets Imgui & all panels.
+			Destroys and resets Imgui & all panels.
 		*/
 		/************************************************************************/
 		void ResetAll();
@@ -74,7 +74,7 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Resets the game to initial state.
+			Resets the game to initial state.
 		*/
 		/************************************************************************/
 		void ResetGame();
@@ -87,9 +87,12 @@ namespace NightSnack {
 		Coordinator& m_coord;
 		Signature m_systemSignature{};
 		EventDispatcher* m_dispatcher = nullptr;
+
+		// Editor state
 		bool m_toggleEditor = false;
 		bool m_isPlaying = true;
 
+		// Panels and shared data
 		std::shared_ptr<std::unordered_map<Entity, std::string>> m_uiNames;
 		std::shared_ptr<Entity> m_selectedEntity;
 		std::unique_ptr<HierarchyPanel> m_hierarchyPanel;
@@ -98,20 +101,61 @@ namespace NightSnack {
 		std::unique_ptr<OptionsPanel> m_optionsPanel;
 		std::unique_ptr<AssetsPanel> m_assetsPanel;
 
+		// Panel visibility toggles
 		bool m_showHierarchy = true;
 		bool m_showInspector = true;
 		bool m_showScene = true;
 		bool m_showOptions = true;
 		bool m_showAssets = true;
 
+		/************************************************************************/
+		/*!
+		\brief
+			Sets up the main dockspace for the editor panels.
+		*/
+		/************************************************************************/
 		void SetupDockspace();
+
+		/************************************************************************/
+		/*!
+		\brief
+			Draws the main menu bar for the editor.
+		*/
+		/************************************************************************/
 		void DrawMenuBar();
+		
+		/************************************************************************/
+		/*!
+		\brief
+			Enables or disables the editor UI.
+
+		\param[in] enabled
+			- Switch to enable or disable the editor.
+		*/
+		/************************************************************************/
 		void SetEditorEnabled(bool enabled);
+		
+		/************************************************************************/
+		/*!
+		\brief
+			Pauses or unpauses the simulation.
+
+		\param[in] paused
+			- Switch to pause or unpause the simulation.
+		*/
+		/************************************************************************/
 		void SetSimulationPaused(bool paused);
 
+		/************************************************************************/
+		/*!
+		\brief
+			Sets ImGui theme style.
+		*/
+		/************************************************************************/
 		void SetImThemeStyle();
 	};
 
+	// Creates imgui context and initializes OpenGL for imgui panel
 	inline ImguiSystem::ImguiSystem(Coordinator& coord, EventDispatcher& dispatcher) : m_coord{ coord }, m_dispatcher{ &dispatcher } {
 		// Check for UI toggle input event
 		m_dispatcher->Subscribe<InputEvent>([this](const InputEvent& event)
@@ -128,20 +172,24 @@ namespace NightSnack {
 		Init();
 	}
 
+	// Destroys imgui context and shuts down OpenGL and GLFW for imgui
 	inline ImguiSystem::~ImguiSystem() {
 		ImguiSystem::ResetAll();
 	}
 
+	// Initializes ImGui context and configures settings
 	inline void ImguiSystem::Init() {
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 
+		// Configure ImGui IO settings
 		ImGuiIO& io = ImGui::GetIO();
 		io.ConfigFlags |=
 			ImGuiConfigFlags_DockingEnable |
 			ImGuiConfigFlags_ViewportsEnable |
 			ImGuiConfigFlags_DpiEnableScaleFonts;
 
+		// Set ImGui style
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 			SetImThemeStyle();
 		}
@@ -149,6 +197,7 @@ namespace NightSnack {
 		ImGui_ImplGlfw_InitForOpenGL(m_coord.GetSystem<ApplicationSystem>()->GetNativeHandle(), true);
 		ImGui_ImplOpenGL3_Init("#version 450");
 
+		// Initialize shared data and panels
 		m_selectedEntity = std::make_shared<Entity>(INVALID_ENTITY);
 		m_uiNames		 = std::make_shared<std::unordered_map<Entity, std::string>>();
 		m_hierarchyPanel = std::make_unique<HierarchyPanel>(m_coord, m_selectedEntity, m_uiNames);
@@ -158,17 +207,20 @@ namespace NightSnack {
 		m_assetsPanel	 = std::make_unique<AssetsPanel>(m_coord);
 	}
 
+	// Sets up and draws UI panels
 	inline void ImguiSystem::Update(int steps) {
 		(void)steps;
 
 		if (!m_toggleEditor) { return; }
 
+		// Start the ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
 		// DockSpace setup
 		SetupDockspace();
+
 		// Panels Drawing
 		if (m_showHierarchy && m_hierarchyPanel) m_hierarchyPanel->Draw();
 		if (m_showInspector && m_inspectorPanel) m_inspectorPanel->Draw();
@@ -189,9 +241,9 @@ namespace NightSnack {
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup);
 		}
-
 	}
 
+	// Destroys and resets Imgui & all panels
 	inline void ImguiSystem::ResetAll() {
 		if (ImGui::GetCurrentContext())
 		{
@@ -208,6 +260,7 @@ namespace NightSnack {
 		m_uiNames.reset();
 	}
 
+	// Resets the game to initial state
 	inline void ImguiSystem::ResetGame() {
 		auto factory = m_coord.GetSystem<EntityFactory>();
 		if (factory)
@@ -217,6 +270,7 @@ namespace NightSnack {
 		}
 	}
 
+	// Sets up the main dockspace for the editor panels
 	inline void ImguiSystem::SetupDockspace() {
 		// Padding removal for dockspace window
 		ImGui::GetStyle().WindowPadding = ImVec2(0, 0);
@@ -279,6 +333,7 @@ namespace NightSnack {
 		ImGui::End();
 	}
 
+	// Draws the main menu bar for the editor
 	inline void ImguiSystem::DrawMenuBar() {
 		if (ImGui::BeginMenuBar())
 		{
@@ -358,6 +413,7 @@ namespace NightSnack {
 		}
 	}
 
+	// Enables or disables the editor UI
 	inline void ImguiSystem::SetEditorEnabled(bool enabled) {
 		if (enabled && !ImGui::GetCurrentContext()) {
 			Init();
@@ -383,6 +439,7 @@ namespace NightSnack {
 		m_toggleEditor = enabled;
 	}
 
+	// Pauses or unpauses the simulation
 	inline void ImguiSystem::SetSimulationPaused(bool paused) {
 		if (m_dispatcher) {
 			auto physics = m_coord.GetSystem<PhysicsSystem>();
@@ -393,6 +450,7 @@ namespace NightSnack {
 		}
 	}
 
+	// Sets ImGui theme style
 	inline void ImguiSystem::SetImThemeStyle() {
 		// Visual Studio style from ImThemes
 		ImGuiStyle& style = ImGui::GetStyle();

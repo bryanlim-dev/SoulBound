@@ -1,7 +1,7 @@
 /******************************************************************************
  * File:        OptionsPanel.h
  * Project:     NightSnack
- * Author(s):	
+ * Author(s):	Wei Jie Lim (Primary, 100%)
  *
  * Description:
  * Hierarchy panel showing all entities in the scene.
@@ -17,8 +17,24 @@ namespace NightSnack
 {
     class OptionsPanel {
     public:
+
+        /************************************************************************/
+        /*!
+        \brief
+		    Constructor for OptionsPanel.
+
+        \param[in] coord
+			- Reference to Coordinator.
+        */
+        /************************************************************************/
         OptionsPanel(Coordinator& coord) : m_coord(coord) {}
 
+        /************************************************************************/
+        /*!
+        \brief
+		    Draws options panel for audio and debug settings.
+        */
+        /************************************************************************/
         void Draw()
         {
 			// Set initial window size and style
@@ -65,6 +81,7 @@ namespace NightSnack
                         togglePerfViewer = !togglePerfViewer;
                     }
 
+					// Display performance viewer if toggled
                     if (togglePerfViewer)
                     {
                         ImGui::Separator();
@@ -91,6 +108,8 @@ namespace NightSnack
 
     private:
         Coordinator& m_coord;
+
+		// Audio volume levels
         float m_masterVolume = 1.f;
         float m_musicVolume = 1.f;
         float m_sfxVolume = 1.f;

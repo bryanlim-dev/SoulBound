@@ -1,9 +1,8 @@
 /******************************************************************************
  * File:        AssetsPanel.h
  * Project:     NightSnack
- * Author(s):	Bryan Lim Jun Jie (Primary, 90%) - Drawing of assets and files tab with thumbnails
- *              Lim Wei Jie (Secondary, 10%)
- *
+ * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Drawing of assets and files tab with thumbnails
+ *              
  * Description:
  * Assets panel displaying and handling all game assets.
  * Displays thumbnails for images and allows importing files from external sources.

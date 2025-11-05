@@ -17,9 +17,31 @@ namespace NightSnack
 {
     class HierarchyPanel {
     public:
+
+        /************************************************************************/
+        /*!
+        \brief
+		    Constructor for HierarchyPanel.
+
+		\param[in] coord
+		    - Reference to Coordinator.
+
+		\param[in] selectedEntity
+		    - Shared pointer to currently selected entity.
+
+        \param[in] uiNames
+			- Shared pointer to map of entity to UI names.
+        */
+        /************************************************************************/
         HierarchyPanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity, std::shared_ptr<std::unordered_map<Entity, std::string>> uiNames)
             : m_coord(coord), m_selectedEntity(selectedEntity), m_uiNames(uiNames) {}
 
+        /************************************************************************/
+        /*!
+        \brief
+		    Draws hierarchy panel showing all entities in the scene.
+        */
+        /************************************************************************/
         void Draw()
         {
 			// Set initial window size and style
@@ -38,14 +60,19 @@ namespace NightSnack
                     {
                         const auto& entities = m_coord.GetLivingEntities();
                         auto factory = m_coord.GetSystem<NightSnack::EntityFactory>();
+
+						// List all entities
                         for (Entity e : entities)
                         {
+							// Assign default UI name if not present
                             if (m_uiNames->find(e) == m_uiNames->end()) {
                                 (*m_uiNames)[e] = factory ? factory->GetEntityPrefabName(e) : "Entity " + std::to_string(e);
                             }
 
+							// Create unique label for ImGui Selectable
                             std::string label = (*m_uiNames)[e] + "##" + std::to_string(e);
 
+							// Check if this entity is selected
                             bool selected = (m_selectedEntity && e == *m_selectedEntity);
                             if (ImGui::Selectable(label.c_str(), selected)) {
                                 *m_selectedEntity = e;
@@ -53,7 +80,7 @@ namespace NightSnack
                         }
                         ImGui::TreePop();
 
-                        // Add Prefab button at the bottom
+                        // Add Prefab button at the bottom of list
                         if (ImGui::Button("Add Prefab"))
                         {
                             Entity newEntity = m_coord.CreateEntity();
@@ -79,12 +106,15 @@ namespace NightSnack
                             *m_selectedEntity = newEntity;
                         }
 
-                        if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY) {
+						// Delete button to remove selected entity
+                        if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY)
+                        {
                             ImGui::SameLine();
-                            if (ImGui::Button("Delete")) {
-                                m_coord.DestroyEntity(*m_selectedEntity); // Remove from ECS
-                                m_uiNames->erase(*m_selectedEntity);      // Remove from UI name map
-                                *m_selectedEntity = INVALID_ENTITY;       // Clear selection
+                            if (ImGui::Button("Delete"))
+                            {
+                                m_coord.DestroyEntity(*m_selectedEntity);
+                                m_uiNames->erase(*m_selectedEntity);
+                                *m_selectedEntity = INVALID_ENTITY;
                             }
                         }
                     }

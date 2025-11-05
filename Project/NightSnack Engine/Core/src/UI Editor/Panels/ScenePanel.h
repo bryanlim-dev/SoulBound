@@ -5,7 +5,8 @@
  *              Bryan Lim Jun Jie (Secondary, 5%)
  *
  * Description:
- * Scene panel showing the rendered viewport.
+ * Scene panel showing the rendered viewport. Handles rendering the scene, 
+ * including the editor camera. 
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -18,6 +19,13 @@ namespace NightSnack
 {
     class ScenePanel {
     public:
+
+        /************************************************************************/
+        /*!
+        \brief
+		    Constructor for ScenePanel that sets up editor camera entity and framebuffer.
+        */
+        /************************************************************************/
         ScenePanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity)
             : m_coord(coord), m_selectedEntity(selectedEntity)
         {
@@ -46,6 +54,12 @@ namespace NightSnack
             CreateFramebuffer(1600, 900);
         }
 
+        /************************************************************************/
+        /*!
+        \brief
+		    Destructor for ScenePanel that cleans up framebuffer and texture.
+        */
+        /************************************************************************/
         ~ScenePanel()
         {
             // Clean up framebuffer
@@ -56,22 +70,26 @@ namespace NightSnack
             }
         }
 
-
+        /************************************************************************/
+        /*!
+        \brief
+		    Draws the Scene panel, rendering the scene to a framebuffer and displaying it.
+        */
+        /************************************************************************/
         void Draw()
         {
             // Scene Panel
             ImGui::Begin("Scene");
 
-            // ----------------------------------------------------------------
-            // GET MOUSE POSITION - For positioning dropped assets
-            // ----------------------------------------------------------------
+			// Get mouse world position variables
             auto inputSystem = m_coord.GetSystem<InputSystem>();
             float mouseWorldX = inputSystem->GetMousePosX();
             float mouseWorldY = inputSystem->GetMousePosY();
 
+			// Get available size in panel
             ImVec2 panelSize = ImGui::GetContentRegionAvail();
 
-            // Set your target aspect ratio (e.g., 16:9)
+            // Set target aspect ratio
             constexpr float targetAspect = 16.0f / 9.0f;
 
             // Calculate the largest size that fits in the panel while maintaining aspect ratio
@@ -88,7 +106,7 @@ namespace NightSnack
                 imageSize.y = panelSize.x / targetAspect;
             }
 
-            // Resize framebuffer if needed
+            // Resizing of framebuffer
             if ((int)imageSize.x != m_width || (int)imageSize.y != m_height) {
                 CleanupFramebuffer();
                 CreateFramebuffer((int)imageSize.x, (int)imageSize.y);
@@ -100,22 +118,19 @@ namespace NightSnack
             glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+			// Render with editor camera
             auto graphics = m_coord.GetSystem<GraphicsSystem>();
             if (graphics) {
                 graphics->RenderWithCamera(m_editorCameraEntity);
             }
 
-            /*auto text = m_coord.GetSystem<TextSystem>();
-            if (text) {
-                text->Draw(m_editorCameraEntity, false);
-            }*/
-
+			// Draw hovered entity outline
             auto& camInfo = m_coord.GetComponent<Camera>(m_editorCameraEntity);
             if (m_hoveredEntity != INVALID_ENTITY)
             {
-				// Draw outline for hovered entity
                 if (graphics && m_coord.HasComponent<Transform>(m_hoveredEntity) && m_coord.HasComponent<Renderable>(m_hoveredEntity))
                 {
+					// Get components
                     auto& t = m_coord.GetComponent<Transform>(m_hoveredEntity);
                     auto& r = m_coord.GetComponent<Renderable>(m_hoveredEntity);
 
@@ -130,6 +145,7 @@ namespace NightSnack
                         glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camTransform.pos.x, -camTransform.pos.y, -camTransform.pos.z));
                         glm::mat4 model = graphics->GetModelToWorldMatrix(t.pos, t.rot, t.scale, r.renderLayer);
 
+						// Draw mesh in wireframe
                         shader->Use();
                         shader->SetMat4("uDebugMVP", proj * view * model);
                         shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green
@@ -148,6 +164,7 @@ namespace NightSnack
             ImVec2 offset = ImVec2((panelSize.x - imageSize.x) * 0.5f, (panelSize.y - imageSize.y) * 0.5f);
             ImGui::SetCursorPos(ImVec2(cursorPos.x + offset.x, cursorPos.y + offset.y));
 
+			// Display the framebuffer texture in the panel
             if (m_colorTex && imageSize.x > 0 && imageSize.y > 0)
             {
                 ImGui::Image((ImTextureID)m_colorTex, imageSize, ImVec2(0, 1), ImVec2(1, 0));
@@ -175,6 +192,7 @@ namespace NightSnack
                 {
                     ImGuiIO& io = ImGui::GetIO();
                     auto& cam = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
+                    
                     // Camera Zoom
                     float scroll = io.MouseWheel;
                     if (scroll != 0.0f)
@@ -324,6 +342,12 @@ namespace NightSnack
             ImGui::End();
         }
 
+        /************************************************************************/
+        /*!
+        \brief
+		    Resets and deletes the scene texture.
+        */
+        /************************************************************************/
         void ResetTexture()
         {
             if (m_sceneTexture)
@@ -333,6 +357,12 @@ namespace NightSnack
             }
         }
 
+        /************************************************************************/
+        /*!
+        \brief
+		    Destroys the editor camera entity.
+        */
+        /************************************************************************/
         void DestroyEditorCamera()
         {
             // Remove editor camera entity
@@ -359,7 +389,18 @@ namespace NightSnack
         GLuint m_fbo = 0, m_colorTex = 0, m_rbo = 0;
         int m_width = 1600, m_height = 900;
 
-        // Create or resize the texture used for rendering the scene
+        /************************************************************************/
+        /*!
+        \brief
+		    Creates or resizes the scene texture.
+
+        \param[in] width
+			- Width of the texture.
+
+        \param[in] height
+			- Height of the texture.
+        */
+        /************************************************************************/
         void CreateOrResizeTexture(int width, int height)
         {
             if (m_sceneTexture) glDeleteTextures(1, &m_sceneTexture);
@@ -370,14 +411,36 @@ namespace NightSnack
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         }
 
-        // Update the texture with the current framebuffer content
+        /************************************************************************/
+        /*!
+        \brief
+		    Updates the scene texture from the current framebuffer.
+
+        \param[in] width
+		    - Width of the texture.
+
+        \param[in] height
+            - Height of the texture.
+        */
+        /************************************************************************/
         void UpdateTextureFromFramebuffer(int width, int height) const
         {
             glBindTexture(GL_TEXTURE_2D, m_sceneTexture);
             glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, width, height, 0);
         }
 
-		// Create framebuffer with color and depth attachments
+        /************************************************************************/
+        /*!
+        \brief
+		    Creates the framebuffer and its attachments.
+
+        \param[in] width
+            - Width of the framebuffer.
+
+        \param[in] height
+            - Height of the framebuffer.
+        */
+        /************************************************************************/
         void CreateFramebuffer(int width, int height) {
             m_width = width;
             m_height = height;
@@ -403,7 +466,12 @@ namespace NightSnack
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
         }
 
-		// Cleanup framebuffer resources
+        /************************************************************************/
+        /*!
+        \brief
+		    Cleans up the framebuffer and its attachments.
+        */
+        /************************************************************************/
         void CleanupFramebuffer() {
             if (m_fbo) glDeleteFramebuffers(1, &m_fbo);
             if (m_colorTex) glDeleteTextures(1, &m_colorTex);
@@ -411,10 +479,22 @@ namespace NightSnack
             m_fbo = m_colorTex = m_rbo = 0;
         }
 
-        // ====================================================================
-       // CREATE ENTITY FROM ASSET
-       // Loads image and creates game entity at mouse position
-       // ====================================================================
+        /************************************************************************/
+        /*!
+        \brief
+		    Creates an entity in the scene from the given asset path at the 
+            specified mouse position.
+
+        \param[in] assetPath
+			- Path to the image asset.
+
+        \param[in] mouseX
+			- mouse X coordinate in world space.
+
+        \param[in] mouseY
+			- mouse Y coordinate in world space.
+        */
+        /************************************************************************/
         void CreateEntityFromAsset(const std::string& assetPath, float mouseX, float mouseY)
         {
             // STEP 1: Load image through ResourceManager
@@ -470,7 +550,18 @@ namespace NightSnack
             std::cout << "[Scene] Background created at (" << mouseX << ", " << mouseY << ")\n";
         }
 
-        // Shows current scene information at bottom of panel
+        /************************************************************************/
+        /*!
+        \brief
+		    Draws scene information such as mouse position and background entity info.
+
+		\param[in] mouseX
+		    - Mouse X coordinate in world space.
+
+		\param[in] mouseY
+		    - Mouse Y coordinate in world space.
+        */
+        /************************************************************************/
         void DrawSceneInfo(float mouseX, float mouseY)
         {
             ImGui::Separator();
