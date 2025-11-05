@@ -20,11 +20,20 @@ namespace NightSnack {
             Init();
         }
 
+        struct Character {
+            GLuint textureID;
+            glm::ivec2 size;
+            glm::ivec2 bearing;
+            unsigned int advance;
+        };
+
         void Init();
         
         void LoadFontGlyphs(size_t fontKey, const std::string& name);
 
         void Update(int steps) override;
+
+        void Draw(Entity camera, bool isGameCamera);
 
         void RenderText(std::string text, float x, float y, float scale, glm::vec3 color, 
             const glm::mat4& proj, const glm::mat4& view, const std::string& fontName);
@@ -34,13 +43,6 @@ namespace NightSnack {
         Signature GetSignature() const override { return m_systemSignature; }
 
     private:
-
-        struct Character {
-            GLuint textureID;
-            glm::ivec2 size;
-            glm::ivec2 bearing;
-            unsigned int advance;
-        };
 
         std::unordered_map<std::string, size_t> m_fonts; // [fontName, fontKey]
         std::unordered_map<std::string, std::unordered_map<char, Character>> m_fontCharacters;

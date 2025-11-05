@@ -44,9 +44,9 @@ namespace NightSnack {
 		// Upload actual pixel data to the texture
 		glTextureSubImage2D(m_texID, 0, 0, 0, width, height, (m_hasAlphaComponent ? GL_RGBA : GL_RGB), GL_UNSIGNED_BYTE, pixels);
 
-		// Sets default wrap mode - clamp to edge
-		glTextureParameteri(m_texID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTextureParameteri(m_texID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		// Sets wrap mode so the texture will tile instead of clamping
+		glTextureParameteri(m_texID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(m_texID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		glTextureParameteri(m_texID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTextureParameteri(m_texID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 

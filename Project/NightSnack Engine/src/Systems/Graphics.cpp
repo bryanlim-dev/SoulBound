@@ -35,16 +35,16 @@ namespace NightSnack {
 		// The number of columns and rows passed in here
 		// determines the number of AnimationClips and AnimationFrames
 		// [if the entity has an Animator component]
-		auto bananaTex = std::make_unique<Texture>("assets/banana.jpg", rm, 4, 1);
+		auto bananaTex = std::make_unique<Texture>("assets/banana.jpg", rm);
 		AddTexture("assets/banana.jpg", std::move(bananaTex));
-		//auto targetTex = std::make_unique<Texture>("assets/image_UI_target.png", rm, 4, 1);
-		//AddTexture("assets/image_UI_target.png", std::move(targetTex));
+		auto targetTex = std::make_unique<Texture>("assets/target.png", rm);
+		AddTexture("assets/target.png", std::move(targetTex));
 		auto bgTex = std::make_unique<Texture>("assets/background.png", rm);
 		AddTexture("assets/background.png", std::move(bgTex));
 		auto ghostTex = std::make_unique<Texture>("assets/ghost.png", rm, 4, 1);
 		AddTexture("assets/ghost.png", std::move(ghostTex));
-		//auto slimeTex = std::make_unique<Texture>("assets/slime.png", rm, 4, 1);
-		//AddTexture("assets/slime.png", std::move(slimeTex));
+		auto slimeTex = std::make_unique<Texture>("assets/slime.png", rm, 4, 1);
+		AddTexture("assets/slime.png", std::move(slimeTex));
 
 		// Meshes;
 		AddMesh("point", Mesh::CreatePoint());
@@ -58,14 +58,14 @@ namespace NightSnack {
 		auto bananaMat = std::make_unique<Material>(GetShader("texture"), GetTexture("assets/banana.jpg"));
 		bananaMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
 		AddMaterial("bananaMat", std::move(bananaMat));
-		//auto targetMat = std::make_unique<Material>(GetShader("texture"), GetTexture("assets/image_UI_target.png"));
-		//AddMaterial("targetMat", std::move(targetMat));
+		auto targetMat = std::make_unique<Material>(GetShader("texture"), GetTexture("assets/target.png"));
+		AddMaterial("targetMat", std::move(targetMat));
 		auto backgroundMat = std::make_unique<Material>(GetShader("texture"), GetTexture("assets/background.png"));
 		AddMaterial("backgroundMat", std::move(backgroundMat));
 		auto ghostMat = std::make_unique<Material>(GetShader("texture"), GetTexture("assets/ghost.png"));
 		AddMaterial("ghostMat", std::move(ghostMat));
-		//auto slimeMat = std::make_unique<Material>(GetShader("texture"), GetTexture("assets/slime.png"));
-		//AddMaterial("slimeMat", std::move(slimeMat));
+		auto slimeMat = std::make_unique<Material>(GetShader("texture"), GetTexture("assets/slime.png"));
+		AddMaterial("slimeMat", std::move(slimeMat));
 
 		/*auto bananaMat = std::make_unique<Material>(GetShader("color"));
 		bananaMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);

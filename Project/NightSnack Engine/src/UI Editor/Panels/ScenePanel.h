@@ -101,6 +101,11 @@ namespace NightSnack
                 graphics->RenderWithCamera(m_editorCameraEntity);
             }
 
+            /*auto text = m_coord.GetSystem<TextSystem>();
+            if (text) {
+                text->Draw(m_editorCameraEntity, false);
+            }*/
+
             auto& camInfo = m_coord.GetComponent<Camera>(m_editorCameraEntity);
             if (m_hoveredEntity != INVALID_ENTITY)
             {

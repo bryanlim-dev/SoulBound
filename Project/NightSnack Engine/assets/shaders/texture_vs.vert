@@ -25,6 +25,7 @@ uniform vec4 uUVRect;
 
 // Non-instanced rendering
 uniform mat4 uModelToWorld; // used for non-instancing rendering
+//uniform float uTileScale; // 1 = normal, >1 = repeat, <1 = stretch
 
 struct InstanceData {
     vec4 pos_rot;
@@ -71,6 +72,15 @@ void main(void) {
     } else {
         model = uModelToWorld;
         vTexCoord = mix(uUVRect.xy, uUVRect.zw, aTexCoord);
+
+        
+        //if (uTileScale > 1.0) {
+        //    // Tile the background
+        //    vTexCoord = aTexCoord * uTileScale;
+        //} else {
+        //    // Normal sprite mode
+        //    vTexCoord = mix(uUVRect.xy, uUVRect.zw, aTexCoord);
+        //}
     }
 
     gl_Position = uProj * uView * model * vec4(aVertexPosition, 1.0); 

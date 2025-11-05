@@ -170,7 +170,7 @@
   "Control": {
     "Renderable": {
       "meshName": "square",
-      "materialName": "ghostMat"
+      "materialName": "targetMat"
     }
   },
 
@@ -278,11 +278,11 @@
     },
     "Renderable": {
       "meshName": "square",
-      "materialName": "ghostMat",
+      "materialName": "slimeMat",
       "isWireframe" : false
     },
     "Animator": {
-      "spriteSheetName": "assets/ghost.png",
+      "spriteSheetName": "assets/slime.png",
       "playbackSpeed": 2.0,
       "isPlaying": true,
       "isLooping": true

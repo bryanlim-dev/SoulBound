@@ -61,7 +61,6 @@ namespace NightSnack {
 		// Iterate through all entities that have Animator component
 		for (Entity e : m_entities) {
 			auto& animator = m_coord.ModifyComponent<Animator>(e);
-			auto& ren = m_coord.ModifyComponent<Renderable>(e);
 
 			// Skip the updating of this sprite sheet
 			// User either did not properly initialized Texture[cols, rows] or
@@ -115,6 +114,7 @@ namespace NightSnack {
 
 			// Update the UV coordinates, to be retrieved on the Graphics System side
 			if (m_coord.HasComponent<RigidBody>(e)) {
+				// Has RigidBody component, set the UV coordinates according to where it moves
 				auto& rb = m_coord.GetComponent<RigidBody>(e);
 				
 				if (rb.vel.x < 0.f) {
