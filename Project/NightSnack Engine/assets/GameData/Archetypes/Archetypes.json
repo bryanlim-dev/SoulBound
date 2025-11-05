@@ -79,9 +79,9 @@
       "type": "GameMenu"
     },
     "Font": {
-      "fontType": "default",
+      "fontType": "liberation",
       "text": "Stress Test",
-      "fontSize": 0.2,
+      "fontSize": 0.3,
       "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 }
     },
     "Color": { "r": 1.0, "g": 0.4, "b": 0.0, "a": 1.0 }
