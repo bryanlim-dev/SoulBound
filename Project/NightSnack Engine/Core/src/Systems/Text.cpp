@@ -82,9 +82,9 @@ namespace NightSnack {
 		(void)steps;
 
 		//if (!m_coord.GetSystem<ImguiSystem>()->GetEditorActive()) {
-			Entity mainCam = m_coord.GetSystem<GraphicsSystem>()->FindCamera();
-			if (mainCam == INVALID_ENTITY) return;
-			Draw(mainCam, true);
+		Entity mainCam = m_coord.GetSystem<GraphicsSystem>()->FindCamera();
+		if (mainCam == INVALID_ENTITY) return;
+		Draw(mainCam, true);
 		//}
 	}
 
@@ -98,17 +98,32 @@ namespace NightSnack {
 		auto& camPos = m_coord.GetComponent<Transform>(camera).pos;
 		auto& camInfo = m_coord.GetComponent<Camera>(camera);
 
+		// Default proj and view matrix for GAMELAYER entities
 		glm::mat4 proj = m_coord.GetSystem<GraphicsSystem>()->GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
-
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
-		for (Entity e : m_entities) {
-			auto& pos = m_coord.GetComponent<Transform>(e).pos;
-			auto& txt = m_coord.GetComponent<Font>(e);
+		// Currently, only iterating through GAMELAYER and GAMEUI layers
+		for (Layer& l : m_layers) {
+			if (l.Empty() || !l.IsVisible()) { continue; }
+			for (Entity e : l.Entities()) {
+				// Reached the end of Valid Entities
+				if (e == INVALID_ENTITY) { break; }
 
-			RenderText(txt.text, pos.x, pos.y, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, proj, view, txt.fontType);
+				bool isUILayer = (l.Type() == LayerType::GAMEUI);
+				// Flip the y axis for orthographic proj if using UI Layer (screen coords)
+				glm::mat4 projToUse = isUILayer ? glm::ortho(0.f, 1600.f, 0.f, 900.f) : proj;
+				glm::mat4 viewToUse = isUILayer ? glm::mat4(1.f) : view;
+
+				auto& pos = m_coord.GetComponent<Transform>(e).pos;
+				auto& scale = m_coord.GetComponent<Transform>(e).scale;
+				auto& txt = m_coord.GetComponent<Font>(e);
+
+				float posYToUse = isUILayer ? 900.f - pos.y : pos.y;
+				float posXToUse = pos.x - scale.x * 0.5f;
+
+				RenderText(txt.text, posXToUse, posYToUse, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType);
+			}
 		}
-
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
 	}
@@ -135,18 +150,18 @@ namespace NightSnack {
 
 			float xpos = x + ch.bearing.x * scale;
 			float ypos = y - (ch.size.y - ch.bearing.y) * scale;
-
 			float w = ch.size.x * scale;
 			float h = ch.size.y * scale;
+
 			// update VBO for each character
 			float vertices[6][4] = {
-				{ xpos,     ypos + h,   0.0f, 0.0f },
-				{ xpos,     ypos,       0.0f, 1.0f },
-				{ xpos + w, ypos,       1.0f, 1.0f },
+				{ xpos,     ypos + h,   0.f, 0.f },
+				{ xpos,     ypos,       0.f, 1.f },
+				{ xpos + w, ypos,       1.f, 1.f },
 
-				{ xpos,     ypos + h,   0.0f, 0.0f },
-				{ xpos + w, ypos,       1.0f, 1.0f },
-				{ xpos + w, ypos + h,   1.0f, 0.0f }
+				{ xpos,     ypos + h,   0.f, 0.f },
+				{ xpos + w, ypos,       1.f, 1.f },
+				{ xpos + w, ypos + h,   1.f, 0.f }
 			};
 			// render glyph texture over quad
 			glBindTexture(GL_TEXTURE_2D, ch.textureID);
