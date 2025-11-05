@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        AnimationSystem.h
+ * Project:     NightSnack
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Animation System
+ *
+ * Description:
+ * This file contains the declarations of the Animation System.
+ * It initializes the AnimationClips and AnimationFrames of every texture loaded, based on its number of columns and rows.
+ * It manages the updating of UV coordinates of the current AnimationClip, which is used by the Graphics System.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #pragma once
 
 #include "Core/ECS/Coordinator.h"
@@ -10,32 +24,45 @@ namespace NightSnack {
 
 	public:
 
+		/************************************************************************/
+		/*!
+		\brief
+		Constructor for the AnimationSystem
+		Sets up the system signatures so that this system only operates on entities
+		that contain components (Animator, Renderable)
+
+		\param[in] coord
+		Reference to the ECS Coordinator
+
+		\param[in] dispatcher
+		Reference to the event dispatcher used for Input Events
+		*/
+		/************************************************************************/
 		AnimationSystem(Coordinator& coord, EventDispatcher& dispatcher) : m_coord{ coord }, m_dispatcher{ &dispatcher } {
 			m_systemSignature.set(GetComponentTypeID<Renderable>());
 			m_systemSignature.set(GetComponentTypeID<Animator>());
 
 			Init();
-
-			//// Dispatcher lambda
-			//m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
-			//	if (m_entities.empty())
-			//		return;
-
-			//	});
 		}
 
+		/************************************************************************/
+		/*!
+		\brief
+		Initialise the map of animation clips, with its UV coordinates, with all the 
+		stored pointer textures from Graphics System
+		*/
+		/************************************************************************/
 		void Init();
 
 		/************************************************************************/
 		/*!
 		\brief
-		Main update called by the core
+		Main update called by the core.
+		It updates the UV coordinates that will be used to render by the Graphics System, 
+		based on which frame of the current animation clip is playing.
 
-		\param[in] dt
-		Delta time
-
-		\param[in] coord
-		Reference to the ECS Coordinator
+		\param[in] steps
+		The number of steps in the simulation
 		*/
 		/************************************************************************/
 		void Update(int steps) override;

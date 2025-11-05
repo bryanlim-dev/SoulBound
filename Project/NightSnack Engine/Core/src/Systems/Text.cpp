@@ -89,6 +89,7 @@ namespace NightSnack {
 	}
 
 	void TextSystem::Draw(Entity camera, bool isGameCamera) {
+		(void)isGameCamera; // To be used in the future, to differentiate game scene and level editor
 
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);

@@ -9,6 +9,7 @@
  * applies uniforms, and issues draw calls for each renderable entity in the scene.
  * It also provides debug drawing visualization (circle and AABB collider outlines, velocity vector)
  * and basic scaling and rotating of a specific object via input events from the event dispatcher.
+ * The Graphics System supports both Instanced and Non-Instanced Rendering. 
  *
  * Copyright � 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -66,18 +67,6 @@ namespace NightSnack {
 		AddMaterial("ghostMat", std::move(ghostMat));
 		auto slimeMat = std::make_unique<Material>(GetShader("texture"), GetTexture("../assets/slime.png"));
 		AddMaterial("slimeMat", std::move(slimeMat));
-
-		/*auto bananaMat = std::make_unique<Material>(GetShader("color"));
-		bananaMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
-		AddMaterial("bananaMat", std::move(bananaMat));
-		auto targetMat = std::make_unique<Material>(GetShader("color"));
-		AddMaterial("targetMat", std::move(targetMat));
-		auto backgroundMat = std::make_unique<Material>(GetShader("color"));
-		AddMaterial("backgroundMat", std::move(backgroundMat));
-		auto ghostMat = std::make_unique<Material>(GetShader("color"));
-		AddMaterial("ghostMat", std::move(ghostMat));
-		auto slimeMat = std::make_unique<Material>(GetShader("color"));
-		AddMaterial("slimeMat", std::move(slimeMat));*/
 
 		// Materials with solid color
 		auto colorMat = std::make_unique<Material>(GetShader("color"));
@@ -160,14 +149,18 @@ namespace NightSnack {
 					instance.pos_rot = glm::vec4{ pos.x, pos.y, z, glm::radians(rot) };
 					instance.scale = glm::vec4{ scl.x, scl.y, 1.f, 1.f };
 
+					// UV coordinates
 					if (m_coord.HasComponent<Animator>(e)) {
 						auto& animator = m_coord.GetComponent<Animator>(e);
+						// Pass the UV coordinates that were updated from the AnimationSystem
 						instance.uvRect = glm::vec4{ animator.uvTopLeft.x, animator.uvTopLeft.y,
 							animator.uvBottomRight.x, animator.uvBottomRight.y };
 					} else {
+						// Non-animated textures will use default values
 						instance.uvRect = glm::vec4{ 0.f, 0.f, 1.f, 1.f };
 					}
 
+					// Each different combination of color/texture/wireframe will be sent in different batches
 					std::string key = ren.meshName;
 
 					if (m_coord.HasComponent<Color>(e)) {
@@ -352,56 +345,6 @@ namespace NightSnack {
 		}
 	}
 
-	// This functions will be deleted in due time hahahaha
-	void GraphicsSystem::TestSwapTextures() {
-		for (Layer& l : m_layers) {
-			if (l.Empty() || !l.IsVisible()) { continue; }
-			for (Entity e : l.Entities()) {
-				// Reached the end of Valid Entities
-				if (e == INVALID_ENTITY) { break; }
-
-				// Obtain entity components
-				auto& ren = m_coord.GetComponent<Renderable>(e);
-				auto& pos = m_coord.GetComponent<Transform>(e).pos;
-				auto& rot = m_coord.GetComponent<Transform>(e).rot;
-				auto& scl = m_coord.GetComponent<Transform>(e).scale;
-
-				if (ren.wasModified) { ResolveRenderable(e, ren); }
-				// Find entity's renderCache;
-				auto it = m_renderCache.find(e);
-				if (it == m_renderCache.end() || !it->second.valid) {
-					ResolveRenderable(e, ren);
-					it = m_renderCache.find(e);
-				}
-
-				CachedRenderData& data = it->second;
-				if (!data.valid) {
-					std::cout << "Entity " << e << " skipped (invalid renderable)\n";
-					continue;
-				}
-
-				// swap textures
-				if (ren.materialName == "ghostMat") {
-
-					//std::cout << "\nK Pressed, Entity " << e << " is a ghostMat\n";
-					//std::cout << "Entity " << e << " material name is: " << ren.materialName << std::endl;
-					UpdateTextureOfMaterial("../assets/slime.png", e);
-					return;
-				}
-				if (ren.materialName == "ghostMat1") {
-					//std::cout << "\nK Pressed, Entity " << e << " is a ghostMat1\n";
-					//std::cout << "Entity " << e << " material name is: " << ren.materialName << std::endl;
-					UpdateTextureOfMaterial("../assets/image_UI_target.png", e);
-				}
-				if (ren.materialName == "ghostMat2") {
-					//std::cout << "\nK Pressed, Entity " << e << " is a ghostMat2\n";
-					//std::cout << "Entity " << e << " material name is: " << ren.materialName << std::endl;
-					UpdateTextureOfMaterial("../assets/ghost.png", e);
-				}
-			}
-		}
-	}
-
 	void GraphicsSystem::UpdateTextureOfMaterial(const std::string& textureFilePath, Entity e) {
 		auto& ren = m_coord.ModifyComponent<Renderable>(e);
 
@@ -435,12 +378,12 @@ namespace NightSnack {
 			for (const auto& [matName, material] : m_materials) {
 				// Check whether the texture exists first! 
 				// Since there are colorMat with no textures too
-				Texture* tex = material->GetTexture();
-				if (!tex) continue;
+				Texture* matTex = material->GetTexture();
+				if (!matTex) continue;
 
 				// If it exists already, change the name of this Renderable's material to the existing material name
 				//std::cout << "Checking for texture name: " << textureFileName << std::endl;
-				if (textureFilePath == tex->GetTextureName()) {
+				if (textureFilePath == matTex->GetTextureName()) {
 					ren.materialName = matName;
 					found = true;
 					//std::cout << "Material for this texture exists too!\n";

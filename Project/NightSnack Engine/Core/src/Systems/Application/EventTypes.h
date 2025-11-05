@@ -58,7 +58,6 @@ namespace NightSnack {
             ToggleInstancedRendering, // I
             CrashTest,          // C
             PhysicsDebugStep,   // P
-            TextureTest, // K
 
             // Mouse events
             ClickLMB,           // LMB
