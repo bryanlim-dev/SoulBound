@@ -283,15 +283,21 @@ namespace NightSnack {
 		if (ImGui::BeginMenuBar())
 		{
 			// Implemented at later date
-			/*if (ImGui::BeginMenu("File"))
+			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New")) {}
-				if (ImGui::MenuItem("Open")) {}
-				if (ImGui::MenuItem("Save")) {}
+				//if (ImGui::MenuItem("New")) {}
+				if (ImGui::MenuItem("Open")) {
+					auto factory = m_coord.GetSystem<EntityFactory>();
+					if (factory)
+					{
+						factory->LoadLevel("../assets/GameData/DefaultLevel.json");
+					}
+				}
+				//if (ImGui::MenuItem("Save")) {}
 				ImGui::Separator();
-				if (ImGui::MenuItem("Exit")) {}
+				//if (ImGui::MenuItem("Exit")) {}
 				ImGui::EndMenu();
-			}*/
+			}
 			if (ImGui::BeginMenu("View"))
 			{
 				ImGui::MenuItem("Hierarchy", nullptr, &m_showHierarchy);
