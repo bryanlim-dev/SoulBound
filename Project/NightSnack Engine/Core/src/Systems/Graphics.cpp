@@ -21,7 +21,7 @@ namespace NightSnack {
 
 	void GraphicsSystem::Init() {
 		// Default Shader;
-		auto debugShader = std::make_unique<Shader>("assets/shaders/debug_vertex_shader.vert", "assets/shaders/debug_fragment_shader.frag");
+		auto debugShader = std::make_unique<Shader>("assets/shaders/debug_vs.vert", "assets/shaders/debug_fs.frag");
 		AddShader("debug", std::move(debugShader));
 		auto colorShader = std::make_unique<Shader>("assets/shaders/color_vs.vert", "assets/shaders/color_fs.frag");
 		AddShader("color", std::move(colorShader));

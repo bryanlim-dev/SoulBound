@@ -8,7 +8,7 @@
  * terminate functions. Contains the ECS Coordinator, Event Dispatcher and all
  * registered systems are stored in m_systems.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -25,9 +25,11 @@
 #include "Systems/Application/IEvent.h"
 #include "CrashLogger.h"
 
+#include "ImportExport.h"
+
 namespace NightSnack {
 
-	class CoreEngine {
+	class CORE_API CoreEngine {
 
 	public:
 
