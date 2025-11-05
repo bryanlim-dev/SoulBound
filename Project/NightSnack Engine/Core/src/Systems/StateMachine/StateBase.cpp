@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        StateBase.cpp
+ * Project:     NightSnack
+ * Author(s):	Clement Ang Yang Ying (Primary, 100%) - Created class and logic
+ *
+ * Description:
+ * This file contains the definition of the class StateBase.
+ * It is the class that holds data on a state for the state machine such as
+ * which states to transition to and their requirements, update, eneter, exit
+ * and their state components.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 #include "StateBase.h"
 #include <Systems/PlayerController.h>
 #include <fstream>
@@ -5,6 +19,64 @@
 namespace NightSnack
 {
 
+    void StateBase::Enter(Entity entityID, Coordinator& coord)
+    {
+        m_isExit = false;
+        std::cout << "ID: " << entityID << ", State Enter: " << m_stateName << std::endl;
+
+        if (m_enterFunction)
+            m_enterFunction(entityID, coord);
+
+        //Structure bindings to iterate
+        for (auto& [name, component] : m_stateComponentMap)
+        {
+            component->OnEnter(entityID, coord);
+        }
+    }
+
+    void StateBase::Update(float dt, Entity entityID, Coordinator& coord)
+    {
+        //Call update function
+        if (m_updateFunction)
+            m_updateFunction(dt, entityID, coord);
+
+        //Structure bindings to iterate
+        for (auto& [name, component] : m_stateComponentMap)
+        {
+            component->OnUpdate(dt, entityID, coord);
+        }
+
+        //Check thru transition list
+        for (auto& stateFuncPair : m_transtitionStatesList)
+        {
+            if (stateFuncPair.second && stateFuncPair.second(entityID, coord))
+            {
+                m_nextState = stateFuncPair.first;
+                m_isExit = true;
+                return;
+            }
+        }
+    }
+
+    void StateBase::Exit(Entity entityID, Coordinator& coord)
+    {
+        m_isExit = false;
+        std::cout << "ID: " << entityID << ", State Exit: " << m_stateName << std::endl;
+
+        if (m_exitFunction)
+            m_exitFunction(entityID, coord);
+
+        //Structure bindings to iterate
+        for (auto& [name, component] : m_stateComponentMap)
+        {
+            component->OnExit(entityID, coord);
+        }
+
+        if (!m_nextState.expired())
+        {
+            m_nextState.reset();
+        }
+    }
 
     States CreateStateFromArchetypeJson(std::string stateArchetype, std::string stateArchetypeFilePath)
     {
@@ -85,5 +157,6 @@ namespace NightSnack
 
         return states;
     }
+
 
 }

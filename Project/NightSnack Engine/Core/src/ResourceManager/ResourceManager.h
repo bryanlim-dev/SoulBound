@@ -4,7 +4,7 @@
  * Author(s):	Clement Ang Yang Ying (Primary, 100%) - Created manager class and logic
  *
  * Description:
- * This file contains the declarations of a ResourceManager class, that manages Resouorce pointers
+ * This file contains the deleclrations of a ResourceManager class, that manages Resouorce pointers
  * It saves/creates Resources and puts them in a different map depending on the resource type.
  * The key to the pointers made using the string of the file path and returning it to the caller.
  * When unloading Resources, it flags the Resource with a bool within the that class and unloads them all within update.
