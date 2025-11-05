@@ -29,13 +29,19 @@ namespace NightSnack
                 editorTransform.pos = { 0.f, 0.f, 0.f };
                 editorTransform.rot = 0.f;
                 editorTransform.scale = { 1.f, 1.f };
+				editorTransform.layer = LayerType::GAMEUI;
 				m_editorCameraEntity = factory->Create("Cam", editorTransform);
                 
-                auto& cam = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
-				cam.zoom = 1.0f;
-				cam.isMainCam = false;
+                if (m_editorCameraEntity != INVALID_ENTITY)
+                {
+                    if (!m_coord.HasComponent<Camera>(m_editorCameraEntity)) {
+                        m_coord.AddComponent<Camera>(m_editorCameraEntity, Camera{});
+                    }
+                    auto& cam = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
+                    cam.zoom = 1.0f;
+                    cam.isMainCam = false;
+                }
 			}
-
             // Create framebuffer and color/depth attachments
             CreateFramebuffer(1600, 900);
         }
@@ -48,8 +54,6 @@ namespace NightSnack
             {
                 glDeleteTextures(1, &m_sceneTexture);
             }
-			// Remove editor camera entity
-			m_coord.DestroyEntity(m_editorCameraEntity);
         }
 
 
@@ -321,6 +325,17 @@ namespace NightSnack
             {
                 glDeleteTextures(1, &m_sceneTexture);
                 m_sceneTexture = 0;
+            }
+        }
+
+        void DestroyEditorCamera()
+        {
+            // Remove editor camera entity
+            if (m_editorCameraEntity != INVALID_ENTITY &&
+                m_coord.GetLivingEntities().count(m_editorCameraEntity))
+            {
+                m_coord.DestroyEntity(m_editorCameraEntity);
+                m_editorCameraEntity = INVALID_ENTITY;
             }
         }
 

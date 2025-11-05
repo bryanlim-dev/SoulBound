@@ -18,7 +18,7 @@ namespace NightSnack
 {
     class InspectorPanel {
     public:
-        InspectorPanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity, std::unordered_map<Entity, std::string>& uiNames)
+        InspectorPanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity, std::shared_ptr<std::unordered_map<Entity, std::string>> uiNames)
             : m_coord(coord), m_selectedEntity(selectedEntity), m_uiNames(uiNames) {}
 
         void Draw()
@@ -28,7 +28,8 @@ namespace NightSnack
 
             if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY)
             {
-                DrawEntityInfo(*m_selectedEntity); // Draw name/layer section
+                // Draw entity info
+                DrawEntityInfo(*m_selectedEntity);
                 ImGui::Separator();
 
 				TransformComponent();
@@ -53,7 +54,7 @@ namespace NightSnack
     private:
         Coordinator& m_coord;
         std::shared_ptr<Entity> m_selectedEntity;
-		std::unordered_map<Entity, std::string>& m_uiNames;
+        std::shared_ptr<std::unordered_map<Entity, std::string>> m_uiNames;
 
         void DrawEntityInfo(Entity entity);
         void TransformComponent();
@@ -67,27 +68,29 @@ namespace NightSnack
     {
         auto factory = m_coord.GetSystem<EntityFactory>();
 
-        if (m_uiNames.find(entity) == m_uiNames.end()) {
-            m_uiNames[entity] = factory ? factory->GetEntityPrefabName(entity) : "Entity " + std::to_string(entity);
+		// Retrieve Prefab name for the entity
+        if (m_uiNames->find(entity) == m_uiNames->end()) {
+            (*m_uiNames)[entity] = factory ? factory->GetEntityPrefabName(entity) : "Entity " + std::to_string(entity);
         }
-
+		// Input field for entity name
         char nameBuffer[128];
-        strncpy_s(nameBuffer, m_uiNames[entity].c_str(), sizeof(nameBuffer));
+        strncpy_s(nameBuffer, (*m_uiNames)[entity].c_str(), sizeof(nameBuffer));
         nameBuffer[sizeof(nameBuffer) - 1] = 0;
 
         ImGui::PushID("EntityNameField");
         ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 80.0f);
         if (ImGui::InputText("##EntityName", nameBuffer, sizeof(nameBuffer))) {
-            m_uiNames[entity] = std::string(nameBuffer);
+            (*m_uiNames)[entity] = std::string(nameBuffer);
         }
         ImGui::SameLine();
         ImGui::TextDisabled("ID: %u", entity);
         ImGui::PopID();
 
+		// Layer selection dropdown
         if (m_coord.HasComponent<Transform>(entity))
         {
             auto& t = m_coord.ModifyComponent<Transform>(entity);
-            const char* layerNames[] = { "ENGINE", "BACKGROUND", "GAMELAYER", "FOREGROUND", "GAMEUI" };
+            const char* layerNames[] = { "_ENGINE", "BACKGROUND", "GAMELAYER", "FOREGROUND", "GAMEUI", "_ENGINE2"};
             int currentLayer = static_cast<int>(t.layer);
 
             ImGui::Text("Layer");
@@ -299,13 +302,12 @@ namespace NightSnack
             ImGui::TextDisabled("%s", renderable.meshName.c_str());
 
             // Material Name with Drag and Drop
-            
             const std::string& textureName = renderable.materialName.empty() ? std::string("None") : renderable.materialName;
             
             ImGui::Text("Texture");
             ImGui::SameLine(100);
 
-            // Use a selectable or button to mimic a non-editable text box
+            // Use a selectable to mimic a non-editable text box
             ImGui::PushID("TextureField");
             ImGui::PushStyleColor(ImGuiCol_FrameBg, ImGui::GetStyle().Colors[ImGuiCol_FrameBg]);
             ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_Text]);
