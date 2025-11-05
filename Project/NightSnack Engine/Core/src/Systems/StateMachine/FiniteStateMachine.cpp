@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        ResourceManager.cpp
+ * Project:     NightSnack
+ * Author(s):	Clement Ang Yang Ying (Primary, 100%) - Created class and logic
+ *
+ * Description:
+ * This file contains the definition of the system class FiniteStateMachine.
+ * It is NOT owned by a single entity and is instead a system that takes in 
+ * the component States from entities and trigger 
+ * the state functions (Upadte/Eneter/Exit/Switchhing,etc.)
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 #include "FiniteStateMachine.h"
 #include <Factory/EntityFactory.h>
 #include "StateComponents.h"
@@ -39,30 +53,7 @@ namespace NightSnack
 				if (m_coord.HasComponent<States>(e))
 					UpdateEntityState(dt, e, m_coord.ModifyComponent<States>(e));
 			}
-			//for (Entity& id : m_entityList)
-			//{
-			//	if (m_coord.HasComponent<States>(id))
-			//		UpdateEntityState(dt, id, m_coord.ModifyComponent<States>(id));
-			//	else
-			//		removalList.push_back(id);
-			//}
-
-			//Dont delete partway thru loop
-			for (Entity& id : removalList)
-			{
-				RemoveEntity(id);
-			}
 		}
-	}
-
-	void FiniteStateMachine::AddEntity(Entity id)
-	{
-		m_entityList.push_back(id);
-	}
-
-	void FiniteStateMachine::RemoveEntity(Entity id)
-	{
-		m_entityList.remove(id);
 	}
 
 
