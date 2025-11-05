@@ -327,28 +327,29 @@ namespace NightSnack {
 				}
 
 				// Pause
-				auto physics = m_coord.GetSystem<PhysicsSystem>();
-				bool isPaused = physics && physics->IsDebugMode();
-				if (ImGui::MenuItem("Pause", nullptr, isPaused))
-				{
-					SetSimulationPaused(!isPaused);
-				}
-
-				// Stop
 				if (m_isPlaying)
 				{
-					if (ImGui::MenuItem("Stop"))
+					auto physics = m_coord.GetSystem<PhysicsSystem>();
+					bool isPaused = physics && physics->IsDebugMode();
+					if (ImGui::MenuItem("Pause"))
 					{
 						m_isPlaying = false;
 						SetSimulationPaused(true);
-						ResetGame();
 					}
 				}
 				else
 				{
 					ImGui::BeginDisabled();
-					ImGui::MenuItem("Stop");
+					ImGui::MenuItem("Pause");
 					ImGui::EndDisabled();
+				}
+
+				// Stop
+				if (ImGui::MenuItem("Stop"))
+				{
+					m_isPlaying = false;
+					SetSimulationPaused(true);
+					ResetGame();
 				}
 
 				ImGui::EndMenu();
