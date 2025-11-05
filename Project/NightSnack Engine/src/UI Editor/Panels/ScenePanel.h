@@ -21,21 +21,20 @@ namespace NightSnack
         ScenePanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity)
             : m_coord(coord), m_selectedEntity(selectedEntity)
         {
-			// Create a dedicated editor camera entity for Scene Panel
-            m_editorCameraEntity = m_coord.CreateEntity();
-
-            Transform editorTransform;
-            editorTransform.pos = { 0.f, 0.f, 0.f };
-            editorTransform.rot = 0.f;
-            editorTransform.scale = { 1.f, 1.f };
-            m_coord.AddComponent(m_editorCameraEntity, editorTransform);
-
-            Camera editorCamera;
-            editorCamera.isMainCam = false;
-            editorCamera.zoom = 1.f;
-            editorCamera.width = 1600.f;
-            editorCamera.height = 900.f;
-            m_coord.AddComponent(m_editorCameraEntity, editorCamera);
+            // Create a dedicated editor camera entity for Scene
+			auto factory = m_coord.GetSystem<EntityFactory>();
+			if (factory)
+			{
+                Transform editorTransform;
+                editorTransform.pos = { 0.f, 0.f, 0.f };
+                editorTransform.rot = 0.f;
+                editorTransform.scale = { 1.f, 1.f };
+				m_editorCameraEntity = factory->Create("Cam", editorTransform);
+                
+                auto& cam = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
+				cam.zoom = 1.0f;
+				cam.isMainCam = false;
+			}
 
             // Create framebuffer and color/depth attachments
             CreateFramebuffer(1600, 900);
@@ -43,11 +42,14 @@ namespace NightSnack
 
         ~ScenePanel()
         {
+            // Clean up framebuffer
             CleanupFramebuffer();
             if (m_sceneTexture)
             {
                 glDeleteTextures(1, &m_sceneTexture);
             }
+			// Remove editor camera entity
+			m_coord.DestroyEntity(m_editorCameraEntity);
         }
 
 
@@ -328,14 +330,11 @@ namespace NightSnack
 
         std::shared_ptr<Entity> m_selectedEntity;
         Entity m_backgroundEntity;      // Current background entity ID
-		Entity m_editorCameraEntity;
+		Entity m_editorCameraEntity = INVALID_ENTITY;
 
         Entity m_hoveredEntity = INVALID_ENTITY;
         Vec3   m_dragOffset = { 0, 0, 0 };
         bool   m_isDragging = false;
-
-        Transform m_editorTransform;
-        Camera m_editorCamera;
 
         GLuint m_fbo = 0, m_colorTex = 0, m_rbo = 0;
         int m_width = 1600, m_height = 900;
