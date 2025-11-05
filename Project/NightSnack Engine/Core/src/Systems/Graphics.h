@@ -396,6 +396,7 @@ namespace NightSnack {
 			Material* material{ nullptr };
 			bool isWireframe{ false };
 			std::vector<Mesh::InstanceData> instances;
+			LayerType layerType = LayerType::GAMELAYER;
 		};
 
 		// Resource stores (owned by system);

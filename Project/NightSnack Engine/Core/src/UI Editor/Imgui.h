@@ -283,15 +283,21 @@ namespace NightSnack {
 		if (ImGui::BeginMenuBar())
 		{
 			// Implemented at later date
-			/*if (ImGui::BeginMenu("File"))
+			if (ImGui::BeginMenu("File"))
 			{
-				if (ImGui::MenuItem("New")) {}
-				if (ImGui::MenuItem("Open")) {}
-				if (ImGui::MenuItem("Save")) {}
+				//if (ImGui::MenuItem("New")) {}
+				if (ImGui::MenuItem("Open")) {
+					auto factory = m_coord.GetSystem<EntityFactory>();
+					if (factory)
+					{
+						factory->LoadLevel("../assets/GameData/DefaultLevel.json");
+					}
+				}
+				//if (ImGui::MenuItem("Save")) {}
 				ImGui::Separator();
-				if (ImGui::MenuItem("Exit")) {}
+				//if (ImGui::MenuItem("Exit")) {}
 				ImGui::EndMenu();
-			}*/
+			}
 			if (ImGui::BeginMenu("View"))
 			{
 				ImGui::MenuItem("Hierarchy", nullptr, &m_showHierarchy);
@@ -321,28 +327,29 @@ namespace NightSnack {
 				}
 
 				// Pause
-				auto physics = m_coord.GetSystem<PhysicsSystem>();
-				bool isPaused = physics && physics->IsDebugMode();
-				if (ImGui::MenuItem("Pause", nullptr, isPaused))
-				{
-					SetSimulationPaused(!isPaused);
-				}
-
-				// Stop
 				if (m_isPlaying)
 				{
-					if (ImGui::MenuItem("Stop"))
+					auto physics = m_coord.GetSystem<PhysicsSystem>();
+					bool isPaused = physics && physics->IsDebugMode();
+					if (ImGui::MenuItem("Pause"))
 					{
 						m_isPlaying = false;
 						SetSimulationPaused(true);
-						ResetGame();
 					}
 				}
 				else
 				{
 					ImGui::BeginDisabled();
-					ImGui::MenuItem("Stop");
+					ImGui::MenuItem("Pause");
 					ImGui::EndDisabled();
+				}
+
+				// Stop
+				if (ImGui::MenuItem("Stop"))
+				{
+					m_isPlaying = false;
+					SetSimulationPaused(true);
+					ResetGame();
 				}
 
 				ImGui::EndMenu();

@@ -140,13 +140,7 @@ namespace NightSnack {
 
 					// Prepare instance data
 					Mesh::InstanceData instance{};
-
-					// Base z offset from the RenderLayer
-					float layerZ = GetRenderLayerZPos(ren.renderLayer);
-					// Final z offset of this renderable
-					float z = layerZ + pos.z;
-
-					instance.pos_rot = glm::vec4{ pos.x, pos.y, z, glm::radians(rot) };
+					instance.pos_rot = glm::vec4{ pos.x, pos.y, pos.z, glm::radians(rot) };
 					instance.scale = glm::vec4{ scl.x, scl.y, 1.f, 1.f };
 
 					// UV coordinates
@@ -159,6 +153,8 @@ namespace NightSnack {
 						// Non-animated textures will use default values
 						instance.uvRect = glm::vec4{ 0.f, 0.f, 1.f, 1.f };
 					}
+
+					instance.color = glm::vec4{ 1.f, 1.f, 1.f, 1.f };
 
 					// Each different combination of color/texture/wireframe will be sent in different batches
 					std::string key = ren.meshName;
@@ -177,10 +173,25 @@ namespace NightSnack {
 						key += "_solid";
 					}
 
+					if (l.Type() == LayerType::GAMELAYER) {
+						key += "_gameLayer";
+					} else if (l.Type() == LayerType::BACKGROUND) {
+						key += "_backgroundLayer";
+					} else if (l.Type() == LayerType::GAMEUI) {
+						key += "_uiLayer";
+					} else if (l.Type() == LayerType::_ENGINE) {
+						key += "_engineLayer";
+					} else if (l.Type() == LayerType::_ENGINE2) {
+						key += "_engine2Layer";
+					} else if (l.Type() == LayerType::FOREGROUND) {
+						key += "_foregroundLayer";
+					}
+
 					m_meshBatches[key].instances.push_back(instance);
 					m_meshBatches[key].mesh = data.mesh;
 					m_meshBatches[key].material = data.material;
 					m_meshBatches[key].isWireframe = ren.isWireframe;
+					m_meshBatches[key].layerType = l.Type();
 
 				} else { // Non-Instanced Rendering
 					glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl, ren.renderLayer);
@@ -192,10 +203,16 @@ namespace NightSnack {
 
 					// Passing of variables for SOLID COLOR entities only 
 					// Only solid color entities have the component color
-					shader->SetMat4("uProj", proj);
-					shader->SetMat4("uView", view);
+					
+					// Entities on the GAMEUI layer will have different transformatio matrices
+					glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view; 
+					glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, 1600.f, 900.f, 0.f) : proj;
+
+					shader->SetMat4("uView", viewToUse);
+					shader->SetMat4("uProj", projToUse);
 					shader->SetBool("uUseInstancing", false);
 					shader->SetMat4("uModelToWorld", model);
+					shader->SetBool("uIsWireframe", ren.isWireframe);
 
 					if (m_coord.HasComponent<Color>(e)) {
 						// Entities with solid color
@@ -246,13 +263,16 @@ namespace NightSnack {
 					// Drawing of colliders 
 					if (m_coord.HasComponent<Collider>(e)) {
 						Collider const& col = m_coord.GetComponent<Collider>(e);
+						// Entities on the GAMEUI layer will have different transformatio matrices
+						glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
+						glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, 1600.f, 900.f, 0.f) : proj;
 
 						switch (col.shape) {
 						case ShapeType::AABB:
 						{
 							// Model matrix according to its collider's scale
 							glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.width, col.height }, RenderLayer::DEBUG);
-							glm::mat4 debugMVP = proj * view * debugmodel;
+							glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 							shader->SetMat4("uDebugMVP", debugMVP);
 							shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
 							GetMesh("AABBColliderMesh")->Draw();
@@ -263,7 +283,7 @@ namespace NightSnack {
 						{
 							// Model matrix according to its collider's scale
 							glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.radius, col.radius }, RenderLayer::DEBUG);
-							glm::mat4 debugMVP = proj * view * debugmodel;
+							glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 							shader->SetMat4("uDebugMVP", debugMVP);
 							shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
 							GetMesh("CircleColliderMesh")->Draw();
@@ -321,23 +341,31 @@ namespace NightSnack {
 				shader->Use();
 
 				// Both solid colors and textures will have these uniforms
-				shader->SetMat4("uProj", proj);
-				shader->SetMat4("uView", view);
-				shader->SetBool("uUseInstancing", true);
 
-				material->ApplyUniforms(false);
+				// Entities on the GAMEUI layer will have different transformatio matrices
+				glm::mat4 projToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::ortho(0.f, 1600.f, 900.f, 0.f) : proj;
+				glm::mat4 viewToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
+
+				shader->SetMat4("uProj", projToUse);
+				shader->SetMat4("uView", viewToUse);
+				shader->SetBool("uUseInstancing", true);
+				shader->SetBool("uIsWireframe", instanceBatch.isWireframe);
+
+				material->ApplyUniforms(instanceBatch.isWireframe);
 
 				size_t size = instanceBatch.instances.size() * sizeof(Mesh::InstanceData);
 				glNamedBufferSubData(m_globalInstanceSSBO, 0, size, instanceBatch.instances.data());
 				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
 
 				if (instanceBatch.isWireframe) {
+					glDepthMask(GL_TRUE);
 					glEnable(GL_POLYGON_OFFSET_LINE);
 					glPolygonOffset(-1.0f, -1.0f); // push lines slightly toward camera
 					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 					mesh->DrawInstanced(instanceBatch.instances.size());
 					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 					glDisable(GL_POLYGON_OFFSET_LINE);
+					glDepthMask(GL_FALSE);
 				} else {
 					mesh->DrawInstanced(instanceBatch.instances.size());
 				}
@@ -460,13 +488,7 @@ namespace NightSnack {
 
 	glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Vec3 position, float rotation, Vec2 scale, RenderLayer layer) {
 		glm::mat4 model(1.f);
-
-		// Base z offset from the RenderLayer
-		float layerZ = GetRenderLayerZPos(layer);
-		// Final z offset of this renderable
-		float z = layerZ + position.z;
-
-		model = glm::translate(model, glm::vec3(position.x, position.y, z));
+		model = glm::translate(model, glm::vec3(position.x, position.y, position.z));
 		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f)); // Rotate about z-axis
 		model = glm::scale(model, glm::vec3(scale.x, scale.y, 1.f));
 		return model;

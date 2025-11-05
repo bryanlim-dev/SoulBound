@@ -55,7 +55,6 @@ namespace NightSnack {
 		Entity cam = m_coord.GetSystem<GraphicsSystem>()->FindCamera();
 		m_mouseWorldPosX = (-Wvp / 2.f) + m_mousePosX + m_coord.GetComponent<Transform>(cam).pos.x;
 		m_mouseWorldPosY = (Hvp / 2.f) - m_mousePosY + m_coord.GetComponent<Transform>(cam).pos.y;
-
 		// Compute mouse delta - the relative movement since the last frame
 		m_deltaWorldPosX = m_mouseWorldPosX - m_prevMouseWorldPosX;
 		m_deltaWorldPosY = m_mouseWorldPosY - m_prevMouseWorldPosY;
@@ -255,8 +254,10 @@ namespace NightSnack {
 	// Queries for mouse position -----------------------------------------------------------------------
 	// ------------------------------------------------------------------------------------------------
 
-	float InputSystem::GetMousePosX() const { return m_mouseWorldPosX; }
-	float InputSystem::GetMousePosY() const { return m_mouseWorldPosY; }
+	float InputSystem::GetMousePosX() const { return m_mousePosX; }
+	float InputSystem::GetMousePosY() const { return m_mousePosY; }
+	float InputSystem::GetMouseWorldPosX() const { return m_mouseWorldPosX; }
+	float InputSystem::GetMouseWorldPosY() const { return m_mouseWorldPosY; }
 	float InputSystem::GetMouseDeltaPosX() const { return m_deltaWorldPosX; }
 	float InputSystem::GetMouseDeltaPosY() const { return m_deltaWorldPosY; }
 

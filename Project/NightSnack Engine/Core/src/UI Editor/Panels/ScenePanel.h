@@ -26,7 +26,7 @@ namespace NightSnack
 			if (factory)
 			{
                 Transform editorTransform;
-                editorTransform.pos = { 0.f, 0.f, 0.f };
+                editorTransform.pos = { 0.f, 0.f, 2.f }; 
                 editorTransform.rot = 0.f;
                 editorTransform.scale = { 1.f, 1.f };
 				editorTransform.layer = LayerType::GAMEUI;

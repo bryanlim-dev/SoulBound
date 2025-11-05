@@ -59,15 +59,15 @@ namespace NightSnack
                             Entity newEntity = m_coord.CreateEntity();
                             
                             Transform defaultTransform{
-                                Vec3(0.0f, 0.0f, 0.0f),
+                                Vec3(0.f, 145.f, 0.f),
                                 0.0f,
-                                Vec2(200.f, 200.f)
+                                Vec2(100.f, 100.f)
                             };
 
                             Renderable defaultRenderable{
-                                "circle",
+                                "square",
                                 "ColorMat",
-                                RenderLayer::DEFAULT,
+                                RenderLayer::UI,
                                 false,
                                 true
                             };
@@ -77,6 +77,15 @@ namespace NightSnack
                             m_coord.AddComponent<Color>(newEntity, Color{ 1.f, 0.f, 0.f, 1.f });
 
                             *m_selectedEntity = newEntity;
+                        }
+
+                        if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY) {
+                            ImGui::SameLine();
+                            if (ImGui::Button("Delete")) {
+                                m_coord.DestroyEntity(*m_selectedEntity); // Remove from ECS
+                                m_uiNames->erase(*m_selectedEntity);      // Remove from UI name map
+                                *m_selectedEntity = INVALID_ENTITY;       // Clear selection
+                            }
                         }
                     }
                     ImGui::EndTabItem();
