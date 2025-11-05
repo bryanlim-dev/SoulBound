@@ -33,11 +33,24 @@ namespace NightSnack
                 if (ImGui::BeginTabItem("Audio"))
                 {
                     ImGui::Text("Volume Controls");
-                    ImGui::SliderFloat("Master Volume", &m_masterVolume, 0.f, 1.0f);
-                    ImGui::SliderFloat("Music Volume", &m_musicVolume, 0.f, 1.0f);
-                    ImGui::SliderFloat("SFX Volume", &m_sfxVolume, 0.f, 1.0f);
+                    auto audioSystem = m_coord.GetSystem<AudioSystem>();
+                    if (audioSystem)
+                    {
+                        // Master Volume
+                        float master = audioSystem->GetMasterVolume();
+                        if (ImGui::SliderFloat("Master Volume", &master, 0.f, 1.0f))
+                            audioSystem->SetMasterVolume(master);
 
-					// Set volumes in AudioSystem (future implementation)
+                        // Music Volume
+                        float music = audioSystem->GetBGMVolume();
+                        if (ImGui::SliderFloat("Music Volume", &music, 0.f, 1.0f))
+                            audioSystem->SetBGMVolume(music);
+
+                        // SFX Volume
+                        float sfx = audioSystem->GetSFXVolume();
+                        if (ImGui::SliderFloat("SFX Volume", &sfx, 0.f, 1.0f))
+                            audioSystem->SetSFXVolume(sfx);
+                    }
 
                     ImGui::EndTabItem();
                 }
@@ -78,8 +91,8 @@ namespace NightSnack
 
     private:
         Coordinator& m_coord;
-        float m_masterVolume = 0.5f;
-        float m_musicVolume = 0.5f;
-        float m_sfxVolume = 0.5f;
+        float m_masterVolume = 1.f;
+        float m_musicVolume = 1.f;
+        float m_sfxVolume = 1.f;
     };
 }
