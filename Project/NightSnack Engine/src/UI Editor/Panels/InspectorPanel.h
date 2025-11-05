@@ -320,8 +320,16 @@ namespace NightSnack
             ImGui::PopStyleColor(2);
 
             // Accept drag-and-drop from AssetsPanel
+            ImVec2 rect_min = ImGui::GetItemRectMin();
+            ImVec2 rect_max = ImGui::GetItemRectMax();
+
             if (ImGui::BeginDragDropTarget())
             {
+                // Draw custom highlight
+                ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max,
+					IM_COL32(50, 150, 255, 80) // Transparent blue color
+                );
+
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE")) {
                     const char* droppedPath = static_cast<const char*>(payload->Data);
                     if (graphics)
