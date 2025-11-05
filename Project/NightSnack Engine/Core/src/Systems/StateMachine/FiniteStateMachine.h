@@ -1,5 +1,5 @@
 /******************************************************************************
- * File:        ResourceManager.cpp
+ * File:        FiniteStateMachine.cpp
  * Project:     NightSnack
  * Author(s):	Clement Ang Yang Ying (Primary, 100%) - Created class and logic
  *
