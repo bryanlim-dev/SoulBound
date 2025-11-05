@@ -19,8 +19,13 @@ in vec2 vTexCoord;
 
 uniform bool uUseInstancing;
 uniform sampler2D uTex2d; // bound in Material::ApplyUniforms()
+uniform bool uIsWireframe;
 
 void main() {
     
-    fFragColor = texture(uTex2d, vTexCoord);
+    if (uIsWireframe) {
+        fFragColor = vec4(1.0, 1.0, 1.0, 1.0); // white color by default
+    } else {
+        fFragColor = texture(uTex2d, vTexCoord);
+    }
 }

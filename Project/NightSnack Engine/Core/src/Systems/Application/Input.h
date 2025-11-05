@@ -234,13 +234,35 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Gets the screen position for mouse position x coordinate
+
+		\return
+		Screen position for mouse position x coordinate
+		*/
+		/************************************************************************/
+		float GetMousePosX() const;
+
+		/************************************************************************/
+		/*!
+		\brief
+		Gets the screen position for mouse position y coordinate
+		
+		\return
+		Screen position for mouse position y coordinate
+		*/
+		/************************************************************************/
+		float GetMousePosY() const;
+		
+		/************************************************************************/
+		/*!
+		\brief
 		Gets the world position for mouse position x coordinate
 
 		\return
 		World position for mouse position x coordinate
 		*/
 		/************************************************************************/
-		float GetMousePosX() const;
+		float GetMouseWorldPosX() const;
 
 		/************************************************************************/
 		/*!
@@ -251,7 +273,7 @@ namespace NightSnack {
 		World position for mouse position y coordinate
 		*/
 		/************************************************************************/
-		float GetMousePosY() const;
+		float GetMouseWorldPosY() const;
 
 		/************************************************************************/
 		/*!
