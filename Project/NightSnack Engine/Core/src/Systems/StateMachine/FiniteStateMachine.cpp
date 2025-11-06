@@ -45,10 +45,6 @@ namespace NightSnack
 		{
 			float dt = m_coord.GetSystem<ApplicationSystem>()->GetDT();
 
-			//Find and update each entity state machine
-			std::list<Entity> removalList;
-			removalList.clear();
-
 			for (auto const& e : m_entities) {
 				if (m_coord.HasComponent<States>(e))
 					UpdateEntityState(dt, e, m_coord.ModifyComponent<States>(e));
