@@ -104,6 +104,10 @@ namespace NightSnack {
 		auto& camPos = m_coord.GetComponent<Transform>(camera).pos;
 		auto& camInfo = m_coord.GetComponent<Camera>(camera);
 
+		// Get the updated window resolution from the ApplicationSystem first
+		float screenW = static_cast<float>(m_coord.GetSystem<ApplicationSystem>()->GetWidth());
+		float screenH = static_cast<float>(m_coord.GetSystem<ApplicationSystem>()->GetHeight());
+
 		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
@@ -205,8 +209,8 @@ namespace NightSnack {
 					// Only solid color entities have the component color
 					
 					// Entities on the GAMEUI layer will have different transformatio matrices
-					glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view; 
-					glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, 1600.f, 900.f, 0.f) : proj;
+					glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
+					glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
 
 					shader->SetMat4("uView", viewToUse);
 					shader->SetMat4("uProj", projToUse);
@@ -343,7 +347,7 @@ namespace NightSnack {
 				// Both solid colors and textures will have these uniforms
 
 				// Entities on the GAMEUI layer will have different transformatio matrices
-				glm::mat4 projToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::ortho(0.f, 1600.f, 900.f, 0.f) : proj;
+				glm::mat4 projToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
 				glm::mat4 viewToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
 
 				shader->SetMat4("uProj", projToUse);

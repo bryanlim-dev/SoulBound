@@ -81,7 +81,7 @@ namespace NightSnack {
 		//Get window data
 		ResourceSystemHelper::GetResourceSystemWindowData(m_coord.GetSystem<ResourceManager>(), configFilePath, winHeight, winWidth, windowTitle);
 
-		AddSystem<ApplicationSystem>(winWidth, winHeight, std::move(windowTitle), m_coord, core_dispatcher);
+		AddSystem<ApplicationSystem>(std::move(windowTitle), m_coord, core_dispatcher);
 		AddSystem<InputSystem>(m_coord, core_dispatcher);
 
 		AddSystem<AudioSystem>(m_coord, core_dispatcher);

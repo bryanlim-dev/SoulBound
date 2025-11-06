@@ -98,6 +98,10 @@ namespace NightSnack {
 		auto& camPos = m_coord.GetComponent<Transform>(camera).pos;
 		auto& camInfo = m_coord.GetComponent<Camera>(camera);
 
+		// Get the updated window resolution from the ApplicationSystem first
+		float screenW = static_cast<float>(m_coord.GetSystem<ApplicationSystem>()->GetWidth());
+		float screenH = static_cast<float>(m_coord.GetSystem<ApplicationSystem>()->GetHeight());
+
 		// Default proj and view matrix for GAMELAYER entities
 		glm::mat4 proj = m_coord.GetSystem<GraphicsSystem>()->GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
@@ -111,14 +115,14 @@ namespace NightSnack {
 
 				bool isUILayer = (l.Type() == LayerType::GAMEUI);
 				// Flip the y axis for orthographic proj if using UI Layer (screen coords)
-				glm::mat4 projToUse = isUILayer ? glm::ortho(0.f, 1600.f, 0.f, 900.f) : proj;
+				glm::mat4 projToUse = isUILayer ? glm::ortho(0.f, screenW, 0.f, screenH) : proj;
 				glm::mat4 viewToUse = isUILayer ? glm::mat4(1.f) : view;
 
 				auto& pos = m_coord.GetComponent<Transform>(e).pos;
 				auto& scale = m_coord.GetComponent<Transform>(e).scale;
 				auto& txt = m_coord.GetComponent<Font>(e);
 
-				float posYToUse = isUILayer ? 900.f - pos.y : pos.y;
+				float posYToUse = isUILayer ? screenH - pos.y : pos.y;
 				float posXToUse = pos.x - scale.x * 0.5f;
 
 				RenderText(txt.text, posXToUse, posYToUse, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType);

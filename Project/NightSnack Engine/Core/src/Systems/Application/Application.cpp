@@ -17,14 +17,16 @@
 namespace NightSnack {
 
 	std::vector<std::string> ApplicationSystem::s_droppedFiles;
+	int ApplicationSystem::m_appWidth = 1600;
+	int ApplicationSystem::m_appHeight = 900;
 
 	// Required OpenGL version;
 	static constexpr int REQUIRED_GL_MAJOR = 4;
 	static constexpr int REQUIRED_GL_MINOR = 5;
 
 	// Default constructor to create a window with given width, height and title.
-	ApplicationSystem::ApplicationSystem(int width, int height, std::string const& title, Coordinator& coord, EventDispatcher& dispatcher)
-		: m_coord{ coord }, m_appWidth{ width }, m_appHeight{ height }, m_appTitle{ title } {
+	ApplicationSystem::ApplicationSystem(std::string const& title, Coordinator& coord, EventDispatcher& dispatcher)
+		: m_coord{ coord }, m_appTitle{ title } {
 		// Initialize GLFW;
 		if (!glfwInit())
 		{
@@ -156,6 +158,8 @@ namespace NightSnack {
 	// Changes the viewport when the window is resized
 	void ApplicationSystem::FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
 		(void)window;
+		m_appWidth = width;
+		m_appHeight = height;
 		glViewport(0, 0, width, height);
 	}
 

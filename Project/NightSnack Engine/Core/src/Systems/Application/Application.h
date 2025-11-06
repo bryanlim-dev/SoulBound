@@ -47,7 +47,7 @@ namespace NightSnack {
 		Reference to the EventDispatcher used for system events
 		*/
 		/************************************************************************/
-		ApplicationSystem(int width, int height, std::string const& title, Coordinator& coord, EventDispatcher& dispatcher);
+		ApplicationSystem(std::string const& title, Coordinator& coord, EventDispatcher& dispatcher);
 
 		/************************************************************************/
 		/*!
@@ -192,6 +192,8 @@ namespace NightSnack {
 		const std::vector<std::string>& GetDroppedFiles() const { return s_droppedFiles; }
 		void ClearDroppedFiles() { s_droppedFiles.clear(); }
 
+		static int m_appWidth;
+		static int m_appHeight;
 	private:
 		/************************************************************************/
 		/*!
@@ -203,8 +205,6 @@ namespace NightSnack {
 
 		// Window properties
 		GLFWwindow* m_windowHandle{ nullptr };
-		int m_appWidth{ 1600 };
-		int m_appHeight{ 900 };
 		std::string m_appTitle;
 
 		// Tick Tocker
