@@ -23,7 +23,7 @@
 #include <iostream>
 
 #include <Core/ECS/Coordinator.h>
-#include "StateComponents.h"
+#include "StateBehaviour.h"
 
 namespace NightSnack
 {
@@ -37,7 +37,7 @@ namespace NightSnack
 		
 		//A map of components for states and thier names
 		//Refactor tracker: 8
-		std::unordered_map<std::string, std::shared_ptr<StateComponent>> m_stateComponentMap;
+		std::unordered_map<std::string, std::shared_ptr<StateBehaviour>> m_stateComponentMap;
 
 		std::function<void (Entity, Coordinator&)> m_enterFunction = nullptr;
 		std::function<void (float, Entity, Coordinator&)> m_updateFunction = nullptr;
@@ -266,7 +266,7 @@ namespace NightSnack
 		shared ptr of the state component to add
 		*/
 		/************************************************************************/
-		void InsertStateComponent(std::string const& name, std::shared_ptr<StateComponent> component)
+		void InsertStateComponent(std::string const& name, std::shared_ptr<StateBehaviour> component)
 		{
 			m_stateComponentMap.insert(std::make_pair(name, component));
 		}
@@ -303,7 +303,7 @@ namespace NightSnack
 		shared ptr of the state componenet
 		*/
 		/************************************************************************/
-		std::shared_ptr<StateComponent> GetStateComponent(std::string stateName)
+		std::shared_ptr<StateBehaviour> GetStateComponent(std::string stateName)
 		{
 			//Find if it is in map
 			auto it = m_stateComponentMap.find(stateName);
@@ -311,7 +311,7 @@ namespace NightSnack
 				return nullptr;
 
 			//Cast it to a shared ptr, as this is how it is stored
-			return std::shared_ptr<StateComponent>(it->second);
+			return std::shared_ptr<StateBehaviour>(it->second);
 		}
 	};
 

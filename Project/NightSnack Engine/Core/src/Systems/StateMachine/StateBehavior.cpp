@@ -1,5 +1,5 @@
 /******************************************************************************
- * File:        StateComponents.cpp
+ * File:        StateBehaviour.cpp
  * Project:     NightSnack
  * Author(s):	Clement Ang Yang Ying (Primary, 100%) - Created class and logic
  *
@@ -13,7 +13,7 @@
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
-#include "StateComponents.h"
+#include "StateBehaviour.h"
 #include "../AllSystems.h"
 #include <Core/ECS/Coordinator.h>
 
@@ -212,9 +212,9 @@ namespace NightSnack
 	}
 
 
-	std::shared_ptr<StateComponent> CreateStateComponent(std::string componentName, json& paramJson)
+	std::shared_ptr<StateBehaviour> CreateStateBehaviour(std::string componentName, json& paramJson)
 	{
-		std::shared_ptr<StateComponent> component = nullptr;
+		std::shared_ptr<StateBehaviour> component = nullptr;
 
 		if (componentName == "countdown")
 		{

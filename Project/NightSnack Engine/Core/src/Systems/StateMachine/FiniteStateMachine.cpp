@@ -14,7 +14,7 @@
  ******************************************************************************/
 #include "FiniteStateMachine.h"
 #include <Factory/EntityFactory.h>
-#include "StateComponents.h"
+#include "StateBehaviour.h"
 
 namespace NightSnack
 {
