@@ -1,5 +1,5 @@
 /******************************************************************************
- * File:        ResourceManager.h
+ * File:        ResourceSystemHelper.h
  * Project:     NightSnack
  * Author(s):	Clement Ang Yang Ying (Primary, 100%) - Created manager class and logic
  *
