@@ -112,7 +112,7 @@
     },
     "Font": {
       "fontType": "liberation",
-      "text": "Hello World",
+      "text": "Ghost",
       "fontSize": 0.5,
       "textColor": { "r": 0.5, "g": 0.9, "b": 0.5 }
     }
