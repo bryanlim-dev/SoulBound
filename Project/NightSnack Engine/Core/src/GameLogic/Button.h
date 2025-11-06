@@ -319,6 +319,8 @@ namespace NightSnack {
 		 */
 		void ExecuteButtonAction(ButtonAction action, Coordinator& coord, AudioSystem* audioSystem)
 		{
+			(void)coord;
+
 			switch (action)
 			{
 				// play audio

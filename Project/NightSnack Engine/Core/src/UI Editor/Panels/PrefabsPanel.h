@@ -186,7 +186,7 @@ namespace NightSnack
 
                     if (ImGui::TreeNode(componentName.c_str()))
                     {
-                        DisplayComponentProperties(componentName, componentData);
+                        DisplayComponentProperties(componentData);
                         ImGui::TreePop();
                     }
                 }
@@ -217,7 +217,7 @@ namespace NightSnack
         * @param componentName name of the component
         * @param componentData JSON data for the component
         */
-        void DisplayComponentProperties(const std::string& componentName, const nlohmann::json& componentData)
+        void DisplayComponentProperties(const nlohmann::json& componentData)
         {
             if (componentData.is_object())
             {
