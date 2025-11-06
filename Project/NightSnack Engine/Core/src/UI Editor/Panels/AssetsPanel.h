@@ -663,14 +663,14 @@ namespace NightSnack
                         //std::cout << "[Assets] Removed texture from cache\n";
                     }
 
-                    /*if (fs::remove(filePath))
+                    if (fs::remove(filePath))
                     {
-                        std::cout << "[Assets] Successfully deleted file: " << assetPath << "\n";
+                        //std::cout << "[Assets] Successfully deleted file: " << assetPath << "\n";
                     }
                     else
                     {
-                        std::cerr << "[Assets] Failed to delete file: " << assetPath << "\n";
-                    }*/
+                        //std::cerr << "[Assets] Failed to delete file: " << assetPath << "\n";
+                    }
 
                     // remove texture object
                     m_textureObjects.erase(assetPath);
