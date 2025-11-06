@@ -5,11 +5,12 @@
  *
  * Description:
  * This file contains the declarations of the Text System.
+ * This Text System is in charge of initializing OpenGL buffers for text rendering.
  * Loading of font files using the ResourceManager.
  * Preparing the glyph textures for ASCII characters.
  * Rendering of text belonging to entities in in-game and UI layers.
  *
- * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
