@@ -143,7 +143,7 @@ namespace NightSnack
                         auto& camTransform = m_coord.GetComponent<Transform>(m_editorCameraEntity);
                         glm::mat4 proj = graphics->GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
                         glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camTransform.pos.x, -camTransform.pos.y, -camTransform.pos.z));
-                        glm::mat4 model = graphics->GetModelToWorldMatrix(t.pos, t.rot, t.scale, r.renderLayer);
+                        glm::mat4 model = graphics->GetModelToWorldMatrix(t.pos, t.rot, t.scale);
 
 						// Draw mesh in wireframe
                         shader->Use();
@@ -241,12 +241,10 @@ namespace NightSnack
                                 mouseWorldY >= t.pos.y - halfH && mouseWorldY <= t.pos.y + halfH)
                             {
 								// Check if this entity is on top based on render layer and z-position
-                                int layer = static_cast<int>(r.renderLayer);
                                 float z = t.pos.z;
-                                if (layer > topLayer || (layer == topLayer && z > topZ))
+                                if (z > topZ)
                                 {
                                     topEntity = e;
-                                    topLayer = layer;
                                     topZ = z;
                                 }
                             }
@@ -541,7 +539,6 @@ namespace NightSnack
             Renderable renderable;
             renderable.meshName = "quad";               // Use quad mesh
             renderable.materialName = "background_mat"; // Your material name
-            renderable.renderLayer = RenderLayer::BACKGROUND; // Render behind
             renderable.isWireframe = false;
             renderable.wasModified = true;              // Flag for graphics system
             m_coord.AddComponent(m_backgroundEntity, renderable);
