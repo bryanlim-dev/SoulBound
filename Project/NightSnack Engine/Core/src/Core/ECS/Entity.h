@@ -19,7 +19,7 @@
 namespace NightSnack {
 
 	// Maximum number of entities in the system;
-	constexpr size_t MAX_ENTITIES = 3000;
+	constexpr size_t MAX_ENTITIES = 7000;
 	// Maximum number of components;
 	constexpr size_t MAX_COMPONENTS = 32;
 

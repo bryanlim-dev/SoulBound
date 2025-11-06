@@ -125,6 +125,28 @@ namespace NightSnack {
 		LoadLevel("../assets/GameData/DefaultLevel.json");
 	}
 
+	void EntityFactory::InstancedTestCreate(LayerType layer, std::string const& prefabName, int seed, Vec2 const& scale) {
+
+		// seed for rand;
+		srand(seed * static_cast<unsigned>(glfwGetTime()));
+		int Hvp = m_coord.GetWindowHeight();
+		int Wvp = m_coord.GetWindowWidth();
+
+		Transform t{ Vec3{}, {}, scale, layer };
+
+		for (int i{}; i < 7000; ++i) {
+
+			// Random position within viewport;
+			t.pos = { static_cast<float>(rand() % Wvp - Wvp / 2),
+			static_cast<float>(rand() % Hvp - Hvp / 2), 1.f };
+
+			Entity e2 = Create(prefabName, t);
+		}
+		for (Entity e : m_coord.GetLivingEntities()) {
+			m_coord.BufferEntitySignature(e);
+		}
+	}
+
 	void EntityFactory::PrintPrefabNames() const {
 
 		std::cout << "Prefabs: ";

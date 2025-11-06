@@ -77,6 +77,14 @@ namespace NightSnack {
 							m_layer = false;
 						}
 						break;
+
+					case InputEvent::InputAction::InstanceTest:
+						if (!m_stress) {
+							UnLoadLevel();
+							InstancedTestCreate(LayerType::GAMELAYER, "InstanceTest", 123, Vec2{ 50.f, 50.f });
+							m_stress = true;
+						}
+						break;
 					}
 				}
 
@@ -248,6 +256,8 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void StressTestEnd();
+
+		void InstancedTestCreate(LayerType, std::string const&, int, Vec2 const&);
 
 		/************************************************************************/
 		/*!

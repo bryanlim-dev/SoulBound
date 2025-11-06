@@ -117,6 +117,7 @@ namespace NightSnack {
 		case GLFW_KEY_SPACE: return InputEvent::InputAction::StressTest;
 		case GLFW_KEY_BACKSPACE: return InputEvent::InputAction::EndStressTest;
 		case GLFW_KEY_L: return InputEvent::InputAction::LayerTest;
+		case GLFW_KEY_O: return InputEvent::InputAction::InstanceTest;
 
 			// Player movement
 		case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;

@@ -45,6 +45,7 @@ namespace NightSnack {
             StressTest,         // Space
             LayerTest,          // L
             EndStressTest,      // Backspace
+            InstanceTest,       // O
 
             // Player movement
             PlayerMoveLeft,     // Player controller with Arrow keys;
