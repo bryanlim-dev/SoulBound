@@ -38,7 +38,8 @@ namespace NightSnack
             //m_searchFilter(""),
             m_selectedAssetPath(""),
             m_showAssetProperties(false),
-            m_showImportDialog(false)
+            m_showImportDialog(false),
+            m_prefabsPanel(coord, "../../../NightSnack Engine/assets/GameData/Archetypes/Archetypes.json")
         {
             m_prefabNames.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
             for (std::string const& s : coord.GetSystem<EntityFactory>()->GetPrefabNames()) 
@@ -93,11 +94,9 @@ namespace NightSnack
                     ImGui::EndTabItem();
                 }
 
-                if (ImGui::BeginTabItem("Prefabs"))
-                {
-                    //DrawPrefabsPanel(m_prefabs);
-                    ImGui::EndTabItem();
-                }
+                // handle the prefab tab item creation
+                m_prefabsPanel.Draw();
+
                 ImGui::EndTabBar();
             }
             ImGui::End();
@@ -132,6 +131,8 @@ namespace NightSnack
         std::vector<std::string> m_prefabNames;
         std::unordered_map<std::string, std::string> m_prefabMats;
         std::string m_importDestination;
+
+        PrefabsPanel m_prefabsPanel;  // prefabs panel instance
 
         /**
         * @brief handles external file drop events
@@ -534,7 +535,7 @@ namespace NightSnack
                 if (ImGui::IsItemHovered())
                 {
                     ImGui::BeginTooltip();
-                    ImGui::Text("Drag to Scene to add");
+                    //ImGui::Text("Drag to Scene to add");
                     ImGui::Text("File: %s", entry.path().filename().string().c_str());
                     ImGui::Text("Path: %s", pathStr.c_str());
                     ImGui::EndTooltip();
