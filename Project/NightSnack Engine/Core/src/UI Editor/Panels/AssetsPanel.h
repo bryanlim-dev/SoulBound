@@ -517,19 +517,19 @@ namespace NightSnack
                 }
 
                 // not in use for now
-                //// enable dragging
-                //// This allows dragging the image to Scene panel
-                //if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-                //{
-                //    // SET PAYLOAD - Store the asset path as drag data
-                //    ImGui::SetDragDropPayload("ASSET_IMAGE", pathStr.c_str(), pathStr.size() + 1);
+                // enable dragging
+                // This allows dragging the image to Scene panel
+                if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+                {
+                    // SET PAYLOAD - Store the asset path as drag data
+                    ImGui::SetDragDropPayload("ASSET_IMAGE", pathStr.c_str(), pathStr.size() + 1);
 
-                //    // DRAG PREVIEW - Show thumbnail while dragging
-                //    ImGui::Image(texID, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
-                //    ImGui::Text("%s", entry.path().filename().string().c_str());
+                    // DRAG PREVIEW - Show thumbnail while dragging
+                    ImGui::Image(texID, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
+                    ImGui::Text("%s", entry.path().filename().string().c_str());
 
-                //    ImGui::EndDragDropSource();
-                //}
+                    ImGui::EndDragDropSource();
+                }
 
                 // show info on hover
                 if (ImGui::IsItemHovered())

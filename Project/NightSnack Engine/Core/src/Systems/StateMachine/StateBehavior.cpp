@@ -1,5 +1,5 @@
 /******************************************************************************
- * File:        StateComponents.cpp
+ * File:        StateBehaviour.cpp
  * Project:     NightSnack
  * Author(s):	Clement Ang Yang Ying (Primary, 100%) - Created class and logic
  *
@@ -13,7 +13,7 @@
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
-#include "StateComponents.h"
+#include "StateBehaviour.h"
 #include "../AllSystems.h"
 #include <Core/ECS/Coordinator.h>
 
@@ -212,23 +212,23 @@ namespace NightSnack
 	}
 
 
-	std::shared_ptr<StateComponent> CreateStateComponent(std::string componentName, json& paramJson)
+	std::shared_ptr<StateBehaviour> CreateStateBehaviour(std::string behaviourName, json& paramJson)
 	{
-		std::shared_ptr<StateComponent> component = nullptr;
+		std::shared_ptr<StateBehaviour> component = nullptr;
 
-		if (componentName == "countdown")
+		if (behaviourName == "countdown")
 		{
 			float maxTime = paramJson.get<float>();
 			component = std::make_shared<StateComponentCountdown>(maxTime);
 		}
-		else if (componentName == "movment")
+		else if (behaviourName == "movement")
 		{
 			Vec2 speed;
 			paramJson.at("fx").get_to(speed.x);
 			paramJson.at("fy").get_to(speed.y);
 			component = std::make_shared<StateComponentMovement>(speed);
 		}
-		else if (componentName == "impulse")
+		else if (behaviourName == "impulse")
 		{
 			Vec2 impulse;
 			paramJson.at("fx").get_to(impulse.x);

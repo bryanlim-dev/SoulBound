@@ -1,5 +1,5 @@
 /******************************************************************************
- * File:        StateComponents.h
+ * File:        StateBehaviour.h
  * Project:     NightSnack
  * Author(s):	Clement Ang Yang Ying (Primary, 100%) - Created class and logic
  *
@@ -136,23 +136,23 @@ namespace NightSnack
 
 
 	//This is a class instead of a template becuase it needs to udpate and reset its values on enter/exit
-	class StateComponent
+	class StateBehaviour
 	{
 	public:
 		/************************************************************************/
 		/*!
 		\brief
-		Default constructor of the StateComponent class
+		Default constructor of the StateBehaviour class
 		*/
 		/************************************************************************/
-		StateComponent() {};
+		StateBehaviour() {};
 		/************************************************************************/
 		/*!
 		\brief
-		Virtual destructor of the StateComponent class
+		Virtual destructor of the StateBehaviour class
 		*/
 		/************************************************************************/
-		virtual ~StateComponent() { 
+		virtual ~StateBehaviour() { 
 			//std::cout << "Component Deletd" << std::endl; 
 		};
 
@@ -262,7 +262,7 @@ namespace NightSnack
 		void SetVariable(T newVar);
 	};
 
-	class StateComponentCountdown : public StateComponent 
+	class StateComponentCountdown : public StateBehaviour 
 	{
 	private:
 		float m_maxTime;
@@ -344,7 +344,7 @@ namespace NightSnack
 		float GetCurrTime() const;
 	};
 
-	class StateComponentMovement : public StateComponent
+	class StateComponentMovement : public StateBehaviour
 	{
 	private:
 		Vec2 m_spd = Vec2();
@@ -425,7 +425,7 @@ namespace NightSnack
 	};
 
 	//Sets a sudden impulse force to the entity
-	class StateComponentImpulse : public StateComponent
+	class StateComponentImpulse : public StateBehaviour
 	{
 	private:
 		Vec2 m_impluse = Vec2();
@@ -468,7 +468,7 @@ namespace NightSnack
 	/************************************************************************/
 	/*!
 	\brief
-	Creates a shared ptr of a StateComponent based on the name
+	Creates a shared ptr of a StateBehaviour based on the name
 
 	\param[in] componentName
 	Name of the component to create
@@ -477,10 +477,10 @@ namespace NightSnack
 	Refrence of json to get the component data from
 
 	\return
-	Shared ptr of the component created as the ptr of the base class StateComponent
+	Shared ptr of the component created as the ptr of the base class StateBehaviour
 	*/
 	/************************************************************************/
-	std::shared_ptr<StateComponent> CreateStateComponent(std::string componentName, json& paramJson);
+	std::shared_ptr<StateBehaviour> CreateStateBehaviour(std::string componentName, json& paramJson);
 
 
 	/************************************************************************/
