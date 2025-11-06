@@ -94,7 +94,6 @@ namespace NightSnack
                             Renderable defaultRenderable{
                                 "square",
                                 "ColorMat",
-                                RenderLayer::UI,
                                 false,
                                 true
                             };

@@ -121,21 +121,11 @@ namespace NightSnack {
     // GRAPHICS COMPONENTS
     // ================================================================================================
 
-    // The render layer determines the base z position of all renderable entities
-    // This is to prevent z fighting glitches for all renderable entities
-    enum class RenderLayer {
-        BACKGROUND = 0,
-        DEFAULT,
-        DEBUG,
-        UI
-    };
-
     // All renderable entities will have this component
     // Each renderable will have a Mesh, Material, Shader, Texture tied to them
     struct Renderable {
         std::string meshName{};
         std::string materialName{};
-        RenderLayer renderLayer{ RenderLayer::DEFAULT };
         bool isWireframe{ false };
         bool wasModified{ true };
 
@@ -265,12 +255,6 @@ namespace NightSnack {
             j.at("isWireframe").get_to(r.isWireframe);
         else
             r.isWireframe = false;
-
-        if (j.contains("renderLayer")) {
-            r.renderLayer = RenderLayer::BACKGROUND;
-        }
-        else
-            r.renderLayer = RenderLayer::DEFAULT;
 
         r.wasModified = true;
 
