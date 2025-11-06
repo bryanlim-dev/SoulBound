@@ -10,7 +10,7 @@
         },
         "MoveLeftState": {
           "behaviourTypes": { 
-            "movment" : {"fx": -350.0, "fy": 0.0 }
+            "movement" : {"fx": -350.0, "fy": 0.0 }
           },
           "transitions": [
             { "target": "CountdownState", "condition": "IsCollided" }
@@ -18,7 +18,7 @@
         },
         "MoveRightState": {
           "behaviourTypes": { 
-            "movment" : {"fx": 350.0, "fy": 0.0 }
+            "movement" : {"fx": 350.0, "fy": 0.0 }
           },
           "transitions": [
             { "target": "CountdownState", "condition": "IsCollided" }
