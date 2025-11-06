@@ -102,6 +102,7 @@ namespace NightSnack {
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
 
 		AddSystem<FiniteStateMachine>(m_coord);
+		AddSystem<ScriptManager>(m_coord, core_dispatcher);
 
 
 		// Buffer all entities' signatures to properly initialize all systems' set of entities

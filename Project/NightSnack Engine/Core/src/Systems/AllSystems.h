@@ -28,6 +28,7 @@
 #include "Graphics/Camera.h"
 #include "StateMachine/FiniteStateMachine.h"
 #include "GameLogic/Button.h"
+#include "./Scripting/ScriptManager.h"
 
 // Add System header files here...
 

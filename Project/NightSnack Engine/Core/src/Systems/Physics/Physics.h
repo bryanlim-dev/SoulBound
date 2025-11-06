@@ -66,7 +66,7 @@ namespace NightSnack {
                     }
                 }
             });
-            // By default add 1 game layer;
+            // Add some default layers;
             AddLayer(LayerType::BACKGROUND);
             AddLayer(LayerType::GAMELAYER);
             AddLayer(LayerType::FOREGROUND);
