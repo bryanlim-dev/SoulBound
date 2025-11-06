@@ -163,9 +163,8 @@ namespace NightSnack
         */
         void DrawJsonProperties(const std::string& prefabName)
         {
-            std::string windowTitle = "Properties:";
-            ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_FirstUseEver);
-            ImGui::Begin(windowTitle.c_str(), &m_showJsonProperties);
+            //ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_FirstUseEver);
+            ImGui::Begin("Properties:", &m_showJsonProperties);
 
             if (m_archetypes.contains(prefabName) && m_archetypes[prefabName].is_object())
             {

@@ -306,7 +306,7 @@ namespace NightSnack {
 			
 			// Split the dockspace into 4 regions
 			ImGuiID dock_id_left, dock_id_right, dock_id_top, dock_id_bottom, dock_id_center;
-			ImGuiID dock_id_left_top, dock_id_left_bottom, dock_id_center_right;
+			ImGuiID dock_id_left_top, dock_id_left_bottom, dock_id_center_right, dock_id_bottom_right;
 
 			ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.20f, &dock_id_left, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Right, 0.25f, &dock_id_right, &dock_id_center);
@@ -314,6 +314,7 @@ namespace NightSnack {
 			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Down, 1.0f / 3.0f, &dock_id_bottom, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_left, ImGuiDir_Down, 1.0f / 3.0f, &dock_id_left_bottom, &dock_id_left_top);
 			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Right, 0.3f, &dock_id_center_right, &dock_id_center);
+			ImGui::DockBuilderSplitNode(dock_id_bottom, ImGuiDir_Right, 0.5f, &dock_id_bottom_right, &dock_id_bottom);
 
 
 			// Dock panels to regions
@@ -323,6 +324,7 @@ namespace NightSnack {
 			ImGui::DockBuilderDockWindow("Scene", dock_id_center);
 			ImGui::DockBuilderDockWindow("Assets", dock_id_bottom);
 			ImGui::DockBuilderDockWindow("Asset Properties", dock_id_center_right);
+			ImGui::DockBuilderDockWindow("Properties:", dock_id_bottom_right);
 
 			ImGui::DockBuilderFinish(dockspace_id);
 		}
