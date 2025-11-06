@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ScriptInterface.h"
+
 #include "./Systems/AudioSystem.h"
 #include "./Systems/Application/Application.h"
 #include "./Systems/Application/Input.h"

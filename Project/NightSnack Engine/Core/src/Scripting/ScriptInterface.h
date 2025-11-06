@@ -3,6 +3,7 @@
 #include "../ImportExport.h"
 #include "Core/ECS/Coordinator.h"
 #include "ScriptTypes.h"
+
 #include <string>
 
 namespace NightSnack::Scripting {

@@ -71,6 +71,12 @@ add_custom_command(TARGET Game POST_BUILD
         "$<TARGET_FILE_DIR:Game>/mono-lib"
     COMMENT "Copying Mono assemblies..."
 )
+add_custom_command(TARGET Game POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        "${CMAKE_SOURCE_DIR}/extern/mono/lib"
+        "$<TARGET_FILE_DIR:Game>/../lib/"
+    COMMENT "Copying Mono dlls..."
+)
 
 # Copy Core.dll to Game output directory
 add_custom_command(TARGET Game POST_BUILD

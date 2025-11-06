@@ -1,9 +1,11 @@
 #include "Scripting/MonoInternalCalls.h"
+
 #include "Scripting/ScriptInterface.h"
 #include "Scripting/ScriptTypes.h"
 
-#include <mono/metadata/object.h>
-#include <mono/metadata/appdomain.h>
+#include "mono/metadata/object.h"
+#include "mono/metadata/appdomain.h"
+
 #include <iostream>
 
 // Global pointer to script interface (set during initialization)

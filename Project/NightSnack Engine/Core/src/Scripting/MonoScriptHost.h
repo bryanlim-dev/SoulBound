@@ -2,19 +2,17 @@
 
 #include "ImportExport.h"
 
-#include "mono/jit/jit.h"
-#include "mono/metadata/assembly.h"
-
 #include <string>
 #include <vector>
 #include <unordered_map>
 
-//typedef struct _MonoDomain MonoDomain;
-//typedef struct _MonoAssembly MonoAssembly;
-//typedef struct _MonoImage MonoImage;
-//typedef struct _MonoClass MonoClass;
-//typedef struct _MonoObject MonoObject;
-//typedef struct _MonoMethod MonoMethod;
+// Forward declaration of types to avoid including Mono headers in public API
+typedef struct _MonoDomain MonoDomain;
+typedef struct _MonoAssembly MonoAssembly;
+typedef struct _MonoImage MonoImage;
+typedef struct _MonoClass MonoClass;
+typedef struct _MonoObject MonoObject;
+typedef struct _MonoMethod MonoMethod;
 
 namespace NightSnack::Scripting {
 
@@ -24,26 +22,24 @@ namespace NightSnack::Scripting {
         ~MonoScriptHost();
 
         // Disable copy/move
-        MonoScriptHost(const MonoScriptHost&) = delete;
+        MonoScriptHost(MonoScriptHost const&) = delete;
         MonoScriptHost& operator=(const MonoScriptHost&) = delete;
 
         // Initialize Mono runtime
-        bool Initialize(const std::string& monoLibPath = "mono-lib");
+        bool Initialize();
         void Shutdown();
 
         // Load script assembly
-        bool LoadAssembly(const std::string& assemblyPath);
+        bool LoadAssembly(std::string const& path);
 
         // Script instance management
-        void* CreateScriptInstance(const std::string& namespaceName, const std::string& className);
+        void* CreateScriptInstance(std::string const& namespaceName, std::string const& className);
         void DestroyScriptInstance(void* instance);
 
         // Call script methods
-        void CallMethod(void* instance, const std::string& methodName);
-        void CallMethodWithInt(void* instance, const std::string& methodName, int value);
-
+        void CallMethod(void* instance, std::string const& methodName);
         // Set script fields
-        void SetScriptEntityId(void* instance, uint32_t entityId);
+        void SetScriptEntityId(void* instance, uint32_t objID);
 
         // Update all active scripts
         void UpdateAllScripts();
@@ -65,9 +61,9 @@ namespace NightSnack::Scripting {
 
         bool m_initialized;
 
-        // Helper methods
-        MonoClass* GetClass(const std::string& namespaceName, const std::string& className);
-        MonoMethod* GetMethod(MonoClass* klass, const std::string& methodName, int paramCount = 0);
+        // Helper functions
+        MonoClass* GetClass(std::string const& namespaceName, std::string const& className);
+        MonoMethod* GetMethod(MonoClass* c, std::string const& methodName, int paramCount = 0);
     };
 
 
