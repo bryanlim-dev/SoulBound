@@ -18,19 +18,19 @@ namespace NightSnack::Scripting {
         Trans GetTransform(GameObjectHandle e);
         void SetTransform(GameObjectHandle e, Trans& transform);
 
-        //// Input
-        //bool IsKeyPressed(int keyCode);
-        //bool IsKeyDown(int keyCode);
-        //bool IsKeyReleased(int keyCode);
+        // Input
+        bool IsKeyPressed(int key);
+        bool IsKeyDown(int key);
+        bool IsKeyReleased(int key);
 
         // Audio
-        void PlaySound(const std::string& soundPath);
+        void PlaySound(const std::string& path);
 
         // Time
         float GetDeltaTime();
 
         // Logging
-        void Log(const std::string& message);
+        void Log(const std::string& msg);
 
     private:
         Coordinator& m_coord;

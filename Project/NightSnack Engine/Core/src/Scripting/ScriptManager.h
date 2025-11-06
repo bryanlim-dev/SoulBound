@@ -1,9 +1,12 @@
 #pragma once
 
 #include "Core/ECS/Coordinator.h"
-#include "IScriptInterface.h"
+#include "ScriptInterface.h"
 
 namespace NightSnack {
+
+
+
 
 	class CORE_API ScriptManager : public ISystem {
 

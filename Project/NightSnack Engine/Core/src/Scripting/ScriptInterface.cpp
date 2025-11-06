@@ -1,12 +1,15 @@
 #pragma once
 
-#include "IScriptInterface.h"
+#include "ScriptInterface.h"
 #include "./Systems/AudioSystem.h"
 #include "./Systems/Application/Application.h"
+#include "./Systems/Application/Input.h"
+
 #include <iostream>
 
 namespace NightSnack::Scripting {
 
+    // --------------------------------------------------------------
     // Transform operations
     Trans ScriptInterface::GetTransform(GameObjectHandle obj) {
         Entity e = static_cast<Entity>(obj.id);
@@ -23,11 +26,24 @@ namespace NightSnack::Scripting {
         m_coord.ModifyComponent<Transform>(e).rot = t.rot;
         m_coord.ModifyComponent<Transform>(e).scale = t.scale;
     }
+    // --------------------------------------------------------------
+    // Key Inputs
+    bool ScriptInterface::IsKeyPressed(int key) {
+        return m_coord.GetSystem<InputSystem>()->IsKeyPressed(key);
+    }
 
+    bool ScriptInterface::IsKeyDown(int key) {
+        return m_coord.GetSystem<InputSystem>()->IsKeyDown(key);
+    }
+
+    bool ScriptInterface::IsKeyReleased(int key) {
+        return m_coord.GetSystem<InputSystem>()->IsKeyReleased(key);
+    }
+    // --------------------------------------------------------------
     // Audio
-    void ScriptInterface::PlaySound(const std::string& soundPath) {
+    void ScriptInterface::PlaySound(const std::string& path) {
         //m_coord.GetSystem<AudioSystem>()->PlayAudio(soundPath);
-        std::cout << "Playing sound: " << soundPath << std::endl;
+        std::cout << "Playing sound: " << path << '\n';
     }
 
     // Time
@@ -36,8 +52,9 @@ namespace NightSnack::Scripting {
     }
 
     // Logging
-    void ScriptInterface::Log(const std::string& message) {
-        std::cout << "[Script] " << message << std::endl;
+    void ScriptInterface::Log(const std::string& msg) {
+        std::cout << "[Script] " << msg << '\n';
     }
+    // --------------------------------------------------------------
 
 }   // NightSnack::Scripting

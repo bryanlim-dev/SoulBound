@@ -18,9 +18,6 @@
 
 #include "Core/Core.h"
 
-#include "Scripting/Testing/Test.h"
-#include "Scripting/MonoMeta.h"
-
 int main()
 {
 	// Enable memory leak checking at program exit

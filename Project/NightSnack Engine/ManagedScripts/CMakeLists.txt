@@ -6,9 +6,8 @@ project(ManagedScripts LANGUAGES CSharp)
 enable_language(CSharp)
 
 # Source files
-set(MANAGED_SOURCES
-    Script.cs
-    ScriptManager.cs
+file(GLOB_RECURSE MANAGED_SOURCES CONFIGURE_DEPENDS 
+    "${CMAKE_CURRENT_SOURCE_DIR}/*.cs"
 )
 
 # Create C# class library
