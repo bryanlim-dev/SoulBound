@@ -5,6 +5,7 @@
  *              overloads for reading components
  *				Goh Bei Lai (Secondary, 15%) - Created Graphics components (RenderLayer, Renderable, Camera)
  *              Bryan Lim Jun Jie (Secondary, 5%) - Created Button components (ButtonType, ButtonAction, ButtonInfo)
+ *              Clement Ang Yang Ying (Secondary, 5%) - Create States component
  *
  * Description:
  * This file defines all components for this project, it also defines a specific

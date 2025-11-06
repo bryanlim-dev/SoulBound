@@ -22,7 +22,7 @@ namespace NightSnack
     void StateBase::Enter(Entity entityID, Coordinator& coord)
     {
         m_isExit = false;
-        std::cout << "ID: " << entityID << ", State Enter: " << m_stateName << std::endl;
+        //std::cout << "ID: " << entityID << ", State Enter: " << m_stateName << std::endl;
 
         if (m_enterFunction)
             m_enterFunction(entityID, coord);
@@ -61,7 +61,7 @@ namespace NightSnack
     void StateBase::Exit(Entity entityID, Coordinator& coord)
     {
         m_isExit = false;
-        std::cout << "ID: " << entityID << ", State Exit: " << m_stateName << std::endl;
+        //std::cout << "ID: " << entityID << ", State Exit: " << m_stateName << std::endl;
 
         if (m_exitFunction)
             m_exitFunction(entityID, coord);
