@@ -328,7 +328,7 @@ namespace NightSnack {
 				{
 					const auto& audioKeys = audioSystem->GetAudioKeys();
 					audioSystem->PlaySFX(audioKeys.buttonClick);
-					std::cout << "Playing click sound\n";
+					//std::cout << "Playing click sound\n";
 				}
 				break;
 
@@ -338,7 +338,7 @@ namespace NightSnack {
 				{
 					const auto& audioKeys = audioSystem->GetAudioKeys();
 					audioSystem->PlaySFX(audioKeys.playerJump);
-					std::cout << "Playing jump sound\n";
+					//std::cout << "Playing jump sound\n";
 				}
 				break;
 
@@ -348,7 +348,7 @@ namespace NightSnack {
 				{
 					const auto& audioKeys = audioSystem->GetAudioKeys();
 					audioSystem->PlaySFX(audioKeys.playerHit);
-					std::cout << "Playing hit sound\n";
+					//std::cout << "Playing hit sound\n";
 				}
 				break;
 			// play stress test
