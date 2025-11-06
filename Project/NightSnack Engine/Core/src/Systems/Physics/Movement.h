@@ -76,39 +76,42 @@ namespace NightSnack {
         */
         /************************************************************************/
         void Update(int steps) override {
-            (void)steps;
 
             // Pause movement updates if in Physics debug mode
             if (debugMode && !stepRequest) {
                 return;
             }
 
-            // Iterate through all Entities this system can access;
-            for (Layer& l : m_layers) {
-                if (!l.IsActive()) { continue; }
+            // Accumulated Time FixedDT;
+            for (int s{}; s < steps; ++s) {
 
-                for (Entity e : l.Entities()) {
-                    if (e == INVALID_ENTITY) { break; }
+                // Iterate through all Entities this system can access;
+                for (Layer& l : m_layers) {
+                    if (!l.IsActive()) { continue; }
 
-                    // First obtain references to components of interest;
-                    auto& pos = m_coord.ModifyComponent<Transform>(e).pos;
-                    auto& velocity = m_coord.ModifyComponent<RigidBody>(e).vel;
+                    for (Entity e : l.Entities()) {
+                        if (e == INVALID_ENTITY) { break; }
 
-                    // Get more components here if necessary...
+                        // First obtain references to components of interest;
+                        auto& pos = m_coord.ModifyComponent<Transform>(e).pos;
+                        auto& velocity = m_coord.ModifyComponent<RigidBody>(e).vel;
 
-                    // Do stuff that you want to do with the components;
-                    pos.x += velocity.x * FixedDT;
-                    pos.y += velocity.y * FixedDT;
+                        // Get more components here if necessary...
 
-                    // Limit movement to borders of screen;
-                    if (pos.y > m_coord.GetWindowHeight() / 2.f) { pos.y = m_coord.GetWindowHeight() / 2.f; }
-                    if (pos.y < -m_coord.GetWindowHeight() / 2.f) { pos.y = -m_coord.GetWindowHeight() / 2.f; }
-                    if (pos.x > m_coord.GetWindowWidth() / 2.f) { pos.x = m_coord.GetWindowWidth() / 2.f; }
-                    if (pos.x < -m_coord.GetWindowWidth() / 2.f) { pos.x = -m_coord.GetWindowWidth() / 2.f; }
+                        // Do stuff that you want to do with the components;
+                        pos.x += velocity.x * FixedDT;
+                        pos.y += velocity.y * FixedDT;
 
-                    // Do more stuff here if necessary...
+                        // Limit movement to borders of screen;
+                        if (pos.y > m_coord.GetWindowHeight() / 2.f) { pos.y = m_coord.GetWindowHeight() / 2.f; }
+                        if (pos.y < -m_coord.GetWindowHeight() / 2.f) { pos.y = -m_coord.GetWindowHeight() / 2.f; }
+                        if (pos.x > m_coord.GetWindowWidth() / 2.f) { pos.x = m_coord.GetWindowWidth() / 2.f; }
+                        if (pos.x < -m_coord.GetWindowWidth() / 2.f) { pos.x = -m_coord.GetWindowWidth() / 2.f; }
 
-                    if (debugMode) stepRequest = false; // reset step request
+                        // Do more stuff here if necessary...
+
+                        if (debugMode) stepRequest = false; // reset step request
+                    }
                 }
             }
         }

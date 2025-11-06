@@ -69,7 +69,6 @@ namespace NightSnack {
             // By default add 1 game layer;
             AddLayer(LayerType::BACKGROUND);
             AddLayer(LayerType::GAMELAYER);
-            AddLayer(LayerType::FOREGROUND);
 
             // Initialize collision grid;
             m_gridCols = 60; m_gridRows = 40;

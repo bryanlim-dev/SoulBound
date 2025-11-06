@@ -183,7 +183,7 @@ namespace NightSnack {
 
 		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("ApplicationSystem");
 		m_coord.GetSystem<ApplicationSystem>()->SwapBuffers();
-		m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(62.0f);
+		//m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(62.0f);
 		m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer("ApplicationSystem");
 
 		// End frame timing;

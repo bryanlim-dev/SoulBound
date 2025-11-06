@@ -140,7 +140,7 @@ namespace NightSnack {
 			t.pos = { static_cast<float>(rand() % Wvp - Wvp / 2),
 			static_cast<float>(rand() % Hvp - Hvp / 2), 1.f };
 
-			Entity e2 = Create(prefabName, t);
+			Create(prefabName, t);
 		}
 		for (Entity e : m_coord.GetLivingEntities()) {
 			m_coord.BufferEntitySignature(e);
@@ -157,11 +157,7 @@ namespace NightSnack {
 	}
 
 	std::vector<std::string> const& EntityFactory::GetPrefabNames() const {
-		std::vector<std::string> names;
-		for (auto& [name, data] : GetArchetypes().items()) {
-			names.emplace_back(name);
-		}
-		return names;
+		return m_prefabNames;
 	}
 
 	std::unordered_map<std::string, std::string> EntityFactory::GetPrefabMaterials() const {

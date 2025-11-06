@@ -105,6 +105,12 @@ namespace NightSnack {
 				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
 			}
 
+			m_prefabNames.clear();
+
+			for (auto& [name, data] : GetArchetypes().items()) {
+				m_prefabNames.emplace_back(name);
+			}
+
 			//std::ifstream file(filename);
 			//if (!file.is_open()) {
 			//	throw std::runtime_error("Failed to open archetypes file: " + filename);
@@ -298,6 +304,7 @@ namespace NightSnack {
 
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;
+		std::vector<std::string> m_prefabNames;
 	};
 
 }	// NightSnack

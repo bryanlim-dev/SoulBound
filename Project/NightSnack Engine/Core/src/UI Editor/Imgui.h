@@ -387,7 +387,7 @@ namespace NightSnack {
 				if (m_isPlaying)
 				{
 					auto physics = m_coord.GetSystem<PhysicsSystem>();
-					bool isPaused = physics && physics->IsDebugMode();
+					//bool isPaused = physics && physics->IsDebugMode();
 					if (ImGui::MenuItem("Pause"))
 					{
 						m_isPlaying = false;

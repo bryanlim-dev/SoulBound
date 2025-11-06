@@ -24,6 +24,8 @@
 #include "Layer.h"
 #include "Component.h"
 
+#include "ImportExport.h"
+
 namespace NightSnack {
 
 	// Forward declaration of Coordinator class - Do not remove;

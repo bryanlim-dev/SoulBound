@@ -129,16 +129,16 @@ namespace NightSnack
 		
 		//Movement stops when colliding or when player is in wrong dir
 		movmenetLeftState->InsertStateTransition(stateCountdown, (StateFunctionChecker::EntityIsColliding)); //Entity collided, wait
-		movmenetLeftState->InsertStateComponent("LeftMovmentComponent", std::make_shared<StateComponentMovement>(Vec2{ -350, 0 }));
+		movmenetLeftState->InsertStateComponent("LeftMovmentComponent", std::make_shared<StateComponentMovement>(Vec2{ -350.f, 0.f }));
 		//movmenetLeftState->InsertStateTransition(movemementRightState, (&StateBase::StateDecisionFuncionHelper::CheckPlayerIsRightSide)); //Player going other dir
 
 		movemementRightState->InsertStateTransition(stateCountdown, (StateFunctionChecker::EntityIsColliding)); //Entity Collided wait
-		movemementRightState->InsertStateComponent("RightMovmentComponent", std::make_shared<StateComponentMovement>(Vec2{ 350, 0 }));
+		movemementRightState->InsertStateComponent("RightMovmentComponent", std::make_shared<StateComponentMovement>(Vec2{ 350.f, 0.f }));
 		//movemementRightState->InsertStateTransition(movmenetLeftState, (&StateBase::StateDecisionFuncionHelper::CheckPlayerIsLeftSide)); //Pllayer going other dir
 
 		//Countdown ends into decision
 		stateCountdown->InsertStateTransition(desicionState, StateFunctionChecker::EntityCountdownComponentFinish);
-		stateCountdown->InsertStateComponent("CooldownComponent", std::make_shared<StateComponentCountdown>(2.5));
+		stateCountdown->InsertStateComponent("CooldownComponent", std::make_shared<StateComponentCountdown>(2.5f));
 
 		//stateCountdown->InsertStateComponent("Int", std::make_shared<int>(3));
 		//int* x = (stateCountdown->GetStateComponent<int>("Int").get());
