@@ -257,6 +257,12 @@ namespace NightSnack {
 		/************************************************************************/
 		void StressTestEnd();
 
+		/************************************************************************/
+		/*!
+		\brief
+		Create 7000 entities with colliders for instanced rendering test
+		*/
+		/************************************************************************/
 		void InstancedTestCreate(LayerType, std::string const&, int, Vec2 const&);
 
 		/************************************************************************/
