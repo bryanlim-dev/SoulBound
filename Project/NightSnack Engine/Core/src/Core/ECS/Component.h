@@ -168,6 +168,8 @@ namespace NightSnack {
     };
     enum ButtonAction {
         PLAYAUDIO,
+        PLAYAUDIO2,
+        PLAYAUDIO3,
         PLAYSTRESSTEST,
         //ENDSTRESSTEST,
         CHANGELEVELS
@@ -178,7 +180,8 @@ namespace NightSnack {
 
         bool isHovered{ false };
         bool wasClicked{ false };
-  
+
+        //Vec2 screenPos{};
     };
 
     // Add more Components here if necessary...
@@ -288,6 +291,14 @@ namespace NightSnack {
     inline void from_json(const json& j, ButtonInfo& b) {
         if (j["action"] == "PlayAudio") {
             b.action = ButtonAction::PLAYAUDIO;
+        }
+
+        if (j["action"] == "PlayAudio2") {
+            b.action = ButtonAction::PLAYAUDIO2;
+        }
+
+        if (j["action"] == "PlayAudio3") {
+            b.action = ButtonAction::PLAYAUDIO3;
         }
 
         if (j["action"] == "StressTest") {

@@ -97,9 +97,25 @@
 
     { "prefab": "ButtonAudio",
     "Transform": {
-      "Position": { "x": 1200.0, "y": 200.0, "z": 1.0 },
+      "Position": { "x": 900.0, "y": 100.0, "z": 1.0 },
       "Rotation": 0.0,
-      "Scale": { "x": 100.0, "y": 100.0 }},
+      "Scale": { "x": 200.0, "y": 100.0 }},
+    "Layer": "GameUI"
+    },
+
+    { "prefab": "ButtonAudio2",
+    "Transform": {
+      "Position": { "x": 1200.0, "y": 100.0, "z": 1.0 },
+      "Rotation": 0.0,
+      "Scale": { "x": 200.0, "y": 100.0 }},
+    "Layer": "GameUI"
+    },
+
+    { "prefab": "ButtonAudio3",
+    "Transform": {
+      "Position": { "x": 1500.0, "y": 100.0, "z": 1.0 },
+      "Rotation": 0.0,
+      "Scale": { "x": 200.0, "y": 100.0 }},
     "Layer": "GameUI"
     }
   ]

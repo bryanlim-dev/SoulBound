@@ -40,7 +40,7 @@
       "shape": "AABB",
       "type": "Trigger",
       "isStatic": true,
-      "width": 100.0,
+      "width": 200.0,
       "height": 100.0
     },
     "Renderable": {
@@ -55,6 +55,58 @@
     "Font": {
       "fontType": "default",
       "text": "Play Audio",
+      "fontSize": 0.2,
+      "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 }
+    },
+    "Color": { "r": 1.0, "g": 0.4, "b": 0.0, "a": 1.0 }
+  },
+
+  "ButtonAudio2": {
+    "Collider": {
+      "shape": "AABB",
+      "type": "Trigger",
+      "isStatic": true,
+      "width": 200.0,
+      "height": 100.0
+    },
+    "Renderable": {
+      "meshName": "square",
+      "materialName": "ColorMat",
+      "isWireframe" : false
+    },
+    "ButtonInfo": {
+      "action": "PlayAudio2",
+      "type": "GameMenu"
+    },
+    "Font": {
+      "fontType": "default",
+      "text": "Play Audio 2",
+      "fontSize": 0.2,
+      "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 }
+    },
+    "Color": { "r": 1.0, "g": 0.4, "b": 0.0, "a": 1.0 }
+  },
+
+  "ButtonAudio3": {
+    "Collider": {
+      "shape": "AABB",
+      "type": "Trigger",
+      "isStatic": true,
+      "width": 200.0,
+      "height": 100.0
+    },
+    "Renderable": {
+      "meshName": "square",
+      "materialName": "ColorMat",
+      "isWireframe" : false
+    },
+    "ButtonInfo": {
+      "action": "PlayAudio3",
+      "type": "GameMenu"
+    },
+    "Font": {
+      "fontType": "default",
+      "text": "Play Audio 3",
       "fontSize": 0.2,
       "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 }
     },
@@ -82,9 +134,9 @@
       "fontType": "liberation",
       "text": "Stress Test",
       "fontSize": 0.3,
-      "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 }
+      "textColor": { "r": 0.0, "g": 0.0, "b": 0.0 }
     },
-    "Color": { "r": 1.0, "g": 0.4, "b": 0.0, "a": 1.0 }
+    "Color": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 }
   },
 
   "Ghost": {
