@@ -44,6 +44,7 @@ namespace NightSnack {
 		EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& archetypes_filename, std::string const& archetype_states_filename, std::string const& level0_file)
 			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord } {
 
+			(void)archetype_states_filename;
 			m_prefabManager.Initialize();
 			LoadArchetypes(archetypes_filename);
 			LoadLevel(level0_file);

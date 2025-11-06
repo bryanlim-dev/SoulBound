@@ -184,7 +184,7 @@ namespace NightSnack
 		Cordinator refrence
 		*/
 		/************************************************************************/
-		virtual void OnUpdate(float dt, Entity idOwner, Coordinator& coord) { (void)idOwner; (void)coord; };
+		virtual void OnUpdate(float dt, Entity idOwner, Coordinator& coord) { (void)dt; (void)idOwner; (void)coord; };
 		/************************************************************************/
 		/*!
 		\brief

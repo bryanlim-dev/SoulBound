@@ -179,6 +179,7 @@ namespace NightSnack
 	}
 	void StateComponentMovement::OnUpdate(float dt, Entity idOwner, Coordinator& coord)
 	{
+		(void)dt;
 		//NOTE CHANGE THIS TO ACCEL
 		//Vec2 newSpd = m_coord.GetComponent<RigidBody>(m_entityID).vel + m_Speed; //This one becomes a missle heheh
 		Vec2 newSpd = m_spd;
