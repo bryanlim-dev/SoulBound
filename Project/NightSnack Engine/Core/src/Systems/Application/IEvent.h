@@ -24,8 +24,8 @@ namespace NightSnack {
     /************************************************************************/
     /*!
     \brief
-    Interface for all events in the system. Includes a virtual destructor
-    and a method to get the event type.
+        Interface for all events in the system. Includes a virtual destructor
+        and a method to get the event type.
     */
     /************************************************************************/
     class IEvent
@@ -38,33 +38,33 @@ namespace NightSnack {
     class EventDispatcher
     {
     public:
-        /************************************************************************/
-        /*!
-        \brief
+    /************************************************************************/
+    /*!
+    \brief
         Subscribes a listener function to a specific event type.
         When an event of that type is dispatched, the listener will be called.
 
-        \param[in] listener
-        The function to be called when the event is received.
-        */
-        /************************************************************************/
-        template<typename EventType>
-        void Subscribe(std::function<void(const EventType&)> listener)
+    \param[in] listener
+        - The function to be called when the event is received.
+    */
+    /************************************************************************/
+    template<typename EventType>
+    void Subscribe(std::function<void(const EventType&)> listener)
+    {
+        auto& listeners = m_listeners[std::type_index(typeid(EventType))];
+        listeners.push_back([listener](const void* event)
         {
-            auto& listeners = m_listeners[std::type_index(typeid(EventType))];
-            listeners.push_back([listener](const void* event)
-                {
-                    listener(*static_cast<const EventType*>(event));
-                });
-        }
+            listener(*static_cast<const EventType*>(event));
+        });
+    }
 
-        /************************************************************************/
-        /*!
-        \brief
+    /************************************************************************/
+    /*!
+    \brief
         Dispatches an event to all subscribed listeners of that event type.
 
     \param[in] event
-	The event instance to be dispatched.
+	    - The event instance to be dispatched.
     */
     /************************************************************************/
     template<typename EventType>
@@ -80,13 +80,26 @@ namespace NightSnack {
         }
     }
 
-	// Queue of unique_ptr to events for deferred processing
+    /************************************************************************/
+    /*!
+    \brief
+	    Queues an event for deferred processing.
+
+    \param[in] event
+	     - The event instance to be queued.
+    */
+    /************************************************************************/
     void QueueEvent(std::unique_ptr<IEvent> event)
     {
         m_eventQueue.push_back(std::move(event));
     }
 
-    // Process all queued events
+    /************************************************************************/
+    /*!
+    \brief
+	    Processes all queued events, dispatching them to their respective listeners.
+    */
+    /************************************************************************/
     void ProcessEvents()
     {
         for (const auto& event : m_eventQueue)

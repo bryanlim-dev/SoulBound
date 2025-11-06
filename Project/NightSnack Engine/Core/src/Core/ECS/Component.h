@@ -352,6 +352,8 @@ namespace NightSnack {
         c.isGrounded = j.value("isGrounded", false);
         c.colliding = j.value("colliding", false);
     }
+    // STATES ==================================================
+    //States from_json function is within StateBase.h
 
 }   // NightSnack
 

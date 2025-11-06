@@ -1,7 +1,7 @@
 /******************************************************************************
  * File:        InspectorPanel.h
  * Project:     NightSnack
- * Author(s):	
+ * Author(s):	Wei Jie Lim (Primary, 100%)
  *
  * Description:
  * Inspector panel showing details of selected entity.
@@ -18,14 +18,37 @@ namespace NightSnack
 {
     class InspectorPanel {
     public:
+
+        /************************************************************************/
+        /*!
+        \brief
+		    Constructor for InspectorPanel.
+
+        \param[in] coord
+			- Reference to Coordinator.
+
+		\param[in] selectedEntity
+		    - Shared pointer to currently selected entity.
+
+		\param[in] uiNames
+		    - Shared pointer to map of entity to UI names.
+        */
+        /************************************************************************/
         InspectorPanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity, std::shared_ptr<std::unordered_map<Entity, std::string>> uiNames)
             : m_coord(coord), m_selectedEntity(selectedEntity), m_uiNames(uiNames) {}
 
+        /************************************************************************/
+        /*!
+        \brief
+		    Draws inspector panel showing details of selected entity.
+        */
+        /************************************************************************/
         void Draw()
         {
             //ImGui::SetNextWindowSize(ImVec2(300, 400), ImGuiCond_Once);
             ImGui::Begin("Inspector");
 
+			// Check if an entity is selected
             if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY)
             {
                 // Draw entity info
@@ -41,7 +64,6 @@ namespace NightSnack
                 ColliderComponent();
 
 				RendererComponent();
-                // Add more components as needed...
             }
             else
             {
@@ -56,14 +78,63 @@ namespace NightSnack
         std::shared_ptr<Entity> m_selectedEntity;
         std::shared_ptr<std::unordered_map<Entity, std::string>> m_uiNames;
 
+        /************************************************************************/
+        /*!
+        \brief
+		    Draws basic information of the entity such as name and ID.
+
+		\param[in] entity
+		    - The entity to draw info for.
+        */
+        /************************************************************************/
         void DrawEntityInfo(Entity entity);
+
+        /************************************************************************/
+        /*!
+        \brief
+			Draws Transform component details which includes position, rotation,
+            and scale.
+        */
+        /************************************************************************/
         void TransformComponent();
+
+        /************************************************************************/
+        /*!
+        \brief
+		    Draws Physics component details which includes mass, drag, and other
+			physics-related properties.
+        */
+        /************************************************************************/
         void PhysicsComponent();
+
+        /************************************************************************/
+        /*!
+        \brief
+		    Draws RigidBody component details which includes velocity, angular
+        */
+        /************************************************************************/
 		void RigidBodyComponent();
+
+        /************************************************************************/
+        /*!
+        \brief
+            Draws Collider component details which includes collider type, size,
+			and other collider-related properties.
+        */
+        /************************************************************************/
 		void ColliderComponent();
+
+        /************************************************************************/
+        /*!
+        \brief
+		    Draws Renderer component details which includes mesh, texture, and
+			other rendering-related properties.
+        */
+        /************************************************************************/
 		void RendererComponent();
     };
 
+	// Draws basic information of the entity such as name and ID.
     inline void InspectorPanel::DrawEntityInfo(Entity entity)
     {
         auto factory = m_coord.GetSystem<EntityFactory>();
@@ -102,6 +173,7 @@ namespace NightSnack
         }
     }
 
+	// Draws Transform component details which includes position, rotation, and scale.
     inline void InspectorPanel::TransformComponent()
     {
         auto& t = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
@@ -148,6 +220,7 @@ namespace NightSnack
         ImGui::Separator();
 	}
 
+	// Draws Physics component details which includes mass, drag, and other physics-related properties.
     inline void InspectorPanel::PhysicsComponent()
     {
         auto ps = m_coord.GetSystem<PhysicsSystem>();
@@ -194,6 +267,7 @@ namespace NightSnack
         ImGui::Separator();
     }
 
+	// Draws RigidBody component details which includes velocity, angular
     inline void InspectorPanel::RigidBodyComponent()
     {
         if (!m_coord.HasComponent<RigidBody>(*m_selectedEntity))
@@ -240,6 +314,7 @@ namespace NightSnack
         ImGui::Separator();
 	}
 
+	// Draws Collider component details which includes collider type, size, and other collider-related properties.
     inline void InspectorPanel::ColliderComponent()
     {
         if (!m_coord.HasComponent<Collider>(*m_selectedEntity))
@@ -286,6 +361,7 @@ namespace NightSnack
         ImGui::Separator();
     }
 
+	// Draws Renderer component details which includes mesh, texture, and other rendering-related properties.
     inline void InspectorPanel::RendererComponent()
     {
         if (!m_coord.HasComponent<Renderable>(*m_selectedEntity))

@@ -9,6 +9,7 @@
  * applies uniforms, and issues draw calls for each renderable entity in the scene.
  * It also provides debug drawing visualization (circle and AABB collider outlines, velocity vector) 
  * and basic scaling and rotating of a specific object via input events from the event dispatcher. 
+ * The Graphics System supports both Instanced and Non-Instanced Rendering. 
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -36,7 +37,7 @@ namespace NightSnack {
 		\brief
 		Constructor for the GraphicsSystem
 		Sets up the system signatures so that this system only operates on entities
-		that contain components (Position, Rotation, Scale, Renderable)
+		that contain components (Transform, Renderable)
 
 		\param[in] coord
 		Reference to the ECS Coordinator
@@ -47,8 +48,8 @@ namespace NightSnack {
 		/************************************************************************/
 		GraphicsSystem(Coordinator& coord, EventDispatcher& dispatcher) : m_coord{ coord }, m_dispatcher{ &dispatcher } {
 			// The Graphics System only cares about entities with these components
-			// - Position, Rotation, Scale
-			// - Renderable (mesh, material, texture, color)
+			// - Transform (Position, Rotation, Scale, Layer)
+			// - Renderable (Mesh, Material, Texture, Color)
 			m_systemSignature.set(GetComponentTypeID<Transform>());
 			m_systemSignature.set(GetComponentTypeID<Renderable>());
 
@@ -83,9 +84,6 @@ namespace NightSnack {
 					case InputEvent::InputAction::CrashTest:
 						CrashLogger::ForceCrash("Forced crash from GraphicsSystem for testing");
 						break;
-					case InputEvent::InputAction::TextureTest:
-						TestSwapTextures();
-						break;
 					}
 				}
 			});
@@ -103,23 +101,17 @@ namespace NightSnack {
 		Initialize function
 		All the different types of shaders, textures, meshes, materials are created here
 		Subscribing to Input Events from the Event Dispatcher is done here too
-
-		\param[in] Coord
-		Reference to the ECS Coordinator
 		*/
 		/************************************************************************/
 		void Init();
-		void TestSwapTextures();
+
 		/************************************************************************/
 		/*!
 		\brief
 		Main update called by the core
 
-		\param[in] dt
-		Delta time
-
-		\param[in] coord
-		Reference to the ECS Coordinator
+		\param[in] steps
+		The number of steps in the simulation
 		*/
 		/************************************************************************/
 		void Update(int steps) override;
@@ -128,6 +120,9 @@ namespace NightSnack {
 		/*!
 		\brief
 		Render the scene using the specified camera
+
+		\param[in] Camera
+		The specified camera that is used to render the scene
 		*/
 		/************************************************************************/
 		void RenderWithCamera(Entity Camera);
@@ -231,9 +226,22 @@ namespace NightSnack {
 		/************************************************************************/
 		glm::mat4 GetModelToWorldMatrix(Vec3 position, float rotation, Vec2 scale, RenderLayer layer);
 
-		void UpdateTextureOfMaterial(const std::string& textureFilePath, Entity e);
+		/************************************************************************/
+		/*!
+		\brief
+		Updates the texture that will be binded to the material that belongs to this Entity.
+		This function allows the functionality to change the texture of an Entity in real time, 
+		using the level editor. 
+		The texture can be either an existing texture, or a new texture to be loaded in. 
 
-		std::string GetNewMaterialName(std::string oldMatName);
+		\param[in] textureFilePath
+		The file path of the texture that will be binded.
+
+		\param[in] e
+		The current entity that will have its texture modified.
+		*/
+		/************************************************************************/
+		void UpdateTextureOfMaterial(const std::string& textureFilePath, Entity e);
 
 		/************************************************************************/
 		/*!
@@ -313,7 +321,40 @@ namespace NightSnack {
 		/************************************************************************/
 		void RemoveCache(Entity e);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Gets the result of whether the program is using Instanced Rendering or not
+		This function is called by the ApplicationSystem
+
+		\return
+		The result of whether the program is using Instanced Rendering or not
+		*/
+		/************************************************************************/
+		const bool GetEnableInstancedRendering() const { return m_enableInstancedRendering; }
+
+		/************************************************************************/
+		/*!
+		\brief
+		Gets the std::unordered_map of textures from the Graphics System
+		This function is called by the AnimationSystem
+
+		\return
+		The std::unordered_map of textures from the Graphics System
+		*/
+		/************************************************************************/
 		const std::unordered_map<std::string, std::unique_ptr<Texture>>& GetTexturesMap() const { return m_textures; }
+
+		/************************************************************************/
+		/*!
+		\brief
+		Gets the std::unordered_map of shaders from the Graphics System
+		This function is called by the TextSystem
+
+		\return
+		The std::unordered_map of shaders from the Graphics System
+		*/
+		/************************************************************************/
 		const std::unordered_map<std::string, std::unique_ptr<Shader>>& GetShadersMap() const { return m_shaders; }
 
 		/************************************************************************/
@@ -355,6 +396,7 @@ namespace NightSnack {
 			Material* material{ nullptr };
 			bool isWireframe{ false };
 			std::vector<Mesh::InstanceData> instances;
+			LayerType layerType = LayerType::GAMELAYER;
 		};
 
 		// Resource stores (owned by system);
@@ -440,6 +482,24 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		Vec3 ScreenToWorld(Vec3 const& screenPos);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Constructs a new material name, based on the old material name provided.
+		It checks how many variants of the original material name there are, and get the next variant.
+		Etc. "ghost", "ghost1", "ghost2"
+		This function is called by UpdateTextureOfMaterial(), when there is a new combination
+		of a material and texture.
+
+		\param[in] oldMatName
+		The old material name, to be changed
+
+		\return
+		The new material name
+		*/
+		/************************************************************************/
+		std::string GetNewMaterialName(std::string oldMatName);
 
 		bool m_enableDebugDraw{ false };
 		bool m_enableInstancedRendering{ true };

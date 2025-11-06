@@ -18,6 +18,9 @@ namespace NightSnack {
             m_systemSignature.set(GetComponentTypeID<Font>());
             m_systemSignature.set(GetComponentTypeID<Transform>());
             Init();
+
+            AddLayer(LayerType::GAMELAYER);
+            AddLayer(LayerType::GAMEUI);
         }
 
         struct Character {

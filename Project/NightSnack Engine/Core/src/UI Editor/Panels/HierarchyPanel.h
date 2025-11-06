@@ -17,9 +17,31 @@ namespace NightSnack
 {
     class HierarchyPanel {
     public:
+
+        /************************************************************************/
+        /*!
+        \brief
+		    Constructor for HierarchyPanel.
+
+		\param[in] coord
+		    - Reference to Coordinator.
+
+		\param[in] selectedEntity
+		    - Shared pointer to currently selected entity.
+
+        \param[in] uiNames
+			- Shared pointer to map of entity to UI names.
+        */
+        /************************************************************************/
         HierarchyPanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity, std::shared_ptr<std::unordered_map<Entity, std::string>> uiNames)
             : m_coord(coord), m_selectedEntity(selectedEntity), m_uiNames(uiNames) {}
 
+        /************************************************************************/
+        /*!
+        \brief
+		    Draws hierarchy panel showing all entities in the scene.
+        */
+        /************************************************************************/
         void Draw()
         {
 			// Set initial window size and style
@@ -38,14 +60,19 @@ namespace NightSnack
                     {
                         const auto& entities = m_coord.GetLivingEntities();
                         auto factory = m_coord.GetSystem<NightSnack::EntityFactory>();
+
+						// List all entities
                         for (Entity e : entities)
                         {
+							// Assign default UI name if not present
                             if (m_uiNames->find(e) == m_uiNames->end()) {
                                 (*m_uiNames)[e] = factory ? factory->GetEntityPrefabName(e) : "Entity " + std::to_string(e);
                             }
 
+							// Create unique label for ImGui Selectable
                             std::string label = (*m_uiNames)[e] + "##" + std::to_string(e);
 
+							// Check if this entity is selected
                             bool selected = (m_selectedEntity && e == *m_selectedEntity);
                             if (ImGui::Selectable(label.c_str(), selected)) {
                                 *m_selectedEntity = e;
@@ -53,21 +80,21 @@ namespace NightSnack
                         }
                         ImGui::TreePop();
 
-                        // Add Prefab button at the bottom
+                        // Add Prefab button at the bottom of list
                         if (ImGui::Button("Add Prefab"))
                         {
                             Entity newEntity = m_coord.CreateEntity();
                             
                             Transform defaultTransform{
-                                Vec3(0.0f, 0.0f, 0.0f),
+                                Vec3(0.f, 145.f, 0.f),
                                 0.0f,
-                                Vec2(200.f, 200.f)
+                                Vec2(100.f, 100.f)
                             };
 
                             Renderable defaultRenderable{
-                                "circle",
+                                "square",
                                 "ColorMat",
-                                RenderLayer::DEFAULT,
+                                RenderLayer::UI,
                                 false,
                                 true
                             };
@@ -77,6 +104,18 @@ namespace NightSnack
                             m_coord.AddComponent<Color>(newEntity, Color{ 1.f, 0.f, 0.f, 1.f });
 
                             *m_selectedEntity = newEntity;
+                        }
+
+						// Delete button to remove selected entity
+                        if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY)
+                        {
+                            ImGui::SameLine();
+                            if (ImGui::Button("Delete"))
+                            {
+                                m_coord.DestroyEntity(*m_selectedEntity);
+                                m_uiNames->erase(*m_selectedEntity);
+                                *m_selectedEntity = INVALID_ENTITY;
+                            }
                         }
                     }
                     ImGui::EndTabItem();

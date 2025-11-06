@@ -1,11 +1,11 @@
 /******************************************************************************
  * File:        AssetsPanel.h
  * Project:     NightSnack
- * Author(s):	Bryan Lim Jun Jie (Primary, 95%)
- *              Lim Wei Jie (Secondary, 5%)
- *
+ * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Drawing of assets and files tab with thumbnails
+ *              
  * Description:
  * Assets panel displaying and handling all game assets.
+ * Displays thumbnails for images and allows importing files from external sources.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -22,8 +22,15 @@ namespace fs = std::filesystem;
 
 namespace NightSnack
 {
+    /**
+    * @brief Assets Panel for managing game assets
+    */
     class AssetsPanel {
     public:
+        /**
+        * @brief Constructor
+        * @param coord reference to the ECS coordinator
+        */
         AssetsPanel(Coordinator& coord) :
             m_coord(coord),
             m_assetsRoot("../../../NightSnack Engine/assets"),
@@ -34,48 +41,54 @@ namespace NightSnack
             m_showImportDialog(false)
         {
             m_prefabNames.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
-            for (std::string const& s : coord.GetSystem<EntityFactory>()->GetPrefabNames()) {
+            for (std::string const& s : coord.GetSystem<EntityFactory>()->GetPrefabNames()) 
+            {
                 m_prefabNames.emplace_back(s);
             }
             m_prefabMats.reserve(coord.GetSystem<EntityFactory>()->GetPrefabMaterials().size());
-            for (auto const& [n, m] : coord.GetSystem<EntityFactory>()->GetPrefabMaterials()) {
+            for (auto const& [n, m] : coord.GetSystem<EntityFactory>()->GetPrefabMaterials()) 
+            {
                 m_prefabMats.insert({ n, m });
             }
         }
 
+        /**
+        * @brief draw the assets panel
+        */
         void Draw()
         {
             // Set initial window size and style
             //ImGui::SetNextWindowSize(ImVec2(600, 300), ImGuiCond_Once);
-
             static bool firstFrame = true;
             if (firstFrame)
             {
-                // Clear any leftover dropped files on first frame
+                // clear any leftover dropped files on first frame
                 auto appSystem = m_coord.GetSystem<ApplicationSystem>();
                 if (appSystem) appSystem->ClearDroppedFiles();
                 firstFrame = false;
             }
             else
             {
-                // Normal operation: check for dropped files
+                // check for dropped files from file explorer
                 HandleExternalFileDrop();
             }
 
-            // Options Window
             ImGui::Begin("Assets");
-            DrawToolbar();
+            // not in use for now
+            // DrawToolbar();
 
             if (ImGui::BeginTabBar("AssetsTabs"))
             {
                 if (ImGui::BeginTabItem("Images"))
                 {
-                    DrawImagesTab(); // Render all image thumbnails
+                    // render all image thumbnails
+                    DrawImagesTab();
                     ImGui::EndTabItem();
                 }
 
                 if (ImGui::BeginTabItem("Files"))
                 {
+                    // list out files
                     DrawAllFilesTab();
                     ImGui::EndTabItem();
                 }
@@ -91,12 +104,11 @@ namespace NightSnack
 
             if (m_showImportDialog)
             {
+                // import dialog to show what file is going to be imported
                 DrawImportDialog();
             }
 
-            // ================================================================
-            // STEP 4: DRAW ASSET PROPERTIES (if asset selected)
-            // ================================================================
+           // draw asset properties tab if asset is selected
             if (m_showAssetProperties && !m_selectedAssetPath.empty())
             {
                 DrawAssetProperties();
@@ -121,30 +133,36 @@ namespace NightSnack
         std::unordered_map<std::string, std::string> m_prefabMats;
         std::string m_importDestination;
 
+        /**
+        * @brief handles external file drop events
+        */
         void HandleExternalFileDrop()
         {
-            // Get the application system
+            // get the application system
             auto appSystem = m_coord.GetSystem<ApplicationSystem>();
             if (!appSystem) return;
 
-            // Check if any files were dropped
+            // check if any files were dropped
             const auto& droppedFiles = appSystem->GetDroppedFiles();
 
             if (!droppedFiles.empty())
             {
-                // Files were dropped! Store them and show import dialog
+                // store them and show import dialog
                 m_pendingImports = droppedFiles;
                 m_showImportDialog = true;
                 m_importDestination = m_assetsRoot.string();
 
-                std::cout << "[Assets] Received " << droppedFiles.size()
-                    << " dropped file(s)\n";
+                /*std::cout << "[Assets] Received " << droppedFiles.size()
+                    << " dropped file(s)\n";*/
 
-                // Clear the application's dropped files list
+                // clear the application's dropped files list
                 appSystem->ClearDroppedFiles();
             }
         }
 
+        /**
+        * @brief draws the import dialog
+        */
         void DrawImportDialog()
         {
             if (!ImGui::IsPopupOpen("Import Files"))
@@ -152,7 +170,7 @@ namespace NightSnack
                 ImGui::OpenPopup("Import Files");
             }
 
-            // Center the dialog
+            // center the dialog
             ImVec2 center = ImGui::GetMainViewport()->GetCenter();
             ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
             ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_Appearing);
@@ -162,9 +180,7 @@ namespace NightSnack
                 ImGui::Text("Import %zu file(s) to Assets folder", m_pendingImports.size());
                 ImGui::Separator();
 
-                // ----------------------------------------------------------------
-                // Show list of files to import
-                // ----------------------------------------------------------------
+                // show list of files to import
                 ImGui::Text("Files:");
                 ImGui::BeginChild("FileList", ImVec2(0, 150), true);
 
@@ -174,7 +190,7 @@ namespace NightSnack
                     std::string filename = filePath.filename().string();
                     std::string ext = filePath.extension().string();
 
-                    // Color code by file type
+                    // color code by file type
                     if (IsImageFile(ext))
                     {
                         ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f),
@@ -197,15 +213,11 @@ namespace NightSnack
                 ImGui::EndChild();
                 ImGui::Separator();
 
-                // ----------------------------------------------------------------
-                // Destination folder
-                // ----------------------------------------------------------------
+				// the folder that files will be imported to
                 ImGui::Text("Import to: %s", m_importDestination.c_str());
                 ImGui::Separator();
 
-                // ----------------------------------------------------------------
-                // Import options
-                // ----------------------------------------------------------------
+                // import options
                 static bool copyFiles = true;
                 static bool overwriteExisting = false;
 
@@ -213,9 +225,7 @@ namespace NightSnack
                 ImGui::Checkbox("Overwrite existing files", &overwriteExisting);
                 ImGui::Separator();
 
-                // ----------------------------------------------------------------
-                // Action buttons
-                // ----------------------------------------------------------------
+                // action buttons
                 float buttonWidth = 100.0f;
 
                 if (ImGui::Button("Import", ImVec2(buttonWidth, 0)))
@@ -224,7 +234,8 @@ namespace NightSnack
                     m_showImportDialog = false;
                     m_pendingImports.clear();
                 }
-
+                
+                // create cancel button in the same line
                 ImGui::SameLine();
 
                 if (ImGui::Button("Cancel", ImVec2(buttonWidth, 0)))
@@ -237,9 +248,14 @@ namespace NightSnack
             }
         }
 
+        /**
+        * @brief imports files to the assets folder
+        * @param copyFiles copy files to project
+        * @param overwriteExisting whether to overwrite existing files
+        */
         void ImportFiles(bool copyFiles, bool overwriteExisting)
         {
-            std::cout << "[Assets] Importing " << m_pendingImports.size() << " files...\n";
+            //std::cout << "[Assets] Importing " << m_pendingImports.size() << " files...\n";
 
             int successCount = 0;
             int failCount = 0;
@@ -251,25 +267,23 @@ namespace NightSnack
                     fs::path source(sourcePath);
                     fs::path destination = fs::path(m_importDestination) / source.filename();
 
-                    // Check if file exists
+                    // check if file exists
                     if (fs::exists(destination) && !overwriteExisting)
                     {
-                        std::cout << "[Assets] Skipped (already exists): "
-                            << destination.string() << "\n";
+                       /* std::cout << "[Assets] Skipped (already exists): "
+                            << destination.string() << "\n";*/
                         failCount++;
                         continue;
                     }
 
-                    // Copy file
+                    // copy file
                     if (copyFiles)
                     {
-                        fs::copy_file(source, destination,
-                            fs::copy_options::overwrite_existing);
-                        std::cout << "[Assets] Copied: " << source.filename().string()
-                            << " -> " << destination.string() << "\n";
+                        fs::copy_file(source, destination, fs::copy_options::overwrite_existing);
+                        /*std::cout << "[Assets] Copied: " << source.filename().string() << " -> " << destination.string() << "\n";*/
                     }
 
-                    // Clear texture cache to reload
+                    // clear texture cache to reload
                     if (IsImageFile(source.extension().string()))
                     {
                         m_loadedTextures.erase(destination.string());
@@ -280,16 +294,16 @@ namespace NightSnack
                 }
                 catch (const std::exception& e)
                 {
-                    std::cerr << "[Assets] Failed to import " << sourcePath
-                        << ": " << e.what() << "\n";
+                    std::cerr << "Failed to import " << sourcePath << ": " << e.what() << "\n";
                     failCount++;
                 }
             }
-
-            std::cout << "[Assets] Import complete: " << successCount
-                << " success, " << failCount << " failed\n";
+            //std::cout << "[Assets] Import complete: " << successCount << " success, " << failCount << " failed\n";
         }
 
+        /**
+        * @brief draws the asset properties window
+        */
         void DrawAssetProperties()
         {
             ImGui::Begin("Asset Properties", &m_showAssetProperties);
@@ -313,7 +327,7 @@ namespace NightSnack
 
                 ImGui::Separator();
 
-                // Preview for images
+                // preview for images
                 if (IsImageFile(selectedPath.extension().string()))
                 {
                     ImGui::Text("Preview:");
@@ -326,8 +340,7 @@ namespace NightSnack
 
                 ImGui::Separator();
 
-                // buttons 
-
+                // close buttoon
                 if (ImGui::Button("Close"))
                 {
                     m_showAssetProperties = false;
@@ -340,6 +353,7 @@ namespace NightSnack
                 ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.3f, 0.3f, 1.0f));
                 ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.6f, 0.1f, 0.1f, 1.0f));
 
+                // delete button
                 if (ImGui::Button("Delete", ImVec2(100, 0)))
                 {
                     // Show confirmation popup
@@ -349,7 +363,7 @@ namespace NightSnack
                 ImGui::PopStyleColor(3);
 
                 // delete confirmation popup
-                // Safety measure to prevent accidental deletion
+                // safety measure to prevent accidental deletion
                 if (ImGui::BeginPopupModal("Delete Asset?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
                 {
                     ImGui::Text("Are you sure you want to delete this asset?");
@@ -371,7 +385,7 @@ namespace NightSnack
 
                     ImGui::SameLine();
 
-                    // Cancel button
+                    // cancel button
                     if (ImGui::Button("Cancel", ImVec2(120, 0)))
                     {
                         ImGui::CloseCurrentPopup();
@@ -380,81 +394,76 @@ namespace NightSnack
                     ImGui::EndPopup();
                 }
             }
-
             ImGui::End();
         }
 
-        void DrawToolbar()
-        {
-            // ----------------------------------------------------------------
-            // SEARCH BAR - Filter assets by name
-            // ----------------------------------------------------------------
-            /*static char searchBuffer[256] = "";
-            ImGui::SetNextItemWidth(200.0f);
-            if (ImGui::InputTextWithHint("##Search", "Search assets...", searchBuffer, 256))
-            {
-                m_searchFilter = std::string(searchBuffer);
-            }
+        // not used for now
+        //void DrawToolbar()
+        //{
+        //    // search bar to filter assets by name
 
-            ImGui::SameLine();*/
+        //    /*static char searchBuffer[256] = "";
+        //    ImGui::SetNextItemWidth(200.0f);
+        //    if (ImGui::InputTextWithHint("##Search", "Search assets...", searchBuffer, 256))
+        //    {
+        //        m_searchFilter = std::string(searchBuffer);
+        //    }
 
-            //// ----------------------------------------------------------------
-            //// REFRESH BUTTON - Rescan assets folder
-            //// ----------------------------------------------------------------
-            //if (ImGui::Button("Refresh"))
-            //{
-            //    // Clear texture cache to force reload
-            //    m_loadedTextures.clear();
-            //    m_textureObjects.clear();
-            //    std::cout << "[Assets] Refreshed asset cache\n";
-            //}
+        //    ImGui::SameLine();*/
 
-            //if (ImGui::Button("Import Files..."))
-            //{
-            //    // import window
-            //}
+        //    // refresh button to Rescan assets folder
+        //     
+        //    if (ImGui::Button("Refresh"))
+        //    {
+        //        // Clear texture cache to force reload
+        //        m_loadedTextures.clear();
+        //        m_textureObjects.clear();
+        //        std::cout << "[Assets] Refreshed asset cache\n";
+        //    }
 
-            //ImGui::SameLine();
-            //ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
-            //    "");
-        }
+        //    if (ImGui::Button("Import Files..."))
+        //    {
+        //        // import window
+        //    }
 
+        //    ImGui::SameLine();
+        //    ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
+        //        "");
+        //}
+
+        /**
+        * @brief draws the images in the assets tab
+        */
         void DrawImagesTab()
         {
-            // ----------------------------------------------------------------
-            // CALCULATE GRID LAYOUT
-            // Determine how many thumbnails fit per row
-            // ----------------------------------------------------------------
+            // calculate grid layout
+           // determine how many thumbnails fit per row
             static float padding = 12.0f;
             float cellSize = m_thumbnailSize + padding;
             float panelWidth = ImGui::GetContentRegionAvail().x;
             int columnCount = std::max(1, (int)(panelWidth / cellSize));
 
-            // Create column layout for grid
+            // create column layout for grid
             ImGui::Columns(columnCount, 0, false);
 
-            // ----------------------------------------------------------------
-            // ITERATE THROUGH ALL IMAGE FILES
-            // Scan assets folder recursively for images
-            // ----------------------------------------------------------------
+            // iterate through all image files
+            // scan assets folder recursively for images
             for (auto const& entry : fs::recursive_directory_iterator(m_assetsRoot))
             {
-                // Skip directories - only process files
+                // skip directories and only process files
                 if (!entry.is_regular_file())
                     continue;
 
-                // Check if file is an image (png, jpg, etc.)
+                // check if file is an image (png, jpg, etc.)
                 std::string ext = entry.path().extension().string();
-                if (!IsImageFile(ext))
-                    continue;
+                if (!IsImageFile(ext)) continue;
 
-                // Get full path as string
+                // get full path as string
                 std::string pathStr = entry.path().string();
 
+                // search filter not in use for now
                 /*
-                // ----------------------------------------------------------------
                 // SEARCH FILTER - Skip if doesn't match search
-                // ----------------------------------------------------------------
                 if (!m_searchFilter.empty())
                 {
                     std::string filename = entry.path().filename().string();
@@ -473,40 +482,32 @@ namespace NightSnack
                 }
                 */
 
-                // ----------------------------------------------------------------
-                // LOAD TEXTURE - Get or load thumbnail from cache
-                // ----------------------------------------------------------------
+                // load texture from cache
                 ImTextureID texID = GetOrLoadTexture(pathStr);
-                if (!texID)
-                    continue; // Skip if failed to load
+                if (!texID) continue;
 
-                // Push unique ID for this asset (prevents ImGui conflicts)
+                // push unique ID for the asset
                 ImGui::PushID(pathStr.c_str());
 
-                // ----------------------------------------------------------------
-                // HIGHLIGHT IF SELECTED (Unity blue highlight)
-                // ----------------------------------------------------------------
+                // highlight if selected
+                // change colour values accordingly
                 if (m_selectedAssetPath == pathStr)
                 {
                     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.5f, 0.8f, 1.0f));
                 }
 
-                // ----------------------------------------------------------------
-                // RENDER THUMBNAIL - Clickable image button
-                // ----------------------------------------------------------------
+				// clickable image button with thumbnail
                 ImGui::ImageButton(pathStr.c_str(), texID, 
                     ImVec2(m_thumbnailSize, m_thumbnailSize), ImVec2(0, 1), ImVec2(1, 0));
 
 
-                // Pop highlight color if was selected
+                // pop highlight color if was selected
                 if (m_selectedAssetPath == pathStr)
                 {
                     ImGui::PopStyleColor();
                 }
 
-                // ----------------------------------------------------------------
-                // CLICK TO SELECT - Single click selects the asset
-                // ----------------------------------------------------------------
+                // click to select
                 if (ImGui::IsItemClicked())
                 {
                     m_selectedAssetPath = pathStr;
@@ -514,21 +515,22 @@ namespace NightSnack
                     //std::cout << "[Assets] Selected: " << pathStr << "\n";
                 }
 
-                // DRAG SOURCE - ENABLE DRAGGING 
-                // This allows dragging the image to Scene panel
-                if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-                {
-                    // SET PAYLOAD - Store the asset path as drag data
-                    ImGui::SetDragDropPayload("ASSET_IMAGE", pathStr.c_str(), pathStr.size() + 1);
+                // not in use for now
+                //// enable dragging
+                //// This allows dragging the image to Scene panel
+                //if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+                //{
+                //    // SET PAYLOAD - Store the asset path as drag data
+                //    ImGui::SetDragDropPayload("ASSET_IMAGE", pathStr.c_str(), pathStr.size() + 1);
 
-                    // DRAG PREVIEW - Show thumbnail while dragging
-                    ImGui::Image(texID, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
-                    ImGui::Text("%s", entry.path().filename().string().c_str());
+                //    // DRAG PREVIEW - Show thumbnail while dragging
+                //    ImGui::Image(texID, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
+                //    ImGui::Text("%s", entry.path().filename().string().c_str());
 
-                    ImGui::EndDragDropSource();
-                }
+                //    ImGui::EndDragDropSource();
+                //}
 
-                // TOOLTIP - Show info on hover
+                // show info on hover
                 if (ImGui::IsItemHovered())
                 {
                     ImGui::BeginTooltip();
@@ -538,27 +540,32 @@ namespace NightSnack
                     ImGui::EndTooltip();
                 }
 
-                // Display filename text below thumbnail
+                // display filename text below thumbnail
                 ImGui::TextWrapped("%s", entry.path().filename().string().c_str());
 
-                // Move to next column in grid
+                // move to next column in grid
                 ImGui::NextColumn();
 
                 ImGui::PopID();
             }
 
-            // End grid layout
+            // end grid layout
             ImGui::Columns(1);
         }
 
-        // Displays all files (any type) inside the assets folder
+        /**
+        * @brief displays all files inside the assets folder
+        */
         void DrawAllFilesTab()
         {
-            // Use a tree view to show folders & files
+            // use a tree view to show folders and files
             DrawDirectoryRecursive(m_assetsRoot);
         }
 
-        // Recursively displays folders and their files as a tree.
+        /**
+        * @brief recursively displays folders and their files as a tree
+        * @param dir the directory to display
+        */
         void DrawDirectoryRecursive(const fs::path& dir)
         {
             for (const auto& entry : fs::directory_iterator(dir))
@@ -568,7 +575,7 @@ namespace NightSnack
 
                 if (entry.is_directory())
                 {
-                    // Create a collapsible tree node for folders
+                    // create a collapsible tree node for folders
                     if (ImGui::TreeNode(name.c_str()))
                     {
                         DrawDirectoryRecursive(path); // recurse into subfolder
@@ -587,13 +594,23 @@ namespace NightSnack
             }
         }
 
-        // Checks if a file has a supported image extension
+        /**
+        * @brief checks if a file has a supported image extension
+        * @param ext file extension to check
+        * @return true if the file is an image, else false
+        */
         bool IsImageFile(const std::string& ext)
         {
             std::string lower = ext;
             std::transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
             return (lower == ".png" || lower == ".jpg" || lower == ".jpeg" || lower == ".bmp");
         }
+
+        /**
+        * @brief gets or loads a texture from cache
+        * @param path path to the texture file
+        * @return ImTextureID for the texture
+        */
 
         ImTextureID GetOrLoadTexture(const std::string& path)
         {
@@ -605,16 +622,19 @@ namespace NightSnack
 
             //stbi_set_flip_vertically_on_load(false);
 
-            // --- Use your Texture class to load the image --- //
             std::shared_ptr<Texture> tex = std::make_shared<Texture>(path, m_coord.GetSystem<ResourceManager>());
 
-            // Cache the texture (store both Texture and ImGui ID)
+            // cache the texture (store both Texture and ImGui ID)
             m_textureObjects[path] = tex;
             m_loadedTextures[path] = (ImTextureID)(intptr_t)tex->GetID();
 
             return m_loadedTextures[path];
         }
 
+        /**
+        * @brief deletes an asset from the filesystem and cache
+        * @param assetPath path to the asset to delete
+        */
         void DeleteAsset(const std::string& assetPath)
         {
             try
@@ -631,27 +651,27 @@ namespace NightSnack
 
                 if (IsImageFile(filePath.extension().string()))
                 {
-                    // Remove from cache
+                    // remove from cache
                     auto texIt = m_loadedTextures.find(assetPath);
                     if (texIt != m_loadedTextures.end())
                     {
-                        // Delete OpenGL texture
+                        // delete OpenGL texture
                         GLuint texID = texIt->second;
                         glDeleteTextures(1, &texID);
                         m_loadedTextures.erase(texIt);
                         //std::cout << "[Assets] Removed texture from cache\n";
                     }
 
-                    if (fs::remove(filePath))
+                    /*if (fs::remove(filePath))
                     {
                         std::cout << "[Assets] Successfully deleted file: " << assetPath << "\n";
                     }
                     else
                     {
                         std::cerr << "[Assets] Failed to delete file: " << assetPath << "\n";
-                    }
+                    }*/
 
-                    // Remove texture object
+                    // remove texture object
                     m_textureObjects.erase(assetPath);
                 }
 

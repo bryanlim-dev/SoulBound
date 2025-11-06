@@ -11,6 +11,7 @@
  ******************************************************************************/
 
 #include "Application.h"
+#include "Systems/Graphics.h"
 #include <iostream>
 
 namespace NightSnack {
@@ -112,10 +113,13 @@ namespace NightSnack {
 		PollEvents();
 
 		size_t livingEntities = m_coord.GetEntityNum();
+		std::string instanced = m_coord.GetSystem<GraphicsSystem>()->GetEnableInstancedRendering() ? "Yes" : "No";
 
 		std::string title = "NightSnack Engine | FPS: " + std::to_string(static_cast<int>(GetTimer().GetFPS()))
 			+ " | Game Time: " + std::to_string(static_cast<int>(GetTimer().GetTotalSystemTime()))
-			+ " | Number of Entities: " + std::to_string(livingEntities);
+			+ " | Number of Entities: " + std::to_string(livingEntities)
+			+ " | Instanced Rendering: " + instanced;
+
 
 		SetWindowTitle(GetNativeHandle(), title.c_str());
 

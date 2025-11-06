@@ -1,3 +1,18 @@
+/******************************************************************************
+ * File:        StateComponents.cpp
+ * Project:     NightSnack
+ * Author(s):	Clement Ang Yang Ying (Primary, 100%) - Created class and logic
+ *
+ * Description:
+ * This file contains the definitions for the state component class and state transition functions
+ * It is the class that holds data on a state as componets asa well as update eneter
+ * and exit functions
+ * This file also contatins the transitions functions to singal that a transition
+ * to another state is avaliable
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 #include "StateComponents.h"
 #include "../AllSystems.h"
 #include <Core/ECS/Coordinator.h>
