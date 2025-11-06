@@ -79,6 +79,17 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void Draw() const;
+
+		/************************************************************************/
+		/*!
+		\brief
+		Renders the mesh using Instanced Rendering calls
+		Calls the correct draw call based on the mesh's primitive type
+
+		\param[in] instanceCount
+		The number of instances to render
+		*/
+		/************************************************************************/
 		void DrawInstanced(size_t instanceCount) const;
 
 		/************************************************************************/

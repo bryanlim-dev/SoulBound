@@ -30,28 +30,28 @@ namespace NightSnack {
 	public:
 
 		// Specific keyboard keys to check for input state
-		//enum KeyboardKeys {
-		//	W = 0,
-		//	A,
-		//	S,
-		//	D,
-		//	H,
-		//	SPACE,
-		//	ESC,
+		enum KeyboardKeys {
+			W = 0,
+			A,
+			S,
+			D,
+			H,
+			SPACE,
+			ESC,
 
-		//	RIGHT_ARROW,
-		//	LEFT_ARROW,
-		//	UP_ARROW,
+			RIGHT_ARROW,
+			LEFT_ARROW,
+			UP_ARROW,
 
-		//	NUM_TOTAL_KEYBOARD_KEY	// MUST BE THE LAST
-		//};
+			NUM_TOTAL_KEYBOARD_KEY	// MUST BE THE LAST
+		};
 
-		//// Specific mouse buttons to check for input state
-		//enum MouseButtons {
-		//	LMB = 0,
-		//	RMB,
-		//	NUM_TOTAL_MOUSE_BUTTON
-		//};
+		// Specific mouse buttons to check for input state
+		enum MouseButtons {
+			LMB = 0,
+			RMB,
+			NUM_TOTAL_MOUSE_BUTTON
+		};
 
 		/************************************************************************/
 		/*!
@@ -108,7 +108,7 @@ namespace NightSnack {
 		Resets all the key and mouse states back to false
 		*/
 		/************************************************************************/
-		//void ResetInputStates();
+		void ResetInputStates();
 
 		// Keyboard queries
 		/************************************************************************/
@@ -123,7 +123,7 @@ namespace NightSnack {
 		True if this specific key is being pressed down repeatedly
 		*/
 		/************************************************************************/
-		//bool IsKeyDown(int key) const;
+		bool IsKeyDown(int key) const;
 
 		/************************************************************************/
 		/*!
@@ -137,7 +137,7 @@ namespace NightSnack {
 		True if this specific key has been pressed
 		*/
 		/************************************************************************/
-		//bool IsKeyPressed(int key) const;
+		bool IsKeyPressed(int key) const;
 
 		/************************************************************************/
 		/*!
@@ -151,7 +151,7 @@ namespace NightSnack {
 		True if this specific key has been released
 		*/
 		/************************************************************************/
-		//bool IsKeyReleased(int key) const;
+		bool IsKeyReleased(int key) const;
 
 		// Keyboard modifier queries
 		/************************************************************************/
@@ -163,7 +163,7 @@ namespace NightSnack {
 		True if the shift key is being pressed down repeatedly
 		*/
 		/************************************************************************/
-		//bool IsShiftDown() const;
+		bool IsShiftDown() const;
 
 		/************************************************************************/
 		/*!
@@ -174,7 +174,7 @@ namespace NightSnack {
 		True if the control key is being pressed down repeatedly
 		*/
 		/************************************************************************/
-		//bool IsCtrlDown() const;
+		bool IsCtrlDown() const;
 
 		/************************************************************************/
 		/*!
@@ -185,7 +185,7 @@ namespace NightSnack {
 		True if the alternate key is being pressed down repeatedly
 		*/
 		/************************************************************************/
-		//bool IsAltDown() const;
+		bool IsAltDown() const;
 
 		// Mouse queries
 		/************************************************************************/
@@ -200,7 +200,7 @@ namespace NightSnack {
 		True if this specific mouse button is being pressed down repeatedly
 		*/
 		/************************************************************************/
-		//bool IsMouseButtonDown(int button) const;
+		bool IsMouseButtonDown(int button) const;
 
 		/************************************************************************/
 		/*!
@@ -214,7 +214,7 @@ namespace NightSnack {
 		True if this specific mouse button has been pressed
 		*/
 		/************************************************************************/
-		//bool IsMouseButtonPressed(int button) const;
+		bool IsMouseButtonPressed(int button) const;
 
 		/************************************************************************/
 		/*!
@@ -228,7 +228,7 @@ namespace NightSnack {
 		True if this specific mouse button has been released
 		*/
 		/************************************************************************/
-		//bool IsMouseButtonReleased(int button) const;
+		bool IsMouseButtonReleased(int button) const;
 
 		// Accessor functions for mouse position
 		/************************************************************************/
@@ -368,7 +368,7 @@ namespace NightSnack {
 		Enum value from KeyboardKeys
 		*/
 		/************************************************************************/
-		//static KeyboardKeys TranslateGLFWKeyboardKey(int glfwKey);
+		static KeyboardKeys TranslateGLFWKeyboardKey(int glfwKey);
 
 		/************************************************************************/
 		/*!
@@ -382,7 +382,7 @@ namespace NightSnack {
 		Enum value from MouseButtons
 		*/
 		/************************************************************************/
-		//static MouseButtons TranslateGLFWMouseButton(int glfwButton);
+		static MouseButtons TranslateGLFWMouseButton(int glfwButton);
 
 		/************************************************************************/
 		/*!
@@ -452,15 +452,15 @@ namespace NightSnack {
 		static void CursorPosCallback(GLFWwindow* window, double xPos, double yPos);
 
 		// State tracking
-		//static std::array<bool, static_cast<size_t>(NUM_TOTAL_KEYBOARD_KEY)> m_keysDown;		// Represents the keys that are being held down
-		//static std::array<bool, static_cast<size_t>(NUM_TOTAL_KEYBOARD_KEY)> m_keysPressed;		// Represents the keys that are pressed once
-		//static std::array<bool, static_cast<size_t>(NUM_TOTAL_KEYBOARD_KEY)> m_keysReleased;	// Represents the keys that are released
+		static std::array<bool, static_cast<size_t>(NUM_TOTAL_KEYBOARD_KEY)> m_keysDown;		// Represents the keys that are being held down
+		static std::array<bool, static_cast<size_t>(NUM_TOTAL_KEYBOARD_KEY)> m_keysPressed;		// Represents the keys that are pressed once
+		static std::array<bool, static_cast<size_t>(NUM_TOTAL_KEYBOARD_KEY)> m_keysReleased;	// Represents the keys that are released
 
-		//static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mouseDown;		// Represents the mouse that is being held down
-		//static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mousePressed;	// Represents the mouse that is pressed once
-		//static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mouseReleased;	// Represents the mouse that is released
+		static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mouseDown;		// Represents the mouse that is being held down
+		static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mousePressed;	// Represents the mouse that is pressed once
+		static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mouseReleased;	// Represents the mouse that is released
 
-		//static int m_currentModifiers;							// Represents the bitfield of modifier keys
+		static int m_currentModifiers;							// Represents the bitfield of modifier keys
 		static float m_mousePosX, m_mousePosY;					// Represents the current position in the current frame
 
 		float m_mouseWorldPosX{}, m_mouseWorldPosY{};
