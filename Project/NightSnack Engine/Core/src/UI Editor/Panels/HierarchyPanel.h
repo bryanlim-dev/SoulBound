@@ -86,7 +86,7 @@ namespace NightSnack
                             Entity newEntity = m_coord.CreateEntity();
                             
                             Transform defaultTransform{
-                                Vec3(0.f, 145.f, 0.f),
+                                Vec3(0.f, 145.f, 1.f),
                                 0.0f,
                                 Vec2(100.f, 100.f)
                             };
