@@ -3,12 +3,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /clr")
 set(CMAKE_CXX_STANDARD 20)
 
 # Source files
-set(SCRIPTAPI_SOURCES
-    src/ScriptAPIWrapper.cpp
+file(GLOB_RECURSE SCRIPTAPI_SOURCES CONFIGURE_DEPENDS 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
 )
-
-set(SCRIPTAPI_HEADERS
-    include/ScriptAPIWrapper.h
+file(GLOB_RECURSE SCRIPTAPI_HEADERS CONFIGURE_DEPENDS 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.h"
 )
 
 # Create the C++/CLI DLL
@@ -37,12 +36,10 @@ target_compile_options(ScriptAPI PRIVATE
     /EHa  # Enable C++ exceptions with SEH
 )
 
-# Disable precompiled headers for C++/CLI (they can cause issues)
 set_target_properties(ScriptAPI PROPERTIES
     FOLDER "Scripting"
-    COMMON_LANGUAGE_RUNTIME "netcore"  # Use .NET Core/5+
-    DOTNET_TARGET_FRAMEWORK "net8.0"
-    VS_GLOBAL_CLRSupport "NetCore"
+    COMMON_LANGUAGE_RUNTIME ""  # Let VS handle it
+    VS_DOTNET_REFERENCES "System;System.Core"
 )
 
 # Define export macro
@@ -50,5 +47,11 @@ target_compile_definitions(ScriptAPI PRIVATE
     SCRIPTAPI_EXPORTS
 )
 
-# Remove /RTC1 flag which is incompatible with /clr
+# Organize files in Visual Studio Solution Explorer
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src" 
+    FILES ${SCRIPTAPI_SOURCES} ${SCRIPTAPI_HEADERS}
+)
+
+# Remove incompatible flags
+string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")

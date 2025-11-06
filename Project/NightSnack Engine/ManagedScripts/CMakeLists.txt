@@ -15,7 +15,7 @@ add_library(ManagedScripts SHARED
 # Set C# project properties
 set_target_properties(ManagedScripts PROPERTIES
     FOLDER "Scripting"
-    DOTNET_TARGET_FRAMEWORK "net8.0"
+    DOTNET_TARGET_FRAMEWORK "net48"  # .NET Framework 4.8
     DOTNET_SDK "Microsoft.NET.Sdk"
     VS_GLOBAL_ROOTNAMESPACE "ManagedScripts"
     VS_DOTNET_REFERENCES "System;System.Core"
