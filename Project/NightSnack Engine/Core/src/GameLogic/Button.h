@@ -85,26 +85,26 @@ namespace NightSnack {
 	/**
 	* @brief struct to handle audio playing
 	*/
-	struct PlayAudio {
-		size_t soundID; // id of the sound to play
+	//struct PlayAudio {
+	//	size_t soundID; // id of the sound to play
 
-		/**
-		* @brief play sound using AudioSystem
-		* @param coord reference to coordinator
-		*/
-		void operator()(Coordinator& coord)
-		{
-			coord.GetSystem<AudioSystem>()->PlaySFX(soundID);
-		}
-	};
+	//	/**
+	//	* @brief play sound using AudioSystem
+	//	* @param coord reference to coordinator
+	//	*/
+	//	void operator()(Coordinator& coord)
+	//	{
+	//		coord.GetSystem<AudioSystem>()->PlaySFX(soundID);
+	//	}
+	//};
 
-	inline void OnPlayClick() {
-		//std::cout << "Play button clicked!\n";
-	}
+	//inline void OnPlayClick() {
+	//	//std::cout << "Play button clicked!\n";
+	//}
 
-	inline void OnPlayHover() {
-		//std::cout << "Play button hovered!\n";
-	}
+	//inline void OnPlayHover() {
+	//	//std::cout << "Play button hovered!\n";
+	//}
 
 	// GameUI system
 	class GameUI : public ISystem {

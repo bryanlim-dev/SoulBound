@@ -121,27 +121,29 @@ namespace NightSnack {
 	void Mesh::DrawInstanced(size_t instanceCount) const {
 		glBindVertexArray(m_vao);
 
+		GLsizei cnt = static_cast<GLsizei>(instanceCount);
+
 		// Call the correct draw call based on the primitive type
 		switch (m_primitiveType) {
 		case GL_POINTS:
 			glPointSize(10.f);
-			glDrawArraysInstanced(GL_POINTS, 0, m_vertexCount, instanceCount);
+			glDrawArraysInstanced(GL_POINTS, 0, m_vertexCount, cnt);
 			glPointSize(1.f);
 			break;
 
 		case GL_LINES:
-			glDrawArraysInstanced(GL_LINES, 0, m_vertexCount, instanceCount);
+			glDrawArraysInstanced(GL_LINES, 0, m_vertexCount, cnt);
 			break;
 
 		case GL_TRIANGLES:
 			if (m_ebo)
-				glDrawElementsInstanced(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, nullptr, instanceCount);
+				glDrawElementsInstanced(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, nullptr, cnt);
 			else
-				glDrawArraysInstanced(GL_TRIANGLES, 0, m_vertexCount, instanceCount);
+				glDrawArraysInstanced(GL_TRIANGLES, 0, m_vertexCount, cnt);
 			break;
 
 		case GL_TRIANGLE_FAN:
-			glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, m_vertexCount, instanceCount);
+			glDrawArraysInstanced(GL_TRIANGLE_FAN, 0, m_vertexCount, cnt);
 			break;
 		}
 

@@ -1,3 +1,19 @@
+/******************************************************************************
+ * File:        Text.cpp
+ * Project:     NightSnack
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Text System
+ *
+ * Description:
+ * This file contains the definitions of the Text System.
+ * This Text System is in charge of initializing OpenGL buffers for text rendering.
+ * Loading of font files using the ResourceManager.
+ * Preparing the glyph textures for ASCII characters.
+ * Rendering of text belonging to entities in in-game and UI layers.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Text.h"
 #include "Graphics.h"
 
@@ -15,10 +31,11 @@ namespace NightSnack {
 		rm->LoadFont("../assets/Font/liberation-mono.ttf", fontKeyLiberation);
 		m_fonts["liberation"] = fontKeyLiberation;
 
+		// Generate glyphs for the loaded fonts
 		LoadFontGlyphs(fontKeyDefault, "default");
 		LoadFontGlyphs(fontKeyLiberation, "liberation");
 
-		// Configure VAO/VBO for texture quads
+		// Configure VAO/VBO for rendering character quads
 		glGenVertexArrays(1, &m_vao);
 		glGenBuffers(1, &m_vbo);
 		glBindVertexArray(m_vao);
@@ -29,6 +46,7 @@ namespace NightSnack {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
 
+		// Only will use the text shader file from the Graphics System
 		auto& shaders = m_coord.GetSystem<GraphicsSystem>()->GetShadersMap();
 		m_shader = shaders.find("text")->second.get();
 	}
@@ -39,19 +57,19 @@ namespace NightSnack {
 		// Get the face for the respective font
 		FT_Face face = rm->GetFont(fontKey);
 
-		// Set size to load glyphs as
+		// Set the glyph pixel size (height = 48)
 		FT_Set_Pixel_Sizes(face, 0, 48);
 		// Disable byte-alignment restriction
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 		// Load first 128 characters of ASCII set only
 		for (unsigned char c = 0; c < 128; ++c) {
-			// Load character glyph
+			// Load and render character glyph
 			if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
 				std::cout << "Error: Failed to load Glyph\n";
 				continue;
 			}
-			// Generate texture
+			// Generate texture from glyph bitmap
 			unsigned int texture;
 			glGenTextures(1, &texture);
 			glBindTexture(GL_TEXTURE_2D, texture);
@@ -61,12 +79,12 @@ namespace NightSnack {
 				0, GL_RED, GL_UNSIGNED_BYTE,
 				face->glyph->bitmap.buffer
 			);
-			// Set texture options
+			// Configure texture parameters for text rendering
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			// Store character for later use
+			// Store character information
 			Character character = {
 				texture,
 				glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
@@ -82,9 +100,12 @@ namespace NightSnack {
 		(void)steps;
 
 		//if (!m_coord.GetSystem<ImguiSystem>()->GetEditorActive()) {
+		
+		// Find the main camera and render accordingly
 		Entity mainCam = m_coord.GetSystem<GraphicsSystem>()->FindCamera();
 		if (mainCam == INVALID_ENTITY) return;
 		Draw(mainCam, true);
+
 		//}
 	}
 
@@ -122,9 +143,12 @@ namespace NightSnack {
 				auto& scale = m_coord.GetComponent<Transform>(e).scale;
 				auto& txt = m_coord.GetComponent<Font>(e);
 
+				// Flip the y pos for entities on the UI layer
 				float posYToUse = isUILayer ? screenH - pos.y : pos.y;
+				// Small offset for rendering, to be tweaked in the future
 				float posXToUse = pos.x - scale.x * 0.5f;
 
+				// Render the actual text string
 				RenderText(txt.text, posXToUse, posYToUse, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType);
 			}
 		}
@@ -134,6 +158,7 @@ namespace NightSnack {
 
 	void TextSystem::RenderText(std::string text, float x, float y, float scale, glm::vec3 color, const glm::mat4& proj, const glm::mat4& view, const std::string& fontName)
 	{
+		// Make sure the font exists
 		if (m_fontCharacters.find(fontName) == m_fontCharacters.end()) {
 			std::cout << "ERROR: Font '" << fontName << "' not found!" << std::endl;
 			return;
@@ -148,7 +173,7 @@ namespace NightSnack {
 		glActiveTexture(GL_TEXTURE0);
 		glBindVertexArray(m_vao);
 
-		// iterate through all characters
+		// Render each character in the string
 		for (char c : text) {
 			auto& ch = chars[c];
 
@@ -157,7 +182,7 @@ namespace NightSnack {
 			float w = ch.size.x * scale;
 			float h = ch.size.y * scale;
 
-			// update VBO for each character
+			// Define vertices for the character quad
 			float vertices[6][4] = {
 				{ xpos,     ypos + h,   0.f, 0.f },
 				{ xpos,     ypos,       0.f, 1.f },
@@ -167,16 +192,14 @@ namespace NightSnack {
 				{ xpos + w, ypos,       1.f, 1.f },
 				{ xpos + w, ypos + h,   1.f, 0.f }
 			};
-			// render glyph texture over quad
+			// Bind the glyph texture and update the VBO
 			glBindTexture(GL_TEXTURE_2D, ch.textureID);
-			// update content of VBO memory
 			glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // be sure to use glBufferSubData and not glBufferData
-
+			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // use glBufferSubData and not glBufferData
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			// render quad
+			// Draw quad
 			glDrawArrays(GL_TRIANGLES, 0, 6);
-			// now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+			// Advance cursors for next glyph (note that advance is number of 1/64 pixels)
 			x += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
 		}
 		glBindVertexArray(0);

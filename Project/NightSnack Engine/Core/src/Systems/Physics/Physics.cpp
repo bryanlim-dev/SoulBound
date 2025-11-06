@@ -188,7 +188,9 @@ namespace NightSnack {
 			}
 		}
 	}
+
 	void PhysicsSystem::ResolveOverlap(Transform& t1, Transform& t2, Collider& c1, Collider& c2, RigidBody& r1, RigidBody& r2) {
+		(void)r2;
 
 		// Resolve collisions;
 		Vec2 half1 = (c1.shape == ShapeType::AABB) ? Vec2{ c1.width * 0.5f, c1.height * 0.5f } : Vec2{ c1.radius, c1.radius };
@@ -204,11 +206,11 @@ namespace NightSnack {
 
 		if (overlap.x < overlap.y) {
 			t1.pos.x -= (overlap.x) * sign.x;
-			r1.vel.x = 0;
+			r1.vel.x = 0.f;
 		}
 		else {
 			t1.pos.y -= (overlap.y) * sign.y;
-			r1.vel.y = 0;
+			r1.vel.y = 0.f;
 
 			if (t1.pos.y > t2.pos.y) {
 				c1.isGrounded = true;

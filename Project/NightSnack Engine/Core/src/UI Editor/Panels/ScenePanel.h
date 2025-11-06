@@ -221,7 +221,7 @@ namespace NightSnack
                     {
 						// Find topmost entity under mouse
                         Entity topEntity = INVALID_ENTITY;
-                        int topLayer = -1000;
+                        //int topLayer = -1000;
                         float topZ = -1e9f;
 
 						// Iterate through all entities to find which one is under the mouse
@@ -232,7 +232,7 @@ namespace NightSnack
                                 continue;
 
                             auto& t = m_coord.GetComponent<Transform>(e);
-                            auto& r = m_coord.GetComponent<Renderable>(e);
+                            //auto& r = m_coord.GetComponent<Renderable>(e);
 
 							// AABB check
                             float halfW = t.scale.x * 0.5f;

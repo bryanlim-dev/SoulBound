@@ -25,7 +25,7 @@
 #include "Systems/Application/IEvent.h"
 #include "CrashLogger.h"
 
-#include "ImportExport.h"
+#include "ImportExport.h"	// DLL export
 
 namespace NightSnack {
 

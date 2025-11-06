@@ -22,6 +22,7 @@
 #include "ISystem.h"
 #include "Systems/Application/Application.h"
 
+
 namespace NightSnack {
 
 	// Coordinator manages the ECS Managers;
@@ -336,5 +337,7 @@ namespace NightSnack {
 	}
 
 }	// NightSnack
+
+#pragma warning(disable: 4251)
 
 #endif // COORD_HPP

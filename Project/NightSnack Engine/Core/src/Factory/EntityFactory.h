@@ -44,6 +44,7 @@ namespace NightSnack {
 		EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& archetypes_filename, std::string const& archetype_states_filename, std::string const& level0_file)
 			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord } {
 
+			(void)archetype_states_filename;
 			m_prefabManager.Initialize();
 			LoadArchetypes(archetypes_filename);
 			LoadLevel(level0_file);
@@ -77,6 +78,14 @@ namespace NightSnack {
 							m_layer = false;
 						}
 						break;
+
+					case InputEvent::InputAction::InstanceTest:
+						if (!m_stress) {
+							UnLoadLevel();
+							InstancedTestCreate(LayerType::GAMELAYER, "InstanceTest", 123, Vec2{ 50.f, 50.f });
+							m_stress = true;
+						}
+						break;
 					}
 				}
 
@@ -94,6 +103,12 @@ namespace NightSnack {
 			}
 			catch (json::parse_error& e) {
 				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
+			}
+
+			m_prefabNames.clear();
+
+			for (auto& [name, data] : GetArchetypes().items()) {
+				m_prefabNames.emplace_back(name);
 			}
 
 			//std::ifstream file(filename);
@@ -252,6 +267,14 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Create 7000 entities with colliders for instanced rendering test
+		*/
+		/************************************************************************/
+		void InstancedTestCreate(LayerType, std::string const&, int, Vec2 const&);
+
+		/************************************************************************/
+		/*!
+		\brief
 		Adds entity to m_toBeDestroyed (These entities will be destroyed at the
 		end of the core loop).
 		*/
@@ -281,6 +304,7 @@ namespace NightSnack {
 
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;
+		std::vector<std::string> m_prefabNames;
 	};
 
 }	// NightSnack

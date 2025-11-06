@@ -2,7 +2,7 @@
  * File:        Input.cpp
  * Project:     NightSnack
  * Author(s):	Goh Bei Lai (Primary, 95%) - Created Input System
- *				Lim Wei Jie (Secondary, 5%) - Initialized event dispatcher to 
+ *				Lim Wei Jie (Secondary, 5%) - Initialized event dispatcher to
  *				dispatch Input Events on key/mouse input
  *
  * Description:
@@ -18,18 +18,18 @@
 #include "Input.h"
 #include "Systems/Graphics.h"
 
-// Define static variables
-//std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysDown;
-//std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysPressed;
-//std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysReleased;
-//
-//std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_MOUSE_BUTTON)> InputSystem::m_mouseDown;
-//std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_MOUSE_BUTTON)> InputSystem::m_mousePressed;
-//std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_MOUSE_BUTTON)> InputSystem::m_mouseReleased;
-
 namespace NightSnack {
 
-	//int InputSystem::m_currentModifiers = 0;
+	// Define static variables
+	std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysDown;
+	std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysPressed;
+	std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_KEYBOARD_KEY)> InputSystem::m_keysReleased;
+
+	std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_MOUSE_BUTTON)> InputSystem::m_mouseDown;
+	std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_MOUSE_BUTTON)> InputSystem::m_mousePressed;
+	std::array<bool, static_cast<size_t>(InputSystem::NUM_TOTAL_MOUSE_BUTTON)> InputSystem::m_mouseReleased;
+
+	int InputSystem::m_currentModifiers = 0;
 	float InputSystem::m_mousePosX = 0.f;
 	float InputSystem::m_mousePosY = 0.f;
 
@@ -65,37 +65,37 @@ namespace NightSnack {
 		m_dispatcher->ProcessEvents();
 	}
 
-	//void InputSystem::ResetInputStates() {
-	//	// Reset states back to false
-	//	m_keysPressed.fill(false);
-	//	m_keysReleased.fill(false);
-	//	m_mousePressed.fill(false);
-	//	m_mouseReleased.fill(false);
-	//}
+	void InputSystem::ResetInputStates() {
+		// Reset states back to false
+		m_keysPressed.fill(false);
+		m_keysReleased.fill(false);
+		m_mousePressed.fill(false);
+		m_mouseReleased.fill(false);
+	}
 
-	//InputSystem::KeyboardKeys InputSystem::TranslateGLFWKeyboardKey(int glfwKey) {
-	//	switch (glfwKey) {
-	//	case GLFW_KEY_W: return KeyboardKeys::W;
-	//	case GLFW_KEY_A: return KeyboardKeys::A;
-	//	case GLFW_KEY_S: return KeyboardKeys::S;
-	//	case GLFW_KEY_D: return KeyboardKeys::D;
-	//	case GLFW_KEY_H: return KeyboardKeys::H;
-	//	case GLFW_KEY_SPACE: return KeyboardKeys::SPACE;
-	//	case GLFW_KEY_ESCAPE: return KeyboardKeys::ESC;
-	//	case GLFW_KEY_RIGHT: return KeyboardKeys::RIGHT_ARROW;
-	//	case GLFW_KEY_LEFT: return KeyboardKeys::LEFT_ARROW;
-	//	case GLFW_KEY_UP: return KeyboardKeys::UP_ARROW;
-	//	default: return KeyboardKeys::NUM_TOTAL_KEYBOARD_KEY;
-	//	}
-	//}
+	InputSystem::KeyboardKeys InputSystem::TranslateGLFWKeyboardKey(int glfwKey) {
+		switch (glfwKey) {
+		case GLFW_KEY_W: return KeyboardKeys::W;
+		case GLFW_KEY_A: return KeyboardKeys::A;
+		case GLFW_KEY_S: return KeyboardKeys::S;
+		case GLFW_KEY_D: return KeyboardKeys::D;
+		case GLFW_KEY_H: return KeyboardKeys::H;
+		case GLFW_KEY_SPACE: return KeyboardKeys::SPACE;
+		case GLFW_KEY_ESCAPE: return KeyboardKeys::ESC;
+		case GLFW_KEY_RIGHT: return KeyboardKeys::RIGHT_ARROW;
+		case GLFW_KEY_LEFT: return KeyboardKeys::LEFT_ARROW;
+		case GLFW_KEY_UP: return KeyboardKeys::UP_ARROW;
+		default: return KeyboardKeys::NUM_TOTAL_KEYBOARD_KEY;
+		}
+	}
 
-	//InputSystem::MouseButtons InputSystem::TranslateGLFWMouseButton(int glfwButton) {
-	//	switch (glfwButton) {
-	//	case GLFW_MOUSE_BUTTON_LEFT: return MouseButtons::LMB;
-	//	case GLFW_MOUSE_BUTTON_RIGHT: return MouseButtons::RMB;
-	//	default: return MouseButtons::NUM_TOTAL_MOUSE_BUTTON;
-	//	}
-	//}
+	InputSystem::MouseButtons InputSystem::TranslateGLFWMouseButton(int glfwButton) {
+		switch (glfwButton) {
+		case GLFW_MOUSE_BUTTON_LEFT: return MouseButtons::LMB;
+		case GLFW_MOUSE_BUTTON_RIGHT: return MouseButtons::RMB;
+		default: return MouseButtons::NUM_TOTAL_MOUSE_BUTTON;
+		}
+	}
 
 	InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int modifier) {
 		switch (glfwKey) {
@@ -117,6 +117,7 @@ namespace NightSnack {
 		case GLFW_KEY_SPACE: return InputEvent::InputAction::StressTest;
 		case GLFW_KEY_BACKSPACE: return InputEvent::InputAction::EndStressTest;
 		case GLFW_KEY_L: return InputEvent::InputAction::LayerTest;
+		case GLFW_KEY_O: return InputEvent::InputAction::InstanceTest;
 
 			// Player movement
 		case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
@@ -166,27 +167,27 @@ namespace NightSnack {
 
 		InputEvent::InputActionState mappedActionState = TranslateGLFWKeyStateToAction(action);
 
-	// Dispatch InputEvent when key is pressed
-	if (m_dispatcher)
-	{
-		m_dispatcher->QueueEvent(std::make_unique<InputEvent>(mappedAction, mappedActionState));
-	}
+		// Dispatch InputEvent when key is pressed
+		if (m_dispatcher)
+		{
+			m_dispatcher->QueueEvent(std::make_unique<InputEvent>(mappedAction, mappedActionState));
+		}
 
 		// Update the modifier state
-		//m_currentModifiers = mods;
+		m_currentModifiers = mods;
 
 		// Evalute the respective key states
-		//KeyboardKeys mappedKey = TranslateGLFWKeyboardKey(key);
-		//if (mappedKey == NUM_TOTAL_KEYBOARD_KEY)
-		//	return;
+		KeyboardKeys mappedKey = TranslateGLFWKeyboardKey(key);
+		if (mappedKey == NUM_TOTAL_KEYBOARD_KEY)
+			return;
 
-		/*if (action == GLFW_PRESS) {
+		if (action == GLFW_PRESS) {
 			m_keysDown[mappedKey] = true;
 			m_keysPressed[mappedKey] = true;
 		} else if (action == GLFW_RELEASE) {
 			m_keysDown[mappedKey] = false;
 			m_keysReleased[mappedKey] = true;
-		}*/
+		}
 	}
 
 	void InputSystem::MouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
@@ -199,17 +200,17 @@ namespace NightSnack {
 
 		InputEvent::InputActionState mappedActionState = TranslateGLFWKeyStateToAction(action);
 
-	// Dispatch InputEvent when key is pressed
-	if (m_dispatcher)
-	{
-		m_dispatcher->QueueEvent(std::make_unique<InputEvent>(mappedAction, mappedActionState));
-	}
+		// Dispatch InputEvent when key is pressed
+		if (m_dispatcher)
+		{
+			m_dispatcher->QueueEvent(std::make_unique<InputEvent>(mappedAction, mappedActionState));
+		}
 
 		// Update the modifier state
-		//m_currentModifiers = mods;
+		m_currentModifiers = mods;
 
 		// Evalute the respective mouse states
-		/*KeyboardKeys mappedButton = TranslateGLFWKeyboardKey(button);
+		KeyboardKeys mappedButton = TranslateGLFWKeyboardKey(button);
 		if (mappedButton == NUM_TOTAL_KEYBOARD_KEY)
 			return;
 
@@ -219,7 +220,7 @@ namespace NightSnack {
 		} else if (action == GLFW_RELEASE) {
 			m_mouseDown[mappedButton] = false;
 			m_mouseReleased[mappedButton] = true;
-		}*/
+		}
 	}
 
 	void InputSystem::CursorPosCallback(GLFWwindow* window, double xPos, double yPos) {
@@ -233,23 +234,23 @@ namespace NightSnack {
 	// Queries for key states -------------------------------------------------------------------------
 	// ------------------------------------------------------------------------------------------------
 
-	//bool InputSystem::IsKeyDown(int key) const { return m_keysDown[key]; }
-	//bool InputSystem::IsKeyPressed(int key) const { return m_keysPressed[key]; }
-	//bool InputSystem::IsKeyReleased(int key) const { return m_keysReleased[key]; }
+	bool InputSystem::IsKeyDown(int key) const { return m_keysDown[key]; }
+	bool InputSystem::IsKeyPressed(int key) const { return m_keysPressed[key]; }
+	bool InputSystem::IsKeyReleased(int key) const { return m_keysReleased[key]; }
 
 	// Queries for modifier key states ----------------------------------------------------------------
 	// ------------------------------------------------------------------------------------------------
 
-	//bool InputSystem::IsShiftDown() const { return m_currentModifiers & GLFW_MOD_SHIFT; }
-	//bool InputSystem::IsCtrlDown() const { return m_currentModifiers & GLFW_MOD_CONTROL; }
-	//bool InputSystem::IsAltDown() const { return m_currentModifiers & GLFW_MOD_ALT; }
+	bool InputSystem::IsShiftDown() const { return m_currentModifiers & GLFW_MOD_SHIFT; }
+	bool InputSystem::IsCtrlDown() const { return m_currentModifiers & GLFW_MOD_CONTROL; }
+	bool InputSystem::IsAltDown() const { return m_currentModifiers & GLFW_MOD_ALT; }
 
 	// Queries for mouse states -----------------------------------------------------------------------
 	// ------------------------------------------------------------------------------------------------
 
-	//bool InputSystem::IsMouseButtonDown(int button) const { return m_mouseDown[button]; }
-	//bool InputSystem::IsMouseButtonPressed(int button) const { return m_mousePressed[button]; }
-	//bool InputSystem::IsMouseButtonReleased(int button) const { return m_mouseReleased[button]; }
+	bool InputSystem::IsMouseButtonDown(int button) const { return m_mouseDown[button]; }
+	bool InputSystem::IsMouseButtonPressed(int button) const { return m_mousePressed[button]; }
+	bool InputSystem::IsMouseButtonReleased(int button) const { return m_mouseReleased[button]; }
 
 	// Queries for mouse position -----------------------------------------------------------------------
 	// ------------------------------------------------------------------------------------------------

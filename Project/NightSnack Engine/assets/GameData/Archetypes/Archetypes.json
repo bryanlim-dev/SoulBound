@@ -397,5 +397,19 @@
       "isWireframe" : false
     },
     "Color": { "r": 0.8, "g": 0.0, "b": 0.8, "a": 1.0 }
+  }, 
+
+  "InstanceTest": {
+    "Collider": {
+      "shape": "Circle",
+      "type": "Solid",
+      "isStatic": true,
+      "radius": 50.0
+    },
+    "Renderable": {
+      "meshName": "circle",
+      "materialName": "bananaMat",
+      "isWireframe" : false
+    }
   }
 }

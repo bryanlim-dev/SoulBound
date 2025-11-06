@@ -6,6 +6,7 @@
  * Description:
  * Debug Vertex shader is responsible for transforming vertices from model space to 
  * clip space.
+ * This Vertex Shader will only take care of debug drawing visualizations.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
