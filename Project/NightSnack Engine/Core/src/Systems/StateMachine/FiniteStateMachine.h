@@ -80,7 +80,7 @@ namespace NightSnack
 		Required by ISystem base class;
 
 		\return
-		Returns name of system (FiniteStateMachine)
+		Returns signature of system (FiniteStateMachine)
 		*/
 		/************************************************************************/
 		Signature GetSignature() const override;
