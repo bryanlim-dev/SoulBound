@@ -8,6 +8,8 @@ namespace Core
 	{
 	public:
 		void Run();
+
+		static void HelloWorld();
 	};
 
 }

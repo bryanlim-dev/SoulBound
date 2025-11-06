@@ -23,7 +23,7 @@ endif()
 target_link_libraries(Game PRIVATE Core)
 
 # ------------------------------------------------------------
-# Assets Handling
+# Assets and DLL Handling
 # ------------------------------------------------------------
 # Gather all asset files (for dependency tracking)
 file(GLOB_RECURSE ASSET_FILES "${CMAKE_SOURCE_DIR}/assets/*")
@@ -55,8 +55,21 @@ add_custom_target(copy_assets ALL
         "${CMAKE_SOURCE_DIR}/extern/freetype/freetype.dll"
         "$<TARGET_FILE_DIR:Game>"
 
+    # Copy mono dll
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_SOURCE_DIR}/extern/mono/lib/mono-2.0-sgen.dll"
+        "$<TARGET_FILE_DIR:Game>"
+
     DEPENDS ${ASSET_FILES}
     COMMENT "Copying assets and DLLs..."
+)
+
+# Copy Mono .NET assemblies to Game output directory
+add_custom_command(TARGET Game POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        "${CMAKE_SOURCE_DIR}/extern/mono/mono-lib"
+        "$<TARGET_FILE_DIR:Game>/mono-lib"
+    COMMENT "Copying Mono assemblies..."
 )
 
 # Copy Core.dll to Game output directory
@@ -67,22 +80,17 @@ add_custom_command(TARGET Game POST_BUILD
     COMMENT "Copying Core.dll to game directory"
 )
 
-# # Copy ScriptAPI.dll if scripting is enabled
-# add_custom_command(TARGET Game POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#         "$<TARGET_FILE:ScriptAPI>"
-#         "$<TARGET_FILE_DIR:Game>"
-#     COMMENT "Copying ScriptAPI.dll to game directory"
-# )
+# Copy ManagedScripts.dll
+add_custom_command(TARGET Game POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:ManagedScripts>"
+        "$<TARGET_FILE_DIR:Game>"
+    COMMENT "Copying ManagedScripts.dll"
+)
 
-# # Copy ManagedScripts.dll if scripting is enabled
-# add_custom_command(TARGET Game POST_BUILD
-#     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#         "$<TARGET_FILE:ManagedScripts>"
-#         "$<TARGET_FILE_DIR:Game>"
-#     COMMENT "Copying ManagedScripts.dll to game directory"
-# )
-
-# Make sure assets are copied before building/running
-add_dependencies(Game copy_assets Core)
-#add_dependencies(Game copy_assets Core ScriptAPI ManagedScripts)
+# Ensure proper build order
+add_dependencies(Game 
+    copy_assets 
+    Core 
+    ManagedScripts
+)

@@ -57,6 +57,13 @@ target_link_libraries(freetype INTERFACE
     "${CMAKE_CURRENT_SOURCE_DIR}/freetype/freetype.lib"
 )
 
+# mono
+add_library(mono INTERFACE)
+target_include_directories(mono SYSTEM INTERFACE 
+    "${CMAKE_CURRENT_SOURCE_DIR}/mono/include")
+target_link_libraries(mono INTERFACE 
+    "${CMAKE_CURRENT_SOURCE_DIR}/mono/lib/mono-2.0-sgen.lib")
+
 # Create an interface library that bundles all common dependencies
 add_library(EngineThirdParty INTERFACE)
 target_link_libraries(EngineThirdParty INTERFACE
@@ -68,4 +75,5 @@ target_link_libraries(EngineThirdParty INTERFACE
     nlohmann_json
     imgui
     freetype
+    mono
 )

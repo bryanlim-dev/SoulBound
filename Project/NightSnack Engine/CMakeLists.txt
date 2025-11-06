@@ -47,7 +47,6 @@ add_subdirectory(extern)
 # Engine Projects
 # ------------------------------------------------------------
 add_subdirectory(Core)
-add_subdirectory(ScriptAPI)
 add_subdirectory(ManagedScripts)
 add_subdirectory(Game)
 
