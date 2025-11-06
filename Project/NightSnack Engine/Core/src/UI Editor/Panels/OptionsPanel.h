@@ -1,10 +1,11 @@
 /******************************************************************************
  * File:        OptionsPanel.h
  * Project:     NightSnack
- * Author(s):	Wei Jie Lim (Primary, 100%)
+ * Author(s):	Wei Jie Lim (Primary, 100%) - Created and implemented options panel
  *
  * Description:
- * Hierarchy panel showing all entities in the scene.
+ * Options panel for configuring application settings. Includes audio volume controls
+ * and debug options.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
