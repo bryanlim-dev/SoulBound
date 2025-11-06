@@ -13,7 +13,7 @@ namespace NightSnack::Scripting {
 	: m_rootDomain(nullptr)
 	, m_appDomain(nullptr)
 	, m_assembly(nullptr)
-	, m_assemblyImage(nullptr)
+	, m_image(nullptr)
 	, m_initialized(false) {
       InitMono();
     }
@@ -48,8 +48,8 @@ namespace NightSnack::Scripting {
         std::cerr << "Mono shutting down...\n";
 
         // Clear script instances
-        m_scriptInstances.clear();
-        m_classCache.clear();
+        //m_scriptInstances.clear();
+        //m_classCache.clear();
 
         // Unload app domain
         if (m_appDomain) {
