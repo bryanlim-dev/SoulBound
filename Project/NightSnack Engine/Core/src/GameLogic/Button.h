@@ -186,6 +186,8 @@ namespace NightSnack {
 				const auto& transform = m_coord.GetComponent<Transform>(e);
 				const auto& collider = m_coord.GetComponent<Collider>(e);
 
+				//transform.pos = m_coord.GetWindowWidth
+
 				// reset button states
 				bool wasHovered = buttonInfo.isHovered;
 				buttonInfo.isHovered = false;
@@ -317,6 +319,8 @@ namespace NightSnack {
 		 */
 		void ExecuteButtonAction(ButtonAction action, Coordinator& coord, AudioSystem* audioSystem)
 		{
+			(void)coord;
+
 			switch (action)
 			{
 				// play audio
@@ -326,10 +330,30 @@ namespace NightSnack {
 				{
 					const auto& audioKeys = audioSystem->GetAudioKeys();
 					audioSystem->PlaySFX(audioKeys.buttonClick);
-					std::cout << "Playing button sound\n";
+					//std::cout << "Playing click sound\n";
 				}
 				break;
-				// play stress test
+
+			case ButtonAction::PLAYAUDIO2:
+				// Play button click sound
+				if (audioSystem)
+				{
+					const auto& audioKeys = audioSystem->GetAudioKeys();
+					audioSystem->PlaySFX(audioKeys.playerJump);
+					//std::cout << "Playing jump sound\n";
+				}
+				break;
+
+			case ButtonAction::PLAYAUDIO3:
+				// Play button click sound
+				if (audioSystem)
+				{
+					const auto& audioKeys = audioSystem->GetAudioKeys();
+					audioSystem->PlaySFX(audioKeys.playerHit);
+					//std::cout << "Playing hit sound\n";
+				}
+				break;
+			// play stress test
 			case ButtonAction::PLAYSTRESSTEST:
 
 				if (!m_stress) {

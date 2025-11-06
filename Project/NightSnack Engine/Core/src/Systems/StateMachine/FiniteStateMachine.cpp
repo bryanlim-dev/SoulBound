@@ -14,7 +14,7 @@
  ******************************************************************************/
 #include "FiniteStateMachine.h"
 #include <Factory/EntityFactory.h>
-#include "StateComponents.h"
+#include "StateBehaviour.h"
 
 namespace NightSnack
 {
@@ -44,10 +44,6 @@ namespace NightSnack
 		for (int stepCount = 0; stepCount < steps; ++stepCount)
 		{
 			float dt = m_coord.GetSystem<ApplicationSystem>()->GetDT();
-
-			//Find and update each entity state machine
-			std::list<Entity> removalList;
-			removalList.clear();
 
 			for (auto const& e : m_entities) {
 				if (m_coord.HasComponent<States>(e))

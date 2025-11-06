@@ -5,6 +5,7 @@
  *              overloads for reading components
  *				Goh Bei Lai (Secondary, 15%) - Created Graphics components (RenderLayer, Renderable, Camera)
  *              Bryan Lim Jun Jie (Secondary, 5%) - Created Button components (ButtonType, ButtonAction, ButtonInfo)
+ *              Clement Ang Yang Ying (Secondary, 5%) - Create States component
  *
  * Description:
  * This file defines all components for this project, it also defines a specific
@@ -120,21 +121,11 @@ namespace NightSnack {
     // GRAPHICS COMPONENTS
     // ================================================================================================
 
-    // The render layer determines the base z position of all renderable entities
-    // This is to prevent z fighting glitches for all renderable entities
-    enum class RenderLayer {
-        BACKGROUND = 0,
-        DEFAULT,
-        DEBUG,
-        UI
-    };
-
     // All renderable entities will have this component
     // Each renderable will have a Mesh, Material, Shader, Texture tied to them
     struct Renderable {
         std::string meshName{};
         std::string materialName{};
-        RenderLayer renderLayer{ RenderLayer::DEFAULT };
         bool isWireframe{ false };
         bool wasModified{ true };
 
@@ -177,6 +168,8 @@ namespace NightSnack {
     };
     enum ButtonAction {
         PLAYAUDIO,
+        PLAYAUDIO2,
+        PLAYAUDIO3,
         PLAYSTRESSTEST,
         //ENDSTRESSTEST,
         CHANGELEVELS
@@ -187,7 +180,8 @@ namespace NightSnack {
 
         bool isHovered{ false };
         bool wasClicked{ false };
-  
+
+        //Vec2 screenPos{};
     };
 
     // Add more Components here if necessary...
@@ -265,12 +259,6 @@ namespace NightSnack {
         else
             r.isWireframe = false;
 
-        if (j.contains("renderLayer")) {
-            r.renderLayer = RenderLayer::BACKGROUND;
-        }
-        else
-            r.renderLayer = RenderLayer::DEFAULT;
-
         r.wasModified = true;
 
     }
@@ -303,6 +291,14 @@ namespace NightSnack {
     inline void from_json(const json& j, ButtonInfo& b) {
         if (j["action"] == "PlayAudio") {
             b.action = ButtonAction::PLAYAUDIO;
+        }
+
+        if (j["action"] == "PlayAudio2") {
+            b.action = ButtonAction::PLAYAUDIO2;
+        }
+
+        if (j["action"] == "PlayAudio3") {
+            b.action = ButtonAction::PLAYAUDIO3;
         }
 
         if (j["action"] == "StressTest") {

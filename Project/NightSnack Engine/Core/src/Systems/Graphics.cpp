@@ -104,6 +104,10 @@ namespace NightSnack {
 		auto& camPos = m_coord.GetComponent<Transform>(camera).pos;
 		auto& camInfo = m_coord.GetComponent<Camera>(camera);
 
+		// Get the updated window resolution from the ApplicationSystem first
+		float screenW = static_cast<float>(m_coord.GetSystem<ApplicationSystem>()->GetWidth());
+		float screenH = static_cast<float>(m_coord.GetSystem<ApplicationSystem>()->GetHeight());
+
 		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
@@ -194,7 +198,7 @@ namespace NightSnack {
 					m_meshBatches[key].layerType = l.Type();
 
 				} else { // Non-Instanced Rendering
-					glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl, ren.renderLayer);
+					glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl);
 
 					Shader* shader = data.material->GetShader();
 					Mesh* mesh = data.mesh;
@@ -205,8 +209,8 @@ namespace NightSnack {
 					// Only solid color entities have the component color
 					
 					// Entities on the GAMEUI layer will have different transformatio matrices
-					glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view; 
-					glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, 1600.f, 900.f, 0.f) : proj;
+					glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
+					glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
 
 					shader->SetMat4("uView", viewToUse);
 					shader->SetMat4("uProj", projToUse);
@@ -263,15 +267,15 @@ namespace NightSnack {
 					// Drawing of colliders 
 					if (m_coord.HasComponent<Collider>(e)) {
 						Collider const& col = m_coord.GetComponent<Collider>(e);
-						// Entities on the GAMEUI layer will have different transformatio matrices
+						// Entities on the GAMEUI layer will have different transformation matrices
 						glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
-						glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, 1600.f, 900.f, 0.f) : proj;
+						glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
 
 						switch (col.shape) {
 						case ShapeType::AABB:
 						{
 							// Model matrix according to its collider's scale
-							glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.width, col.height }, RenderLayer::DEBUG);
+							glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.width, col.height });
 							glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 							shader->SetMat4("uDebugMVP", debugMVP);
 							shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
@@ -282,7 +286,7 @@ namespace NightSnack {
 						case ShapeType::Circle:
 						{
 							// Model matrix according to its collider's scale
-							glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.radius, col.radius }, RenderLayer::DEBUG);
+							glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.radius, col.radius });
 							glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 							shader->SetMat4("uDebugMVP", debugMVP);
 							shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
@@ -313,7 +317,7 @@ namespace NightSnack {
 							float angle = glm::degrees(std::atan2(dir.y, dir.x) - glm::half_pi<float>());
 
 							// Model matrix according to its new rotation, and y-scale so line size reflects speed
-							glm::mat4 debugModel = GetModelToWorldMatrix(pos, angle, Vec2{ 1.f, length }, RenderLayer::DEBUG);
+							glm::mat4 debugModel = GetModelToWorldMatrix(pos, angle, Vec2{ 1.f, length });
 							glm::mat4 debugMVP = proj * view * debugModel;
 							shader->SetMat4("uDebugMVP", debugMVP);
 							shader->SetVec3("uEntityColor", glm::vec3(0.1f, 0.9f, 0.9f));
@@ -343,7 +347,7 @@ namespace NightSnack {
 				// Both solid colors and textures will have these uniforms
 
 				// Entities on the GAMEUI layer will have different transformatio matrices
-				glm::mat4 projToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::ortho(0.f, 1600.f, 900.f, 0.f) : proj;
+				glm::mat4 projToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
 				glm::mat4 viewToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
 
 				shader->SetMat4("uProj", projToUse);
@@ -486,7 +490,7 @@ namespace NightSnack {
 		return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, Z_EPSILON, 10.f);
 	}
 
-	glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Vec3 position, float rotation, Vec2 scale, RenderLayer layer) {
+	glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Vec3 position, float rotation, Vec2 scale) {
 		glm::mat4 model(1.f);
 		model = glm::translate(model, glm::vec3(position.x, position.y, position.z));
 		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.f, 0.f, 1.f)); // Rotate about z-axis
@@ -538,19 +542,6 @@ namespace NightSnack {
 		}
 		std::cerr << "Error: No main camera found in scene!\n";
 		return INVALID_ENTITY;
-	}
-
-	float GraphicsSystem::GetRenderLayerZPos(RenderLayer layer) {
-
-		// Higher values will render on top of lower values
-		// Currently, the near and far plane is -0.0001.f and -10.f
-		switch (layer) {
-		case RenderLayer::BACKGROUND: return -9.5f;	 break;
-		case RenderLayer::DEFAULT:	  return -7.f;	 break;
-		case RenderLayer::DEBUG:	  return -3.f;	 break;
-		case RenderLayer::UI:		  return -2.f;	 break;
-		default:					  return -7.f;	 break;
-		}
 	}
 
 	void GraphicsSystem::ModifyEntityScale(Coordinator& coord, float value) {

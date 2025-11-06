@@ -32,6 +32,8 @@ namespace NightSnack {
     struct AudioKeys {
         // SFX
         size_t buttonClick = 0;
+		size_t playerJump = 0;
+        size_t playerHit = 0;
 
         // BGM
         size_t mainMenu = 0;

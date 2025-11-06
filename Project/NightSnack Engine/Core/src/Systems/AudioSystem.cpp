@@ -89,6 +89,8 @@ namespace NightSnack {
     {
         // load sfx
         LoadSoundFile("../assets/Sound/SFX/sound_button_temp.wav", m_audioKeys.buttonClick);
+        LoadSoundFile("../assets/Sound/SFX/Jump.wav", m_audioKeys.playerJump);
+        LoadSoundFile("../assets/Sound/SFX/Block_Hit.wav", m_audioKeys.playerHit);
 
         // add more sfx here as needed
 

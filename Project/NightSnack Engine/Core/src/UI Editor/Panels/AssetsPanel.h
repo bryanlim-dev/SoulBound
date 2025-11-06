@@ -38,7 +38,8 @@ namespace NightSnack
             //m_searchFilter(""),
             m_selectedAssetPath(""),
             m_showAssetProperties(false),
-            m_showImportDialog(false)
+            m_showImportDialog(false),
+            m_prefabsPanel(coord, "../../../NightSnack Engine/assets/GameData/Archetypes/Archetypes.json")
         {
             m_prefabNames.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
             for (std::string const& s : coord.GetSystem<EntityFactory>()->GetPrefabNames()) 
@@ -93,11 +94,9 @@ namespace NightSnack
                     ImGui::EndTabItem();
                 }
 
-                if (ImGui::BeginTabItem("Prefabs"))
-                {
-                    //DrawPrefabsPanel(m_prefabs);
-                    ImGui::EndTabItem();
-                }
+                // handle the prefab tab item creation
+                m_prefabsPanel.Draw();
+
                 ImGui::EndTabBar();
             }
             ImGui::End();
@@ -132,6 +131,8 @@ namespace NightSnack
         std::vector<std::string> m_prefabNames;
         std::unordered_map<std::string, std::string> m_prefabMats;
         std::string m_importDestination;
+
+        PrefabsPanel m_prefabsPanel;  // prefabs panel instance
 
         /**
         * @brief handles external file drop events
@@ -516,25 +517,25 @@ namespace NightSnack
                 }
 
                 // not in use for now
-                //// enable dragging
-                //// This allows dragging the image to Scene panel
-                //if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-                //{
-                //    // SET PAYLOAD - Store the asset path as drag data
-                //    ImGui::SetDragDropPayload("ASSET_IMAGE", pathStr.c_str(), pathStr.size() + 1);
+                // enable dragging
+                // This allows dragging the image to Scene panel
+                if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+                {
+                    // SET PAYLOAD - Store the asset path as drag data
+                    ImGui::SetDragDropPayload("ASSET_IMAGE", pathStr.c_str(), pathStr.size() + 1);
 
-                //    // DRAG PREVIEW - Show thumbnail while dragging
-                //    ImGui::Image(texID, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
-                //    ImGui::Text("%s", entry.path().filename().string().c_str());
+                    // DRAG PREVIEW - Show thumbnail while dragging
+                    ImGui::Image(texID, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
+                    ImGui::Text("%s", entry.path().filename().string().c_str());
 
-                //    ImGui::EndDragDropSource();
-                //}
+                    ImGui::EndDragDropSource();
+                }
 
                 // show info on hover
                 if (ImGui::IsItemHovered())
                 {
                     ImGui::BeginTooltip();
-                    ImGui::Text("Drag to Scene to add");
+                    //ImGui::Text("Drag to Scene to add");
                     ImGui::Text("File: %s", entry.path().filename().string().c_str());
                     ImGui::Text("Path: %s", pathStr.c_str());
                     ImGui::EndTooltip();

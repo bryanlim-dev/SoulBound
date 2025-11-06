@@ -224,7 +224,7 @@ namespace NightSnack {
 		Model-to-World transformation matrix
 		*/
 		/************************************************************************/
-		glm::mat4 GetModelToWorldMatrix(Vec3 position, float rotation, Vec2 scale, RenderLayer layer);
+		glm::mat4 GetModelToWorldMatrix(Vec3 position, float rotation, Vec2 scale);
 
 		/************************************************************************/
 		/*!
@@ -423,20 +423,6 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void ResolveRenderable(Entity e, Renderable const& r);
-
-		/************************************************************************/
-		/*!
-		\brief
-		Compute the Z-position value based on the given render layer
-
-		\param[in] layer
-		The render layer of an entity
-
-		\return
-		A Z-position that can be applied in the model matrix
-		*/
-		/************************************************************************/
-		float GetRenderLayerZPos(RenderLayer layer);
 
 		/************************************************************************/
 		/*!

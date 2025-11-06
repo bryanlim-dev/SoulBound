@@ -2,6 +2,8 @@
  * File:        EntityFactory.h
  * Project:     NightSnack
  * Author(s):	Chewn Thing Kwan
+ *              Clement Ang Yang Ying (Secondary, 5%) - Changed loading to use RM
+ * 
  *
  * Description:
  * Declares EntityFactory class that creates entities from prefabs/archetypes

@@ -22,7 +22,7 @@ namespace NightSnack
     void StateBase::Enter(Entity entityID, Coordinator& coord)
     {
         m_isExit = false;
-        std::cout << "ID: " << entityID << ", State Enter: " << m_stateName << std::endl;
+        //std::cout << "ID: " << entityID << ", State Enter: " << m_stateName << std::endl;
 
         if (m_enterFunction)
             m_enterFunction(entityID, coord);
@@ -61,7 +61,7 @@ namespace NightSnack
     void StateBase::Exit(Entity entityID, Coordinator& coord)
     {
         m_isExit = false;
-        std::cout << "ID: " << entityID << ", State Exit: " << m_stateName << std::endl;
+        //std::cout << "ID: " << entityID << ", State Exit: " << m_stateName << std::endl;
 
         if (m_exitFunction)
             m_exitFunction(entityID, coord);
@@ -105,9 +105,9 @@ namespace NightSnack
             std::shared_ptr<StateBase> statePtr = std::make_shared<StateBase>(stateName);
 
             //Loop through the all params in the list and create them
-            for (auto& [componentType, paramJsonInfo] : stateJson["componentTypes"].items())
+            for (auto& [componentType, paramJsonInfo] : stateJson["behaviourTypes"].items())
             {
-                std::shared_ptr<StateComponent> component = CreateStateComponent(componentType, paramJsonInfo);
+                std::shared_ptr<StateBehaviour> component = CreateStateBehaviour(componentType, paramJsonInfo);
                 statePtr->InsertStateComponent(componentType, component);
             }
 

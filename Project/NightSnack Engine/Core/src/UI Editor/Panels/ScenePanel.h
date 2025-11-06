@@ -143,7 +143,7 @@ namespace NightSnack
                         auto& camTransform = m_coord.GetComponent<Transform>(m_editorCameraEntity);
                         glm::mat4 proj = graphics->GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
                         glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camTransform.pos.x, -camTransform.pos.y, -camTransform.pos.z));
-                        glm::mat4 model = graphics->GetModelToWorldMatrix(t.pos, t.rot, t.scale, r.renderLayer);
+                        glm::mat4 model = graphics->GetModelToWorldMatrix(t.pos, t.rot, t.scale);
 
 						// Draw mesh in wireframe
                         shader->Use();
@@ -241,12 +241,10 @@ namespace NightSnack
                                 mouseWorldY >= t.pos.y - halfH && mouseWorldY <= t.pos.y + halfH)
                             {
 								// Check if this entity is on top based on render layer and z-position
-                                int layer = static_cast<int>(r.renderLayer);
                                 float z = t.pos.z;
-                                if (layer > topLayer || (layer == topLayer && z > topZ))
+                                if (z > topZ)
                                 {
                                     topEntity = e;
-                                    topLayer = layer;
                                     topZ = z;
                                 }
                             }
@@ -283,60 +281,46 @@ namespace NightSnack
                     }
                 }
 
-                // ================================================================
-                // DRAG & DROP TARGET - Accept images dropped from Assets panel
-                // THIS IS WHERE THE MAGIC HAPPENS!
-                // ================================================================
-                if (ImGui::BeginDragDropTarget())
-                {
-                    // ----------------------------------------------------------------
-                    // VISUAL FEEDBACK - Green overlay when hovering with asset
-                    // ----------------------------------------------------------------
-                    ImGui::GetWindowDrawList()->AddRectFilled(
-                        imageTopLeft,
-                        ImVec2(imageTopLeft.x + imageSize.x, imageTopLeft.y + imageSize.y),
-                        IM_COL32(100, 200, 100, 50) // Semi-transparent green
-                    );
+                //// Accept images dropped from Assets panel
+                //if (ImGui::BeginDragDropTarget())
+                //{
+                //    // green overlay when hovering with asset
+                //    ImGui::GetWindowDrawList()->AddRectFilled(
+                //        imageTopLeft,
+                //        ImVec2(imageTopLeft.x + imageSize.x, imageTopLeft.y + imageSize.y),
+                //        IM_COL32(100, 200, 100, 50) // Semi-transparent green
+                //    );
 
-                    // ----------------------------------------------------------------
-                    // ACCEPT PAYLOAD - Receive dropped image
-                    // ----------------------------------------------------------------
-                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE"))
-                    {
-                        // Extract file path from payload
-                        const char* droppedPath = (const char*)payload->Data;
-                        std::string assetPath(droppedPath);
+                //    // receive dropped image
+                //    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE"))
+                //    {
+                //        // extract file path from payload
+                //        const char* droppedPath = (const char*)payload->Data;
+                //        std::string assetPath(droppedPath);
 
-                        std::cout << "[Scene] Dropped asset: " << assetPath << "\n";
-                        std::cout << "[Scene] Mouse position: (" << mouseWorldX << ", " << mouseWorldY << ")\n";
+                //        std::cout << "[Scene] Dropped asset: " << assetPath << "\n";
+                //        std::cout << "[Scene] Mouse position: (" << mouseWorldX << ", " << mouseWorldY << ")\n";
+                // 
+                //        // create entity in the scene
+                //        CreateEntityFromAsset(assetPath, mouseWorldX, mouseWorldY);
+                //    }
 
-                        // ----------------------------------------------------------------
-                        // CREATE ENTITY FROM DROPPED ASSET
-                        // This spawns the image in your game world
-                        // ----------------------------------------------------------------
-                        CreateEntityFromAsset(assetPath, mouseWorldX, mouseWorldY);
-                    }
-
-                    ImGui::EndDragDropTarget();
-                }
+                //    ImGui::EndDragDropTarget();
+                //}
 
                 
-                // ----------------------------------------------------------------
-                // TOOLTIP - Show instructions when hovering
-                // ----------------------------------------------------------------
-                if (ImGui::IsItemHovered())
-                {
-                    if (m_backgroundEntity == INVALID_ENTITY)
-                    {
-                        ImGui::BeginTooltip();
-                        ImGui::Text("Drag an image from Assets to add background");
-                        ImGui::EndTooltip();
-                    }
-                }
+                //// show instructions when hovering
+                //if (ImGui::IsItemHovered())
+                //{
+                //    if (m_backgroundEntity == INVALID_ENTITY)
+                //    {
+                //        ImGui::BeginTooltip();
+                //        ImGui::Text("Drag an image from Assets to add background");
+                //        ImGui::EndTooltip();
+                //    }
+                //}
             }
-            // ----------------------------------------------------------------
-            // INFO PANEL - Show current scene info
-            // ----------------------------------------------------------------
+            // info panel to show current scene info
             DrawSceneInfo(mouseWorldX, mouseWorldY);
 
             ImGui::End();
@@ -497,7 +481,7 @@ namespace NightSnack
         /************************************************************************/
         void CreateEntityFromAsset(const std::string& assetPath, float mouseX, float mouseY)
         {
-            // STEP 1: Load image through ResourceManager
+            // load image through ResourceManager
             auto resourceMgr = m_coord.GetSystem<ResourceManager>();
             if (!resourceMgr)
             {
@@ -517,19 +501,18 @@ namespace NightSnack
 
             std::cout << "[Scene] Loaded image with key: " << imageKey << "\n";
 
-            // STEP 2: Remove old background if exists
-            // (You can remove this if you want multiple backgrounds)
+            // remove old background if exists
             if (m_backgroundEntity != INVALID_ENTITY)
             {
                 m_coord.DestroyEntity(m_backgroundEntity);
                 std::cout << "[Scene] Removed old background entity\n";
             }
 
-            // STEP 3: Create new entity
+            // create new entity
             m_backgroundEntity = m_coord.CreateEntity();
             std::cout << "[Scene] Created entity: " << m_backgroundEntity << "\n";
 
-            // STEP 4: Add Transform component (position, rotation, scale)
+            // add Transform component (position, rotation, scale)
             // Position at mouse location in world space
             Transform transform;
             transform.pos = Vec3{ mouseX, mouseY, -10.0f }; // z = -10 puts it behind
@@ -541,7 +524,6 @@ namespace NightSnack
             Renderable renderable;
             renderable.meshName = "quad";               // Use quad mesh
             renderable.materialName = "background_mat"; // Your material name
-            renderable.renderLayer = RenderLayer::BACKGROUND; // Render behind
             renderable.isWireframe = false;
             renderable.wasModified = true;              // Flag for graphics system
             m_coord.AddComponent(m_backgroundEntity, renderable);
