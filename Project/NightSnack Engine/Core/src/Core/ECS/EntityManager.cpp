@@ -11,6 +11,7 @@
  ******************************************************************************/
 
 #include <iostream>
+#include <algorithm>
 
 #include "EntityManager.h"
 
@@ -86,6 +87,23 @@ namespace NightSnack {
 			return m_signatures[MAX_ENTITIES];
 		}
 		return m_signatures[e];
+	}
+
+	void EntityManager::Reset() {
+
+		m_livingEntities.clear();
+		m_livingEntityCount = 0;
+
+		while (!m_availableEntities.empty()) {
+			m_availableEntities.pop(); 
+		}
+
+		for (Entity e = 0; e < MAX_ENTITIES; ++e) {
+			m_availableEntities.push(e);
+		}
+		for (Signature& s : m_signatures) {
+			s.reset();
+		}
 	}
 
 }	// NightSnack

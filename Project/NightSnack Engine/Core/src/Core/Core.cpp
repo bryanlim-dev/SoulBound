@@ -179,8 +179,7 @@ namespace NightSnack {
 
 		// Destroy all entities scheduled to be removed;
 		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("EntityFactory");
-		for (Entity e : m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed) { m_coord.DestroyEntity(e); }
-		m_coord.GetSystem<EntityFactory>()->m_toBeDestroyed.clear();
+		m_coord.GetSystem<EntityFactory>()->PostUpdate();
 		m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer("EntityFactory");
 
 		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("ApplicationSystem");

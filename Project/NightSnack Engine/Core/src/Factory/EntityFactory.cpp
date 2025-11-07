@@ -6,7 +6,7 @@
  * Description:
  * Defines member functions of EntityFactory class.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -25,7 +25,32 @@ namespace NightSnack {
 			PrintPrefabNames();
 			printed = true;
 		}
+	}
 
+	void EntityFactory::PostUpdate() {
+
+		static bool stressed{ false }, layered{ false };
+
+		if (m_stress && !stressed) {
+			UnLoadLevel();
+			StressTestCreate(LayerType::GAMELAYER, "StressTest", 69, Vec2{ 5.f, 5.f });
+			stressed = true;
+		}
+		if (m_stress && m_layer && !layered) {
+			StressTestCreate(LayerType::BACKGROUND, "LayerTest", 420, Vec2{ 10.f, 10.f });
+			layered = true;
+		}
+		else if (m_reload && stressed) {
+			UnLoadLevel();
+			LoadLevel("../assets/GameData/DefaultLevel.json");
+
+			stressed = false;
+			layered = false;
+
+			m_stress = false;
+			m_layer = false;
+		}
+		m_reload = false;
 	}
 
 	Entity EntityFactory::Create(std::string const& name) {
@@ -83,7 +108,13 @@ namespace NightSnack {
 		int Hvp = m_coord.GetWindowHeight();
 		int Wvp = m_coord.GetWindowWidth();
 
-		Transform t{ Vec3{}, {}, scale, layer };
+		Transform t{ Vec3{}, {}, Vec2{}, LayerType::GAMEUI };
+
+		if (m_stress && !m_layer) {
+			Create("Cam", t);
+		}
+		t.scale = scale;
+		t.layer = layer;
 
 		for (int i{}; i < 1000; ++i) {
 
@@ -121,8 +152,7 @@ namespace NightSnack {
 	void EntityFactory::StressTestEnd() {
 
 		UnLoadLevel();
-
-		LoadLevel("../assets/GameData/DefaultLevel.json");
+		m_reload = true;
 	}
 
 	void EntityFactory::PrintPrefabNames() const {

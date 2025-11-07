@@ -240,6 +240,8 @@ namespace NightSnack {
 		/************************************************************************/
 		int GetWindowWidth();
 
+		void ResetEverything();
+
 	private:
 		// ECS Managers;
 		std::unique_ptr<EntityManager> m_entityManager;
@@ -247,11 +249,10 @@ namespace NightSnack {
 		std::unique_ptr<SystemManager> m_systemManager;
 	};
 
+
 	// ------------------------------------------------------------------------------------------------
 	// TEMPLATE FUNCTIONS
 	// ------------------------------------------------------------------------------------------------
-
-
 	// Register a Component into the ComponentManager;
 	template <typename T>
 	void Coordinator::RegisterComponent() {

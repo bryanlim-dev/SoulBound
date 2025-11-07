@@ -92,6 +92,8 @@ namespace NightSnack {
 
 		size_t GetLivingEntityCount() const { return m_livingEntityCount; }
 
+		void Reset();
+
 	private:
 		std::queue<Entity> m_availableEntities;
 		std::set<Entity> m_livingEntities;

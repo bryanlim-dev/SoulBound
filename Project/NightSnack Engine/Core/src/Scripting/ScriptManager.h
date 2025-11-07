@@ -64,6 +64,7 @@ namespace NightSnack::Scripting {
 				});
 
 			Initialize();
+			entityNum = m_entities.size();
 		}
 		// Destructor that calls shutdown member function;
 		~ScriptManager() { Shutdown(); }
@@ -99,6 +100,8 @@ namespace NightSnack::Scripting {
 		bool debugMode = false;
 		bool stepRequest = false;
 		bool m_attached = false;
+
+		size_t entityNum;
 	};
 
 }	// NightSnack

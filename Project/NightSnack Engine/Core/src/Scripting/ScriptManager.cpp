@@ -29,7 +29,12 @@ namespace NightSnack::Scripting {
     // Main update to be called by Core engine (Updates all scripts)
     void ScriptManager::Update(int steps) {
         // Reattach entity scripts when Level is reloaded
-        if (!m_attached) {
+        if (!m_attached || entityNum != m_entities.size()) {
+            for (Entity e{}; e < MAX_ENTITIES; ++e) {
+                RemoveScript(e);
+            }
+
+            entityNum = m_entities.size();
             // Attach scripts;
             for (Entity e : m_entities) {
                 std::cout << "Script[" << m_coord.GetComponent<Script>(e).name << "] attached to Entity: " << e << '\n';

@@ -27,7 +27,7 @@ int main()
 	NightSnack::CoreEngine core;
 	core.StartUp("../assets/Data/WindowConfig.json");
 	core.Run();
-	core.Terminate();
+ 	core.Terminate();
 
 	return 0;
 

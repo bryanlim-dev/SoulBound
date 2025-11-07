@@ -57,26 +57,17 @@ namespace NightSnack {
 					switch (event.inputAction) {
 
 					case InputEvent::InputAction::StressTest:
-						if (!m_stress) {
-							UnLoadLevel();
-							StressTestCreate(LayerType::GAMELAYER, "StressTest", 69, Vec2{5.f, 5.f});
-							m_stress = true;
-						}
+						m_stress = true;
 						break;
 
 					case InputEvent::InputAction::LayerTest:
-						if (m_stress && !m_layer) {
-							StressTestCreate(LayerType::BACKGROUND, "LayerTest", 420, Vec2{ 10.f, 10.f });
-							m_layer = true;
-						}
+						if (m_stress)
+						m_layer = true;
 						break;
 
 					case InputEvent::InputAction::EndStressTest:
-						if (m_stress) {
-							StressTestEnd();
-							m_stress = false;
-							m_layer = false;
-						}
+						if (m_stress)
+						m_reload = true;
 						break;
 
 					}
@@ -143,12 +134,13 @@ namespace NightSnack {
 
 			m_currentLevel = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelLey);
 
-
 			for (auto const& item : m_currentLevel["Entities"]) {
 				Entity e = Create(item["prefab"], item["Transform"]);
 				if (item.contains("Layer")) {
 					if (item["Layer"] == "Background")
 					m_coord.ModifyComponent<Transform>(e).layer = LayerType::BACKGROUND;
+					if (item["Layer"] == "Foreground")
+					m_coord.ModifyComponent<Transform>(e).layer = LayerType::FOREGROUND;
 					if (item["Layer"] == "GameUI")
 					m_coord.ModifyComponent<Transform>(e).layer = LayerType::GAMEUI;
 				}
@@ -162,12 +154,12 @@ namespace NightSnack {
 		}
 
 		void UnLoadLevel() {
-			for (Entity e : m_coord.GetLivingEntities()) {
-				if (m_coord.HasComponent<Camera>(e)) { continue; }
-				if (e == m_coord.GetSystem<GraphicsSystem>()->FindCamera()) { continue; }
-
-				RemoveEntity(e);
+			for (Entity e{}; e < MAX_ENTITIES; ++e) {
+				//if (m_coord.HasComponent<Camera>(e)) { continue; }
+				//if (e == m_coord.GetSystem<GraphicsSystem>()->FindCamera()) { continue; }
+				m_coord.DestroyEntity(e);
 			}
+			m_coord.ResetEverything();
 		}
 
 		/************************************************************************/
@@ -248,6 +240,9 @@ namespace NightSnack {
 		void StressTestCreate(LayerType, std::string const&, int, Vec2 const&);
 		bool m_stress{ false };
 		bool m_layer{ false };
+		bool m_reload{ false };
+
+		void PostUpdate();
 
 		/************************************************************************/
 		/*!
@@ -256,14 +251,6 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void StressTestEnd();
-
-		/************************************************************************/
-		/*!
-		\brief
-		Create 7000 entities with colliders for instanced rendering test
-		*/
-		/************************************************************************/
-		void InstancedTestCreate(LayerType, std::string const&, int, Vec2 const&);
 
 		/************************************************************************/
 		/*!

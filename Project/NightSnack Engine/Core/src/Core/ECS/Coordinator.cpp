@@ -56,4 +56,10 @@ namespace NightSnack {
 		return GetSystem<ApplicationSystem>()->GetWidth();
 	}
 
+	void Coordinator::ResetEverything() {
+		m_entityManager->Reset();
+		m_componentManager->Reset();
+		//m_systemManager->Reset();
+	}
+
 }	// NightSnack

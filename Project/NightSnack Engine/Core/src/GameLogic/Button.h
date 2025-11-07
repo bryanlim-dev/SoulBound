@@ -144,14 +144,14 @@ namespace NightSnack {
 				}
 
 				// handle stress test end key
-				if (event.inputAction == InputEvent::InputAction::EndStressTest)
-				{
-					if (m_stress) {
-						m_coord.GetSystem<EntityFactory>()->StressTestEnd();
-						m_stress = false;
-						//m_layer = false;
-					}
-				}
+				//if (event.inputAction == InputEvent::InputAction::EndStressTest)
+				//{
+				//	if (m_stress) {
+				//		m_coord.GetSystem<EntityFactory>()->StressTestEnd();
+				//		m_stress = false;
+				//		m_layer = false;
+				//	}
+				//}
 				});
 		}
 
@@ -355,21 +355,9 @@ namespace NightSnack {
 				break;
 			// play stress test
 			case ButtonAction::PLAYSTRESSTEST:
-
-				if (!m_coord.GetSystem<EntityFactory>()->m_stress) {
-					m_coord.GetSystem<EntityFactory>()->UnLoadLevel();
-					m_coord.GetSystem<EntityFactory>()->StressTestCreate(LayerType::GAMELAYER, "StressTest", 69, Vec2{ 5.f, 5.f });
-					m_coord.GetSystem<EntityFactory>()->m_stress = true;
-				}
+				m_coord.GetSystem<EntityFactory>()->m_stress = true;
 				break;
 
-				//case ButtonAction::ENDSTRESSTEST:
-				//	if (m_stress) {
-				//		m_coord.GetSystem<EntityFactory>()->StressTestEnd();
-				//		m_stress = false;
-				//		//m_layer = false;
-				//	}
-				//	break;
 			default:
 				break;
 			}

@@ -53,6 +53,8 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		virtual void EntityDestroyed(Entity entity) = 0;
+
+		virtual void ResetComponents() = 0;
 	};
 
 	// Component Array class to store components of type T
@@ -136,9 +138,11 @@ namespace NightSnack {
 		/************************************************************************/
 		void EntityDestroyed(Entity e) override;
 
+		void ResetComponents() override;
+
 	private:
 		// Actual storage of components.
-		std::array<T, MAX_ENTITIES> m_components;
+		std::array<T, MAX_ENTITIES> m_components{};
 
 		// Helper maps that link entities to their specific index in m_components.
 		std::unordered_map<Entity, size_t> m_entityToIndex;
@@ -247,6 +251,8 @@ namespace NightSnack {
 		/************************************************************************/
 		void EntityDestroyed(Entity e);
 
+		void Reset();
+
 	private:
 		// Mapping of all Component Arrays of any type;
 		std::unordered_map<ComponentType, std::shared_ptr<IComponentArray>> m_componentArrays;
@@ -282,6 +288,18 @@ namespace NightSnack {
 	// ------------------------------------------------------------------------------------------------
 	// COMPONENT ARRAY
 	// ------------------------------------------------------------------------------------------------
+
+	template <typename T>
+	void ComponentArray<T>::ResetComponents() {
+		m_entityToIndex.clear();
+		m_indexToEntity.clear();
+
+		for (T& comp : m_components) {
+			comp = T{};
+		}
+
+		m_size = 0;
+	}
 
 	// Size starts at 0;
 	// When inserting Components,
@@ -378,6 +396,14 @@ namespace NightSnack {
 	// ------------------------------------------------------------------------------------------------
 	// COMPONENT MANAGER
 	// ------------------------------------------------------------------------------------------------
+	inline void ComponentManager::Reset() {
+		using IT = std::unordered_map<ComponentType, std::shared_ptr<IComponentArray>>::iterator;
+	
+		for (IT i = std::begin(m_componentArrays); i != std::end(m_componentArrays); ++i) {
+			i->second->ResetComponents();
+		}
+	}
+
 
 	template <typename T>
 	void ComponentManager::RegisterComponent() {
