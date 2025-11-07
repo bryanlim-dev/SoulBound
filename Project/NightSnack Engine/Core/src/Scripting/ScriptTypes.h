@@ -1,3 +1,15 @@
+/******************************************************************************
+ * File:        ScriptTypes.h
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan
+ *
+ * Description:
+ * This file defines simple data structures that can cross the C++/C# boundary.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #pragma once
 
 #include "../ImportExport.h"
@@ -8,7 +20,6 @@ namespace NightSnack::Scripting {
     // Entity IDs;
 	using Entity = std::uint32_t;
 
-    // Simple data structures that can cross the C++/CLI boundary
     struct CORE_API vec2 {
         float x, y;
 

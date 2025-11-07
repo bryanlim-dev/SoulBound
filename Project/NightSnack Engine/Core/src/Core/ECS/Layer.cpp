@@ -1,3 +1,20 @@
+/******************************************************************************
+ * File:        Layer.cpp
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan (Primary, 100%)
+ *
+ * Description:
+ * This file defines member functions of the Layer class.
+ * The functions include:
+ * - Insert
+ * - Remove
+ * - Has
+ * - Operator <
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Layer.h"
 
 namespace NightSnack {

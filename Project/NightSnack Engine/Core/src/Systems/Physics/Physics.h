@@ -1,13 +1,15 @@
 /******************************************************************************
  * File:        Physics.h
  * Project:     NightSnack
- * Author(s):   Chewn Thing Kwan (Primary - 62%) - Created the class.
- *				LIM Wei Jie (Secondary, 38%) - Event dispatcher subscription 
+ * Author(s):   Chewn Thing Kwan (Primary - 80%) - Created the class.
+ *				LIM Wei Jie (Secondary, 20%) - Event dispatcher subscription 
  *              to Input Events to toggle debug mode and step through physics updates
  *
  * Description: 
+ * This file declares the PhysicsSystem class which handles the RigidBody and
+ * Collider components of Entities.
  *
- * Copyright � 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 

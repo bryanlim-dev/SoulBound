@@ -1,3 +1,16 @@
+/******************************************************************************
+ * File:        MonoScriptHost.h
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan
+ *
+ * Description:
+ * This file declares the MonoScriptHost class which manages operations dealing
+ * with script instances, Mono Assemblies, as well as handles for C# classes.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #pragma once
 
 #include "ImportExport.h"
@@ -18,6 +31,7 @@ namespace NightSnack::Scripting {
 
     class CORE_API MonoScriptHost {
     public:
+        // Constructor Destructor
         MonoScriptHost();
         ~MonoScriptHost();
 

@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        ScriptInterface.h
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan
+ *
+ * Description:
+ * This file declares class ScriptInterface which contain functions which can 
+ * interact with the ECS architecture from the outside.
+ * 
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #pragma once
 
 #include "../ImportExport.h"

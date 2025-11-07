@@ -4,7 +4,6 @@
  * Author(s):	Chewn Thing Kwan
  *              Clement Ang Yang Ying (Secondary, 5%) - Changed loading to use RM
  * 
- *
  * Description:
  * Declares EntityFactory class that creates entities from prefabs/archetypes
  * read from a json file.
@@ -50,6 +49,7 @@ namespace NightSnack {
 			LoadLevel(level0_file);
 
 			m_stress = false;
+			m_layer = false;
 
 			// Setup input events;
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {

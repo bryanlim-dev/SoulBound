@@ -8,7 +8,7 @@
  * terminate functions. Contains the ECS Coordinator, Event Dispatcher and all
  * registered systems are stored in m_systems.
  *
- * Copyright � 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -33,6 +33,12 @@ namespace NightSnack {
 
 	public:
 
+		/************************************************************************/
+		/*!
+		\brief
+		Wraps Initialize in a try catch in case of exceptions.
+		*/
+		/************************************************************************/
 		void StartUp(std::string const& configFilePath);
 
 		/************************************************************************/

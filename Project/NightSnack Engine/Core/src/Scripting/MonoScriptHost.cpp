@@ -1,3 +1,15 @@
+/******************************************************************************
+ * File:        MonoScriptHost.cpp
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan
+ *
+ * Description:
+ * This file defines the member functions of MonoScriptHost.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #pragma once
 
 #include "Scripting/MonoScriptHost.h"
@@ -11,6 +23,7 @@
 
 namespace NightSnack::Scripting {
 
+    // Sets default values for Mono data members and calls Initialize() member funciton.
     MonoScriptHost::MonoScriptHost()
         : m_rootDomain(nullptr),
         m_appDomain(nullptr),
@@ -19,11 +32,12 @@ namespace NightSnack::Scripting {
         m_initialized(false) {
         Initialize();
     }
-
+    // Calls Shut down to clean up.
     MonoScriptHost::~MonoScriptHost() {
         Shutdown();
     }
 
+    // Initializes Mono and creates app domain.
     bool MonoScriptHost::Initialize() {
         if (m_initialized) {
             std::cout << "[Mono] Already initialized\n";
@@ -57,6 +71,7 @@ namespace NightSnack::Scripting {
         return true;
     }
 
+    // Clears all Script instances and Mono class cache.
     void MonoScriptHost::Shutdown() {
         if (!m_initialized) return;
 
@@ -82,6 +97,7 @@ namespace NightSnack::Scripting {
         m_initialized = false;
     }
 
+    // Loads an assembly given a specified filepath;
     bool MonoScriptHost::LoadAssembly(std::string const& path) {
         if (!m_initialized) {
             std::cerr << "[Mono] ERROR: Cannot load assembly - not initialized\n";
@@ -104,6 +120,7 @@ namespace NightSnack::Scripting {
         return true;
     }
 
+    // Creates an instance of a script. namespaceName -> ManagedScripts, className -> name of C# script class
     void* MonoScriptHost::CreateScriptInstance(std::string const& namespaceName, std::string const& className) {
         if (!m_initialized || !m_assembly) {
             std::cerr << "[Mono] ERROR: Cannot create instance - not initialized or no assembly loaded\n";
@@ -150,6 +167,8 @@ namespace NightSnack::Scripting {
         }
     }
 
+    // Calls member functions of C# script classes. Name must match.
+    // e.g -> CallMethod(instance, "OnUpdate");
     void MonoScriptHost::CallMethod(void* instance, std::string const& methodName) {
         if (!instance) return;
 
@@ -165,6 +184,7 @@ namespace NightSnack::Scripting {
         MonoObject* exception = nullptr;
         mono_runtime_invoke(method, obj, nullptr, &exception);
 
+        // Logs error in Cerr in case of exceptions
         if (exception) {
             MonoClass* exceptionClass = mono_object_get_class(exception);
             const char* exceptionName = mono_class_get_name(exceptionClass);
@@ -184,6 +204,7 @@ namespace NightSnack::Scripting {
         }
     }
 
+    // Links entityID field within the Script class in C#
     void MonoScriptHost::SetScriptEntityId(void* instance, uint32_t objID) {
         if (!instance) return;
 
@@ -207,6 +228,8 @@ namespace NightSnack::Scripting {
             CallMethod(instance, "OnUpdate");
         }
     }
+
+    // Helper functions ----------------------------------
 
     MonoClass* MonoScriptHost::GetClass(std::string const& namespaceName, std::string const& className) {
         std::string fullName = namespaceName + "." + className;

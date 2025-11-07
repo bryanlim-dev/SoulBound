@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        MonoInternalCalls.cpp
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan
+ *
+ * Description:
+ * This file defines internal calls that will link:
+ * C# functions defined in Engine API in ManagedScripts/Engine.cs 
+ * to NightSnack's native ScriptInterface's C++ functions. 
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "Scripting/MonoInternalCalls.h"
 
 #include "Scripting/ScriptInterface.h"

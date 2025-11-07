@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        ScriptInterface.cpp
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan
+ *
+ * Description:
+ * This file defines functions convert native component types to types visible
+ * to C# Scripting API.
+ * This is the furthest that the ECS Coordinator will be able to reach.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #pragma once
 
 #include "ScriptInterface.h"

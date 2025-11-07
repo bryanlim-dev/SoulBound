@@ -1,3 +1,19 @@
+/******************************************************************************
+ * File:        ScriptManager.h
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan
+ *
+ * Description:
+ * This file defines class ScriptManager. 
+ * 
+ * This class is the System that manages
+ * Script operations and begins the chain from the CoreEngine that eventually
+ * links to Scripts in ManagedScripts
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #pragma once
 
 #include "Core/ECS/Coordinator.h"
@@ -15,6 +31,14 @@ namespace NightSnack::Scripting {
 	class CORE_API ScriptManager : public ISystem {
 
 	public:
+		/************************************************************************/
+		/*!
+		\brief
+		Constructor for ScriptManager, requires coordinator, event dispatcher.
+		Creates ScriptInterface, MonoHost and then registers internal calls in
+		Initialize().
+		*/
+		/************************************************************************/
 		ScriptManager(Coordinator& coord, EventDispatcher& disp)
 			: m_coord{ coord }, m_dispatcher{ &disp } {
 
@@ -41,14 +65,15 @@ namespace NightSnack::Scripting {
 
 			Initialize();
 		}
+		// Destructor that calls shutdown member function;
 		~ScriptManager() { Shutdown(); }
 		
 		// Main Update function;
 		void Update(int steps) override;
 
-		// Create a script instance attached to an entity
+		// Create a script instance attached to an entity;
 		void* AttachScript(Entity e, std::string const& scriptClassName);
-		// Remove script from entity
+		// Remove script from entity;
 		void RemoveScript(Entity e);
 
 		// Required by ISystem base class;

@@ -1,4 +1,20 @@
-﻿#pragma once
+﻿/******************************************************************************
+ * File:        ScriptManager.cpp
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan
+ *
+ * Description:
+ * This file defines the member functions of ScriptManager class.
+ * Functions include:
+ * - Update -> called by CoreEngine::Update()
+ * - Initialize and Shutdown
+ * - AttachScript and RemoveScript
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
+#pragma once
 
 #include "Scripting/ScriptManager.h"
 
@@ -10,7 +26,9 @@
 
 namespace NightSnack::Scripting {
 
+    // Main update to be called by Core engine (Updates all scripts)
     void ScriptManager::Update(int steps) {
+        // Reattach entity scripts when Level is reloaded
         if (!m_attached) {
             // Attach scripts;
             for (Entity e : m_entities) {
@@ -54,7 +72,6 @@ namespace NightSnack::Scripting {
     }
     
     void ScriptManager::Shutdown() {
-
         // Clear all scripts
         m_entityScripts.clear();
 
@@ -63,6 +80,8 @@ namespace NightSnack::Scripting {
         m_scriptInterface.reset();
     }
 
+    // Attach a script to an entity (ScriptName is the name of the C# class, but just use Script.name component)
+    // i.e. m_coord.GetComponent<Script>().name;
     void* ScriptManager::AttachScript(Entity e, std::string const& scriptName) {
 
         // Create script instance -> from ManagedScripts namespace
@@ -77,11 +96,11 @@ namespace NightSnack::Scripting {
 
         // Store mapping
         m_entityScripts[e] = instance;
-
-        std::cout << "[ScriptManager] Script attached successfully\n";
+        //std::cout << "[ScriptManager] Script attached successfully\n";
         return instance;
     }
 
+    // Remove an entity's script
     void ScriptManager::RemoveScript(Entity e) {
         auto it = m_entityScripts.find(e);
         if (it == m_entityScripts.end()) {
