@@ -1,8 +1,11 @@
 /******************************************************************************
  * File:        ScenePanel.h
  * Project:     NightSnack
- * Author(s):	Lim Wei Jie (Primary, 95%)
- *              Bryan Lim Jun Jie (Secondary, 5%)
+ * Author(s):	Lim Wei Jie (Primary, 95%) - Created and implemented scene panel
+ *              rendering and editor camera
+ *              Bryan Lim Jun Jie (Secondary, 5%) - Added creation of entity
+ *              from dragging assets into scene panel
+ *                                      
  *
  * Description:
  * Scene panel showing the rendered viewport. Handles rendering the scene, 

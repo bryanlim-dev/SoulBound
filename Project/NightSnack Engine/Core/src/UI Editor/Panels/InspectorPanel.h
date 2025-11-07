@@ -1,10 +1,11 @@
 /******************************************************************************
  * File:        InspectorPanel.h
  * Project:     NightSnack
- * Author(s):	Wei Jie Lim (Primary, 100%)
+ * Author(s):	Wei Jie Lim (Primary, 100%) - Created and implemented inspector panel
  *
  * Description:
- * Inspector panel showing details of selected entity.
+ * Inspector panel showing details of selected entity. Displays components and
+ * their properties, allowing real-time editing of parameters.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.

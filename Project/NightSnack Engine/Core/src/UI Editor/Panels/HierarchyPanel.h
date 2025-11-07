@@ -1,10 +1,11 @@
 /******************************************************************************
  * File:        HierarchyPanel.h
  * Project:     NightSnack
- * Author(s):	
+ * Author(s):	Wei Jie Lim (Primary, 100%) - Created and implemented hierarchy panel
  *
  * Description:
- * Hierarchy panel showing all entities in the scene.
+ * Hierarchy panel showing all entities in the scene. Able to select, add 
+ * and delete entities.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -86,7 +87,7 @@ namespace NightSnack
                             Entity newEntity = m_coord.CreateEntity();
                             
                             Transform defaultTransform{
-                                Vec3(0.f, 145.f, 0.f),
+                                Vec3(0.f, 145.f, 1.f),
                                 0.0f,
                                 Vec2(100.f, 100.f)
                             };
