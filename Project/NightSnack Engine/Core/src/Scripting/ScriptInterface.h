@@ -16,8 +16,18 @@ namespace NightSnack::Scripting {
         ~ScriptInterface() = default;
 
         // Transform operations
-        Trans GetTransform(GameObjectHandle e);
-        void SetTransform(GameObjectHandle e, Trans& transform);
+        Trans GetTransform(Entity e);
+        void SetTransform(Entity e, Trans& transform);
+
+        // Individual getters/setters
+        vec3 GetPosition(Entity e);
+        void SetPosition(Entity e, vec3 pos);
+
+        float GetRotation(Entity e);
+        void SetRotation(Entity e, float rotation);
+
+        vec2 GetScale(Entity e);
+        void SetScale(Entity e, vec2 scale);
 
         // Input
         bool IsKeyPressed(int key);

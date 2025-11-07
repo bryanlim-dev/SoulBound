@@ -71,6 +71,7 @@ namespace NightSnack {
 		m_coord.RegisterComponent<Animator>();
 		m_coord.RegisterComponent<Font>();
 		m_coord.RegisterComponent<ButtonInfo>();
+		m_coord.RegisterComponent<Script>();
 
 		// Add more Components here...
 

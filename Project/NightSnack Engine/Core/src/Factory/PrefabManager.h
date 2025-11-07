@@ -53,7 +53,7 @@ namespace NightSnack {
 			RegisterComponentLoader<ButtonInfo>("ButtonInfo");
 
 			RegisterComponentLoader<States>("States");
-
+			RegisterComponentLoader<Script>("Script");
 			RegisterComponentLoader<PlayerController>("PlayerController");
 		}
 

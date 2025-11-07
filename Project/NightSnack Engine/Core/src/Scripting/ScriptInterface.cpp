@@ -12,21 +12,54 @@ namespace NightSnack::Scripting {
 
     // --------------------------------------------------------------
     // Transform operations
-    Trans ScriptInterface::GetTransform(GameObjectHandle obj) {
-        Entity e = static_cast<Entity>(obj.id);
+    Trans ScriptInterface::GetTransform(Entity e) {
 
         Transform t = m_coord.GetComponent<Transform>(e);
-        return Trans::FromNative(t);
-    }
-    void ScriptInterface::SetTransform(GameObjectHandle obj, Trans& transform) {
+        Trans result;
 
-        Entity e = static_cast<Entity>(obj.id);
+        result.pos = vec3(t.pos.x, t.pos.y, t.pos.z);
+        result.rot = t.rot;
+        result.scale = vec2(t.scale.x, t.scale.y);
 
-        Transform t = transform.ToNative();
-        m_coord.ModifyComponent<Transform>(e).pos = t.pos;
-        m_coord.ModifyComponent<Transform>(e).rot = t.rot;
-        m_coord.ModifyComponent<Transform>(e).scale = t.scale;
+        return result;
     }
+    void ScriptInterface::SetTransform(Entity e, Trans& t) {
+
+        Transform& trans = m_coord.ModifyComponent<Transform>(e);
+
+        trans.pos = Vec3(t.pos.x, t.pos.y, t.pos.z);
+        trans.rot = t.rot;
+        trans.scale = Vec2(t.scale.x, t.scale.y);
+    }
+    // Position ----
+    vec3 ScriptInterface::GetPosition(Entity e) {
+        Vec3 position = m_coord.GetComponent<Transform>(e).pos;
+        vec3 result = vec3(position.x, position.y, position.z);
+        return result;
+    }
+    void ScriptInterface::SetPosition(Entity e, vec3 pos) {
+        Vec3& position = m_coord.ModifyComponent<Transform>(e).pos;
+        position = Vec3(pos.x, pos.y, pos.z);
+    }
+
+    // Rotation ----
+    float ScriptInterface::GetRotation(Entity e) {
+        return m_coord.GetComponent<Transform>(e).rot;
+    }
+    void ScriptInterface::SetRotation(Entity e, float rotate) {
+        m_coord.ModifyComponent<Transform>(e).rot = rotate;
+    }
+
+    // Scale -------
+    vec2 ScriptInterface::GetScale(Entity e) {
+        Vec2 scale = m_coord.GetComponent<Transform>(e).scale;
+        return vec2(scale.x, scale.y);
+    }
+    void ScriptInterface::SetScale(Entity e, vec2 scal) {
+        Vec2& scale = m_coord.ModifyComponent<Transform>(e).scale;
+        scale = Vec2(scal.x, scal.y);
+    }
+
     // --------------------------------------------------------------
     // Key Inputs
     bool ScriptInterface::IsKeyPressed(int key) {
@@ -49,7 +82,7 @@ namespace NightSnack::Scripting {
 
     // Time
     float ScriptInterface::GetDeltaTime() {
-        return m_coord.GetSystem<ApplicationSystem>()->GetDT();
+        return FixedDT;
     }
 
     // Logging

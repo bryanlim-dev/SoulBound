@@ -23,6 +23,20 @@
       "Scale": { "x": 30.0, "y": 30.0 }
     }},
 
+    { "prefab": "ScriptTest1",
+    "Transform": {
+      "Position": { "x": 450.0, "y": 0.0, "z": 1.0 },
+      "Rotation": 0.0,
+      "Scale": { "x": 30.0, "y": 30.0 }
+    }},
+
+    { "prefab": "ScriptTest2",
+    "Transform": {
+      "Position": { "x": -500.0, "y": -50.0, "z": 1.0 },
+      "Rotation": 0.0,
+      "Scale": { "x": 30.0, "y": 30.0 }
+    }},
+
     { "prefab": "RedBall",
     "Transform": {
       "Position": { "x": 0.0, "y": -50.0, "z": 1.0 },

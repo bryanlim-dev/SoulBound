@@ -18,6 +18,10 @@ namespace NightSnack::Scripting {
 		ScriptManager(Coordinator& coord, EventDispatcher& disp)
 			: m_coord{ coord }, m_dispatcher{ &disp } {
 
+			// Physics components of interest;
+			m_systemSignature.set(GetComponentTypeID<Transform>());
+			m_systemSignature.set(GetComponentTypeID<Script>());
+
 			// Event dispatcher initialisations
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
@@ -27,6 +31,9 @@ namespace NightSnack::Scripting {
 						break;
 					case InputEvent::InputAction::PhysicsDebugStep:
 						stepRequest = true;
+						break;
+					case InputEvent::InputAction::EndStressTest:
+						m_attached = false;
 						break;
 					}
 				}
@@ -66,6 +73,7 @@ namespace NightSnack::Scripting {
 
 		bool debugMode = false;
 		bool stepRequest = false;
+		bool m_attached = false;
 	};
 
 }	// NightSnack

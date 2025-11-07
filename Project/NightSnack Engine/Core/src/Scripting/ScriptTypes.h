@@ -15,12 +15,12 @@ namespace NightSnack::Scripting {
         vec2(float x1=0, float y1=0) 
         : x{x1}, y{y1} {}
 
-        NightSnack::Vec2 ToNative() {
-            return NightSnack::Vec2(x, y);
-        }
-        static vec2 FromNative(NightSnack::Vec2 const& v) {
-            return vec2(v.x, v.y);
-        }
+        //NightSnack::Vec2 ToNative() {
+        //    return NightSnack::Vec2(x, y);
+        //}
+        //static vec2 FromNative(NightSnack::Vec2 const& v) {
+        //    return vec2(v.x, v.y);
+        //}
     };
 
     struct CORE_API vec3 {
@@ -29,12 +29,12 @@ namespace NightSnack::Scripting {
         vec3(float x1=0, float y1=0, float z1=0) 
         : x{x1}, y{y1}, z{z1} {}
 
-        NightSnack::Vec3 ToNative() {
-            return NightSnack::Vec3(x, y, z);
-        }
-        static vec3 FromNative(NightSnack::Vec3 const& v) {
-            return vec3(v.x, v.y, v.z);
-        }
+        //NightSnack::Vec3 ToNative() {
+        //    return NightSnack::Vec3(x, y, z);
+        //}
+        //static vec3 FromNative(NightSnack::Vec3 const& v) {
+        //    return vec3(v.x, v.y, v.z);
+        //}
     };
 
     struct CORE_API Trans {
@@ -42,20 +42,20 @@ namespace NightSnack::Scripting {
         float rot{};
         vec2 scale;
 
-        NightSnack::Transform ToNative() {
-            NightSnack::Transform t;
-            t.pos = pos.ToNative();
-            t.rot = rot;
-            t.scale = scale.ToNative();
-            return t;
-        }
-        static Trans FromNative(const NightSnack::Transform& t) {
-            Trans ret;
-            ret.pos = vec3::FromNative(t.pos);
-            ret.rot = t.rot;
-            ret.scale = vec2::FromNative(t.scale);
-            return ret;
-        }
+        //NightSnack::Transform ToNative() {
+        //    NightSnack::Transform t;
+        //    t.pos = pos.ToNative();
+        //    t.rot = rot;
+        //    t.scale = scale.ToNative();
+        //    return t;
+        //}
+        //static Trans FromNative(const NightSnack::Transform& t) {
+        //    Trans ret;
+        //    ret.pos = vec3::FromNative(t.pos);
+        //    ret.rot = t.rot;
+        //    ret.scale = vec2::FromNative(t.scale);
+        //    return ret;
+        //}
     };
 
     // Handle to a game object (Similar to Entity ID)

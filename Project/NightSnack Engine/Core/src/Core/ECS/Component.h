@@ -71,6 +71,10 @@ namespace NightSnack {
         bool useRotate; 
     };
 
+    struct Script {
+        std::string name;
+    };
+
     enum class ShapeType { AABB, Circle };
     enum class ColliderType {
         Solid,   // Blocks movement
@@ -350,6 +354,9 @@ namespace NightSnack {
     }
     // STATES ==================================================
     //States from_json function is within StateBase.h
+    inline void from_json(const json& j, Script& s) {
+        j.at("name").get_to(s.name);
+    }
 
 }   // NightSnack
 

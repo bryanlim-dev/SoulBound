@@ -8,6 +8,24 @@
     }
   },
 
+  "ScriptTest1": {
+    "Renderable": {
+      "meshName": "circle",
+      "materialName": "targetMat"
+    },
+    "Script": { "name": "RotatorScript" }
+  },
+
+  "ScriptTest2": {
+    "Renderable": {
+      "meshName": "square",
+      "materialName": "ColorMat"
+    },
+    "Color": { "r": 1.0, "g": 0.2, "b": 0.8, "a": 1.0 },
+    "Script": { "name": "HoverScript" }
+  },
+
+
   "Backdrop": {
     "Renderable": {
       "meshName": "square",

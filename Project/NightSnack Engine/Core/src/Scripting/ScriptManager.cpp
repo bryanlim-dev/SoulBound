@@ -11,6 +11,15 @@
 namespace NightSnack::Scripting {
 
     void ScriptManager::Update(int steps) {
+        if (!m_attached) {
+            // Attach scripts;
+            for (Entity e : m_entities) {
+                std::cout << "Script[" << m_coord.GetComponent<Script>(e).name << "] attached to Entity: " << e << '\n';
+                AttachScript(e, m_coord.GetComponent<Script>(e).name);
+            }
+            m_attached = true;
+        }
+
         // Skip updating of scripts if in debug mode;
         if (debugMode && !stepRequest) { return; }
 
