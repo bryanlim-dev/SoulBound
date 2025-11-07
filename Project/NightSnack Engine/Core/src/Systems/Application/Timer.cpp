@@ -21,7 +21,7 @@ namespace NightSnack {
         : m_lastFrameTime(static_cast<float>(glfwGetTime())), m_currentFrameTime(0.f), m_endFrameTime(0.f), m_deltaTime(0.f),
         m_fps(0.f), m_frameCount(0), m_lastFpsUpdateTime(static_cast<float>(glfwGetTime())), m_totalSystemTime(0.f)
     {
-        glfwSwapInterval(1); // Enable VSync
+        EnableVSync(1);
     }
 
     // Starts game loop timer, delta time and FPS calculation
@@ -47,6 +47,12 @@ namespace NightSnack {
     {
         m_endFrameTime = static_cast<float>(glfwGetTime());
         m_totalSystemTime += (m_endFrameTime - m_currentFrameTime);
+    }
+
+    // Toggles VSync mode
+    void Timer::EnableVSync(bool enabled)
+    {
+        glfwSwapInterval(enabled);
     }
 
     // Caps the frame rate to the target FPS

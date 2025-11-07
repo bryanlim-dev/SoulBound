@@ -110,6 +110,9 @@ namespace NightSnack {
 		for (Entity e : m_coord.GetLivingEntities()) {
 			m_coord.BufferEntitySignature(e);
 		}
+
+		// Set to 0 to disable frame cap
+		m_coord.GetSystem<ApplicationSystem>()->SetFrameCap(0.f);
 	}
 
 	// Function should be called upon termination of program;
@@ -185,7 +188,7 @@ namespace NightSnack {
 
 		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("ApplicationSystem");
 		m_coord.GetSystem<ApplicationSystem>()->SwapBuffers();
-		//m_coord.GetSystem<ApplicationSystem>()->GetTimer().FrameCap(62.0f);
+		m_coord.GetSystem<ApplicationSystem>()->FrameCapUpdate();
 		m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer("ApplicationSystem");
 
 		// End frame timing;
