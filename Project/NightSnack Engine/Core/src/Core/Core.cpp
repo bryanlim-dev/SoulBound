@@ -27,9 +27,9 @@ namespace NightSnack {
 	// ------------------------------------------------------------------------------------------------
 	// CORE
 	// ------------------------------------------------------------------------------------------------
-	void CoreEngine::StartUp(std::string&& configFilePath) {
+	void CoreEngine::StartUp(std::string const& configFilePath) {
 		try {
-			Initialize(std::move(configFilePath));
+			Initialize(configFilePath);
 		}
 		catch (const NightSnack::IException ex)
 		{
@@ -51,7 +51,7 @@ namespace NightSnack {
 		}
 	}
 
-	void CoreEngine::Initialize(std::string&& configFilePath) {
+	void CoreEngine::Initialize(std::string const& configFilePath) {
 
 		// Initialize ECS Coordinator and Managers;
 		m_coord.Initialize();

@@ -33,7 +33,7 @@ namespace NightSnack {
 
 	public:
 
-		void StartUp(std::string&& configFilePath);
+		void StartUp(std::string const& configFilePath);
 
 		/************************************************************************/
 		/*!
@@ -44,7 +44,7 @@ namespace NightSnack {
 		Application config file path.
 		*/
 		/************************************************************************/
-		void Initialize(std::string&& configFilePath);
+		void Initialize(std::string const& configFilePath);
 
 		/************************************************************************/
 		/*!
