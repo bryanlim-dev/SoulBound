@@ -75,14 +75,14 @@ namespace NightSnack
                 // Debug Tab
                 if (ImGui::BeginTabItem("Debug"))
                 {
-					// Performance Viewer
+                    // Performance Viewer
                     static bool togglePerfViewer = false;
                     if (ImGui::Button("View Performance Viewer"))
                     {
                         togglePerfViewer = !togglePerfViewer;
                     }
 
-					// Display performance viewer if toggled
+                    // Display performance viewer if toggled
                     if (togglePerfViewer)
                     {
                         ImGui::Separator();
@@ -99,6 +99,70 @@ namespace NightSnack
                             ImGui::Text("ApplicationSystem not found");
                         }
                     }
+                    ImGui::EndTabItem();
+                }
+
+                // Window settings Tab
+                if (ImGui::BeginTabItem("Window"))
+                {
+                    auto appSystem = m_coord.GetSystem<ApplicationSystem>();
+                    static bool vsyncEnabled = true;
+                    static bool frameCapEnabled = true;
+                    static float frameCap = 60.0f;
+
+                    if (appSystem)
+                    {
+                        float currentCap = appSystem->GetFrameCap();
+                        frameCapEnabled = (currentCap > 0.0f);
+                        if (frameCapEnabled) { frameCap = currentCap; }
+                    }
+
+                    // VSync toggle
+                    ImGui::Text("VSync");
+                    ImGui::SameLine(50);
+                    if (ImGui::Checkbox("##VSync", &vsyncEnabled))
+                    {
+                        if (appSystem)
+                        {
+                            appSystem->EnableVSync(vsyncEnabled);
+                        }
+                    }
+
+                    // Frame Cap toggle
+                    ImGui::SameLine(90);
+                    ImGui::Text("FrameCap");
+                    ImGui::SameLine(160);
+                    if (ImGui::Checkbox("##FrameCapEnable", &frameCapEnabled))
+                    {
+                        if (appSystem)
+                        {
+                            if (!frameCapEnabled)
+                            {
+                                // Disable frame cap
+                                appSystem->SetFrameCap(0.0f);
+                            }
+                            else
+                            {
+                                // Enable frame cap with last value
+								appSystem->SetFrameCap(frameCap);
+                            }
+                        }
+                    }
+
+                    // Frame Cap value input (only enabled if frame cap is on)
+                    ImGui::BeginDisabled(!frameCapEnabled);
+                    ImGui::Text("FrameCap Value");
+                    ImGui::SameLine(100);
+                    ImGui::SetNextItemWidth(100);
+                    if (ImGui::InputFloat("##FrameCapValue", &frameCap, 1.0f, 10.0f, "%.1f"))
+                    {
+                        if (appSystem && frameCapEnabled)
+                        {
+                            appSystem->SetFrameCap(frameCap);
+                        }
+                    }
+                    ImGui::EndDisabled();
+
                     ImGui::EndTabItem();
                 }
                 ImGui::EndTabBar();

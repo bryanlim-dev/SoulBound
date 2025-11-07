@@ -51,6 +51,17 @@ namespace NightSnack {
         /************************************************************************/
         /*!
         \brief
+        Toggles VSync mode
+
+        \param[in] enabled
+        Flag to set VSync
+        */
+        /************************************************************************/
+        void    EnableVSync(bool enabled = true);
+
+        /************************************************************************/
+        /*!
+        \brief
         Caps the frame rate to the target FPS
 
         \param[in] targetFPS
