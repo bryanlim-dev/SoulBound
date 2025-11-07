@@ -79,13 +79,6 @@ namespace NightSnack {
 						}
 						break;
 
-					case InputEvent::InputAction::InstanceTest:
-						if (!m_stress) {
-							UnLoadLevel();
-							InstancedTestCreate(LayerType::GAMELAYER, "InstanceTest", 123, Vec2{ 50.f, 50.f });
-							m_stress = true;
-						}
-						break;
 					}
 				}
 

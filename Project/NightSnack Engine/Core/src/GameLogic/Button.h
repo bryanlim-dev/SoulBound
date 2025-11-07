@@ -356,10 +356,10 @@ namespace NightSnack {
 			// play stress test
 			case ButtonAction::PLAYSTRESSTEST:
 
-				if (!m_stress) {
+				if (!m_coord.GetSystem<EntityFactory>()->m_stress) {
 					m_coord.GetSystem<EntityFactory>()->UnLoadLevel();
 					m_coord.GetSystem<EntityFactory>()->StressTestCreate(LayerType::GAMELAYER, "StressTest", 69, Vec2{ 5.f, 5.f });
-					m_stress = true;
+					m_coord.GetSystem<EntityFactory>()->m_stress = true;
 				}
 				break;
 
