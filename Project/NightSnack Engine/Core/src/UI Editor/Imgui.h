@@ -1,8 +1,10 @@
 /******************************************************************************
  * File:        Imgui.h
  * Project:     NightSnack
- * Author(s):	Wei Jie Lim (Primary, %)
- *				Chewn Thing Kwan (Secondary, %)
+ * Author(s):	Wei Jie Lim (Primary, 88%) - Implemented Editor using ImGui System.
+ *				Included various panels: Hierarchy, Inspector, Scene, Options, Assets.
+ *				Added docking, menu bar, and theme styling.
+ *				Chewn Thing Kwan (Secondary, 12%) - Created base ImGui System
  *
  * Description: 
  * This file contains the definition of ImguiSystem which handles the 
