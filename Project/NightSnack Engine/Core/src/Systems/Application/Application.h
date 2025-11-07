@@ -185,6 +185,10 @@ namespace NightSnack {
 		void EndFrame() { m_timer.EndFrame(); }
 		void StartSystemTimer(std::string&& s) { m_timer.StartSystemTimer(s); }
 		void EndSystemTimer(std::string&& s) { m_timer.EndSystemTimer(s); }
+		void EnableVSync(bool enabled = true) { m_timer.EnableVSync(enabled); }
+		void SetFrameCap(float targetFPS) { frameCap = targetFPS; }
+		void FrameCapUpdate() { if (frameCap > 0.f) m_timer.FrameCap(frameCap); }
+		float GetFrameCap() { return frameCap; }
 		float GetDT() { return m_timer.GetDT(); }
 
 		Signature GetSignature() const override { return m_systemSignature; }
@@ -209,6 +213,7 @@ namespace NightSnack {
 
 		// Tick Tocker
 		Timer m_timer;
+		float frameCap = 0.f;
 		bool systemTimersEnabled = false;
 
 		Signature m_systemSignature{};
