@@ -27,13 +27,11 @@
 #include "Component.h"
 #include "Entity.h"
 
-#include "ImportExport.h"
-
 namespace NightSnack {
 
 	using LayerID = std::uint32_t;
 	
-	class CORE_API Layer {
+	class Layer {
 
 	public:
 		/************************************************************************/
