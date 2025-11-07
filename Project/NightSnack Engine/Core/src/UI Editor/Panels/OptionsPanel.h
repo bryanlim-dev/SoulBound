@@ -119,7 +119,7 @@ namespace NightSnack
 
                     // VSync toggle
                     ImGui::Text("VSync");
-                    ImGui::SameLine(100);
+                    ImGui::SameLine(50);
                     if (ImGui::Checkbox("##VSync", &vsyncEnabled))
                     {
                         if (appSystem)
@@ -129,9 +129,9 @@ namespace NightSnack
                     }
 
                     // Frame Cap toggle
-                    ImGui::SameLine();
+                    ImGui::SameLine(90);
                     ImGui::Text("FrameCap");
-                    ImGui::SameLine(200);
+                    ImGui::SameLine(160);
                     if (ImGui::Checkbox("##FrameCapEnable", &frameCapEnabled))
                     {
                         if (appSystem)
@@ -153,6 +153,7 @@ namespace NightSnack
                     ImGui::BeginDisabled(!frameCapEnabled);
                     ImGui::Text("FrameCap Value");
                     ImGui::SameLine(100);
+                    ImGui::SetNextItemWidth(100);
                     if (ImGui::InputFloat("##FrameCapValue", &frameCap, 1.0f, 10.0f, "%.1f"))
                     {
                         if (appSystem && frameCapEnabled)
