@@ -6,8 +6,9 @@
 
 ## Input Controls
 ## --------------------------
-T: Activate debug-drawing.
+T: Activate debug-drawing
 \: Open UI Editor
+I: Toggle Instanced rendering mode
 
 ## Stress testing
 ## --------------------------
