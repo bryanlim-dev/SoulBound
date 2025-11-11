@@ -20,6 +20,14 @@
 
 namespace NightSnack
 {
+    struct DefaultEditorCamera
+    {
+		Vec3 pos{ 0.f, 0.f, 2.f };
+		float rot { 1.0f };
+		Vec2 scale{ 1.0f, 1.0f };
+		float zoom{ 1.0f };
+    };
+
     class ScenePanel {
     public:
 
@@ -32,27 +40,9 @@ namespace NightSnack
         ScenePanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity)
             : m_coord(coord), m_selectedEntity(selectedEntity)
         {
-            // Create a dedicated editor camera entity for Scene
-			auto factory = m_coord.GetSystem<EntityFactory>();
-			if (factory)
-			{
-                Transform editorTransform;
-                editorTransform.pos = { 0.f, 0.f, 2.f }; 
-                editorTransform.rot = 0.f;
-                editorTransform.scale = { 1.f, 1.f };
-				editorTransform.layer = LayerType::GAMEUI;
-				m_editorCameraEntity = factory->Create("Cam", editorTransform);
-                
-                if (m_editorCameraEntity != INVALID_ENTITY)
-                {
-                    if (!m_coord.HasComponent<Camera>(m_editorCameraEntity)) {
-                        m_coord.AddComponent<Camera>(m_editorCameraEntity, Camera{});
-                    }
-                    auto& cam = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
-                    cam.zoom = 1.0f;
-                    cam.isMainCam = false;
-                }
-			}
+			// Create editor camera entity
+            CreateEditorCamera();
+
             // Create framebuffer and color/depth attachments
             CreateFramebuffer(1600, 900);
         }
@@ -202,6 +192,7 @@ namespace NightSnack
                     {
                         // Clamp scaling for smooth zoom
                         cam.zoom = std::clamp(cam.zoom * (scroll > 0 ? 1.1f : 0.9f), 0.05f, 10.0f);
+						m_editorCameraData.zoom = cam.zoom;
                     }
 
                     // Camera Pan (Right Mouse Drag)
@@ -214,6 +205,7 @@ namespace NightSnack
 						constexpr float panSpeed = 1.65f;
                         camTransform.pos.x -= dragDelta.x * (panSpeed / cam.zoom);
                         camTransform.pos.y += dragDelta.y * (panSpeed / cam.zoom);
+						m_editorCameraData.pos = camTransform.pos;
 						// Reset drag delta to avoid compounding movement
                         ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
                     }
@@ -344,6 +336,32 @@ namespace NightSnack
             }
         }
 
+        void CreateEditorCamera()
+        {
+            // Create a dedicated editor camera entity for Scene
+            auto factory = m_coord.GetSystem<EntityFactory>();
+            if (factory)
+            {
+                Transform editorTransform;
+                editorTransform.pos = m_editorCameraData.pos;
+                editorTransform.rot = m_editorCameraData.rot;
+                editorTransform.scale = m_editorCameraData.scale;
+                editorTransform.layer = LayerType::GAMEUI;
+                m_editorCameraEntity = factory->Create("Cam", editorTransform);
+
+                if (m_editorCameraEntity != INVALID_ENTITY)
+                {
+                    if (!m_coord.HasComponent<Camera>(m_editorCameraEntity))
+                    {
+                        m_coord.AddComponent<Camera>(m_editorCameraEntity, Camera{});
+                    }
+                    auto& cam = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
+                    cam.zoom = m_editorCameraData.zoom;
+                    cam.isMainCam = false;
+                }
+            }
+        }
+
         /************************************************************************/
         /*!
         \brief
@@ -368,6 +386,7 @@ namespace NightSnack
         std::shared_ptr<Entity> m_selectedEntity;
         Entity m_backgroundEntity;      // Current background entity ID
 		Entity m_editorCameraEntity = INVALID_ENTITY;
+        DefaultEditorCamera m_editorCameraData;
 
         Entity m_hoveredEntity = INVALID_ENTITY;
         Vec3   m_dragOffset = { 0, 0, 0 };

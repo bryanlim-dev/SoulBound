@@ -269,6 +269,7 @@ namespace NightSnack {
 		{
 			factory->UnLoadLevel();
 			factory->LoadLevel("../assets/GameData/DefaultLevel.json");
+			m_scenePanel->CreateEditorCamera();
 		}
 	}
 
@@ -403,8 +404,8 @@ namespace NightSnack {
 					ImGui::EndDisabled();
 				}
 
-				// Stop
-				if (ImGui::MenuItem("Stop"))
+				// Reset
+				if (ImGui::MenuItem("Reset"))
 				{
 					m_isPlaying = false;
 					SetSimulationPaused(true);
