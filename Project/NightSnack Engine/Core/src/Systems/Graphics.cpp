@@ -77,7 +77,13 @@ namespace NightSnack {
 		if (m_globalInstanceSSBO == 0) {
 			glCreateBuffers(1, &m_globalInstanceSSBO);
 			m_globalInstanceSSBOSize = sizeof(Mesh::InstanceData) * NightSnack::MAX_ENTITIES;
-			glNamedBufferStorage(m_globalInstanceSSBO, m_globalInstanceSSBOSize, nullptr, GL_DYNAMIC_STORAGE_BIT);
+			//glNamedBufferStorage(m_globalInstanceSSBO, m_globalInstanceSSBOSize, nullptr, GL_DYNAMIC_STORAGE_BIT);
+
+			// Explicit zero-initialization
+			std::vector<Mesh::InstanceData> zeroData(NightSnack::MAX_ENTITIES);
+			memset(zeroData.data(), 0, m_globalInstanceSSBOSize);
+			glNamedBufferStorage(m_globalInstanceSSBO, m_globalInstanceSSBOSize, zeroData.data(), GL_DYNAMIC_STORAGE_BIT);
+
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
 			//std::cout << "Size of InstanceData: " << sizeof(Mesh::InstanceData);
 		}
