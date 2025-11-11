@@ -130,6 +130,17 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Render debug drawing visualizations using the specified camera
+
+		\param[in] Camera
+		The specified camera that is used to render the debug drawing visualizations
+		*/
+		/************************************************************************/
+		void RenderDebugDrawing(Entity camera);
+
+		/************************************************************************/
+		/*!
+		\brief
 		Adds a new shader resource to the Graphics System
 
 		\param[in] name

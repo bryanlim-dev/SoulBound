@@ -152,7 +152,6 @@ namespace NightSnack {
 				RenderText(txt.text, posXToUse, posYToUse, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType);
 			}
 		}
-		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
 	}
 
