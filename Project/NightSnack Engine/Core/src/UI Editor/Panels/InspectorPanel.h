@@ -673,9 +673,6 @@ namespace NightSnack
 
     inline void InspectorPanel::AddComponentButton()
     {
-		// Vertical spacing from last component
-        ImGui::Dummy(ImVec2(0.0f, 10.0f));
-
         // Center the button horizontally
         ImGui::Dummy(ImVec2(0.0f, 20.0f));
         float panelWidth = ImGui::GetWindowSize().x;
