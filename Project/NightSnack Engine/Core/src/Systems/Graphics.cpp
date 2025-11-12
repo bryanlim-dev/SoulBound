@@ -120,6 +120,7 @@ namespace NightSnack {
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
 		m_meshBatches.clear();
+		m_allInstances.clear();
 
 		for (Layer& l : m_layers) {
 			if (l.Empty() || !l.IsVisible()) { continue; }
@@ -185,18 +186,17 @@ namespace NightSnack {
 						key += "_solid";
 					}
 
-					if (l.Type() == LayerType::GAMELAYER) {
-						key += "_gameLayer";
-					} else if (l.Type() == LayerType::BACKGROUND) {
-						key += "_backgroundLayer";
-					} else if (l.Type() == LayerType::GAMEUI) {
-						key += "_uiLayer";
-					} else if (l.Type() == LayerType::_ENGINE) {
-						key += "_engineLayer";
-					} else if (l.Type() == LayerType::_ENGINE2) {
-						key += "_engine2Layer";
-					} else if (l.Type() == LayerType::FOREGROUND) {
-						key += "_foregroundLayer";
+					// Since for Instanced Rendering, we are using a std::map instead
+					// Let background layers render first so they can appear behind
+					// For it to render first, their key has to be alphabetically smaller
+					switch (l.Type()) {
+					case LayerType::_ENGINE:	key = "layer0_" + key;	break;
+					case LayerType::BACKGROUND: key = "layer1_" + key;	break;
+					default:
+					case LayerType::GAMELAYER:	key = "layer2_" + key;	break;
+					case LayerType::FOREGROUND: key = "layer3_" + key;	break;
+					case LayerType::GAMEUI:		key = "layer4_" + key;	break;
+					case LayerType::_ENGINE2:	key = "layer5_" + key;	break;
 					}
 
 					m_meshBatches[key].instances.push_back(instance);
@@ -268,11 +268,24 @@ namespace NightSnack {
 		if (m_enableInstancedRendering) {
 			//std::cout << "Num unique instances total: " << m_meshBatches.size() << std::endl;
 
-			// Upload once per mesh type
+			// Update m_allInstances with the collected InstanceBatches, and the SSBO offsets
+			size_t currentOffset{ 0 };
+			for (auto& [key, instanceBatch] : m_meshBatches) {
+				instanceBatch.ssboOffset = currentOffset;
+				instanceBatch.instanceCount = instanceBatch.instances.size();
+				m_allInstances.insert(m_allInstances.end(), instanceBatch.instances.begin(), instanceBatch.instances.end());
+				currentOffset += instanceBatch.instanceCount;
+			}
+
+			// Upload all the InstanceData as one batch per frame
+			glNamedBufferSubData(m_globalInstanceSSBO, 0, m_allInstances.size() * sizeof(Mesh::InstanceData), m_allInstances.data());
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
+
+			// Upload uniforms in respect to its InstanceBatch
 			for (auto& [key, instanceBatch] : m_meshBatches) {
 				//std::cout << "uploading unique mesh with name: " << meshName;
 				//std::cout << " with its instance count: " << instances.size() << std::endl;
-
+				
 				Mesh* mesh = instanceBatch.mesh;
 				Material* material = instanceBatch.material;
 
@@ -281,7 +294,7 @@ namespace NightSnack {
 
 				// Both solid colors and textures will have these uniforms
 
-				// Entities on the GAMEUI layer will have different transformatio matrices
+				// Entities on the GAMEUI layer will have different transformation matrices
 				glm::mat4 projToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
 				glm::mat4 viewToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
 
@@ -289,24 +302,21 @@ namespace NightSnack {
 				shader->SetMat4("uView", viewToUse);
 				shader->SetBool("uUseInstancing", true);
 				shader->SetBool("uIsWireframe", instanceBatch.isWireframe);
-
+				shader->SetInt("uInstanceOffset", static_cast<int>(instanceBatch.ssboOffset));
+				
 				material->ApplyUniforms(instanceBatch.isWireframe);
-
-				size_t size = instanceBatch.instances.size() * sizeof(Mesh::InstanceData);
-				glNamedBufferSubData(m_globalInstanceSSBO, 0, size, instanceBatch.instances.data());
-				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
 
 				if (instanceBatch.isWireframe) {
 					glDepthMask(GL_TRUE);
 					glEnable(GL_POLYGON_OFFSET_LINE);
 					glPolygonOffset(-1.0f, -1.0f); // push lines slightly toward camera
 					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-					mesh->DrawInstanced(instanceBatch.instances.size());
+					mesh->DrawInstanced(instanceBatch.instanceCount);
 					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 					glDisable(GL_POLYGON_OFFSET_LINE);
 					glDepthMask(GL_FALSE);
 				} else {
-					mesh->DrawInstanced(instanceBatch.instances.size());
+					mesh->DrawInstanced(instanceBatch.instanceCount);
 				}
 			}
 		}
