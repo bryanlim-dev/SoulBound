@@ -102,7 +102,7 @@ namespace NightSnack
                             Vec2(100.f, 100.f)
                         };
 
-                        Entity newEntity = factory->Create("Ghost", defaultTransform);
+                        factory->Create("Ghost", defaultTransform);
                     }
 
                     // Delete button to remove selected entity

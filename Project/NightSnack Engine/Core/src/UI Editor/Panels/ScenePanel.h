@@ -116,6 +116,10 @@ namespace NightSnack
             if (graphics) {
                 graphics->RenderWithCamera(m_editorCameraEntity);
             }
+            auto textSystem = m_coord.GetSystem<TextSystem>();
+            if (textSystem) {
+                textSystem->Draw(m_editorCameraEntity, false);
+            }
 
 			// Draw hovered entity outline
             auto& camInfo = m_coord.GetComponent<Camera>(m_editorCameraEntity);
