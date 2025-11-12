@@ -74,8 +74,8 @@ namespace NightSnack {
 		glfwSetDropCallback(m_windowHandle, FileDropCallback);
 		// std::cout << "[Application] File drop callback initialized\n";
 
-		// Depth testing
-		glEnable(GL_DEPTH_TEST);
+		// Disable Depth testing since the primary way of rendering is using Layers 
+		glDisable(GL_DEPTH_TEST);
 		// Depth buffer stores values in NDC [0,1], render the fragment if z is lesser/closer
 		glDepthFunc(GL_LESS);
 
