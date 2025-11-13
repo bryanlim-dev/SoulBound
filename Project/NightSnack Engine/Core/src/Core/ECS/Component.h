@@ -66,6 +66,7 @@ namespace NightSnack {
         float invInertia;
 
         float restitution;
+        float gravitymult;
 
         bool useGravity;
         bool useRotate; 
@@ -85,6 +86,9 @@ namespace NightSnack {
         ShapeType shape{ ShapeType::AABB };     // AABB or Circle
         ColliderType type{ ColliderType::Solid };   // Solid or Trigger
         bool isStatic{ true };       // true = immovable (walls), false = dynamic (player)
+
+        Vec3 posOffset;
+        Vec2 scaleMult;
 
         // Shape data
         float width{ 1.0f };   // AABB width
