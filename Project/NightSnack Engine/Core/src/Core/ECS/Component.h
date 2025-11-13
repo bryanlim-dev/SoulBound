@@ -341,7 +341,7 @@ namespace NightSnack {
 
         j.at("isStatic").get_to(c.isStatic);
 
-        if (c.shape == ShapeType::AABB) {
+        /*if (c.shape == ShapeType::AABB) {
             j.at("width").get_to(c.width);
             j.at("height").get_to(c.height);
             c.radius = 0.f;
@@ -350,7 +350,11 @@ namespace NightSnack {
             j.at("radius").get_to(c.radius);
             c.width = 0.f;
             c.height = 0.f;
-        }
+        }*/
+        c.scaleMult.x = j.value("width", 1.f);
+        c.scaleMult.y = j.value("height", 1.f);
+
+        c.posOffset = {};
 
         // Optional runtime-only flags (not usually in prefab JSON)
         c.isGrounded = j.value("isGrounded", false);
