@@ -25,4 +25,8 @@ namespace NightSnack {
 		}
 	}
 
+	void LevelManager::UnloadLevel() {
+
+	}
+
 }	// NightSnack

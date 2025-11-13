@@ -327,18 +327,18 @@ namespace NightSnack {
 	template<typename T>
 	void ComponentArray<T>::Remove(Entity e) {
 
+		// Check size first
+		if (m_size == 0) {
+			std::cout << "ERROR: Remove called on empty ComponentArray! "
+				<< "ComponentID=" << std::to_string(GetComponentTypeID<T>())
+				<< " Entity=" << e << std::endl;
+			return;
+		}
 		// Ensure entity actually exists in this array
 		auto it = m_entityToIndex.find(e);
 		if (it == m_entityToIndex.end()) {
 			std::cout << "WARNING: Tried to remove non-existent component "
 				<< std::to_string(GetComponentTypeID<T>()) << " from entity " << e << std::endl;
-			return;
-		}
-
-		if (m_size <= 0) {
-			std::cout << "ERROR: Remove called on empty ComponentArray! "
-				<< "ComponentID=" << std::to_string(GetComponentTypeID<T>())
-				<< " Entity=" << e << std::endl;
 			return;
 		}
 

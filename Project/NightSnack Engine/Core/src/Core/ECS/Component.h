@@ -43,7 +43,7 @@ namespace NightSnack {
         float rot;
         Vec2 scale;
 
-        LayerType layer{ LayerType::GAMELAYER };
+        LayerType layer;
     };
 
     struct Force {
@@ -218,19 +218,14 @@ namespace NightSnack {
         t.scale = { scl.value("x", 1.0f), scl.value("y", 1.0f) };
 
         // entity layer
-        if (j.contains("Layer")) {
-            if (j["Layer"] == "_Engine") { t.layer = LayerType::_ENGINE; }
-            if (j["Layer"] == "Background") { t.layer = LayerType::BACKGROUND; }
-            if (j["Layer"] == "Foreground") { t.layer = LayerType::FOREGROUND; }
-            if (j["Layer"] == "GameUI") { t.layer = LayerType::GAMEUI; }
-            if (j["Layer"] == "_Engine2") { t.layer = LayerType::_ENGINE2; }
-            else {
-                t.layer == LayerType::GAMELAYER;
-            }
-        }
+        std::string l = j.value("Layer", "");
+        if (l == "_Engine") { t.layer = LayerType::_ENGINE; }
+        else if (l == "Background") { t.layer = LayerType::BACKGROUND; }
+        else if (l == "Foreground") { t.layer = LayerType::FOREGROUND; }
+        else if (l == "GameUI") { t.layer = LayerType::GAMEUI; }
+        else if (l == "_Engine2") { t.layer = LayerType::_ENGINE2; }
         else {
-            // default layer
-            t.layer == LayerType::GAMELAYER;
+            t.layer = LayerType::GAMELAYER;
         }
     }
     

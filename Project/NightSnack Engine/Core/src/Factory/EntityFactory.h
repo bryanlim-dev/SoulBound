@@ -136,24 +136,13 @@ namespace NightSnack {
 			m_currentLevel = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelLey);
 
 			for (auto const& item : m_currentLevel["Entities"]) {
-				Entity e = Create(item["prefab"], item["Transform"]);
-				if (item.contains("Layer")) {
-					if (item["Layer"] == "Background")
-					m_coord.ModifyComponent<Transform>(e).layer = LayerType::BACKGROUND;
-					if (item["Layer"] == "Foreground")
-					m_coord.ModifyComponent<Transform>(e).layer = LayerType::FOREGROUND;
-					if (item["Layer"] == "GameUI")
-					m_coord.ModifyComponent<Transform>(e).layer = LayerType::GAMEUI;
-				}
-				else {
-					m_coord.ModifyComponent<Transform>(e).layer = LayerType::GAMELAYER;
-				}
+				Create(item["prefab"], item["Transform"]);
 			}
 			for (Entity e : m_coord.GetLivingEntities()) {
 				m_coord.BufferEntitySignature(e);
 			}
 		}
-		void PromptUnload
+		void PromptUnload() { m_reload = true; }
 		void UnloadLevel() {
 			for (Entity e{}; e < MAX_ENTITIES; ++e) {
 				m_coord.DestroyEntity(e);

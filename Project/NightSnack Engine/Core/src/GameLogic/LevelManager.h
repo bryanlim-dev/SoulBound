@@ -31,6 +31,8 @@ namespace NightSnack {
 		void RestartLevel() {}
 		void PauseGame() {}
 
+		void UnloadLevel();
+
 		bool SaveLevel() {}
 
 		// Required by ISystem base class;

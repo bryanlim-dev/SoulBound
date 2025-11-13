@@ -267,7 +267,7 @@ namespace NightSnack {
 		auto factory = m_coord.GetSystem<EntityFactory>();
 		if (factory)
 		{
-			factory->UnLoadLevel();
+			factory->UnloadLevel();
 			factory->LoadLevel("../assets/GameData/DefaultLevel.json");
 			m_scenePanel->CreateEditorCamera();
 		}

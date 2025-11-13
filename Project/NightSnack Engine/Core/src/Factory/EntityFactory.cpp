@@ -151,7 +151,7 @@ namespace NightSnack {
 
 	void EntityFactory::StressTestEnd() {
 
-		UnLoadLevel();
+		UnloadLevel();
 		m_reload = true;
 	}
 
