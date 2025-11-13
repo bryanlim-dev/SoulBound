@@ -16,6 +16,7 @@
 #include "Graphics/Texture.h"
 #include "Factory/EntityFactory.h"
 #include "PrefabsPanel.h"
+#include "FilesPanel.h"
 #include <stb_image.h>
 
 namespace fs = std::filesystem;
@@ -39,6 +40,7 @@ namespace NightSnack
             m_selectedAssetPath(""),
             m_showAssetProperties(false),
             m_showImportDialog(false),
+            m_filesPanel(coord, "../../../NightSnack Engine/assets"),
             m_prefabsPanel(coord, "../../../NightSnack Engine/assets/GameData/Archetypes/Archetypes.json")
         {
             m_prefabNames.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
@@ -87,13 +89,7 @@ namespace NightSnack
                     ImGui::EndTabItem();
                 }
 
-                if (ImGui::BeginTabItem("Files"))
-                {
-                    // list out files
-                    DrawAllFilesTab();
-                    ImGui::EndTabItem();
-                }
-
+                m_filesPanel.Draw();
                 // handle the prefab tab item creation
                 m_prefabsPanel.Draw();
 
@@ -133,6 +129,7 @@ namespace NightSnack
         std::string m_importDestination;
 
         PrefabsPanel m_prefabsPanel;  // prefabs panel instance
+        FilesPanel m_filesPanel;  // prefabs files instance
 
         /**
         * @brief handles external file drop events
@@ -552,47 +549,6 @@ namespace NightSnack
 
             // end grid layout
             ImGui::Columns(1);
-        }
-
-        /**
-        * @brief displays all files inside the assets folder
-        */
-        void DrawAllFilesTab()
-        {
-            // use a tree view to show folders and files
-            DrawDirectoryRecursive(m_assetsRoot);
-        }
-
-        /**
-        * @brief recursively displays folders and their files as a tree
-        * @param dir the directory to display
-        */
-        void DrawDirectoryRecursive(const fs::path& dir)
-        {
-            for (const auto& entry : fs::directory_iterator(dir))
-            {
-                const auto& path = entry.path();
-                std::string name = path.filename().string();
-
-                if (entry.is_directory())
-                {
-                    // create a collapsible tree node for folders
-                    if (ImGui::TreeNode(name.c_str()))
-                    {
-                        DrawDirectoryRecursive(path); // recurse into subfolder
-                        ImGui::TreePop();
-                    }
-                }
-                else if (entry.is_regular_file())
-                {
-                    std::string ext = path.extension().string();
-                    if (IsImageFile(ext))
-                    {
-                        continue;
-                    }
-                    ImGui::BulletText("%s", name.c_str());
-                }
-            }
         }
 
         /**

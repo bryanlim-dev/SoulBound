@@ -23,6 +23,8 @@
 #include "ScenePanel.h"
 #include "OptionsPanel.h"
 #include "AssetsPanel.h"
+#include "PrefabsPanel.h"
+#include "FilesPanel.h"
 
 #endif // ALLPANEL_HPP
 
