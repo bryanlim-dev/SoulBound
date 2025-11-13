@@ -145,11 +145,9 @@ namespace NightSnack {
 
 				// Flip the y pos for entities on the UI layer
 				float posYToUse = isUILayer ? screenH - pos.y : pos.y;
-				// Small offset for rendering, to be tweaked in the future
-				float posXToUse = pos.x - scale.x * 0.5f;
 
 				// Render the actual text string
-				RenderText(txt.text, posXToUse, posYToUse, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType);
+				RenderText(txt.text, pos.x, posYToUse, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType);
 			}
 		}
 		glDisable(GL_BLEND);
@@ -172,12 +170,26 @@ namespace NightSnack {
 		glActiveTexture(GL_TEXTURE0);
 		glBindVertexArray(m_vao);
 
+		// Get the width and height of the string of text, not the entity
+		// So that we can offset the position of the string of text, to be at the center of the entity position by default
+		float textWidth{};
+		float maxY{}, minY{};
+		for (char c : text) {
+			auto& ch = chars[c];
+			textWidth += (ch.advance >> 6) * scale;
+			maxY = std::max(maxY, ch.bearing.y * scale);
+			minY = std::max(minY, (ch.size.y - ch.bearing.y) * scale);
+		}
+		float textHeight = maxY - minY;
+		float cursorX = x - (textWidth * 0.5f);
+		float cursorY = y - (textHeight * 0.5f);
+
 		// Render each character in the string
 		for (char c : text) {
 			auto& ch = chars[c];
 
-			float xpos = x + ch.bearing.x * scale;
-			float ypos = y - (ch.size.y - ch.bearing.y) * scale;
+			float xpos = cursorX + ch.bearing.x * scale;
+			float ypos = cursorY - (ch.size.y - ch.bearing.y) * scale;
 			float w = ch.size.x * scale;
 			float h = ch.size.y * scale;
 
@@ -199,7 +211,7 @@ namespace NightSnack {
 			// Draw quad
 			glDrawArrays(GL_TRIANGLES, 0, 6);
 			// Advance cursors for next glyph (note that advance is number of 1/64 pixels)
-			x += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+			cursorX += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
 		}
 		glBindVertexArray(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
