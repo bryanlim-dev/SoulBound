@@ -13,9 +13,12 @@ namespace ManagedScripts
             //pos.X = 100;
             //pos.Y = 100;
             //pos.Z = 0;
-            //Engine.CreateEntityArchetype("RedBall", pos);
+            //uint id1 = Engine.CreateEntityArchetype("RedBall", pos);
             //pos.X = 200;
-            //Engine.CreateEntityArchetype("RedBall", pos);
+            //uint id2 = Engine.CreateEntityArchetype("RedBall", pos);
+
+            //Engine.SetLayer(id1, LayerType.GAMEUI);
+            //Engine.SetLayer(id2, LayerType._ENGINE2);
 
             //Log("RotatorScript started!");
             //Log($"Initial rotation: {Rotation}");

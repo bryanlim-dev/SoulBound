@@ -75,6 +75,16 @@ namespace NightSnack::Scripting {
         scale = Vec2(scal.x, scal.y);
     }
 
+    // Layer -------
+    LayerType ScriptInterface::GetLayer(Entity e) {
+        LayerType layer = m_coord.GetComponent<Transform>(e).layer;
+        return layer;
+    }
+    void ScriptInterface::SetLayer(Entity e, LayerType lay) {
+        LayerType& layer = m_coord.ModifyComponent<Transform>(e).layer;
+        layer = lay;
+    }
+
     // --------------------------------------------------------------
     // Key Inputs
     bool ScriptInterface::IsKeyPressed(int key) {
@@ -104,10 +114,13 @@ namespace NightSnack::Scripting {
     void ScriptInterface::Log(const std::string& msg) {
         std::cout << "[Script] " << msg << '\n';
     }
-    void ScriptInterface::CreateEntityArchetype(std::string archeTypeName, vec3 pos)
+
+    //Create Entity
+    Entity ScriptInterface::CreateEntityArchetype(std::string archeTypeName, vec3 pos)
     {
         Entity entity= m_coord.GetSystem<EntityFactory>()->Create(archeTypeName);
         m_coord.ModifyComponent<Transform>(entity).pos = Vec3{ pos.x, pos.x, pos.z };
+        return entity;
     }
     // --------------------------------------------------------------
 

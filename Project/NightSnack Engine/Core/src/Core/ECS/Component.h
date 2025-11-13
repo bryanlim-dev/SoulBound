@@ -30,6 +30,7 @@ namespace NightSnack {
     // ================================================================================================
     // COMPONENTS
     // ================================================================================================
+    //When updating this update the one in Engine.cs
     enum class LayerType : std::uint8_t {
         _ENGINE,
         BACKGROUND,

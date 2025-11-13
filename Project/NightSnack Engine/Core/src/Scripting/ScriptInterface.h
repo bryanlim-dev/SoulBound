@@ -43,6 +43,9 @@ namespace NightSnack::Scripting {
         vec2 GetScale(Entity e);
         void SetScale(Entity e, vec2 scale);
 
+        LayerType GetLayer(Entity e);
+        void SetLayer(Entity e, LayerType lay);
+
         // Input
         bool IsKeyPressed(int key);
         bool IsKeyDown(int key);
@@ -58,7 +61,7 @@ namespace NightSnack::Scripting {
         void Log(const std::string& msg);
 
         //Create Entity
-        void CreateEntityArchetype(std::string archeTypeName, vec3 pos);
+        Entity CreateEntityArchetype(std::string archeTypeName, vec3 pos);
 
     private:
         Coordinator& m_coord;

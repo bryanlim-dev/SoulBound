@@ -12,6 +12,7 @@ namespace ManagedScripts
         public virtual void OnDestroy() { }
 
         // Convenience properties
+        #region Transform
         protected Vector3 Position
         {
             get => Engine.GetPosition(EntityId);
@@ -28,6 +29,13 @@ namespace ManagedScripts
             set => Engine.SetScale(EntityId, value);
         }
 
+        protected LayerType Layer
+        {
+            get => Engine.GetLayer(EntityId);
+            set => Engine.SetLayer(EntityId, value);
+        }
+        #endregion
+
         protected float DeltaTime => Engine.DeltaTime;
         //protected float Time => Engine.Time;
 
@@ -37,6 +45,6 @@ namespace ManagedScripts
         protected bool IsKeyDown(int key) => Engine.IsKeyDown(key);
         protected bool IsKeyReleased(int key) => Engine.IsKeyReleased(key);
         protected void PlaySound(string path) => Engine.PlaySound(path);
-        protected void CreateEntityArchetype(string archetypeName, Vector3 pos) => Engine.CreateEntityArchetype(archetypeName, pos);
+        protected uint CreateEntityArchetype(string archetypeName, Vector3 pos) => Engine.CreateEntityArchetype(archetypeName, pos);
     }
 }   // ManagedScripts

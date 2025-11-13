@@ -27,7 +27,9 @@ static NightSnack::Scripting::ScriptInterface* g_scriptInterface = nullptr;
 
 // Internal call functions from C# must use C linkage
 extern "C" {
+    // --------------------------------------------------------------
 
+#pragma region Transform
 	// Position --------------
 	static void NightSnack_GetPosition(uint32_t id, NightSnack::Scripting::vec3* outpos) {
 		if (!g_scriptInterface || !outpos) { return; }
@@ -37,6 +39,7 @@ extern "C" {
 		if (!g_scriptInterface || !pos) { return; }
 		g_scriptInterface->SetPosition(id, *pos);
 	}
+
     // Rotation --------------
     static void NightSnack_GetRotation(uint32_t id, float* outrot) {
         if (!g_scriptInterface || !outrot) { return; }
@@ -46,6 +49,7 @@ extern "C" {
         if (!g_scriptInterface || !rot) { return; }
         g_scriptInterface->SetRotation(id, *rot);
     }
+
     // Scale -----------------
     static void NightSnack_GetScale(uint32_t id, NightSnack::Scripting::vec2* scale) {
         if (!g_scriptInterface || !scale) { return; }
@@ -55,8 +59,21 @@ extern "C" {
         if (!g_scriptInterface || !scale) { return; }
         g_scriptInterface->SetScale(id, *scale);
     }
+
+    // Layer -----------------
+    static void NightSnack_GetLayer(uint32_t id, uint8_t* layer) {
+        if (!g_scriptInterface || !layer) { return; }
+        *layer = static_cast<uint8_t>(g_scriptInterface->GetLayer(id));
+    }
+    static void NightSnack_SetLayer(uint32_t id, uint8_t* layer) {
+        if (!g_scriptInterface || !layer) { return; }
+        g_scriptInterface->SetLayer(id, static_cast<NightSnack::LayerType>(*layer));
+    }
+#pragma endregion //Transform
+
     // --------------------------------------------------------------
 
+#pragma region Key/Buttons
     // Input - Is Key Pressed (just pressed this frame)
     static bool NightSnack_IsKeyPressed(int keyCode) {
         if (!g_scriptInterface) { return false; }
@@ -74,6 +91,8 @@ extern "C" {
         if (!g_scriptInterface) { return false; }
         return g_scriptInterface->IsKeyReleased(keyCode);
     }
+#pragma endregion
+
     // --------------------------------------------------------------
 
 
@@ -102,11 +121,10 @@ extern "C" {
     }
 
     //Create Entity
-    static void NightSnack_CreateEntityArchetype(MonoString* archeType, NightSnack::Scripting::vec3* pos) {
-        if (!g_scriptInterface) { return; }
+    static uint32_t NightSnack_CreateEntityArchetype(MonoString* archeType, NightSnack::Scripting::vec3* pos) {
+        if (!g_scriptInterface) { return 0; }
         char* cStr = mono_string_to_utf8(archeType);
-        g_scriptInterface->CreateEntityArchetype(std::string(cStr), *pos);
-        return;
+        return g_scriptInterface->CreateEntityArchetype(std::string(cStr), *pos);
     }
     // --------------------------------------------------------------
 
@@ -123,6 +141,7 @@ namespace NightSnack::Scripting {
 
         // Register all internal calls
         // Format: "Namespace.ClassName::MethodName"
+#pragma region Transform
         mono_add_internal_call("ManagedScripts.Engine::GetPosition_Internal", (void*)NightSnack_GetPosition);
         mono_add_internal_call("ManagedScripts.Engine::SetPosition_Internal", (void*)NightSnack_SetPosition);
 
@@ -131,6 +150,10 @@ namespace NightSnack::Scripting {
 
         mono_add_internal_call("ManagedScripts.Engine::GetScale_Internal", (void*)NightSnack_GetScale);
         mono_add_internal_call("ManagedScripts.Engine::SetScale_Internal", (void*)NightSnack_SetScale);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetLayer_Internal", (void*)NightSnack_GetLayer);
+        mono_add_internal_call("ManagedScripts.Engine::SetLayer_Internal", (void*)NightSnack_SetLayer);
+#pragma endregion
 
         mono_add_internal_call("ManagedScripts.Engine::IsKeyPressed_Internal", (void*)NightSnack_IsKeyPressed);
         mono_add_internal_call("ManagedScripts.Engine::IsKeyDown_Internal", (void*)NightSnack_IsKeyDown);
