@@ -381,6 +381,24 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		ResourceJson(std::unordered_map<std::string, Archtype> const& newArchtypeMap, std::string newPath);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Constructor of json resource class
+		Creates a class that stores filepath and mapKey
+		Does NOT open file, call LoadFile for that
+
+		\param[in] jsonData
+		json of data to save to path
+
+		\param[in] path
+		std::string const ref of the file path to save to
+
+		*/
+		/************************************************************************/
+		ResourceJson(nlohmann::json jsonData, std::string path);
+
 		/************************************************************************/
 		/*!
 		\brief

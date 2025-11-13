@@ -41,5 +41,5 @@ https://github.com/Kitware/CMake/releases/download/v3.30.3/cmake-3.30.3-windows-
 You should now be able to find "NightSnack.sln" inside the "build" folder.
 
 After opening the sln, on the top row of button select Project > Property,
-change the option within "Single startup project" to "NightSnack".
+change the option within "Single startup project" to "Game".
 The solution should be ready to build.

@@ -56,9 +56,17 @@ namespace NightSnack
 				// Scene Tab
                 if (ImGui::BeginTabItem("Scene"))
                 {
+                    // Highlight Objects with Dropdown
+                    ImVec2 min = ImGui::GetCursorScreenPos();
+                    ImVec2 max = ImVec2(min.x + ImGui::GetContentRegionAvail().x, min.y + ImGui::GetTextLineHeight());
+                    ImU32 bgColor = IM_COL32(80, 180, 255, 60); // Light blue, semi-transparent
+                    ImGui::GetWindowDrawList()->AddRectFilled(min, max, bgColor);
+
+
                     // Scene Dropdown list
                     if (ImGui::TreeNodeEx("Scene", ImGuiTreeNodeFlags_DefaultOpen))
                     {
+						ImGui::Indent(30.f);
                         const auto& entities = m_coord.GetLivingEntities();
                         auto factory = m_coord.GetSystem<NightSnack::EntityFactory>();
 
@@ -79,54 +87,39 @@ namespace NightSnack
                                 *m_selectedEntity = e;
                             }
                         }
+						ImGui::Unindent(30.f);
                         ImGui::TreePop();
+                    }
 
-                        // Add Prefab button at the bottom of list
-                        if (ImGui::Button("Add Prefab"))
+                    // Add Prefab button at the bottom of list
+                    if (ImGui::Button("Add Prefab"))
+                    {
+                        auto factory = m_coord.GetSystem<NightSnack::EntityFactory>();
+                        Transform defaultTransform
                         {
-                            Entity newEntity = m_coord.CreateEntity();
-                            
-                            Transform defaultTransform{
-                                Vec3(0.f, 145.f, 1.f),
-                                0.0f,
-                                Vec2(100.f, 100.f)
-                            };
+                            Vec3(0.f, 145.f, 1.f),
+                            0.0f,
+                            Vec2(100.f, 100.f)
+                        };
 
-                            Renderable defaultRenderable{
-                                "square",
-                                "ColorMat",
-                                false,
-                                true
-                            };
+                        factory->Create("Ghost", defaultTransform);
+                    }
 
-                            m_coord.AddComponent<Transform>(newEntity, defaultTransform);
-                            m_coord.AddComponent<Renderable>(newEntity, defaultRenderable);
-                            m_coord.AddComponent<Color>(newEntity, Color{ 1.f, 0.f, 0.f, 1.f });
-
-                            *m_selectedEntity = newEntity;
-                        }
-
-						// Delete button to remove selected entity
-                        if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY)
+                    // Delete button to remove selected entity
+                    if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY)
+                    {
+                        ImGui::SameLine();
+                        if (ImGui::Button("Delete"))
                         {
-                            ImGui::SameLine();
-                            if (ImGui::Button("Delete"))
-                            {
-                                m_coord.DestroyEntity(*m_selectedEntity);
-                                m_uiNames->erase(*m_selectedEntity);
-                                *m_selectedEntity = INVALID_ENTITY;
-                            }
+                            m_coord.DestroyEntity(*m_selectedEntity);
+                            m_uiNames->erase(*m_selectedEntity);
+                            *m_selectedEntity = INVALID_ENTITY;
                         }
                     }
+
                     ImGui::EndTabItem();
                 }
 
-				// Prefabs Tab
-                if (ImGui::BeginTabItem("Prefabs"))
-                {
-                    ImGui::Text("Prefab list & instances coming soon");
-                    ImGui::EndTabItem();
-                }
                 ImGui::EndTabBar();
             }
 

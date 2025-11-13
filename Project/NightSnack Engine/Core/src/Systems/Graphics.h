@@ -130,6 +130,17 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Render debug drawing visualizations using the specified camera
+
+		\param[in] Camera
+		The specified camera that is used to render the debug drawing visualizations
+		*/
+		/************************************************************************/
+		void RenderDebugDrawing(Entity camera);
+
+		/************************************************************************/
+		/*!
+		\brief
 		Adds a new shader resource to the Graphics System
 
 		\param[in] name
@@ -397,6 +408,8 @@ namespace NightSnack {
 			bool isWireframe{ false };
 			std::vector<Mesh::InstanceData> instances;
 			LayerType layerType = LayerType::GAMELAYER;
+			size_t ssboOffset{ 0 };
+			size_t instanceCount{ 0 };
 		};
 
 		// Resource stores (owned by system);
@@ -405,7 +418,8 @@ namespace NightSnack {
 		std::unordered_map<std::string, std::unique_ptr<Mesh>>     m_meshes;
 		std::unordered_map<std::string, std::unique_ptr<Material>> m_materials;
 
-		std::unordered_map<std::string, InstanceBatch> m_meshBatches;
+		std::map<std::string, InstanceBatch> m_meshBatches; // Holds all the different InstanceBatch combinations
+		std::vector<Mesh::InstanceData> m_allInstances; // Holds all the InstanceData only, to upload to the GPU once
 
 		/************************************************************************/
 		/*!
