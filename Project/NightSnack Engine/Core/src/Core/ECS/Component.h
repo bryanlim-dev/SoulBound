@@ -216,6 +216,22 @@ namespace NightSnack {
         t.pos = { pos.value("x", 0.0f), pos.value("y", 0.0f), pos.value("z", 0.0f) };
         t.rot = j.value("Rotation", 0.0f);
         t.scale = { scl.value("x", 1.0f), scl.value("y", 1.0f) };
+
+        // entity layer
+        if (j.contains("Layer")) {
+            if (j["Layer"] == "_Engine") { t.layer = LayerType::_ENGINE; }
+            if (j["Layer"] == "Background") { t.layer = LayerType::BACKGROUND; }
+            if (j["Layer"] == "Foreground") { t.layer = LayerType::FOREGROUND; }
+            if (j["Layer"] == "GameUI") { t.layer = LayerType::GAMEUI; }
+            if (j["Layer"] == "_Engine2") { t.layer = LayerType::_ENGINE2; }
+            else {
+                t.layer == LayerType::GAMELAYER;
+            }
+        }
+        else {
+            // default layer
+            t.layer == LayerType::GAMELAYER;
+        }
     }
     
     inline void from_json(const json& j, PlayerController& p) {

@@ -80,10 +80,9 @@ namespace NightSnack {
 
 			try {
 				LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(filename, m_archetypesKey);
-				if (result == LOAD_RESULT::LOAD_SUCCESS || result == LOAD_RESULT::LOAD_SUCCESS_STOPPED_UNLOAD)
-					return;
-				else if (result == LOAD_FAIL_BADPATH)
+				if (result == LOAD_FAIL_BADPATH) {
 					throw std::runtime_error("Failed to open archetypes file due to bad file path: " + filename);
+				}
 			}
 			catch (json::parse_error& e) {
 				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
@@ -122,11 +121,13 @@ namespace NightSnack {
 			//	throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
 			//}
 
+			m_coord.GetSystem<ResourceManager>()->UnloadJson(m_currentLevelLey);
+
 			try {
 				LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(levelfile, m_currentLevelLey);
-				if (result == LOAD_RESULT::LOAD_SUCCESS || result == LOAD_RESULT::LOAD_SUCCESS_STOPPED_UNLOAD) {/* Empty by design*/}
-				else if (result == LOAD_FAIL_BADPATH)
+				if (result == LOAD_FAIL_BADPATH) {
 					throw std::runtime_error("Failed to open archetypes file due to bad file path: " + levelfile);
+				}
 			}
 			catch (json::parse_error& e) {
 				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
@@ -152,11 +153,9 @@ namespace NightSnack {
 				m_coord.BufferEntitySignature(e);
 			}
 		}
-
-		void UnLoadLevel() {
+		void PromptUnload
+		void UnloadLevel() {
 			for (Entity e{}; e < MAX_ENTITIES; ++e) {
-				//if (m_coord.HasComponent<Camera>(e)) { continue; }
-				//if (e == m_coord.GetSystem<GraphicsSystem>()->FindCamera()) { continue; }
 				m_coord.DestroyEntity(e);
 			}
 			m_coord.ResetEverything();

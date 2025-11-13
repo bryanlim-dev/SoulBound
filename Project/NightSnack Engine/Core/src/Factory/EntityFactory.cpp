@@ -32,7 +32,7 @@ namespace NightSnack {
 		static bool stressed{ false }, layered{ false };
 
 		if (m_stress && !stressed) {
-			UnLoadLevel();
+			UnloadLevel();
 			StressTestCreate(LayerType::GAMELAYER, "StressTest", 69, Vec2{ 5.f, 5.f });
 			stressed = true;
 		}
@@ -41,7 +41,7 @@ namespace NightSnack {
 			layered = true;
 		}
 		else if (m_reload && stressed) {
-			UnLoadLevel();
+			UnloadLevel();
 			LoadLevel("../assets/GameData/DefaultLevel.json");
 
 			stressed = false;
