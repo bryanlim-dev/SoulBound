@@ -100,6 +100,14 @@ extern "C" {
         if (!g_scriptInterface) { return 0.0f; }
         return g_scriptInterface->GetDeltaTime();
     }
+
+    //Create Entity
+    static void NightSnack_CreateEntityArchetype(MonoString* archeType, NightSnack::Scripting::vec3* pos) {
+        if (!g_scriptInterface) { return; }
+        char* cStr = mono_string_to_utf8(archeType);
+        g_scriptInterface->CreateEntityArchetype(std::string(cStr), *pos);
+        return;
+    }
     // --------------------------------------------------------------
 
 
@@ -131,6 +139,9 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::Log_Internal", (void*)NightSnack_Log);
         mono_add_internal_call("ManagedScripts.Engine::PlaySound_Internal", (void*)NightSnack_PlaySound);
         mono_add_internal_call("ManagedScripts.Engine::GetDeltaTime_Internal", (void*)NightSnack_GetDeltaTime);
+
+        mono_add_internal_call("ManagedScripts.Engine::CreateEntityArchetype_Internal", (void*)NightSnack_CreateEntityArchetype);
+
 
         std::cout << "[Mono] Internal calls registered successfully" << std::endl;
     }

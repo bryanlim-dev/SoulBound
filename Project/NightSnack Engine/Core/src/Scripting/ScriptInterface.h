@@ -57,6 +57,9 @@ namespace NightSnack::Scripting {
         // Logging
         void Log(const std::string& msg);
 
+        //Create Entity
+        void CreateEntityArchetype(std::string archeTypeName, vec3 pos);
+
     private:
         Coordinator& m_coord;
     };

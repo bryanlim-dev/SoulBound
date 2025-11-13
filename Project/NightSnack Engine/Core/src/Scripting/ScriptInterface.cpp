@@ -19,6 +19,7 @@
 #include "./Systems/AudioSystem.h"
 #include "./Systems/Application/Application.h"
 #include "./Systems/Application/Input.h"
+#include "../Systems/AllSystems.h"
 
 #include <iostream>
 
@@ -102,6 +103,11 @@ namespace NightSnack::Scripting {
     // Logging
     void ScriptInterface::Log(const std::string& msg) {
         std::cout << "[Script] " << msg << '\n';
+    }
+    void ScriptInterface::CreateEntityArchetype(std::string archeTypeName, vec3 pos)
+    {
+        Entity entity= m_coord.GetSystem<EntityFactory>()->Create(archeTypeName);
+        m_coord.ModifyComponent<Transform>(entity).pos = Vec3{ pos.x, pos.x, pos.z };
     }
     // --------------------------------------------------------------
 

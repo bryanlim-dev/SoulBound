@@ -9,6 +9,14 @@ namespace ManagedScripts
 
         public override void OnStart()
         {
+            //Vector3 pos;
+            //pos.X = 100;
+            //pos.Y = 100;
+            //pos.Z = 0;
+            //Engine.CreateEntityArchetype("RedBall", pos);
+            //pos.X = 200;
+            //Engine.CreateEntityArchetype("RedBall", pos);
+
             //Log("RotatorScript started!");
             //Log($"Initial rotation: {Rotation}");
             //Log($"Rotation speed: {rotationSpeed} degrees/sec");

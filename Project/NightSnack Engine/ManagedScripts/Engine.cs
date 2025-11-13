@@ -49,6 +49,9 @@ namespace ManagedScripts
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern float GetDeltaTime_Internal();
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern float CreateEntityArchetype_Internal(string archetypeName, Vector3 pos);
+
         //[MethodImpl(MethodImplOptions.InternalCall)]
         //private static extern float GetTime_Internal();
 
@@ -96,6 +99,9 @@ namespace ManagedScripts
         public static bool IsKeyReleased(int keyCode) => IsKeyReleased_Internal(keyCode);
 
         public static void PlaySound(string path) => PlaySound_Internal(path);
+
+        public static void CreateEntityArchetype(string archetypeName, Vector3 pos) => CreateEntityArchetype_Internal(archetypeName, pos);
+
 
         public static float DeltaTime => GetDeltaTime_Internal();
         //public static float Time => GetTime_Internal();

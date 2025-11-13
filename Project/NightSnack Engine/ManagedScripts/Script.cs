@@ -37,5 +37,6 @@ namespace ManagedScripts
         protected bool IsKeyDown(int key) => Engine.IsKeyDown(key);
         protected bool IsKeyReleased(int key) => Engine.IsKeyReleased(key);
         protected void PlaySound(string path) => Engine.PlaySound(path);
+        protected void CreateEntityArchetype(string archetypeName, Vector3 pos) => Engine.CreateEntityArchetype(archetypeName, pos);
     }
 }   // ManagedScripts
