@@ -27,6 +27,7 @@ namespace NightSnack::Scripting {
 
     // --------------------------------------------------------------
     // Transform operations
+#pragma region Transform
     Trans ScriptInterface::GetTransform(Entity e) {
 
         Transform t = m_coord.GetComponent<Transform>(e);
@@ -35,6 +36,7 @@ namespace NightSnack::Scripting {
         result.pos = vec3(t.pos.x, t.pos.y, t.pos.z);
         result.rot = t.rot;
         result.scale = vec2(t.scale.x, t.scale.y);
+        result.layer = t.layer;
 
         return result;
     }
@@ -45,6 +47,7 @@ namespace NightSnack::Scripting {
         trans.pos = Vec3(t.pos.x, t.pos.y, t.pos.z);
         trans.rot = t.rot;
         trans.scale = Vec2(t.scale.x, t.scale.y);
+        trans.layer = t.layer;
     }
     // Position ----
     vec3 ScriptInterface::GetPosition(Entity e) {
@@ -84,9 +87,84 @@ namespace NightSnack::Scripting {
         LayerType& layer = m_coord.ModifyComponent<Transform>(e).layer;
         layer = lay;
     }
+#pragma endregion
+
+    // --------------------------------------------------------------
+    // Force Inputs
+#pragma region Force
+    Forc ScriptInterface::GetForce(Entity e) {
+
+        Force t = m_coord.GetComponent<Force>(e);
+        Forc result;
+
+        result.direction = vec2(t.direction.x, t.direction.y);
+        result.magnitude = t.magnitude;
+        result.isActive = t.isActive;
+        result.lifetime = t.lifetime;
+
+        return result;
+    }
+    void ScriptInterface::SetForce(Entity e, Forc& t) {
+
+        Force& force = m_coord.ModifyComponent<Force>(e);
+
+        force.direction = Vec2(t.direction.x, t.direction.y);
+        force.magnitude = t.magnitude;
+        force.isActive = t.isActive;
+        force.lifetime = t.lifetime;
+    }
+
+    // Direction ----
+    vec2 ScriptInterface::GetForceDirection(Entity e) {
+        Vec2 direction = m_coord.GetComponent<Force>(e).direction;
+        vec2 result = vec2(direction.x, direction.y);
+        return result;
+    }
+    void ScriptInterface::SetForceDirection(Entity e, vec2 pos) {
+        Vec2& direction = m_coord.ModifyComponent<Force>(e).direction;
+        direction = Vec3(pos.x, pos.y);
+    }
+
+    // Magnitude ----
+    float ScriptInterface::GetForceMagnitude(Entity e)
+    {
+        float magnitude = m_coord.GetComponent<Force>(e).magnitude;
+        return magnitude;
+    }
+    void ScriptInterface::SetForceMagnitude(Entity e, float mag)
+    {
+        float& magnitude = m_coord.ModifyComponent<Force>(e).magnitude;
+        magnitude = mag;
+    }
+
+    // Lifetime ----
+    float ScriptInterface::GetForceLifetime(Entity e)
+    {
+        float lifetime = m_coord.GetComponent<Force>(e).lifetime;
+        return lifetime;
+    }
+    void ScriptInterface::SetForceLifetime(Entity e, float life)
+    {
+        float& lifetime = m_coord.ModifyComponent<Force>(e).lifetime;
+        lifetime = life;
+    }
+
+    // Force ----
+    bool ScriptInterface::GetForceActive(Entity e)
+    {
+        bool isActive = m_coord.GetComponent<Force>(e).isActive;
+        return isActive;
+    }
+    void ScriptInterface::SetForceActive(Entity e, bool active)
+    {
+        bool& isActive = m_coord.ModifyComponent<Force>(e).isActive;
+        isActive = active;
+    }
+#pragma endregion
 
     // --------------------------------------------------------------
     // Key Inputs
+#pragma region Key/Buttons
     bool ScriptInterface::IsKeyPressed(int key) {
         return m_coord.GetSystem<InputSystem>()->IsKeyPressed(key);
     }
@@ -98,6 +176,8 @@ namespace NightSnack::Scripting {
     bool ScriptInterface::IsKeyReleased(int key) {
         return m_coord.GetSystem<InputSystem>()->IsKeyReleased(key);
     }
+#pragma endregion
+
     // --------------------------------------------------------------
     // Audio
     void ScriptInterface::PlaySound(const std::string& path) {

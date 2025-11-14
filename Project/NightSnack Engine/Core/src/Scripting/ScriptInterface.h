@@ -29,6 +29,7 @@ namespace NightSnack::Scripting {
         ScriptInterface(Coordinator& coord) : m_coord{ coord } {}
         ~ScriptInterface() = default;
 
+#pragma region Transform
         // Transform operations
         Trans GetTransform(Entity e);
         void SetTransform(Entity e, Trans& transform);
@@ -45,11 +46,33 @@ namespace NightSnack::Scripting {
 
         LayerType GetLayer(Entity e);
         void SetLayer(Entity e, LayerType lay);
+#pragma endregion
 
+#pragma region Force
+        // Force operations
+        Forc GetForce(Entity e);
+        void SetForce(Entity e, Forc& forc);
+
+        // Individual getters/setters
+        vec2 GetForceDirection(Entity e);
+        void SetForceDirection(Entity e, vec2 dir);
+
+        float GetForceMagnitude(Entity e);
+        void SetForceMagnitude(Entity e, float mag);
+
+        float GetForceLifetime(Entity e);
+        void SetForceLifetime(Entity e, float life);
+
+        bool GetForceActive(Entity e);
+        void SetForceActive(Entity e, bool active);
+#pragma endregion
+
+#pragma region Key/Inputs
         // Input
         bool IsKeyPressed(int key);
         bool IsKeyDown(int key);
         bool IsKeyReleased(int key);
+#pragma endregion
 
         // Audio
         void PlaySound(const std::string& path);

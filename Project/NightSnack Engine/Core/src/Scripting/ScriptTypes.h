@@ -52,7 +52,7 @@ namespace NightSnack::Scripting {
         vec3 pos;
         float rot{};
         vec2 scale;
-
+        NightSnack::LayerType layer;
         //NightSnack::Transform ToNative() {
         //    NightSnack::Transform t;
         //    t.pos = pos.ToNative();
@@ -67,6 +67,15 @@ namespace NightSnack::Scripting {
         //    ret.scale = vec2::FromNative(t.scale);
         //    return ret;
         //}
+    };
+
+    struct CORE_API Forc {
+        // Direction force
+        vec2 direction;
+        float magnitude;
+
+        float lifetime;
+        bool isActive;
     };
 
     // Handle to a game object (Similar to Entity ID)

@@ -41,6 +41,29 @@ namespace ManagedScripts
         private static extern void SetLayer_Internal(uint entityId, ref LayerType layer);
         #endregion
 
+        #region Force
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetForceDirection_Internal(uint entityId, out Vector2 position);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetForceDirection_Internal(uint entityId, ref Vector2 position);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetForceMagnitude_Internal(uint entityId, out float position);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetForceMagnitude_Internal(uint entityId, ref float position);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetForceLifetime_Internal(uint entityId, out float position);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetForceLifetime_Internal(uint entityId, ref float position);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetForceActive_Internal(uint entityId, out bool position);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetForceActive_Internal(uint entityId, ref bool position);
+
+        #endregion
+
         #region Key/Buttons
         // ----------------------
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -118,6 +141,48 @@ namespace ManagedScripts
         public static void SetLayer(uint entityId, LayerType layer)
         {
             SetLayer_Internal(entityId, ref layer);
+        }
+        #endregion
+
+        #region Force
+        public static Vector2 GetForceDirection(uint entityId)
+        {
+            GetForceDirection_Internal(entityId, out Vector2 dir);
+            return dir;
+        }
+        public static void SetForceDirection(uint entityId, Vector2 dir)
+        {
+            SetForceDirection_Internal(entityId, ref dir);
+        }
+
+        public static float GetForceMagnitude(uint entityId)
+        {
+            GetForceMagnitude_Internal(entityId, out float mag);
+            return mag;
+        }
+        public static void SetForceMagnitude(uint entityId, float mag)
+        {
+            SetForceMagnitude_Internal(entityId, ref mag);
+        }
+
+        public static float GetForceLifetime(uint entityId)
+        {
+            GetForceLifetime_Internal(entityId, out float life);
+            return life;
+        }
+        public static void SetForceLifetime(uint entityId, float life)
+        {
+            SetForceLifetime_Internal(entityId, ref life);
+        }
+
+        public static bool GetForceActive(uint entityId)
+        {
+            GetForceActive_Internal(entityId, out bool active);
+            return active;
+        }
+        public static void SetForceActive(uint entityId, bool active)
+        {
+            SetForceActive_Internal(entityId, ref active);
         }
         #endregion
 

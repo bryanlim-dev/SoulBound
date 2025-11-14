@@ -73,6 +73,52 @@ extern "C" {
 
     // --------------------------------------------------------------
 
+#pragma region Force
+    // Direction --------------
+    static void NightSnack_GetForceDirection(uint32_t id, NightSnack::Scripting::vec2* outdir) {
+        if (!g_scriptInterface || !outdir) { return; }
+        *outdir = g_scriptInterface->GetForceDirection(id);
+    }
+    static void NightSnack_SetForceDirection(uint32_t id, NightSnack::Scripting::vec2* dir) {
+        if (!g_scriptInterface || !dir) { return; }
+        g_scriptInterface->SetForceDirection(id, *dir);
+    }
+
+    // Magnitude --------------
+    static void NightSnack_GetForceMagnitude(uint32_t id, float* outmag) {
+        if (!g_scriptInterface || !outmag) { return; }
+        *outmag = g_scriptInterface->GetForceMagnitude(id);
+    }
+    static void NightSnack_SetForceMagnitude(uint32_t id, float* mag) {
+        if (!g_scriptInterface || !mag) { return; }
+        g_scriptInterface->SetForceMagnitude(id, *mag);
+    }
+
+    // Lifetime --------------
+    static void NightSnack_GetForceLifetime(uint32_t id, float* outLife) {
+        if (!g_scriptInterface || !outLife) { return; }
+        *outLife = g_scriptInterface->GetForceLifetime(id);
+    }
+    static void NightSnack_SetForceLifetime(uint32_t id, float* life) {
+        if (!g_scriptInterface || !life) { return; }
+        g_scriptInterface->SetForceLifetime(id, *life);
+    }
+
+    // Active --------------
+    static void NightSnack_GetForceActive(uint32_t id, bool* outActive) {
+        if (!g_scriptInterface || !outActive) { return; }
+        *outActive = g_scriptInterface->GetForceActive(id);
+    }
+    static void NightSnack_SetForceActive(uint32_t id, bool* active) {
+        if (!g_scriptInterface || !active) { return; }
+        g_scriptInterface->SetForceActive(id, *active);
+    }
+
+
+#pragma endregion //Force
+
+    // --------------------------------------------------------------
+
 #pragma region Key/Buttons
     // Input - Is Key Pressed (just pressed this frame)
     static bool NightSnack_IsKeyPressed(int keyCode) {
@@ -91,7 +137,7 @@ extern "C" {
         if (!g_scriptInterface) { return false; }
         return g_scriptInterface->IsKeyReleased(keyCode);
     }
-#pragma endregion
+#pragma endregion //Key/Buttons
 
     // --------------------------------------------------------------
 
@@ -155,9 +201,26 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::SetLayer_Internal", (void*)NightSnack_SetLayer);
 #pragma endregion
 
+#pragma region Force
+        mono_add_internal_call("ManagedScripts.Engine::GetForceDirection_Internal", (void*)NightSnack_GetForceDirection);
+        mono_add_internal_call("ManagedScripts.Engine::SetForceDirection_Internal", (void*)NightSnack_SetForceDirection);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetForceMagnitude_Internal", (void*)NightSnack_GetForceMagnitude);
+        mono_add_internal_call("ManagedScripts.Engine::SetForceMagnitude_Internal", (void*)NightSnack_SetForceMagnitude);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetForceLifetime_Internal", (void*)NightSnack_GetForceLifetime);
+        mono_add_internal_call("ManagedScripts.Engine::SetForceLifetime_Internal", (void*)NightSnack_SetForceLifetime);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetForceActive_Internal", (void*)NightSnack_GetForceActive);
+        mono_add_internal_call("ManagedScripts.Engine::SetForceActive_Internal", (void*)NightSnack_SetForceActive);
+#pragma endregion
+
+
+#pragma region Key/Inputs
         mono_add_internal_call("ManagedScripts.Engine::IsKeyPressed_Internal", (void*)NightSnack_IsKeyPressed);
         mono_add_internal_call("ManagedScripts.Engine::IsKeyDown_Internal", (void*)NightSnack_IsKeyDown);
         mono_add_internal_call("ManagedScripts.Engine::IsKeyReleased_Internal", (void*)NightSnack_IsKeyReleased);
+#pragma endregion
 
         mono_add_internal_call("ManagedScripts.Engine::Log_Internal", (void*)NightSnack_Log);
         mono_add_internal_call("ManagedScripts.Engine::PlaySound_Internal", (void*)NightSnack_PlaySound);

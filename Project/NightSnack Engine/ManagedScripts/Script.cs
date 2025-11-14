@@ -36,6 +36,14 @@ namespace ManagedScripts
         }
         #endregion
 
+        #region Force
+        protected Vector2 Direction
+        {
+            get => Engine.GetForceDirection(EntityId);
+            set => Engine.SetForceDirection(EntityId, value);
+        }
+        #endregion
+
         protected float DeltaTime => Engine.DeltaTime;
         //protected float Time => Engine.Time;
 
