@@ -9,26 +9,26 @@ namespace ManagedScripts
 
         public override void OnStart()
         {
-            //Vector3 pos;
-            //pos.X = 100;
-            //pos.Y = 100;
-            //pos.Z = 0;
-            //uint id1 = Engine.CreateEntityArchetype("RedBall", pos);
-            //pos.X = 200;
-            //uint id2 = Engine.CreateEntityArchetype("RedBall", pos);
+            Vector3 pos;
+            pos.X = 100;
+            pos.Y = 100;
+            pos.Z = 0;
+            uint id1 = Engine.CreateEntityArchetype("RedBall", pos);
+            pos.X = 200;
+            uint id2 = Engine.CreateEntityArchetype("RedBall", pos);
 
-            //Engine.SetLayer(id1, LayerType.GAMEUI);
-            //Engine.SetLayer(id2, LayerType._ENGINE2);
+            Engine.SetLayer(id1, LayerType.GAMEUI);
+            Engine.SetLayer(id2, LayerType._ENGINE2);
 
-            //Vector2 dir;
-            //dir.X = 1;
-            //dir.Y = 1;
-            //Engine.SetForceDirection(id2, dir);
-            //Engine.SetForceMagnitude(id2, 100);
-            //Engine.SetForceLifetime(id2, 0.5f);
-            //Engine.SetForceActive(id2, true);
+            Vector2 dir;
+            dir.X = 1;
+            dir.Y = 1;
+            Engine.SetForceDirection(id2, dir);
+            Engine.SetForceMagnitude(id2, 100);
+            Engine.SetForceLifetime(id2, 0.5f);
+            Engine.SetForceActive(id2, true);
 
-            
+
 
             //Log("RotatorScript started!");
             //Log($"Initial rotation: {Rotation}");

@@ -94,7 +94,7 @@ namespace NightSnack::Scripting {
 #pragma region Force
     Forc ScriptInterface::GetForce(Entity e) {
 
-        Force t = m_coord.GetComponent<Force>(e);
+        Force t = m_coord.GetComponent<RigidBody>(e).force;
         Forc result;
 
         result.direction = vec2(t.direction.x, t.direction.y);
@@ -106,7 +106,7 @@ namespace NightSnack::Scripting {
     }
     void ScriptInterface::SetForce(Entity e, Forc& t) {
 
-        Force& force = m_coord.ModifyComponent<Force>(e);
+        Force& force = m_coord.ModifyComponent<RigidBody>(e).force;
 
         force.direction = Vec2(t.direction.x, t.direction.y);
         force.magnitude = t.magnitude;
@@ -116,48 +116,48 @@ namespace NightSnack::Scripting {
 
     // Direction ----
     vec2 ScriptInterface::GetForceDirection(Entity e) {
-        Vec2 direction = m_coord.GetComponent<Force>(e).direction;
+        Vec2 direction = m_coord.GetComponent<RigidBody>(e).force.direction;
         vec2 result = vec2(direction.x, direction.y);
         return result;
     }
     void ScriptInterface::SetForceDirection(Entity e, vec2 pos) {
-        Vec2& direction = m_coord.ModifyComponent<Force>(e).direction;
+        Vec2& direction = m_coord.ModifyComponent<RigidBody>(e).force.direction;
         direction = Vec3(pos.x, pos.y);
     }
 
     // Magnitude ----
     float ScriptInterface::GetForceMagnitude(Entity e)
     {
-        float magnitude = m_coord.GetComponent<Force>(e).magnitude;
+        float magnitude = m_coord.GetComponent<RigidBody>(e).force.magnitude;
         return magnitude;
     }
     void ScriptInterface::SetForceMagnitude(Entity e, float mag)
     {
-        float& magnitude = m_coord.ModifyComponent<Force>(e).magnitude;
+        float& magnitude = m_coord.ModifyComponent<RigidBody>(e).force.magnitude;
         magnitude = mag;
     }
 
     // Lifetime ----
     float ScriptInterface::GetForceLifetime(Entity e)
     {
-        float lifetime = m_coord.GetComponent<Force>(e).lifetime;
+        float lifetime = m_coord.GetComponent<RigidBody>(e).force.lifetime;
         return lifetime;
     }
     void ScriptInterface::SetForceLifetime(Entity e, float life)
     {
-        float& lifetime = m_coord.ModifyComponent<Force>(e).lifetime;
+        float& lifetime = m_coord.ModifyComponent<RigidBody>(e).force.lifetime;
         lifetime = life;
     }
 
     // Force ----
     bool ScriptInterface::GetForceActive(Entity e)
     {
-        bool isActive = m_coord.GetComponent<Force>(e).isActive;
+        bool isActive = m_coord.GetComponent<RigidBody> (e).force.isActive;
         return isActive;
     }
     void ScriptInterface::SetForceActive(Entity e, bool active)
     {
-        bool& isActive = m_coord.ModifyComponent<Force>(e).isActive;
+        bool& isActive = m_coord.ModifyComponent<RigidBody>(e).force.isActive;
         isActive = active;
     }
 #pragma endregion
