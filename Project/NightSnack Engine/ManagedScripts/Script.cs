@@ -59,6 +59,42 @@ namespace ManagedScripts
             set => Engine.SetForceActive(EntityId, value);
         }
         #endregion //Force
+
+        protected Vector2 Velocity
+        {
+            get => Engine.GetVelocity(EntityId);
+            set => Engine.SetVelocity(EntityId, value);
+        }
+        protected Vector2 Accleration
+        {
+            get => Engine.GetAcceleration(EntityId);
+            set => Engine.SetAcceleration(EntityId, value);
+        }
+        protected float InvMass
+        {
+            get => Engine.GetInvMass(EntityId);
+            set => Engine.SetInvMass(EntityId, value);
+        }
+        protected float InvInertia
+        {
+            get => Engine.GetInvInertia(EntityId);
+            set => Engine.SetInvInertia(EntityId, value);
+        }
+        protected float Restitution
+        {
+            get => Engine.GetRestitution(EntityId);
+            set => Engine.SetRestitution(EntityId, value);
+        }
+        protected bool UseGravity
+        {
+            get => Engine.GetUseGravity(EntityId);
+            set => Engine.SetUseGravity(EntityId, value);
+        }
+        protected bool UseRotate
+        {
+            get => Engine.GetUseRotate(EntityId);
+            set => Engine.SetUseRotate(EntityId, value);
+        }
         #endregion //Rigidbody
 
         protected float DeltaTime => Engine.DeltaTime;

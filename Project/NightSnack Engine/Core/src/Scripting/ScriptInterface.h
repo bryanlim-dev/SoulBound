@@ -48,6 +48,7 @@ namespace NightSnack::Scripting {
         void SetLayer(Entity e, LayerType lay);
 #pragma endregion
 
+#pragma region Rigidbody
 #pragma region Force
         // Force operations
         Forc GetForce(Entity e);
@@ -65,7 +66,32 @@ namespace NightSnack::Scripting {
 
         bool GetForceActive(Entity e);
         void SetForceActive(Entity e, bool active);
-#pragma endregion
+#pragma endregion //Force
+
+        vec2 GetVelocity(Entity e);
+        void SetVelocity(Entity e, vec2 vel);
+
+        vec2 GetAcceleration(Entity e);
+        void SetAcceleration(Entity e, vec2 accel);
+
+        float GetInvMass(Entity e);
+        void SetInvMass(Entity e, float invmas);
+
+        float GetInvInertia(Entity e);
+        void SetInvInertia(Entity e, float invInertia);
+
+        float GetRestitution(Entity e);
+        void SetRestitution(Entity e, float restitution);
+
+        bool GetUseGravity(Entity e);
+        void SetUseGravity(Entity e, bool useGravity);
+
+        bool GetUseRotate(Entity e);
+        void SetUseRotate(Entity e, bool useRotate);
+
+
+
+#pragma endregion //Rigidbody
 
 #pragma region Key/Inputs
         // Input

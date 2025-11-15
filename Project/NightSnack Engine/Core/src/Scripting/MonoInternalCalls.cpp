@@ -73,6 +73,7 @@ extern "C" {
 
     // --------------------------------------------------------------
 
+#pragma region Rigidbody
 #pragma region Force
     // Direction --------------
     static void NightSnack_GetForceDirection(uint32_t id, NightSnack::Scripting::vec2* outdir) {
@@ -116,6 +117,77 @@ extern "C" {
 
 
 #pragma endregion //Force
+
+    // Velocity -----------------
+    static void NightSnack_GetVelocity(uint32_t id, NightSnack::Scripting::vec2* outVel) {
+        if (!g_scriptInterface || !outVel) { return; }
+        *outVel = g_scriptInterface->GetVelocity(id);
+    }
+    static void NightSnack_SetVelocity(uint32_t id, NightSnack::Scripting::vec2* vel) {
+        if (!g_scriptInterface || !vel) { return; }
+        g_scriptInterface->SetVelocity(id, *vel);
+    }
+
+    // Acceleration -----------------
+    static void NightSnack_GetAcceleration(uint32_t id, NightSnack::Scripting::vec2* outAcc) {
+        if (!g_scriptInterface || !outAcc) { return; }
+        *outAcc = g_scriptInterface->GetAcceleration(id);
+    }
+    static void NightSnack_SetAcceleration(uint32_t id, NightSnack::Scripting::vec2* acc) {
+        if (!g_scriptInterface || !acc) { return; }
+        g_scriptInterface->SetAcceleration(id, *acc);
+    }
+
+    // InvMass --------------
+    static void NightSnack_GetInvMass(uint32_t id, float* outInvMass) {
+        if (!g_scriptInterface || !outInvMass) { return; }
+        *outInvMass = g_scriptInterface->GetInvMass(id);
+    }
+    static void NightSnack_SetInvMass(uint32_t id, float* invMass) {
+        if (!g_scriptInterface || !invMass) { return; }
+        g_scriptInterface->SetInvMass(id, *invMass);
+    }
+
+    // InvInertia --------------
+    static void NightSnack_GetInvInertia(uint32_t id, float* outInvInertia) {
+        if (!g_scriptInterface || !outInvInertia) { return; }
+        *outInvInertia = g_scriptInterface->GetInvInertia(id);
+    }
+    static void NightSnack_SetInvInertia(uint32_t id, float* invInertia) {
+        if (!g_scriptInterface || !invInertia) { return; }
+        g_scriptInterface->SetInvInertia(id, *invInertia);
+    }
+
+    // Restitution --------------
+    static void NightSnack_GetRestitution(uint32_t id, float* outrestitution) {
+        if (!g_scriptInterface || !outrestitution) { return; }
+        *outrestitution = g_scriptInterface->GetRestitution(id);
+    }
+    static void NightSnack_SetRestitution(uint32_t id, float* restitution) {
+        if (!g_scriptInterface || !restitution) { return; }
+        g_scriptInterface->SetRestitution(id, *restitution);
+    }
+
+    // UseGravity --------------
+    static void NightSnack_GetUseGravity(uint32_t id, bool* outuseGravity) {
+        if (!g_scriptInterface || !outuseGravity) { return; }
+        *outuseGravity = g_scriptInterface->GetUseGravity(id);
+    }
+    static void NightSnack_SetUseGravity(uint32_t id, bool* useGravity) {
+        if (!g_scriptInterface || !useGravity) { return; }
+        g_scriptInterface->SetUseGravity(id, *useGravity);
+    }
+
+    // UseRotate --------------
+    static void NightSnack_GetUseRotate(uint32_t id, bool* outuseRotate) {
+        if (!g_scriptInterface || !outuseRotate) { return; }
+        *outuseRotate = g_scriptInterface->GetUseRotate(id);
+    }
+    static void NightSnack_SetUseRotate(uint32_t id, bool* useRotate) {
+        if (!g_scriptInterface || !useRotate) { return; }
+        g_scriptInterface->SetUseRotate(id, *useRotate);
+    }
+#pragma endregion //Rigidbody
 
     // --------------------------------------------------------------
 
@@ -201,6 +273,7 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::SetLayer_Internal", (void*)NightSnack_SetLayer);
 #pragma endregion
 
+#pragma region Rigidbody
 #pragma region Force
         mono_add_internal_call("ManagedScripts.Engine::GetForceDirection_Internal", (void*)NightSnack_GetForceDirection);
         mono_add_internal_call("ManagedScripts.Engine::SetForceDirection_Internal", (void*)NightSnack_SetForceDirection);
@@ -213,7 +286,38 @@ namespace NightSnack::Scripting {
 
         mono_add_internal_call("ManagedScripts.Engine::GetForceActive_Internal", (void*)NightSnack_GetForceActive);
         mono_add_internal_call("ManagedScripts.Engine::SetForceActive_Internal", (void*)NightSnack_SetForceActive);
-#pragma endregion
+#pragma endregion //Force
+        
+        //Velocity
+        mono_add_internal_call("ManagedScripts.Engine::GetVelocity_Internal", (void*)NightSnack_GetVelocity);
+        mono_add_internal_call("ManagedScripts.Engine::SetVelocity_Internal", (void*)NightSnack_SetVelocity);
+
+        //Acceleration
+        mono_add_internal_call("ManagedScripts.Engine::GetAcceleration_Internal", (void*)NightSnack_GetAcceleration);
+        mono_add_internal_call("ManagedScripts.Engine::SetAcceleration_Internal", (void*)NightSnack_SetAcceleration);
+
+        //InvMass
+        mono_add_internal_call("ManagedScripts.Engine::GetInvMass_Internal", (void*)NightSnack_GetInvMass);
+        mono_add_internal_call("ManagedScripts.Engine::SetInvMass_Internal", (void*)NightSnack_SetInvMass);
+
+        //InvInertia
+        mono_add_internal_call("ManagedScripts.Engine::GetInvInertia_Internal", (void*)NightSnack_GetInvInertia);
+        mono_add_internal_call("ManagedScripts.Engine::SetInvInertia_Internal", (void*)NightSnack_SetInvInertia);
+
+        //Restitution
+        mono_add_internal_call("ManagedScripts.Engine::GetRestitution_Internal", (void*)NightSnack_GetRestitution);
+        mono_add_internal_call("ManagedScripts.Engine::SetRestitution_Internal", (void*)NightSnack_SetRestitution);
+
+        //UseGravity
+        mono_add_internal_call("ManagedScripts.Engine::GetUseGravity_Internal", (void*)NightSnack_GetUseGravity);
+        mono_add_internal_call("ManagedScripts.Engine::SetUseGravity_Internal", (void*)NightSnack_SetUseGravity);
+
+        //UseRotate
+        mono_add_internal_call("ManagedScripts.Engine::GetUseRotate_Internal", (void*)NightSnack_GetUseRotate);
+        mono_add_internal_call("ManagedScripts.Engine::SetUseRotate_Internal", (void*)NightSnack_SetUseRotate);
+
+
+#pragma endregion //RigidBody
 
 
 #pragma region Key/Inputs

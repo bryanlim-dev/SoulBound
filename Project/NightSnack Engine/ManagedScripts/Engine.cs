@@ -41,6 +41,7 @@ namespace ManagedScripts
         private static extern void SetLayer_Internal(uint entityId, ref LayerType layer);
         #endregion
 
+        #region Rigidbody
         #region Force
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void GetForceDirection_Internal(uint entityId, out Vector2 position);
@@ -61,8 +62,53 @@ namespace ManagedScripts
         private static extern void GetForceActive_Internal(uint entityId, out bool position);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetForceActive_Internal(uint entityId, ref bool position);
+        #endregion //Force
 
-        #endregion
+
+        //Velocity
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetVelocity_Internal(uint entityId, out Vector2 vel);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetVelocity_Internal(uint entityId, ref Vector2 vel);
+
+        //Acceleration
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAcceleration_Internal(uint entityId, out Vector2 acc);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAcceleration_Internal(uint entityId, ref Vector2 acc);
+
+        //InvMass
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetInvMass_Internal(uint entityId, out float invMass);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetInvMass_Internal(uint entityId, ref float invMass);
+
+        //InvInertia
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetInvInertia_Internal(uint entityId, out float invInertia);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetInvInertia_Internal(uint entityId, ref float invInertia);
+
+        //Restitution
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetRestitution_Internal(uint entityId, out float restitution);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetRestitution_Internal(uint entityId, ref float restitution);
+
+        //UseGravity
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetUseGravity_Internal(uint entityId, out bool gravity);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetUseGravity_Internal(uint entityId, ref bool gravity);
+
+        //UseRotate
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetUseRotate_Internal(uint entityId, out bool rotate);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetUseRotate_Internal(uint entityId, ref bool rotate);
+
+
+        #endregion //Rigibody
 
         #region Key/Buttons
         // ----------------------
@@ -190,7 +236,82 @@ namespace ManagedScripts
         }
         #endregion //Force
 
+        //--Velocity--
+        public static Vector2 GetVelocity(uint entityId)
+        {
+            GetVelocity_Internal(entityId, out Vector2 vel);
+            return vel;
+        }
+        public static void SetVelocity(uint entityId, Vector2 vel)
+        {
+            SetVelocity_Internal(entityId, ref vel);
+        }
 
+        //--Acceleration--
+        public static Vector2 GetAcceleration(uint entityId)
+        {
+            GetAcceleration_Internal(entityId, out Vector2 acc);
+            return acc;
+        }
+        public static void SetAcceleration(uint entityId, Vector2 acc)
+        {
+            SetAcceleration_Internal(entityId, ref acc);
+        }
+
+        //--InvMass--
+        public static float GetInvMass(uint entityId)
+        {
+            GetInvMass_Internal(entityId, out float mass);
+            return mass;
+        }
+        public static void SetInvMass(uint entityId, float mass)
+        {
+            SetInvMass_Internal(entityId, ref mass);
+        }
+
+        //--InvInertia--
+        public static float GetInvInertia(uint entityId)
+        {
+            GetInvInertia_Internal(entityId, out float inertia);
+            return inertia;
+        }
+        public static void SetInvInertia(uint entityId, float inertia)
+        {
+            SetInvInertia_Internal(entityId, ref inertia);
+        }
+
+        //--Restitution--
+        public static float GetRestitution(uint entityId)
+        {
+            GetRestitution_Internal(entityId, out float restitution);
+            return restitution;
+        }
+        public static void SetRestitution(uint entityId, float restitution)
+        {
+            SetRestitution_Internal(entityId, ref restitution);
+        }
+
+        //--UseGravity--
+        public static bool GetUseGravity(uint entityId)
+        {
+            GetUseGravity_Internal(entityId, out bool gravity);
+            return gravity;
+        }
+        public static void SetUseGravity(uint entityId, bool gravity)
+        {
+            SetUseGravity_Internal(entityId, ref gravity);
+        }
+
+        //--UseRotate--
+        public static bool GetUseRotate(uint entityId)
+        {
+            GetUseRotate_Internal(entityId, out bool rotate);
+            return rotate;
+        }
+        public static void SetUseRotate(uint entityId, bool rotate)
+        {
+            SetUseRotate_Internal(entityId, ref rotate);
+        }
         #endregion //Rigibody
 
         #region Key/Buttons

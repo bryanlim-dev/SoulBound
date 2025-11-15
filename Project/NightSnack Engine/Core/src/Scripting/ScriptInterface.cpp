@@ -90,6 +90,9 @@ namespace NightSnack::Scripting {
 #pragma endregion
 
     // --------------------------------------------------------------
+    // Rigidbody Inputs
+#pragma region Rigidbody
+    // --------------------------------------------------------------
     // Force Inputs
 #pragma region Force
     Forc ScriptInterface::GetForce(Entity e) {
@@ -149,7 +152,7 @@ namespace NightSnack::Scripting {
         lifetime = life;
     }
 
-    // Force ----
+    // Force Active ----
     bool ScriptInterface::GetForceActive(Entity e)
     {
         bool isActive = m_coord.GetComponent<RigidBody> (e).force.isActive;
@@ -160,7 +163,72 @@ namespace NightSnack::Scripting {
         bool& isActive = m_coord.ModifyComponent<RigidBody>(e).force.isActive;
         isActive = active;
     }
-#pragma endregion
+#pragma endregion //Force
+
+    // Velocity ----
+    vec2 ScriptInterface::GetVelocity(Entity e) {
+        Vec2 vel = m_coord.GetComponent<RigidBody>(e).vel;
+        vec2 result = vec2(vel.x, vel.y);
+        return result;
+    }
+    void ScriptInterface::SetVelocity(Entity e, vec2 vel) {
+        Vec2& velocity = m_coord.ModifyComponent<RigidBody>(e).vel;
+        velocity = Vec2(vel.x, vel.y);
+    }
+
+    // Acceleration ----
+    vec2 ScriptInterface::GetAcceleration(Entity e) {
+        Vec2 acc = m_coord.GetComponent<RigidBody>(e).accel;
+        vec2 result = vec2(acc.x, acc.y);
+        return result;
+    }
+    void ScriptInterface::SetAcceleration(Entity e, vec2 accel) {
+        Vec2& acceleration = m_coord.ModifyComponent<RigidBody>(e).accel;
+        acceleration = Vec2(accel.x, accel.y);
+    }
+
+    // InvMass ----
+    float ScriptInterface::GetInvMass(Entity e) {
+        return m_coord.GetComponent<RigidBody>(e).invMass;
+    }
+    void ScriptInterface::SetInvMass(Entity e, float invmas) {
+        m_coord.ModifyComponent<RigidBody>(e).invMass = invmas;
+    }
+
+    // InvInertia ----
+    float ScriptInterface::GetInvInertia(Entity e) {
+        return m_coord.GetComponent<RigidBody>(e).invInertia;
+    }
+    void ScriptInterface::SetInvInertia(Entity e, float invIner) {
+        m_coord.ModifyComponent<RigidBody>(e).invInertia = invIner;
+    }
+
+    // Restitution ----
+    float ScriptInterface::GetRestitution(Entity e) {
+        return m_coord.GetComponent<RigidBody>(e).restitution;
+    }
+    void ScriptInterface::SetRestitution(Entity e, float restitution) {
+        m_coord.ModifyComponent<RigidBody>(e).restitution = restitution;
+    }
+
+    // UseGravity ----
+    bool ScriptInterface::GetUseGravity(Entity e) {
+        return m_coord.GetComponent<RigidBody>(e).useGravity;
+    }
+    void ScriptInterface::SetUseGravity(Entity e, bool useGravity) {
+        m_coord.ModifyComponent<RigidBody>(e).useGravity = useGravity;
+    }
+
+    // UseRotate ----
+    bool ScriptInterface::GetUseRotate(Entity e) {
+        return m_coord.GetComponent<RigidBody>(e).useRotate;
+    }
+    void ScriptInterface::SetUseRotate(Entity e, bool useRotate) {
+        m_coord.ModifyComponent<RigidBody>(e).useRotate = useRotate;
+    }
+
+
+#pragma endregion //Rigidbody
 
     // --------------------------------------------------------------
     // Key Inputs

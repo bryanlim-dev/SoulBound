@@ -28,6 +28,12 @@ namespace ManagedScripts
             Engine.SetForceLifetime(id2, 0.5f);
             Engine.SetForceActive(id2, true);
 
+            Vector2 vel;
+            vel.X = 150;
+            vel.Y = 0;
+            Engine.SetUseGravity(id1, true);
+            Engine.SetVelocity(id1, vel);
+
 
 
             //Log("RotatorScript started!");
