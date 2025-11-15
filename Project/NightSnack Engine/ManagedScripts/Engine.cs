@@ -144,6 +144,10 @@ namespace ManagedScripts
         }
         #endregion
 
+        // ----------------------------
+        // Rigidbody API for Scripts
+        // ----------------------------
+        #region Rigidbody
         #region Force
         public static Vector2 GetForceDirection(uint entityId)
         {
@@ -184,7 +188,10 @@ namespace ManagedScripts
         {
             SetForceActive_Internal(entityId, ref active);
         }
-        #endregion
+        #endregion //Force
+
+
+        #endregion //Rigibody
 
         #region Key/Buttons
         public static bool IsKeyPressed(int keyCode) => IsKeyPressed_Internal(keyCode);

@@ -36,13 +36,30 @@ namespace ManagedScripts
         }
         #endregion
 
+        #region RigidBody
         #region Force
-        protected Vector2 Direction
+        protected Vector2 ForceDirection
         {
             get => Engine.GetForceDirection(EntityId);
             set => Engine.SetForceDirection(EntityId, value);
         }
-        #endregion
+        protected float ForceMagnitude
+        {
+            get => Engine.GetForceMagnitude(EntityId);
+            set => Engine.SetForceMagnitude(EntityId, value);
+        }
+        protected float ForceLifetime
+        {
+            get => Engine.GetForceLifetime(EntityId);
+            set => Engine.SetForceLifetime(EntityId, value);
+        }
+        protected bool ForceActive 
+        {
+            get => Engine.GetForceActive(EntityId);
+            set => Engine.SetForceActive(EntityId, value);
+        }
+        #endregion //Force
+        #endregion //Rigidbody
 
         protected float DeltaTime => Engine.DeltaTime;
         //protected float Time => Engine.Time;
