@@ -20,21 +20,6 @@
 namespace NightSnack {
 
 	void TextSystem::Init() {
-		std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
-
-		// Use the Resource Manager to load the fonts
-		size_t fontKeyDefault = 0;
-		rm->LoadFont("../assets/Font/buggy-font.ttf", fontKeyDefault);
-		m_fonts["default"] = fontKeyDefault;
-
-		size_t fontKeyLiberation = 0;
-		rm->LoadFont("../assets/Font/liberation-mono.ttf", fontKeyLiberation);
-		m_fonts["liberation"] = fontKeyLiberation;
-
-		// Generate glyphs for the loaded fonts
-		LoadFontGlyphs(fontKeyDefault, "default");
-		LoadFontGlyphs(fontKeyLiberation, "liberation");
-
 		// Configure VAO/VBO for rendering character quads
 		glGenVertexArrays(1, &m_vao);
 		glGenBuffers(1, &m_vbo);
@@ -49,6 +34,34 @@ namespace NightSnack {
 		// Only will use the text shader file from the Graphics System
 		auto& shaders = m_coord.GetSystem<GraphicsSystem>()->GetShadersMap();
 		m_shader = shaders.find("text")->second.get();
+
+		// THE CREATION OF THIS FONT WILL EITHER BE ENTIRELY REMOVED OR MOVED TO RESOURCE MANAGER DEFAULT LOADINGS
+		CreateFont("../assets/Font/buggy-font.ttf");
+		//CreateFont("../assets/Font/liberation-mono.ttf");
+	}
+
+	void TextSystem::CreateFont(const std::string& fontFilePath) {
+		std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
+
+		// Use the Resource Manager to load the fonts
+		size_t fontKey = 0;
+		rm->LoadFont(fontFilePath, fontKey);
+
+		// Generate glyphs for the loaded fonts
+		LoadFontGlyphs(fontKey, fontFilePath);
+	}
+
+	void TextSystem::UpdateFont(const std::string& newFontFilePath, Entity e) {
+
+		// Check whether the font exists first
+		if (m_fontCharacters.find(newFontFilePath) == m_fontCharacters.end()) {
+			// Create the new font if it does not exist yet
+			CreateFont(newFontFilePath);
+		}
+
+		// Change the font type accordingly
+		auto& font = m_coord.ModifyComponent<Font>(e);
+		font.fontType = newFontFilePath;
 	}
 
 	void TextSystem::LoadFontGlyphs(size_t fontKey, const std::string& name) {
@@ -141,10 +154,15 @@ namespace NightSnack {
 
 				auto& pos = m_coord.GetComponent<Transform>(e).pos;
 				auto& scale = m_coord.GetComponent<Transform>(e).scale;
-				auto& txt = m_coord.GetComponent<Font>(e);
+				auto& txt = m_coord.ModifyComponent<Font>(e);
 
 				// Flip the y pos for entities on the UI layer
 				float posYToUse = isUILayer ? screenH - pos.y : pos.y;
+
+				// If it is empty, make it use the default font, which is the first font in the map
+				if (txt.fontType.empty()) {
+					txt.fontType = m_fontCharacters.begin()->first;
+				}
 
 				// Render the actual text string
 				RenderText(txt.text, pos.x, posYToUse, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType);

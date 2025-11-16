@@ -20,7 +20,8 @@ namespace NightSnack {
     {
         Input,
         Collision,
-        Audio
+        Audio,
+        Graphics
     };
 
     // Input event (keyboard/mouse)
@@ -107,6 +108,21 @@ namespace NightSnack {
             : action(act), soundId(id) {
         }
         EventType GetType() const override { return EventType::Audio; }
+    };
+
+    // Graphics event
+    class GraphicsEvent : public IEvent
+    {
+    public:
+
+        enum class GraphicsAction {
+            CreateTexture = 0
+        };
+
+        GraphicsAction graphicsAction;
+
+        GraphicsEvent(GraphicsAction a) : graphicsAction(a) {}
+        EventType GetType() const override { return EventType::Graphics; }
     };
 
 }   // NightSnack

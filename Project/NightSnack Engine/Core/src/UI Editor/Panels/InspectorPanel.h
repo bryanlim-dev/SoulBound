@@ -36,14 +36,15 @@ namespace NightSnack
 		    - Shared pointer to map of entity to UI names.
         */
         /************************************************************************/
-        InspectorPanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity, std::shared_ptr<std::unordered_map<Entity, std::string>> uiNames)
-            : m_coord(coord), m_selectedEntity(selectedEntity), m_uiNames(uiNames) 
+        InspectorPanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity, std::shared_ptr<std::unordered_map<Entity, std::string>> uiNames, Tilemap& tilemap)
+			: m_coord(coord), m_selectedEntity(selectedEntity), m_uiNames(uiNames), m_tilemap(tilemap)
         {
             // Default order
             m_components =
             {
                 "Transform",
                 "Physics",
+                "Tilemap",
                 "Rigidbody",
                 "Collider",
                 "Renderer",
@@ -80,6 +81,7 @@ namespace NightSnack
                     bool hasComponent = false;
                     if (compName == "Transform") { hasComponent = m_coord.HasComponent<Transform>(*m_selectedEntity); }
                     if (compName == "Physics")   { hasComponent = true; }
+					if (compName == "Tilemap")   { hasComponent = true; }
                     if (compName == "Rigidbody") { hasComponent = m_coord.HasComponent<RigidBody>(*m_selectedEntity); }
                     if (compName == "Collider")  { hasComponent = m_coord.HasComponent<Collider>(*m_selectedEntity); }
                     if (compName == "Renderer")  { hasComponent = m_coord.HasComponent<Renderable>(*m_selectedEntity); }
@@ -125,6 +127,7 @@ namespace NightSnack
                         {
                             if (compName == "Transform") { TransformComponent(); }
                             if (compName == "Physics")   { PhysicsComponent(); }
+							if (compName == "Tilemap")      { TilemapComponent(); }
                             if (compName == "Rigidbody") { RigidBodyComponent(); }
                             if (compName == "Collider")  { ColliderComponent(); }
                             if (compName == "Renderer")  { RendererComponent(); }
@@ -139,6 +142,7 @@ namespace NightSnack
                 }
 
                 AddComponentButton();
+                RemoveComponentButton();
             }
             else
             {
@@ -154,6 +158,8 @@ namespace NightSnack
         std::shared_ptr<std::unordered_map<Entity, std::string>> m_uiNames;
 
         std::vector<std::string> m_components;
+
+		Tilemap& m_tilemap;
 
         /************************************************************************/
         /*!
@@ -183,6 +189,14 @@ namespace NightSnack
         */
         /************************************************************************/
         void PhysicsComponent();
+
+        /************************************************************************/
+        /*!
+        \brief
+			Draws Tilemap component details which displays tilemap overlay in Scene.
+        */
+        /************************************************************************/
+        void TilemapComponent();
 
         /************************************************************************/
         /*!
@@ -244,6 +258,14 @@ namespace NightSnack
         */
         /************************************************************************/
         void AddComponentButton();
+
+        /************************************************************************/
+        /*!
+        \brief
+            Adds a button to add new components to the selected entity.
+        */
+        /************************************************************************/
+        void RemoveComponentButton();
     };
 
 	// Draws basic information of the entity such as name and ID.
@@ -370,6 +392,13 @@ namespace NightSnack
 
             ImGui::EndTable();
         }
+    }
+
+	// Draws Tilemap component details which displays tilemap overlay in Scene.
+    inline void InspectorPanel::TilemapComponent()
+    {
+        m_tilemap.DrawTilemapSettings();
+        m_tilemap.DrawTileEditor(m_coord, *m_selectedEntity);
     }
 
 	// Draws RigidBody component details which includes velocity, angular
@@ -741,5 +770,72 @@ namespace NightSnack
             ImGui::EndPopup();
         }
 	}
+
+    inline void InspectorPanel::RemoveComponentButton()
+    {
+        // Center the button horizontally
+        ImGui::Dummy(ImVec2(0.0f, 5.0f));
+        float panelWidth = ImGui::GetWindowSize().x;
+        float buttonWidth = 150.0f;
+        ImGui::SetCursorPosX((panelWidth - buttonWidth) * 0.5f);
+
+        // Build a list of removable components (exclude Transform and Physics)
+        struct CompInfo { const char* name; bool has; std::function<void()> remove; };
+        std::vector<CompInfo> removable;
+        Entity e = *m_selectedEntity;
+        if (m_coord.HasComponent<RigidBody>(e))   removable.push_back({ "Rigidbody", true, [this, e] { m_coord.RemoveComponent<RigidBody>(e); } });
+        if (m_coord.HasComponent<Collider>(e))    removable.push_back({ "Collider", true, [this, e] { m_coord.RemoveComponent<Collider>(e); } });
+        if (m_coord.HasComponent<Renderable>(e))  removable.push_back({ "Renderer", true, [this, e] { m_coord.RemoveComponent<Renderable>(e); } });
+        if (m_coord.HasComponent<Script>(e))      removable.push_back({ "Scripting", true, [this, e] { m_coord.RemoveComponent<Script>(e); } });
+        if (m_coord.HasComponent<Animator>(e))    removable.push_back({ "Animator", true, [this, e] { m_coord.RemoveComponent<Animator>(e); } });
+        if (m_coord.HasComponent<Font>(e))        removable.push_back({ "Font", true, [this, e] { m_coord.RemoveComponent<Font>(e); } });
+
+        // Disable button if no components left to remove
+        if (removable.empty())
+        {
+            ImGui::BeginDisabled();
+            ImGui::Button("Remove Component", ImVec2(buttonWidth, 0));
+            ImGui::EndDisabled();
+            return;
+        }
+
+        ImVec2 buttonPos = ImGui::GetCursorScreenPos();
+        if (ImGui::Button("Remove Component", ImVec2(buttonWidth, 0)))
+        {
+            float availableBelow = ImGui::GetWindowPos().y + ImGui::GetWindowSize().y - (buttonPos.y + ImGui::GetFrameHeight());
+            float popupHeight = ImGui::GetFrameHeight() * static_cast<float>(removable.size());
+
+            if (availableBelow < popupHeight)
+            {
+                // Anchor popup's bottom to button's bottom
+                ImGui::SetNextWindowPos(ImVec2(buttonPos.x, buttonPos.y + ImGui::GetFrameHeight() - popupHeight), ImGuiCond_Appearing);
+            }
+            else
+            {
+                // Default: show below
+                ImGui::SetNextWindowPos(ImVec2(buttonPos.x, buttonPos.y + ImGui::GetFrameHeight()), ImGuiCond_Appearing);
+            }
+            ImGui::OpenPopup("RemoveComponentPopup");
+        }
+
+        // Lambda to handle menu item creation and component removal
+        auto removeMenuItem = [this](const char* name, auto removeFunc, bool hasComponent) {
+            if (hasComponent) {
+                if (ImGui::MenuItem(name)) {
+                    removeFunc();
+                    ImGui::CloseCurrentPopup();
+                }
+            }
+            };
+
+        if (ImGui::BeginPopup("RemoveComponentPopup"))
+        {
+            for (const auto& info : removable)
+            {
+                removeMenuItem(info.name, info.remove, info.has);
+            }
+            ImGui::EndPopup();
+        }
+    }
 
 } // NightSnack
