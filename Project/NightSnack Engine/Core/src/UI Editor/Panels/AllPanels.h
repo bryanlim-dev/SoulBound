@@ -25,6 +25,7 @@
 #include "AssetsPanel.h"
 #include "PrefabsPanel.h"
 #include "FilesPanel.h"
+#include "ScriptsPanel.h"
 
 #endif // ALLPANEL_HPP
 
