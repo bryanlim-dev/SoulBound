@@ -295,17 +295,17 @@ namespace NightSnack {
 		}
 
 		// Remove component;
-		m_componentManager->RemoveComponent(e);
+		m_componentManager->RemoveComponent<T>(e);
 
 		// Obtain the Entity's component Signature;
-		Signature sig = m_entityManager->GetSignature();
+		Signature sig = m_entityManager->GetSignature(e);
 		// Modify the Signature to remove specified Component of type T;
 		sig.set(GetComponentTypeID<T>(), false);
 
 		// Update the actual Signature of Entity e;
 		m_entityManager->SetSignature(e, sig);
 		// Inform the SystemManager that Entity e's Signature has changed;
-		m_systemManager->EntitySignatureChanged(e, sig);
+		m_systemManager->EntitySignatureChanged(e, sig, GetComponent<Transform>(e).layer);
 	}
 
 	template <typename T>

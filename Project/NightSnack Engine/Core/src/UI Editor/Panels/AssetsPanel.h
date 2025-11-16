@@ -1,11 +1,11 @@
 /******************************************************************************
  * File:        AssetsPanel.h
  * Project:     NightSnack
- * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Drawing of assets and files tab with thumbnails
- *              
+ * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Unified assets panel
+ *
  * Description:
- * Assets panel displaying and handling all game assets.
- * Displays thumbnails for images and allows importing files from external sources.
+ * Unified assets panel displaying all assets in a hierarchical folder structure.
+ * Integrates Images, Files, Scripts, and Prefabs in one view.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -16,38 +16,60 @@
 #include "Graphics/Texture.h"
 #include "Factory/EntityFactory.h"
 #include "PrefabsPanel.h"
+#include "FilesPanel.h"
+#include "ScriptsPanel.h"
 #include <stb_image.h>
 
 namespace fs = std::filesystem;
 
 namespace NightSnack
 {
+    enum class AssetType
+    {
+        Folder,
+        Image,
+        Script,
+        Prefab,
+        Other
+    };
+
+    struct AssetItem
+    {
+        std::string name;
+        fs::path fullPath;
+        AssetType type;
+        bool isDirectory;
+    };
+
     /**
-    * @brief Assets Panel for managing game assets
+    * @brief assets panel for managing all game assets
     */
     class AssetsPanel {
     public:
         /**
-        * @brief Constructor
+        * @brief constructor
         * @param coord reference to the ECS coordinator
         */
         AssetsPanel(Coordinator& coord) :
             m_coord(coord),
             m_assetsRoot("../../../NightSnack Engine/assets"),
+            m_scriptsRoot("../../../NightSnack Engine/ManagedScripts"),
+            m_currentDirectory(m_assetsRoot),
             m_thumbnailSize(96.0f),
-            //m_searchFilter(""),
             m_selectedAssetPath(""),
             m_showAssetProperties(false),
             m_showImportDialog(false),
-            m_prefabsPanel(coord, "../../../NightSnack Engine/assets/GameData/Archetypes/Archetypes.json")
+            m_prefabsPanel(coord, "../../../NightSnack Engine/assets/GameData/Archetypes/Archetypes.json"),
+            m_filesPanel(coord, "../../../NightSnack Engine/assets"),
+            m_scriptsPanel(coord, "../../../NightSnack Engine/ManagedScripts")
         {
             m_prefabNames.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
-            for (std::string const& s : coord.GetSystem<EntityFactory>()->GetPrefabNames()) 
+            for (std::string const& s : coord.GetSystem<EntityFactory>()->GetPrefabNames())
             {
                 m_prefabNames.emplace_back(s);
             }
             m_prefabMats.reserve(coord.GetSystem<EntityFactory>()->GetPrefabMaterials().size());
-            for (auto const& [n, m] : coord.GetSystem<EntityFactory>()->GetPrefabMaterials()) 
+            for (auto const& [n, m] : coord.GetSystem<EntityFactory>()->GetPrefabMaterials())
             {
                 m_prefabMats.insert({ n, m });
             }
@@ -58,105 +80,475 @@ namespace NightSnack
         */
         void Draw()
         {
-            // Set initial window size and style
-            //ImGui::SetNextWindowSize(ImVec2(600, 300), ImGuiCond_Once);
             static bool firstFrame = true;
             if (firstFrame)
             {
-                // clear any leftover dropped files on first frame
                 auto appSystem = m_coord.GetSystem<ApplicationSystem>();
                 if (appSystem) appSystem->ClearDroppedFiles();
                 firstFrame = false;
             }
             else
             {
-                // check for dropped files from file explorer
                 HandleExternalFileDrop();
             }
 
             ImGui::Begin("Assets");
-            // not in use for now
-            // DrawToolbar();
 
-            if (ImGui::BeginTabBar("AssetsTabs"))
+            DrawToolbar();
+            ImGui::Separator();
+
+            // Two-column layout: Left = folder tree, Right = content view
+            ImGui::Columns(2, "AssetColumns", true);
+
+            // Left column - Folder tree
+            ImGui::BeginChild("FolderTree", ImVec2(0, 0), true);
+            ImGui::Text("Project");
+            ImGui::Separator();
+            DrawFolderTree(m_assetsRoot);
+
+            // Add scripts folder if it exists
+            if (fs::exists(m_scriptsRoot))
             {
-                if (ImGui::BeginTabItem("Images"))
-                {
-                    // render all image thumbnails
-                    DrawImagesTab();
-                    ImGui::EndTabItem();
-                }
-
-                if (ImGui::BeginTabItem("Files"))
-                {
-                    // list out files
-                    DrawAllFilesTab();
-                    ImGui::EndTabItem();
-                }
-
-                // handle the prefab tab item creation
-                m_prefabsPanel.Draw();
-
-                ImGui::EndTabBar();
+                DrawFolderTree(m_scriptsRoot);
             }
+            ImGui::EndChild();
+
+            ImGui::NextColumn();
+
+            // Right column - Content view
+            ImGui::BeginChild("ContentView", ImVec2(0, 0), true);
+            DrawContentView();
+            ImGui::EndChild();
+
+            ImGui::Columns(1);
             ImGui::End();
 
-            if (m_showImportDialog)
-            {
-                // import dialog to show what file is going to be imported
-                DrawImportDialog();
-            }
-
-           // draw asset properties tab if asset is selected
+            // Preview/Properties panel (separate window)
             if (m_showAssetProperties && !m_selectedAssetPath.empty())
             {
                 DrawAssetProperties();
+            }
+
+            if (m_showImportDialog)
+            {
+                DrawImportDialog();
             }
         }
 
     private:
         Coordinator& m_coord;
-        fs::path m_assetsRoot;// Root directory of the assets folder
+        fs::path m_assetsRoot;
+        fs::path m_scriptsRoot;
+        fs::path m_currentDirectory;
 
-        std::unordered_map<std::string, GLuint> m_loadedTextures; // Cache of loaded textures
+        std::unordered_map<std::string, GLuint> m_loadedTextures;
         std::unordered_map<std::string, std::shared_ptr<Texture>> m_textureObjects;
 
-        float m_thumbnailSize;                   // Size of thumbnail images
-        std::string m_searchFilter;              // Current search text
-        std::string m_selectedAssetPath;         // Currently selected asset
-        bool m_showAssetProperties;              // Show properties window
+        float m_thumbnailSize;
+        std::string m_searchFilter;
+        std::string m_selectedAssetPath;
+        AssetItem m_selectedAsset;
+        bool m_showAssetProperties;
 
         bool m_showImportDialog;
         std::vector<std::string> m_pendingImports;
-        std::vector<std::string> m_prefabNames;
-        std::unordered_map<std::string, std::string> m_prefabMats;
         std::string m_importDestination;
 
-        PrefabsPanel m_prefabsPanel;  // prefabs panel instance
+        std::vector<std::string> m_prefabNames;
+        std::unordered_map<std::string, std::string> m_prefabMats;
+
+        PrefabsPanel m_prefabsPanel;
+        FilesPanel m_filesPanel;
+        ScriptsPanel m_scriptsPanel;
+
+        /**
+        * @brief draws the toolbar with navigation and controls
+        */
+        void DrawToolbar()
+        {
+            // Back button
+            if (m_currentDirectory != m_assetsRoot && m_currentDirectory != m_scriptsRoot)
+            {
+                if (ImGui::Button("<- Back"))
+                {
+                    m_currentDirectory = m_currentDirectory.parent_path();
+                }
+                ImGui::SameLine();
+            }
+
+            // Current path breadcrumb
+            ImGui::Text("Path: %s", m_currentDirectory.string().c_str());
+
+            ImGui::SameLine(ImGui::GetWindowWidth() - 100);
+            if (ImGui::Button("Refresh"))
+            {
+                m_loadedTextures.clear();
+                m_textureObjects.clear();
+            }
+        }
+
+        /**
+        * @brief draws the folder tree recursively
+        */
+        void DrawFolderTree(const fs::path& path)
+        {
+            if (!fs::exists(path) || !fs::is_directory(path))
+                return;
+
+            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick;
+
+            if (path == m_currentDirectory)
+            {
+                flags |= ImGuiTreeNodeFlags_Selected;
+            }
+
+            bool nodeOpen = ImGui::TreeNodeEx(path.filename().string().c_str(), flags);
+
+            if (ImGui::IsItemClicked())
+            {
+                m_currentDirectory = path;
+            }
+
+            if (nodeOpen)
+            {
+                for (const auto& entry : fs::directory_iterator(path))
+                {
+                    if (entry.is_directory())
+                    {
+                        DrawFolderTree(entry.path());
+                    }
+                }
+                ImGui::TreePop();
+            }
+        }
+
+        /**
+        * @brief draws the content of the current directory
+        */
+        void DrawContentView()
+        {
+            if (!fs::exists(m_currentDirectory))
+            {
+                ImGui::TextColored(ImVec4(1, 0.4f, 0.4f, 1), "Directory does not exist");
+                return;
+            }
+
+            std::vector<AssetItem> items;
+
+            // Collect all items in current directory
+            for (const auto& entry : fs::directory_iterator(m_currentDirectory))
+            {
+                AssetItem item;
+                item.name = entry.path().filename().string();
+                item.fullPath = entry.path();
+                item.isDirectory = entry.is_directory();
+                item.type = DetermineAssetType(entry.path());
+
+                // Apply search filter
+                if (!m_searchFilter.empty())
+                {
+                    std::string lowerName = item.name;
+                    std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), ::tolower);
+                    std::string lowerFilter = m_searchFilter;
+                    std::transform(lowerFilter.begin(), lowerFilter.end(), lowerFilter.begin(), ::tolower);
+
+                    if (lowerName.find(lowerFilter) == std::string::npos)
+                        continue;
+                }
+
+                items.push_back(item);
+            }
+
+            // Sort: folders first, then files
+            std::sort(items.begin(), items.end(), [](const AssetItem& a, const AssetItem& b) {
+                if (a.isDirectory != b.isDirectory)
+                    return a.isDirectory;
+                return a.name < b.name;
+                });
+
+            DrawGridView(items);
+        }
+
+        /**
+        * @brief draws items in grid view
+        */
+        void DrawGridView(const std::vector<AssetItem>& items)
+        {
+            float padding = 12.0f;
+            float cellSize = m_thumbnailSize + padding;
+            float panelWidth = ImGui::GetContentRegionAvail().x;
+            int columnCount = std::max(1, (int)(panelWidth / cellSize));
+
+            ImGui::Columns(columnCount, nullptr, false);
+
+            for (const auto& item : items)
+            {
+                ImGui::PushID(item.fullPath.string().c_str());
+
+                bool isSelected = (item.fullPath.string() == m_selectedAssetPath);
+                if (isSelected)
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.5f, 0.8f, 1.0f));
+                }
+
+                if (item.isDirectory)
+                {
+                    // Folder button
+                    if (ImGui::Button("Folder", ImVec2(m_thumbnailSize, m_thumbnailSize)))
+                    {
+                        if (ImGui::IsMouseDoubleClicked(0))
+                        {
+                            m_currentDirectory = item.fullPath;
+                        }
+                        else
+                        {
+                            m_selectedAsset = item;
+                            m_selectedAssetPath = item.fullPath.string();
+                            m_showAssetProperties = false;
+                        }
+                    }
+                }
+                else
+                {
+                    DrawItemThumbnail(item);
+                }
+
+                if (isSelected)
+                {
+                    ImGui::PopStyleColor();
+                }
+
+                // Handle selection
+                if (ImGui::IsItemClicked() && !ImGui::IsMouseDoubleClicked(0))
+                {
+                    m_selectedAsset = item;
+                    m_selectedAssetPath = item.fullPath.string();
+                    m_showAssetProperties = true;
+
+                    // Load appropriate preview based on type
+                    if (item.type == AssetType::Script)
+                    {
+                        m_scriptsPanel.SelectScript(item.fullPath.string());
+                    }
+                    else if (item.type == AssetType::Prefab)
+                    {
+                        m_prefabsPanel.SelectPrefab(item.name);
+                    }
+                }
+
+                // Double-click to open folders
+                if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0) && item.isDirectory)
+                {
+                    m_currentDirectory = item.fullPath;
+                }
+
+                // Drag and drop source for assets
+                if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
+                {
+                    std::string pathStr = item.fullPath.string();
+
+                    if (item.type == AssetType::Image)
+                    {
+                        ImGui::SetDragDropPayload("ASSET_IMAGE", pathStr.c_str(), pathStr.size() + 1);
+                        ImTextureID texID = GetOrLoadTexture(pathStr);
+                        if (texID)
+                        {
+                            ImGui::Image(texID, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
+                        }
+                    }
+                    else
+                    {
+                        ImGui::SetDragDropPayload("ASSET_ITEM", pathStr.c_str(), pathStr.size() + 1);
+                    }
+
+                    ImGui::Text("%s", item.name.c_str());
+                    ImGui::EndDragDropSource();
+                }
+
+                // Show tooltip on hover
+                if (ImGui::IsItemHovered())
+                {
+                    ImGui::BeginTooltip();
+                    ImGui::Text("File: %s", item.name.c_str());
+                    ImGui::Text("Path: %s", item.fullPath.string().c_str());
+                    ImGui::EndTooltip();
+                }
+
+                ImGui::TextWrapped("%s", item.name.c_str());
+                ImGui::NextColumn();
+                ImGui::PopID();
+            }
+
+            ImGui::Columns(1);
+        }
+
+        /**
+        * @brief draws thumbnail for an item
+        */
+        void DrawItemThumbnail(const AssetItem& item)
+        {
+            switch (item.type)
+            {
+            case AssetType::Image:
+            {
+                ImTextureID texID = GetOrLoadTexture(item.fullPath.string());
+                if (texID)
+                {
+                    ImGui::ImageButton(
+                        item.fullPath.string().c_str(),
+                        texID,
+                        ImVec2(m_thumbnailSize, m_thumbnailSize),
+                        ImVec2(0, 1), ImVec2(1, 0));
+                }
+                else
+                {
+                    ImGui::Button("Image", ImVec2(m_thumbnailSize, m_thumbnailSize));
+                }
+                break;
+            }
+            case AssetType::Script:
+                ImGui::Button("Script", ImVec2(m_thumbnailSize, m_thumbnailSize));
+                break;
+            case AssetType::Prefab:
+                ImGui::Button("Prefab", ImVec2(m_thumbnailSize, m_thumbnailSize));
+                break;
+            default:
+                ImGui::Button("File", ImVec2(m_thumbnailSize, m_thumbnailSize));
+                break;
+            }
+        }
+
+        /**
+        * @brief draws the asset properties window
+        */
+        void DrawAssetProperties()
+        {
+            ImGui::Begin("Asset Properties", &m_showAssetProperties);
+
+            if (!m_selectedAssetPath.empty())
+            {
+                fs::path selectedPath(m_selectedAssetPath);
+
+                ImGui::Text("Asset Inspector");
+                ImGui::Separator();
+
+                ImGui::Text("Name: %s", selectedPath.filename().string().c_str());
+                ImGui::Text("Type: %s", selectedPath.extension().string().c_str());
+                ImGui::Text("Path: %s", m_selectedAssetPath.c_str());
+
+                if (fs::exists(selectedPath) && !m_selectedAsset.isDirectory)
+                {
+                    auto fileSize = fs::file_size(selectedPath);
+                    ImGui::Text("Size: %.2f KB", fileSize / 1024.0f);
+                }
+
+                ImGui::Separator();
+
+                // Show appropriate preview based on asset type
+                switch (m_selectedAsset.type)
+                {
+                case AssetType::Image:
+                {
+                    ImGui::Text("Preview:");
+                    ImTextureID texID = GetOrLoadTexture(m_selectedAssetPath);
+                    if (texID)
+                    {
+                        ImGui::Image(texID, ImVec2(200, 200), ImVec2(0, 1), ImVec2(1, 0));
+                    }
+                    break;
+                }
+                case AssetType::Script:
+                {
+                    ImGui::Text("Script Contents:");
+                    std::string contents = m_scriptsPanel.GetScriptContents(m_selectedAssetPath);
+                    ImGui::BeginChild("ScriptContent", ImVec2(0, 300), true);
+                    ImGui::TextWrapped("%s", contents.c_str());
+                    ImGui::EndChild();
+                    break;
+                }
+                case AssetType::Prefab:
+                {
+                    m_prefabsPanel.DrawPrefabProperties(selectedPath.filename().string());
+                    break;
+                }
+                default:
+                    ImGui::TextDisabled("No preview available");
+                    break;
+                }
+
+                ImGui::Separator();
+
+                // Close button
+                if (ImGui::Button("Close"))
+                {
+                    m_showAssetProperties = false;
+                    m_selectedAssetPath = "";
+                }
+
+                ImGui::SameLine();
+
+                // Delete button (only for non-directories and images)
+                if (!m_selectedAsset.isDirectory)
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.3f, 0.3f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.6f, 0.1f, 0.1f, 1.0f));
+
+                    if (ImGui::Button("Delete", ImVec2(100, 0)))
+                    {
+                        ImGui::OpenPopup("Delete Asset?");
+                    }
+
+                    ImGui::PopStyleColor(3);
+
+                    // Delete confirmation popup
+                    if (ImGui::BeginPopupModal("Delete Asset?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+                    {
+                        ImGui::Text("Are you sure you want to delete this asset?");
+                        ImGui::Separator();
+
+                        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f),
+                            "File: %s", selectedPath.filename().string().c_str());
+
+                        ImGui::Separator();
+
+                        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
+                        if (ImGui::Button("Delete", ImVec2(120, 0)))
+                        {
+                            DeleteAsset(m_selectedAssetPath);
+                            ImGui::CloseCurrentPopup();
+                        }
+                        ImGui::PopStyleColor();
+
+                        ImGui::SameLine();
+
+                        if (ImGui::Button("Cancel", ImVec2(120, 0)))
+                        {
+                            ImGui::CloseCurrentPopup();
+                        }
+
+                        ImGui::EndPopup();
+                    }
+                }
+            }
+            ImGui::End();
+        }
 
         /**
         * @brief handles external file drop events
         */
         void HandleExternalFileDrop()
         {
-            // get the application system
             auto appSystem = m_coord.GetSystem<ApplicationSystem>();
             if (!appSystem) return;
 
-            // check if any files were dropped
             const auto& droppedFiles = appSystem->GetDroppedFiles();
 
             if (!droppedFiles.empty())
             {
-                // store them and show import dialog
                 m_pendingImports = droppedFiles;
                 m_showImportDialog = true;
-                m_importDestination = m_assetsRoot.string();
-
-                /*std::cout << "[Assets] Received " << droppedFiles.size()
-                    << " dropped file(s)\n";*/
-
-                // clear the application's dropped files list
+                m_importDestination = m_currentDirectory.string();
                 appSystem->ClearDroppedFiles();
             }
         }
@@ -171,7 +563,6 @@ namespace NightSnack
                 ImGui::OpenPopup("Import Files");
             }
 
-            // center the dialog
             ImVec2 center = ImGui::GetMainViewport()->GetCenter();
             ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
             ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_Appearing);
@@ -181,7 +572,6 @@ namespace NightSnack
                 ImGui::Text("Import %zu file(s) to Assets folder", m_pendingImports.size());
                 ImGui::Separator();
 
-                // show list of files to import
                 ImGui::Text("Files:");
                 ImGui::BeginChild("FileList", ImVec2(0, 150), true);
 
@@ -191,7 +581,6 @@ namespace NightSnack
                     std::string filename = filePath.filename().string();
                     std::string ext = filePath.extension().string();
 
-                    // color code by file type
                     if (IsImageFile(ext))
                     {
                         ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f),
@@ -214,11 +603,9 @@ namespace NightSnack
                 ImGui::EndChild();
                 ImGui::Separator();
 
-				// the folder that files will be imported to
                 ImGui::Text("Import to: %s", m_importDestination.c_str());
                 ImGui::Separator();
 
-                // import options
                 static bool copyFiles = true;
                 static bool overwriteExisting = false;
 
@@ -226,7 +613,6 @@ namespace NightSnack
                 ImGui::Checkbox("Overwrite existing files", &overwriteExisting);
                 ImGui::Separator();
 
-                // action buttons
                 float buttonWidth = 100.0f;
 
                 if (ImGui::Button("Import", ImVec2(buttonWidth, 0)))
@@ -235,8 +621,7 @@ namespace NightSnack
                     m_showImportDialog = false;
                     m_pendingImports.clear();
                 }
-                
-                // create cancel button in the same line
+
                 ImGui::SameLine();
 
                 if (ImGui::Button("Cancel", ImVec2(buttonWidth, 0)))
@@ -251,13 +636,9 @@ namespace NightSnack
 
         /**
         * @brief imports files to the assets folder
-        * @param copyFiles copy files to project
-        * @param overwriteExisting whether to overwrite existing files
         */
         void ImportFiles(bool copyFiles, bool overwriteExisting)
         {
-            //std::cout << "[Assets] Importing " << m_pendingImports.size() << " files...\n";
-
             int successCount = 0;
             int failCount = 0;
 
@@ -268,23 +649,17 @@ namespace NightSnack
                     fs::path source(sourcePath);
                     fs::path destination = fs::path(m_importDestination) / source.filename();
 
-                    // check if file exists
                     if (fs::exists(destination) && !overwriteExisting)
                     {
-                       /* std::cout << "[Assets] Skipped (already exists): "
-                            << destination.string() << "\n";*/
                         failCount++;
                         continue;
                     }
 
-                    // copy file
                     if (copyFiles)
                     {
                         fs::copy_file(source, destination, fs::copy_options::overwrite_existing);
-                        /*std::cout << "[Assets] Copied: " << source.filename().string() << " -> " << destination.string() << "\n";*/
                     }
 
-                    // clear texture cache to reload
                     if (IsImageFile(source.extension().string()))
                     {
                         m_loadedTextures.erase(destination.string());
@@ -302,306 +677,74 @@ namespace NightSnack
                     failCount++;
                 }
             }
-            //std::cout << "[Assets] Import complete: " << successCount << " success, " << failCount << " failed\n";
         }
 
         /**
-        * @brief draws the asset properties window
+        * @brief deletes an asset from the filesystem and cache
         */
-        void DrawAssetProperties()
+        void DeleteAsset(const std::string& assetPath)
         {
-            ImGui::Begin("Asset Properties", &m_showAssetProperties);
-
-            if (!m_selectedAssetPath.empty())
+            try
             {
-                fs::path selectedPath(m_selectedAssetPath);
+                fs::path filePath(assetPath);
 
-                ImGui::Text("Asset Inspector");
-                ImGui::Separator();
-
-                ImGui::Text("Name: %s", selectedPath.filename().string().c_str());
-                ImGui::Text("Type: %s", selectedPath.extension().string().c_str());
-                ImGui::Text("Path: %s", m_selectedAssetPath.c_str());
-
-                if (fs::exists(selectedPath))
-                {
-                    auto fileSize = fs::file_size(selectedPath);
-                    ImGui::Text("Size: %.2f KB", fileSize / 1024.0f);
-                }
-
-                ImGui::Separator();
-
-                // preview for images
-                if (IsImageFile(selectedPath.extension().string()))
-                {
-                    ImGui::Text("Preview:");
-                    ImTextureID texID = GetOrLoadTexture(m_selectedAssetPath);
-                    if (texID)
-                    {
-                        ImGui::Image(texID, ImVec2(200, 200), ImVec2(0, 1), ImVec2(1, 0));
-                    }
-                }
-
-                ImGui::Separator();
-
-                // close buttoon
-                if (ImGui::Button("Close"))
+                if (!fs::exists(filePath))
                 {
                     m_showAssetProperties = false;
                     m_selectedAssetPath = "";
+                    return;
                 }
 
-                ImGui::SameLine();
-
-                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
-                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.3f, 0.3f, 1.0f));
-                ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.6f, 0.1f, 0.1f, 1.0f));
-
-                // delete button
-                if (ImGui::Button("Delete", ImVec2(100, 0)))
+                if (IsImageFile(filePath.extension().string()))
                 {
-                    // Show confirmation popup
-                    ImGui::OpenPopup("Delete Asset?");
-                }
-
-                ImGui::PopStyleColor(3);
-
-                // delete confirmation popup
-                // safety measure to prevent accidental deletion
-                if (ImGui::BeginPopupModal("Delete Asset?", NULL, ImGuiWindowFlags_AlwaysAutoResize))
-                {
-                    ImGui::Text("Are you sure you want to delete this asset?");
-                    ImGui::Separator();
-
-                    ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f),
-                        "File: %s", selectedPath.filename().string().c_str());
-
-                    ImGui::Separator();
-
-                    // Confirm delete button
-                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
-                    if (ImGui::Button("Delete", ImVec2(120, 0)))
+                    auto texIt = m_loadedTextures.find(assetPath);
+                    if (texIt != m_loadedTextures.end())
                     {
-                        DeleteAsset(m_selectedAssetPath);
-                        ImGui::CloseCurrentPopup();
-                    }
-                    ImGui::PopStyleColor();
-
-                    ImGui::SameLine();
-
-                    // cancel button
-                    if (ImGui::Button("Cancel", ImVec2(120, 0)))
-                    {
-                        ImGui::CloseCurrentPopup();
+                        GLuint texID = texIt->second;
+                        glDeleteTextures(1, &texID);
+                        m_loadedTextures.erase(texIt);
                     }
 
-                    ImGui::EndPopup();
+                    fs::remove(filePath);
+                    m_textureObjects.erase(assetPath);
                 }
+
+                m_showAssetProperties = false;
+                m_selectedAssetPath = "";
             }
-            ImGui::End();
-        }
-
-        // not used for now
-        //void DrawToolbar()
-        //{
-        //    // search bar to filter assets by name
-
-        //    /*static char searchBuffer[256] = "";
-        //    ImGui::SetNextItemWidth(200.0f);
-        //    if (ImGui::InputTextWithHint("##Search", "Search assets...", searchBuffer, 256))
-        //    {
-        //        m_searchFilter = std::string(searchBuffer);
-        //    }
-
-        //    ImGui::SameLine();*/
-
-        //    // refresh button to Rescan assets folder
-        //     
-        //    if (ImGui::Button("Refresh"))
-        //    {
-        //        // Clear texture cache to force reload
-        //        m_loadedTextures.clear();
-        //        m_textureObjects.clear();
-        //        std::cout << "[Assets] Refreshed asset cache\n";
-        //    }
-
-        //    if (ImGui::Button("Import Files..."))
-        //    {
-        //        // import window
-        //    }
-
-        //    ImGui::SameLine();
-        //    ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f),
-        //        "");
-        //}
-
-        /**
-        * @brief draws the images in the assets tab
-        */
-        void DrawImagesTab()
-        {
-            // calculate grid layout
-           // determine how many thumbnails fit per row
-            static float padding = 12.0f;
-            float cellSize = m_thumbnailSize + padding;
-            float panelWidth = ImGui::GetContentRegionAvail().x;
-            int columnCount = std::max(1, (int)(panelWidth / cellSize));
-
-            // create column layout for grid
-            ImGui::Columns(columnCount, 0, false);
-
-            // iterate through all image files
-            // scan assets folder recursively for images
-            for (auto const& entry : fs::recursive_directory_iterator(m_assetsRoot))
+            catch (const std::exception& e)
             {
-                // skip directories and only process files
-                if (!entry.is_regular_file())
-                    continue;
-
-                // check if file is an image (png, jpg, etc.)
-                std::string ext = entry.path().extension().string();
-                if (!IsImageFile(ext)) continue;
-
-                // get full path as string
-                std::string pathStr = entry.path().string();
-
-                // search filter not in use for now
-                /*
-                // SEARCH FILTER - Skip if doesn't match search
-                if (!m_searchFilter.empty())
-                {
-                    std::string filename = entry.path().filename().string();
-                    std::string lowerFilename = filename;
-                    std::string lowerFilter = m_searchFilter;
-
-                    // Convert to lowercase for case-insensitive search
-                    std::transform(lowerFilename.begin(), lowerFilename.end(),
-                        lowerFilename.begin(), ::tolower);
-                    std::transform(lowerFilter.begin(), lowerFilter.end(),
-                        lowerFilter.begin(), ::tolower);
-
-                    // Skip if filename doesn't contain search term
-                    if (lowerFilename.find(lowerFilter) == std::string::npos)
-                        continue;
-                }
-                */
-
-                // load texture from cache
-                ImTextureID texID = GetOrLoadTexture(pathStr);
-                if (!texID) continue;
-
-                // push unique ID for the asset
-                ImGui::PushID(pathStr.c_str());
-
-                // highlight if selected
-                // change colour values accordingly
-                if (m_selectedAssetPath == pathStr)
-                {
-                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.3f, 0.5f, 0.8f, 1.0f));
-                }
-
-				// clickable image button with thumbnail
-                ImGui::ImageButton(pathStr.c_str(), texID, 
-                    ImVec2(m_thumbnailSize, m_thumbnailSize), ImVec2(0, 1), ImVec2(1, 0));
-
-
-                // pop highlight color if was selected
-                if (m_selectedAssetPath == pathStr)
-                {
-                    ImGui::PopStyleColor();
-                }
-
-                // click to select
-                if (ImGui::IsItemClicked())
-                {
-                    m_selectedAssetPath = pathStr;
-                    m_showAssetProperties = true;
-                    //std::cout << "[Assets] Selected: " << pathStr << "\n";
-                }
-
-                // not in use for now
-                // enable dragging
-                // This allows dragging the image to Scene panel
-                if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-                {
-                    // SET PAYLOAD - Store the asset path as drag data
-                    ImGui::SetDragDropPayload("ASSET_IMAGE", pathStr.c_str(), pathStr.size() + 1);
-
-                    // DRAG PREVIEW - Show thumbnail while dragging
-                    ImGui::Image(texID, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
-                    ImGui::Text("%s", entry.path().filename().string().c_str());
-
-                    ImGui::EndDragDropSource();
-                }
-
-                // show info on hover
-                if (ImGui::IsItemHovered())
-                {
-                    ImGui::BeginTooltip();
-                    //ImGui::Text("Drag to Scene to add");
-                    ImGui::Text("File: %s", entry.path().filename().string().c_str());
-                    ImGui::Text("Path: %s", pathStr.c_str());
-                    ImGui::EndTooltip();
-                }
-
-                // display filename text below thumbnail
-                ImGui::TextWrapped("%s", entry.path().filename().string().c_str());
-
-                // move to next column in grid
-                ImGui::NextColumn();
-
-                ImGui::PopID();
+                std::cerr << "[Assets] Error deleting asset: " << e.what() << "\n";
+                m_showAssetProperties = false;
+                m_selectedAssetPath = "";
             }
-
-            // end grid layout
-            ImGui::Columns(1);
         }
 
         /**
-        * @brief displays all files inside the assets folder
+        * @brief determines the type of an asset
         */
-        void DrawAllFilesTab()
+        AssetType DetermineAssetType(const fs::path& path)
         {
-            // use a tree view to show folders and files
-            DrawDirectoryRecursive(m_assetsRoot);
-        }
+            if (fs::is_directory(path))
+                return AssetType::Folder;
 
-        /**
-        * @brief recursively displays folders and their files as a tree
-        * @param dir the directory to display
-        */
-        void DrawDirectoryRecursive(const fs::path& dir)
-        {
-            for (const auto& entry : fs::directory_iterator(dir))
-            {
-                const auto& path = entry.path();
-                std::string name = path.filename().string();
+            std::string ext = path.extension().string();
+            std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
-                if (entry.is_directory())
-                {
-                    // create a collapsible tree node for folders
-                    if (ImGui::TreeNode(name.c_str()))
-                    {
-                        DrawDirectoryRecursive(path); // recurse into subfolder
-                        ImGui::TreePop();
-                    }
-                }
-                else if (entry.is_regular_file())
-                {
-                    std::string ext = path.extension().string();
-                    if (IsImageFile(ext))
-                    {
-                        continue;
-                    }
-                    ImGui::BulletText("%s", name.c_str());
-                }
-            }
+            if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".bmp")
+                return AssetType::Image;
+
+            if (ext == ".cs" || ext == ".txt")
+                return AssetType::Script;
+
+            if (ext == ".json" || path.filename().string().find("Archetype") != std::string::npos)
+                return AssetType::Prefab;
+
+            return AssetType::Other;
         }
 
         /**
         * @brief checks if a file has a supported image extension
-        * @param ext file extension to check
-        * @return true if the file is an image, else false
         */
         bool IsImageFile(const std::string& ext)
         {
@@ -612,86 +755,19 @@ namespace NightSnack
 
         /**
         * @brief gets or loads a texture from cache
-        * @param path path to the texture file
-        * @return ImTextureID for the texture
         */
-
         ImTextureID GetOrLoadTexture(const std::string& path)
         {
-            // If already cached, return it
             if (m_loadedTextures.find(path) != m_loadedTextures.end())
             {
                 return m_loadedTextures[path];
             }
 
-            //stbi_set_flip_vertically_on_load(false);
-
             std::shared_ptr<Texture> tex = std::make_shared<Texture>(path, m_coord.GetSystem<ResourceManager>());
-
-            // cache the texture (store both Texture and ImGui ID)
             m_textureObjects[path] = tex;
             m_loadedTextures[path] = (ImTextureID)(intptr_t)tex->GetID();
 
             return m_loadedTextures[path];
-        }
-
-        /**
-        * @brief deletes an asset from the filesystem and cache
-        * @param assetPath path to the asset to delete
-        */
-        void DeleteAsset(const std::string& assetPath)
-        {
-            try
-            {
-                fs::path filePath(assetPath);
-
-                // check if the file exists
-                if (!fs::exists(filePath))
-                {
-                    m_showAssetProperties = false;
-                    m_selectedAssetPath = "";
-                    return;
-                }
-
-                if (IsImageFile(filePath.extension().string()))
-                {
-                    // remove from cache
-                    auto texIt = m_loadedTextures.find(assetPath);
-                    if (texIt != m_loadedTextures.end())
-                    {
-                        // delete OpenGL texture
-                        GLuint texID = texIt->second;
-                        glDeleteTextures(1, &texID);
-                        m_loadedTextures.erase(texIt);
-                        //std::cout << "[Assets] Removed texture from cache\n";
-                    }
-
-                    if (fs::remove(filePath))
-                    {
-                        //std::cout << "[Assets] Successfully deleted file: " << assetPath << "\n";
-                    }
-                    else
-                    {
-                        //std::cerr << "[Assets] Failed to delete file: " << assetPath << "\n";
-                    }
-
-                    // remove texture object
-                    m_textureObjects.erase(assetPath);
-                }
-
-                // close the asset inspector window
-                m_showAssetProperties = false;
-                m_selectedAssetPath = "";
-
-            }
-            catch (const std::exception& e)
-            {
-                std::cerr << "[Assets] Error deleting asset: " << e.what() << "\n";
-
-                // close the window
-                m_showAssetProperties = false;
-                m_selectedAssetPath = "";
-            }
         }
     };
 }
