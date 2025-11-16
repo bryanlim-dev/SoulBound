@@ -43,6 +43,16 @@ namespace NightSnack {
 			m_systemSignature.set(GetComponentTypeID<Animator>());
 
 			Init();
+
+			// Dispatcher lambda
+			m_dispatcher->Subscribe<GraphicsEvent>([this](const GraphicsEvent& event) {
+				switch (event.graphicsAction) {
+				case GraphicsEvent::GraphicsAction::CreateTexture:
+					//std::cout << "[ANIMATIONSYSTEM] received event\n";
+					UpdateAnimationClipsMap();
+					break;
+				}
+			});
 		}
 
 		/************************************************************************/
@@ -66,6 +76,10 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void Update(int steps) override;
+
+		void UpdateAnimationClipsMap(); 
+
+		void CreateAnimationClips(std::string textureName, Texture* tex, int cols, int rows);
 
 		/************************************************************************/
 		/*!

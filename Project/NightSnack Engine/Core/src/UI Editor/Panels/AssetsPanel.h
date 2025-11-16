@@ -290,6 +290,9 @@ namespace NightSnack
                         m_loadedTextures.erase(destination.string());
                         m_textureObjects.erase(destination.string());
                     }
+                    
+                    // dynamically load and create the newly dragged-in texture
+                    m_coord.GetSystem<GraphicsSystem>()->CreateTexture(destination.string());
 
                     successCount++;
                 }

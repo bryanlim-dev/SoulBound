@@ -11,7 +11,7 @@
   "ScriptTest1": {
     "Renderable": {
       "meshName": "circle",
-      "materialName": "targetMat"
+      "materialName": "ColorMat"
     },
     "Script": { "name": "RotatorScript" }
   },
@@ -29,7 +29,7 @@
   "Backdrop": {
     "Renderable": {
       "meshName": "square",
-      "materialName": "backgroundMat"
+      "materialName": "ColorMat"
     }
   },
 
@@ -171,11 +171,11 @@
     },
     "Renderable": {
       "meshName": "square",
-      "materialName": "ghostMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
     },
     "Animator": {
-      "spriteSheetName": "../assets/ghost.png",
+      "spriteSheetName": "",
       "playbackSpeed": 1.0,
       "isPlaying": true,
       "isLooping": true
@@ -206,11 +206,11 @@
     },
     "Renderable": {
       "meshName": "square",
-      "materialName": "ghostMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
     },
     "Animator": {
-      "spriteSheetName": "../assets/ghost.png",
+      "spriteSheetName": "",
       "playbackSpeed": 1.0,
       "isPlaying": true,
       "isLooping": true
@@ -235,11 +235,11 @@
     },
     "Renderable": {
       "meshName": "square",
-      "materialName": "ghostMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
     },
     "Animator": {
-      "spriteSheetName": "../assets/ghost.png",
+      "spriteSheetName": "",
       "playbackSpeed": 1.0,
       "isPlaying": true,
       "isLooping": true
@@ -250,7 +250,7 @@
   "Control": {
     "Renderable": {
       "meshName": "square",
-      "materialName": "targetMat"
+      "materialName": "ColorMat"
     }
   },
 
@@ -358,11 +358,11 @@
     },
     "Renderable": {
       "meshName": "square",
-      "materialName": "slimeMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
     },
     "Animator": {
-      "spriteSheetName": "../assets/slime.png",
+      "spriteSheetName": "",
       "playbackSpeed": 2.0,
       "isPlaying": true,
       "isLooping": true
@@ -392,7 +392,7 @@
     },
     "Renderable": {
       "meshName": "circle",
-      "materialName": "bananaMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
     }
   },
@@ -426,7 +426,7 @@
     },
     "Renderable": {
       "meshName": "circle",
-      "materialName": "bananaMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
     }
   }
