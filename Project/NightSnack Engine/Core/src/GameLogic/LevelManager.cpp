@@ -1,6 +1,6 @@
 #include "LevelManager.h"
 
-namespace NightSnack {
+namespace NightSnack::Scene {
 
 	void LevelManager::LoadLevel(std::string const& filename) {
 

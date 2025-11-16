@@ -339,6 +339,4 @@ namespace NightSnack {
 
 }	// NightSnack
 
-#pragma warning(disable: 4251)
-
 #endif // COORD_HPP

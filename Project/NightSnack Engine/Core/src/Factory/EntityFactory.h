@@ -19,12 +19,13 @@
 #include <string>
 #include <json.hpp>
 #include <fstream>
+#include <filesystem>
 
 #include "Core/ECS/Coordinator.h"
 #include "Factory/PrefabManager.h"
 #include "Systems/Application/Input.h"
 #include "Systems/Application/IEvent.h"
-#include "Systems/Graphics.h"
+#include "ResourceManager/ResourceManager.h"
 
 namespace NightSnack {
 
@@ -40,16 +41,17 @@ namespace NightSnack {
 		will help with entity creation.
 		*/
 		/************************************************************************/
-		EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& archetypes_filename, std::string const& archetype_states_filename, std::string const& level0_file)
-			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord } {
+		EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& gameDataPath)
+			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord }, GAMEDATA_DIR{ gameDataPath } {
 
-			(void)archetype_states_filename;
 			m_prefabManager.Initialize();
-			LoadArchetypes(archetypes_filename);
-			LoadLevel(level0_file);
 
-			m_stress = false;
-			m_layer = false;
+			CreateFolders();
+
+			LoadArchetypes("../assets/GameData/Archetypes/Archetypes.json");
+			LoadLevel("../assets/GameData/DefaultLevel.json");
+
+			SaveLevel("Level0", true);
 
 			// Setup input events;
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
@@ -57,23 +59,10 @@ namespace NightSnack {
 					switch (event.inputAction) {
 
 					case InputEvent::InputAction::StressTest:
-						m_stress = true;
 						break;
-
-					case InputEvent::InputAction::LayerTest:
-						if (m_stress)
-						m_layer = true;
-						break;
-
-					case InputEvent::InputAction::EndStressTest:
-						if (m_stress)
-						m_reload = true;
-						break;
-
 					}
 				}
-
-				});
+			});
 		}
 
 		void LoadArchetypes(std::string const& filename) {
@@ -94,37 +83,29 @@ namespace NightSnack {
 				m_prefabNames.emplace_back(name);
 			}
 
-			//std::ifstream file(filename);
-			//if (!file.is_open()) {
-			//	throw std::runtime_error("Failed to open archetypes file: " + filename);
-			//}
+			std::ifstream file(filename);
+			if (!file.is_open()) {
+				throw std::runtime_error("Failed to open archetypes file: " + filename);
+			}
 
-			//try {
-			//	file >> m_archetypes;
-			//}
-			//catch (json::parse_error& e) {
-			//	throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
-			//}
+			try {
+				file >> m_archetypes;
+			}
+			catch (json::parse_error& e) {
+				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
+			}
 		}
+
+		// Saves all entities in the current level
+		bool SaveLevel(std::string const& levelName, bool overwrite);
 
 		// Read a Level file and creates Entities from prefabs in m_archetypes;
 		void LoadLevel(std::string const& levelfile) {
-			//std::ifstream file(levelfile);
-			//if (!file.is_open()) {
-			//	throw std::runtime_error("Failed to open level file: " + levelfile);
-			//}
 
-			//try {
-			//	file >> m_currentLevel;
-			//}
-			//catch (json::parse_error& e) {
-			//	throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
-			//}
-
-			m_coord.GetSystem<ResourceManager>()->UnloadJson(m_currentLevelLey);
+			m_coord.GetSystem<ResourceManager>()->UnloadJson(m_currentLevelKey);
 
 			try {
-				LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(levelfile, m_currentLevelLey);
+				LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(levelfile, m_currentLevelKey);
 				if (result == LOAD_FAIL_BADPATH) {
 					throw std::runtime_error("Failed to open archetypes file due to bad file path: " + levelfile);
 				}
@@ -133,7 +114,7 @@ namespace NightSnack {
 				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
 			}
 
-			m_currentLevel = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelLey);
+			m_currentLevel = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelKey);
 
 			for (auto const& item : m_currentLevel["Entities"]) {
 				Create(item["prefab"], item["Transform"]);
@@ -142,13 +123,8 @@ namespace NightSnack {
 				m_coord.BufferEntitySignature(e);
 			}
 		}
-		void PromptUnload() { m_reload = true; }
-		void UnloadLevel() {
-			for (Entity e{}; e < MAX_ENTITIES; ++e) {
-				m_coord.DestroyEntity(e);
-			}
-			m_coord.ResetEverything();
-		}
+
+		void UnloadLevel();
 
 		/************************************************************************/
 		/*!
@@ -157,15 +133,6 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void Update(int steps) override;
-
-		//void EditPrefab(std::string const& s) {
-		//	if (m_archetypes[s].contains("RigidBody")) {
-
-		//	}
-		//	if (m_archetypes[s].contains("Renderable")) {
-
-		//	}
-		//}
 
 		// Required functions from base class ISystem.
 		Signature GetSignature() const override { return Signature{}; }
@@ -222,32 +189,18 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Create 1000 entities for stress test - Combination 1;
-		*/
-		/************************************************************************/
-		void StressTestCreate(LayerType, std::string const&, int, Vec2 const&);
-		bool m_stress{ false };
-		bool m_layer{ false };
-		bool m_reload{ false };
-
-		void PostUpdate();
-
-		/************************************************************************/
-		/*!
-		\brief
-		Removes entities created for stress test;
-		*/
-		/************************************************************************/
-		void StressTestEnd();
-
-		/************************************************************************/
-		/*!
-		\brief
 		Adds entity to m_toBeDestroyed (These entities will be destroyed at the
 		end of the core loop).
 		*/
 		/************************************************************************/
 		void RemoveEntity(Entity e);
+
+		bool SaveAsPrefab(Entity e, std::string const& prefabName, bool overwrite);
+
+		void CreateFolders() const;
+		void TransferPrefabs();
+
+		void PostUpdate();
 
 		void PrintPrefabNames() const;
 		std::unordered_map<std::string, std::string> GetPrefabMaterials() const;
@@ -255,24 +208,28 @@ namespace NightSnack {
 		std::string GetEntityPrefabName(Entity e) const;
 		const json& GetArchetypes() const;
 
-		std::set<Entity> m_toBeDestroyed;
 
 	private:
 		Coordinator& m_coord;
 		PrefabManager m_prefabManager;
 		EventDispatcher* m_dispatcher;
 
-		//json m_archetypes{};
+		// Entities that have been marked for deletion
+		std::set<Entity> m_toBeDestroyed;
+
+		json m_archetypes{};
 		//json m_archetypesStates{};
 		json m_currentLevel{}; //Copy yo not effect the orginal
 
 		size_t m_archetypesKey{};
 		//size_t m_archetypesStatesKey{};
-		size_t m_currentLevelLey{};
+		size_t m_currentLevelKey{};
 
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;
 		std::vector<std::string> m_prefabNames;
+
+		std::filesystem::path GAMEDATA_DIR;
 	};
 
 }	// NightSnack

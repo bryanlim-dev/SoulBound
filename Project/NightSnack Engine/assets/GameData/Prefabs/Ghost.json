@@ -1,0 +1,34 @@
+{
+    "Animator": {
+        "isLooping": true,
+        "isPlaying": true,
+        "playbackSpeed": 1.0,
+        "spriteSheetName": "../assets/ghost.png"
+    },
+    "Collider": {
+        "height": 100.0,
+        "isStatic": false,
+        "shape": "AABB",
+        "type": "Solid",
+        "width": 100.0
+    },
+    "Font": {
+        "fontSize": 0.5,
+        "fontType": "liberation",
+        "text": "Ghost",
+        "textColor": {
+            "b": 0.5,
+            "g": 0.8999999761581421,
+            "r": 0.5
+        }
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "ghostMat",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": false
+    }
+}

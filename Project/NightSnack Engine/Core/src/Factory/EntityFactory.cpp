@@ -11,7 +11,6 @@
  ******************************************************************************/
 
 #include "EntityFactory.h"
-#include "Systems/Graphics.h"
 
 namespace NightSnack {
 
@@ -28,29 +27,12 @@ namespace NightSnack {
 	}
 
 	void EntityFactory::PostUpdate() {
-
-		static bool stressed{ false }, layered{ false };
-
-		if (m_stress && !stressed) {
-			UnloadLevel();
-			StressTestCreate(LayerType::GAMELAYER, "StressTest", 69, Vec2{ 5.f, 5.f });
-			stressed = true;
+		
+		for (Entity e : m_toBeDestroyed) {
+			m_coord.DestroyEntity(e);
 		}
-		if (m_stress && m_layer && !layered) {
-			StressTestCreate(LayerType::BACKGROUND, "LayerTest", 420, Vec2{ 10.f, 10.f });
-			layered = true;
-		}
-		else if (m_reload && stressed) {
-			UnloadLevel();
-			LoadLevel("../assets/GameData/DefaultLevel.json");
+        m_toBeDestroyed.clear();
 
-			stressed = false;
-			layered = false;
-
-			m_stress = false;
-			m_layer = false;
-		}
-		m_reload = false;
 	}
 
 	Entity EntityFactory::Create(std::string const& name) {
@@ -100,59 +82,8 @@ namespace NightSnack {
 		return clone;
 	}
 
-	// Create 1000 entities for stress test - Combination 1;
-	void EntityFactory::StressTestCreate(LayerType layer, std::string const& prefabName, int seed, Vec2 const& scale) {
-
-		// seed for rand;
-		srand(seed * static_cast<unsigned>(glfwGetTime()));
-		int Hvp = m_coord.GetWindowHeight();
-		int Wvp = m_coord.GetWindowWidth();
-
-		Transform t{ Vec3{}, {}, Vec2{}, LayerType::GAMEUI };
-
-		if (m_stress && !m_layer) {
-			Create("Cam", t);
-		}
-		t.scale = scale;
-		t.layer = layer;
-
-		for (int i{}; i < 1000; ++i) {
-
-			// Random position within viewport;
-			t.pos = { static_cast<float>(rand() % Wvp - Wvp / 2),
-			static_cast<float>(rand() % Hvp - Hvp / 2), 1.f };
-
-			Entity e2 = Create(prefabName, t);
-
-			// Randomized vector for Force direction;
-			Vec2 v = { static_cast<float>(rand() % Wvp - Wvp / 2),
-			static_cast<float>(rand() % Hvp - Hvp / 2) };
-
-			Force f; 
-			RigidBody& r = m_coord.ModifyComponent<RigidBody>(e2);
-			if (v.x != 0.f || v.y != 0.f) {
-				f.direction = v.normalized();
-				f.magnitude = 25.f;
-				f.lifetime = 1000000.f;
-				f.isActive = true;
-				
-				r.force = f;
-			}
-			r.useGravity = false;
-		}
-		for (Entity e : m_coord.GetLivingEntities()) {
-			m_coord.BufferEntitySignature(e);
-		}
-	}
-
 	void EntityFactory::RemoveEntity(Entity e) {
 		m_toBeDestroyed.insert(e);
-	}
-
-	void EntityFactory::StressTestEnd() {
-
-		UnloadLevel();
-		m_reload = true;
 	}
 
 	void EntityFactory::PrintPrefabNames() const {
@@ -193,4 +124,275 @@ namespace NightSnack {
 	{
 		return m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_archetypesKey);
 	}
+
+    bool EntityFactory::SaveLevel(std::string const& levelName, bool overwrite) {
+
+        // Output file path
+        std::filesystem::path outPath = GAMEDATA_DIR / "Levels" / (levelName + ".json");
+
+        // Check if a prefab already exists with the same name
+        if (std::filesystem::exists(outPath) && !overwrite) {
+            std::cout << "There already exists a level named '" << levelName << "' at '" << GAMEDATA_DIR / "Levels" << '\n';
+            return false;
+        }
+
+        // Output json object
+        json level;
+        level["Entities"] = json::array();
+
+        // Iterate through living entities;
+        for (Entity e : m_coord.GetLivingEntities()) {
+            json j;
+
+            std::string prefabName = entityToPrefab[e];
+            j["prefab"] = { prefabName };
+
+            Transform const& t = m_coord.GetComponent<Transform>(e);
+            j["Transform"] = {
+                { "Position", { {"x", t.pos.x}, {"y", t.pos.y}, {"z", t.pos.z} } },
+                { "Rotation", t.rot },
+                { "Scale",    { {"x", t.scale.x}, {"y", t.scale.y} } }
+            };
+
+            // Insert into Level json
+            level["Entities"].push_back(j);
+        }
+        // Write file -------------------------------------------------------
+        std::ofstream ofs(outPath);
+        if (!ofs.is_open()) {
+            std::cerr << "Failed to write level file: " << outPath << "\n";
+            return false;
+        }
+
+        ofs << std::setw(4) << level;
+        ofs.close();
+
+        std::cout << "Saved level to: " << outPath << "\n";
+        return true;
+    }
+
+    bool EntityFactory::SaveAsPrefab(Entity e, std::string const& prefabName, bool overwrite) {
+
+        // Output file path
+        std::filesystem::path outPath = GAMEDATA_DIR / "Prefabs" / (prefabName + ".json");
+
+        // Check if a prefab already exists with the same name
+        if (std::filesystem::exists(outPath) && !overwrite) {
+            std::cout << "There already exists a prefab named '" << prefabName << "' at '" << GAMEDATA_DIR / "Prefabs" << '\n';
+            return false;
+        }
+        // JSON object that will become the prefab content
+        json j;
+
+        // TRANSFORM ------------------------------------------------------
+        //if (m_coord.HasComponent<Transform>(e)) {
+        //    Transform const& t = m_coord.GetComponent<Transform>(e);
+        //    j["Transform"] = {
+        //        { "Position", { {"x", t.pos.x}, {"y", t.pos.y}, {"z", t.pos.z} } },
+        //        { "Rotation", t.rot },
+        //        { "Scale",    { {"x", t.scale.x}, {"y", t.scale.y} } }
+        //    };
+        //}
+        
+        // RIGIDBODY ------------------------------------------------------
+        if (m_coord.HasComponent<RigidBody>(e)) {
+            RigidBody const& rb = m_coord.GetComponent<RigidBody>(e);
+            float mass = 1.f;
+            if (rb.invMass != 0.f) {
+                mass = 1.f / rb.invMass;
+            }
+            j["RigidBody"] = {
+                {"mass", mass},
+                {"useGravity", rb.useGravity}
+            };
+        }
+        // COLLIDER -------------------------------------------------------
+        if (m_coord.HasComponent<Collider>(e)) {
+            Collider const& c = m_coord.GetComponent<Collider>(e);
+            json col;
+            col["isStatic"] = c.isStatic;
+
+            // Type
+            if (c.type == ColliderType::Solid) {
+                col["type"] = "Solid";
+            }
+            else if (c.type == ColliderType::Trigger) {
+                col["type"] = "Trigger";
+            }
+            else if (c.type == ColliderType::Ground) {
+                col["type"] = "Ground";
+            }
+
+            // Shape & dimensions
+            if (c.shape == ShapeType::AABB) {
+                col["shape"] = "AABB";
+                col["width"] = c.width;
+                col["height"] = c.height;
+            }
+            else if (c.shape == ShapeType::Circle) {
+                col["shape"] = "Circle";
+                col["radius"] = c.radius;
+            }
+
+            j["Collider"] = col;
+        }
+        // RENDERABLE -----------------------------------------------------
+        if (m_coord.HasComponent<Renderable>(e)) {
+            Renderable const& r = m_coord.GetComponent<Renderable>(e);
+            j["Renderable"] = {
+                {"meshName", r.meshName},
+                {"materialName", r.materialName},
+                {"isWireframe", r.isWireframe}
+            };
+        }
+        // COLOR ----------------------------------------------------------
+        if (m_coord.HasComponent<Color>(e)) {
+            Color const& c = m_coord.GetComponent<Color>(e);
+            j["Color"] = {
+                {"r", c.r},
+                {"g", c.g},
+                {"b", c.b},
+                {"a", c.a}
+            };
+        }
+        // CAMERA ---------------------------------------------------------
+        if (m_coord.HasComponent<Camera>(e)) {
+            Camera const& c = m_coord.GetComponent<Camera>(e);
+            j["Camera"] = {
+                {"isMainCam", c.isMainCam},
+                {"zoom",      c.zoom},
+                {"width",     c.width},
+                {"height",    c.height}
+            };
+        }
+        // STATES ---------------------------------------------------------
+        //if (m_coord.HasComponent<States>(e)) {
+        //    States const& s = m_coord.GetComponent<States>(e);
+        //    j["States"] = {
+        //        {"States", { "StateMachine", s.}}
+        //    };
+        //}
+
+        // ANIMATOR -------------------------------------------------------
+        if (m_coord.HasComponent<Animator>(e)) {
+            Animator const& a = m_coord.GetComponent<Animator>(e);
+            j["Animator"] = {
+                {"spriteSheetName", a.spriteSheetName},
+                {"playbackSpeed", a.playbackSpeed},
+                {"isPlaying", a.isPlaying},
+                {"isLooping", a.isLooping}
+            };
+        }
+        // FONT -----------------------------------------------------------
+        if (m_coord.HasComponent<Font>(e)) {
+            Font const& f = m_coord.GetComponent<Font>(e);
+
+            j["Font"] = {
+                {"fontType", f.fontType},
+                {"text", f.text},
+                {"fontSize", f.fontSize},
+                {"textColor", {{"r", f.textColor.x}, {"g", f.textColor.y}, {"b", f.textColor.z}} }
+            };
+        }
+        // BUTTON ---------------------------------------------------------
+        if (m_coord.HasComponent<ButtonInfo>(e)) {
+            ButtonInfo const& b = m_coord.GetComponent<ButtonInfo>(e);
+
+            std::string action, type;
+            switch (b.action) {
+            case ButtonAction::PLAYAUDIO:
+                action = "PlayAudio";
+                break;
+            case ButtonAction::PLAYAUDIO2:
+                action = "PlayAudio2";
+                break;
+            case ButtonAction::PLAYAUDIO3:
+                action = "PlayAudio3";
+                break;
+            case ButtonAction::PLAYSTRESSTEST:
+                action = "StressTest";
+                break;
+            case ButtonAction::CHANGELEVELS:
+                action = "ChangeLevel";
+                break;
+            default:
+                type = "Unknown";
+                break;
+            }
+            switch (b.type) {
+            case ButtonType::GAMEMENU:
+                type = "GameMenu";
+                break;
+            default:
+                type = "Unknown";
+                break;
+            }
+            j["ButtonInfo"] = {
+                {"action", action},
+                {"type", type}
+            };
+        }
+        // SCRIPT ---------------------------------------------------------
+        if (m_coord.HasComponent<Script>(e)) {
+            Script const& s = m_coord.GetComponent<Script>(e);
+            j["Script"] = {
+                {"name", s.name}
+            };
+        }
+        //  ---------------------------------------------------------------
+
+        // Write to file
+        std::ofstream ofs(outPath);
+        if (!ofs.is_open()) {
+            std::cerr << "Failed to write prefab file: " << outPath << "\n";
+            return false;
+        }
+        // pretty-print with 4-space indent
+        ofs << std::setw(4) << j;
+        ofs.close();
+        std::cout << "Saved prefab to: " << outPath << "\n";
+
+        // Update mapping of current entity to new created prefab
+        entityToPrefab[e] = prefabName;
+
+        return true;
+    }
+
+    void EntityFactory::CreateFolders() const {
+        // Create prefabs folder if not existing
+        std::filesystem::path prefabs = GAMEDATA_DIR / "Prefabs";
+        if (!std::filesystem::exists(prefabs)) {
+            std::filesystem::create_directories(prefabs);
+            std::cout << "[EntityFactory] Created 'Prefabs' folder\n";
+        }
+        // Same for levels folder
+        std::filesystem::path levels = GAMEDATA_DIR / "Levels";
+        if (!std::filesystem::exists(levels)) {
+            std::filesystem::create_directories(levels);
+            std::cout << "[EntityFactory] Created 'Levels' folder\n";
+        }
+    }
+
+    void EntityFactory::UnloadLevel() {
+        for (Entity e{}; e < MAX_ENTITIES; ++e) {
+            m_coord.DestroyEntity(e);
+        }
+        m_coord.ResetEverything();
+    }
+
+    void EntityFactory::TransferPrefabs() {
+        {
+            std::vector<Entity> entities;
+            std::vector<std::string> names;
+            for (auto& [name, data] : GetArchetypes().items()) {
+                entities.push_back(Create(name));
+                names.push_back(name);
+            }
+            for (int i{}; i < entities.size(); ++i) {
+                SaveAsPrefab(entities[i], names[i], false);
+                RemoveEntity(entities[i]);
+            }
+        }
+    }
+
 }	// NightSnack

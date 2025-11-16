@@ -1,0 +1,33 @@
+{
+    "Animator": {
+        "isLooping": true,
+        "isPlaying": true,
+        "playbackSpeed": 2.0,
+        "spriteSheetName": "../assets/slime.png"
+    },
+    "Collider": {
+        "isStatic": false,
+        "radius": 15.0,
+        "shape": "Circle",
+        "type": "Solid"
+    },
+    "Font": {
+        "fontSize": 0.5,
+        "fontType": "default",
+        "text": "Player",
+        "textColor": {
+            "b": 0.8999999761581421,
+            "g": 0.75,
+            "r": 0.6499999761581421
+        }
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "slimeMat",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": true
+    }
+}

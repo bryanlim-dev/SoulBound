@@ -1,0 +1,34 @@
+{
+    "ButtonInfo": {
+        "action": "PlayAudio2",
+        "type": "GameMenu"
+    },
+    "Collider": {
+        "height": 100.0,
+        "isStatic": true,
+        "shape": "AABB",
+        "type": "Trigger",
+        "width": 200.0
+    },
+    "Color": {
+        "a": 1.0,
+        "b": 0.0,
+        "g": 0.4000000059604645,
+        "r": 1.0
+    },
+    "Font": {
+        "fontSize": 0.20000000298023224,
+        "fontType": "default",
+        "text": "Play Audio 2",
+        "textColor": {
+            "b": 0.8999999761581421,
+            "g": 0.75,
+            "r": 0.6499999761581421
+        }
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "ColorMat",
+        "meshName": "square"
+    }
+}

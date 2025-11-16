@@ -1,0 +1,17 @@
+{
+    "Collider": {
+        "isStatic": false,
+        "radius": 5.0,
+        "shape": "Circle",
+        "type": "Solid"
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "bananaMat",
+        "meshName": "circle"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": false
+    }
+}
