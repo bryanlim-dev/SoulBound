@@ -208,4 +208,40 @@ namespace NightSnack {
 		//std::cout << "Created AnimationClip for: " << textureName << std::endl;
 	}
 
+	std::vector<std::string> AnimationSystem::GetSpritesheetAnimationClipsNames(Entity e) {
+		auto& animator = m_coord.GetComponent<Animator>(e);
+		std::vector<std::string> ret;
+
+		// This entity does not have a spritesheet/texture attached to it
+		if (animator.spriteSheetName.empty()) {
+			return {};
+		}
+
+		// Iterate through all AnimationClips in this spritesheet
+		for (const auto& [animClipName, animClip] : m_animationClips[animator.spriteSheetName]) {
+			// Collect the AnimationClip names
+			ret.emplace_back(animClipName);
+		}
+
+		return ret;
+	}
+
+	void AnimationSystem::SetCurrentAnimationClip(const std::string& animationClipName, Entity e) {
+
+		auto& animator = m_coord.ModifyComponent<Animator>(e);
+
+		// Check whether the Entity has a spritesheet attached to it
+		if (animator.spriteSheetName.empty()) {
+			std::cerr << "[AnimationSystem] Error: This Entity does not have a Spritesheet!\n";
+			return;
+		}
+
+		if (m_animationClips[animator.spriteSheetName].find(animationClipName) == m_animationClips[animator.spriteSheetName].end()) {
+			std::cerr << "[AnimationSystem] Error: This AnimationClip name does not exist!\n";
+			return;
+		}
+
+		animator.currentAnimationClip = animationClipName;
+	}
+
 } // NightSnack

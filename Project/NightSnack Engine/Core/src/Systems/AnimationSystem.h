@@ -81,6 +81,10 @@ namespace NightSnack {
 
 		void CreateAnimationClips(std::string textureName, Texture* tex, int cols, int rows);
 
+		std::vector<std::string> GetSpritesheetAnimationClipsNames(Entity e);
+
+		void SetCurrentAnimationClip(const std::string& animationClipName, Entity e);
+
 		/************************************************************************/
 		/*!
 		\brief
