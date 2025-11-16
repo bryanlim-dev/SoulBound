@@ -80,9 +80,15 @@ namespace NightSnack
         /*!
         \brief
 		    Draws the tile editor panel for selecting and placing tiles.
+
+        \param[in] coord
+			- Reference to the ECS Coordinator.
+
+		\param[in] selectedEntity
+			- Currently selected entity in the scene.
         */
         /************************************************************************/
-        void DrawTileEditor();
+        void DrawTileEditor(Coordinator& coord, Entity selectedEntity);
 
         /************************************************************************/
         /*!
@@ -123,31 +129,52 @@ namespace NightSnack
         }
     }
 
-    inline void Tilemap::DrawTileEditor()
+    inline void Tilemap::DrawTileEditor(Coordinator& coord, Entity selectedEntity)
     {
-        if (!showTileEditor) return;
-        ImGui::SetNextWindowSize(ImVec2(400, 400), ImGuiCond_Once); // Set a reasonable default size
+        if (!showTileEditor) { return; }
+
+        // Calculate desired texture display size based on world grid
+        float displayWidth = tileCols * gridSize;
+        float displayHeight = tileRows * gridSize;
+        ImVec2 texSize(displayWidth, displayHeight);
+
+        ImGui::SetNextWindowSize(ImVec2(displayWidth + 80, displayHeight + 120), ImGuiCond_Always);
         ImGui::Begin("Tile Editor", &showTileEditor);
 
-        // Editable parameters
+        // Texture loading from the selected entity's Renderable component
+        bool hasTexture = false;
+        if (selectedEntity != INVALID_ENTITY && coord.HasComponent<Renderable>(selectedEntity))
+        {
+            auto& renderable = coord.GetComponent<Renderable>(selectedEntity);
+            auto graphics = coord.GetSystem<GraphicsSystem>();
+            if (graphics)
+            {
+                Material* mat = graphics->GetMaterial(renderable.materialName);
+                if (mat && mat->GetTexture())
+                {
+                    tileTextureID = (ImTextureID)(intptr_t)mat->GetTexture()->GetID();
+                    tileTexturePath = mat->GetTexture()->GetTextureName();
+                    hasTexture = true;
+                }
+            }
+        }
+
+        // Show texture path (read-only)
         char texPathBuffer[256];
         strncpy_s(texPathBuffer, tileTexturePath.c_str(), sizeof(texPathBuffer));
         texPathBuffer[sizeof(texPathBuffer) - 1] = 0;
-        if (ImGui::InputText("Texture Path", texPathBuffer, sizeof(texPathBuffer))) {
-            tileTexturePath = texPathBuffer;
-            // TODO: Load texture and set tileTextureID here
-        }
+        ImGui::InputText("Texture Path", texPathBuffer, sizeof(texPathBuffer), ImGuiInputTextFlags_ReadOnly);
+        // Editable parameters
         ImGui::InputInt("Rows", &tileRows);
         ImGui::InputInt("Cols", &tileCols);
 
-        ImVec2 texSize(256, 256); // Replace with actual texture size after loading
-        if (tileTextureID)
+        if (hasTexture && tileTextureID)
         {
             ImGui::Text("Select a tile:");
             ImVec2 gridOrigin = ImGui::GetCursorScreenPos();
-            ImGui::Image(tileTextureID, texSize);
+            ImGui::Image(tileTextureID, texSize, ImVec2(0, 1), ImVec2(1, 0)); // Fixes flipping
 
-            // Draw Tilemap overlay
+            // Draw grid overlay using world mapping
             ImDrawList* draw_list = ImGui::GetWindowDrawList();
             float cellW = texSize.x / tileCols;
             float cellH = texSize.y / tileRows;
@@ -180,12 +207,20 @@ namespace NightSnack
                 ImVec2 min = ImVec2(gridOrigin.x + selCol * cellW, gridOrigin.y + selRow * cellH);
                 ImVec2 max = ImVec2(min.x + cellW, min.y + cellH);
                 draw_list->AddRect(min, max, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
+
+                // Preview selected tile (simple rectangle for now)
+                ImGui::Text("Selected Tile Preview:");
+                ImVec2 previewMin = ImGui::GetCursorScreenPos();
+                ImVec2 previewMax = ImVec2(previewMin.x + cellW, previewMin.y + cellH);
+                draw_list->AddRectFilled(previewMin, previewMax, IM_COL32(255, 255, 255, 255));
+                draw_list->AddRect(previewMin, previewMax, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
+                ImGui::Dummy(ImVec2(cellW, cellH));
             }
 
-            // Save selected tile as PNG (pseudo-code)
+            // Save selected tile as PNG
             if (selectedTile >= 0 && ImGui::Button("Save Selected Tile"))
             {
-                // TODO: Extract tile from texture and save as PNG
+                // Future extracting and saving coming soon...
             }
         }
         else

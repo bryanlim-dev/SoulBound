@@ -398,7 +398,7 @@ namespace NightSnack
     inline void InspectorPanel::TilemapComponent()
     {
         m_tilemap.DrawTilemapSettings();
-        m_tilemap.DrawTileEditor();
+        m_tilemap.DrawTileEditor(m_coord, *m_selectedEntity);
     }
 
 	// Draws RigidBody component details which includes velocity, angular
