@@ -3,7 +3,7 @@
         "isLooping": true,
         "isPlaying": true,
         "playbackSpeed": 1.0,
-        "spriteSheetName": "../assets/ghost.png"
+        "spriteSheetName": ""
     },
     "Collider": {
         "isStatic": false,
@@ -13,7 +13,7 @@
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "ghostMat",
+        "materialName": "ColorMat",
         "meshName": "square"
     },
     "RigidBody": {

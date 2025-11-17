@@ -3,7 +3,7 @@
         "isLooping": true,
         "isPlaying": true,
         "playbackSpeed": 1.0,
-        "spriteSheetName": "../assets/ghost.png"
+        "spriteSheetName": ""
     },
     "Collider": {
         "height": 100.0,
@@ -14,7 +14,7 @@
     },
     "Font": {
         "fontSize": 0.5,
-        "fontType": "liberation",
+        "fontType": "",
         "text": "Ghost",
         "textColor": {
             "b": 0.5,
@@ -24,7 +24,7 @@
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "ghostMat",
+        "materialName": "ColorMat",
         "meshName": "square"
     },
     "RigidBody": {

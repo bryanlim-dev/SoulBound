@@ -35,8 +35,8 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Constructor for Factory, requires coordinator, event dispatcher and file
-		of archetypes.
+		Constructor for Factory, requires coordinator, event dispatcher and
+		directory of "assets/GameData" (Original, not build copied version).
 		Creates the prefabManager that will register all component loaders that
 		will help with entity creation.
 		*/
@@ -44,14 +44,16 @@ namespace NightSnack {
 		EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& gameDataPath)
 			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord }, GAMEDATA_DIR{ gameDataPath } {
 
+			// Register component loaders in PrefabManager.
 			m_prefabManager.Initialize();
-
+			// Create "Prefabs" and "Levels" folder in "assets/GameData" if they don't exist.
 			CreateFolders();
 
-			LoadArchetypes("../assets/GameData/Archetypes/Archetypes.json");
-			LoadLevel("../assets/GameData/DefaultLevel.json");
-
-			SaveLevel("Level0", true);
+			// Read Level and Prefab json files.
+			ReloadPrefabs();
+			ReloadLevels();
+			// Create Default level.
+			LoadLevel("DefaultLevel");
 
 			// Setup input events;
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
@@ -65,78 +67,34 @@ namespace NightSnack {
 			});
 		}
 
-		void LoadArchetypes(std::string const& filename) {
-
-			try {
-				LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(filename, m_archetypesKey);
-				if (result == LOAD_FAIL_BADPATH) {
-					throw std::runtime_error("Failed to open archetypes file due to bad file path: " + filename);
-				}
-			}
-			catch (json::parse_error& e) {
-				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
-			}
-
-			m_prefabNames.clear();
-
-			for (auto& [name, data] : GetArchetypes().items()) {
-				m_prefabNames.emplace_back(name);
-			}
-
-			std::ifstream file(filename);
-			if (!file.is_open()) {
-				throw std::runtime_error("Failed to open archetypes file: " + filename);
-			}
-
-			try {
-				file >> m_archetypes;
-			}
-			catch (json::parse_error& e) {
-				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
-			}
-		}
+		// Resets m_prefabKeys and loads all json files in "GameData/Prefabs"
+		void ReloadPrefabs();
+		// Resets m_levelKeys and loads all json files in "GameData/Levels"
+		void ReloadLevels();
 
 		// Saves all entities in the current level
 		bool SaveLevel(std::string const& levelName, bool overwrite);
-
-		// Read a Level file and creates Entities from prefabs in m_archetypes;
-		void LoadLevel(std::string const& levelfile) {
-
-			m_coord.GetSystem<ResourceManager>()->UnloadJson(m_currentLevelKey);
-
-			try {
-				LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(levelfile, m_currentLevelKey);
-				if (result == LOAD_FAIL_BADPATH) {
-					throw std::runtime_error("Failed to open archetypes file due to bad file path: " + levelfile);
-				}
-			}
-			catch (json::parse_error& e) {
-				throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
-			}
-
-			m_currentLevel = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelKey);
-
-			for (auto const& item : m_currentLevel["Entities"]) {
-				Create(item["prefab"], item["Transform"]);
-			}
-			for (Entity e : m_coord.GetLivingEntities()) {
-				m_coord.BufferEntitySignature(e);
-			}
-		}
-
+		// Creates entities found in a level (levelName does not have prefix, just "DefaultLevel" or "Level0" etc...)
+		void LoadLevel(std::string const& levelName);
+		// Destroys all entities and Resets all ECS managers.
 		void UnloadLevel();
 
 		/************************************************************************/
 		/*!
 		\brief
-		Currently does not do anything, but is required to be defined by ISystem
+		Currently does not do anything, but is required to be defined by ISystem.
 		*/
 		/************************************************************************/
 		void Update(int steps) override;
 
-		// Required functions from base class ISystem.
-		Signature GetSignature() const override { return Signature{}; }
-		std::string GetName() const override { return "EntityFactory"; }
+		/************************************************************************/
+		/*!
+		\brief
+		Performs necessary operations at end of Core update Loop like destroying
+		entities marked for deletion.
+		*/
+		/************************************************************************/
+		void PostUpdate();
 
 		/************************************************************************/
 		/*!
@@ -198,16 +156,16 @@ namespace NightSnack {
 		bool SaveAsPrefab(Entity e, std::string const& prefabName, bool overwrite);
 
 		void CreateFolders() const;
-		void TransferPrefabs();
-
-		void PostUpdate();
 
 		void PrintPrefabNames() const;
-		std::unordered_map<std::string, std::string> GetPrefabMaterials() const;
-		std::vector<std::string> const& GetPrefabNames() const;
+		std::vector<std::string> GetPrefabNames() const;
 		std::string GetEntityPrefabName(Entity e) const;
-		const json& GetArchetypes() const;
+		
+		std::unordered_map<std::string, std::string> GetPrefabMaterials() const;
 
+		// Required functions from base class ISystem.
+		Signature GetSignature() const override { return Signature{}; }
+		std::string GetName() const override { return "EntityFactory"; }
 
 	private:
 		Coordinator& m_coord;
@@ -217,19 +175,29 @@ namespace NightSnack {
 		// Entities that have been marked for deletion
 		std::set<Entity> m_toBeDestroyed;
 
-		json m_archetypes{};
-		//json m_archetypesStates{};
-		json m_currentLevel{}; //Copy yo not effect the orginal
+		size_t m_currentLevelKey;
+		size_t m_previousLevelKey;
 
-		size_t m_archetypesKey{};
-		//size_t m_archetypesStatesKey{};
-		size_t m_currentLevelKey{};
+		std::unordered_map<std::string, size_t> m_prefabKeys;
+		std::unordered_map<std::string, size_t> m_levelKeys;
 
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;
 		std::vector<std::string> m_prefabNames;
 
 		std::filesystem::path GAMEDATA_DIR;
+
+		// ---------------------------------------------------------------------
+		
+		// Split Monolithic Json file (containing all archetypes) into individual prefab json files.
+		void TransferPrefabs(std::string const& monolith);
+
+		// Reads all json files from a given directory
+		// Stores the json keys in the map, with the filenames as accessors (Level1, PlayerPrefab, etc...)
+		void LoadJsonFolder(std::unordered_map<std::string, size_t>& map, std::string const& path);
+
+		// Obtain a json file from ResourceManager using a given key.
+		json const& GetArchetypes(size_t key) const;
 	};
 
 }	// NightSnack
