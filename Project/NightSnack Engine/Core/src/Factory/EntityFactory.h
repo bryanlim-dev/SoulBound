@@ -117,7 +117,19 @@ namespace NightSnack {
 			m_currentLevel = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelKey);
 
 			for (auto const& item : m_currentLevel["Entities"]) {
-				Create(item["prefab"], item["Transform"]);
+				// Had an exception where type must be string, but was array
+				// Temp fix
+				std::string prefabName;
+				if (item["prefab"].is_array() && !item["prefab"].empty()) {
+					prefabName = item["prefab"][0].get<std::string>();
+				}
+				else if (item["prefab"].is_string()) {
+					prefabName = item["prefab"].get<std::string>();
+				}
+				else {
+					prefabName = "UnknownPrefab";
+				}
+				Create(prefabName, item["Transform"]);
 			}
 			for (Entity e : m_coord.GetLivingEntities()) {
 				m_coord.BufferEntitySignature(e);

@@ -344,19 +344,45 @@ namespace NightSnack {
 	inline void ImguiSystem::DrawMenuBar() {
 		if (ImGui::BeginMenuBar())
 		{
-			// Implemented at later date
 			if (ImGui::BeginMenu("File"))
 			{
-				//if (ImGui::MenuItem("New")) {}
-				if (ImGui::MenuItem("Open")) {
+				// Save current level
+				static char levelName[128] = "MyLevel";
+				ImGui::InputText("Level Name", levelName, IM_ARRAYSIZE(levelName));
+				ImGui::SameLine();
+				static bool overwrite = true;
+				ImGui::Checkbox("Overwrite", &overwrite);
+				ImGui::SameLine();
+				if (ImGui::Button("Save")) {
 					auto factory = m_coord.GetSystem<EntityFactory>();
 					if (factory)
 					{
-						factory->LoadLevel("../assets/GameData/DefaultLevel.json");
+						factory->SaveLevel(levelName, overwrite);
 					}
 				}
-				//if (ImGui::MenuItem("Save")) {}
+
+				// Load level by name
+				static char loadLevelName[128] = "MyLevel";
+				ImGui::InputText("Load Level", loadLevelName, IM_ARRAYSIZE(loadLevelName));
+				ImGui::SameLine();
+				if (ImGui::Button("Load")) {
+					auto factory = m_coord.GetSystem<EntityFactory>();
+					if (factory)
+					{
+						factory->UnloadLevel();
+						std::string path = "../assets/GameData/Levels/" + std::string(loadLevelName) + ".json";
+						factory->LoadLevel(path); // Load the new level
+					}
+				}
+
 				ImGui::Separator();
+				if (ImGui::MenuItem("Open Default Level")) {
+					auto factory = m_coord.GetSystem<EntityFactory>();
+					if (factory)
+					{
+						factory->LoadLevel("DefaultLevel");
+					}
+				}
 				//if (ImGui::MenuItem("Exit")) {}
 				ImGui::EndMenu();
 			}
