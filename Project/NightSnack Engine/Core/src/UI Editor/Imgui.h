@@ -270,7 +270,7 @@ namespace NightSnack {
 		if (factory)
 		{
 			factory->UnloadLevel();
-			factory->LoadLevel("../assets/GameData/DefaultLevel.json");
+			factory->LoadLevel("DefaultLevel");
 			m_scenePanel->CreateEditorCamera();
 		}
 	}
@@ -311,7 +311,7 @@ namespace NightSnack {
 			
 			// Split the dockspace into 4 regions
 			ImGuiID dock_id_left, dock_id_right, dock_id_top, dock_id_bottom, dock_id_center;
-			ImGuiID dock_id_left_top, dock_id_left_bottom, dock_id_center_right, dock_id_bottom_right;
+			ImGuiID dock_id_left_top, dock_id_left_bottom, dock_id_center_right, dock_id_bottom_right, dock_id_right_top, dock_id_right_bottom;
 
 			ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.20f, &dock_id_left, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Right, 0.25f, &dock_id_right, &dock_id_center);
@@ -320,6 +320,7 @@ namespace NightSnack {
 			ImGui::DockBuilderSplitNode(dock_id_left, ImGuiDir_Down, 1.0f / 3.0f, &dock_id_left_bottom, &dock_id_left_top);
 			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Right, 0.3f, &dock_id_center_right, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_bottom, ImGuiDir_Right, 0.5f, &dock_id_bottom_right, &dock_id_bottom);
+			ImGui::DockBuilderSplitNode(dock_id_center_right, ImGuiDir_Down, 0.5f, &dock_id_right_bottom, &dock_id_right_top);
 
 
 			// Dock panels to regions
@@ -328,7 +329,8 @@ namespace NightSnack {
 			ImGui::DockBuilderDockWindow("Inspector", dock_id_right);
 			ImGui::DockBuilderDockWindow("Scene", dock_id_center);
 			ImGui::DockBuilderDockWindow("Assets", dock_id_bottom);
-			ImGui::DockBuilderDockWindow("Asset Properties", dock_id_center_right);
+			ImGui::DockBuilderDockWindow("Asset Properties", dock_id_right_top);
+			ImGui::DockBuilderDockWindow("Tile Editor", dock_id_right_bottom);
 			ImGui::DockBuilderDockWindow("Properties:", dock_id_bottom_right);
 
 			ImGui::DockBuilderFinish(dockspace_id);
@@ -347,8 +349,8 @@ namespace NightSnack {
 			if (ImGui::BeginMenu("File"))
 			{
 				// Save current level
-				static char levelName[128] = "MyLevel";
-				ImGui::InputText("Level Name", levelName, IM_ARRAYSIZE(levelName));
+				std::string levelName = "MyLevel";
+				ImGui::InputText("Level Name", levelName.data(), levelName.size());
 				ImGui::SameLine();
 				static bool overwrite = true;
 				ImGui::Checkbox("Overwrite", &overwrite);
@@ -362,16 +364,15 @@ namespace NightSnack {
 				}
 
 				// Load level by name
-				static char loadLevelName[128] = "MyLevel";
-				ImGui::InputText("Load Level", loadLevelName, IM_ARRAYSIZE(loadLevelName));
+				std::string loadLevelName = "MyLevel";
+				ImGui::InputText("Load Level", loadLevelName.data(), loadLevelName.size());
 				ImGui::SameLine();
 				if (ImGui::Button("Load")) {
 					auto factory = m_coord.GetSystem<EntityFactory>();
 					if (factory)
 					{
 						factory->UnloadLevel();
-						std::string path = "../assets/GameData/Levels/" + std::string(loadLevelName) + ".json";
-						factory->LoadLevel(path); // Load the new level
+						factory->LoadLevel(loadLevelName);
 					}
 				}
 
