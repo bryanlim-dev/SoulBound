@@ -60,6 +60,8 @@ namespace NightSnack {
 		m_coord.ModifyComponent<Transform>(e) = trans;
 		entityToPrefab[e] = name;
 
+        m_coord.BufferEntitySignature(e);
+
 		return e;
 	}
 
@@ -73,6 +75,8 @@ namespace NightSnack {
 
 		m_coord.ModifyComponent<Transform>(e) = trans;
 		entityToPrefab[e] = name;
+
+        m_coord.BufferEntitySignature(e);
 
 		return e;
 	}
@@ -88,6 +92,9 @@ namespace NightSnack {
 
 		m_coord.ModifyComponent<Transform>(e) = trans;
 		entityToPrefab[e] = name;
+
+        m_coord.BufferEntitySignature(clone);
+
 
 		return clone;
 	}
