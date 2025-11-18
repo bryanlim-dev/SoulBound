@@ -22,6 +22,7 @@ uniform mat4 uProj;
 uniform mat4 uView;
 uniform bool uUseInstancing;
 uniform vec4 uUVRect; 
+uniform int uInstanceOffset;
 
 // Non-instanced rendering
 uniform mat4 uModelToWorld; // used for non-instancing rendering
@@ -66,7 +67,8 @@ void main(void) {
     mat4 model;
 
     if (uUseInstancing) {
-        InstanceData data = instances[gl_InstanceID];
+        int index = gl_InstanceID + uInstanceOffset;
+        InstanceData data = instances[index];
         model = computeModelMatrix(data);
         vTexCoord = mix(data.uvRect.xy, data.uvRect.zw, aTexCoord);
     } else {

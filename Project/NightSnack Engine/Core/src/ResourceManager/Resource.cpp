@@ -193,6 +193,11 @@ namespace NightSnack {
 		m_archetypeMap = newArchtypeMap;
 	}
 
+	ResourceJson::ResourceJson(nlohmann::json jsonData, std::string path)
+		: Resource(path,0), m_jsonData (jsonData)
+	{
+	}
+
 	ResourceJson::~ResourceJson()
 	{
 
@@ -224,7 +229,10 @@ namespace NightSnack {
 
 	void ResourceJson::SaveFile()
 	{
-		ConvertArchtypeToJson();
+		//Only convert if there is if converted into Archtype
+		//Otherwise the json data may have been inputted by itself without the archtype
+		if (m_archetypeMap.size())
+			ConvertArchtypeToJson();
 
 		std::ofstream outFile(m_path.c_str());
 

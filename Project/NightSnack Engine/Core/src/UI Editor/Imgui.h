@@ -94,6 +94,8 @@ namespace NightSnack {
 		bool m_toggleEditor = false;
 		bool m_isPlaying = true;
 
+		Tilemap m_tilemap;
+
 		// Panels and shared data
 		std::shared_ptr<std::unordered_map<Entity, std::string>> m_uiNames;
 		std::shared_ptr<Entity> m_selectedEntity;
@@ -203,8 +205,8 @@ namespace NightSnack {
 		m_selectedEntity = std::make_shared<Entity>(INVALID_ENTITY);
 		m_uiNames		 = std::make_shared<std::unordered_map<Entity, std::string>>();
 		m_hierarchyPanel = std::make_unique<HierarchyPanel>(m_coord, m_selectedEntity, m_uiNames);
-		m_inspectorPanel = std::make_unique<InspectorPanel>(m_coord, m_selectedEntity, m_uiNames);
-		m_scenePanel	 = std::make_unique<ScenePanel>(m_coord, m_selectedEntity);
+		m_inspectorPanel = std::make_unique<InspectorPanel>(m_coord, m_selectedEntity, m_uiNames, m_tilemap);
+		m_scenePanel	 = std::make_unique<ScenePanel>(m_coord, m_selectedEntity, m_tilemap);
 		m_optionsPanel	 = std::make_unique<OptionsPanel>(m_coord);
 		m_assetsPanel	 = std::make_unique<AssetsPanel>(m_coord);
 	}
@@ -267,8 +269,9 @@ namespace NightSnack {
 		auto factory = m_coord.GetSystem<EntityFactory>();
 		if (factory)
 		{
-			factory->UnLoadLevel();
+			factory->UnloadLevel();
 			factory->LoadLevel("../assets/GameData/DefaultLevel.json");
+			m_scenePanel->CreateEditorCamera();
 		}
 	}
 
@@ -403,8 +406,8 @@ namespace NightSnack {
 					ImGui::EndDisabled();
 				}
 
-				// Stop
-				if (ImGui::MenuItem("Stop"))
+				// Reset
+				if (ImGui::MenuItem("Reset"))
 				{
 					m_isPlaying = false;
 					SetSimulationPaused(true);

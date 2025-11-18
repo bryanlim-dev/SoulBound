@@ -130,6 +130,28 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Render debug drawing visualizations using the specified camera
+
+		\param[in] Camera
+		The specified camera that is used to render the debug drawing visualizations
+		*/
+		/************************************************************************/
+		void RenderDebugDrawing(Entity camera);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Creates a texture using the Resource Manager.
+
+		\param[in] textureFilePath
+		The texture file path to load
+		*/
+		/************************************************************************/
+		void CreateTexture(std::string textureFilePath);
+
+		/************************************************************************/
+		/*!
+		\brief
 		Adds a new shader resource to the Graphics System
 
 		\param[in] name
@@ -397,6 +419,8 @@ namespace NightSnack {
 			bool isWireframe{ false };
 			std::vector<Mesh::InstanceData> instances;
 			LayerType layerType = LayerType::GAMELAYER;
+			size_t ssboOffset{ 0 };
+			size_t instanceCount{ 0 };
 		};
 
 		// Resource stores (owned by system);
@@ -405,7 +429,8 @@ namespace NightSnack {
 		std::unordered_map<std::string, std::unique_ptr<Mesh>>     m_meshes;
 		std::unordered_map<std::string, std::unique_ptr<Material>> m_materials;
 
-		std::unordered_map<std::string, InstanceBatch> m_meshBatches;
+		std::map<std::string, InstanceBatch> m_meshBatches; // Holds all the different InstanceBatch combinations
+		std::vector<Mesh::InstanceData> m_allInstances; // Holds all the InstanceData only, to upload to the GPU once
 
 		/************************************************************************/
 		/*!
@@ -469,23 +494,7 @@ namespace NightSnack {
 		/************************************************************************/
 		Vec3 ScreenToWorld(Vec3 const& screenPos);
 
-		/************************************************************************/
-		/*!
-		\brief
-		Constructs a new material name, based on the old material name provided.
-		It checks how many variants of the original material name there are, and get the next variant.
-		Etc. "ghost", "ghost1", "ghost2"
-		This function is called by UpdateTextureOfMaterial(), when there is a new combination
-		of a material and texture.
-
-		\param[in] oldMatName
-		The old material name, to be changed
-
-		\return
-		The new material name
-		*/
-		/************************************************************************/
-		std::string GetNewMaterialName(std::string oldMatName);
+		void DebugRenderableInformation();
 
 		bool m_enableDebugDraw{ false };
 		bool m_enableInstancedRendering{ true };

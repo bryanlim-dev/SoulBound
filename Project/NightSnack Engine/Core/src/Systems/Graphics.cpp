@@ -9,7 +9,7 @@
  * applies uniforms, and issues draw calls for each renderable entity in the scene.
  * It also provides debug drawing visualization (circle and AABB collider outlines, velocity vector)
  * and basic scaling and rotating of a specific object via input events from the event dispatcher.
- * The Graphics System supports both Instanced and Non-Instanced Rendering. 
+ * The Graphics System supports both Instanced and Non-Instanced Rendering.
  *
  * Copyright � 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -31,12 +31,12 @@ namespace NightSnack {
 		auto textShader = std::make_unique<Shader>("../assets/shaders/text_vs.vert", "../assets/shaders/text_fs.frag");
 		AddShader("text", std::move(textShader));
 
-		std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
+		//std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
 		// Textures;
 		// The number of columns and rows passed in here
 		// determines the number of AnimationClips and AnimationFrames
 		// [if the entity has an Animator component]
-		auto bananaTex = std::make_unique<Texture>("../assets/banana.jpg", rm);
+		/*auto bananaTex = std::make_unique<Texture>("../assets/banana.jpg", rm);
 		AddTexture("../assets/banana.jpg", std::move(bananaTex));
 		auto targetTex = std::make_unique<Texture>("../assets/target.png", rm);
 		AddTexture("../assets/target.png", std::move(targetTex));
@@ -45,7 +45,7 @@ namespace NightSnack {
 		auto ghostTex = std::make_unique<Texture>("../assets/ghost.png", rm, 4, 1);
 		AddTexture("../assets/ghost.png", std::move(ghostTex));
 		auto slimeTex = std::make_unique<Texture>("../assets/slime.png", rm, 4, 1);
-		AddTexture("../assets/slime.png", std::move(slimeTex));
+		AddTexture("../assets/slime.png", std::move(slimeTex));*/
 
 		// Meshes;
 		AddMesh("point", Mesh::CreatePoint());
@@ -56,7 +56,7 @@ namespace NightSnack {
 		AddMesh("CircleColliderMesh", Mesh::CreateCircleMesh());
 
 		// Materials with texture
-		auto bananaMat = std::make_unique<Material>(GetShader("texture"), GetTexture("../assets/banana.jpg"));
+		/*auto bananaMat = std::make_unique<Material>(GetShader("texture"), GetTexture("../assets/banana.jpg"));
 		bananaMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
 		AddMaterial("bananaMat", std::move(bananaMat));
 		auto targetMat = std::make_unique<Material>(GetShader("texture"), GetTexture("../assets/target.png"));
@@ -66,11 +66,12 @@ namespace NightSnack {
 		auto ghostMat = std::make_unique<Material>(GetShader("texture"), GetTexture("../assets/ghost.png"));
 		AddMaterial("ghostMat", std::move(ghostMat));
 		auto slimeMat = std::make_unique<Material>(GetShader("texture"), GetTexture("../assets/slime.png"));
-		AddMaterial("slimeMat", std::move(slimeMat));
+		AddMaterial("slimeMat", std::move(slimeMat));*/
 
 		// Materials with solid color
+		// THE CREATION OF THIS COLOR MATERIAL SHALL BE MOVED TO RESOURCE MANAGER INIT
 		auto colorMat = std::make_unique<Material>(GetShader("color"));
-		colorMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
+		//colorMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
 		AddMaterial("ColorMat", std::move(colorMat));
 
 		// Initialise buffer for Instanced Rendering
@@ -93,7 +94,7 @@ namespace NightSnack {
 		(void)steps;
 
 		if (m_entities.empty()) return;
-
+		//DebugRenderableInformation();
 		// Update viewport dimensions;
 		Hvp = static_cast<float>(m_coord.GetWindowHeight());
 		Wvp = static_cast<float>(m_coord.GetWindowWidth());
@@ -106,6 +107,8 @@ namespace NightSnack {
 	}
 
 	void GraphicsSystem::RenderWithCamera(Entity camera) {
+		// By default, GL_DEPTH_TEST is disabled for scene objects, since they will be rendered by their Layers order
+
 		// Get camera components
 		auto& camPos = m_coord.GetComponent<Transform>(camera).pos;
 		auto& camInfo = m_coord.GetComponent<Camera>(camera);
@@ -118,6 +121,7 @@ namespace NightSnack {
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
 		m_meshBatches.clear();
+		m_allInstances.clear();
 
 		for (Layer& l : m_layers) {
 			if (l.Empty() || !l.IsVisible()) { continue; }
@@ -141,7 +145,7 @@ namespace NightSnack {
 
 				CachedRenderData& data = it->second;
 				if (!data.valid) {
-					std::cout << "Entity " << e << " skipped (invalid renderable)\n";
+					//std::cout << "Entity " << e << " skipped (invalid renderable)\n";
 					continue;
 				}
 
@@ -183,18 +187,17 @@ namespace NightSnack {
 						key += "_solid";
 					}
 
-					if (l.Type() == LayerType::GAMELAYER) {
-						key += "_gameLayer";
-					} else if (l.Type() == LayerType::BACKGROUND) {
-						key += "_backgroundLayer";
-					} else if (l.Type() == LayerType::GAMEUI) {
-						key += "_uiLayer";
-					} else if (l.Type() == LayerType::_ENGINE) {
-						key += "_engineLayer";
-					} else if (l.Type() == LayerType::_ENGINE2) {
-						key += "_engine2Layer";
-					} else if (l.Type() == LayerType::FOREGROUND) {
-						key += "_foregroundLayer";
+					// Since for Instanced Rendering, we are using a std::map instead
+					// Let background layers render first so they can appear behind
+					// For it to render first, their key has to be alphabetically smaller
+					switch (l.Type()) {
+					case LayerType::_ENGINE:	key = "layer0_" + key;	break;
+					case LayerType::BACKGROUND: key = "layer1_" + key;	break;
+					default:
+					case LayerType::GAMELAYER:	key = "layer2_" + key;	break;
+					case LayerType::FOREGROUND: key = "layer3_" + key;	break;
+					case LayerType::GAMEUI:		key = "layer4_" + key;	break;
+					case LayerType::_ENGINE2:	key = "layer5_" + key;	break;
 					}
 
 					m_meshBatches[key].instances.push_back(instance);
@@ -213,7 +216,7 @@ namespace NightSnack {
 
 					// Passing of variables for SOLID COLOR entities only 
 					// Only solid color entities have the component color
-					
+
 					// Entities on the GAMEUI layer will have different transformatio matrices
 					glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
 					glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
@@ -237,6 +240,8 @@ namespace NightSnack {
 						} else {
 							shader->SetVec4("uUVRect", { 0.f, 0.f, 1.f, 1.f });
 						}
+						// Default color is white, if the texture is not initialized
+						shader->SetVec3("uColor", glm::vec3{ 1.f, 1.f, 1.f});
 					}
 
 					data.material->ApplyUniforms(ren.isWireframe);
@@ -258,79 +263,6 @@ namespace NightSnack {
 
 					GLenum err = glGetError();
 					if (err != GL_NO_ERROR) std::cerr << "GL ERROR: " << err << "\n";
-					glEnable(GL_DEBUG_OUTPUT);
-					glDebugMessageCallback([](GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar* message, const void*) {
-						std::cerr << "[GL] " << message << "\n";
-						}, nullptr);
-				}
-
-				// Debug Drawing, for entities with no texture
-				if (m_enableDebugDraw) {
-					// For Debug Drawing, debug shader will be used for simplicity
-					Shader* shader = GetShader("debug");
-					shader->Use();
-
-					// Drawing of colliders 
-					if (m_coord.HasComponent<Collider>(e)) {
-						Collider const& col = m_coord.GetComponent<Collider>(e);
-						// Entities on the GAMEUI layer will have different transformation matrices
-						glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
-						glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
-
-						switch (col.shape) {
-						case ShapeType::AABB:
-						{
-							// Model matrix according to its collider's scale
-							glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.width, col.height });
-							glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
-							shader->SetMat4("uDebugMVP", debugMVP);
-							shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
-							GetMesh("AABBColliderMesh")->Draw();
-						}
-						break;
-
-						case ShapeType::Circle:
-						{
-							// Model matrix according to its collider's scale
-							glm::mat4 debugmodel = GetModelToWorldMatrix(pos, rot, Vec2{ col.radius, col.radius });
-							glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
-							shader->SetMat4("uDebugMVP", debugMVP);
-							shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
-							GetMesh("CircleColliderMesh")->Draw();
-						}
-						break;
-
-						}
-					}
-
-					// Drawing of velocity direction for moving objects
-					if (m_coord.HasComponent<RigidBody>(e)) {
-						Vec2 const& vel = m_coord.GetComponent<RigidBody>(e).vel;
-
-						glm::vec3 velocity(vel.x, vel.y, 0.f);
-						float speed = glm::length(velocity); // Magnitude of the velocity vector
-
-						// Only draw the velocity line if it is moving
-						if (speed > 0.f) {
-							// Max length of the velocity line is slightly above the scale of the entity
-							float maxLength = std::max(scl.x, scl.y) * 1.4f;
-							float length = std::min(speed, maxLength);
-
-							glm::vec3 dir = glm::normalize(velocity); // Direction of the velocity vector
-
-							// Compute angle between +ve y-axis and the velocity direction
-							// atan2(y, x) gives angle relative to +ve x-axis, so subtract 90 degrees to align with +ve y-axis
-							float angle = glm::degrees(std::atan2(dir.y, dir.x) - glm::half_pi<float>());
-
-							// Model matrix according to its new rotation, and y-scale so line size reflects speed
-							glm::mat4 debugModel = GetModelToWorldMatrix(pos, angle, Vec2{ 1.f, length });
-							glm::mat4 debugMVP = proj * view * debugModel;
-							shader->SetMat4("uDebugMVP", debugMVP);
-							shader->SetVec3("uEntityColor", glm::vec3(0.1f, 0.9f, 0.9f));
-							// Points upwards by default, will be rotated accordingly
-							GetMesh("line")->Draw();
-						}
-					}
 				}
 			}
 		}
@@ -339,11 +271,24 @@ namespace NightSnack {
 		if (m_enableInstancedRendering) {
 			//std::cout << "Num unique instances total: " << m_meshBatches.size() << std::endl;
 
-			// Upload once per mesh type
+			// Update m_allInstances with the collected InstanceBatches, and the SSBO offsets
+			size_t currentOffset{ 0 };
+			for (auto& [key, instanceBatch] : m_meshBatches) {
+				instanceBatch.ssboOffset = currentOffset;
+				instanceBatch.instanceCount = instanceBatch.instances.size();
+				m_allInstances.insert(m_allInstances.end(), instanceBatch.instances.begin(), instanceBatch.instances.end());
+				currentOffset += instanceBatch.instanceCount;
+			}
+
+			// Upload all the InstanceData as one batch per frame
+			glNamedBufferSubData(m_globalInstanceSSBO, 0, m_allInstances.size() * sizeof(Mesh::InstanceData), m_allInstances.data());
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
+
+			// Upload uniforms in respect to its InstanceBatch
 			for (auto& [key, instanceBatch] : m_meshBatches) {
 				//std::cout << "uploading unique mesh with name: " << meshName;
 				//std::cout << " with its instance count: " << instances.size() << std::endl;
-
+				
 				Mesh* mesh = instanceBatch.mesh;
 				Material* material = instanceBatch.material;
 
@@ -352,7 +297,7 @@ namespace NightSnack {
 
 				// Both solid colors and textures will have these uniforms
 
-				// Entities on the GAMEUI layer will have different transformatio matrices
+				// Entities on the GAMEUI layer will have different transformation matrices
 				glm::mat4 projToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
 				glm::mat4 viewToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
 
@@ -360,26 +305,175 @@ namespace NightSnack {
 				shader->SetMat4("uView", viewToUse);
 				shader->SetBool("uUseInstancing", true);
 				shader->SetBool("uIsWireframe", instanceBatch.isWireframe);
-
+				shader->SetInt("uInstanceOffset", static_cast<int>(instanceBatch.ssboOffset));
+				
 				material->ApplyUniforms(instanceBatch.isWireframe);
-
-				size_t size = instanceBatch.instances.size() * sizeof(Mesh::InstanceData);
-				glNamedBufferSubData(m_globalInstanceSSBO, 0, size, instanceBatch.instances.data());
-				glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
 
 				if (instanceBatch.isWireframe) {
 					glDepthMask(GL_TRUE);
 					glEnable(GL_POLYGON_OFFSET_LINE);
 					glPolygonOffset(-1.0f, -1.0f); // push lines slightly toward camera
 					glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-					mesh->DrawInstanced(instanceBatch.instances.size());
+					mesh->DrawInstanced(instanceBatch.instanceCount);
 					glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 					glDisable(GL_POLYGON_OFFSET_LINE);
 					glDepthMask(GL_FALSE);
 				} else {
-					mesh->DrawInstanced(instanceBatch.instances.size());
+					mesh->DrawInstanced(instanceBatch.instanceCount);
 				}
 			}
+		}
+
+		// Render debug drawing visualizations only after rendering all scene objects
+		if (m_enableDebugDraw)
+			RenderDebugDrawing(camera);
+	}
+
+	void GraphicsSystem::RenderDebugDrawing(Entity camera) {
+		// Debug drawing visualizations will render on top of their own entities
+		// Only enable GL_DEPTH_TEST for debug drawing so that we can offset the colliders slightly in front of its entity
+		glEnable(GL_DEPTH_TEST);
+		glDepthMask(GL_TRUE);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		// Debug Drawing, for entities with no texture
+		// For Debug Drawing, debug shader will be used for simplicity
+		Shader* shader = GetShader("debug");
+		shader->Use();
+
+		// Get camera components
+		auto& camPos = m_coord.GetComponent<Transform>(camera).pos;
+		auto& camInfo = m_coord.GetComponent<Camera>(camera);
+
+		// Get the updated window resolution from the ApplicationSystem first
+		float screenW = static_cast<float>(m_coord.GetSystem<ApplicationSystem>()->GetWidth());
+		float screenH = static_cast<float>(m_coord.GetSystem<ApplicationSystem>()->GetHeight());
+
+		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
+		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
+
+		m_meshBatches.clear();
+
+		for (Layer& l : m_layers) {
+			if (l.Empty() || !l.IsVisible()) { continue; }
+			for (Entity e : l.Entities()) {
+				// Reached the end of Valid Entities
+				if (e == INVALID_ENTITY) { break; }
+
+				// Obtain entity components
+				auto& pos = m_coord.GetComponent<Transform>(e).pos;
+				auto& rot = m_coord.GetComponent<Transform>(e).rot;
+				auto& scl = m_coord.GetComponent<Transform>(e).scale;
+
+				// Drawing of colliders 
+				if (m_coord.HasComponent<Collider>(e)) {
+					Collider const& col = m_coord.GetComponent<Collider>(e);
+					// Entities on the GAMEUI layer will have different transformation matrices
+					glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
+					glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
+
+					switch (col.shape) {
+					case ShapeType::AABB:
+					{
+						// Model matrix according to its collider's scale
+						// Make the z value of the collider be slightly in front of its entity
+						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, rot, Vec2{ col.width, col.height });
+						glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
+						shader->SetMat4("uDebugMVP", debugMVP);
+						shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
+						GetMesh("AABBColliderMesh")->Draw();
+					}
+					break;
+
+					case ShapeType::Circle:
+					{
+						// Model matrix according to its collider's scale
+						// Make the z value of the collider be slightly in front of its entity
+						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, rot, Vec2{ col.radius, col.radius });
+						glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
+						shader->SetMat4("uDebugMVP", debugMVP);
+						shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
+						GetMesh("CircleColliderMesh")->Draw();
+					}
+					break;
+
+					}
+				}
+
+				// Drawing of velocity direction for moving objects
+				if (m_coord.HasComponent<RigidBody>(e)) {
+					Vec2 const& vel = m_coord.GetComponent<RigidBody>(e).vel;
+
+					glm::vec3 velocity(vel.x, vel.y, 0.f);
+					float speed = glm::length(velocity); // Magnitude of the velocity vector
+
+					// Only draw the velocity line if it is moving
+					if (speed > 0.f) {
+						// Max length of the velocity line is slightly above the scale of the entity
+						float maxLength = std::max(scl.x, scl.y) * 1.4f;
+						float length = std::min(speed, maxLength);
+
+						glm::vec3 dir = glm::normalize(velocity); // Direction of the velocity vector
+
+						// Compute angle between +ve y-axis and the velocity direction
+						// atan2(y, x) gives angle relative to +ve x-axis, so subtract 90 degrees to align with +ve y-axis
+						float angle = glm::degrees(std::atan2(dir.y, dir.x) - glm::half_pi<float>());
+
+						// Model matrix according to its new rotation, and y-scale so line size reflects speed
+						// Make the z value of the collider be slightly in front of its entity
+						glm::mat4 debugModel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, angle, Vec2{ 1.f, length });
+						glm::mat4 debugMVP = proj * view * debugModel;
+						shader->SetMat4("uDebugMVP", debugMVP);
+						shader->SetVec3("uEntityColor", glm::vec3(0.1f, 0.9f, 0.9f));
+						// Points upwards by default, will be rotated accordingly
+						GetMesh("line")->Draw();
+					}
+				}
+			}
+		}
+
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(GL_FALSE);
+	}
+
+	void GraphicsSystem::CreateTexture(std::string textureFilePath) {
+
+		// Texture already exists
+		if (GetTexture(textureFilePath)) {
+			//std::cout << "This texture already exists!\n";
+			return;
+		}
+
+		// Create a new texture
+		std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
+
+		// Get the number of cols and rows first, to determine whether the texture is a static texture or a textured spritesheet
+		size_t firstUnderscore = textureFilePath.find_first_of('_');
+		size_t secondUnderscore = textureFilePath.find_first_of('_', firstUnderscore + 1);
+		size_t lastDot = textureFilePath.find_last_of('.');
+		
+		// Texture name provided no columns or rows, thus treat it as a static texture
+		if (firstUnderscore == std::string::npos || secondUnderscore == std::string::npos) {
+			auto tex = std::make_unique<Texture>(textureFilePath, rm);
+			AddTexture(textureFilePath, std::move(tex));
+			return;
+		}
+
+		std::string numColStr = textureFilePath.substr(firstUnderscore + 1, secondUnderscore - firstUnderscore - 1);
+		std::string numRowStr = textureFilePath.substr(secondUnderscore + 1, lastDot - secondUnderscore - 1);
+
+		int numCol = std::stoi(numColStr);
+		int numRow = std::stoi(numRowStr);
+
+		auto tex = std::make_unique<Texture>(textureFilePath, rm, numCol, numRow);
+		AddTexture(textureFilePath, std::move(tex));
+
+		// Dispatch a GraphicsEvent
+		// To create the AnimationClip after creating a new texture
+		if (m_dispatcher)
+		{
+			//std::cout << "[GRAPHICSYSTEM] dispatching event\n";
+			m_dispatcher->QueueEvent(std::make_unique<GraphicsEvent>(GraphicsEvent::GraphicsAction::CreateTexture));
 		}
 	}
 
@@ -390,20 +484,16 @@ namespace NightSnack {
 		Texture* tex = GetTexture(textureFilePath);
 		if (!tex) {
 			// This is a new texture, add it to the resource map
-			// Create the Texture pointer
-			std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
-			auto newTex = std::make_unique<Texture>(textureFilePath, rm, 4, 1);
-			AddTexture(textureFilePath, std::move(newTex));
+			CreateTexture(textureFilePath);
 
 			// If it is a new texture, it means that there is no existing material for it
 			// Create new material with this texture combination
 			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(textureFilePath));
-			std::string newName = GetNewMaterialName(ren.materialName);
-			// Name this new material to be a variant of the current material
-			AddMaterial(newName, std::move(newMat));
+			// Name of the material will be the texture file path
+			AddMaterial(textureFilePath, std::move(newMat));
 
 			// Change the name of this Renderable's material name to the new material name
-			ren.materialName = newName;
+			ren.materialName = textureFilePath;
 			//std::cout << "New texture detected!\n";
 			//std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
 			//std::cout << "and this texture name is: " << m_materials[ren.materialName]->GetTexture()->GetTextureName() << std::endl;
@@ -422,7 +512,7 @@ namespace NightSnack {
 				// If it exists already, change the name of this Renderable's material to the existing material name
 				//std::cout << "Checking for texture name: " << textureFileName << std::endl;
 				if (textureFilePath == matTex->GetTextureName()) {
-					ren.materialName = matName;
+					ren.materialName = textureFilePath;
 					found = true;
 					//std::cout << "Material for this texture exists too!\n";
 					break;
@@ -433,40 +523,15 @@ namespace NightSnack {
 				//std::cout << "Material for this texture doesnt exist yet, creating one ...\n";
 				// if it does not exist, create new material with this texture combination
 				auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(textureFilePath));
-				std::string newName = GetNewMaterialName(ren.materialName);
-				// Name this new material to be a variant of the current material
-				AddMaterial(newName, std::move(newMat));
+				// Name of the material will be the texture file path
+				AddMaterial(textureFilePath, std::move(newMat));
 				// change the name of this Renderable's material name to the new material name
-				ren.materialName = newName;
+				ren.materialName = textureFilePath;
 			}
 			//std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
 		}
-	}
 
-	std::string GraphicsSystem::GetNewMaterialName(std::string oldMatName) {
-		// Checks how many variants of the original material name there are, and get the next variant
-		// "ghost", "ghost1", "ghost2" etc ...
-
-		// Find the position where the 'number' in the string starts
-		size_t len = oldMatName.length();
-		size_t i = len;
-
-		// Find the first non-digit character
-		while (i > 0 && std::isdigit(oldMatName[i - 1])) {
-			--i;
-		}
-
-		// If there are digits at the end, extract the number from the string
-		if (i < len) {
-			std::string baseName = oldMatName.substr(0, i);
-			int num = std::stoi(oldMatName.substr(i)); // Convert from string to number
-
-			// Increment the digit by 1
-			return baseName + std::to_string(num + 1);
-		} else {
-			// This is the first variant 
-			return oldMatName + "1";
-		}
+		//std::cout << "UpdateTextureOfMaterial(), mat name: " << ren.materialName << std::endl;
 	}
 
 	// Helper functions to add resources --------------------------------------------------------------------
@@ -601,6 +666,21 @@ namespace NightSnack {
 
 	void GraphicsSystem::RemoveCache(Entity e) {
 		m_renderCache.erase(e);
+	}
+
+	void GraphicsSystem::DebugRenderableInformation() {
+
+		// Materials
+		std::cout << "===== MATERIALS IN STORE =====\n";
+		for (auto& [matName, material] : m_materials) {
+			std::cout << matName << std::endl;
+		}
+
+		// Textures
+		std::cout << "===== TEXTURES IN STORE =====\n";
+		for (auto& [texName, texture] : m_textures) {
+			std::cout << texName << std::endl;
+		}
 	}
 
 }	// NightSnack

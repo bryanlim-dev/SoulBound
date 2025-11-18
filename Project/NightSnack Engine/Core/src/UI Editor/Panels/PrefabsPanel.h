@@ -2,7 +2,7 @@
  * File:        PrefabsPanel.h
  * Project:     NightSnack
  * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Drawing of prefabs tab
- *             
+ *
  *
  * Description:
  * Displays archetypes from a JSON file in the Prefabs panel.
@@ -24,28 +24,63 @@ namespace NightSnack
         * @param coord reference to the ECS coordinator
         * @param archetypesPath path to the archetypes JSON file
         */
-        PrefabsPanel(Coordinator& coord, const std::string& archetypesPath) 
-          : m_coord(coord),
-            m_archetypesPath(archetypesPath)
+        PrefabsPanel(Coordinator& coord, const std::string& archetypesRoot)
+            : m_coord(coord),
+            m_archetypesRoot(archetypesRoot)
         {
             LoadArchetypes();
         }
 
         /**
-        * @brief draws the prefabs panel
+        * @brief selects a prefab for preview (called from main assets panel)
+        * @param prefabName name of the prefab to select
         */
-        void Draw()
+        void SelectPrefab(const std::string& prefabName)
         {
-            if (ImGui::BeginTabItem("Prefabs"))
+            m_selectedPrefabName = prefabName;
+        }
+
+        /**
+        * @brief draws prefab properties in the asset inspector
+        * @param prefabName name of the prefab
+        */
+        void DrawPrefabProperties(const std::string& prefabName)
+        {
+            if (m_archetypes.contains(prefabName) && m_archetypes[prefabName].is_object())
             {
-                DrawPrefabsContent();
-                ImGui::EndTabItem();
+                auto& prefabData = m_archetypes[prefabName];
+
+                ImGui::Text("Prefab: %s", prefabName.c_str());
+                ImGui::Text("Components: %zu", prefabData.size());
+                ImGui::Separator();
+
+                ImGui::Text("Component Properties:");
+                ImGui::BeginChild("PrefabComponentProperties", ImVec2(0, 300), true);
+
+                for (auto& component : prefabData.items())
+                {
+                    std::string componentName = component.key();
+                    auto& componentData = component.value();
+
+                    if (ImGui::TreeNode(componentName.c_str()))
+                    {
+                        DisplayComponentProperties(componentData);
+                        ImGui::TreePop();
+                    }
+                }
+
+                ImGui::EndChild();
+            }
+            else
+            {
+                ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.5f, 1.0f),
+                    "Invalid prefab data or prefab not found");
             }
         }
 
     private:
-        Coordinator& m_coord;                              
-        std::string m_archetypesPath;                           
+        Coordinator& m_coord;
+        std::string m_archetypesRoot;
         nlohmann::json m_archetypes;
         std::vector<std::string> m_prefabNames;
         bool m_showJsonProperties = false;
@@ -58,11 +93,11 @@ namespace NightSnack
         {
             try
             {
-                std::ifstream file(m_archetypesPath);
+                std::ifstream file(m_archetypesRoot);
                 if (!file.is_open())
                 {
-                    std::cerr << "[PrefabsPanel] Failed to open archetypes file: "
-                        << m_archetypesPath << std::endl;
+                    std::cerr << "Failed to open archetypes file: "
+                        << m_archetypesRoot << std::endl;
                     return;
                 }
 
@@ -80,136 +115,8 @@ namespace NightSnack
             }
             catch (const std::exception& e)
             {
-                std::cerr << "[PrefabsPanel] Error loading archetypes: " << e.what() << std::endl;
+                std::cerr << "Error loading archetypes: " << e.what() << std::endl;
             }
-        }
-
-        /**
-        * @brief draws the prefabs panel content
-        */
-        void DrawPrefabsContent()
-        {
-            ImGui::Text("Archetypes from: %s", m_archetypesPath.c_str());
-            ImGui::Separator();
-
-            if (m_prefabNames.empty())
-            {
-                ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.5f, 1.0f),
-                    "No archetypes found or failed to load JSON file");
-                return;
-            }
-
-            // display archetypes in a list
-            //ImGui::Text("Available Prefabs (%zu):", m_prefabNames.size());
-            ImGui::BeginChild("PrefabsList", ImVec2(0, 0), true);
-
-            for (const auto& prefabName : m_prefabNames)
-            {
-                ImGui::PushID(prefabName.c_str());
-
-                // display prefab name as selectable item
-                if (ImGui::Selectable(prefabName.c_str()))
-                {
-                    OnPrefabSelected(prefabName);
-                }
-
-                // drag and drop source for prefabs
-                // not in use for now
-                //if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-                //{
-                //    ImGui::SetDragDropPayload("PREFAB_ARCHETYPE", prefabName.c_str(),
-                //        prefabName.size() + 1);
-                //    ImGui::Text("Create: %s", prefabName.c_str());
-                //    ImGui::EndDragDropSource();
-                //}
-
-                //// show tooltip with prefab details on hover
-                //if (ImGui::IsItemHovered())
-                //{
-                //    ImGui::BeginTooltip();
-                //    ImGui::Text("Prefab: %s", prefabName.c_str());
-
-                //    // show prefab components if available
-                //    if (m_archetypes.contains(prefabName) &&
-                //        m_archetypes[prefabName].is_object())
-                //    {
-                //        ImGui::Separator();
-                //        ImGui::Text("Components:");
-                //        for (auto it = m_archetypes[prefabName].begin();
-                //            it != m_archetypes[prefabName].end(); ++it)
-                //        {
-                //            ImGui::BulletText("%s", it.key().c_str());
-                //        }
-                //    }
-
-                //    ImGui::EndTooltip();
-                //}
-
-                ImGui::PopID();
-            }
-
-            ImGui::EndChild();
-
-            // draw JSON properties window if a prefab is selected
-            if (m_showJsonProperties && !m_selectedPrefabName.empty())
-            {
-                DrawJsonProperties(m_selectedPrefabName);
-            }
-        }
-
-        /**
-        * @brief draws the JSON properties window for a selected prefab
-        * @param prefabName name of the prefab to display properties for
-        */
-        void DrawJsonProperties(const std::string& prefabName)
-        {
-            //ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_FirstUseEver);
-            ImGui::Begin("Properties:", &m_showJsonProperties);
-
-            if (m_archetypes.contains(prefabName) && m_archetypes[prefabName].is_object())
-            {
-                auto& prefabData = m_archetypes[prefabName];
-
-                // display basic prefab info
-                ImGui::Text("Name: %s", prefabName.c_str());
-                ImGui::Text("Components: %zu", prefabData.size());
-                ImGui::Separator();
-
-                // display each component and its properties
-                ImGui::Text("Component Properties:");
-                ImGui::BeginChild("ComponentProperties", ImVec2(0, 300), true);
-
-                for (auto& component : prefabData.items())
-                {
-                    std::string componentName = component.key();
-                    auto& componentData = component.value();
-
-                    if (ImGui::TreeNode(componentName.c_str()))
-                    {
-                        DisplayComponentProperties(componentData);
-                        ImGui::TreePop();
-                    }
-                }
-
-                ImGui::EndChild();
-                ImGui::Separator();
-
-                // action buttons
-                if (ImGui::Button("Close"))
-                {
-                    m_showJsonProperties = false;
-                    m_selectedPrefabName = "";
-                }
-
-                ImGui::SameLine();
-            }
-            else
-            {
-                ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.5f, 1.0f),
-                    "Invalid prefab data or prefab not found");
-            }
-
-            ImGui::End();
         }
 
         /**
@@ -282,17 +189,6 @@ namespace NightSnack
             {
                 ImGui::TextColored(ImVec4(0.8f, 0.2f, 0.2f, 1.0f), "Invalid component data structure");
             }
-        }
-
-        /**
-         * @brief handles prefab selection and shows properties window
-         * @param prefabName The name of the selected prefab
-         */
-        void OnPrefabSelected(const std::string& prefabName)
-        {
-            m_selectedPrefabName = prefabName;
-            m_showJsonProperties = true;
-            std::cout << "[PrefabsPanel] Selected prefab: " << prefabName << std::endl;
         }
     };
 }

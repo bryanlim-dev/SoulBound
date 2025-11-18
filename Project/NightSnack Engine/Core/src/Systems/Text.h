@@ -72,6 +72,10 @@ namespace NightSnack {
         /************************************************************************/
         void Init();
         
+        void CreateFont(const std::string& fontFilePath);
+
+        void UpdateFont(const std::string& newFontFilePath, Entity e);
+
         /************************************************************************/
         /*!
         \brief
@@ -153,7 +157,6 @@ namespace NightSnack {
 
     private:
 
-        std::unordered_map<std::string, size_t> m_fonts; // [fontName, fontKey]
         std::unordered_map<std::string, std::unordered_map<char, Character>> m_fontCharacters;
         Shader* m_shader = nullptr; // Only 1 text shader needed
         float m_windowWidth{}, m_windowHeight{};
