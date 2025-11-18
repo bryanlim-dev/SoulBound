@@ -6,7 +6,7 @@
  * Description:
  * Defines member functions of EntityFactory class.
  *
- * Copyright � 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -14,117 +14,202 @@
 
 namespace NightSnack {
 
-	// unused for now...
-	void EntityFactory::Update(int steps) {
-		(void)steps;
-		
-		static bool printed = false;
+    // unused for now...
+    void EntityFactory::Update(int steps) {
+        (void)steps;
 
-		if (!printed) {
-			PrintPrefabNames();
-			printed = true;
-		}
-	}
+        static bool printed = false;
+        if (!printed) {
+            PrintPrefabNames();
+            printed = true;
+        }
+    }
 
-	void EntityFactory::PostUpdate() {
-		
-		for (Entity e : m_toBeDestroyed) {
-			m_coord.DestroyEntity(e);
-		}
+    void EntityFactory::PostUpdate() {
+
+        // Destroy all removed entities
+        for (Entity e : m_toBeDestroyed) {
+            m_coord.DestroyEntity(e);
+        }
         m_toBeDestroyed.clear();
 
-	}
+        for (size_t key : m_toBeUnloaded) {
+            m_coord.GetSystem<ResourceManager>()->UnloadJson(key);
+        }
+        m_toBeUnloaded.clear();
 
-	Entity EntityFactory::Create(std::string const& name) {
-		Entity e = m_prefabManager.CreateFromPrefab(name, GetArchetypes());
-		if (e == INVALID_ENTITY) { return e; }
+    }
 
-		Transform trans{};
+    Entity EntityFactory::Create(std::string const& name) {
 
-		trans.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
-		trans.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
-		trans.pos.z = 1.f;
-		// default layer...
-		trans.layer = LayerType::GAMELAYER;
+        size_t key = m_prefabKeys[name];
 
-		trans.scale = Vec2{ 50.f, 50.f };	// default scale...
-		
-		m_coord.ModifyComponent<Transform>(e) = trans;
+        Entity e = m_prefabManager.CreateFromPrefab(GetArchetypes(key));
+        if (e == INVALID_ENTITY) { return e; }
 
-		entityToPrefab[e] = name;
+        Transform trans{};
 
-		return e;
-	}
+        trans.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
+        trans.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
+        trans.pos.z = 1.f;
+        // default layer...
+        trans.layer = LayerType::GAMELAYER;
 
-	// For creating entities at specific locations, scaling etc...
-	Entity EntityFactory::Create(std::string const& name, Transform trans) {
-		Entity e = m_prefabManager.CreateFromPrefab(name, GetArchetypes());
-		if (e == INVALID_ENTITY) { return e; }
+        trans.scale = Vec2{ 50.f, 50.f };	// default scale...
 
-		m_coord.ModifyComponent<Transform>(e) = trans;
-		
-		entityToPrefab[e] = name;
+        m_coord.ModifyComponent<Transform>(e) = trans;
+        entityToPrefab[e] = name;
 
-		return e;
-	}
+        return e;
+    }
 
-	// Clone an entity prefab at specific locations, scaling etc...
-	Entity EntityFactory::Clone(Entity e, Transform trans) {
-		std::string name = entityToPrefab[e];
+    // For creating entities at specific locations, scaling etc...
+    Entity EntityFactory::Create(std::string const& name, Transform trans) {
 
-		Entity clone = m_prefabManager.CreateFromPrefab(name, GetArchetypes());
-		if (clone == INVALID_ENTITY) { return clone; }
+        size_t key = m_prefabKeys[name];
 
-		m_coord.ModifyComponent<Transform>(e) = trans;
+        Entity e = m_prefabManager.CreateFromPrefab(GetArchetypes(key));
+        if (e == INVALID_ENTITY) { return e; }
 
-		entityToPrefab[e] = name;
+        m_coord.ModifyComponent<Transform>(e) = trans;
+        entityToPrefab[e] = name;
 
-		return clone;
-	}
+        return e;
+    }
 
-	void EntityFactory::RemoveEntity(Entity e) {
-		m_toBeDestroyed.insert(e);
-	}
+    // Clone an entity prefab at specific locations, scaling etc...
+    Entity EntityFactory::Clone(Entity e, Transform trans) {
 
-	void EntityFactory::PrintPrefabNames() const {
+        std::string name = entityToPrefab[e];
+        size_t key = m_prefabKeys[name];
 
-		std::cout << "Prefabs: ";
-		for (auto& [name, data] : GetArchetypes().items()) {
-			std::cout << name << " ";
-		}
-		std::cout << '\n';
-	}
+        Entity clone = m_prefabManager.CreateFromPrefab(GetArchetypes(key));
+        if (clone == INVALID_ENTITY) { return clone; }
 
-	std::vector<std::string> const& EntityFactory::GetPrefabNames() const {
-		return m_prefabNames;
-	}
+        m_coord.ModifyComponent<Transform>(e) = trans;
+        entityToPrefab[e] = name;
 
-	std::unordered_map<std::string, std::string> EntityFactory::GetPrefabMaterials() const {
-		std::unordered_map<std::string, std::string> materials;
+        return clone;
+    }
 
-		for (auto& [name, data] : GetArchetypes().items()) {
-			if (data.contains("Renderable")) {
-				std::string mat = data["Renderable"]["materialName"];
-				materials.insert({ name, mat });
-			}
-		}
-		return materials;
-	}
+    void EntityFactory::RemoveEntity(Entity e) {
+        m_toBeDestroyed.insert(e);
+    }
 
-	std::string EntityFactory::GetEntityPrefabName(Entity e) const
-	{
-		auto it = entityToPrefab.find(e);
-		if (it != entityToPrefab.end()) {
-			return it->second;
-		}
-		return "UnknownPrefab";
-	}
+    void EntityFactory::PrintPrefabNames() const {
 
-	const json& EntityFactory::GetArchetypes() const
-	{
-		return m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_archetypesKey);
-	}
+        std::vector<std::string> names = GetPrefabNames();
 
+        std::cout << "Loaded Prefabs: ";
+        for (std::string const& s : names) {
+            std::cout << s << " ";
+        }
+        std::cout << '\n';
+    }
+
+    std::vector<std::string> EntityFactory::GetPrefabNames() const {
+
+        std::vector<std::string> names;
+        std::unordered_map<std::string, size_t>::const_iterator it;
+        for (it = m_prefabKeys.begin(); it != m_prefabKeys.end(); ++it) {
+            names.emplace_back(it->first);
+        }
+        return names;
+    }
+
+    std::unordered_map<std::string, std::string> EntityFactory::GetPrefabMaterials() const {
+
+        std::unordered_map<std::string, std::string> materials;
+        std::unordered_map<std::string, size_t>::const_iterator it;
+
+        for (it = m_prefabKeys.begin(); it != m_prefabKeys.end(); ++it) {
+
+            json const& prefab = GetArchetypes(it->second);
+
+            if (prefab.contains("Renderable")) {
+                std::string mat = prefab["Renderable"]["materialName"];
+                materials.insert({ it->first, mat });
+            }
+        }
+        //for (auto& [name, data] : GetArchetypes().items()) {
+        //	if (data.contains("Renderable")) {
+        //		std::string mat = data["Renderable"]["materialName"];
+        //		materials.insert({ name, mat });
+        //	}
+        //}
+        return materials;
+    }
+
+    std::string EntityFactory::GetEntityPrefabName(Entity e) const {
+        auto it = entityToPrefab.find(e);
+        if (it != entityToPrefab.end()) {
+            return it->second;
+        }
+        return "UnknownPrefab";
+    }
+
+    json const& EntityFactory::GetArchetypes(size_t key) const {
+        return m_coord.GetSystem<ResourceManager>()->GetJsonRaw(key);
+    }
+
+    void EntityFactory::LoadLevel(std::string const& levelName) {
+
+        size_t key = m_levelKeys[levelName];
+        json const& level = GetArchetypes(key);
+
+        // Resets ECS and destroys all current entities;
+        UnloadLevel();
+        m_previousLevelKey = m_currentLevelKey;
+        m_currentLevelKey = key;
+
+        for (auto const& item : level["Entities"]) {
+            Create(item["prefab"], item["Transform"]);
+        }
+        for (Entity e : m_coord.GetLivingEntities()) {
+            m_coord.BufferEntitySignature(e);
+        }
+    }
+
+    void EntityFactory::ReloadPrefabs() {
+        // Queue old keys to be unloaded.
+        for (auto const& [name, key] : m_prefabKeys) {
+            m_toBeUnloaded.emplace_back(key);
+        }
+        // Clear prefab keys.
+        m_prefabKeys.clear();
+        // Reread json files from "GameData/Prefabs", assign keys into m_prefabKeys.
+        std::filesystem::path path = GAMEDATA_DIR / "Prefabs";
+        LoadJsonFolder(m_prefabKeys, path.string());
+    }
+    void EntityFactory::ReloadLevels() {
+        // Queue old keys to be unloaded.
+        for (auto const& [name, key] : m_levelKeys) {
+            m_toBeUnloaded.emplace_back(key);
+        }
+        // Clear level keys.
+        m_levelKeys.clear();
+        // Reread json files from "GameData/Levels", assign keys into m_levelKeys.
+        std::filesystem::path path = GAMEDATA_DIR / "Levels";
+        LoadJsonFolder(m_levelKeys, path.string());
+    }
+
+    // Loads all json files within a folder given a directory path
+    void EntityFactory::LoadJsonFolder(std::unordered_map<std::string, size_t>& map, std::string const& path) {
+
+        // Iterate through entries in directory.
+        for (auto const& entry : std::filesystem::directory_iterator(path))
+        {
+            size_t key = 0;
+            LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(entry.path().string(), key);
+            if (result == LOAD_FAIL_BADPATH) {
+                std::cerr << "Failed to read json file: " << entry.path() << '\n';
+                continue;
+            }
+            map[entry.path().stem().string()] = key;
+        }
+    }
+
+    // Save all Living entities into a Level json file (Prefab Name and Transform)
     bool EntityFactory::SaveLevel(std::string const& levelName, bool overwrite) {
 
         // Output file path
@@ -145,13 +230,36 @@ namespace NightSnack {
             json j;
 
             std::string prefabName = entityToPrefab[e];
-            j["prefab"] = { prefabName };
+            j["prefab"] = prefabName;
 
             Transform const& t = m_coord.GetComponent<Transform>(e);
+            std::string layer;
+            switch (t.layer) {
+            case LayerType::_ENGINE:
+                layer = "_Engine";
+                break;
+            case LayerType::BACKGROUND:
+                layer = "Background";
+                break;
+            case LayerType::FOREGROUND:
+                layer = "Foreground";
+                break;
+            case LayerType::GAMEUI:
+                layer = "GameUI";
+                break;
+            case LayerType::_ENGINE2:
+                layer = "_Engine2";
+                break;
+            default:
+                layer = "GameLayer";
+                break;
+            }
+
             j["Transform"] = {
                 { "Position", { {"x", t.pos.x}, {"y", t.pos.y}, {"z", t.pos.z} } },
                 { "Rotation", t.rot },
-                { "Scale",    { {"x", t.scale.x}, {"y", t.scale.y} } }
+                { "Scale",    { {"x", t.scale.x}, {"y", t.scale.y} } },
+                { "Layer", layer }
             };
 
             // Insert into Level json
@@ -171,6 +279,7 @@ namespace NightSnack {
         return true;
     }
 
+    // Save all current components of an Entity as a Prefab
     bool EntityFactory::SaveAsPrefab(Entity e, std::string const& prefabName, bool overwrite) {
 
         // Output file path
@@ -184,16 +293,6 @@ namespace NightSnack {
         // JSON object that will become the prefab content
         json j;
 
-        // TRANSFORM ------------------------------------------------------
-        //if (m_coord.HasComponent<Transform>(e)) {
-        //    Transform const& t = m_coord.GetComponent<Transform>(e);
-        //    j["Transform"] = {
-        //        { "Position", { {"x", t.pos.x}, {"y", t.pos.y}, {"z", t.pos.z} } },
-        //        { "Rotation", t.rot },
-        //        { "Scale",    { {"x", t.scale.x}, {"y", t.scale.y} } }
-        //    };
-        //}
-        
         // RIGIDBODY ------------------------------------------------------
         if (m_coord.HasComponent<RigidBody>(e)) {
             RigidBody const& rb = m_coord.GetComponent<RigidBody>(e);
@@ -291,7 +390,7 @@ namespace NightSnack {
                 {"fontType", f.fontType},
                 {"text", f.text},
                 {"fontSize", f.fontSize},
-                {"textColor", {{"r", f.textColor.x}, {"g", f.textColor.y}, {"b", f.textColor.z}} }
+                { "textColor", {{"r", f.textColor.x}, {"g", f.textColor.y}, {"b", f.textColor.z}} }
             };
         }
         // BUTTON ---------------------------------------------------------
@@ -358,6 +457,7 @@ namespace NightSnack {
         return true;
     }
 
+    // Create "Prefabs" and "Levels" folder in "assets/GameData" if they don't exist.
     void EntityFactory::CreateFolders() const {
         // Create prefabs folder if not existing
         std::filesystem::path prefabs = GAMEDATA_DIR / "Prefabs";
@@ -373,6 +473,7 @@ namespace NightSnack {
         }
     }
 
+    // Destroys all entities and Resets all ECS managers.
     void EntityFactory::UnloadLevel() {
         for (Entity e{}; e < MAX_ENTITIES; ++e) {
             m_coord.DestroyEntity(e);
@@ -380,19 +481,29 @@ namespace NightSnack {
         m_coord.ResetEverything();
     }
 
-    void EntityFactory::TransferPrefabs() {
-        {
-            std::vector<Entity> entities;
-            std::vector<std::string> names;
-            for (auto& [name, data] : GetArchetypes().items()) {
-                entities.push_back(Create(name));
-                names.push_back(name);
-            }
-            for (int i{}; i < entities.size(); ++i) {
-                SaveAsPrefab(entities[i], names[i], false);
-                RemoveEntity(entities[i]);
-            }
+    // Helper function to split Monolithic Json file (containing all archetypes)
+    // into individual prefab json files.
+    void EntityFactory::TransferPrefabs(std::string const& monolith) {
+        // USE CASE:
+        // std::filesystem::path monolith = GAMEDATA_DIR / "Archetypes/Archetypes.json";
+        // TransferPrefabs(monolith.string());
+
+        std::ifstream file(monolith);
+        json j;
+        file >> j;
+
+        std::vector<Entity> entities;
+        std::vector<std::string> names;
+
+        for (auto const& [name, data] : j.items()) {
+            entities.push_back(m_prefabManager.CreateFromPrefab(data));
+            names.push_back(name);
         }
+        for (int i{}; i < entities.size(); ++i) {
+            SaveAsPrefab(entities[i], names[i], true);
+            RemoveEntity(entities[i]);
+        }
+        std::cout << "Prefabs transferred\n";
     }
 
 }	// NightSnack
