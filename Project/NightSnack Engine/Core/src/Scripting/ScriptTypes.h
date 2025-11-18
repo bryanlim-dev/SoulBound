@@ -109,6 +109,11 @@ namespace NightSnack::Scripting {
         bool colliding{ false };
     };
 
+    //Color
+    struct CORE_API Colo {
+        float r{}, g{}, b{}, a{};
+    };
+
 
 
     // Handle to a game object (Similar to Entity ID)
