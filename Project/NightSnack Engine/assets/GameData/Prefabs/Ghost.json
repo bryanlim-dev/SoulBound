@@ -14,7 +14,7 @@
     },
     "Font": {
         "fontSize": 0.5,
-        "fontType": "",
+        "fontType": "buggy-font",
         "text": "Ghost",
         "textColor": {
             "b": 0.5,

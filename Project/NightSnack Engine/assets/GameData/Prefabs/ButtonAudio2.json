@@ -18,7 +18,7 @@
     },
     "Font": {
         "fontSize": 0.20000000298023224,
-        "fontType": "",
+        "fontType": "buggy-font",
         "text": "Play Audio 2",
         "textColor": {
             "b": 0.8999999761581421,

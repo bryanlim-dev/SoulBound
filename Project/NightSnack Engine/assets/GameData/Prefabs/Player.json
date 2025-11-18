@@ -13,7 +13,7 @@
     },
     "Font": {
         "fontSize": 0.5,
-        "fontType": "",
+        "fontType": "buggy-font",
         "text": "Player",
         "textColor": {
             "b": 0.8999999761581421,

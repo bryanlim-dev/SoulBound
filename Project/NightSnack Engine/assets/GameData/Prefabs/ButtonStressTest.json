@@ -18,7 +18,7 @@
     },
     "Font": {
         "fontSize": 0.30000001192092896,
-        "fontType": "",
+        "fontType": "liberation-mono",
         "text": "Stress Test",
         "textColor": {
             "b": 0.0,

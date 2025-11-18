@@ -72,6 +72,8 @@ namespace NightSnack {
         /************************************************************************/
         void Init();
         
+        void LoadFonts();
+
         void CreateFont(const std::string& fontFilePath);
 
         void UpdateFont(const std::string& newFontFilePath, Entity e);

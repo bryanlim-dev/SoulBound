@@ -35,9 +35,35 @@ namespace NightSnack {
 		auto& shaders = m_coord.GetSystem<GraphicsSystem>()->GetShadersMap();
 		m_shader = shaders.find("text")->second.get();
 
-		// THE CREATION OF THIS FONT WILL EITHER BE ENTIRELY REMOVED OR MOVED TO RESOURCE MANAGER DEFAULT LOADINGS
-		CreateFont("../assets/Font/buggy-font.ttf");
-		//CreateFont("../assets/Font/liberation-mono.ttf");
+		LoadFonts();
+	}
+
+	void TextSystem::LoadFonts() {
+		std::filesystem::path assetsFilePath = "../assets/Font";
+
+		if (!std::filesystem::exists(assetsFilePath)) {
+			std::cerr << "[TextSystem] Error: Assets Font directory cannot be found!\n";
+			return;
+		}
+
+		// Iterate through entries in directory
+		for (auto const& entry : std::filesystem::directory_iterator(assetsFilePath)) {
+			// Skip through folders
+			if (entry.is_directory()) {
+				continue;
+			}
+
+			// Only load the fonts that are in this assets folder
+			std::filesystem::path filePath = entry.path();
+			std::string extension = filePath.extension().string();
+
+			// Only load fonts with the correct extensions
+			if (extension != ".ttf") {
+				continue;
+			}
+
+			CreateFont(filePath.string());
+		}
 	}
 
 	void TextSystem::CreateFont(const std::string& fontFilePath) {
@@ -48,7 +74,8 @@ namespace NightSnack {
 		rm->LoadFont(fontFilePath, fontKey);
 
 		// Generate glyphs for the loaded fonts
-		LoadFontGlyphs(fontKey, fontFilePath);
+		std::filesystem::path font = fontFilePath;
+		LoadFontGlyphs(fontKey, font.stem().string());
 	}
 
 	void TextSystem::UpdateFont(const std::string& newFontFilePath, Entity e) {
