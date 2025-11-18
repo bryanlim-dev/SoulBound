@@ -104,6 +104,7 @@ namespace NightSnack {
 
 				// Obtain entity components
 				auto& ren = m_coord.GetComponent<Renderable>(e);
+				auto& trans = m_coord.GetComponent<Transform>(e);
 				auto& pos = m_coord.GetComponent<Transform>(e).pos;
 				auto& rot = m_coord.GetComponent<Transform>(e).rot;
 				auto& scl = m_coord.GetComponent<Transform>(e).scale;
@@ -119,6 +120,19 @@ namespace NightSnack {
 				CachedRenderData& data = it->second;
 				if (!data.valid) {
 					std::cout << "Entity " << e << " skipped (invalid renderable)\n";
+					continue;
+				}
+
+				// If the layer of this entity has been changed in real-time, 
+				// Remove this entity from the previous layer, and insert it into the new layer
+				if (trans.layer != l.Type()) {
+					l.Remove(e);
+					for (auto& layer : m_layers) {
+						if (layer.Type() == trans.layer) {
+							layer.Insert(e);
+							break;
+						}
+					}
 					continue;
 				}
 
