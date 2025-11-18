@@ -390,7 +390,8 @@ namespace NightSnack {
                 {"fontType", f.fontType},
                 {"text", f.text},
                 {"fontSize", f.fontSize},
-                { "textColor", {{"r", f.textColor.x}, {"g", f.textColor.y}, {"b", f.textColor.z}} }
+                { "textColor", {{"r", f.textColor.x}, {"g", f.textColor.y}, {"b", f.textColor.z}} },
+                {"offsetPosition", {{"x", f.offsetPosition.x}, {"y", f.offsetPosition.y}, {"z", f.offsetPosition.z}} }
             };
         }
         // BUTTON ---------------------------------------------------------

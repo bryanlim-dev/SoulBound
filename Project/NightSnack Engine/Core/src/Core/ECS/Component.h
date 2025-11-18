@@ -158,6 +158,7 @@ namespace NightSnack {
         std::string text;
         float fontSize{ 1.f };
         Vec3 textColor{ 1.f, 1.f, 1.f };
+        Vec3 offsetPosition{ 0.f, 0.f, 0.f };
     };
 
     // Only camera objects will have this component
@@ -288,6 +289,8 @@ namespace NightSnack {
         j.at("fontSize").get_to(f.fontSize);
         auto clr = j.at("textColor");
         f.textColor = { clr.value("r", 0.0f), clr.value("g", 0.0f), clr.value("b", 0.0f) };
+        auto offsetPos = j.at("offsetPosition");
+        f.offsetPosition = { offsetPos.value("x", 0.0f), offsetPos.value("y", 0.0f), offsetPos.value("z", 0.0f) };
     }
 
     // Animator ===================================================

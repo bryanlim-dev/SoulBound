@@ -52,7 +52,7 @@ namespace NightSnack
         */
         AssetsPanel(Coordinator& coord) :
             m_coord(coord),
-            m_assetsRoot("../../../NightSnack Engine/assets"),
+            m_assetsRoot("../assets"),
             m_scriptsRoot("../../../NightSnack Engine/ManagedScripts"),
             m_currentDirectory(m_assetsRoot),
             m_thumbnailSize(96.0f),
@@ -60,7 +60,7 @@ namespace NightSnack
             m_showAssetProperties(false),
             m_showImportDialog(false),
             m_prefabsPanel(coord, "../../../NightSnack Engine/assets/GameData/Archetypes/Archetypes.json"),
-            m_filesPanel(coord, "../../../NightSnack Engine/assets"),
+            m_filesPanel(coord, "../assets"),
             m_scriptsPanel(coord, "../../../NightSnack Engine/ManagedScripts")
         {
             m_prefabNames.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
