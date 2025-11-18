@@ -61,6 +61,15 @@ namespace NightSnack {
 					switch (event.inputAction) {
 
 					case InputEvent::InputAction::StressTest:
+						// Testcase for layer changing in real-time
+						for (Entity e : m_coord.GetLivingEntities())
+						{
+							if (e == 1) // 1 == backdrop entity
+							{
+								auto& t = m_coord.ModifyComponent<Transform>(e);
+								t.layer = LayerType::GAMEUI;
+							}
+						}
 						break;
 					}
 				}
