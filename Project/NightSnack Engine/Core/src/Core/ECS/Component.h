@@ -77,6 +77,7 @@ namespace NightSnack {
         std::string name;
     };
 
+    //When updating this update the one in Engine.cs
     enum class ShapeType { AABB, Circle };
     enum class ColliderType {
         Solid,   // Blocks movement
