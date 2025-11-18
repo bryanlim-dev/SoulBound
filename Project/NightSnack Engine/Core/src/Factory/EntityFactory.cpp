@@ -33,6 +33,11 @@ namespace NightSnack {
 		}
         m_toBeDestroyed.clear();
 
+        for (size_t key : m_toBeUnloaded) {
+            m_coord.GetSystem<ResourceManager>()->UnloadJson(key);
+        }
+        m_toBeUnloaded.clear();
+
 	}
 
 	Entity EntityFactory::Create(std::string const& name) {
@@ -166,6 +171,10 @@ namespace NightSnack {
     }
 
     void EntityFactory::ReloadPrefabs() {
+        // Queue old keys to be unloaded.
+        for (auto const& [name, key] : m_prefabKeys) {
+            m_toBeUnloaded.emplace_back(key);
+        }
         // Clear prefab keys.
         m_prefabKeys.clear();
         // Reread json files from "GameData/Prefabs", assign keys into m_prefabKeys.
@@ -173,6 +182,10 @@ namespace NightSnack {
         LoadJsonFolder(m_prefabKeys, path.string());
     }
     void EntityFactory::ReloadLevels() {
+        // Queue old keys to be unloaded.
+        for (auto const& [name, key] : m_levelKeys) {
+            m_toBeUnloaded.emplace_back(key);
+        }
         // Clear level keys.
         m_levelKeys.clear();
         // Reread json files from "GameData/Levels", assign keys into m_levelKeys.

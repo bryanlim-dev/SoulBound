@@ -61,6 +61,11 @@ namespace NightSnack {
 					switch (event.inputAction) {
 
 					case InputEvent::InputAction::StressTest:
+						ReloadPrefabs();
+						for (auto const& [name, key] : m_prefabKeys) {
+							std::cout << name << ", ";
+						}
+						std::cout << '\n';
 						break;
 					}
 				}
@@ -180,6 +185,8 @@ namespace NightSnack {
 
 		std::unordered_map<std::string, size_t> m_prefabKeys;
 		std::unordered_map<std::string, size_t> m_levelKeys;
+
+		std::vector<size_t> m_toBeUnloaded;
 
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;
