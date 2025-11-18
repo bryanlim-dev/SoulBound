@@ -3,12 +3,12 @@
  * Project:     NightSnack
  * Author(s):	Chewn Thing Kwan
  *              Clement Ang Yang Ying (Secondary, 5%) - Changed loading to use RM
- * 
+ *
  * Description:
  * Declares EntityFactory class that creates entities from prefabs/archetypes
  * read from a json file.
  *
- * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -69,7 +69,7 @@ namespace NightSnack {
 						break;
 					}
 				}
-			});
+				});
 		}
 
 		// Resets m_prefabKeys and loads all json files in "GameData/Prefabs"
@@ -165,7 +165,7 @@ namespace NightSnack {
 		void PrintPrefabNames() const;
 		std::vector<std::string> GetPrefabNames() const;
 		std::string GetEntityPrefabName(Entity e) const;
-		
+
 		std::unordered_map<std::string, std::string> GetPrefabMaterials() const;
 
 		// Required functions from base class ISystem.
@@ -195,7 +195,7 @@ namespace NightSnack {
 		std::filesystem::path GAMEDATA_DIR;
 
 		// ---------------------------------------------------------------------
-		
+
 		// Split Monolithic Json file (containing all archetypes) into individual prefab json files.
 		void TransferPrefabs(std::string const& monolith);
 

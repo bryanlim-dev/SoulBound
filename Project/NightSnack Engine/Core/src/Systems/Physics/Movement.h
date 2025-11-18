@@ -11,7 +11,7 @@
  * Defines MovementSystem class that will update the Position component of
  * entities based on their Velocity components.
  *
- * Copyright � 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
