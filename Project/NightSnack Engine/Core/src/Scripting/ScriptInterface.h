@@ -68,6 +68,9 @@ namespace NightSnack::Scripting {
         void SetForceActive(Entity e, bool active);
 #pragma endregion //Force
 
+        RigidBod GetRigidBody(Entity e);
+        void SetRigidBody(Entity e, RigidBod& bod);
+
         vec2 GetVelocity(Entity e);
         void SetVelocity(Entity e, vec2 vel);
 
@@ -82,6 +85,9 @@ namespace NightSnack::Scripting {
 
         float GetRestitution(Entity e);
         void SetRestitution(Entity e, float restitution);
+
+        float GetGravityMult(Entity e);
+        void SetGravityMult(Entity e, float gravMul);
 
         bool GetUseGravity(Entity e);
         void SetUseGravity(Entity e, bool useGravity);

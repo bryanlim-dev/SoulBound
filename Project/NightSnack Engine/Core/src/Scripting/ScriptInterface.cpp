@@ -168,6 +168,38 @@ namespace NightSnack::Scripting {
     }
 #pragma endregion //Force
 
+    RigidBod ScriptInterface::GetRigidBody(Entity e)
+    {
+        RigidBody rigidBody = m_coord.GetComponent<RigidBody>(e);
+        RigidBod body;
+        body.force = GetForce(e);
+        body.vel = rigidBody.vel;
+        body.accel = rigidBody.accel;
+        body.invMass = rigidBody.invMass;
+        body.invInertia = rigidBody.invInertia;
+        body.restitution = rigidBody.restitution;
+        body.gravitymult = rigidBody.gravitymult;
+        body.useGravity = rigidBody.useGravity;
+        body.useRotate = rigidBody.useRotate;
+        
+
+        return body;
+    }
+    void ScriptInterface::SetRigidBody(Entity e, RigidBod& bod)
+    {
+        RigidBody& rigidBody = m_coord.ModifyComponent<RigidBody>(e);
+        SetForce(e, bod.force);
+
+        rigidBody.vel = bod.vel;
+        rigidBody.accel = bod.accel;
+        rigidBody.invMass = bod.invMass;
+        rigidBody.invInertia = bod.invInertia;
+        rigidBody.restitution = bod.restitution;
+        rigidBody.gravitymult = bod.gravitymult;
+        rigidBody.useGravity = bod.useGravity;
+        rigidBody.useRotate = bod.useRotate;
+    }
+
     // Velocity ----
     vec2 ScriptInterface::GetVelocity(Entity e) {
         Vec2 vel = m_coord.GetComponent<RigidBody>(e).vel;
@@ -212,6 +244,14 @@ namespace NightSnack::Scripting {
     }
     void ScriptInterface::SetRestitution(Entity e, float restitution) {
         m_coord.ModifyComponent<RigidBody>(e).restitution = restitution;
+    }
+
+    // GravityMult ----
+    float ScriptInterface::GetGravityMult(Entity e){
+        return m_coord.GetComponent<RigidBody>(e).gravitymult;
+    }
+    void ScriptInterface::SetGravityMult(Entity e, float gravMul) {
+        m_coord.ModifyComponent<RigidBody>(e).gravitymult = gravMul;
     }
 
     // UseGravity ----

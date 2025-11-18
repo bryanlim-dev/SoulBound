@@ -100,6 +100,12 @@ namespace ManagedScripts
         private static extern void GetRestitution_Internal(uint entityId, out float restitution);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetRestitution_Internal(uint entityId, ref float restitution);
+        
+        //GravityMult
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetGravityMult_Internal(uint entityId, out float gravMult);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetGravityMult_Internal(uint entityId, ref float gravMult);
 
         //UseGravity
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -349,6 +355,17 @@ namespace ManagedScripts
         public static void SetRestitution(uint entityId, float restitution)
         {
             SetRestitution_Internal(entityId, ref restitution);
+        }
+
+        //--GravityMult--
+        public static float GetGravityMult(uint entityId)
+        {
+            GetGravityMult_Internal(entityId, out float gravMult);
+            return gravMult;
+        }
+        public static void SetGravityMult(uint entityId, float gravMult)
+        {
+            SetGravityMult_Internal(entityId, ref gravMult);
         }
 
         //--UseGravity--

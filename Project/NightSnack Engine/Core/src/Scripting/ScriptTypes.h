@@ -78,6 +78,22 @@ namespace NightSnack::Scripting {
         bool isActive = false;
     };
 
+    struct CORE_API RigidBod {
+
+        Forc force{};
+        Vec2 vel{};
+        Vec2 accel{};
+
+        float invMass{};
+        float invInertia{};
+
+        float restitution{};
+        float gravitymult{};
+
+        bool useGravity{};
+        bool useRotate{};
+    };
+
     struct CORE_API Collide {
         NightSnack::ShapeType shape{ NightSnack::ShapeType::AABB };     // AABB or Circle
         NightSnack::ColliderType type{ NightSnack::ColliderType::Solid };   // Solid or Trigger
@@ -92,6 +108,7 @@ namespace NightSnack::Scripting {
         bool isGrounded{ false };
         bool colliding{ false };
     };
+
 
 
     // Handle to a game object (Similar to Entity ID)

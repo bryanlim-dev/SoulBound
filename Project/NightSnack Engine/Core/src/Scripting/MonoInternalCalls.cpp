@@ -168,6 +168,16 @@ extern "C" {
         g_scriptInterface->SetRestitution(id, *restitution);
     }
 
+    // GravityMult --------------
+    static void NightSnack_GetGravityMult(uint32_t id, float* outMult) {
+        if (!g_scriptInterface || !outMult) { return; }
+        *outMult = g_scriptInterface->GetGravityMult(id);
+    }
+    static void NightSnack_SetGravityMult(uint32_t id, float* mult) {
+        if (!g_scriptInterface || !mult) { return; }
+        g_scriptInterface->SetGravityMult(id, *mult);
+    }
+
     // UseGravity --------------
     static void NightSnack_GetUseGravity(uint32_t id, bool* outuseGravity) {
         if (!g_scriptInterface || !outuseGravity) { return; }
@@ -390,6 +400,10 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::SetInvInertia_Internal", (void*)NightSnack_SetInvInertia);
 
         //Restitution
+        mono_add_internal_call("ManagedScripts.Engine::GetRestitution_Internal", (void*)NightSnack_GetRestitution);
+        mono_add_internal_call("ManagedScripts.Engine::SetRestitution_Internal", (void*)NightSnack_SetRestitution);
+        
+        //GravityMult
         mono_add_internal_call("ManagedScripts.Engine::GetRestitution_Internal", (void*)NightSnack_GetRestitution);
         mono_add_internal_call("ManagedScripts.Engine::SetRestitution_Internal", (void*)NightSnack_SetRestitution);
 

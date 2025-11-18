@@ -19,7 +19,7 @@ namespace ManagedScripts
 
             ////Transform Test
             //Engine.SetLayer(id1, LayerType.GAMEUI);
-            //Engine.SetLayer(id2, LayerType._ENGINE2);
+            //Engine.SetLayer(id2, LayerType.BACKGROUND);
 
             ////Rigibody Test
             //Vector2 dir;
@@ -34,6 +34,7 @@ namespace ManagedScripts
             //vel.X = 150;
             //vel.Y = 0;
             //Engine.SetUseGravity(id1, true);
+            //Engine.SetGravityMult(id1, 1);
             //Engine.SetVelocity(id1, vel);
 
             ////Collider Test
