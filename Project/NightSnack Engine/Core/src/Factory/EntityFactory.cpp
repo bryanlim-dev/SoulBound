@@ -60,8 +60,10 @@ namespace NightSnack {
         m_coord.ModifyComponent<Transform>(e) = trans;
         entityToPrefab[e] = name;
 
-        return e;
-    }
+        m_coord.BufferEntitySignature(e);
+
+		return e;
+	}
 
     // For creating entities at specific locations, scaling etc...
     Entity EntityFactory::Create(std::string const& name, Transform trans) {
@@ -74,8 +76,10 @@ namespace NightSnack {
         m_coord.ModifyComponent<Transform>(e) = trans;
         entityToPrefab[e] = name;
 
-        return e;
-    }
+        m_coord.BufferEntitySignature(e);
+
+		return e;
+	}
 
     // Clone an entity prefab at specific locations, scaling etc...
     Entity EntityFactory::Clone(Entity e, Transform trans) {
@@ -89,8 +93,11 @@ namespace NightSnack {
         m_coord.ModifyComponent<Transform>(e) = trans;
         entityToPrefab[e] = name;
 
-        return clone;
-    }
+        m_coord.BufferEntitySignature(clone);
+
+
+		return clone;
+	}
 
     void EntityFactory::RemoveEntity(Entity e) {
         m_toBeDestroyed.insert(e);
@@ -390,7 +397,8 @@ namespace NightSnack {
                 {"fontType", f.fontType},
                 {"text", f.text},
                 {"fontSize", f.fontSize},
-                { "textColor", {{"r", f.textColor.x}, {"g", f.textColor.y}, {"b", f.textColor.z}} }
+                { "textColor", {{"r", f.textColor.x}, {"g", f.textColor.y}, {"b", f.textColor.z}} },
+                {"offsetPosition", {{"x", f.offsetPosition.x}, {"y", f.offsetPosition.y}, {"z", f.offsetPosition.z}} }
             };
         }
         // BUTTON ---------------------------------------------------------

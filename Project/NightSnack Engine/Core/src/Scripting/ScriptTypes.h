@@ -48,11 +48,19 @@ namespace NightSnack::Scripting {
         //}
     };
 
-    struct CORE_API Trans {
-        vec3 pos;
-        float rot{};
-        vec2 scale;
+    struct CORE_API vec4 {
+        float x, y, z, w;
 
+        vec4(float x1 = 0, float y1 = 0, float z1 = 0, float w1 = 0)
+            : x{ x1 }, y{ y1 }, z{ z1 }, w{ w1 } {
+        }
+    };
+
+    struct CORE_API Trans {
+        vec3 pos{};
+        float rot{};
+        vec2 scale{};
+        NightSnack::LayerType layer = NightSnack::LayerType::_ENGINE;
         //NightSnack::Transform ToNative() {
         //    NightSnack::Transform t;
         //    t.pos = pos.ToNative();
@@ -68,6 +76,53 @@ namespace NightSnack::Scripting {
         //    return ret;
         //}
     };
+
+    struct CORE_API Forc {
+        // Direction force
+        vec2 direction{};
+        float magnitude{};
+
+        float lifetime{};
+        bool isActive = false;
+    };
+
+    struct CORE_API RigidBod {
+
+        Forc force{};
+        Vec2 vel{};
+        Vec2 accel{};
+
+        float invMass{};
+        float invInertia{};
+
+        float restitution{};
+        float gravitymult{};
+
+        bool useGravity{};
+        bool useRotate{};
+    };
+
+    struct CORE_API Collide {
+        NightSnack::ShapeType shape{ NightSnack::ShapeType::AABB };     // AABB or Circle
+        NightSnack::ColliderType type{ NightSnack::ColliderType::Solid };   // Solid or Trigger
+        bool isStatic{ true };       // true = immovable (walls), false = dynamic (player)
+
+        // Shape data
+        float width{ 1.0f };   // AABB width
+        float height{ 1.0f };  // AABB height
+        float radius{ 0.5f };  // Circle radius
+
+        // Collision state
+        bool isGrounded{ false };
+        bool colliding{ false };
+    };
+
+    //Color
+    struct CORE_API Colo {
+        float r{}, g{}, b{}, a{};
+    };
+
+
 
     // Handle to a game object (Similar to Entity ID)
     struct CORE_API GameObjectHandle {
