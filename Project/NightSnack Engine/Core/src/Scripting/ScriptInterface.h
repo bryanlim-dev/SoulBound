@@ -88,10 +88,37 @@ namespace NightSnack::Scripting {
 
         bool GetUseRotate(Entity e);
         void SetUseRotate(Entity e, bool useRotate);
-
-
-
 #pragma endregion //Rigidbody
+        
+#pragma region Collider
+        Collide GetCollider(Entity e);
+        void SetCollider(Entity e, Collide col);
+
+        ShapeType GetColliderShape(Entity e);
+        void SetColliderShape(Entity e, ShapeType shap);
+
+        ColliderType GetColliderType(Entity e);
+        void SetColliderType(Entity e, ColliderType typ);
+
+        bool GetColliderStatic(Entity e);
+        void SetColliderStatic(Entity e, bool isStatic);
+
+        float GetColliderHeight(Entity e);
+        void SetColliderHeight(Entity e, float height);
+
+        float GetColliderWidth(Entity e);
+        void SetColliderWidth(Entity e, float width);
+
+        float GetColliderRadius(Entity e);
+        void SetColliderRadius(Entity e, float radius);
+
+        bool GetColliderGrounded(Entity e);
+        void SetColliderGrounded(Entity e, bool grounded);
+
+        bool GetColliderColliding(Entity e);
+        void SetColliderColliding(Entity e, bool colliding);
+#pragma endregion
+
 
 #pragma region Key/Inputs
         // Input

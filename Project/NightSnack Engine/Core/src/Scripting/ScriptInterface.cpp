@@ -27,6 +27,7 @@ namespace NightSnack::Scripting {
 
     // --------------------------------------------------------------
     // Transform operations
+    // --------------------------------------------------------------
 #pragma region Transform
     Trans ScriptInterface::GetTransform(Entity e) {
 
@@ -91,9 +92,11 @@ namespace NightSnack::Scripting {
 
     // --------------------------------------------------------------
     // Rigidbody Inputs
+    // --------------------------------------------------------------
 #pragma region Rigidbody
     // --------------------------------------------------------------
     // Force Inputs
+    // --------------------------------------------------------------
 #pragma region Force
     Forc ScriptInterface::GetForce(Entity e) {
 
@@ -230,8 +233,120 @@ namespace NightSnack::Scripting {
 
 #pragma endregion //Rigidbody
 
+#pragma region Collider
+
+    Collide ScriptInterface::GetCollider(Entity e) {
+
+        Collider t = m_coord.GetComponent<Collider>(e);
+        Collide result;
+
+        result.shape = t.shape;
+        result.type = t.type;
+        result.isStatic = t.isStatic;
+        result.width = t.width;
+        result.height = t.height;
+        result.radius = t.radius;
+
+        return result;
+    }
+
+    void ScriptInterface::SetCollider(Entity e, Collide col)
+    {
+        Collider& t = m_coord.ModifyComponent<Collider>(e);
+        t.shape = col.shape;
+        t.type = col.type;
+        t.isStatic = col.isStatic;
+        t.width = col.width;
+        t.height = col.height;
+        t.radius = col.radius;
+    }
+
+    // ShapeType -------
+    ShapeType ScriptInterface::GetColliderShape(Entity e) {
+        ShapeType shape = m_coord.GetComponent<Collider>(e).shape;
+        return shape;
+    }
+    void ScriptInterface::SetColliderShape(Entity e, ShapeType shap) {
+        ShapeType& shape = m_coord.ModifyComponent<Collider>(e).shape;
+        shape = shap;
+    }
+
+    // ColliderType -------
+    ColliderType ScriptInterface::GetColliderType(Entity e) {
+        ColliderType type = m_coord.GetComponent<Collider>(e).type;
+        return type;
+    }
+    void ScriptInterface::SetColliderType(Entity e, ColliderType typ) {
+        ColliderType& type = m_coord.ModifyComponent<Collider>(e).type;
+        type = typ;
+    }
+
+    // isStatic ----
+    bool ScriptInterface::GetColliderStatic(Entity e)
+    {
+        return m_coord.GetComponent<Collider>(e).isStatic;
+    }
+    void ScriptInterface::SetColliderStatic(Entity e, bool isStatic)
+    {
+        m_coord.ModifyComponent<Collider>(e).isStatic = isStatic;
+    }
+
+    // Height ----
+    float ScriptInterface::GetColliderHeight(Entity e)
+    {
+        return m_coord.GetComponent<Collider>(e).height;
+    }
+    void ScriptInterface::SetColliderHeight(Entity e, float height)
+    {
+        m_coord.ModifyComponent<Collider>(e).height = height;
+    }
+
+    // Width ----
+    float ScriptInterface::GetColliderWidth(Entity e)
+    {
+        return m_coord.GetComponent<Collider>(e).width;
+    }
+    void ScriptInterface::SetColliderWidth(Entity e, float width)
+    {
+        m_coord.ModifyComponent<Collider>(e).width = width;
+    }
+
+    // Radius ----
+    float ScriptInterface::GetColliderRadius(Entity e)
+    {
+        return m_coord.GetComponent<Collider>(e).radius;
+    }
+    void ScriptInterface::SetColliderRadius(Entity e, float radius)
+    {
+        m_coord.ModifyComponent<Collider>(e).radius = radius;
+    }
+
+    // isGrounded ----
+    bool ScriptInterface::GetColliderGrounded(Entity e)
+    {
+        return m_coord.GetComponent<Collider>(e).isGrounded;
+    }
+    void ScriptInterface::SetColliderGrounded(Entity e, bool grounded)
+    {
+        m_coord.ModifyComponent<Collider>(e).isGrounded = grounded;
+    }
+
+    // Colliding ----
+    bool ScriptInterface::GetColliderColliding(Entity e)
+    {
+        return m_coord.GetComponent<Collider>(e).colliding;
+    }
+    void ScriptInterface::SetColliderColliding(Entity e, bool colliding)
+    {
+        m_coord.ModifyComponent<Collider>(e).colliding = colliding;
+    }
+
+#pragma endregion
+
+
     // --------------------------------------------------------------
     // Key Inputs
+    // --------------------------------------------------------------
 #pragma region Key/Buttons
     bool ScriptInterface::IsKeyPressed(int key) {
         return m_coord.GetSystem<InputSystem>()->IsKeyPressed(key);
@@ -248,6 +363,7 @@ namespace NightSnack::Scripting {
 
     // --------------------------------------------------------------
     // Audio
+    // --------------------------------------------------------------
     void ScriptInterface::PlaySound(const std::string& path) {
         //m_coord.GetSystem<AudioSystem>()->PlayAudio(soundPath);
         std::cout << "Playing sound: " << path << '\n';

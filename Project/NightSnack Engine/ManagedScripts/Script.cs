@@ -97,6 +97,56 @@ namespace ManagedScripts
         }
         #endregion //Rigidbody
 
+        #region Collider
+
+        protected ColliderType ColType
+        {
+            get => Engine.GetColliderType(EntityId);
+            set => Engine.SetColliderType(EntityId, value);
+        }
+        protected ShapeType ColShape
+        {
+            get => Engine.GetColliderShapeType(EntityId);
+            set => Engine.SeColliderShapeType(EntityId, value);
+        }
+
+        protected bool ColStatic
+        {
+            get => Engine.GetColliderStatic(EntityId);
+            set => Engine.SetColliderStatic(EntityId, value);
+        }
+
+        protected float ColHeight
+        {
+            get => Engine.GetColliderHeight(EntityId);
+            set => Engine.SetColliderHeight(EntityId, value);
+        }
+
+        protected float ColWidth
+        {
+            get => Engine.GetColliderWidth(EntityId);
+            set => Engine.SetColliderWidth(EntityId, value);
+        }
+        protected float ColRadius
+        {
+            get => Engine.GetColliderRadius(EntityId);
+            set => Engine.SetColliderRadius(EntityId, value);
+        }
+
+        protected bool ColGrounded
+        {
+            get => Engine.GetColliderGrounded(EntityId);
+            set => Engine.SetColliderGrounded(EntityId, value);
+        }
+
+        protected bool ColColliding
+        {
+            get => Engine.GetColliderColliding(EntityId);
+            set => Engine.SetColliderColliding(EntityId, value);
+        }
+
+        #endregion
+
         protected float DeltaTime => Engine.DeltaTime;
         //protected float Time => Engine.Time;
 

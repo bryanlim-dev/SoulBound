@@ -15,6 +15,9 @@ namespace ManagedScripts
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Log_Internal(string message);
 
+        // ----------------------------
+        // Transform Internal for Scripts
+        // ----------------------------
         #region Transform
         // ----------------------
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -41,6 +44,9 @@ namespace ManagedScripts
         private static extern void SetLayer_Internal(uint entityId, ref LayerType layer);
         #endregion
 
+        // ----------------------------
+        // Rigidbody Internal for Scripts
+        // ----------------------------
         #region Rigidbody
         #region Force
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -109,6 +115,60 @@ namespace ManagedScripts
 
 
         #endregion //Rigibody
+
+        // ----------------------------
+        // Collider Internal for Scripts
+        // ----------------------------
+        #region Collider
+
+        //Shape Type
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetColliderShape_Internal(uint entityId, out ShapeType shape);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetColliderShape_Internal(uint entityId, ref ShapeType shape);
+
+        //ColliderType
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetColliderType_Internal(uint entityId, out ColliderType colliderType);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetColliderType_Internal(uint entityId, ref ColliderType colliderType);
+
+        //isStatic
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetColliderStatic_Internal(uint entityId, out bool colStatic);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetColliderStatic_Internal(uint entityId, ref bool colStatic);
+
+        //Height
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetColliderHeight_Internal(uint entityId, out float height);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetColliderHeight_Internal(uint entityId, ref float height);
+
+        //Width
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetColliderWidth_Internal(uint entityId, out float width);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetColliderWidth_Internal(uint entityId, ref float width);
+
+        //Radius
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetColliderRadius_Internal(uint entityId, out float radius);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetColliderRadius_Internal(uint entityId, ref float radius);
+
+        //isGrounded
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetColliderGrounded_Internal(uint entityId, out bool grounded);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetColliderGrounded_Internal(uint entityId, ref bool grounded);
+
+        //isGrounded
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetColliderColliding_Internal(uint entityId, out bool colliding);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetColliderColliding_Internal(uint entityId, ref bool colliding);
+        #endregion
 
         #region Key/Buttons
         // ----------------------
@@ -314,6 +374,102 @@ namespace ManagedScripts
         }
         #endregion //Rigibody
 
+        // ----------------------------
+        // Collider API for Scripts
+        // ----------------------------
+        #region Collider
+
+        //---Shape Type---
+        public static ShapeType GetColliderShapeType(uint entityId)
+        {
+            GetColliderShape_Internal(entityId, out ShapeType shape);
+            return shape;
+        }
+        public static void SeColliderShapeType(uint entityId, ShapeType shape)
+        {
+            SetColliderShape_Internal(entityId, ref shape);
+        }
+
+        //---Collider Type---
+        public static ColliderType GetColliderType(uint entityId)
+        {
+            GetColliderType_Internal(entityId, out ColliderType collider);
+            return collider;
+        }
+        public static void SetColliderType(uint entityId, ColliderType collider)
+        {
+            SetColliderType_Internal(entityId, ref collider);
+        }
+
+        //---isStatic---
+        public static bool GetColliderStatic(uint entityId)
+        {
+            GetColliderStatic_Internal(entityId, out bool colStatic);
+            return colStatic;
+        }
+        public static void SetColliderStatic(uint entityId, bool colStatic)
+        {
+            SetColliderStatic_Internal(entityId, ref colStatic);
+        }
+
+        //--Height--
+        public static float GetColliderHeight(uint entityId)
+        {
+            GetColliderHeight_Internal(entityId, out float height);
+            return height;
+        }
+        public static void SetColliderHeight(uint entityId, float height)
+        {
+            SetColliderHeight_Internal(entityId, ref height);
+        }
+
+        //--Width--
+        public static float GetColliderWidth(uint entityId)
+        {
+            GetColliderWidth_Internal(entityId, out float width);
+            return width;
+        }
+        public static void SetColliderWidth(uint entityId, float width)
+        {
+            SetColliderWidth_Internal(entityId, ref width);
+        }
+
+        //--Radius--
+        public static float GetColliderRadius(uint entityId)
+        {
+            GetColliderRadius_Internal(entityId, out float radius);
+            return radius;
+        }
+        public static void SetColliderRadius(uint entityId, float radius)
+        {
+            SetColliderRadius_Internal(entityId, ref radius);
+        }
+
+        //---isGrounded---
+        public static bool GetColliderGrounded(uint entityId)
+        {
+            GetColliderGrounded_Internal(entityId, out bool grounded);
+            return grounded;
+        }
+        public static void SetColliderGrounded(uint entityId, bool grounded)
+        {
+            SetColliderGrounded_Internal(entityId, ref grounded);
+        }
+
+        //---colliding---
+        public static bool GetColliderColliding(uint entityId)
+        {
+            GetColliderColliding_Internal(entityId, out bool colliding);
+            return colliding;
+        }
+        public static void SetColliderColliding(uint entityId, bool colliding)
+        {
+            SetColliderColliding_Internal(entityId, ref colliding);
+        }
+
+
+        #endregion
+
         #region Key/Buttons
         public static bool IsKeyPressed(int keyCode) => IsKeyPressed_Internal(keyCode);
         public static bool IsKeyDown(int keyCode) => IsKeyDown_Internal(keyCode);
@@ -369,5 +525,14 @@ namespace ManagedScripts
         FOREGROUND,
         GAMEUI,
         _ENGINE2
+    };
+
+    //When updating this update this Component.h
+    public enum ShapeType : sbyte { AABB, Circle };
+    public enum ColliderType : sbyte
+    {
+        Solid,   // Blocks movement
+        Trigger,  // Detects overlaps only
+        Ground
     };
 }

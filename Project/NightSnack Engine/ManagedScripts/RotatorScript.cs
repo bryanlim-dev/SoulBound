@@ -17,9 +17,11 @@ namespace ManagedScripts
             //pos.X = 200;
             //uint id2 = Engine.CreateEntityArchetype("RedBall", pos);
 
+            ////Transform Test
             //Engine.SetLayer(id1, LayerType.GAMEUI);
             //Engine.SetLayer(id2, LayerType._ENGINE2);
 
+            ////Rigibody Test
             //Vector2 dir;
             //dir.X = 1;
             //dir.Y = 1;
@@ -33,6 +35,14 @@ namespace ManagedScripts
             //vel.Y = 0;
             //Engine.SetUseGravity(id1, true);
             //Engine.SetVelocity(id1, vel);
+
+            ////Collider Test
+            //Engine.SetColliderWidth(id1, 100);
+            //Engine.SetColliderHeight(id1, 100);
+
+            //Engine.SetColliderType(id2, ColliderType.Ground);
+            //Engine.SeColliderShapeType(id2, ShapeType.Circle);
+            //Engine.SetColliderRadius(id2, 100);
 
 
 

@@ -191,6 +191,91 @@ extern "C" {
 
     // --------------------------------------------------------------
 
+#pragma region Collider
+    // ShapeType -----------------
+    static void NightSnack_GetColliderShape(uint32_t id, uint8_t* shape) {
+        if (!g_scriptInterface || !shape) { return; }
+        *shape = static_cast<uint8_t>(g_scriptInterface->GetColliderShape(id));
+    }
+    static void NightSnack_SetColliderShape(uint32_t id, uint8_t* shape) {
+        if (!g_scriptInterface || !shape) { return; }
+        g_scriptInterface->SetColliderShape(id, static_cast<NightSnack::ShapeType>(*shape));
+    }
+
+    // ColliderType -----------------
+    static void NightSnack_GetColliderType(uint32_t id, uint8_t* type) {
+        if (!g_scriptInterface || !type) { return; }
+        *type = static_cast<uint8_t>(g_scriptInterface->GetColliderType(id));
+    }
+    static void NightSnack_SetColliderType(uint32_t id, uint8_t* type) {
+        if (!g_scriptInterface || !type) { return; }
+        g_scriptInterface->SetColliderType(id, static_cast<NightSnack::ColliderType>(*type));
+    }
+
+    // isStatic --------------
+    static void NightSnack_GetColliderStatic(uint32_t id, bool* outcolStatic) {
+        if (!g_scriptInterface || !outcolStatic) { return; }
+        *outcolStatic = g_scriptInterface->GetColliderStatic(id);
+    }
+    static void NightSnack_SetColliderStatic(uint32_t id, bool* colStatic) {
+        if (!g_scriptInterface || !colStatic) { return; }
+        g_scriptInterface->SetColliderStatic(id, *colStatic);
+    }
+
+    // Height --------------
+    static void NightSnack_GetColliderHeight(uint32_t id, float* outheight) {
+        if (!g_scriptInterface || !outheight) { return; }
+        *outheight = g_scriptInterface->GetColliderHeight(id);
+    }
+    static void NightSnack_SetColliderHeight(uint32_t id, float* height) {
+        if (!g_scriptInterface || !height) { return; }
+        g_scriptInterface->SetColliderHeight(id, *height);
+    }
+
+    // Width --------------
+    static void NightSnack_GetColliderWidth(uint32_t id, float* outwidth) {
+        if (!g_scriptInterface || !outwidth) { return; }
+        *outwidth = g_scriptInterface->GetColliderWidth(id);
+    }
+    static void NightSnack_SetColliderWidth(uint32_t id, float* width) {
+        if (!g_scriptInterface || !width) { return; }
+        g_scriptInterface->SetColliderWidth(id, *width);
+    }
+
+    // Radius --------------
+    static void NightSnack_GetColliderRadius(uint32_t id, float* outradius) {
+        if (!g_scriptInterface || !outradius) { return; }
+        *outradius = g_scriptInterface->GetColliderRadius(id);
+    }
+    static void NightSnack_SetColliderRadius(uint32_t id, float* radius) {
+        if (!g_scriptInterface || !radius) { return; }
+        g_scriptInterface->SetColliderRadius(id, *radius);
+    }
+
+    // isGrounded --------------
+    static void NightSnack_GetColliderGrounded(uint32_t id, bool* outgrounded) {
+        if (!g_scriptInterface || !outgrounded) { return; }
+        *outgrounded = g_scriptInterface->GetColliderGrounded(id);
+    }
+    static void NightSnack_SetColliderGrounded(uint32_t id, bool* grounded) {
+        if (!g_scriptInterface || !grounded) { return; }
+        g_scriptInterface->SetColliderGrounded(id, *grounded);
+    }
+
+    // Colliding --------------
+    static void NightSnack_GetColliderColliding(uint32_t id, bool* outcollided) {
+        if (!g_scriptInterface || !outcollided) { return; }
+        *outcollided = g_scriptInterface->GetColliderColliding(id);
+    }
+    static void NightSnack_SetColliderColliding(uint32_t id, bool* collided) {
+        if (!g_scriptInterface || !collided) { return; }
+        g_scriptInterface->SetColliderColliding(id, *collided);
+    }
+
+#pragma endregion
+
+    // --------------------------------------------------------------
+
 #pragma region Key/Buttons
     // Input - Is Key Pressed (just pressed this frame)
     static bool NightSnack_IsKeyPressed(int keyCode) {
@@ -318,6 +403,34 @@ namespace NightSnack::Scripting {
 
 
 #pragma endregion //RigidBody
+
+#pragma region Collider
+        mono_add_internal_call("ManagedScripts.Engine::GetColliderShape_Internal", (void*)NightSnack_GetColliderShape);
+        mono_add_internal_call("ManagedScripts.Engine::SetColliderShape_Internal", (void*)NightSnack_SetColliderShape);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetColliderType_Internal", (void*)NightSnack_GetColliderType);
+        mono_add_internal_call("ManagedScripts.Engine::SetColliderType_Internal", (void*)NightSnack_SetColliderType);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetColliderStatic_Internal", (void*)NightSnack_GetColliderStatic);
+        mono_add_internal_call("ManagedScripts.Engine::SetColliderStatic_Internal", (void*)NightSnack_SetColliderStatic);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetColliderHeight_Internal", (void*)NightSnack_GetColliderHeight);
+        mono_add_internal_call("ManagedScripts.Engine::SetColliderHeight_Internal", (void*)NightSnack_SetColliderHeight);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetColliderWidth_Internal", (void*)NightSnack_GetColliderWidth);
+        mono_add_internal_call("ManagedScripts.Engine::SetColliderWidth_Internal", (void*)NightSnack_SetColliderWidth);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetColliderRadius_Internal", (void*)NightSnack_GetColliderRadius);
+        mono_add_internal_call("ManagedScripts.Engine::SetColliderRadius_Internal", (void*)NightSnack_SetColliderRadius);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetColliderGrounded_Internal", (void*)NightSnack_GetColliderGrounded);
+        mono_add_internal_call("ManagedScripts.Engine::SetColliderGrounded_Internal", (void*)NightSnack_SetColliderGrounded);
+        
+        mono_add_internal_call("ManagedScripts.Engine::GetColliderColliding_Internal", (void*)NightSnack_GetColliderColliding);
+        mono_add_internal_call("ManagedScripts.Engine::SetColliderColliding_Internal", (void*)NightSnack_SetColliderColliding);
+
+#pragma endregion
+
 
 
 #pragma region Key/Inputs
