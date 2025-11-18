@@ -153,11 +153,14 @@ namespace NightSnack {
 				glm::mat4 viewToUse = isUILayer ? glm::mat4(1.f) : view;
 
 				auto& pos = m_coord.GetComponent<Transform>(e).pos;
-				auto& scale = m_coord.GetComponent<Transform>(e).scale;
 				auto& txt = m_coord.ModifyComponent<Font>(e);
 
 				// Flip the y pos for entities on the UI layer
 				float posYToUse = isUILayer ? screenH - pos.y : pos.y;
+
+				// Offset the base position based on the offset position
+				float posXToUse = pos.x + txt.offsetPosition.x;
+				posYToUse += txt.offsetPosition.y;
 
 				// If it is empty, make it use the default font, which is the first font in the map
 				if (txt.fontType.empty()) {
@@ -165,7 +168,7 @@ namespace NightSnack {
 				}
 
 				// Render the actual text string
-				RenderText(txt.text, pos.x, posYToUse, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType);
+				RenderText(txt.text, posXToUse, posYToUse, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType);
 			}
 		}
 		glDisable(GL_BLEND);

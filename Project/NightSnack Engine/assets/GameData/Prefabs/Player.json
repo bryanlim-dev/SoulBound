@@ -19,11 +19,16 @@
             "b": 0.8999999761581421,
             "g": 0.75,
             "r": 0.6499999761581421
+        },
+        "offsetPosition" : {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
         }
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "ColorMat",
+        "materialName": "slime_4_1",
         "meshName": "square"
     },
     "RigidBody": {
