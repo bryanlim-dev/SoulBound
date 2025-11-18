@@ -125,6 +125,11 @@ namespace NightSnack::Scripting {
         void SetColliderColliding(Entity e, bool colliding);
 #pragma endregion
 
+#pragma region Color
+        vec4 GetColorRGBA(Entity e);
+        void SetColorRGBA(Entity e, vec4 rgba);
+#pragma endregion
+
 
 #pragma region Key/Inputs
         // Input

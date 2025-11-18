@@ -285,6 +285,21 @@ extern "C" {
 #pragma endregion
 
     // --------------------------------------------------------------
+    
+#pragma region Color
+    // RGBA -----------------
+    static void NightSnack_GetColorRGBA(uint32_t id, NightSnack::Scripting::vec4* outVec) {
+        if (!g_scriptInterface || !outVec) { return; }
+        *outVec = g_scriptInterface->GetColorRGBA(id);
+    }
+    static void NightSnack_SetColorRGBA(uint32_t id, NightSnack::Scripting::vec4* vec) {
+        if (!g_scriptInterface || !vec) { return; }
+        g_scriptInterface->SetColorRGBA(id, *vec);
+    }
+#pragma endregion
+
+
+    // --------------------------------------------------------------
 
 #pragma region Key/Buttons
     // Input - Is Key Pressed (just pressed this frame)
@@ -404,8 +419,8 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::SetRestitution_Internal", (void*)NightSnack_SetRestitution);
         
         //GravityMult
-        mono_add_internal_call("ManagedScripts.Engine::GetRestitution_Internal", (void*)NightSnack_GetRestitution);
-        mono_add_internal_call("ManagedScripts.Engine::SetRestitution_Internal", (void*)NightSnack_SetRestitution);
+        mono_add_internal_call("ManagedScripts.Engine::GetGravityMult_Internal", (void*)NightSnack_GetGravityMult);
+        mono_add_internal_call("ManagedScripts.Engine::SetGravityMult_Internal", (void*)NightSnack_SetGravityMult);
 
         //UseGravity
         mono_add_internal_call("ManagedScripts.Engine::GetUseGravity_Internal", (void*)NightSnack_GetUseGravity);
@@ -443,6 +458,11 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::GetColliderColliding_Internal", (void*)NightSnack_GetColliderColliding);
         mono_add_internal_call("ManagedScripts.Engine::SetColliderColliding_Internal", (void*)NightSnack_SetColliderColliding);
 
+#pragma endregion
+
+#pragma region Color
+        mono_add_internal_call("ManagedScripts.Engine::GetRGBA_Internal", (void*)NightSnack_GetColorRGBA);
+        mono_add_internal_call("ManagedScripts.Engine::SetRGBA_Internal", (void*)NightSnack_SetColorRGBA);
 #pragma endregion
 
 

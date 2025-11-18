@@ -176,6 +176,20 @@ namespace ManagedScripts
         private static extern void SetColliderColliding_Internal(uint entityId, ref bool colliding);
         #endregion
 
+        // ----------------------------
+        // Color Internal for Scripts
+        // ----------------------------
+        #region Color
+        //Required function, r,g,b,a, rgb (vec3), rgba (vec4)
+        //Wait no i just need rgba and then split from there
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetRGBA_Internal(uint entityId, out Vector4 color);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetRGBA_Internal(uint entityId, ref Vector4 color);
+
+        #endregion
+
         #region Key/Buttons
         // ----------------------
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -487,6 +501,19 @@ namespace ManagedScripts
 
         #endregion
 
+        #region Color
+        public static Colors GetRGBA(uint entityId)
+        {
+            GetRGBA_Internal(entityId, out Vector4 vec4);
+            return new Colors(vec4);
+        }
+        public static void SetRGBA(uint entityId, Colors col)
+        {
+            SetRGBA_Internal(entityId, ref col.vec4);
+        }
+
+        #endregion
+
         #region Key/Buttons
         public static bool IsKeyPressed(int keyCode) => IsKeyPressed_Internal(keyCode);
         public static bool IsKeyDown(int keyCode) => IsKeyDown_Internal(keyCode);
@@ -546,8 +573,64 @@ namespace ManagedScripts
         public static Vector4 operator +(Vector4 a, Vector4 b) => new Vector4(a.X + b.X, a.Y + b.Y, a.Z + b.Z, a.W + b.W);
         public static Vector4 operator -(Vector4 a, Vector4 b) => new Vector4(a.X - b.X, a.Y - b.Y, a.Z - b.Z, a.W - b.W);
         public static Vector4 operator *(Vector4 a, float scalar) => new Vector4(a.X * scalar, a.Y * scalar, a.Z * scalar, a.W * scalar);
+        public static Vector4 operator /(Vector4 a, float denominator)
+        {
+            if (denominator == 0) // Make sure no divide by 0
+                return new Vector4(a.X, a.Y, a.Z, a.W);
+            else
+                return new Vector4(a.X / denominator, a.Y / denominator, a.Z / denominator, a.W / denominator);
+        }
 
         public override string ToString() => $"({X}, {Y}, {Z}, {W})";
+    }
+
+    //Wrapper struct for color specifically
+    public struct Colors
+    {
+        public Vector4 vec4;
+
+        public Colors(Vector4 vec)
+        {
+            this.vec4 = vec;
+        }
+
+        public Colors(Colors rhs)
+        {
+            this.vec4 = rhs.vec4;
+        }
+
+        public Colors(float r, float g, float b, float a)
+        {
+            this.vec4 = new Vector4(r, g, b, a);
+        }
+
+        public float R
+        {
+            get => vec4.X;
+            set => vec4.X = value;
+        }
+        public float G
+        {
+            get => vec4.Y;
+            set => vec4.Y = value;
+        }
+        public float B
+        {
+            get => vec4.Z;
+            set => vec4.Z = value;
+        }
+        public float A
+        {
+            get => vec4.W;
+            set => vec4.W = value;
+        }
+
+        public static Colors operator +(Colors a, Colors b) => new Colors(a.vec4 + b.vec4);
+        public static Colors operator -(Colors a, Colors b) => new Colors(a.vec4 - b.vec4);
+        public static Colors operator *(Colors a, float scalar) => new Colors(a.vec4 * scalar);
+        public static Colors operator /(Colors a, float denominator) => new Colors(a.vec4 / denominator);
+        public override string ToString() => $"({vec4.X}, {vec4.Y}, {vec4.Z}, {vec4.W})";
+
     }
 
     //When updating this update this Component.h

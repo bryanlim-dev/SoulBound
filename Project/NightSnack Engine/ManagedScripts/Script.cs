@@ -147,6 +147,14 @@ namespace ManagedScripts
 
         #endregion
 
+        #region Color
+        protected Colors Color
+        {
+            get => Engine.GetRGBA(EntityId);
+            set => Engine.SetRGBA(EntityId, value);
+        }
+        #endregion
+
         protected float DeltaTime => Engine.DeltaTime;
         //protected float Time => Engine.Time;
 

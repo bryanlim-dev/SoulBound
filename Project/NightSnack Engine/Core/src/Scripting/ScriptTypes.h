@@ -48,6 +48,14 @@ namespace NightSnack::Scripting {
         //}
     };
 
+    struct CORE_API vec4 {
+        float x, y, z, w;
+
+        vec4(float x1 = 0, float y1 = 0, float z1 = 0, float w1 = 0)
+            : x{ x1 }, y{ y1 }, z{ z1 }, w{ w1 } {
+        }
+    };
+
     struct CORE_API Trans {
         vec3 pos{};
         float rot{};

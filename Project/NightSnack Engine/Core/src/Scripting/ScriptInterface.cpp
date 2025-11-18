@@ -273,6 +273,9 @@ namespace NightSnack::Scripting {
 
 #pragma endregion //Rigidbody
 
+    // --------------------------------------------------------------
+    // Collider Inputs
+    // --------------------------------------------------------------
 #pragma region Collider
 
     Collide ScriptInterface::GetCollider(Entity e) {
@@ -381,9 +384,34 @@ namespace NightSnack::Scripting {
         m_coord.ModifyComponent<Collider>(e).colliding = colliding;
     }
 
+
+#pragma endregion
+
+    // --------------------------------------------------------------
+    // Color Inputs
+    // --------------------------------------------------------------
+#pragma region Color
+    vec4 ScriptInterface::GetColorRGBA(Entity e)
+    {
+        Color color = m_coord.GetComponent<Color>(e);
+        return vec4{ color.r, color.b, color.g, color.a };
+    }
+
+    void ScriptInterface::SetColorRGBA(Entity e, vec4 rgba)
+    {
+        Color& color = m_coord.ModifyComponent<Color>(e);
+        color.r = rgba.x;
+        color.g = rgba.y;
+        color.b = rgba.z;
+        color.a = rgba.w;
+    }
+
 #pragma endregion
 
 
+ // --------------------------------------------------------------
+// Key Inputs
+// --------------------------------------------------------------
     // --------------------------------------------------------------
     // Key Inputs
     // --------------------------------------------------------------
