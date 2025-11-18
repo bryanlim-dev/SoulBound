@@ -152,8 +152,8 @@ namespace NightSnack {
     };
 
     struct Font {
-        std::string fontType{ "default" };
-        std::string text{};
+        std::string fontType;
+        std::string text;
         float fontSize{ 1.f };
         Vec3 textColor{ 1.f, 1.f, 1.f };
     };

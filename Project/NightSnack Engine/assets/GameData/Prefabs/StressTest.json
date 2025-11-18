@@ -7,7 +7,7 @@
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "bananaMat",
+        "materialName": "ColorMat",
         "meshName": "circle"
     },
     "RigidBody": {

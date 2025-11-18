@@ -3,7 +3,7 @@
         "isLooping": true,
         "isPlaying": true,
         "playbackSpeed": 2.0,
-        "spriteSheetName": "../assets/slime.png"
+        "spriteSheetName": ""
     },
     "Collider": {
         "isStatic": false,
@@ -13,7 +13,7 @@
     },
     "Font": {
         "fontSize": 0.5,
-        "fontType": "default",
+        "fontType": "",
         "text": "Player",
         "textColor": {
             "b": 0.8999999761581421,
@@ -23,11 +23,15 @@
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "slimeMat",
+        "materialName": "ColorMat",
         "meshName": "square"
     },
     "RigidBody": {
         "mass": 1.0,
         "useGravity": true
+    },
+    "PlayerController": {
+        "moveSpeed": 300.0,
+        "jumpSpeed": 600.0
     }
 }
