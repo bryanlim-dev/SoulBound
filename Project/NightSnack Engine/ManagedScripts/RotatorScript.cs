@@ -46,7 +46,7 @@ namespace ManagedScripts
             //Engine.SetColliderRadius(id2, 100);
 
             ////Color Test
-            //Engine.SetRGBA(id2, new Colors(0, 1, 0 , 0.25f));
+            //Engine.SetRGBA(id2, new Colors(0, 1, 0, 0.25f));
             //Log($"Ball 1 color: {Color}");
 
             //Log("RotatorScript started!");

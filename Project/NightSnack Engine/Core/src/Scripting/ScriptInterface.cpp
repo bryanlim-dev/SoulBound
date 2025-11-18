@@ -452,6 +452,7 @@ namespace NightSnack::Scripting {
     {
         Entity entity= m_coord.GetSystem<EntityFactory>()->Create(archeTypeName);
         m_coord.ModifyComponent<Transform>(entity).pos = Vec3{ pos.x, pos.x, pos.z };
+        m_coord.BufferEntitySignature(entity);
         return entity;
     }
     // --------------------------------------------------------------
