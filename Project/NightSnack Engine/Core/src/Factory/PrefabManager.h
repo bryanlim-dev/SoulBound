@@ -84,7 +84,7 @@ namespace NightSnack {
 		ID of created entity.
 		*/
 		/************************************************************************/
-		Entity CreateFromPrefab(std::string const& prefabName, json const& archetypes) {
+		Entity CreateFromPrefab(json const& prefab) {
 			// Create a new entity using coordinator;
 			Entity e = m_coord.CreateEntity();
 			//std::cerr << "Created Entity: " << e << '\n';
@@ -95,7 +95,7 @@ namespace NightSnack {
 			//std::cerr << "Added Transform to Entity\n";
 
 			// Adds all components from prefab definition;
-			for (auto& [compName, compData] : archetypes[prefabName].items()) {
+			for (auto& [compName, compData] : prefab.items()) {
 				// Look for component loader with std::string component name;
 				auto it = m_componentLoaders.find(compName);
 				// If found, use lambda function to insert data;

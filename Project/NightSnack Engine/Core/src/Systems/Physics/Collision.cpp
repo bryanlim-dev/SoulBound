@@ -136,8 +136,8 @@ namespace NightSnack {
     bool CheckAABBvsAABB(const Vec3& aPos, const Collider& a,
         const Vec3& bPos, const Collider& b)
     {
-        return (std::abs(aPos.x - bPos.x) * 2 < (a.width + b.width)) &&
-            (std::abs(aPos.y - bPos.y) * 2 < (a.height + b.height));
+        return (std::abs(aPos.x - bPos.x) * 2 <= (a.width + b.width)) &&
+            (std::abs(aPos.y - bPos.y) * 2 <= (a.height + b.height));
     }
 
     // Circle vs Circle

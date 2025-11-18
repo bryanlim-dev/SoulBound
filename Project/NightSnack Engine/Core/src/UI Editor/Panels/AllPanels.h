@@ -18,11 +18,15 @@
 #include "Core/ECS/Coordinator.h"
 #include "Core/ECS/Component.h"
 
+#include "Tilemap.h"
 #include "HierarchyPanel.h"
 #include "InspectorPanel.h"
 #include "ScenePanel.h"
 #include "OptionsPanel.h"
 #include "AssetsPanel.h"
+#include "PrefabsPanel.h"
+#include "FilesPanel.h"
+#include "ScriptsPanel.h"
 
 #endif // ALLPANEL_HPP
 

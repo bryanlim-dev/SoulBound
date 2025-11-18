@@ -63,7 +63,7 @@ namespace NightSnack {
 		}
 
 		// Clear Component signatures for destroyed Entity ID;
-		m_signatures[e] = 0;
+		m_signatures[e].reset();
 
 		// Return the Entity ID to the pool of available entities;
 		m_availableEntities.push(e);

@@ -44,7 +44,7 @@ namespace NightSnack {
         float rot;
         Vec2 scale;
 
-        LayerType layer{ LayerType::GAMELAYER };
+        LayerType layer;
     };
 
     struct Force {
@@ -67,6 +67,7 @@ namespace NightSnack {
         float invInertia;
 
         float restitution;
+        float gravitymult;
 
         bool useGravity;
         bool useRotate; 
@@ -152,8 +153,8 @@ namespace NightSnack {
     };
 
     struct Font {
-        std::string fontType{ "default" };
-        std::string text{};
+        std::string fontType;
+        std::string text;
         float fontSize{ 1.f };
         Vec3 textColor{ 1.f, 1.f, 1.f };
     };
@@ -213,6 +214,17 @@ namespace NightSnack {
         t.pos = { pos.value("x", 0.0f), pos.value("y", 0.0f), pos.value("z", 0.0f) };
         t.rot = j.value("Rotation", 0.0f);
         t.scale = { scl.value("x", 1.0f), scl.value("y", 1.0f) };
+
+        // entity layer
+        std::string l = j.value("Layer", "");
+        if (l == "_Engine") { t.layer = LayerType::_ENGINE; }
+        else if (l == "Background") { t.layer = LayerType::BACKGROUND; }
+        else if (l == "Foreground") { t.layer = LayerType::FOREGROUND; }
+        else if (l == "GameUI") { t.layer = LayerType::GAMEUI; }
+        else if (l == "_Engine2") { t.layer = LayerType::_ENGINE2; }
+        else {
+            t.layer = LayerType::GAMELAYER;
+        }
     }
     
     inline void from_json(const json& j, PlayerController& p) {

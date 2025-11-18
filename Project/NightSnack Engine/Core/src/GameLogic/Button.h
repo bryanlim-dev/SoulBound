@@ -355,7 +355,7 @@ namespace NightSnack {
 				break;
 			// play stress test
 			case ButtonAction::PLAYSTRESSTEST:
-				m_coord.GetSystem<EntityFactory>()->m_stress = true;
+				//m_coord.GetSystem<EntityFactory>()->m_stress = true;
 				break;
 
 			default:
