@@ -461,6 +461,45 @@ namespace NightSnack::Scripting {
 #pragma endregion
 
     // --------------------------------------------------------------
+    // Animator Inputs
+    // --------------------------------------------------------------
+#pragma region Animator
+    Animat ScriptInterface::GetAnimator(Entity e) {
+
+        Animator t = m_coord.GetComponent<Animator>(e);
+        Animat result;
+
+        result.currentAnimationClip = t.currentAnimationClip;
+        result.spriteSheetName = t.spriteSheetName;
+        result.currentFrameIndex = t.currentFrameIndex;
+        result.currentTime = t.currentTime;
+        result.playbackSpeed = t.playbackSpeed;
+        result.isPlaying = t.isPlaying;
+        result.isLooping = t.isLooping;
+        result.lastFacingRight = t.lastFacingRight;
+        result.uvTopLeft = t.uvTopLeft;
+        result.uvBottomRight = t.uvBottomRight;
+
+        return result;
+    }
+
+    void ScriptInterface::SetAnimator(Entity e, Animat rend)
+    {
+        Animator& t = m_coord.ModifyComponent<Animator>(e);
+        t.currentAnimationClip = rend.currentAnimationClip;
+        t.spriteSheetName = rend.spriteSheetName;
+        t.currentFrameIndex = rend.currentFrameIndex;
+        t.currentTime = rend.currentTime;
+        t.playbackSpeed = rend.playbackSpeed;
+        t.isPlaying = rend.isPlaying;
+        t.isLooping = rend.isLooping;
+        t.lastFacingRight = rend.lastFacingRight;
+        t.uvTopLeft = rend.uvTopLeft;
+        t.uvBottomRight = rend.uvBottomRight;
+    }
+#pragma endregion
+
+    // --------------------------------------------------------------
     // Key Inputs
     // --------------------------------------------------------------
 #pragma region Key/Buttons

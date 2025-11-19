@@ -144,6 +144,12 @@ namespace NightSnack::Scripting {
         void SetIsWireframe(Entity e, bool wire);
 #pragma endregion
 
+#pragma region Animator
+        Animat GetAnimator(Entity e);
+        void SetAnimator(Entity e, Animat rend);
+
+#pragma endregion
+
 
 #pragma region Key/Inputs
         // Input

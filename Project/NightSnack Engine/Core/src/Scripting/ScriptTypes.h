@@ -129,7 +129,20 @@ namespace NightSnack::Scripting {
         bool wasModified{ true };
     };
 
-
+    // An entity will have 1 Animator, comprising of many animations
+    struct CORE_API Animat {
+        std::string currentAnimationClip{};
+        std::string spriteSheetName{};
+        int currentFrameIndex{ 0 };
+        float currentTime{ 0.f };
+        float playbackSpeed{ 1.f };
+        bool isPlaying{ true };
+        bool isLooping{ true };
+        bool lastFacingRight{ false };
+        // The active region of the texture to sample from
+        Vec2 uvTopLeft{ 0.f, 0.f };
+        Vec2 uvBottomRight{ 1.f, 1.f };
+    };
 
     // Handle to a game object (Similar to Entity ID)
     struct CORE_API GameObjectHandle {
