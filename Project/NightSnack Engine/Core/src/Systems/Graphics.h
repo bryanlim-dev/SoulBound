@@ -26,6 +26,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include <filesystem>
 
 namespace NightSnack {
 
@@ -56,6 +57,9 @@ namespace NightSnack {
 			// Initialize viewport dimensions;
 			Hvp = static_cast<float>(coord.GetWindowHeight());
 			Wvp = static_cast<float>(coord.GetWindowWidth());
+
+			std::string path = std::filesystem::current_path().string();
+			std::cout << path << '\n';
 
 			Init();
 
@@ -137,6 +141,8 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void RenderDebugDrawing(Entity camera);
+
+		void LoadTextures();
 
 		/************************************************************************/
 		/*!

@@ -7,7 +7,7 @@
  * The Material class encapsulates shader and texture data.
  * It manages base color, texture binding.
  *
- * Copyright � 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 

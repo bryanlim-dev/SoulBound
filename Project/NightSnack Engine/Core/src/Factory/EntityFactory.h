@@ -3,7 +3,7 @@
  * Project:     NightSnack
  * Author(s):	Chewn Thing Kwan
  *              Clement Ang Yang Ying (Secondary, 5%) - Changed loading to use RM
- * 
+ *
  * Description:
  * Declares EntityFactory class that creates entities from prefabs/archetypes
  * read from a json file.
@@ -61,19 +61,15 @@ namespace NightSnack {
 					switch (event.inputAction) {
 
 					case InputEvent::InputAction::StressTest:
-						// Testcase for layer changing in real-time
-						for (Entity e : m_coord.GetLivingEntities())
-						{
-							if (e == 1) // 1 == backdrop entity
-							{
-								auto& t = m_coord.ModifyComponent<Transform>(e);
-								t.layer = LayerType::GAMEUI;
-							}
+						ReloadPrefabs();
+						for (auto const& [name, key] : m_prefabKeys) {
+							std::cout << name << ", ";
 						}
+						std::cout << '\n';
 						break;
 					}
 				}
-			});
+				});
 		}
 
 		// Resets m_prefabKeys and loads all json files in "GameData/Prefabs"
@@ -169,7 +165,7 @@ namespace NightSnack {
 		void PrintPrefabNames() const;
 		std::vector<std::string> GetPrefabNames() const;
 		std::string GetEntityPrefabName(Entity e) const;
-		
+
 		std::unordered_map<std::string, std::string> GetPrefabMaterials() const;
 
 		// Required functions from base class ISystem.
@@ -190,6 +186,8 @@ namespace NightSnack {
 		std::unordered_map<std::string, size_t> m_prefabKeys;
 		std::unordered_map<std::string, size_t> m_levelKeys;
 
+		std::vector<size_t> m_toBeUnloaded;
+
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;
 		std::vector<std::string> m_prefabNames;
@@ -197,7 +195,7 @@ namespace NightSnack {
 		std::filesystem::path GAMEDATA_DIR;
 
 		// ---------------------------------------------------------------------
-		
+
 		// Split Monolithic Json file (containing all archetypes) into individual prefab json files.
 		void TransferPrefabs(std::string const& monolith);
 

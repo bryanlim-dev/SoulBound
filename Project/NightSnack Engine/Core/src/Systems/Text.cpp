@@ -35,9 +35,35 @@ namespace NightSnack {
 		auto& shaders = m_coord.GetSystem<GraphicsSystem>()->GetShadersMap();
 		m_shader = shaders.find("text")->second.get();
 
-		// THE CREATION OF THIS FONT WILL EITHER BE ENTIRELY REMOVED OR MOVED TO RESOURCE MANAGER DEFAULT LOADINGS
-		CreateFont("../assets/Font/buggy-font.ttf");
-		//CreateFont("../assets/Font/liberation-mono.ttf");
+		LoadFonts();
+	}
+
+	void TextSystem::LoadFonts() {
+		std::filesystem::path assetsFilePath = "../assets/Font";
+
+		if (!std::filesystem::exists(assetsFilePath)) {
+			std::cerr << "[TextSystem] Error: Assets Font directory cannot be found!\n";
+			return;
+		}
+
+		// Iterate through entries in directory
+		for (auto const& entry : std::filesystem::directory_iterator(assetsFilePath)) {
+			// Skip through folders
+			if (entry.is_directory()) {
+				continue;
+			}
+
+			// Only load the fonts that are in this assets folder
+			std::filesystem::path filePath = entry.path();
+			std::string extension = filePath.extension().string();
+
+			// Only load fonts with the correct extensions
+			if (extension != ".ttf") {
+				continue;
+			}
+
+			CreateFont(filePath.string());
+		}
 	}
 
 	void TextSystem::CreateFont(const std::string& fontFilePath) {
@@ -48,7 +74,8 @@ namespace NightSnack {
 		rm->LoadFont(fontFilePath, fontKey);
 
 		// Generate glyphs for the loaded fonts
-		LoadFontGlyphs(fontKey, fontFilePath);
+		std::filesystem::path font = fontFilePath;
+		LoadFontGlyphs(fontKey, font.stem().string());
 	}
 
 	void TextSystem::UpdateFont(const std::string& newFontFilePath, Entity e) {
@@ -153,11 +180,14 @@ namespace NightSnack {
 				glm::mat4 viewToUse = isUILayer ? glm::mat4(1.f) : view;
 
 				auto& pos = m_coord.GetComponent<Transform>(e).pos;
-				auto& scale = m_coord.GetComponent<Transform>(e).scale;
 				auto& txt = m_coord.ModifyComponent<Font>(e);
 
 				// Flip the y pos for entities on the UI layer
 				float posYToUse = isUILayer ? screenH - pos.y : pos.y;
+
+				// Offset the base position based on the offset position
+				float posXToUse = pos.x + txt.offsetPosition.x;
+				posYToUse += txt.offsetPosition.y;
 
 				// If it is empty, make it use the default font, which is the first font in the map
 				if (txt.fontType.empty()) {
@@ -165,7 +195,7 @@ namespace NightSnack {
 				}
 
 				// Render the actual text string
-				RenderText(txt.text, pos.x, posYToUse, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType);
+				RenderText(txt.text, posXToUse, posYToUse, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType);
 			}
 		}
 		glDisable(GL_BLEND);

@@ -21,7 +21,7 @@ namespace NightSnack
 
         // Tilemap overlay settings
         bool tileOverlayEnabled = false;
-        float gridSize = 32.0f;
+        float gridSize = 24.0f;
         ImU32 gridColor = IM_COL32(200, 200, 200, 100);
 
         // Tile editor settings
@@ -93,12 +93,33 @@ namespace NightSnack
         /************************************************************************/
         /*!
         \brief
+			Returns the currently selected tile index.
+
+        \param[in] coord
+            - Reference to the ECS Coordinator.
+
+        \param[in] selectedEntity
+            - Currently selected entity in the scene.
+        */
+        /************************************************************************/
+        int GetSelectedTile() const { return selectedTile; }
+
+        /************************************************************************/
+        /*!
+        \brief
 			Helper function to convert world to screen coordinates in image.
         */
         /************************************************************************/
         static ImVec2 WorldToScreen(float wx, float wy, float worldLeft, float worldRight,
             float worldBottom, float worldTop, ImVec2 imageTopLeft, ImVec2 imageSize);
 
+    private:
+        // Editor view control
+        float editorZoom = 1.0f;
+        ImVec2 editorPan = ImVec2(0, 0);
+
+        int tileTextureWidth = 0;
+        int tileTextureHeight = 0;
     };
 
     inline void Tilemap::DrawTilemapSettings()
@@ -131,101 +152,163 @@ namespace NightSnack
 
     inline void Tilemap::DrawTileEditor(Coordinator& coord, Entity selectedEntity)
     {
-        if (!showTileEditor) { return; }
+		(void)selectedEntity; // Unused for now
+        if (!showTileEditor) return;
 
-        // Calculate desired texture display size based on world grid
-        float displayWidth = tileCols * gridSize;
-        float displayHeight = tileRows * gridSize;
-        ImVec2 texSize(displayWidth, displayHeight);
-
-        ImGui::SetNextWindowSize(ImVec2(displayWidth + 80, displayHeight + 120), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(600, 600), ImGuiCond_Once);
         ImGui::Begin("Tile Editor", &showTileEditor);
+        static ImVec2 textureCenter = ImVec2(0, 0);
 
-        // Texture loading from the selected entity's Renderable component
-        bool hasTexture = false;
-        if (selectedEntity != INVALID_ENTITY && coord.HasComponent<Renderable>(selectedEntity))
+        // --- Drag-and-Drop Texture Support ---
+        if (ImGui::BeginDragDropTarget())
         {
-            auto& renderable = coord.GetComponent<Renderable>(selectedEntity);
-            auto graphics = coord.GetSystem<GraphicsSystem>();
-            if (graphics)
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE"))
             {
-                Material* mat = graphics->GetMaterial(renderable.materialName);
-                if (mat && mat->GetTexture())
+                const char* droppedPath = static_cast<const char*>(payload->Data);
+                tileTexturePath = droppedPath;
+
+                // Load texture using ResourceManager
+                auto resourceMgr = coord.GetSystem<ResourceManager>();
+                if (resourceMgr)
                 {
-                    tileTextureID = (ImTextureID)(intptr_t)mat->GetTexture()->GetID();
-                    tileTexturePath = mat->GetTexture()->GetTextureName();
-                    hasTexture = true;
+                    size_t imageKey = 0;
+                    resourceMgr->LoadImage(tileTexturePath, imageKey);
+                    int width, height, channels;
+                    unsigned char* pixels = resourceMgr->GetImage(imageKey, width, height, channels);
+                    if (pixels) {
+                        GLuint texID = 0;
+                        glGenTextures(1, &texID);
+                        glBindTexture(GL_TEXTURE_2D, texID);
+                        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, channels == 4 ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, pixels);
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                        tileTextureID = (ImTextureID)texID;
+                        tileTextureWidth = width;
+                        tileTextureHeight = height;
+
+                        // Snap top-left of texture to nearest grid intersection
+                        ImVec2 mousePos = ImGui::GetMousePos();
+                        float scaledGridSize = gridSize * editorZoom;
+                        float snappedX = std::floor((mousePos.x - editorPan.x) / scaledGridSize) * scaledGridSize;
+                        float snappedY = std::floor((mousePos.y - editorPan.y) / scaledGridSize) * scaledGridSize;
+                        textureCenter = ImVec2(snappedX, snappedY);
+                    }
                 }
             }
+            ImGui::EndDragDropTarget();
         }
 
-        // Show texture path (read-only)
-        char texPathBuffer[256];
-        strncpy_s(texPathBuffer, tileTexturePath.c_str(), sizeof(texPathBuffer));
-        texPathBuffer[sizeof(texPathBuffer) - 1] = 0;
-        ImGui::InputText("Texture Path", texPathBuffer, sizeof(texPathBuffer), ImGuiInputTextFlags_ReadOnly);
-        // Editable parameters
-        ImGui::InputInt("Rows", &tileRows);
-        ImGui::InputInt("Cols", &tileCols);
+        // --- Show drag instruction if no texture ---
+        if (!tileTextureID)
+            ImGui::Text("Drag a texture from the Assets panel here.");
 
-        if (hasTexture && tileTextureID)
+        // --- Pan and Zoom Controls ---
+        ImVec2 windowPos = ImGui::GetWindowPos();
+        ImVec2 windowSize = ImGui::GetWindowSize();
+        ImVec2 mousePos = ImGui::GetMousePos();
+
+        // Store where to center the texture
+        if (textureCenter.x == 0 && textureCenter.y == 0)
+            textureCenter = ImVec2(windowPos.x + windowSize.x * 0.5f, windowPos.y + windowSize.y * 0.5f);
+
+        // Zoom with mouse wheel
+        if (ImGui::IsWindowHovered())
         {
-            ImGui::Text("Select a tile:");
-            ImVec2 gridOrigin = ImGui::GetCursorScreenPos();
-            ImGui::Image(tileTextureID, texSize, ImVec2(0, 1), ImVec2(1, 0)); // Fixes flipping
-
-            // Draw grid overlay using world mapping
-            ImDrawList* draw_list = ImGui::GetWindowDrawList();
-            float cellW = texSize.x / tileCols;
-            float cellH = texSize.y / tileRows;
-            for (int r = 0; r <= tileRows; ++r)
+            float wheel = ImGui::GetIO().MouseWheel;
+            if (wheel != 0.0f)
             {
-                float y = gridOrigin.y + r * cellH;
-                draw_list->AddLine(ImVec2(gridOrigin.x, y), ImVec2(gridOrigin.x + texSize.x, y), IM_COL32(255, 255, 255, 80));
-            }
-            for (int c = 0; c <= tileCols; ++c)
-            {
-                float x = gridOrigin.x + c * cellW;
-                draw_list->AddLine(ImVec2(x, gridOrigin.y), ImVec2(x, gridOrigin.y + texSize.y), IM_COL32(255, 255, 255, 80));
-            }
+                float prevZoom = editorZoom;
+                editorZoom = std::clamp(editorZoom * (wheel > 0 ? 1.1f : 0.9f), 0.2f, 10.0f);
 
-            // Tile selection logic
-            ImVec2 mouse = ImGui::GetMousePos();
-            if (ImGui::IsItemHovered() && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
-            {
-                int col = (int)((mouse.x - gridOrigin.x) / cellW);
-                int row = (int)((mouse.y - gridOrigin.y) / cellH);
-                if (col >= 0 && col < tileCols && row >= 0 && row < tileRows)
-                    selectedTile = row * tileCols + col;
-            }
-
-            // Highlight selected tile
-            if (selectedTile >= 0)
-            {
-                int selRow = selectedTile / tileCols;
-                int selCol = selectedTile % tileCols;
-                ImVec2 min = ImVec2(gridOrigin.x + selCol * cellW, gridOrigin.y + selRow * cellH);
-                ImVec2 max = ImVec2(min.x + cellW, min.y + cellH);
-                draw_list->AddRect(min, max, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
-
-                // Preview selected tile (simple rectangle for now)
-                ImGui::Text("Selected Tile Preview:");
-                ImVec2 previewMin = ImGui::GetCursorScreenPos();
-                ImVec2 previewMax = ImVec2(previewMin.x + cellW, previewMin.y + cellH);
-                draw_list->AddRectFilled(previewMin, previewMax, IM_COL32(255, 255, 255, 255));
-                draw_list->AddRect(previewMin, previewMax, IM_COL32(255, 0, 0, 255), 0.0f, 0, 2.0f);
-                ImGui::Dummy(ImVec2(cellW, cellH));
-            }
-
-            // Save selected tile as PNG
-            if (selectedTile >= 0 && ImGui::Button("Save Selected Tile"))
-            {
-                // Future extracting and saving coming soon...
+                ImVec2 mouseRel;
+                mouseRel.x = mousePos.x - windowPos.x - editorPan.x;
+                mouseRel.y = mousePos.y - windowPos.y - editorPan.y;
+                float zoomFactor = (editorZoom / prevZoom - 1.0f);
+                editorPan.x -= mouseRel.x * zoomFactor;
+                editorPan.y -= mouseRel.y * zoomFactor;
             }
         }
-        else
+
+        // Pan with right mouse drag
+        if (ImGui::IsWindowHovered() && ImGui::IsMouseDragging(ImGuiMouseButton_Right))
         {
-            ImGui::Text("Texture not loaded.");
+            ImVec2 dragDelta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
+            editorPan.x += dragDelta.x;
+            editorPan.y += dragDelta.y;
+            ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
+        }
+
+        ImDrawList* draw_list = ImGui::GetWindowDrawList();
+        // --- Infinite Grid Drawing ---
+        ImVec2 gridOrigin = tileTextureID ? textureCenter : ImVec2(windowPos.x + windowSize.x * 0.5f, windowPos.y + windowSize.y * 0.5f);
+        gridOrigin.x += editorPan.x;
+        gridOrigin.y += editorPan.y;
+
+        float scaledGridSize = gridSize * editorZoom;
+        float left = windowPos.x;
+        float right = windowPos.x + windowSize.x;
+        float top = windowPos.y;
+        float bottom = windowPos.y + windowSize.y;
+        float firstX = gridOrigin.x + std::floor((left - gridOrigin.x) / scaledGridSize) * scaledGridSize;
+        float firstY = gridOrigin.y + std::floor((top - gridOrigin.y) / scaledGridSize) * scaledGridSize;
+
+        // Draw vertical grid lines
+        for (float x = firstX; x <= right; x += scaledGridSize)
+            draw_list->AddLine(ImVec2(x, top), ImVec2(x, bottom), gridColor);
+        // Draw horizontal grid lines
+        for (float y = firstY; y <= bottom; y += scaledGridSize)
+            draw_list->AddLine(ImVec2(left, y), ImVec2(right, y), gridColor);
+
+        // --- Draw Texture at Actual Pixel Size ---
+        if (tileTextureID)
+        {
+            float texWidth = tileTextureWidth * editorZoom;
+            float texHeight = tileTextureHeight * editorZoom;
+            ImVec2 texPos = ImVec2(textureCenter.x + editorPan.x, textureCenter.y + editorPan.y);
+
+            // Flip the UVs to correct vertical orientation
+            draw_list->AddImage(tileTextureID, texPos, ImVec2(texPos.x + texWidth, texPos.y + texHeight), ImVec2(0, 1), ImVec2(1, 0));
+
+            // Overlay grid on texture
+            int cols = static_cast<int>(tileTextureWidth / gridSize);
+            int rows = static_cast<int>(tileTextureHeight / gridSize);
+            for (int x = 0; x <= cols; ++x)
+            {
+                float gx = texPos.x + x * scaledGridSize;
+                draw_list->AddLine(ImVec2(gx, texPos.y), ImVec2(gx, texPos.y + texHeight), IM_COL32(255, 255, 0, 180));
+            }
+            for (int y = 0; y <= rows; ++y)
+            {
+                float gy = texPos.y + y * scaledGridSize;
+                draw_list->AddLine(ImVec2(texPos.x, gy), ImVec2(texPos.x + texWidth, gy), IM_COL32(255, 255, 0, 180));
+            }
+        }
+
+        // --- Tile Selection ---
+        if (tileTextureID)
+        {
+            float cellWidth = gridSize * editorZoom;
+            float cellHeight = gridSize * editorZoom;
+            draw_list = ImGui::GetWindowDrawList();
+
+            for (int row = 0; row < tileRows; ++row)
+            {
+                for (int col = 0; col < tileCols; ++col)
+                {
+                    ImVec2 cellMin = ImVec2(textureCenter.x + editorPan.x + col * cellWidth,
+                        textureCenter.y + editorPan.y + row * cellHeight);
+                    ImVec2 cellMax = ImVec2(cellMin.x + cellWidth, cellMin.y + cellHeight);
+
+                    // Highlight selected tile
+                    int tileIdx = row * tileCols + col;
+                    if (selectedTile == tileIdx)
+                        draw_list->AddRect(cellMin, cellMax, IM_COL32(0, 255, 0, 255), 0.0f, 0, 2.0f);
+
+                    // Selection logic
+                    if (ImGui::IsMouseHoveringRect(cellMin, cellMax) && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                        selectedTile = tileIdx;
+                }
+            }
         }
 
         ImGui::End();

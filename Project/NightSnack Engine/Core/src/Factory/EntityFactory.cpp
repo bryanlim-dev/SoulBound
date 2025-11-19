@@ -6,7 +6,7 @@
  * Description:
  * Defines member functions of EntityFactory class.
  *
- * Copyright � 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -14,84 +14,96 @@
 
 namespace NightSnack {
 
-	// unused for now...
-	void EntityFactory::Update(int steps) {
-		(void)steps;
-		
-		static bool printed = false;
-		if (!printed) {
-			PrintPrefabNames();
-			printed = true;
-		}
-	}
+    // unused for now...
+    void EntityFactory::Update(int steps) {
+        (void)steps;
 
-	void EntityFactory::PostUpdate() {
-		
+        static bool printed = false;
+        if (!printed) {
+            PrintPrefabNames();
+            printed = true;
+        }
+    }
+
+    void EntityFactory::PostUpdate() {
+
         // Destroy all removed entities
-		for (Entity e : m_toBeDestroyed) {
-			m_coord.DestroyEntity(e);
-		}
+        for (Entity e : m_toBeDestroyed) {
+            m_coord.DestroyEntity(e);
+        }
         m_toBeDestroyed.clear();
 
-	}
+        for (size_t key : m_toBeUnloaded) {
+            m_coord.GetSystem<ResourceManager>()->UnloadJson(key);
+        }
+        m_toBeUnloaded.clear();
 
-	Entity EntityFactory::Create(std::string const& name) {
+    }
+
+    Entity EntityFactory::Create(std::string const& name) {
 
         size_t key = m_prefabKeys[name];
 
-		Entity e = m_prefabManager.CreateFromPrefab(GetArchetypes(key));
-		if (e == INVALID_ENTITY) { return e; }
+        Entity e = m_prefabManager.CreateFromPrefab(GetArchetypes(key));
+        if (e == INVALID_ENTITY) { return e; }
 
-		Transform trans{};
+        Transform trans{};
 
-		trans.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
-		trans.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
-		trans.pos.z = 1.f;
-		// default layer...
-		trans.layer = LayerType::GAMELAYER;
+        trans.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
+        trans.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
+        trans.pos.z = 1.f;
+        // default layer...
+        trans.layer = LayerType::GAMELAYER;
 
-		trans.scale = Vec2{ 50.f, 50.f };	// default scale...
-		
-		m_coord.ModifyComponent<Transform>(e) = trans;
-		entityToPrefab[e] = name;
+        trans.scale = Vec2{ 50.f, 50.f };	// default scale...
+
+        m_coord.ModifyComponent<Transform>(e) = trans;
+        entityToPrefab[e] = name;
+
+        m_coord.BufferEntitySignature(e);
 
 		return e;
 	}
 
-	// For creating entities at specific locations, scaling etc...
-	Entity EntityFactory::Create(std::string const& name, Transform trans) {
+    // For creating entities at specific locations, scaling etc...
+    Entity EntityFactory::Create(std::string const& name, Transform trans) {
 
         size_t key = m_prefabKeys[name];
 
-		Entity e = m_prefabManager.CreateFromPrefab(GetArchetypes(key));
-		if (e == INVALID_ENTITY) { return e; }
+        Entity e = m_prefabManager.CreateFromPrefab(GetArchetypes(key));
+        if (e == INVALID_ENTITY) { return e; }
 
-		m_coord.ModifyComponent<Transform>(e) = trans;
-		entityToPrefab[e] = name;
+        m_coord.ModifyComponent<Transform>(e) = trans;
+        entityToPrefab[e] = name;
+
+        m_coord.BufferEntitySignature(e);
 
 		return e;
 	}
 
-	// Clone an entity prefab at specific locations, scaling etc...
-	Entity EntityFactory::Clone(Entity e, Transform trans) {
+    // Clone an entity prefab at specific locations, scaling etc...
+    Entity EntityFactory::Clone(Entity e, Transform trans) {
 
-		std::string name = entityToPrefab[e];
+        std::string name = entityToPrefab[e];
         size_t key = m_prefabKeys[name];
 
-		Entity clone = m_prefabManager.CreateFromPrefab(GetArchetypes(key));
-		if (clone == INVALID_ENTITY) { return clone; }
+        Entity clone = m_prefabManager.CreateFromPrefab(GetArchetypes(key));
+        if (clone == INVALID_ENTITY) { return clone; }
 
-		m_coord.ModifyComponent<Transform>(e) = trans;
-		entityToPrefab[e] = name;
+        m_coord.ModifyComponent<Transform>(e) = trans;
+        entityToPrefab[e] = name;
+
+        m_coord.BufferEntitySignature(clone);
+
 
 		return clone;
 	}
 
-	void EntityFactory::RemoveEntity(Entity e) {
-		m_toBeDestroyed.insert(e);
-	}
+    void EntityFactory::RemoveEntity(Entity e) {
+        m_toBeDestroyed.insert(e);
+    }
 
-	void EntityFactory::PrintPrefabNames() const {
+    void EntityFactory::PrintPrefabNames() const {
 
         std::vector<std::string> names = GetPrefabNames();
 
@@ -100,21 +112,21 @@ namespace NightSnack {
             std::cout << s << " ";
         }
         std::cout << '\n';
-	}
+    }
 
-	std::vector<std::string> EntityFactory::GetPrefabNames() const {
+    std::vector<std::string> EntityFactory::GetPrefabNames() const {
 
         std::vector<std::string> names;
         std::unordered_map<std::string, size_t>::const_iterator it;
         for (it = m_prefabKeys.begin(); it != m_prefabKeys.end(); ++it) {
             names.emplace_back(it->first);
         }
-		return names;
-	}
+        return names;
+    }
 
-	std::unordered_map<std::string, std::string> EntityFactory::GetPrefabMaterials() const {
+    std::unordered_map<std::string, std::string> EntityFactory::GetPrefabMaterials() const {
 
-		std::unordered_map<std::string, std::string> materials;
+        std::unordered_map<std::string, std::string> materials;
         std::unordered_map<std::string, size_t>::const_iterator it;
 
         for (it = m_prefabKeys.begin(); it != m_prefabKeys.end(); ++it) {
@@ -126,22 +138,22 @@ namespace NightSnack {
                 materials.insert({ it->first, mat });
             }
         }
-		//for (auto& [name, data] : GetArchetypes().items()) {
-		//	if (data.contains("Renderable")) {
-		//		std::string mat = data["Renderable"]["materialName"];
-		//		materials.insert({ name, mat });
-		//	}
-		//}
-		return materials;
-	}
+        //for (auto& [name, data] : GetArchetypes().items()) {
+        //	if (data.contains("Renderable")) {
+        //		std::string mat = data["Renderable"]["materialName"];
+        //		materials.insert({ name, mat });
+        //	}
+        //}
+        return materials;
+    }
 
-	std::string EntityFactory::GetEntityPrefabName(Entity e) const {
-		auto it = entityToPrefab.find(e);
-		if (it != entityToPrefab.end()) {
-			return it->second;
-		}
-		return "UnknownPrefab";
-	}
+    std::string EntityFactory::GetEntityPrefabName(Entity e) const {
+        auto it = entityToPrefab.find(e);
+        if (it != entityToPrefab.end()) {
+            return it->second;
+        }
+        return "UnknownPrefab";
+    }
 
     json const& EntityFactory::GetArchetypes(size_t key) const {
         return m_coord.GetSystem<ResourceManager>()->GetJsonRaw(key);
@@ -166,6 +178,10 @@ namespace NightSnack {
     }
 
     void EntityFactory::ReloadPrefabs() {
+        // Queue old keys to be unloaded.
+        for (auto const& [name, key] : m_prefabKeys) {
+            m_toBeUnloaded.emplace_back(key);
+        }
         // Clear prefab keys.
         m_prefabKeys.clear();
         // Reread json files from "GameData/Prefabs", assign keys into m_prefabKeys.
@@ -173,6 +189,10 @@ namespace NightSnack {
         LoadJsonFolder(m_prefabKeys, path.string());
     }
     void EntityFactory::ReloadLevels() {
+        // Queue old keys to be unloaded.
+        for (auto const& [name, key] : m_levelKeys) {
+            m_toBeUnloaded.emplace_back(key);
+        }
         // Clear level keys.
         m_levelKeys.clear();
         // Reread json files from "GameData/Levels", assign keys into m_levelKeys.
@@ -377,7 +397,8 @@ namespace NightSnack {
                 {"fontType", f.fontType},
                 {"text", f.text},
                 {"fontSize", f.fontSize},
-                { "textColor", {{"r", f.textColor.x}, {"g", f.textColor.y}, {"b", f.textColor.z}} }
+                { "textColor", {{"r", f.textColor.x}, {"g", f.textColor.y}, {"b", f.textColor.z}} },
+                {"offsetPosition", {{"x", f.offsetPosition.x}, {"y", f.offsetPosition.y}, {"z", f.offsetPosition.z}} }
             };
         }
         // BUTTON ---------------------------------------------------------
