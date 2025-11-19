@@ -171,7 +171,10 @@ namespace ManagedScripts
             get => Engine.GetIsWireframe(EntityId);
             set => Engine.SetIsWireframe(EntityId, value);
         }
-        #endregion  
+        #endregion
+
+        #region Renderable
+        #endregion
 
         protected float DeltaTime => Engine.DeltaTime;
         //protected float Time => Engine.Time;

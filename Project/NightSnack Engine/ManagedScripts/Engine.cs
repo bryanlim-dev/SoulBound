@@ -215,6 +215,72 @@ namespace ManagedScripts
         //wasModified is not here, it is just a flag
 
         #endregion
+
+        // ----------------------------
+        // Animator Internal for Scripts
+        // ----------------------------
+        #region Animator
+        //---- currentAnimationClip
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetAniamtionCurrentClip_Internal(uint entityId);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimationCurrentClip_Internal(uint entityId, string clipName);
+
+        //---- spriteSheetName
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetAnimationSpriteSheet_Internal(uint entityId);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimationSpriteSheet_Internal(uint entityId, string sheet);
+
+        //---- currentFrameIndex
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimationCurrentFrameIndex_Internal(uint entityId, out int frame);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimationCurrentFrameIndex_Internal(uint entityId, ref int frame);
+
+        //---- currentTime
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimationCurrentTime_Internal(uint entityId, out float time);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimationCurrentTime_Internal(uint entityId, ref float time);
+        
+        //---- playbackSpeed
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimationCurrentPlaybackSpeed_Internal(uint entityId, out float speed);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimationCurrentPlaybackSpeed_Internal(uint entityId, ref float speed);
+
+        //---- isPlaying
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimationIsPlaying_Internal(uint entityId, out bool playing);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimationIsPlaying_Internal(uint entityId, ref bool playing);
+
+        //---- isLooping
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimationIsLooping_Internal(uint entityId, out bool looping);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimationIsLooping_Internal(uint entityId, ref bool looping);
+
+        //---- lastFacingRight
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimationLastFacingRight_Internal(uint entityId, out bool facingRight);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimationLastFacingRight_Internal(uint entityId, ref bool facingRight);
+
+        //---- uvTopLeft
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimationUVTopLeft_Internal(uint entityId, out Vector2 uv);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimationUVTopLeft_Internal(uint entityId, ref Vector2 uv);
+
+        //---- uvBottomRight
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimationUVBottomRight_Internal(uint entityId, out Vector2 uv);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimationUVBottomRight_Internal(uint entityId, ref Vector2 uv);
+        #endregion
+
         // ----------------------------
         // Key/Buttons Internal for Scripts
         // ----------------------------
@@ -575,6 +641,117 @@ namespace ManagedScripts
         public static void SetIsWireframe(uint entityId, bool wire)
         {
             SetIsWireframe_Internal(entityId, ref wire);
+        }
+        #endregion
+
+        // ----------------------------
+        // Animator API for Scripts
+        // ----------------------------
+        #region Animator
+        public static string GetAnimnationCurrentClip(uint entityId)
+        {
+            return GetAniamtionCurrentClip_Internal(entityId);
+        }
+        public static void SetAnimnationCurrentClip(uint entityId, string clipName)
+        {
+            SetAnimationCurrentClip_Internal(entityId, clipName);
+        }
+
+
+        public static string GetAnimnationSpriteSheet(uint entityId)
+        {
+            return GetAnimationSpriteSheet_Internal(entityId);
+        }
+        public static void SetAnimnationSpriteSheet(uint entityId, string clipName)
+        {
+            SetAnimationSpriteSheet_Internal(entityId, clipName);
+        }
+
+
+        public static int GetAnimnationCurrentFrameIndex(uint entityId)
+        {
+            GetAnimationCurrentFrameIndex_Internal(entityId, out int frame);
+            return frame;
+        }
+        public static void SetAnimnationCurrentFrameIndex(uint entityId, int frame)
+        {
+            SetAnimationCurrentFrameIndex_Internal(entityId, ref frame);
+        }
+
+
+        public static float GetAnimnationCurrentTime(uint entityId)
+        {
+            GetAnimationCurrentTime_Internal(entityId, out float time);
+            return time;
+        }
+        public static void SetAnimnationCurrentTime(uint entityId, float time)
+        {
+            SetAnimationCurrentTime_Internal(entityId, ref time);
+        }
+
+
+        public static float GetAnimnationCurrentPlaybackSpeed(uint entityId)
+        {
+            GetAnimationCurrentPlaybackSpeed_Internal(entityId, out float speed);
+            return speed;
+        }
+        public static void SetAnimnationCurrentPlaybackSpeed(uint entityId, float speed)
+        {
+            SetAnimationCurrentPlaybackSpeed_Internal(entityId, ref speed);
+        }
+
+        public static bool GetAnimnationIsPlaying(uint entityId)
+        {
+            GetAnimationIsPlaying_Internal(entityId, out bool playing);
+            return playing;
+        }
+        public static void SetAnimnationIsPlaying(uint entityId, bool playing)
+        {
+            SetAnimationIsPlaying_Internal(entityId, ref playing);
+        }
+
+
+        public static bool GetAnimnationIsLooping(uint entityId)
+        {
+            GetAnimationIsLooping_Internal(entityId, out bool looping);
+            return looping;
+        }
+        public static void SetAnimnationIsLooping(uint entityId, bool looping)
+        {
+            SetAnimationIsLooping_Internal(entityId, ref looping);
+        }
+
+
+        public static bool GetAnimnationLastFacingRight(uint entityId)
+        {
+            GetAnimationLastFacingRight_Internal(entityId, out bool facingRight);
+            return facingRight;
+        }
+        public static void SetAnimnationLastFacingRight(uint entityId, bool facingRight)
+        {
+            SetAnimationLastFacingRight_Internal(entityId, ref facingRight);
+        }
+
+        public static Vector2 GetAnimationUVTopLeft(uint entityId)
+        {
+            GetAnimationUVTopLeft_Internal(entityId, out Vector2 uv);
+            return uv;
+        }
+        public static void SetAnimationUVTopLeft(uint entityId, Vector2 uv)
+        {
+            SetAnimationUVTopLeft_Internal(entityId, ref uv);
+        }
+
+
+
+        public static Vector2 GetAnimationUVBottomRight(uint entityId)
+        {
+            GetAnimationUVBottomRight_Internal(entityId, out Vector2 uv);
+            return uv;
+        }
+        public static void SetAnimationUVTBottomRight(uint entityId, Vector2 uv)
+        {
+            SetAnimationUVBottomRight_Internal(entityId, ref uv);
         }
         #endregion
 
