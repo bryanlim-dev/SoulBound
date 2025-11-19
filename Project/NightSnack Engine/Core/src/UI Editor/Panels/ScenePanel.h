@@ -1,4 +1,4 @@
-/******************************************************************************
+﻿/******************************************************************************
  * File:        ScenePanel.h
  * Project:     NightSnack
  * Author(s):	Lim Wei Jie (Primary, 95%) - Created and implemented scene panel
@@ -11,7 +11,7 @@
  * Scene panel showing the rendered viewport. Handles rendering the scene, 
  * including the editor camera. 
  *
- * Copyright � 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -28,6 +28,8 @@ namespace NightSnack
 		float zoom{ 1.0f };
     };
 
+    enum class SceneTool { PanZoom, Select, MultiSelect, Paint };
+    
     class ScenePanel {
     public:
 
@@ -105,36 +107,82 @@ namespace NightSnack
             // Render scene to framebuffer using editor camera
             RenderSceneToFramebuffer();
 
-            // Center the image in the panel
-            ImVec2 cursorPos = ImGui::GetCursorPos();
-            ImVec2 offset = ImVec2((panelSize.x - imageSize.x) * 0.5f, (panelSize.y - imageSize.y) * 0.5f);
-            ImGui::SetCursorPos(ImVec2(cursorPos.x + offset.x, cursorPos.y + offset.y));
-
 			// Display the framebuffer texture in the panel
             if (m_colorTex && imageSize.x > 0 && imageSize.y > 0)
             {
+                ImGui::BeginChild("SceneToolbar", ImVec2(0, 40), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
+                ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 0));
+                ImGui::Text("Tool:");
+                ImGui::SameLine();
+                if (ImGui::Selectable("View", currentTool == SceneTool::PanZoom, 0, ImVec2(60, 30))) { currentTool = SceneTool::PanZoom; }
+                ImGui::SameLine();
+                if (ImGui::Selectable("Select", currentTool == SceneTool::Select, 0, ImVec2(60, 30))) { currentTool = SceneTool::Select; }
+                ImGui::SameLine();
+                if (ImGui::Selectable("MultiSelect", currentTool == SceneTool::MultiSelect, 0, ImVec2(90, 30))) { currentTool = SceneTool::MultiSelect; }
+                ImGui::SameLine();
+                if (ImGui::Selectable("Paint", currentTool == SceneTool::Paint, 0, ImVec2(60, 30))) { currentTool = SceneTool::Paint; }
+                ImGui::PopStyleVar();
+                ImGui::EndChild();
+
+                // Center the image in the panel
+                panelSize = ImGui::GetContentRegionAvail();
+                ImVec2 cursorPos = ImGui::GetCursorPos();
+                ImVec2 offset = ImVec2((panelSize.x - imageSize.x) * 0.5f, (panelSize.y - imageSize.y) * 0.5f);
+                ImGui::SetCursorPos(ImVec2(cursorPos.x + offset.x, cursorPos.y + offset.y));
+                // Draw the scene texture
                 ImGui::Image((ImTextureID)m_colorTex, imageSize, ImVec2(0, 1), ImVec2(1, 0));
+
+                ImVec2 imageTopLeft = ImGui::GetItemRectMin();
+                auto& cam = m_coord.GetComponent<Camera>(m_editorCameraEntity);
+                auto& camT = m_coord.GetComponent<Transform>(m_editorCameraEntity);
+
+                float halfWidth = (cam.width * 0.5f) / cam.zoom;
+                float halfHeight = (cam.height * 0.5f) / cam.zoom;
+
+                float worldLeft = camT.pos.x - halfWidth;
+                float worldRight = camT.pos.x + halfWidth;
+                float worldBottom = camT.pos.y - halfHeight;
+                float worldTop = camT.pos.y + halfHeight;
+
+				// Initialize game boundary box
+                if (!m_boundaryInitialized)
+                {
+                    m_worldLeft = worldLeft;
+                    m_worldRight = worldRight;
+                    m_worldBottom = worldBottom;
+                    m_worldTop = worldTop;
+                    m_boundaryInitialized = true;
+                }
+
+                ImVec2 boundaryTopLeft = ScenePanel::WorldToScreen(m_worldLeft, m_worldTop, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+                ImVec2 boundaryTopRight = ScenePanel::WorldToScreen(m_worldRight, m_worldTop, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+                ImVec2 boundaryBottomRight = ScenePanel::WorldToScreen(m_worldRight, m_worldBottom, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+                ImVec2 boundaryBottomLeft = ScenePanel::WorldToScreen(m_worldLeft, m_worldBottom, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+
+                ImDrawList* drawList = ImGui::GetWindowDrawList();
+                drawList->AddLine(boundaryTopLeft, boundaryTopRight, IM_COL32(255, 255, 255, 255), 2.0f);
+                drawList->AddLine(boundaryTopRight, boundaryBottomRight, IM_COL32(255, 255, 255, 255), 2.0f);
+                drawList->AddLine(boundaryBottomRight, boundaryBottomLeft, IM_COL32(255, 255, 255, 255), 2.0f);
+                drawList->AddLine(boundaryBottomLeft, boundaryTopLeft, IM_COL32(255, 255, 255, 255), 2.0f);
 
                 if (m_tilemap.tileOverlayEnabled)
                 {
-                    ImVec2 imageTopLeft = ImGui::GetItemRectMin();
                     DrawTilemap(imageTopLeft, imageSize);
                 }
 
-                ImVec2 imageTopLeft = ImGui::GetItemRectMin();
                 CalculateMouseWorldPosition(imageTopLeft, imageSize, mouseWorldX, mouseWorldY);
 
                 if (ImGui::IsItemHovered() && ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
                 {
                     ImGuiIO& io = ImGui::GetIO();
-                    auto& cam = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
+                    auto& camMod = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
 
                     // Camera Zoom
                     float scroll = io.MouseWheel;
                     if (scroll != 0.0f)
                     {
-                        cam.zoom = std::clamp(cam.zoom * (scroll > 0 ? 1.1f : 0.9f), 0.05f, 10.0f);
-                        m_editorCameraData.zoom = cam.zoom;
+                        camMod.zoom = std::clamp(camMod.zoom * (scroll > 0 ? 1.1f : 0.9f), 0.05f, 10.0f);
+                        m_editorCameraData.zoom = camMod.zoom;
                     }
 
                     // Camera Pan
@@ -143,14 +191,70 @@ namespace NightSnack
                         ImVec2 dragDelta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
                         auto& camTransform = m_coord.ModifyComponent<Transform>(m_editorCameraEntity);
                         constexpr float panSpeed = 1.65f;
-                        camTransform.pos.x -= dragDelta.x * (panSpeed / cam.zoom);
-                        camTransform.pos.y += dragDelta.y * (panSpeed / cam.zoom);
+                        camTransform.pos.x -= dragDelta.x * (panSpeed / camMod.zoom);
+                        camTransform.pos.y += dragDelta.y * (panSpeed / camMod.zoom);
                         m_editorCameraData.pos = camTransform.pos;
                         ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
                     }
 
+					// Multi-Selection rectangle
+                    /*if (currentTool == SceneTool::MultiSelect)
+                    {
+                        ImVec2 imageTopLeft = ImGui::GetItemRectMin();
+                        ImVec2 imageSize = ImGui::GetItemRectSize();
+
+                        // Start selection
+                        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                        {
+                            m_isMultiSelecting = true;
+                            m_selectStart = ImGui::GetMousePos();
+                            m_selectEnd = m_selectStart;
+                        }
+                        // Update selection rectangle
+                        if (m_isMultiSelecting && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+                        {
+                            m_selectEnd = ImGui::GetMousePos();
+                            ImDrawList* drawList = ImGui::GetWindowDrawList();
+                            drawList->AddRect(m_selectStart, m_selectEnd, IM_COL32(0, 255, 0, 128), 0.0f, 0, 2.0f);
+                        }
+                        // Finish selection
+                        if (m_isMultiSelecting && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+                        {
+                            m_multiSelectedEntities.clear();
+                            ImVec2 min = ImVec2(std::min(m_selectStart.x, m_selectEnd.x), std::min(m_selectStart.y, m_selectEnd.y));
+                            ImVec2 max = ImVec2(std::max(m_selectStart.x, m_selectEnd.x), std::max(m_selectStart.y, m_selectEnd.y));
+                            for (Entity e : m_coord.GetLivingEntities())
+                            {
+                                if (!m_coord.HasComponent<Transform>(e)) { continue; }
+                                auto& t = m_coord.GetComponent<Transform>(e);
+                                ImVec2 screenPos = WorldToScreen(t.pos.x, t.pos.y, imageTopLeft, imageSize);
+                                if (screenPos.x >= min.x && screenPos.x <= max.x && screenPos.y >= min.y && screenPos.y <= max.y)
+                                {
+                                    m_multiSelectedEntities.insert(e);
+                                }
+                            }
+                            m_isMultiSelecting = false;
+                            currentTool = SceneTool::Select;
+                        }
+                    }
+
+					// Delete selected entities
+                    if (!m_multiSelectedEntities.empty() && ImGui::IsKeyPressed(ImGuiKey_Delete))
+                    {
+                        for (Entity e : m_multiSelectedEntities)
+                        {
+                            m_coord.DestroyEntity(e);
+                        }
+                        m_multiSelectedEntities.clear();
+                    }*/
+                    if (m_multiSelectedEntities.empty() && m_selectedEntity && *m_selectedEntity != INVALID_ENTITY && ImGui::IsKeyPressed(ImGuiKey_Delete))
+                    {
+                        m_coord.DestroyEntity(*m_selectedEntity);
+                        *m_selectedEntity = INVALID_ENTITY;
+                    }
+
                     // Entity Picking
-                    if (!m_isDragging)
+                    if (!m_isDragging && currentTool == SceneTool::Select)
                     {
                         HandleEntityPicking(mouseWorldX, mouseWorldY);
 
@@ -186,6 +290,44 @@ namespace NightSnack
                                 rb.useGravity = m_gravityBackup[m_hoveredEntity];
                                 m_gravityBackup.erase(m_hoveredEntity);
                             }
+                        }
+                    }
+
+					// Tile Painting
+                    if (currentTool == SceneTool::Paint && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+                    {
+						// Calculate grid position
+                        float grid = m_tilemap.gridSize;
+                        int gridX = static_cast<int>(std::floor(mouseWorldX / grid));
+                        int gridY = static_cast<int>(std::floor(mouseWorldY / grid));
+                        
+                        if (ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+                        {
+                            m_isPainting = true;
+                            m_paintPath.clear();
+                            auto tilePos = std::make_pair(gridX, gridY);
+
+							// Determine whether to create or delete tile based on existing tile at grid
+                            PaintAction action = (m_paintedTiles.find(tilePos) == m_paintedTiles.end()) ? PaintAction::Create : PaintAction::Delete;
+                            m_paintAction = action;
+                            m_paintPath.push_back(tilePos);
+                            PaintTile(gridX, gridY, action);
+                        }
+                        else if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && m_isPainting)
+                        {
+							// Continue painting only if new tile position
+                            auto tilePos = std::make_pair(gridX, gridY);
+                            if (std::find(m_paintPath.begin(), m_paintPath.end(), tilePos) == m_paintPath.end())
+                            {
+                                m_paintPath.push_back(tilePos);
+                                PaintTile(gridX, gridY, m_paintAction);
+                            }
+                        }
+                        if (ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+                        {
+							// Stop painting
+                            m_isPainting = false;
+                            m_paintPath.clear();
                         }
                     }
                 }
@@ -257,20 +399,44 @@ namespace NightSnack
         GLuint m_sceneTexture = 0;
         Coordinator& m_coord;
 
+		// Selected entity in the scene
         std::shared_ptr<Entity> m_selectedEntity;
+        std::set<Entity> m_multiSelectedEntities;
+        bool m_isMultiSelecting = false;
+        ImVec2 m_selectStart, m_selectEnd;
+
         Entity m_backgroundEntity;      // Current background entity ID
+
+		// Camera entity and saved camera data
 		Entity m_editorCameraEntity = INVALID_ENTITY;
         DefaultEditorCamera m_editorCameraData;
 
+		// Dragging and picking state
         Entity m_hoveredEntity = INVALID_ENTITY;
         Vec3   m_dragOffset = { 0, 0, 0 };
         bool   m_isDragging = false;
         std::unordered_map<Entity, bool> m_gravityBackup;
 
+		// Framebuffer objects and attachments
         GLuint m_fbo = 0, m_colorTex = 0, m_rbo = 0;
         int m_width = 1600, m_height = 900;
+        float m_worldLeft = 0.0f;
+        float m_worldRight = 0.0f;
+        float m_worldBottom = 0.0f;
+        float m_worldTop = 0.0f;
+        bool m_boundaryInitialized = false;
 
-		Tilemap& m_tilemap;
+		// Current scene tool
+        SceneTool currentTool = SceneTool::PanZoom;
+
+		// Tilemap for object snapping and tile painting
+        Tilemap& m_tilemap;
+        std::map<std::pair<int, int>, std::pair<int, Entity>> m_paintedTiles;
+
+        bool m_isPainting = false;
+        std::vector<std::pair<int, int>> m_paintPath;
+        enum class PaintAction { None, Create, Delete };
+        PaintAction m_paintAction = PaintAction::None;
 
         /************************************************************************/
         /*!
@@ -365,6 +531,40 @@ namespace NightSnack
         /************************************************************************/
         /*!
         \brief
+            Calculates the world position of the mouse based on the image's
+            position and size.
+
+        \param[in] wx
+			- World X coordinate.
+
+		\param[in] wy
+		    - World Y coordinate.
+
+        \param[in] imageTopLeft
+			- Top-left corner of the image in world space.
+
+        \param[in] imageSize
+            - Size of the image in world space.
+
+        \param[in] worldLeft
+			- Left boundary of the world space.
+
+        \param[in] worldRight
+			- Right boundary of the world space.
+
+        \param[in] worldBottom
+			- Bottom boundary of the world space.
+
+        \param[in] worldTop
+			- Top boundary of the world space.
+        */
+        /************************************************************************/
+        static ImVec2 WorldToScreen(float wx, float wy, const ImVec2& imageTopLeft, const ImVec2& imageSize,
+            float worldLeft, float worldRight, float worldBottom, float worldTop);
+
+        /************************************************************************/
+        /*!
+        \brief
             Draws the outline of the selected entity.
         */
         /************************************************************************/
@@ -433,7 +633,7 @@ namespace NightSnack
 		/************************************************************************/
 		/*!
         \brief
-        Draws a tilemap overlay on the scene.
+            Draws a tilemap overlay on the scene.
         
         \param[in] imageTopLeft
             - Top-left corner of the image in world space.
@@ -443,6 +643,20 @@ namespace NightSnack
         */
         /************************************************************************/
         void DrawTilemap(const ImVec2& imageTopLeft, const ImVec2& imageSize);
+
+        /************************************************************************/
+        /*!
+        \brief
+		    Paints a tile at the specified grid coordinates.
+
+        \param[in] mouseX
+		    - Mouse X coordinate in world space.
+
+		\param[in] mouseY
+		    - Mouse Y coordinate in world space.
+        */
+        /************************************************************************/
+		void PaintTile(int gridX, int gridY, PaintAction action);
 
     };
 
@@ -609,6 +823,15 @@ namespace NightSnack
 
         mouseWorldX = camInfoTransform.pos.x + ndcX * halfWidth;
         mouseWorldY = camInfoTransform.pos.y + ndcY * halfHeight;
+    }
+
+	// Convert world coordinates to screen coordinates.
+    inline ImVec2 ScenePanel::WorldToScreen(float wx, float wy, const ImVec2& imageTopLeft, const ImVec2& imageSize,
+        float worldLeft, float worldRight, float worldBottom, float worldTop)
+    {
+        float u = (wx - worldLeft) / (worldRight - worldLeft);
+        float v = 1.0f - (wy - worldBottom) / (worldTop - worldBottom);
+        return ImVec2(imageTopLeft.x + u * imageSize.x, imageTopLeft.y + v * imageSize.y);
     }
 
 	// Draw the outline of the selected entity.
@@ -821,6 +1044,95 @@ namespace NightSnack
         float worldTop = camTransform.pos.y + halfHeight;
 
         m_tilemap.DrawTilemapOverlay(imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+    }
+
+    // Create/Delete a tile at the specified grid coordinates
+    inline void ScenePanel::PaintTile(int gridX, int gridY, PaintAction action)
+    {
+        auto tilePos = std::make_pair(gridX, gridY);
+        int currentTile = m_tilemap.selectedTile;
+        auto factory = m_coord.GetSystem<EntityFactory>();
+        if (!factory) { return; }
+
+        auto it = m_paintedTiles.find(tilePos);
+
+		// Deletes the tile at the specified position if action is Delete
+        if (action == PaintAction::Delete)
+        {
+            if (it != m_paintedTiles.end())
+            {
+                Entity toDelete = it->second.second;
+                if (toDelete != INVALID_ENTITY) 
+                {
+                    m_coord.DestroyEntity(toDelete);
+                }
+                m_paintedTiles.erase(it);
+            }
+            return;
+        }
+
+		// Creates or replaces the tile at the specified position if action is Create
+        if (it != m_paintedTiles.end()) {
+            // If the same tile is being painted, do nothing
+            if (it->second.first == currentTile) { return; }
+
+            // Replace tile if different
+            Entity toDelete = it->second.second;
+            if (toDelete != INVALID_ENTITY)
+            {
+                m_coord.DestroyEntity(toDelete);
+            }
+            m_paintedTiles.erase(it);
+        }
+
+		// Snap position to grid
+        float grid = m_tilemap.gridSize;
+        Vec3 pos{ gridX * grid + grid * 0.5f, gridY * grid + grid * 0.5f, 0.0f };
+        Vec2 scale{ grid, grid };
+
+		// Create tile entity
+        Entity tileEntity = m_coord.CreateEntity();
+
+		// Add components to tile entity
+        Transform t;
+        t.pos = pos;
+        t.scale = scale;
+        t.rot = 0.0f;
+        t.layer = LayerType::GAMELAYER;
+        m_coord.AddComponent(tileEntity, t);
+
+        Renderable r;
+        r.meshName = "square";
+        r.materialName = "tile_mat_" + std::to_string(tileEntity);
+        r.isWireframe = false;
+        r.wasModified = true;
+        m_coord.AddComponent(tileEntity, r);
+
+		RigidBody rb;
+        rb.invMass = 1.f;
+        rb.useGravity = false;
+		m_coord.AddComponent(tileEntity, rb);
+
+		Collider c;
+        c.shape = ShapeType::AABB;
+		c.type = ColliderType::Ground;
+		c.width = grid;
+		c.height = grid;
+		m_coord.AddComponent(tileEntity, c);
+
+		// Update material texture of tile
+        auto graphics = m_coord.GetSystem<GraphicsSystem>();
+        if (graphics)
+        {
+            graphics->UpdateTextureOfMaterial(m_tilemap.tileTexturePath, tileEntity);
+        }
+
+		// Save tile as prefab if not already existing
+        std::string prefabName = "Tile_" + std::to_string(currentTile);
+        factory->SaveAsPrefab(tileEntity, prefabName, true);
+
+		// Record painted tile
+        m_paintedTiles[tilePos] = std::make_pair(currentTile, tileEntity);
     }
 
 } // NightSnack
