@@ -332,7 +332,13 @@ namespace NightSnack
                     }
                     else if (item.type == AssetType::Prefab)
                     {
-                        m_prefabsPanel.SelectPrefab(item.name);
+                        std::string prefabName = item.name;
+                        if (prefabName.ends_with(".json"))
+                        {
+                            prefabName = prefabName.substr(0, prefabName.size() - 5);
+                        }
+
+                        m_prefabsPanel.SelectPrefab(prefabName);
                     }
                 }
 
@@ -468,7 +474,8 @@ namespace NightSnack
                 }
                 case AssetType::Prefab:
                 {
-                    m_prefabsPanel.DrawPrefabProperties(selectedPath.filename().string());
+                    std::string prefabName = selectedPath.stem().string();
+                    m_prefabsPanel.DrawPrefabProperties(prefabName);
                     break;
                 }
                 default:
