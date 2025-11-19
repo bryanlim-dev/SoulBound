@@ -133,6 +133,38 @@ namespace NightSnack
                 ImGui::Image((ImTextureID)m_colorTex, imageSize, ImVec2(0, 1), ImVec2(1, 0));
 
                 ImVec2 imageTopLeft = ImGui::GetItemRectMin();
+                auto& cam = m_coord.GetComponent<Camera>(m_editorCameraEntity);
+                auto& camT = m_coord.GetComponent<Transform>(m_editorCameraEntity);
+
+                float halfWidth = (cam.width * 0.5f) / cam.zoom;
+                float halfHeight = (cam.height * 0.5f) / cam.zoom;
+
+                float worldLeft = camT.pos.x - halfWidth;
+                float worldRight = camT.pos.x + halfWidth;
+                float worldBottom = camT.pos.y - halfHeight;
+                float worldTop = camT.pos.y + halfHeight;
+
+				// Initialize game boundary box
+                if (!m_boundaryInitialized)
+                {
+                    m_worldLeft = worldLeft;
+                    m_worldRight = worldRight;
+                    m_worldBottom = worldBottom;
+                    m_worldTop = worldTop;
+                    m_boundaryInitialized = true;
+                }
+
+                ImVec2 boundaryTopLeft = ScenePanel::WorldToScreen(m_worldLeft, m_worldTop, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+                ImVec2 boundaryTopRight = ScenePanel::WorldToScreen(m_worldRight, m_worldTop, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+                ImVec2 boundaryBottomRight = ScenePanel::WorldToScreen(m_worldRight, m_worldBottom, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+                ImVec2 boundaryBottomLeft = ScenePanel::WorldToScreen(m_worldLeft, m_worldBottom, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+
+                ImDrawList* drawList = ImGui::GetWindowDrawList();
+                drawList->AddLine(boundaryTopLeft, boundaryTopRight, IM_COL32(255, 255, 255, 255), 2.0f);
+                drawList->AddLine(boundaryTopRight, boundaryBottomRight, IM_COL32(255, 255, 255, 255), 2.0f);
+                drawList->AddLine(boundaryBottomRight, boundaryBottomLeft, IM_COL32(255, 255, 255, 255), 2.0f);
+                drawList->AddLine(boundaryBottomLeft, boundaryTopLeft, IM_COL32(255, 255, 255, 255), 2.0f);
+
                 if (m_tilemap.tileOverlayEnabled)
                 {
                     DrawTilemap(imageTopLeft, imageSize);
@@ -143,14 +175,14 @@ namespace NightSnack
                 if (ImGui::IsItemHovered() && ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
                 {
                     ImGuiIO& io = ImGui::GetIO();
-                    auto& cam = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
+                    auto& camMod = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
 
                     // Camera Zoom
                     float scroll = io.MouseWheel;
                     if (scroll != 0.0f)
                     {
-                        cam.zoom = std::clamp(cam.zoom * (scroll > 0 ? 1.1f : 0.9f), 0.05f, 10.0f);
-                        m_editorCameraData.zoom = cam.zoom;
+                        camMod.zoom = std::clamp(camMod.zoom * (scroll > 0 ? 1.1f : 0.9f), 0.05f, 10.0f);
+                        m_editorCameraData.zoom = camMod.zoom;
                     }
 
                     // Camera Pan
@@ -159,8 +191,8 @@ namespace NightSnack
                         ImVec2 dragDelta = ImGui::GetMouseDragDelta(ImGuiMouseButton_Right);
                         auto& camTransform = m_coord.ModifyComponent<Transform>(m_editorCameraEntity);
                         constexpr float panSpeed = 1.65f;
-                        camTransform.pos.x -= dragDelta.x * (panSpeed / cam.zoom);
-                        camTransform.pos.y += dragDelta.y * (panSpeed / cam.zoom);
+                        camTransform.pos.x -= dragDelta.x * (panSpeed / camMod.zoom);
+                        camTransform.pos.y += dragDelta.y * (panSpeed / camMod.zoom);
                         m_editorCameraData.pos = camTransform.pos;
                         ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
                     }
@@ -388,6 +420,11 @@ namespace NightSnack
 		// Framebuffer objects and attachments
         GLuint m_fbo = 0, m_colorTex = 0, m_rbo = 0;
         int m_width = 1600, m_height = 900;
+        float m_worldLeft = 0.0f;
+        float m_worldRight = 0.0f;
+        float m_worldBottom = 0.0f;
+        float m_worldTop = 0.0f;
+        bool m_boundaryInitialized = false;
 
 		// Current scene tool
         SceneTool currentTool = SceneTool::PanZoom;
@@ -1056,7 +1093,7 @@ namespace NightSnack
 		// Create tile entity
         Entity tileEntity = m_coord.CreateEntity();
 
-		// Add transform and renderable components
+		// Add components to tile entity
         Transform t;
         t.pos = pos;
         t.scale = scale;
@@ -1070,6 +1107,18 @@ namespace NightSnack
         r.isWireframe = false;
         r.wasModified = true;
         m_coord.AddComponent(tileEntity, r);
+
+		RigidBody rb;
+        rb.invMass = 1.f;
+        rb.useGravity = false;
+		m_coord.AddComponent(tileEntity, rb);
+
+		Collider c;
+        c.shape = ShapeType::AABB;
+		c.type = ColliderType::Ground;
+		c.width = grid;
+		c.height = grid;
+		m_coord.AddComponent(tileEntity, c);
 
 		// Update material texture of tile
         auto graphics = m_coord.GetSystem<GraphicsSystem>();
