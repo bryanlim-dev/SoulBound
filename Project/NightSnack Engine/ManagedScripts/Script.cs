@@ -155,6 +155,24 @@ namespace ManagedScripts
         }
         #endregion
 
+        #region Renderable
+        protected string MeshName
+        {
+            get => Engine.GetMeshName(EntityId);
+            set => Engine.SetMeshName(EntityId, value);
+        }
+        protected string MaterialName
+        {
+            get => Engine.GetMaterialName(EntityId);
+            set => Engine.SetMaterialName(EntityId, value);
+        }
+        protected bool IsWireframe
+        {
+            get => Engine.GetIsWireframe(EntityId);
+            set => Engine.SetIsWireframe(EntityId, value);
+        }
+        #endregion  
+
         protected float DeltaTime => Engine.DeltaTime;
         //protected float Time => Engine.Time;
 

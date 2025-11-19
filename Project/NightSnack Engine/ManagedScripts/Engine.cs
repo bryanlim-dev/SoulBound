@@ -190,6 +190,34 @@ namespace ManagedScripts
 
         #endregion
 
+        // ----------------------------
+        // Renderable Internal for Scripts
+        // ----------------------------
+        #region Renderable
+        //meshName
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetMeshName_Internal(uint entityId);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetMeshName_Internal(uint entityId, string mesh);
+
+        //materialName
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetMaterialName_Internal(uint entityId);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetMaterialName_Internal(uint entityId, string mat);
+
+        //isWireframe
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetIsWireframe_Internal(uint entityId, out bool wire);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetIsWireframe_Internal(uint entityId, ref bool wire);
+
+        //wasModified is not here, it is just a flag
+
+        #endregion
+        // ----------------------------
+        // Key/Buttons Internal for Scripts
+        // ----------------------------
         #region Key/Buttons
         // ----------------------
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -501,6 +529,9 @@ namespace ManagedScripts
 
         #endregion
 
+        // ----------------------------
+        // Color API for Scripts
+        // ----------------------------
         #region Color
         public static Colors GetRGBA(uint entityId)
         {
@@ -514,6 +545,42 @@ namespace ManagedScripts
 
         #endregion
 
+        // ----------------------------
+        // Renderable API for Scripts
+        // ----------------------------
+        #region Renderable
+        public static string GetMeshName(uint entityId)
+        {
+            return GetMeshName_Internal(entityId);
+        }
+        public static void SetMeshName(uint entityId, string str)
+        {
+            SetMeshName_Internal(entityId, str);
+        }
+
+        public static string GetMaterialName(uint entityId)
+        {
+            return GetMaterialName_Internal(entityId);
+        }
+        public static void SetMaterialName(uint entityId, string str)
+        {
+            SetMaterialName_Internal(entityId, str);
+        }
+
+        public static bool GetIsWireframe(uint entityId)
+        {
+            GetIsWireframe_Internal(entityId, out bool wire);
+            return wire;
+        }
+        public static void SetIsWireframe(uint entityId, bool wire)
+        {
+            SetIsWireframe_Internal(entityId, ref wire);
+        }
+        #endregion
+
+        // ----------------------------
+        // Key/Buttons API for Scripts
+        // ----------------------------
         #region Key/Buttons
         public static bool IsKeyPressed(int keyCode) => IsKeyPressed_Internal(keyCode);
         public static bool IsKeyDown(int keyCode) => IsKeyDown_Internal(keyCode);
