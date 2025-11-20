@@ -144,6 +144,15 @@ namespace NightSnack::Scripting {
         void SetIsWireframe(Entity e, bool wire);
 #pragma endregion
 
+#pragma region Font
+        std::string GetFontType(Entity e);
+        void SetFontType(Entity e, std::string name);
+
+        std::string GetFontText(Entity e);
+        void SetFontText(Entity e, std::string txt);
+
+#pragma endregion
+
 #pragma region Animator
         Animat GetAnimator(Entity e);
         void SetAnimator(Entity e, Animat rend);

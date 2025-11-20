@@ -587,6 +587,29 @@ namespace NightSnack::Scripting {
 #pragma endregion
 
     // --------------------------------------------------------------
+    // Font Inputs
+    // --------------------------------------------------------------
+#pragma region Font
+    std::string ScriptInterface::GetFontType(Entity e) {
+        return m_coord.GetComponent<Font>(e).fontType;
+    }
+    void ScriptInterface::SetFontType(Entity e, std::string name) {
+        m_coord.ModifyComponent<Font>(e).fontType = name;
+    }
+
+    std::string ScriptInterface::GetFontText(Entity e) {
+        return m_coord.GetComponent<Font>(e).text;
+    }
+    void ScriptInterface::SetFontText(Entity e, std::string txt) {
+        m_coord.ModifyComponent<Font>(e).text = txt;
+    }
+
+
+#pragma endregion
+
+
+
+    // --------------------------------------------------------------
     // Key Inputs
     // --------------------------------------------------------------
 #pragma region Key/Buttons
