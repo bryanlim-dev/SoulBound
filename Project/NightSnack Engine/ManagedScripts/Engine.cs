@@ -648,24 +648,26 @@ namespace ManagedScripts
         // Animator API for Scripts
         // ----------------------------
         #region Animator
-        public static string GetAnimatorCurrentClip(uint entityId)
-        {
-            return GetAnimatorCurrentClip_Internal(entityId);
-        }
-        public static void SetAnimatorCurrentClip(uint entityId, string clipName)
-        {
-            SetAnimatorCurrentClip_Internal(entityId, clipName);
-        }
+        //Not needed auto set in AnimationSystem
+        //public static string GetAnimatorCurrentClip(uint entityId)
+        //{
+        //    return GetAnimatorCurrentClip_Internal(entityId);
+        //}
+        //public static void SetAnimatorCurrentClip(uint entityId, string clipName)
+        //{
+        //    SetAnimatorCurrentClip_Internal(entityId, clipName);
+        //}
 
 
-        public static string GetAnimatorSpriteSheet(uint entityId)
-        {
-            return GetAnimatorSpriteSheet_Internal(entityId);
-        }
-        public static void SetAnimatorSpriteSheet(uint entityId, string clipName)
-        {
-            SetAnimatorSpriteSheet_Internal(entityId, clipName);
-        }
+        //Not needed auto set in AnimationSystem
+        //public static string GetAnimatorSpriteSheet(uint entityId)
+        //{
+        //    return GetAnimatorSpriteSheet_Internal(entityId);
+        //}
+        //public static void SetAnimatorSpriteSheet(uint entityId, string clipName)
+        //{
+        //    SetAnimatorSpriteSheet_Internal(entityId, clipName);
+        //}
 
 
         public static int GetAnimatorCurrentFrameIndex(uint entityId)
@@ -732,26 +734,28 @@ namespace ManagedScripts
             SetAnimatorLastFacingRight_Internal(entityId, ref facingRight);
         }
 
-        public static Vector2 GetAnimatorUVTopLeft(uint entityId)
-        {
-            GetAnimatorUVTopLeft_Internal(entityId, out Vector2 uv);
-            return uv;
-        }
-        public static void SetAnimatorUVTopLeft(uint entityId, Vector2 uv)
-        {
-            SetAnimatorUVTopLeft_Internal(entityId, ref uv);
-        }
+        //Not needed auto set in AnimationSystem
+        //public static Vector2 GetAnimatorUVTopLeft(uint entityId)
+        //{
+        //    GetAnimatorUVTopLeft_Internal(entityId, out Vector2 uv);
+        //    return uv;
+        //}
+        //public static void SetAnimatorUVTopLeft(uint entityId, Vector2 uv)
+        //{
+        //    SetAnimatorUVTopLeft_Internal(entityId, ref uv);
+        //}
 
 
-        public static Vector2 GetAnimatorUVBottomRight(uint entityId)
-        {
-            GetAnimatorUVBottomRight_Internal(entityId, out Vector2 uv);
-            return uv;
-        }
-        public static void SetAnimatorUVTBottomRight(uint entityId, Vector2 uv)
-        {
-            SetAnimatorUVBottomRight_Internal(entityId, ref uv);
-        }
+        //Not needed auto set in AnimationSystem
+        //public static Vector2 GetAnimatorUVBottomRight(uint entityId)
+        //{
+        //    GetAnimatorUVBottomRight_Internal(entityId, out Vector2 uv);
+        //    return uv;
+        //}
+        //public static void SetAnimatorUVTBottomRight(uint entityId, Vector2 uv)
+        //{
+        //    SetAnimatorUVBottomRight_Internal(entityId, ref uv);
+        //}
         #endregion
 
         // ----------------------------

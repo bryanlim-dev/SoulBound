@@ -174,17 +174,17 @@ namespace ManagedScripts
         #endregion
 
         #region Renderable
-        protected string AnimatorCurrentClip
-        {
-            get => Engine.GetAnimatorCurrentClip(EntityId);
-            set => Engine.SetAnimatorCurrentClip(EntityId, value);
-        }
+        //protected string AnimatorCurrentClip
+        //{
+        //    get => Engine.GetAnimatorCurrentClip(EntityId);
+        //    set => Engine.SetAnimatorCurrentClip(EntityId, value);
+        //}
 
-        protected string AnimatorSpriteSheet
-        {
-            get => Engine.GetAnimatorSpriteSheet(EntityId);
-            set => Engine.SetAnimatorSpriteSheet(EntityId, value);
-        }
+        //protected string AnimatorSpriteSheet
+        //{
+        //    get => Engine.GetAnimatorSpriteSheet(EntityId);
+        //    set => Engine.SetAnimatorSpriteSheet(EntityId, value);
+        //}
 
         protected int AnimatorCurrentFrameIndex
         {
@@ -222,17 +222,17 @@ namespace ManagedScripts
             set => Engine.SetAnimatorLastFacingRight(EntityId, value);
         }
 
-        protected Vector2 AnimatorUVTopLeft
-        {
-            get => Engine.GetAnimatorUVTopLeft(EntityId);
-            set => Engine.SetAnimatorUVTopLeft(EntityId, value);
-        }
+        //protected Vector2 AnimatorUVTopLeft
+        //{
+        //    get => Engine.GetAnimatorUVTopLeft(EntityId);
+        //    set => Engine.SetAnimatorUVTopLeft(EntityId, value);
+        //}
 
-        protected Vector2 AnimatorUVBottomRight
-        {
-            get => Engine.GetAnimatorUVBottomRight(EntityId);
-            set => Engine.SetAnimatorUVTBottomRight(EntityId, value);
-        }
+        //protected Vector2 AnimatorUVBottomRight
+        //{
+        //    get => Engine.GetAnimatorUVBottomRight(EntityId);
+        //    set => Engine.SetAnimatorUVTBottomRight(EntityId, value);
+        //}
 
 
 

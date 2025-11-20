@@ -59,7 +59,7 @@ namespace ManagedScripts
             //Engine.SetIsWireframe(id1, true);
 
             ////Animator Test
-            //Engine.SetAnimatorCurrentClip(id2, Engine.GetMaterialName(id2));
+            ////Engine.SetAnimatorCurrentClip(id2, Engine.GetMaterialName(id2)); //Not needed
             //Engine.SetAnimatorIsPlaying(id2, true);
             //Engine.SetAnimatorIsLooping(id2, true);
 
