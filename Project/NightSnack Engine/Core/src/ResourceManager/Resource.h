@@ -178,6 +178,29 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		ResourceImage(const std::string& inFilePath, const std::size_t& inMapKey);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Constructor of ResourceImage meant for saving image data
+
+		\param[in] filePath
+		std::string const ref file path to save to
+
+		\param[in] newImageData
+		image data to save
+
+		\param[in] width
+		width of new image
+
+		\param[in] height
+		height of new image
+
+		\param[in] channels
+		channels of new image
+		/************************************************************************/
+		ResourceImage(const std::string& filePath, unsigned char newImageData, int width, int height, int channels);
+
 		/************************************************************************/
 		/*!
 		\brief
@@ -193,6 +216,16 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void LoadFile() override;
+
+		/************************************************************************/
+		/*!
+		\brief
+		Saves image resource from saved file path and current image stored
+		*/
+		/************************************************************************/
+		void SaveFile();
+
+
 
 		/************************************************************************/
 		/*!

@@ -25,6 +25,13 @@
 // Global pointer to script interface (set during initialization)
 static NightSnack::Scripting::ScriptInterface* g_scriptInterface = nullptr;
 
+namespace NightSnack::Scripting {
+    MonoString* StringToMonoString(std::string str)
+    {
+        MonoDomain* domain = mono_domain_get();
+        return mono_string_new(domain, str.c_str());
+    }
+}
 // Internal call functions from C# must use C linkage
 extern "C" {
     // --------------------------------------------------------------
@@ -298,6 +305,42 @@ extern "C" {
     }
 #pragma endregion
 
+    // --------------------------------------------------------------
+    
+#pragma region Renderable
+    // meshName --------------
+    static MonoString* NightSnack_GetMeshName(uint32_t id) {
+        if (!g_scriptInterface) { return NULL; }
+        return NightSnack::Scripting::StringToMonoString(g_scriptInterface->GetMeshName(id));
+    }
+    static void NightSnack_SetMeshName(uint32_t id, MonoString* name) {
+        if (!g_scriptInterface || !name) { return; }
+        char* cStr = mono_string_to_utf8(name);
+        g_scriptInterface->SetMeshName(id, std::string{ cStr });
+    }
+
+    // materialName --------------
+    static MonoString* NightSnack_GetMaterialhName(uint32_t id) {
+        if (!g_scriptInterface) { return NULL; }
+        return NightSnack::Scripting::StringToMonoString(g_scriptInterface->GetMaterialName(id));
+    }
+    static void NightSnack_SetMaterialName(uint32_t id, MonoString* name) {
+        if (!g_scriptInterface || !name) { return; }
+        char* cStr = mono_string_to_utf8(name);
+        g_scriptInterface->SetMaterialName(id, std::string{ cStr });
+    }
+
+    // isWireframe --------------
+    static void NightSnack_GetIsWireframe(uint32_t id, bool* outWireframe) {
+        if (!g_scriptInterface || !outWireframe) { return; }
+        *outWireframe = g_scriptInterface->GetIsWireframe(id);
+    }
+    static void NightSnack_SetIsWireframe(uint32_t id, bool* wireframe) {
+        if (!g_scriptInterface || !wireframe) { return; }
+        g_scriptInterface->SetIsWireframe(id, *wireframe);
+    }
+#pragma endregion
+
 
     // --------------------------------------------------------------
 
@@ -465,6 +508,16 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::SetRGBA_Internal", (void*)NightSnack_SetColorRGBA);
 #pragma endregion
 
+#pragma region Renderaable
+        mono_add_internal_call("ManagedScripts.Engine::GetMeshName_Internal", (void*)NightSnack_GetMeshName);
+        mono_add_internal_call("ManagedScripts.Engine::SetMeshName_Internal", (void*)NightSnack_SetMeshName);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetMaterialName_Internal", (void*)NightSnack_GetMaterialhName);
+        mono_add_internal_call("ManagedScripts.Engine::SetMaterialName_Internal", (void*)NightSnack_SetMaterialName);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetIsWireframe_Internal", (void*)NightSnack_GetIsWireframe);
+        mono_add_internal_call("ManagedScripts.Engine::SetIsWireframe_Internal", (void*)NightSnack_SetIsWireframe);
+#pragma endregion
 
 
 #pragma region Key/Inputs

@@ -214,6 +214,33 @@ namespace NightSnack {
 		/************************************************************************/
 		ResourceImage* GetImageResource(const std::size_t imageKey);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Crop and save an image as a file
+
+		\param orginalKey
+		Key of orginal image to access
+
+		\param newFileName
+		File path/name of new image
+
+		\param startingX
+		Starting X offset pos (starting from bottom left)
+
+		\param startingY
+		Starting Y offset pos (starting from bottom left)
+
+		\param newHeight
+		New height of the image
+
+		\param newWidth
+		New width of the image
+
+		*/
+		/************************************************************************/
+		void SaveCroppedImageResource(const std::size_t orginalKey, const std::string& newFileName, int startingX, int startingY, int newHeight, int newWidth);
+
 #pragma endregion
 
 #pragma region Txt File Functions

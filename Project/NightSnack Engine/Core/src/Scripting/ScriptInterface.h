@@ -130,6 +130,20 @@ namespace NightSnack::Scripting {
         void SetColorRGBA(Entity e, vec4 rgba);
 #pragma endregion
 
+#pragma region Renderable
+        Renderabl GetRenderable(Entity e);
+        void SetRenderable(Entity e, Renderabl rend);
+
+        std::string GetMeshName(Entity e);
+        void SetMeshName(Entity e, std::string name);
+
+        std::string GetMaterialName(Entity e);
+        void SetMaterialName(Entity e, std::string name);
+
+        bool GetIsWireframe(Entity e);
+        void SetIsWireframe(Entity e, bool wire);
+#pragma endregion
+
 
 #pragma region Key/Inputs
         // Input
