@@ -174,6 +174,69 @@ namespace ManagedScripts
         #endregion
 
         #region Renderable
+        protected string AnimatorCurrentClip
+        {
+            get => Engine.GetAnimatorCurrentClip(EntityId);
+            set => Engine.SetAnimatorCurrentClip(EntityId, value);
+        }
+
+        protected string AnimatorSpriteSheet
+        {
+            get => Engine.GetAnimatorSpriteSheet(EntityId);
+            set => Engine.SetAnimatorSpriteSheet(EntityId, value);
+        }
+
+        protected int AnimatorCurrentFrameIndex
+        {
+            get => Engine.GetAnimatorCurrentFrameIndex(EntityId);
+            set => Engine.SetAnimatorCurrentFrameIndex(EntityId, value);
+        }
+
+        protected float AnimatorCurrentTime
+        {
+            get => Engine.GetAnimatorCurrentTime(EntityId);
+            set => Engine.SetAnimatorCurrentTime(EntityId, value);
+        }
+
+        protected float AnimatorCurrentPlaybackSpeed
+        {
+            get => Engine.GetAnimatorCurrentPlaybackSpeed(EntityId);
+            set => Engine.SetAnimatorCurrentPlaybackSpeed(EntityId, value);
+        }
+
+        protected bool AnimatorIsPlaying
+        {
+            get => Engine.GetAnimatorIsPlaying(EntityId);
+            set => Engine.SetAnimatorIsPlaying(EntityId, value);
+        }
+
+        protected bool AnimatorIsLooping
+        {
+            get => Engine.GetAnimatorIsLooping(EntityId);
+            set => Engine.SetAnimatorIsLooping(EntityId, value);
+        }
+
+        protected bool AnimatorLastFacingRight
+        {
+            get => Engine.GetAnimatorLastFacingRight(EntityId);
+            set => Engine.SetAnimatorLastFacingRight(EntityId, value);
+        }
+
+        protected Vector2 AnimatorUVTopLeft
+        {
+            get => Engine.GetAnimatorUVTopLeft(EntityId);
+            set => Engine.SetAnimatorUVTopLeft(EntityId, value);
+        }
+
+        protected Vector2 AnimatorUVBottomRight
+        {
+            get => Engine.GetAnimatorUVBottomRight(EntityId);
+            set => Engine.SetAnimatorUVTBottomRight(EntityId, value);
+        }
+
+
+
+
         #endregion
 
         protected float DeltaTime => Engine.DeltaTime;

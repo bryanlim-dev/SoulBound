@@ -497,6 +497,93 @@ namespace NightSnack::Scripting {
         t.uvTopLeft = rend.uvTopLeft;
         t.uvBottomRight = rend.uvBottomRight;
     }
+
+    //---currentAnimationClip---
+    std::string ScriptInterface::GetAnimatorCurrentAnimationClip(Entity e) {
+        return m_coord.GetComponent<Animator>(e).currentAnimationClip;
+    }
+    void ScriptInterface::SetAnimatorCurrentAnimationClip(Entity e, std::string name) {
+        m_coord.GetSystem<AnimationSystem>()->SetCurrentAnimationClip(name, e);
+    }
+
+    //---spriteSheetName---
+    std::string ScriptInterface::GetAnimatorSpriteSheetName(Entity e) {
+        return m_coord.GetComponent<Animator>(e).spriteSheetName;
+    }
+    void ScriptInterface::SetAnimatorSpriteSheetName(Entity e, std::string name) {
+        m_coord.ModifyComponent<Animator>(e).spriteSheetName = name; //May not be needed
+    }
+
+    //---currentFrameIndex---
+    int ScriptInterface::GetAnimatorCurrentFrameIndex(Entity e) {
+        return m_coord.GetComponent<Animator>(e).currentFrameIndex;
+    }
+    void ScriptInterface::SetAnimatorCurrentFrameIndex(Entity e, int index) {
+        m_coord.ModifyComponent<Animator>(e).currentFrameIndex = index;
+    }
+
+    //---currentTime---
+    float ScriptInterface::GetAnimatorCurrentTime(Entity e) {
+        return m_coord.GetComponent<Animator>(e).currentTime;
+    }
+    void ScriptInterface::SetAnimatorCurrentTime(Entity e, float time) {
+        m_coord.ModifyComponent<Animator>(e).currentTime = time;
+    }
+
+    //---playbackSpeed---
+    float ScriptInterface::GetAnimatorPlaybackSpeed(Entity e) {
+        return m_coord.GetComponent<Animator>(e).playbackSpeed;
+    }
+    void ScriptInterface::SetAnimatorPlaybackSpeed(Entity e, float spd) {
+        m_coord.ModifyComponent<Animator>(e).playbackSpeed = spd;
+    }
+
+    //---isPlaying---
+    bool ScriptInterface::GetAnimatorIsPlaying(Entity e) {
+        return m_coord.GetComponent<Animator>(e).isPlaying;
+    }
+    void ScriptInterface::SetAnimatorIsPlaying(Entity e, bool playing) {
+        m_coord.ModifyComponent<Animator>(e).isPlaying = playing;
+    }
+
+    //---isLooping---
+    bool ScriptInterface::GetAnimatorIsLooping(Entity e) {
+        return m_coord.GetComponent<Animator>(e).isLooping;
+    }
+    void ScriptInterface::SetAnimatorIsLooping(Entity e, bool loop) {
+        m_coord.ModifyComponent<Animator>(e).isLooping = loop;
+    }
+
+    //---lastFacingRight---
+    bool ScriptInterface::GetAnimatorLastFacingRight(Entity e) {
+        return m_coord.GetComponent<Animator>(e).lastFacingRight;
+    }
+    void ScriptInterface::SetAnimatorLastFacingRight(Entity e, bool right) {
+        m_coord.ModifyComponent<Animator>(e).lastFacingRight = right;
+    }
+
+    //---uvTopLeft---
+    vec2 ScriptInterface::GetAnimatorUVTopLeft(Entity e) {
+        Vec2 uv = m_coord.GetComponent<Animator>(e).uvTopLeft;
+        return vec2(uv.x, uv.y);
+    }
+    void ScriptInterface::SetAnimatorUVTopLeft(Entity e, vec2 uv) {
+        Vec2& uvComponent = m_coord.ModifyComponent<Animator>(e).uvTopLeft;
+        uvComponent.x = uv.x;
+        uvComponent.y = uv.y;
+    }
+
+    //---uvBottomRight---
+    vec2 ScriptInterface::GetAnimatorUVBottomRight(Entity e) {
+        Vec2 uv = m_coord.GetComponent<Animator>(e).uvBottomRight;
+        return vec2(uv.x, uv.y);
+    }
+    void ScriptInterface::SetAnimatorUVBottomRight(Entity e, vec2 uv) {
+        Vec2& uvComponent = m_coord.ModifyComponent<Animator>(e).uvBottomRight;
+        uvComponent.x = uv.x;
+        uvComponent.y = uv.y;
+    }
+
 #pragma endregion
 
     // --------------------------------------------------------------

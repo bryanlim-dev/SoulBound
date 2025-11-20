@@ -148,6 +148,36 @@ namespace NightSnack::Scripting {
         Animat GetAnimator(Entity e);
         void SetAnimator(Entity e, Animat rend);
 
+        std::string GetAnimatorCurrentAnimationClip(Entity e);
+        void SetAnimatorCurrentAnimationClip(Entity e, std::string name);
+
+        std::string GetAnimatorSpriteSheetName(Entity e);
+        void SetAnimatorSpriteSheetName(Entity e, std::string name);
+
+        int GetAnimatorCurrentFrameIndex(Entity e);
+        void SetAnimatorCurrentFrameIndex(Entity e, int index);
+
+        float GetAnimatorCurrentTime(Entity e);
+        void SetAnimatorCurrentTime(Entity e, float time);
+
+        float GetAnimatorPlaybackSpeed(Entity e);
+        void SetAnimatorPlaybackSpeed(Entity e, float spd);
+
+        bool GetAnimatorIsPlaying(Entity e);
+        void SetAnimatorIsPlaying(Entity e, bool playing);
+
+        bool GetAnimatorIsLooping(Entity e);
+        void SetAnimatorIsLooping(Entity e, bool loop);
+
+        bool GetAnimatorLastFacingRight(Entity e);
+        void SetAnimatorLastFacingRight(Entity e, bool right);
+
+        vec2 GetAnimatorUVTopLeft(Entity e);
+        void SetAnimatorUVTopLeft(Entity e, vec2 uv);
+
+        vec2 GetAnimatorUVBottomRight(Entity e);
+        void SetAnimatorUVBottomRight(Entity e, vec2 uv);
+
 #pragma endregion
 
 
