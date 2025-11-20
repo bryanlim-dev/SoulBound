@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 
 namespace ManagedScripts
@@ -214,6 +215,42 @@ namespace ManagedScripts
 
         //wasModified is not here, it is just a flag
 
+        #endregion
+
+        // ----------------------------
+        // Font Internal for Scripts
+        // ----------------------------
+        #region Font
+        
+        //fontType
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetFontType_Internal(uint entityId);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetFontType_Internal(uint entityId, string fontType);
+
+        //text
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetFontText_Internal(uint entityId);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetFontText_Internal(uint entityId, string fontType);
+
+        //fontSize
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetFontSize_Internal(uint entityId, out float size);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetFontSize_Internal(uint entityId, ref float size);
+
+        //textColor
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetFontColor_Internal(uint entityId, out Vector3 col);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetFontColor_Internal(uint entityId, ref Vector3 col);
+
+        //offsetPosition
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetFontOffsetPosition_Internal(uint entityId, out Vector3 pos);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetFontOffsetPosition_Internal(uint entityId, ref Vector3 pos);
         #endregion
 
         // ----------------------------
@@ -756,6 +793,65 @@ namespace ManagedScripts
         //{
         //    SetAnimatorUVBottomRight_Internal(entityId, ref uv);
         //}
+        #endregion
+
+        // ----------------------------
+        // Font API for Scripts
+        // ----------------------------
+        #region Font
+        //fontType
+        public static string GetFontType(uint entityId)
+        {
+            return GetFontType_Internal(entityId);
+        }
+        public static void SetFontType(uint entityId, string str)
+        {
+            SetFontType_Internal(entityId, str);
+        }
+
+        //text
+        public static string GetFontText(uint entityId)
+        {
+            return GetFontText_Internal(entityId);
+        }
+        public static void SetFontText(uint entityId, string str)
+        {
+            SetFontText_Internal(entityId, str);
+        }
+
+        //text
+        public static float GetFontSize(uint entityId)
+        {
+            GetFontSize_Internal(entityId, out float size);
+            return size;
+        }
+        public static void SetFontSize(uint entityId, float size)
+        {
+            SetFontSize_Internal(entityId, ref size);
+        }
+
+        //textColor
+        public static Vector3 GetFontColor(uint entityId)
+        {
+            GetFontColor_Internal(entityId, out Vector3 color);
+            return color;
+        }
+        public static void SetFontColor(uint entityId, Vector3 color)
+        {
+            SetFontColor_Internal(entityId, ref color);
+        }
+
+        //offsetPosition
+        public static Vector3 GetFontOffsetPosition(uint entityId)
+        {
+            GetFontOffsetPosition_Internal(entityId, out Vector3 pos);
+            return pos;
+        }
+        public static void SetFontOffsetPosition(uint entityId, Vector3 position)
+        {
+            SetFontOffsetPosition_Internal(entityId, ref position);
+        }
+
         #endregion
 
         // ----------------------------

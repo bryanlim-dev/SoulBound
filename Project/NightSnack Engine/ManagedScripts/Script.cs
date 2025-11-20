@@ -173,7 +173,7 @@ namespace ManagedScripts
         }
         #endregion
 
-        #region Renderable
+        #region Animator
         //protected string AnimatorCurrentClip
         //{
         //    get => Engine.GetAnimatorCurrentClip(EntityId);
@@ -234,6 +234,38 @@ namespace ManagedScripts
         //    set => Engine.SetAnimatorUVTBottomRight(EntityId, value);
         //}
 
+
+
+
+        #endregion
+
+        #region Font
+        protected string FontType
+        {
+            get => Engine.GetFontType(EntityId);
+            set => Engine.SetFontType(EntityId, value);
+        }
+        protected string FontText
+        {
+            get => Engine.GetFontText(EntityId);
+            set => Engine.SetFontText(EntityId, value);
+        }
+        protected float FontSize
+        {
+            get => Engine.GetFontSize(EntityId);
+            set => Engine.SetFontSize(EntityId, value);
+        }
+        protected Vector3 FontColor
+        {
+            get => Engine.GetFontColor(EntityId);
+            set => Engine.SetFontColor(EntityId, value);
+        }
+
+        protected Vector3 FontOffsetPosition
+        {
+            get => Engine.GetFontOffsetPosition(EntityId);
+            set => Engine.SetFontOffsetPosition(EntityId, value);
+        }
 
 
 

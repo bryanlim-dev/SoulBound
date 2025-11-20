@@ -144,6 +144,14 @@ namespace NightSnack::Scripting {
         Vec2 uvBottomRight{ 1.f, 1.f };
     };
 
+    struct CORE_API Font {
+        std::string fontType{};
+        std::string text{};
+        float fontSize{ 1.f };
+        Vec3 textColor{ 1.f, 1.f, 1.f };
+        Vec3 offsetPosition{ 0.f, 0.f, 0.f };
+    };
+
     // Handle to a game object (Similar to Entity ID)
     struct CORE_API GameObjectHandle {
         uint32_t id;
