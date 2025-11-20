@@ -214,6 +214,8 @@ namespace NightSnack {
 		/************************************************************************/
 		ResourceImage* GetImageResource(const std::size_t imageKey);
 
+		void SaveCroppedImageResource(const std::size_t orginalKey, const std::string& newFileName, int startingX, int startingY, int newHeight, int newLength);
+
 #pragma endregion
 
 #pragma region Txt File Functions
