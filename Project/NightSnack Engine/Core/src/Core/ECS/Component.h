@@ -349,7 +349,7 @@ namespace NightSnack {
         else if (shapeStr == "Circle") c.shape = ShapeType::Circle;
 
         if (typeStr == "Solid") c.type = ColliderType::Solid;
-        if (typeStr == "Ground") c.type = ColliderType::Ground;
+        //else if (typeStr == "Ground") c.type = ColliderType::Ground;
         else if (typeStr == "Trigger") c.type = ColliderType::Trigger;
 
         j.at("isStatic").get_to(c.isStatic);
