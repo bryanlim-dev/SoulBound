@@ -59,26 +59,23 @@ namespace NightSnack
             ImGui::Text("Prefab: %s", prefabName.c_str());
             ImGui::Separator();
 
-
-            // -------------------------------
-            //   COMPONENT EDITORS (NEW UI)
-            // -------------------------------
+            // json UI
             for (auto& [componentName, componentData] : prefabData.items())
             {
                 if (ImGui::CollapsingHeader(componentName.c_str(),
                     ImGuiTreeNodeFlags_DefaultOpen))
                 {
-                    if (componentName == "Transform")       DrawTransformEditor(componentData);
-                    else if (componentName == "Color")           DrawColorEditor(componentData);
-                    else if (componentName == "RigidBody")       DrawRigidBodyEditor(componentData);
-                    else if (componentName == "Collider")        DrawColliderEditor(componentData);
-                    else if (componentName == "Renderable")      DrawRenderableEditor(componentData);
-                    else if (componentName == "Camera")          DrawCameraEditor(componentData);
-                    else if (componentName == "Animator")        DrawAnimatorEditor(componentData);
-                    else if (componentName == "PlayerController")DrawPlayerControllerEditor(componentData);
-                    else if (componentName == "Font")            DrawFontEditor(componentData);
-                    else if (componentName == "ButtonInfo")      DrawButtonInfoEditor(componentData);
-                    else if (componentName == "Script")          DrawScriptEditor(componentData);
+                    if (componentName == "Transform")               DrawTransformEditor(componentData);
+                    else if (componentName == "Color")              DrawColorEditor(componentData);
+                    else if (componentName == "RigidBody")          DrawRigidBodyEditor(componentData);
+                    else if (componentName == "Collider")           DrawColliderEditor(componentData);
+                    else if (componentName == "Renderable")         DrawRenderableEditor(componentData);
+                    //else if (componentName == "Camera")             DrawCameraEditor(componentData);
+                    else if (componentName == "Animator")           DrawAnimatorEditor(componentData);
+                    else if (componentName == "PlayerController")   DrawPlayerControllerEditor(componentData);
+                    else if (componentName == "Font")               DrawFontEditor(componentData);
+                    else if (componentName == "ButtonInfo")         DrawButtonInfoEditor(componentData);
+                    else if (componentName == "Script")             DrawScriptEditor(componentData);
 
                     else {
                         // Fallback generic editor
@@ -90,9 +87,7 @@ namespace NightSnack
             ImGui::Separator();
 
 
-            // -----------------------------------------
-            // RAW JSON PREVIEW (your Display function)
-            // -----------------------------------------
+            // raw json preview
             if (ImGui::CollapsingHeader("JSON Preview", ImGuiTreeNodeFlags_DefaultOpen))
             {
                 ImGui::BeginChild("PrefabJsonPreview", ImVec2(0, 300), true);
@@ -167,7 +162,11 @@ namespace NightSnack
                     ImGui::BulletText("%s: ", propName.c_str());
                     ImGui::SameLine();
 
-                    if (propValue.is_string())
+                    if (propValue.is_null())
+                    {
+                        ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "null");
+                    }
+                    else if (propValue.is_string())
                     {
                         ImGui::TextColored(ImVec4(0.4f, 0.8f, 1.0f, 1.0f), "%s", propValue.get<std::string>().c_str());
                     }
@@ -340,7 +339,7 @@ namespace NightSnack
             j["jumpSpeed"] = jump;
         }
 
-        void DrawCameraEditor(nlohmann::json& j)
+        /*void DrawCameraEditor(nlohmann::json& j)
         {
             float zoom = j["zoom"];
             if (ImGui::DragFloat("Zoom", &zoom, 0.1f))
@@ -349,7 +348,7 @@ namespace NightSnack
             bool main = j["isMainCamera"];
             if (ImGui::Checkbox("Main Camera", &main))
                 j["isMainCamera"] = main;
-        }
+        }*/
 
         void DrawAnimatorEditor(nlohmann::json& j)
         {
@@ -451,7 +450,5 @@ namespace NightSnack
                 }
             }
         }
-
-
     };
 }

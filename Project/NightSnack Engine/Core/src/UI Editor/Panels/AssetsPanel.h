@@ -364,7 +364,16 @@ namespace NightSnack
                     }
                     else
                     {
-                        ImGui::SetDragDropPayload("ASSET_ITEM", pathStr.c_str(), pathStr.size() + 1);
+                        std::string ext = item.fullPath.extension().string();
+
+                        if (ext == ".json")
+                        {
+                            ImGui::SetDragDropPayload("ASSET_PREFAB", pathStr.c_str(), pathStr.size() + 1);
+                        }
+                        else
+                        {
+                            ImGui::SetDragDropPayload("ASSET_ITEM", pathStr.c_str(), pathStr.size() + 1);
+                        }
                     }
 
                     ImGui::Text("%s", item.name.c_str());

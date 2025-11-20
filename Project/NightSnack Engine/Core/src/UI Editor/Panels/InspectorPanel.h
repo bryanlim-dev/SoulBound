@@ -304,6 +304,7 @@ namespace NightSnack
             if (ImGui::Combo("##LayerCombo", &currentLayer, layerNames, IM_ARRAYSIZE(layerNames))) {
                 std::cout << "original: " << static_cast<int>(t.layer) << ", new: " << currentLayer << std::endl;
                 t.layer = static_cast<LayerType>(currentLayer);
+                m_coord.BufferEntitySignature(entity);
 				std::cout << "Now: " << static_cast<int>(t.layer) << std::endl;
             }
         }
