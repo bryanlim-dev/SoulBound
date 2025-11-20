@@ -190,6 +190,7 @@ namespace NightSnack {
 
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;
+		std::unordered_multimap<std::string, Entity> prefabToEntities;	// Hot reloading prefabs;
 		std::vector<std::string> m_prefabNames;
 
 		std::filesystem::path GAMEDATA_DIR;
