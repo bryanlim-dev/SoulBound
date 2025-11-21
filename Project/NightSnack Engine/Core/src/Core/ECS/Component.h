@@ -131,8 +131,8 @@ namespace NightSnack {
     // All renderable entities will have this component
     // Each renderable will have a Mesh, Material, Shader, Texture tied to them
     struct Renderable {
-        std::string meshName{};
-        std::string materialName{};
+        std::string meshName{ "square" };
+        std::string materialName{ "ColorMat" };
         bool isWireframe{ false };
         bool wasModified{ true };
 
@@ -349,7 +349,7 @@ namespace NightSnack {
         else if (shapeStr == "Circle") c.shape = ShapeType::Circle;
 
         if (typeStr == "Solid") c.type = ColliderType::Solid;
-        if (typeStr == "Ground") c.type = ColliderType::Ground;
+        //else if (typeStr == "Ground") c.type = ColliderType::Ground;
         else if (typeStr == "Trigger") c.type = ColliderType::Trigger;
 
         j.at("isStatic").get_to(c.isStatic);

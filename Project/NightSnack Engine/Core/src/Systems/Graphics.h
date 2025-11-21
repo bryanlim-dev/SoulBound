@@ -453,7 +453,7 @@ namespace NightSnack {
 		to the mesh and material resources used by the entity.
 		*/
 		/************************************************************************/
-		void ResolveRenderable(Entity e, Renderable const& r);
+		void ResolveRenderable(Entity e, Renderable& r);
 
 		/************************************************************************/
 		/*!

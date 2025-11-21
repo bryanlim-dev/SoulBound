@@ -109,11 +109,14 @@ namespace NightSnack {
 				auto& rot = m_coord.GetComponent<Transform>(e).rot;
 				auto& scl = m_coord.GetComponent<Transform>(e).scale;
 
-				if (ren.wasModified) { ResolveRenderable(e, ren); }
+				if (ren.wasModified) { 
+					std::cout << "Resolving renderable: " << e << '\n'; 
+					ResolveRenderable(e, m_coord.ModifyComponent<Renderable>(e));
+				}
 				// Find entity's renderCache;
 				auto it = m_renderCache.find(e);
 				if (it == m_renderCache.end() || !it->second.valid) {
-					ResolveRenderable(e, ren);
+					ResolveRenderable(e, m_coord.ModifyComponent<Renderable>(e));
 					it = m_renderCache.find(e);
 				}
 
@@ -160,13 +163,18 @@ namespace NightSnack {
 					// Each different combination of color/texture/wireframe will be sent in different batches
 					std::string key = ren.meshName;
 
-					if (m_coord.HasComponent<Color>(e)) {
+					// Entities that are of solid color must have
+					// ColorMat as their material and a Color component
+					if (ren.materialName == "ColorMat" && m_coord.HasComponent<Color>(e)) {
+						// Change the instance color to be based on its Color component values
 						auto& col = m_coord.GetComponent<Color>(e);
 						instance.color = glm::vec4{ col.r, col.g, col.b, col.a };
 						key += "_color";
 					} else {
+						// Entities that have textured materials
 						key = key + "_textured_" + ren.materialName;
 					}
+
 
 					if (ren.isWireframe) {
 						key += "_wireframe";
@@ -606,12 +614,14 @@ namespace NightSnack {
 		return (it != m_materials.end()) ? it->second.get() : nullptr;
 	}
 
-	void GraphicsSystem::ResolveRenderable(Entity e, Renderable const& r) {
+	void GraphicsSystem::ResolveRenderable(Entity e, Renderable& r) {
 		CachedRenderData cache;
 		cache.mesh = GetMesh(r.meshName);
 		cache.material = GetMaterial(r.materialName);
 		cache.valid = (cache.mesh && cache.material);
 		m_renderCache[e] = cache;
+
+		r.wasModified = false;
 	}
 
 	Entity GraphicsSystem::FindCamera() {

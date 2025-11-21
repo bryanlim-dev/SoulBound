@@ -143,7 +143,7 @@ namespace NightSnack {
 						Collider& c1 = m_coord.ModifyComponent<Collider>(e1);
 						Collider& c2 = m_coord.ModifyComponent<Collider>(e2);
 
-						if (c1.isStatic) { continue; }
+						//if (c1.isStatic) { continue; }
 
 						RigidBody& r1 = m_coord.ModifyComponent<RigidBody>(e1);
 						RigidBody& r2 = m_coord.ModifyComponent<RigidBody>(e2);
@@ -195,23 +195,47 @@ namespace NightSnack {
 		Vec2 half2 = (c2.shape == ShapeType::AABB) ? Vec2{ c2.width * 0.5f, c2.height * 0.5f } : Vec2{ c2.radius, c2.radius };
 
 		Vec2 move = { t2.pos.x - t1.pos.x, t2.pos.y - t1.pos.y };
-		Vec2 overlap = { half1.x + half2.x - std::fabs(move.x), half1.y + half2.y - std::fabs(move.y) };
 
-		// Shift outside of each other; 
-		Vec2 sign; 
-		sign.x = move.x < 0.f ? -1.f : 1.f;
-		sign.y = move.y < 0.f ? -1.f : 1.f;
+		if (!c1.isStatic) {
+			Vec2 overlap = { half1.x + half2.x - std::fabs(move.x), half1.y + half2.y - std::fabs(move.y) };
 
-		if (overlap.x < overlap.y) {
-			t1.pos.x -= (overlap.x) * sign.x;
-			r1.vel.x = 0.f;
+			// Shift outside of each other; 
+			Vec2 sign;
+			sign.x = move.x < 0.f ? -1.f : 1.f;
+			sign.y = move.y < 0.f ? -1.f : 1.f;
+
+			if (overlap.x < overlap.y) {
+				t1.pos.x -= (overlap.x) * sign.x;
+				r1.vel.x = 0.f;
+			}
+			else {
+				t1.pos.y -= (overlap.y) * sign.y;
+				r1.vel.y = 0.f;
+
+				if (t1.pos.y > t2.pos.y) {
+					c1.isGrounded = true;
+				}
+			}
 		}
-		else {
-			t1.pos.y -= (overlap.y) * sign.y;
-			r1.vel.y = 0.f;
+		else if (!c2.isStatic) {
+			Vec2 overlap = { half1.x + half2.x - std::fabs(move.x), half1.y + half2.y - std::fabs(move.y) };
 
-			if (t1.pos.y > t2.pos.y) {
-				c1.isGrounded = true;
+			// Shift outside of each other; 
+			Vec2 sign;
+			sign.x = move.x < 0.f ? 1.f : -1.f;
+			sign.y = move.y < 0.f ? 1.f : -1.f;
+
+			if (overlap.x < overlap.y) {
+				t2.pos.x -= (overlap.x) * sign.x;
+				r2.vel.x = 0.f;
+			}
+			else {
+				t2.pos.y -= (overlap.y) * sign.y;
+				r2.vel.y = 0.f;
+
+				if (t1.pos.y > t2.pos.y) {
+					c1.isGrounded = true;
+				}
 			}
 		}
 	}
@@ -304,6 +328,7 @@ namespace NightSnack {
 		rig.accel = Vec2{ 0.f, 0.f };
 		if (col.isStatic) {
 			rig.vel = Vec2{};
+			return;
 		}
 
 		// Compute Accel;

@@ -304,6 +304,7 @@ namespace NightSnack
             if (ImGui::Combo("##LayerCombo", &currentLayer, layerNames, IM_ARRAYSIZE(layerNames))) {
                 std::cout << "original: " << static_cast<int>(t.layer) << ", new: " << currentLayer << std::endl;
                 t.layer = static_cast<LayerType>(currentLayer);
+                m_coord.BufferEntitySignature(entity);
 				std::cout << "Now: " << static_cast<int>(t.layer) << std::endl;
             }
         }
@@ -522,7 +523,7 @@ namespace NightSnack
         if (!m_coord.HasComponent<Renderable>(*m_selectedEntity))
             return;
 
-        auto& renderable = m_coord.ModifyComponent<Renderable>(*m_selectedEntity);
+        auto& renderable = m_coord.GetComponent<Renderable>(*m_selectedEntity);
         auto graphics = m_coord.GetSystem<GraphicsSystem>();
 
         if (ImGui::BeginTable("RendererTable", 2, ImGuiTableFlags_SizingFixedFit))
@@ -568,11 +569,15 @@ namespace NightSnack
 			// isWireframe checkbox
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Wireframe");
-            ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##Wireframe", &renderable.isWireframe);
+            bool wireframe = renderable.isWireframe;
+            ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##Wireframe", &wireframe);
+            if (wireframe != renderable.isWireframe) {
+                m_coord.ModifyComponent<Renderable>(*m_selectedEntity).isWireframe = wireframe;
+            }
 			// wasModified checkbox
-            ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0); ImGui::Text("Was Modified");
-            ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##WasModified", &renderable.wasModified);
+            //ImGui::TableNextRow();
+            //ImGui::TableSetColumnIndex(0); ImGui::Text("Was Modified");
+            //ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##WasModified", &renderable.wasModified);
 
             ImGui::EndTable();
         }

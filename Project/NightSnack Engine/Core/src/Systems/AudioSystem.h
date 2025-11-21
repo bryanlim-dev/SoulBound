@@ -6,9 +6,9 @@
  * Description:
  * This file declares the AudioSystem class, which manages all game audio using FMOD.
  * Works with ResourceManager to load and cache sounds. Handles playing, pausing, stopping
- * and updating audio. Logs messages to cout for debug purposes.
+ * and updating audio. Automatically scans audio folders and assigns keys to found files.
  *
- * Copyright � 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 #ifndef AUDIOSYSTEM_H
@@ -27,16 +27,16 @@ namespace NightSnack {
 
     /**
      * @struct AudioKeys
-	 * @brief stores keys for sound effects and background music
+     * @brief stores keys for sound effects and background music using string identifiers
      */
     struct AudioKeys {
         // SFX
-        size_t buttonClick = 0;
-		size_t playerJump = 0;
-        size_t playerHit = 0;
+        static constexpr const char* buttonClick = "buttonClick";
+        static constexpr const char* playerJump = "playerJump";
+        static constexpr const char* playerHit = "playerHit";
 
         // BGM
-        size_t mainMenu = 0;
+        static constexpr const char* mainMenu = "mainMenu";
     };
 
     /**
@@ -52,25 +52,26 @@ namespace NightSnack {
 
     /**
      * @class AudioSystem
-	 * @brief manage all game audio using FMOD
-	 * controls audio playback, volume, loading and updating audio system
+     * @brief manage all game audio using FMOD
+     * controls audio playback, volume, loading and updating audio system
+     * automatically scans folders and assigns keys to audio files
      */
     class AudioSystem : public ISystem {
     public:
         /**
         * @brief audio system constructor
-		* @param coordinator reference to the ECS coordinator
-		* @param dispatcher reference to the event dispatcher
+        * @param coordinator reference to the ECS coordinator
+        * @param dispatcher reference to the event dispatcher
         */
         AudioSystem(Coordinator& coordinator, EventDispatcher& dispatcher);
 
         /**
-		* @brief destructor
+        * @brief destructor
         */
         ~AudioSystem();
 
         /**
-		* @brief initialize the audio system
+        * @brief initialize the audio system
         * @return true if successful, else false
         */
         bool Init();
@@ -82,46 +83,38 @@ namespace NightSnack {
         void Update(int steps) override;
 
         /**
-        * @brief retrieve audio keys to access sound
-		* @return reference to AudioKeys struct
-        */
-        const AudioKeys& GetAudioKeys() const { return m_audioKeys; }
-
-        /**
-         * @brief loads a single sound file
-         * @param filepath path to the audio file
-         * @param outKey output key for the loaded sound
-         * @return true if loaded properly, else false
-         */
-        bool LoadSoundFile(const std::string& filepath, size_t& outKey);
-
-        /**
-         * @brief loads all game audio files
+         * @brief loads all game audio files by scanning audio directories
          */
         void LoadAllGameAudio();
+
+        /**
+         * @brief retrieve audio keys to access sound
+         * @return reference to AudioKeys struct
+         */
+        const AudioKeys& GetAudioKeys() const { return m_audioKeys; }
 
         // SFX Functions
 
         /**
-         * @brief plays a sound effect (SFX) by its key
-         * @param soundID key of the sound effect to play
+         * @brief plays a sound effect (SFX) by its string key
+         * @param soundKey string key of the sound effect to play
          */
-        void PlaySFX(const size_t soundID);
+        void PlaySFX(const std::string& soundKey);
 
         /**
          * @brief plays a sound effect (SFX) with a specified volume
-         * @param soundID key of the sound effect to play
+         * @param soundKey string key of the sound effect to play
          * @param volume volume level (0.0 to 1.0)
          */
-        void PlaySFXWithVolume(const size_t soundID, float volume);
+        void PlaySFXWithVolume(const std::string& soundKey, float volume);
 
         // BGM Functions
 
         /**
-         * @brief plays background music (BGM) by its key
-         * @param bgmID key of the background music to play
+         * @brief plays background music (BGM) by its string key
+         * @param bgmKey string key of the background music to play
          */
-        void PlayBGM(const size_t bgmID);
+        void PlayBGM(const std::string& bgmKey);
 
         /**
          * @brief stops the currently playing background music
@@ -129,7 +122,7 @@ namespace NightSnack {
         void StopBGM();
 
         /**
-         * @brief stops the currently playing background music
+         * @brief pauses the currently playing background music
          */
         void PauseBGM();
 
@@ -177,7 +170,7 @@ namespace NightSnack {
 
         /**
          * @brief gets the current sound effects (SFX) volume level
-         * @return SFX volume level (0.0 to 1.0).
+         * @return SFX volume level (0.0 to 1.0)
          */
         float GetSFXVolume() const;
 
@@ -197,8 +190,8 @@ namespace NightSnack {
 
     private:
         // Resource management
-		// use weak pointer to avoid circular dependency
-		// aka allow safe access to shared resources without extending their lifetime
+        // use weak pointer to avoid circular dependency
+        // aka allow safe access to shared resources without extending their lifetime
         std::weak_ptr<ResourceManager> m_resourceMgr;
         EventDispatcher* m_dispatcher;
         Coordinator& m_coord;
@@ -207,9 +200,11 @@ namespace NightSnack {
         std::weak_ptr<FMOD::System> m_fmodSystem;
         FMOD::Channel* m_bgmChannel;
 
-        // Sound caches
-        std::unordered_map<size_t, FMOD::Sound*> m_loadedSFX;
-        std::unordered_map<size_t, FMOD::Sound*> m_loadedBGM;
+        // Sound caches - maps string keys to sound pointers
+        std::unordered_map<std::string, FMOD::Sound*> m_loadedSFX;
+        std::unordered_map<std::string, FMOD::Sound*> m_loadedBGM;
+        // Maps string keys to numeric IDs for ResourceManager
+        std::unordered_map<std::string, size_t> m_keyToID;
 
         // Audio keys for all game sounds
         AudioKeys m_audioKeys;
@@ -222,6 +217,35 @@ namespace NightSnack {
         float m_masterVolume;
         float m_bgmVolume;
         float m_sfxVolume;
+
+        /**
+         * @brief loads a single sound file and assigns it a string key based on filename
+         * @param filepath path to the audio file
+         * @param isBGM true if this is background music, false if SFX
+         * @return true if loaded properly, else false
+         */
+        bool LoadSoundFile(const std::string& filepath, bool isBGM);
+
+        /**
+         * @brief scans a directory and loads all audio files
+         * @param folderPath path to the folder to scan
+         * @param isBGM true if loading BGM, false if loading SFX
+         */
+        void ScanAudioDirectory(const std::string& folderPath, bool isBGM);
+
+        /**
+         * @brief extracts filename without extension to use as key
+         * @param filepath full file path
+         * @return filename without extension
+         */
+        std::string ExtractKeyFromPath(const std::string& filepath) const;
+
+        /**
+         * @brief checks if a file has a valid audio extension
+         * @param filepath path to check
+         * @return true if file is a valid audio format
+         */
+        bool IsValidAudioFile(const std::string& filepath) const;
     };
 
 } // namespace NightSnack
