@@ -30,6 +30,7 @@ namespace NightSnack
         Image,
         Script,
         Prefab,
+        Audio,
         Other
     };
 
@@ -362,6 +363,11 @@ namespace NightSnack
                             ImGui::Image(texID, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
                         }
                     }
+                    else if (item.type == AssetType::Audio)
+                    {
+                        ImGui::SetDragDropPayload("ASSET_AUDIO", pathStr.c_str(), pathStr.size() + 1);
+                    }
+
                     else
                     {
                         std::string ext = item.fullPath.extension().string();
@@ -372,7 +378,7 @@ namespace NightSnack
                         }
                         else
                         {
-                            ImGui::SetDragDropPayload("ASSET_ITEM", pathStr.c_str(), pathStr.size() + 1);
+                            //ImGui::SetDragDropPayload("ASSET_ITEM", pathStr.c_str(), pathStr.size() + 1);
                         }
                     }
 
@@ -426,6 +432,9 @@ namespace NightSnack
                 break;
             case AssetType::Prefab:
                 ImGui::Button("Prefab", ImVec2(m_thumbnailSize, m_thumbnailSize));
+                break;
+            case AssetType::Audio:
+                ImGui::Button("Audio", ImVec2(m_thumbnailSize, m_thumbnailSize));
                 break;
             default:
                 ImGui::Button("File", ImVec2(m_thumbnailSize, m_thumbnailSize));
@@ -485,6 +494,18 @@ namespace NightSnack
                 {
                     std::string prefabName = selectedPath.stem().string();
                     m_prefabsPanel.DrawPrefabProperties(prefabName);
+                    break;
+                }
+                case AssetType::Audio:
+                {
+                    ImGui::Text("Audio File");
+                    ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f), "Supported format");
+
+                    std::string ext = selectedPath.extension().string();
+                    if (ext == ".mp3")
+                        ImGui::Text("Format: MP3");
+                    else if (ext == ".wav")
+                        ImGui::Text("Format: WAV");
                     break;
                 }
                 default:
@@ -665,6 +686,20 @@ namespace NightSnack
                     fs::path source(sourcePath);
                     fs::path destination = fs::path(m_importDestination) / source.filename();
 
+                    if (DetermineAssetType(source) == AssetType::Audio)
+                    {
+                        std::string ext = source.extension().string();
+                        std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+                        if (ext != ".mp3" && ext != ".wav")
+                        {
+                            std::cerr << "Warning: Audio file '" << source.filename().string()
+                                << "' has unsupported format '" << ext << "'. Only .mp3 and .wav are supported.\n";
+                            failCount++;
+                            continue;
+                        }
+                    }
+
                     if (fs::exists(destination) && !overwriteExisting)
                     {
                         failCount++;
@@ -711,7 +746,10 @@ namespace NightSnack
                     return;
                 }
 
-                if (IsImageFile(filePath.extension().string()))
+                std::string ext = filePath.extension().string();
+                std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+                if (IsImageFile(ext))
                 {
                     auto texIt = m_loadedTextures.find(assetPath);
                     if (texIt != m_loadedTextures.end())
@@ -721,9 +759,17 @@ namespace NightSnack
                         m_loadedTextures.erase(texIt);
                     }
 
-                    fs::remove(filePath);
+                    //fs::remove(filePath);
                     m_textureObjects.erase(assetPath);
                 }
+
+                if (ext == ".mp3" || ext == ".wav")
+                {
+                    // Add any audio-specific cleanup here if needed
+
+                }
+
+                fs::remove(filePath);
 
                 m_showAssetProperties = false;
                 m_selectedAssetPath = "";
@@ -755,6 +801,9 @@ namespace NightSnack
 
             if (ext == ".json" || path.filename().string().find("Archetype") != std::string::npos)
                 return AssetType::Prefab;
+
+            if (ext == ".wav" || ext == ".mp3")
+                return AssetType::Audio;
 
             return AssetType::Other;
         }
