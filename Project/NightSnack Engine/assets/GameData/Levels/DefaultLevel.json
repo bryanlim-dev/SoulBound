@@ -12,6 +12,15 @@
                 "Scale": {
                     "x": 0.0,
                     "y": 0.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
                 }
             },
             "prefab": "Cam"
@@ -26,6 +35,15 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
+                    "x": 1920.0,
+                    "y": 1080.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
                     "x": 1920.0,
                     "y": 1080.0
                 }
@@ -44,6 +62,15 @@
                 "Scale": {
                     "x": 30.0,
                     "y": 30.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 30.0,
+                    "y": 30.0
                 }
             },
             "prefab": "Player"
@@ -58,6 +85,15 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
+                    "x": 30.0,
+                    "y": 30.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
                     "x": 30.0,
                     "y": 30.0
                 }
@@ -76,6 +112,15 @@
                 "Scale": {
                     "x": 30.0,
                     "y": 30.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 30.0,
+                    "y": 30.0
                 }
             },
             "prefab": "ScriptTest2"
@@ -90,6 +135,15 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
                     "x": 100.0,
                     "y": 100.0
                 }
@@ -108,6 +162,15 @@
                 "Scale": {
                     "x": 100.0,
                     "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 100.0
                 }
             },
             "prefab": "Ghost"
@@ -122,6 +185,15 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
+                    "x": 20.0,
+                    "y": 20.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
                     "x": 20.0,
                     "y": 20.0
                 }
@@ -140,6 +212,15 @@
                 "Scale": {
                     "x": 20.0,
                     "y": 20.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 20.0,
+                    "y": 20.0
                 }
             },
             "prefab": "EntityStateBallType2"
@@ -154,6 +235,15 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
+                    "x": 50.0,
+                    "y": 50.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
                     "x": 50.0,
                     "y": 50.0
                 }
@@ -172,6 +262,15 @@
                 "Scale": {
                     "x": 100.0,
                     "y": 400.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 400.0
                 }
             },
             "prefab": "WireframeWall"
@@ -186,6 +285,15 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
+                    "x": 100.0,
+                    "y": 800.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
                     "x": 100.0,
                     "y": 800.0
                 }
@@ -204,6 +312,15 @@
                 "Scale": {
                     "x": 100.0,
                     "y": 800.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 800.0
                 }
             },
             "prefab": "Wall"
@@ -218,6 +335,15 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
+                    "x": 1600.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
                     "x": 1600.0,
                     "y": 100.0
                 }
@@ -236,6 +362,15 @@
                 "Scale": {
                     "x": 100.0,
                     "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 1200.0,
+                    "y": 350.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 100.0
                 }
             },
             "prefab": "ButtonStressTest"
@@ -250,6 +385,15 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
+                    "x": 200.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 900.0,
+                    "y": 100.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
                     "x": 200.0,
                     "y": 100.0
                 }
@@ -268,6 +412,15 @@
                 "Scale": {
                     "x": 200.0,
                     "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 1200.0,
+                    "y": 100.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 200.0,
+                    "y": 100.0
                 }
             },
             "prefab": "ButtonAudio2"
@@ -282,6 +435,15 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
+                    "x": 200.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 1500.0,
+                    "y": 100.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
                     "x": 200.0,
                     "y": 100.0
                 }

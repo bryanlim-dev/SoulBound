@@ -57,6 +57,8 @@ namespace NightSnack {
 			// Initialize viewport dimensions;
 			Hvp = static_cast<float>(coord.GetWindowHeight());
 			Wvp = static_cast<float>(coord.GetWindowWidth());
+			lastHvp = Hvp;
+			lastWvp = Wvp;
 
 			std::string path = std::filesystem::current_path().string();
 			std::cout << path << '\n';
@@ -500,6 +502,10 @@ namespace NightSnack {
 		/************************************************************************/
 		Vec3 ScreenToWorld(Vec3 const& screenPos);
 
+		bool ScreenSizeChanged();
+
+		void TranslateUIEntities();
+
 		void DebugRenderableInformation();
 
 		bool m_enableDebugDraw{ false };
@@ -509,6 +515,7 @@ namespace NightSnack {
 
 		// Viewport dimensions;
 		float Hvp, Wvp;
+		float lastHvp, lastWvp;
 
 		Signature m_systemSignature{};
 		// Reference to Coordinator;

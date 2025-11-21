@@ -75,6 +75,12 @@ namespace NightSnack {
 		Entity mainCam = FindCamera();
 		if (mainCam == INVALID_ENTITY) return;
 
+		if (ScreenSizeChanged()) {
+			TranslateUIEntities();
+			lastHvp = Hvp;
+			lastWvp = Wvp;
+		}
+
 		RenderWithCamera(mainCam);
 	}
 
@@ -84,10 +90,6 @@ namespace NightSnack {
 		// Get camera components
 		auto& camPos = m_coord.GetComponent<Transform>(camera).pos;
 		auto& camInfo = m_coord.GetComponent<Camera>(camera);
-
-		// Get the updated window resolution from the ApplicationSystem first
-		float screenW = static_cast<float>(m_coord.GetSystem<ApplicationSystem>()->GetWidth());
-		float screenH = static_cast<float>(m_coord.GetSystem<ApplicationSystem>()->GetHeight());
 
 		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
@@ -108,7 +110,7 @@ namespace NightSnack {
 				auto& rot = m_coord.GetComponent<Transform>(e).rot;
 				auto& scl = m_coord.GetComponent<Transform>(e).scale;
 
-				if (ren.wasModified) { 
+				if (ren.wasModified) {
 					//std::cout << "Resolving renderable: " << e << '\n'; 
 					ResolveRenderable(e, m_coord.ModifyComponent<Renderable>(e));
 				}
@@ -201,6 +203,7 @@ namespace NightSnack {
 					m_meshBatches[key].layerType = l.Type();
 
 				} else { // Non-Instanced Rendering
+					// Position and scale has been modified before getting the model matrix for UI entities
 					glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl);
 
 					Shader* shader = data.material->GetShader();
@@ -208,12 +211,10 @@ namespace NightSnack {
 
 					shader->Use();
 
-					// Passing of variables for SOLID COLOR entities only 
-					// Only solid color entities have the component color
 
 					// Entities on the GAMEUI layer will have different transformatio matrices
 					glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
-					glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
+					glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, Wvp, Hvp, 0.f) : proj;
 
 					shader->SetMat4("uView", viewToUse);
 					shader->SetMat4("uProj", projToUse);
@@ -221,6 +222,8 @@ namespace NightSnack {
 					shader->SetMat4("uModelToWorld", model);
 					shader->SetBool("uIsWireframe", ren.isWireframe);
 
+					// Passing of variables for SOLID COLOR entities only 
+					// Only solid color entities have the component color
 					if (m_coord.HasComponent<Color>(e)) {
 						// Entities with solid color
 						auto& clr = m_coord.GetComponent<Color>(e);
@@ -235,7 +238,7 @@ namespace NightSnack {
 							shader->SetVec4("uUVRect", { 0.f, 0.f, 1.f, 1.f });
 						}
 						// Default color is white, if the texture is not initialized
-						shader->SetVec3("uColor", glm::vec3{ 1.f, 1.f, 1.f});
+						shader->SetVec3("uColor", glm::vec3{ 1.f, 1.f, 1.f });
 					}
 
 					data.material->ApplyUniforms(ren.isWireframe);
@@ -276,7 +279,7 @@ namespace NightSnack {
 			for (auto& [key, instanceBatch] : m_meshBatches) {
 				//std::cout << "uploading unique mesh with name: " << meshName;
 				//std::cout << " with its instance count: " << instances.size() << std::endl;
-				
+
 				Mesh* mesh = instanceBatch.mesh;
 				Material* material = instanceBatch.material;
 
@@ -286,7 +289,7 @@ namespace NightSnack {
 				// Both solid colors and textures will have these uniforms
 
 				// Entities on the GAMEUI layer will have different transformation matrices
-				glm::mat4 projToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
+				glm::mat4 projToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::ortho(0.f, Wvp, Hvp, 0.f) : proj;
 				glm::mat4 viewToUse = (instanceBatch.layerType == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
 
 				shader->SetMat4("uProj", projToUse);
@@ -294,7 +297,7 @@ namespace NightSnack {
 				shader->SetBool("uUseInstancing", true);
 				shader->SetBool("uIsWireframe", instanceBatch.isWireframe);
 				shader->SetInt("uInstanceOffset", static_cast<int>(instanceBatch.ssboOffset));
-				
+
 				material->ApplyUniforms(instanceBatch.isWireframe);
 
 				if (instanceBatch.isWireframe) {
@@ -449,7 +452,7 @@ namespace NightSnack {
 			}
 
 			CreateTexture(filePath.string());
-			
+
 			// If it is a new texture, it means that there is no existing material for it
 			// Create new material with this texture combination
 			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.string()));
@@ -473,7 +476,7 @@ namespace NightSnack {
 		size_t firstUnderscore = textureFilePath.find_first_of('_');
 		size_t secondUnderscore = textureFilePath.find_first_of('_', firstUnderscore + 1);
 		size_t lastDot = textureFilePath.find_last_of('.');
-		
+
 		// Texture name provided no columns or rows, thus treat it as a static texture
 		if (firstUnderscore == std::string::npos || secondUnderscore == std::string::npos) {
 			auto tex = std::make_unique<Texture>(textureFilePath, rm);
@@ -692,6 +695,41 @@ namespace NightSnack {
 
 	void GraphicsSystem::RemoveCache(Entity e) {
 		m_renderCache.erase(e);
+	}
+
+	bool GraphicsSystem::ScreenSizeChanged() {
+		return (lastHvp != Hvp || lastWvp != Wvp);
+	}
+
+	void GraphicsSystem::TranslateUIEntities() {
+		// Only translate entities on the GAMEUI layer
+		for (Layer& l : m_layers) {
+			if (l.Empty() || !l.IsVisible() || l.Type() != LayerType::GAMEUI) { continue; }
+
+			for (Entity e : l.Entities()) {
+				// Reached the end of Valid Entities
+				if (e == INVALID_ENTITY) { break; }
+
+				// Obtain entity components
+				auto& pos = m_coord.GetComponent<Transform>(e).pos;
+				auto& scl = m_coord.GetComponent<Transform>(e).scale;
+				auto& UIpos = m_coord.GetComponent<Transform>(e).UIbasePos;
+				auto& UIscale = m_coord.GetComponent<Transform>(e).UIbaseScale;
+
+				// Translate the position and scale of UI layer objects based on the current screen resolution
+				// By default, the base screen resolution is 1600, 900
+				float ratioPosX = UIpos.x / 1600.f;
+				float ratioPosY = UIpos.y / 900.f;
+				float ratioScaleX = UIscale.x / 1600.f;
+				float ratioScaleY = UIscale.y / 900.f;
+
+				// Get the new position and scaling based on the current screen resolution
+				m_coord.ModifyComponent<Transform>(e).pos.x = ratioPosX * Wvp;
+				m_coord.ModifyComponent<Transform>(e).pos.y = ratioPosY * Hvp;
+				m_coord.ModifyComponent<Transform>(e).scale.x = ratioScaleX * Wvp;
+				m_coord.ModifyComponent<Transform>(e).scale.y = ratioScaleY * Hvp;
+			}
+		}
 	}
 
 	void GraphicsSystem::DebugRenderableInformation() {
