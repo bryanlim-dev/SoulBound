@@ -612,21 +612,39 @@ namespace NightSnack
                 ImGui::Text("Files:");
                 ImGui::BeginChild("FileList", ImVec2(0, 150), true);
 
+                bool hasUnsupportedAudio = false;
+                bool hasSupportedFiles = false;
+
                 for (size_t i = 0; i < m_pendingImports.size(); i++)
                 {
                     fs::path filePath(m_pendingImports[i]);
                     std::string filename = filePath.filename().string();
                     std::string ext = filePath.extension().string();
+                    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
                     if (IsImageFile(ext))
                     {
                         ImGui::TextColored(ImVec4(0.4f, 1.0f, 0.4f, 1.0f),
                             "[Image] %s", filename.c_str());
+                        hasSupportedFiles = true;
+                    }
+                    else if (ext == ".mp3" || ext == ".wav")
+                    {
+                        ImGui::TextColored(ImVec4(0.4f, 0.8f, 1.0f, 1.0f),
+                            "[Audio] %s", filename.c_str());
+                        hasSupportedFiles = true;
+                    }
+                    else if (ext == ".ogg" || ext == ".flac" || ext == ".aac")
+                    {
+                        ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f),
+                            "[Audio - Unsupported] %s", filename.c_str());
+                        hasUnsupportedAudio = true;
                     }
                     else
                     {
                         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.4f, 1.0f),
                             "[Other] %s", filename.c_str());
+                        hasSupportedFiles = true; // allow other file types
                     }
 
                     if (ImGui::IsItemHovered())
@@ -650,13 +668,37 @@ namespace NightSnack
                 ImGui::Checkbox("Overwrite existing files", &overwriteExisting);
                 ImGui::Separator();
 
+                if (hasUnsupportedAudio)
+                {
+                    ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f),
+                        "Audio file is not supported (only .mp3 and .wav");
+                    ImGui::Separator();
+                }
+
                 float buttonWidth = 100.0f;
 
-                if (ImGui::Button("Import", ImVec2(buttonWidth, 0)))
+                // disable Import button if there are unsupported audio files
+                if (hasUnsupportedAudio)
                 {
-                    ImportFiles(copyFiles, overwriteExisting);
-                    m_showImportDialog = false;
-                    m_pendingImports.clear();
+                    ImGui::BeginDisabled();
+                    ImGui::Button("Import", ImVec2(buttonWidth, 0));
+                    ImGui::EndDisabled();
+
+                    if (ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled))
+                    {
+                        ImGui::BeginTooltip();
+                        ImGui::Text("Cannot import: unsupported audio files detected");
+                        ImGui::EndTooltip();
+                    }
+                }
+                else
+                {
+                    if (ImGui::Button("Import", ImVec2(buttonWidth, 0)))
+                    {
+                        ImportFiles(copyFiles, overwriteExisting);
+                        m_showImportDialog = false;
+                        m_pendingImports.clear();
+                    }
                 }
 
                 ImGui::SameLine();
@@ -676,6 +718,7 @@ namespace NightSnack
         */
         void ImportFiles(bool copyFiles, bool overwriteExisting)
         {
+            //m_unsupportedAudioFiles.clear();
             int successCount = 0;
             int failCount = 0;
 
@@ -691,12 +734,15 @@ namespace NightSnack
                         std::string ext = source.extension().string();
                         std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
-                        if (ext != ".mp3" && ext != ".wav")
+                        // validate audio files - only allow .mp3 and .wav
+                        if (ext == ".mp3" || ext == ".wav" || DetermineAssetType(source) == AssetType::Audio)
                         {
-                            std::cerr << "Warning: Audio file '" << source.filename().string()
-                                << "' has unsupported format '" << ext << "'. Only .mp3 and .wav are supported.\n";
-                            failCount++;
-                            continue;
+                            if (ext != ".mp3" && ext != ".wav")
+                            {
+                                // m_unsupportedAudioFiles.push_back(source.filename().string());
+                                failCount++;
+                                continue;
+                            }
                         }
                     }
 
@@ -727,6 +773,12 @@ namespace NightSnack
                     std::cerr << "Failed to import " << sourcePath << ": " << e.what() << "\n";
                     failCount++;
                 }
+
+                //// show warning if there were unsupported audio files
+                //if (!m_unsupportedAudioFiles.empty())
+                //{
+                //    m_showUnsupportedAudioWarning = true;
+                //}
             }
         }
 
@@ -834,5 +886,6 @@ namespace NightSnack
 
             return m_loadedTextures[path];
         }
+
     };
 }
