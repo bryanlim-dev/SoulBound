@@ -63,8 +63,7 @@ namespace NightSnack {
 		LoadTextures();
 	}
 
-	void GraphicsSystem::Update(int steps) {
-		(void)steps;
+	void GraphicsSystem::Update() {
 
 		if (m_entities.empty()) return;
 
@@ -110,7 +109,7 @@ namespace NightSnack {
 				auto& scl = m_coord.GetComponent<Transform>(e).scale;
 
 				if (ren.wasModified) { 
-					std::cout << "Resolving renderable: " << e << '\n'; 
+					//std::cout << "Resolving renderable: " << e << '\n'; 
 					ResolveRenderable(e, m_coord.ModifyComponent<Renderable>(e));
 				}
 				// Find entity's renderCache;

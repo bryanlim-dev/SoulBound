@@ -75,7 +75,7 @@ namespace NightSnack {
         Reference to Coordinator.
         */
         /************************************************************************/
-        void Update(int steps) override {
+        void Update() override {
 
             // Pause movement updates if in Physics debug mode
             if (debugMode && !stepRequest) {
@@ -83,7 +83,7 @@ namespace NightSnack {
             }
 
             // Accumulated Time FixedDT;
-            for (int s{}; s < steps; ++s) {
+            for (int s{}; s < m_coord.steps; ++s) {
 
                 // Iterate through all Entities this system can access;
                 for (Layer& l : m_layers) {

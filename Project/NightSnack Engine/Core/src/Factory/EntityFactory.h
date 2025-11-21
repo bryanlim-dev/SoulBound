@@ -90,7 +90,7 @@ namespace NightSnack {
 		Currently does not do anything, but is required to be defined by ISystem.
 		*/
 		/************************************************************************/
-		void Update(int steps) override;
+		void Update() override;
 
 		/************************************************************************/
 		/*!
@@ -190,6 +190,7 @@ namespace NightSnack {
 
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;
+		std::unordered_multimap<std::string, Entity> prefabToEntities;	// Hot reloading prefabs;
 		std::vector<std::string> m_prefabNames;
 
 		std::filesystem::path GAMEDATA_DIR;

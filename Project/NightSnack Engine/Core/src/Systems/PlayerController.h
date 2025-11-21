@@ -89,8 +89,7 @@ namespace NightSnack {
         Reference to Coordinator.
         */
         /************************************************************************/
-        void Update(int steps) override {
-            (void)steps;
+        void Update() override {
 
             m_player = FindPlayer(m_coord);
 

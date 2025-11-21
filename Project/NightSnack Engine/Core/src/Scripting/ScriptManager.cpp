@@ -27,7 +27,7 @@
 namespace NightSnack::Scripting {
 
     // Main update to be called by Core engine (Updates all scripts)
-    void ScriptManager::Update(int steps) {
+    void ScriptManager::Update() {
         // Reattach entity scripts when Level is reloaded
         if (!m_attached || entityNum != m_entities.size()) {
             for (Entity e{}; e < MAX_ENTITIES; ++e) {
@@ -46,7 +46,7 @@ namespace NightSnack::Scripting {
         // Skip updating of scripts if in debug mode;
         if (debugMode && !stepRequest) { return; }
 
-        for (int s{}; s < steps; ++s) {
+        for (int s{}; s < m_coord.steps; ++s) {
             // Update all active scripts
             m_monoHost->UpdateAllScripts();
         }

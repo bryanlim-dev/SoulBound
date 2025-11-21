@@ -159,9 +159,8 @@ namespace NightSnack {
 		* @brief updates and handle button interactions
 		* @param steps number of simulation steps
 		*/
-		void Update(int steps) override
+		void Update() override
 		{
-			(void)steps;
 
 			// get mouse x and y position
 			float mouseX = m_coord.GetSystem<InputSystem>()->GetMousePosX();

@@ -79,10 +79,8 @@ namespace NightSnack {
     }
 
     // updates the fmod system
-    void AudioSystem::Update(int steps)
+    void AudioSystem::Update()
     {
-        (void)steps;
-
         if (!m_fmodSystem.expired())
             m_fmodSystem.lock()->update();
     }

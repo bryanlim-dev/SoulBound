@@ -136,8 +136,7 @@ namespace NightSnack {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	void TextSystem::Update(int steps) {
-		(void)steps;
+	void TextSystem::Update() {
 
 		//if (!m_coord.GetSystem<ImguiSystem>()->GetEditorActive()) {
 		

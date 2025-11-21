@@ -110,20 +110,6 @@ namespace NightSnack
 			// Display the framebuffer texture in the panel
 			if (m_colorTex && imageSize.x > 0 && imageSize.y > 0)
 			{
-				ImGui::BeginChild("SceneToolbar", ImVec2(0, 40), false, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoScrollWithMouse);
-				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(10, 0));
-				ImGui::Text("Tool:");
-				ImGui::SameLine();
-				if (ImGui::Selectable("View", currentTool == SceneTool::PanZoom, 0, ImVec2(60, 30))) { currentTool = SceneTool::PanZoom; }
-				ImGui::SameLine();
-				if (ImGui::Selectable("Select", currentTool == SceneTool::Select, 0, ImVec2(60, 30))) { currentTool = SceneTool::Select; }
-				ImGui::SameLine();
-				if (ImGui::Selectable("MultiSelect", currentTool == SceneTool::MultiSelect, 0, ImVec2(90, 30))) { currentTool = SceneTool::MultiSelect; }
-				ImGui::SameLine();
-				if (ImGui::Selectable("Paint", currentTool == SceneTool::Paint, 0, ImVec2(60, 30))) { currentTool = SceneTool::Paint; }
-				ImGui::PopStyleVar();
-				ImGui::EndChild();
-
 				// Center the image in the panel
 				panelSize = ImGui::GetContentRegionAvail();
 				ImVec2 cursorPos = ImGui::GetCursorPos();
@@ -131,8 +117,8 @@ namespace NightSnack
 				ImGui::SetCursorPos(ImVec2(cursorPos.x + offset.x, cursorPos.y + offset.y));
 				// Draw the scene texture
 				ImGui::Image((ImTextureID)m_colorTex, imageSize, ImVec2(0, 1), ImVec2(1, 0));
-
 				ImVec2 imageTopLeft = ImGui::GetItemRectMin();
+
 				auto& cam = m_coord.GetComponent<Camera>(m_editorCameraEntity);
 				auto& camT = m_coord.GetComponent<Transform>(m_editorCameraEntity);
 
@@ -171,6 +157,9 @@ namespace NightSnack
 				}
 
 				CalculateMouseWorldPosition(imageTopLeft, imageSize, mouseWorldX, mouseWorldY);
+
+				// Displays mouse world position
+				DrawMouseInfo(mouseWorldX, mouseWorldY, imageTopLeft);
 
 				if (ImGui::IsItemHovered() && ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
 				{
@@ -364,20 +353,9 @@ namespace NightSnack
 				}
 
 				ImGui::EndDragDropTarget();
-
-				//// show instructions when hovering
-				//if (ImGui::IsItemHovered())
-				//{
-				//    if (m_backgroundEntity == INVALID_ENTITY)
-				//    {
-				//        ImGui::BeginTooltip();
-				//        ImGui::Text("Drag an image from Assets to add background");
-				//        ImGui::EndTooltip();
-				//    }
-				//}
 			}
-			// info panel to show current scene info
-			DrawSceneInfo(mouseWorldX, mouseWorldY);
+			// Draw tool bar for mouse tool selection
+			DrawToolBar();
 
 			ImGui::End();
 		}
@@ -432,7 +410,7 @@ namespace NightSnack
 		bool m_boundaryInitialized = false;
 
 		// Current scene tool
-		SceneTool currentTool = SceneTool::PanZoom;
+		SceneTool currentTool = SceneTool::Select;
 
 		// Tilemap for object snapping and tile painting
 		Tilemap& m_tilemap;
@@ -624,6 +602,14 @@ namespace NightSnack
 		/************************************************************************/
 		/*!
 		\brief
+			Draws the tool bar for selecting mouse tools.
+		*/
+		/************************************************************************/
+		void DrawToolBar();
+
+		/************************************************************************/
+		/*!
+		\brief
 			Draws scene information such as mouse position and background entity info.
 
 		\param[in] mouseX
@@ -631,9 +617,12 @@ namespace NightSnack
 
 		\param[in] mouseY
 			- Mouse Y coordinate in world space.
+
+		\param[in] imageTopLeft
+			- Top-left corner of the image in world space.
 		*/
 		/************************************************************************/
-		void DrawSceneInfo(float mouseX, float mouseY);
+		void DrawMouseInfo(float mouseX, float mouseY, ImVec2 imageTopLeft);
 
 		/************************************************************************/
 		/*!
@@ -880,6 +869,7 @@ namespace NightSnack
 	inline void ScenePanel::HandleEntityPicking(float mouseWorldX, float mouseWorldY)
 	{
 		Entity topEntity = INVALID_ENTITY;
+		LayerType layer = LayerType::_ENGINE;	// Lowest
 		float topZ = -1e9f;
 		for (Entity e : m_coord.GetLivingEntities())
 		{
@@ -893,10 +883,15 @@ namespace NightSnack
 				mouseWorldY >= t.pos.y - halfH && mouseWorldY <= t.pos.y + halfH)
 			{
 				float z = t.pos.z;
-				if (z > topZ)
-				{
-					topEntity = e;
+				LayerType l = t.layer;
+				if (l == layer && z > topZ) {
 					topZ = z;
+					topEntity = e;
+				}
+				if (l > layer) {
+					layer = l;
+					topZ = z;
+					topEntity = e;
 				}
 			}
 		}
@@ -995,43 +990,64 @@ namespace NightSnack
 		std::cout << "[Scene] Background created at (" << mouseX << ", " << mouseY << ")\n";
 	}
 
-	// Draw scene information such as mouse position and background entity info.
-	inline void ScenePanel::DrawSceneInfo(float mouseX, float mouseY)
+	// Draw the tool bar for selecting mouse tools.
+	inline void ScenePanel::DrawToolBar()
 	{
-		ImGui::Separator();
+		ImVec2 imageTopLeft = ImGui::GetItemRectMin();
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
 
-		// Display mouse position
-		ImGui::Text("Mouse World Position: (%.1f, %.1f)", mouseX, mouseY);
+		// Tool bar overlay position
+		ImVec2 toolBarPos = ImVec2(imageTopLeft.x + 12, imageTopLeft.y + 12);
+		float buttonWidth[4] = { 60.0f, 60.0f, 90.0f, 60.0f };
+		const char* toolNames[4] = { "View", "Select", "MultiSelect", "Paint" };
+		SceneTool toolEnums[4] = { SceneTool::PanZoom, SceneTool::Select, SceneTool::MultiSelect, SceneTool::Paint };
 
-		// Display background entity info
-		if (m_backgroundEntity != INVALID_ENTITY)
+		// Draw background
+		float totalWidth = buttonWidth[0] + buttonWidth[1] + buttonWidth[2] + buttonWidth[3] + 30.0f;
+		drawList->AddRectFilled(
+			toolBarPos,
+			ImVec2(toolBarPos.x + totalWidth, toolBarPos.y + 32),
+			IM_COL32(32, 32, 32, 180), 4.0f);
+
+		// Draw and handle buttons
+		float x = toolBarPos.x + 8;
+		for (int i = 0; i < 4; ++i)
 		{
-			//ImGui::Text("Background Entity: %u", m_backgroundEntity);
-
-			// Show transform if exists
-			/*if (m_coord.HasComponent<Transform>(m_backgroundEntity))
+			ImVec2 btnPos = ImVec2(x, toolBarPos.y + 4);
+			ImGui::SetCursorScreenPos(btnPos);
+			ImGui::PushID(i);
+			if (ImGui::InvisibleButton(toolNames[i], ImVec2(buttonWidth[i], 24.0f)))
 			{
-				auto& transform = m_coord.GetComponent<Transform>(m_backgroundEntity);
-				ImGui::Text("Position: (%.1f, %.1f, %.1f)",
-					transform.pos.x, transform.pos.y, transform.pos.z);
-				ImGui::Text("Scale: (%.1f, %.1f)",
-					transform.scale.x, transform.scale.y);
-			}*/
+				currentTool = toolEnums[i];
+			}
 
-			//// Button to remove background
-			//if (ImGui::Button("Remove Background"))
-			//{
-			//    m_coord.DestroyEntity(m_backgroundEntity);
-			//    m_backgroundEntity = INVALID_ENTITY;
-			//    std::cout << "[Scene] Background removed\n";
-			//}
+			// Highlight selected tool
+			ImU32 color = (currentTool == toolEnums[i]) ? IM_COL32(100, 180, 255, 255) : IM_COL32(200, 200, 200, 255);
+			drawList->AddRectFilled(btnPos, ImVec2(btnPos.x + buttonWidth[i], btnPos.y + 24.0f), color, 4.0f);
+			drawList->AddText(ImVec2(btnPos.x + 8, btnPos.y + 4), IM_COL32(32, 32, 32, 255), toolNames[i]);
+			ImGui::PopID();
+			x += buttonWidth[i] + 6.0f;
 		}
-		//else
-		//{
-		//    // Show hint when no background
-		//    ImGui::TextColored(ImVec4(1, 1, 0, 1),
-		//        "Drag an image from Assets panel to add background");
-		//}
+	}
+
+	// Draw scene information such as mouse position and background entity info.
+	inline void ScenePanel::DrawMouseInfo(float mouseX, float mouseY, ImVec2 imageTopLeft)
+	{
+		// Display mouse info at top left corner
+		ImVec2 imageBottomLeft = ImVec2(imageTopLeft.x + 12, imageTopLeft.y + ImGui::GetItemRectSize().y - 32);
+
+		char mouseInfo[64];
+		snprintf(mouseInfo, sizeof(mouseInfo), "Mouse World: (%.1f, %.1f)", mouseX, mouseY);
+
+		// Draw the info with a background for readability
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+		drawList->AddRectFilled(
+			ImVec2(imageBottomLeft.x - 4, imageBottomLeft.y - 4),
+			ImVec2(imageBottomLeft.x + 200, imageBottomLeft.y + 22),
+			IM_COL32(32, 32, 32, 180), 4.0f);
+
+		drawList->AddText(imageBottomLeft, IM_COL32(255, 255, 255, 255), mouseInfo);
+
 	}
 
 	// Draw the tilemap overlay on the scene panel.

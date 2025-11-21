@@ -242,11 +242,19 @@ namespace NightSnack {
 
 		void ResetEverything();
 
+		bool IsPaused() { return m_paused; }
+		void TogglePause() { m_paused = !m_paused; }
+		void Pause() { m_paused = true; }
+		void Unpause() { m_paused = false; }
+		int steps = 0;
+
 	private:
 		// ECS Managers;
 		std::unique_ptr<EntityManager> m_entityManager;
 		std::unique_ptr<ComponentManager> m_componentManager;
 		std::unique_ptr<SystemManager> m_systemManager;
+
+		bool m_paused = true;
 	};
 
 
