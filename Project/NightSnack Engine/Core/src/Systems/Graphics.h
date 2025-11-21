@@ -59,7 +59,7 @@ namespace NightSnack {
 			Wvp = static_cast<float>(coord.GetWindowWidth());
 
 			std::string path = std::filesystem::current_path().string();
-			std::cout << path << '\n';
+			//std::cout << path << '\n';
 
 			Init();
 

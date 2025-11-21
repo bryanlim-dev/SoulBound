@@ -112,7 +112,6 @@ namespace NightSnack {
 
 		// Set to 0 to disable frame cap
 		m_coord.GetSystem<ApplicationSystem>()->SetFrameCap(0.f);
-		m_coord.Unpause();
 	}
 
 	// Function should be called upon termination of program;
@@ -126,6 +125,7 @@ namespace NightSnack {
 
 	void CoreEngine::Run() {
 		try {
+			m_coord.Unpause();
 			while (!m_coord.GetSystem<ApplicationSystem>()->ShouldClose()) {
 				Update();
 			}
@@ -157,6 +157,7 @@ namespace NightSnack {
 		// Fixed DT with Accumulated time implementation;
 		m_coord.steps = 0;	// reset step count per frame;
 		float dt = m_coord.GetSystem<ApplicationSystem>()->GetDT();	// compute actual game loop time;
+
 		accumulatedTime += dt;
 
 		// Obtain number of steps this loop;

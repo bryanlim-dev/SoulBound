@@ -258,6 +258,8 @@ namespace NightSnack
 							{
 								auto& rb = m_coord.ModifyComponent<RigidBody>(m_hoveredEntity);
 								m_gravityBackup[m_hoveredEntity] = rb.useGravity;
+								rb.accel = Vec2{};
+								rb.vel = Vec2{};
 								rb.useGravity = false;
 							}
 						}
@@ -328,12 +330,12 @@ namespace NightSnack
 						const char* droppedPath = static_cast<const char*>(payload->Data);
 
 						// Dropped path: ../assets\GameData\Prefabs\Ghost.json
-						std::cout << "Dropped path: " << droppedPath << "\n";
+						//std::cout << "Dropped path: " << droppedPath << "\n";
 
 						// Get the Prefab name from the path, which is 'Ghost' in this case
 						std::filesystem::path filePath(droppedPath);
 
-						std::cout << "Creating entity from prefab: " << filePath.stem().string() << "\n";
+						//std::cout << "Creating entity from prefab: " << filePath.stem().string() << "\n";
 
 						Transform trans{};
 
@@ -347,7 +349,7 @@ namespace NightSnack
 
 						m_coord.GetSystem<EntityFactory>()->Create(filePath.stem().string(), trans);
 
-						std::cout << "Transform: " << trans.pos.x << ", " << trans.pos.y << std::endl;
+						//std::cout << "Transform: " << trans.pos.x << ", " << trans.pos.y << std::endl;
 
 					}
 				}
@@ -957,18 +959,18 @@ namespace NightSnack
 			return;
 		}
 
-		std::cout << "[Scene] Loaded image with key: " << imageKey << "\n";
+		//std::cout << "[Scene] Loaded image with key: " << imageKey << "\n";
 
 		// remove old background if exists
 		if (m_backgroundEntity != INVALID_ENTITY)
 		{
 			m_coord.DestroyEntity(m_backgroundEntity);
-			std::cout << "[Scene] Removed old background entity\n";
+			//std::cout << "[Scene] Removed old background entity\n";
 		}
 
 		// create new entity
 		m_backgroundEntity = m_coord.CreateEntity();
-		std::cout << "[Scene] Created entity: " << m_backgroundEntity << "\n";
+		//std::cout << "[Scene] Created entity: " << m_backgroundEntity << "\n";
 
 		// add Transform component (position, rotation, scale)
 		// Position at mouse location in world space
@@ -987,7 +989,7 @@ namespace NightSnack
 		m_coord.AddComponent(m_backgroundEntity, renderable);
 
 
-		std::cout << "[Scene] Background created at (" << mouseX << ", " << mouseY << ")\n";
+		//std::cout << "[Scene] Background created at (" << mouseX << ", " << mouseY << ")\n";
 	}
 
 	// Draw the tool bar for selecting mouse tools.
@@ -1137,8 +1139,8 @@ namespace NightSnack
 		Collider c;
 		c.shape = ShapeType::AABB;
 		c.type = ColliderType::Ground;
-		c.width = grid;
-		c.height = grid;
+		//c.width = grid;
+		//c.height = grid;
 		m_coord.AddComponent(tileEntity, c);
 
 		// Update material texture of tile

@@ -57,7 +57,7 @@ namespace NightSnack {
 			glNamedBufferStorage(m_globalInstanceSSBO, m_globalInstanceSSBOSize, zeroData.data(), GL_DYNAMIC_STORAGE_BIT);
 
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
-			//std::cout << "Size of InstanceData: " << sizeof(Mesh::InstanceData);
+			////std::cout << "Size of InstanceData: " << sizeof(Mesh::InstanceData);
 		}
 
 		LoadTextures();
@@ -109,7 +109,7 @@ namespace NightSnack {
 				auto& scl = m_coord.GetComponent<Transform>(e).scale;
 
 				if (ren.wasModified) { 
-					//std::cout << "Resolving renderable: " << e << '\n'; 
+					////std::cout << "Resolving renderable: " << e << '\n'; 
 					ResolveRenderable(e, m_coord.ModifyComponent<Renderable>(e));
 				}
 				// Find entity's renderCache;
@@ -121,7 +121,7 @@ namespace NightSnack {
 
 				CachedRenderData& data = it->second;
 				if (!data.valid) {
-					std::cout << "Entity " << e << " skipped (invalid renderable)\n";
+					//std::cout << "Entity " << e << " skipped (invalid renderable)\n";
 					continue;
 				}
 
@@ -257,7 +257,7 @@ namespace NightSnack {
 
 		// Uploading and Drawing for Instanced Rendering
 		if (m_enableInstancedRendering) {
-			//std::cout << "Num unique instances total: " << m_meshBatches.size() << std::endl;
+			////std::cout << "Num unique instances total: " << m_meshBatches.size() << std::endl;
 
 			// Update m_allInstances with the collected InstanceBatches, and the SSBO offsets
 			size_t currentOffset{ 0 };
@@ -274,8 +274,8 @@ namespace NightSnack {
 
 			// Upload uniforms in respect to its InstanceBatch
 			for (auto& [key, instanceBatch] : m_meshBatches) {
-				//std::cout << "uploading unique mesh with name: " << meshName;
-				//std::cout << " with its instance count: " << instances.size() << std::endl;
+				////std::cout << "uploading unique mesh with name: " << meshName;
+				////std::cout << " with its instance count: " << instances.size() << std::endl;
 				
 				Mesh* mesh = instanceBatch.mesh;
 				Material* material = instanceBatch.material;
@@ -462,7 +462,7 @@ namespace NightSnack {
 
 		// Texture already exists
 		if (GetTexture(textureFilePath)) {
-			//std::cout << "This texture already exists!\n";
+			////std::cout << "This texture already exists!\n";
 			return;
 		}
 
@@ -494,7 +494,7 @@ namespace NightSnack {
 		// To create the AnimationClip after creating a new texture
 		if (m_dispatcher)
 		{
-			//std::cout << "[GRAPHICSYSTEM] dispatching event\n";
+			////std::cout << "[GRAPHICSYSTEM] dispatching event\n";
 			m_dispatcher->QueueEvent(std::make_unique<GraphicsEvent>(GraphicsEvent::GraphicsAction::CreateTexture));
 		}
 	}
@@ -518,14 +518,14 @@ namespace NightSnack {
 
 			// Change the name of this Renderable's material name to the new material name
 			ren.materialName = filePath.stem().string();
-			//std::cout << "New texture detected!\n";
-			//std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
-			//std::cout << "and this texture name is: " << m_materials[ren.materialName]->GetTexture()->GetTextureName() << std::endl;
+			////std::cout << "New texture detected!\n";
+			////std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
+			////std::cout << "and this texture name is: " << m_materials[ren.materialName]->GetTexture()->GetTextureName() << std::endl;
 
 		} else {
 			// Texture already exists, but Material might not
 			// Check whether combination of this Material exists with this Texture
-			//std::cout << "Texture exists already!\n";
+			////std::cout << "Texture exists already!\n";
 			bool found = false;
 			for (const auto& [matName, material] : m_materials) {
 				// Check whether the texture exists first! 
@@ -534,17 +534,17 @@ namespace NightSnack {
 				if (!matTex) continue;
 
 				// If it exists already, change the name of this Renderable's material to the existing material name
-				//std::cout << "Checking for texture name: " << textureFileName << std::endl;
+				////std::cout << "Checking for texture name: " << textureFileName << std::endl;
 				if (filePath.string() == matTex->GetTextureName()) {
 					ren.materialName = filePath.stem().string();
 					found = true;
-					//std::cout << "Material for this texture exists too!\n";
+					////std::cout << "Material for this texture exists too!\n";
 					break;
 				}
 
 			}
 			if (!found) {
-				//std::cout << "Material for this texture doesnt exist yet, creating one ...\n";
+				////std::cout << "Material for this texture doesnt exist yet, creating one ...\n";
 				// if it does not exist, create new material with this texture combination
 				auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.string()));
 				// Name of the material will be the texture file path, but the name only
@@ -552,10 +552,10 @@ namespace NightSnack {
 				// change the name of this Renderable's material name to the new material name
 				ren.materialName = filePath.stem().string();
 			}
-			//std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
+			////std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
 		}
 
-		//std::cout << "UpdateTextureOfMaterial(), mat name: " << ren.materialName << std::endl;
+		////std::cout << "UpdateTextureOfMaterial(), mat name: " << ren.materialName << std::endl;
 	}
 
 	// Helper functions to add resources --------------------------------------------------------------------
@@ -697,15 +697,15 @@ namespace NightSnack {
 	void GraphicsSystem::DebugRenderableInformation() {
 
 		// Materials
-		std::cout << "===== MATERIALS IN STORE =====\n";
+		//std::cout << "===== MATERIALS IN STORE =====\n";
 		for (auto& [matName, material] : m_materials) {
-			std::cout << matName << std::endl;
+			//std::cout << matName << std::endl;
 		}
 
 		// Textures
-		std::cout << "===== TEXTURES IN STORE =====\n";
+		//std::cout << "===== TEXTURES IN STORE =====\n";
 		for (auto& [texName, texture] : m_textures) {
-			std::cout << texName << std::endl;
+			//std::cout << texName << std::endl;
 		}
 	}
 

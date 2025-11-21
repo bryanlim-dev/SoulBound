@@ -65,7 +65,7 @@ namespace NightSnack
 		//	std::function<void(float, Entity)> updateFunction = [](float, Entity) { /* Default is empty by Design*/ })
 		//	:m_entityID(id), m_stateName(stateKeyName), m_coord(coord){
 		//	m_updateFunction = updateFunction;
-		//	//std::cout << "State adresss in constructor: " << this << "\n";
+		//	////std::cout << "State adresss in constructor: " << this << "\n";
 		//}
 
 		/************************************************************************/

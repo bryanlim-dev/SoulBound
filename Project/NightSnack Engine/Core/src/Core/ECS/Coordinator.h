@@ -242,10 +242,10 @@ namespace NightSnack {
 
 		void ResetEverything();
 
-		bool IsPaused() { return m_paused; }
-		void TogglePause() { m_paused = !m_paused; }
-		void Pause() { m_paused = true; }
-		void Unpause() { m_paused = false; }
+		bool IsPaused() const noexcept { return m_paused; }
+		void TogglePause() noexcept { m_paused = !m_paused; }
+		void Pause() noexcept { m_paused = true; }
+		void Unpause() noexcept { m_paused = false; }
 		int steps = 0;
 
 	private:

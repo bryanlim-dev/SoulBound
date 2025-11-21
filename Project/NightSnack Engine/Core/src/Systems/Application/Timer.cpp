@@ -123,11 +123,11 @@ namespace NightSnack {
         /*for (const auto& [name, time] : m_systemsTimes)
         {
             float percent = (time / m_totalSystemTime) * 100.f;
-            std::cout << std::left << std::setw(36) << (name + " Time Consumption :")
+            //std::cout << std::left << std::setw(36) << (name + " Time Consumption :")
                 << std::right << std::setw(8) << std::fixed << std::setprecision(4) << percent
                 << "% |" << std::endl;
         }
-        std::cout << std::endl;*/
+        //std::cout << std::endl;*/
     }
 
     // Resets all system timers and total system time
@@ -140,6 +140,8 @@ namespace NightSnack {
 
     float Timer::GetDT() const
     {
+        static bool firstFrame;
+        if (firstFrame) { return 0.f; }
         return m_deltaTime;
     }
 

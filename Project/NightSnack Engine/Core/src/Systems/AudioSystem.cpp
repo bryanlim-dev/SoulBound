@@ -88,7 +88,7 @@ namespace NightSnack {
     // loads all game audio files by scanning directories
     void AudioSystem::LoadAllGameAudio()
     {
-        std::cout << "[AudioSystem] Scanning audio directories...\n";
+        //std::cout << "[AudioSystem] Scanning audio directories...\n";
 
         // Scan SFX directory
         ScanAudioDirectory("../assets/Sound/SFX", false);
@@ -96,7 +96,7 @@ namespace NightSnack {
         // Scan BGM directory
         ScanAudioDirectory("../assets/Sound/Music", true);
 
-        std::cout << "[AudioSystem] Audio loading complete.\n";
+        //std::cout << "[AudioSystem] Audio loading complete.\n";
     }
 
     // scans a directory and loads all audio files
@@ -119,8 +119,8 @@ namespace NightSnack {
             }
 
             std::string audioType = isBGM ? "BGM" : "SFX";
-            std::cout << "[AudioSystem] Loaded " << loadedCount << " " << audioType
-                << " files from: " << folderPath << "\n";
+            //std::cout << "[AudioSystem] Loaded " << loadedCount << " " << audioType
+            //    << " files from: " << folderPath << "\n";
         }
         catch (const std::exception& e) {
             std::cerr << "[AudioSystem] Error scanning directory " << folderPath
@@ -185,7 +185,7 @@ namespace NightSnack {
                 m_loadedSFX[key] = sound;
             }
 
-            std::cout << "[AudioSystem] Loaded: " << filepath << " (key: " << key << ")\n";
+            //std::cout << "[AudioSystem] Loaded: " << filepath << " (key: " << key << ")\n";
             return true;
         }
         else if (result == LOAD_FAIL_PREEXIST)
@@ -203,7 +203,7 @@ namespace NightSnack {
                 m_loadedSFX[key] = sound;
             }
 
-            std::cout << "[AudioSystem] Already loaded: " << filepath << "\n";
+            //std::cout << "[AudioSystem] Already loaded: " << filepath << "\n";
             return true;
         }
         else
@@ -287,7 +287,7 @@ namespace NightSnack {
         }
 
         m_bgmPaused = false;
-        std::cout << "[AudioSystem] Playing BGM: " << bgmKey << "\n";
+        //std::cout << "[AudioSystem] Playing BGM: " << bgmKey << "\n";
     }
 
     // stops the currently playing background music

@@ -106,7 +106,7 @@ namespace NightSnack {
 		for (unsigned char c = 0; c < 128; ++c) {
 			// Load and render character glyph
 			if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-				std::cout << "Error: Failed to load Glyph\n";
+				//std::cout << "Error: Failed to load Glyph\n";
 				continue;
 			}
 			// Generate texture from glyph bitmap
@@ -204,7 +204,7 @@ namespace NightSnack {
 	{
 		// Make sure the font exists
 		if (m_fontCharacters.find(fontName) == m_fontCharacters.end()) {
-			std::cout << "ERROR: Font '" << fontName << "' not found!" << std::endl;
+			//std::cout << "ERROR: Font '" << fontName << "' not found!" << std::endl;
 			return;
 		}
 

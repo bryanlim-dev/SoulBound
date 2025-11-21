@@ -60,13 +60,13 @@ namespace NightSnack {
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
 
-					case InputEvent::InputAction::StressTest:
-						ReloadPrefabs();
-						for (auto const& [name, key] : m_prefabKeys) {
-							std::cout << name << ", ";
-						}
-						std::cout << '\n';
-						break;
+					//case InputEvent::InputAction::StressTest:
+					//	ReloadPrefabs();
+					//	for (auto const& [name, key] : m_prefabKeys) {
+					//		std::cout << name << ", ";
+					//	}
+					//	std::cout << '\n';
+					//	break;
 					}
 				}
 				});
