@@ -11,7 +11,7 @@
  * and basic scaling and rotating of a specific object via input events from the event dispatcher.
  * The Graphics System supports both Instanced and Non-Instanced Rendering.
  *
- * Copyright � 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -31,22 +31,6 @@ namespace NightSnack {
 		auto textShader = std::make_unique<Shader>("../assets/shaders/text_vs.vert", "../assets/shaders/text_fs.frag");
 		AddShader("text", std::move(textShader));
 
-		std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
-		// Textures;
-		// The number of columns and rows passed in here
-		// determines the number of AnimationClips and AnimationFrames
-		// [if the entity has an Animator component]
-		auto bananaTex = std::make_unique<Texture>("../assets/banana.jpg", rm);
-		AddTexture("../assets/banana.jpg", std::move(bananaTex));
-		auto targetTex = std::make_unique<Texture>("../assets/target.png", rm);
-		AddTexture("../assets/target.png", std::move(targetTex));
-		auto bgTex = std::make_unique<Texture>("../assets/background.png", rm);
-		AddTexture("../assets/background.png", std::move(bgTex));
-		auto ghostTex = std::make_unique<Texture>("../assets/ghost.png", rm, 4, 1);
-		AddTexture("../assets/ghost.png", std::move(ghostTex));
-		auto slimeTex = std::make_unique<Texture>("../assets/slime.png", rm, 4, 1);
-		AddTexture("../assets/slime.png", std::move(slimeTex));
-
 		// Meshes;
 		AddMesh("point", Mesh::CreatePoint());
 		AddMesh("line", Mesh::CreateLine(glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f))); // Default facing upwards
@@ -55,22 +39,10 @@ namespace NightSnack {
 		AddMesh("AABBColliderMesh", Mesh::CreateAABBMesh());
 		AddMesh("CircleColliderMesh", Mesh::CreateCircleMesh());
 
-		// Materials with texture
-		auto bananaMat = std::make_unique<Material>(GetShader("texture"), GetTexture("../assets/banana.jpg"));
-		bananaMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
-		AddMaterial("bananaMat", std::move(bananaMat));
-		auto targetMat = std::make_unique<Material>(GetShader("texture"), GetTexture("../assets/target.png"));
-		AddMaterial("targetMat", std::move(targetMat));
-		auto backgroundMat = std::make_unique<Material>(GetShader("texture"), GetTexture("../assets/background.png"));
-		AddMaterial("backgroundMat", std::move(backgroundMat));
-		auto ghostMat = std::make_unique<Material>(GetShader("texture"), GetTexture("../assets/ghost.png"));
-		AddMaterial("ghostMat", std::move(ghostMat));
-		auto slimeMat = std::make_unique<Material>(GetShader("texture"), GetTexture("../assets/slime.png"));
-		AddMaterial("slimeMat", std::move(slimeMat));
-
 		// Materials with solid color
+		// THE CREATION OF THIS COLOR MATERIAL SHALL BE MOVED TO RESOURCE MANAGER INIT
 		auto colorMat = std::make_unique<Material>(GetShader("color"));
-		colorMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
+		//colorMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
 		AddMaterial("ColorMat", std::move(colorMat));
 
 		// Initialise buffer for Instanced Rendering
@@ -87,6 +59,8 @@ namespace NightSnack {
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
 			//std::cout << "Size of InstanceData: " << sizeof(Mesh::InstanceData);
 		}
+
+		LoadTextures();
 	}
 
 	void GraphicsSystem::Update(int steps) {
@@ -130,21 +104,38 @@ namespace NightSnack {
 
 				// Obtain entity components
 				auto& ren = m_coord.GetComponent<Renderable>(e);
+				auto& trans = m_coord.GetComponent<Transform>(e);
 				auto& pos = m_coord.GetComponent<Transform>(e).pos;
 				auto& rot = m_coord.GetComponent<Transform>(e).rot;
 				auto& scl = m_coord.GetComponent<Transform>(e).scale;
 
-				if (ren.wasModified) { ResolveRenderable(e, ren); }
+				if (ren.wasModified) { 
+					std::cout << "Resolving renderable: " << e << '\n'; 
+					ResolveRenderable(e, m_coord.ModifyComponent<Renderable>(e));
+				}
 				// Find entity's renderCache;
 				auto it = m_renderCache.find(e);
 				if (it == m_renderCache.end() || !it->second.valid) {
-					ResolveRenderable(e, ren);
+					ResolveRenderable(e, m_coord.ModifyComponent<Renderable>(e));
 					it = m_renderCache.find(e);
 				}
 
 				CachedRenderData& data = it->second;
 				if (!data.valid) {
 					std::cout << "Entity " << e << " skipped (invalid renderable)\n";
+					continue;
+				}
+
+				// If the layer of this entity has been changed in real-time, 
+				// Remove this entity from the previous layer, and insert it into the new layer
+				if (trans.layer != l.Type()) {
+					l.Remove(e);
+					for (auto& layer : m_layers) {
+						if (layer.Type() == trans.layer) {
+							layer.Insert(e);
+							break;
+						}
+					}
 					continue;
 				}
 
@@ -172,13 +163,18 @@ namespace NightSnack {
 					// Each different combination of color/texture/wireframe will be sent in different batches
 					std::string key = ren.meshName;
 
-					if (m_coord.HasComponent<Color>(e)) {
+					// Entities that are of solid color must have
+					// ColorMat as their material and a Color component
+					if (ren.materialName == "ColorMat" && m_coord.HasComponent<Color>(e)) {
+						// Change the instance color to be based on its Color component values
 						auto& col = m_coord.GetComponent<Color>(e);
 						instance.color = glm::vec4{ col.r, col.g, col.b, col.a };
 						key += "_color";
 					} else {
+						// Entities that have textured materials
 						key = key + "_textured_" + ren.materialName;
 					}
+
 
 					if (ren.isWireframe) {
 						key += "_wireframe";
@@ -239,15 +235,11 @@ namespace NightSnack {
 						} else {
 							shader->SetVec4("uUVRect", { 0.f, 0.f, 1.f, 1.f });
 						}
+						// Default color is white, if the texture is not initialized
+						shader->SetVec3("uColor", glm::vec3{ 1.f, 1.f, 1.f});
 					}
 
 					data.material->ApplyUniforms(ren.isWireframe);
-
-					/*std::cout << "MATERIAL NAME IS: " << ren.materialName << std::endl;
-					if (ren.materialName == "ghostMat") {
-						std::cout << "MATERIAL NAME ghostMat has texture: " << data.material->GetTexture()->GetTextureName() << std::endl;
-
-					}*/
 
 					// Change the polygon mode to wireframe
 					if (ren.isWireframe) {
@@ -433,27 +425,100 @@ namespace NightSnack {
 		glDepthMask(GL_FALSE);
 	}
 
+	void GraphicsSystem::LoadTextures() {
+		std::filesystem::path assetsFilePath = "../assets";
+
+		if (!std::filesystem::exists(assetsFilePath)) {
+			std::cerr << "[GraphicsSystem] Error: Assets directory cannot be found!\n";
+			return;
+		}
+
+		// Iterate through entries in directory
+		for (auto const& entry : std::filesystem::directory_iterator(assetsFilePath)) {
+			// Skip through folders
+			if (entry.is_directory()) {
+				continue;
+			}
+
+			// Only load the texture assets that are in this assets folder
+			std::filesystem::path filePath = entry.path();
+			std::string extension = filePath.extension().string();
+
+			// Only load image files with the correct extensions
+			if (extension != ".png" && extension != ".jpg" && extension != ".jpeg") {
+				continue;
+			}
+
+			CreateTexture(filePath.string());
+			
+			// If it is a new texture, it means that there is no existing material for it
+			// Create new material with this texture combination
+			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.string()));
+			// Name of the material will be based on the texture file path, but the name only
+			AddMaterial(filePath.stem().string(), std::move(newMat));
+		}
+	}
+
+	void GraphicsSystem::CreateTexture(std::string textureFilePath) {
+
+		// Texture already exists
+		if (GetTexture(textureFilePath)) {
+			//std::cout << "This texture already exists!\n";
+			return;
+		}
+
+		// Create a new texture
+		std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
+
+		// Get the number of cols and rows first, to determine whether the texture is a static texture or a textured spritesheet
+		size_t firstUnderscore = textureFilePath.find_first_of('_');
+		size_t secondUnderscore = textureFilePath.find_first_of('_', firstUnderscore + 1);
+		size_t lastDot = textureFilePath.find_last_of('.');
+		
+		// Texture name provided no columns or rows, thus treat it as a static texture
+		if (firstUnderscore == std::string::npos || secondUnderscore == std::string::npos) {
+			auto tex = std::make_unique<Texture>(textureFilePath, rm);
+			AddTexture(textureFilePath, std::move(tex));
+			return;
+		}
+
+		std::string numColStr = textureFilePath.substr(firstUnderscore + 1, secondUnderscore - firstUnderscore - 1);
+		std::string numRowStr = textureFilePath.substr(secondUnderscore + 1, lastDot - secondUnderscore - 1);
+
+		int numCol = std::stoi(numColStr);
+		int numRow = std::stoi(numRowStr);
+
+		auto tex = std::make_unique<Texture>(textureFilePath, rm, numCol, numRow);
+		AddTexture(textureFilePath, std::move(tex));
+
+		// Dispatch a GraphicsEvent
+		// To create the AnimationClip after creating a new texture
+		if (m_dispatcher)
+		{
+			//std::cout << "[GRAPHICSYSTEM] dispatching event\n";
+			m_dispatcher->QueueEvent(std::make_unique<GraphicsEvent>(GraphicsEvent::GraphicsAction::CreateTexture));
+		}
+	}
+
 	void GraphicsSystem::UpdateTextureOfMaterial(const std::string& textureFilePath, Entity e) {
 		auto& ren = m_coord.ModifyComponent<Renderable>(e);
 
+		std::filesystem::path filePath = textureFilePath;
+
 		// Check whether the current texture exists
-		Texture* tex = GetTexture(textureFilePath);
+		Texture* tex = GetTexture(filePath.string());
 		if (!tex) {
 			// This is a new texture, add it to the resource map
-			// Create the Texture pointer
-			std::shared_ptr<ResourceManager> rm = m_coord.GetSystem<ResourceManager>();
-			auto newTex = std::make_unique<Texture>(textureFilePath, rm, 4, 1);
-			AddTexture(textureFilePath, std::move(newTex));
+			CreateTexture(filePath.string());
 
 			// If it is a new texture, it means that there is no existing material for it
 			// Create new material with this texture combination
-			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(textureFilePath));
-			std::string newName = GetNewMaterialName(ren.materialName);
-			// Name this new material to be a variant of the current material
-			AddMaterial(newName, std::move(newMat));
+			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.string()));
+			// Name of the material will be the texture file path, but the name only
+			AddMaterial(filePath.stem().string(), std::move(newMat));
 
 			// Change the name of this Renderable's material name to the new material name
-			ren.materialName = newName;
+			ren.materialName = filePath.stem().string();
 			//std::cout << "New texture detected!\n";
 			//std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
 			//std::cout << "and this texture name is: " << m_materials[ren.materialName]->GetTexture()->GetTextureName() << std::endl;
@@ -471,8 +536,8 @@ namespace NightSnack {
 
 				// If it exists already, change the name of this Renderable's material to the existing material name
 				//std::cout << "Checking for texture name: " << textureFileName << std::endl;
-				if (textureFilePath == matTex->GetTextureName()) {
-					ren.materialName = matName;
+				if (filePath.string() == matTex->GetTextureName()) {
+					ren.materialName = filePath.stem().string();
 					found = true;
 					//std::cout << "Material for this texture exists too!\n";
 					break;
@@ -482,41 +547,16 @@ namespace NightSnack {
 			if (!found) {
 				//std::cout << "Material for this texture doesnt exist yet, creating one ...\n";
 				// if it does not exist, create new material with this texture combination
-				auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(textureFilePath));
-				std::string newName = GetNewMaterialName(ren.materialName);
-				// Name this new material to be a variant of the current material
-				AddMaterial(newName, std::move(newMat));
+				auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.string()));
+				// Name of the material will be the texture file path, but the name only
+				AddMaterial(filePath.stem().string(), std::move(newMat));
 				// change the name of this Renderable's material name to the new material name
-				ren.materialName = newName;
+				ren.materialName = filePath.stem().string();
 			}
 			//std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
 		}
-	}
 
-	std::string GraphicsSystem::GetNewMaterialName(std::string oldMatName) {
-		// Checks how many variants of the original material name there are, and get the next variant
-		// "ghost", "ghost1", "ghost2" etc ...
-
-		// Find the position where the 'number' in the string starts
-		size_t len = oldMatName.length();
-		size_t i = len;
-
-		// Find the first non-digit character
-		while (i > 0 && std::isdigit(oldMatName[i - 1])) {
-			--i;
-		}
-
-		// If there are digits at the end, extract the number from the string
-		if (i < len) {
-			std::string baseName = oldMatName.substr(0, i);
-			int num = std::stoi(oldMatName.substr(i)); // Convert from string to number
-
-			// Increment the digit by 1
-			return baseName + std::to_string(num + 1);
-		} else {
-			// This is the first variant 
-			return oldMatName + "1";
-		}
+		//std::cout << "UpdateTextureOfMaterial(), mat name: " << ren.materialName << std::endl;
 	}
 
 	// Helper functions to add resources --------------------------------------------------------------------
@@ -574,12 +614,14 @@ namespace NightSnack {
 		return (it != m_materials.end()) ? it->second.get() : nullptr;
 	}
 
-	void GraphicsSystem::ResolveRenderable(Entity e, Renderable const& r) {
+	void GraphicsSystem::ResolveRenderable(Entity e, Renderable& r) {
 		CachedRenderData cache;
 		cache.mesh = GetMesh(r.meshName);
 		cache.material = GetMaterial(r.materialName);
 		cache.valid = (cache.mesh && cache.material);
 		m_renderCache[e] = cache;
+
+		r.wasModified = false;
 	}
 
 	Entity GraphicsSystem::FindCamera() {
@@ -651,6 +693,21 @@ namespace NightSnack {
 
 	void GraphicsSystem::RemoveCache(Entity e) {
 		m_renderCache.erase(e);
+	}
+
+	void GraphicsSystem::DebugRenderableInformation() {
+
+		// Materials
+		std::cout << "===== MATERIALS IN STORE =====\n";
+		for (auto& [matName, material] : m_materials) {
+			std::cout << matName << std::endl;
+		}
+
+		// Textures
+		std::cout << "===== TEXTURES IN STORE =====\n";
+		for (auto& [texName, texture] : m_textures) {
+			std::cout << texName << std::endl;
+		}
 	}
 
 }	// NightSnack

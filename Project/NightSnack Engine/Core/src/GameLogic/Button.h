@@ -7,8 +7,8 @@
  * Description:
  *	This file defines a Button class and a GameUI system for handling UI buttons.
  *	Takes care of button hover and click interactions, executing associated actions.
- *
- * Copyright   2025 DigiPen Institute of Technology Singapore.
+ * 
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -355,7 +355,7 @@ namespace NightSnack {
 				break;
 			// play stress test
 			case ButtonAction::PLAYSTRESSTEST:
-				m_coord.GetSystem<EntityFactory>()->m_stress = true;
+				//m_coord.GetSystem<EntityFactory>()->m_stress = true;
 				break;
 
 			default:

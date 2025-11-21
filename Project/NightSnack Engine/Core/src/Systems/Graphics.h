@@ -26,6 +26,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
+#include <filesystem>
 
 namespace NightSnack {
 
@@ -56,6 +57,9 @@ namespace NightSnack {
 			// Initialize viewport dimensions;
 			Hvp = static_cast<float>(coord.GetWindowHeight());
 			Wvp = static_cast<float>(coord.GetWindowWidth());
+
+			std::string path = std::filesystem::current_path().string();
+			std::cout << path << '\n';
 
 			Init();
 
@@ -137,6 +141,19 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void RenderDebugDrawing(Entity camera);
+
+		void LoadTextures();
+
+		/************************************************************************/
+		/*!
+		\brief
+		Creates a texture using the Resource Manager.
+
+		\param[in] textureFilePath
+		The texture file path to load
+		*/
+		/************************************************************************/
+		void CreateTexture(std::string textureFilePath);
 
 		/************************************************************************/
 		/*!
@@ -436,7 +453,7 @@ namespace NightSnack {
 		to the mesh and material resources used by the entity.
 		*/
 		/************************************************************************/
-		void ResolveRenderable(Entity e, Renderable const& r);
+		void ResolveRenderable(Entity e, Renderable& r);
 
 		/************************************************************************/
 		/*!
@@ -483,23 +500,7 @@ namespace NightSnack {
 		/************************************************************************/
 		Vec3 ScreenToWorld(Vec3 const& screenPos);
 
-		/************************************************************************/
-		/*!
-		\brief
-		Constructs a new material name, based on the old material name provided.
-		It checks how many variants of the original material name there are, and get the next variant.
-		Etc. "ghost", "ghost1", "ghost2"
-		This function is called by UpdateTextureOfMaterial(), when there is a new combination
-		of a material and texture.
-
-		\param[in] oldMatName
-		The old material name, to be changed
-
-		\return
-		The new material name
-		*/
-		/************************************************************************/
-		std::string GetNewMaterialName(std::string oldMatName);
+		void DebugRenderableInformation();
 
 		bool m_enableDebugDraw{ false };
 		bool m_enableInstancedRendering{ true };

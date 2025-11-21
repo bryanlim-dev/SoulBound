@@ -2,7 +2,7 @@
  * File:        PrefabsPanel.h
  * Project:     NightSnack
  * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Drawing of prefabs tab
- *             
+ *
  *
  * Description:
  * Displays archetypes from a JSON file in the Prefabs panel.
@@ -24,28 +24,90 @@ namespace NightSnack
         * @param coord reference to the ECS coordinator
         * @param archetypesPath path to the archetypes JSON file
         */
-        PrefabsPanel(Coordinator& coord, const std::string& archetypesPath) 
-          : m_coord(coord),
-            m_archetypesPath(archetypesPath)
+        PrefabsPanel(Coordinator& coord, const std::string& archetypesRoot)
+            : m_coord(coord),
+            m_archetypesRoot(archetypesRoot)
         {
             LoadArchetypes();
         }
 
         /**
-        * @brief draws the prefabs panel
+        * @brief selects a prefab for preview (called from main assets panel)
+        * @param prefabName name of the prefab to select
         */
-        void Draw()
+        void SelectPrefab(const std::string& prefabName)
         {
-            if (ImGui::BeginTabItem("Prefabs"))
+            m_selectedPrefabName = prefabName;
+        }
+
+        /**
+        * @brief draws prefab properties in the asset inspector
+        * @param prefabName name of the prefab
+        */
+        void DrawPrefabProperties(const std::string& prefabName)
+        {
+            if (!m_archetypes.contains(prefabName) ||
+                !m_archetypes[prefabName].is_object())
             {
-                DrawPrefabsContent();
-                ImGui::EndTabItem();
+                ImGui::TextColored(ImVec4(1, 0.4f, 0.4f, 1),
+                    "Invalid prefab or data not found.");
+                return;
+            }
+
+            auto& prefabData = m_archetypes[prefabName];
+
+            ImGui::Text("Prefab: %s", prefabName.c_str());
+            ImGui::Separator();
+
+            // json UI
+            for (auto& [componentName, componentData] : prefabData.items())
+            {
+                if (ImGui::CollapsingHeader(componentName.c_str(),
+                    ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    if (componentName == "Transform")               DrawTransformEditor(componentData);
+                    else if (componentName == "Color")              DrawColorEditor(componentData);
+                    else if (componentName == "RigidBody")          DrawRigidBodyEditor(componentData);
+                    else if (componentName == "Collider")           DrawColliderEditor(componentData);
+                    else if (componentName == "Renderable")         DrawRenderableEditor(componentData);
+                    //else if (componentName == "Camera")             DrawCameraEditor(componentData);
+                    else if (componentName == "Animator")           DrawAnimatorEditor(componentData);
+                    else if (componentName == "PlayerController")   DrawPlayerControllerEditor(componentData);
+                    else if (componentName == "Font")               DrawFontEditor(componentData);
+                    else if (componentName == "ButtonInfo")         DrawButtonInfoEditor(componentData);
+                    else if (componentName == "Script")             DrawScriptEditor(componentData);
+
+                    else {
+                        // Fallback generic editor
+                        DrawJsonFields(componentData);
+                    }
+                }
+            }
+
+            ImGui::Separator();
+
+
+            // raw json preview
+            if (ImGui::CollapsingHeader("JSON Preview", ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                ImGui::BeginChild("PrefabJsonPreview", ImVec2(0, 300), true);
+
+                for (auto& [componentName, componentJson] : prefabData.items())
+                {
+                    if (ImGui::TreeNode(componentName.c_str()))
+                    {
+                        DisplayComponentProperties(componentJson);
+                        ImGui::TreePop();
+                    }
+                }
+
+                ImGui::EndChild();
             }
         }
 
     private:
-        Coordinator& m_coord;                              
-        std::string m_archetypesPath;                           
+        Coordinator& m_coord;
+        std::string m_archetypesRoot;
         nlohmann::json m_archetypes;
         std::vector<std::string> m_prefabNames;
         bool m_showJsonProperties = false;
@@ -58,11 +120,11 @@ namespace NightSnack
         {
             try
             {
-                std::ifstream file(m_archetypesPath);
+                std::ifstream file(m_archetypesRoot);
                 if (!file.is_open())
                 {
-                    std::cerr << "[PrefabsPanel] Failed to open archetypes file: "
-                        << m_archetypesPath << std::endl;
+                    std::cerr << "Failed to open archetypes file: "
+                        << m_archetypesRoot << std::endl;
                     return;
                 }
 
@@ -80,141 +142,12 @@ namespace NightSnack
             }
             catch (const std::exception& e)
             {
-                std::cerr << "[PrefabsPanel] Error loading archetypes: " << e.what() << std::endl;
+                std::cerr << "Error loading archetypes: " << e.what() << std::endl;
             }
-        }
-
-        /**
-        * @brief draws the prefabs panel content
-        */
-        void DrawPrefabsContent()
-        {
-            ImGui::Text("Archetypes from: %s", m_archetypesPath.c_str());
-            ImGui::Separator();
-
-            if (m_prefabNames.empty())
-            {
-                ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.5f, 1.0f),
-                    "No archetypes found or failed to load JSON file");
-                return;
-            }
-
-            // display archetypes in a list
-            //ImGui::Text("Available Prefabs (%zu):", m_prefabNames.size());
-            ImGui::BeginChild("PrefabsList", ImVec2(0, 0), true);
-
-            for (const auto& prefabName : m_prefabNames)
-            {
-                ImGui::PushID(prefabName.c_str());
-
-                // display prefab name as selectable item
-                if (ImGui::Selectable(prefabName.c_str()))
-                {
-                    OnPrefabSelected(prefabName);
-                }
-
-                // drag and drop source for prefabs
-                // not in use for now
-                //if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID))
-                //{
-                //    ImGui::SetDragDropPayload("PREFAB_ARCHETYPE", prefabName.c_str(),
-                //        prefabName.size() + 1);
-                //    ImGui::Text("Create: %s", prefabName.c_str());
-                //    ImGui::EndDragDropSource();
-                //}
-
-                //// show tooltip with prefab details on hover
-                //if (ImGui::IsItemHovered())
-                //{
-                //    ImGui::BeginTooltip();
-                //    ImGui::Text("Prefab: %s", prefabName.c_str());
-
-                //    // show prefab components if available
-                //    if (m_archetypes.contains(prefabName) &&
-                //        m_archetypes[prefabName].is_object())
-                //    {
-                //        ImGui::Separator();
-                //        ImGui::Text("Components:");
-                //        for (auto it = m_archetypes[prefabName].begin();
-                //            it != m_archetypes[prefabName].end(); ++it)
-                //        {
-                //            ImGui::BulletText("%s", it.key().c_str());
-                //        }
-                //    }
-
-                //    ImGui::EndTooltip();
-                //}
-
-                ImGui::PopID();
-            }
-
-            ImGui::EndChild();
-
-            // draw JSON properties window if a prefab is selected
-            if (m_showJsonProperties && !m_selectedPrefabName.empty())
-            {
-                DrawJsonProperties(m_selectedPrefabName);
-            }
-        }
-
-        /**
-        * @brief draws the JSON properties window for a selected prefab
-        * @param prefabName name of the prefab to display properties for
-        */
-        void DrawJsonProperties(const std::string& prefabName)
-        {
-            //ImGui::SetNextWindowSize(ImVec2(700, 600), ImGuiCond_FirstUseEver);
-            ImGui::Begin("Properties:", &m_showJsonProperties);
-
-            if (m_archetypes.contains(prefabName) && m_archetypes[prefabName].is_object())
-            {
-                auto& prefabData = m_archetypes[prefabName];
-
-                // display basic prefab info
-                ImGui::Text("Name: %s", prefabName.c_str());
-                ImGui::Text("Components: %zu", prefabData.size());
-                ImGui::Separator();
-
-                // display each component and its properties
-                ImGui::Text("Component Properties:");
-                ImGui::BeginChild("ComponentProperties", ImVec2(0, 300), true);
-
-                for (auto& component : prefabData.items())
-                {
-                    std::string componentName = component.key();
-                    auto& componentData = component.value();
-
-                    if (ImGui::TreeNode(componentName.c_str()))
-                    {
-                        DisplayComponentProperties(componentData);
-                        ImGui::TreePop();
-                    }
-                }
-
-                ImGui::EndChild();
-                ImGui::Separator();
-
-                // action buttons
-                if (ImGui::Button("Close"))
-                {
-                    m_showJsonProperties = false;
-                    m_selectedPrefabName = "";
-                }
-
-                ImGui::SameLine();
-            }
-            else
-            {
-                ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.5f, 1.0f),
-                    "Invalid prefab data or prefab not found");
-            }
-
-            ImGui::End();
         }
 
         /**
         * @brief displays properties for a specific component
-        * @param componentName name of the component
         * @param componentData JSON data for the component
         */
         void DisplayComponentProperties(const nlohmann::json& componentData)
@@ -229,7 +162,11 @@ namespace NightSnack
                     ImGui::BulletText("%s: ", propName.c_str());
                     ImGui::SameLine();
 
-                    if (propValue.is_string())
+                    if (propValue.is_null())
+                    {
+                        ImGui::TextColored(ImVec4(1.0f, 0.3f, 0.3f, 1.0f), "null");
+                    }
+                    else if (propValue.is_string())
                     {
                         ImGui::TextColored(ImVec4(0.4f, 0.8f, 1.0f, 1.0f), "%s", propValue.get<std::string>().c_str());
                     }
@@ -284,15 +221,234 @@ namespace NightSnack
             }
         }
 
-        /**
-         * @brief handles prefab selection and shows properties window
-         * @param prefabName The name of the selected prefab
-         */
-        void OnPrefabSelected(const std::string& prefabName)
+        void DrawTransformEditor(nlohmann::json& j)
         {
-            m_selectedPrefabName = prefabName;
-            m_showJsonProperties = true;
-            std::cout << "[PrefabsPanel] Selected prefab: " << prefabName << std::endl;
+            auto& pos = j["Position"];
+            auto& scale = j["Scale"];
+
+            float p[3] = { pos["x"], pos["y"], pos["z"] };
+            if (ImGui::DragFloat3("Position", p, 0.1f))
+            {
+                pos["x"] = p[0]; pos["y"] = p[1]; pos["z"] = p[2];
+            }
+
+            float rot = j["Rotation"];
+            if (ImGui::DragFloat("Rotation", &rot, 0.1f))
+                j["Rotation"] = rot;
+
+            float s[2] = { scale["x"], scale["y"] };
+            if (ImGui::DragFloat2("Scale", s, 0.1f))
+            {
+                scale["x"] = s[0]; scale["y"] = s[1];
+            }
+        }
+
+        void DrawColorEditor(nlohmann::json& j)
+        {
+            float color[4] = { j["r"], j["g"], j["b"], j["a"] };
+
+            if (ImGui::ColorEdit4("Color", color))
+            {
+                j["r"] = color[0];
+                j["g"] = color[1];
+                j["b"] = color[2];
+                j["a"] = color[3];
+            }
+        }
+
+        void DrawRigidBodyEditor(nlohmann::json& j)
+        {
+            float mass = j["mass"];
+            bool useGravity = j["useGravity"];
+
+            if (ImGui::DragFloat("Mass", &mass, 0.1f))
+                j["mass"] = mass;
+
+            if (ImGui::Checkbox("Use Gravity", &useGravity))
+                j["useGravity"] = useGravity;
+        }
+
+        void DrawColliderEditor(nlohmann::json& j)
+        {
+            std::string shape = j["shape"];
+            std::string type = j["type"];
+            bool isStatic = j["isStatic"];
+
+            char shapeBuf[64];
+            strcpy(shapeBuf, shape.c_str());
+            if (ImGui::InputText("Shape", shapeBuf, sizeof(shapeBuf)))
+            {
+                shape = shapeBuf;
+            }
+            j["shape"] = shape;
+
+            char typeBuf[64];
+            strcpy(typeBuf, type.c_str());
+            if (ImGui::InputText("Type", typeBuf, sizeof(typeBuf)))
+            {
+                type = typeBuf;
+            }
+            j["type"] = type;
+
+            ImGui::Checkbox("Static", &isStatic);
+            j["isStatic"] = isStatic;
+
+            if (shape == "Circle")
+            {
+                float radius = j["radius"];
+                if (ImGui::DragFloat("Radius", &radius))
+                    j["radius"] = radius;
+            }
+            else
+            {
+                float w = j["width"];
+                float h = j["height"];
+
+                if (ImGui::DragFloat("Width", &w))
+                    j["width"] = w;
+
+                if (ImGui::DragFloat("Height", &h))
+                    j["height"] = h;
+            }
+        }
+
+        void DrawRenderableEditor(nlohmann::json& j)
+        {
+            char mesh[128]; strcpy(mesh, j["meshName"].get<std::string>().c_str());
+            if (ImGui::InputText("Mesh", mesh, sizeof(mesh)))
+                j["meshName"] = mesh;
+
+            char mat[128]; strcpy(mat, j["materialName"].get<std::string>().c_str());
+            if (ImGui::InputText("Material", mat, sizeof(mat)))
+                j["materialName"] = mat;
+
+            bool wf = j.contains("isWireframe") ? j["isWireframe"].get<bool>() : false;
+            if (ImGui::Checkbox("Wireframe", &wf))
+                j["isWireframe"] = wf;
+        }
+
+        void DrawPlayerControllerEditor(nlohmann::json& j)
+        {
+            float move = j["moveSpeed"];
+            float jump = j["jumpSpeed"];
+
+            ImGui::DragFloat("Move Speed", &move, 1.0f);
+            ImGui::DragFloat("Jump Speed", &jump, 1.0f);
+
+            j["moveSpeed"] = move;
+            j["jumpSpeed"] = jump;
+        }
+
+        /*void DrawCameraEditor(nlohmann::json& j)
+        {
+            float zoom = j["zoom"];
+            if (ImGui::DragFloat("Zoom", &zoom, 0.1f))
+                j["zoom"] = zoom;
+
+            bool main = j["isMainCamera"];
+            if (ImGui::Checkbox("Main Camera", &main))
+                j["isMainCamera"] = main;
+        }*/
+
+        void DrawAnimatorEditor(nlohmann::json& j)
+        {
+            char buf[128]; strcpy(buf, j["spriteSheetName"].get<std::string>().c_str());
+            if (ImGui::InputText("Sprite Sheet", buf, sizeof(buf)))
+                j["spriteSheetName"] = buf;
+
+            float speed = j["playbackSpeed"];
+            bool playing = j["isPlaying"];
+            bool looping = j["isLooping"];
+
+            ImGui::DragFloat("Playback Speed", &speed, 0.05f);
+            ImGui::Checkbox("Playing", &playing);
+            ImGui::Checkbox("Looping", &looping);
+
+            j["playbackSpeed"] = speed;
+            j["isPlaying"] = playing;
+            j["isLooping"] = looping;
+        }
+
+
+        void DrawFontEditor(nlohmann::json& j)
+        {
+            char text[128]; strcpy(text, j["text"].get<std::string>().c_str());
+            if (ImGui::InputText("Text", text, sizeof(text)))
+                j["text"] = text;
+
+            float size = j["fontSize"];
+            ImGui::DragFloat("Size", &size, 0.05f);
+            j["fontSize"] = size;
+
+            auto& c = j["textColor"];
+            float color[3] = { c["r"], c["g"], c["b"] };
+
+            if (ImGui::ColorEdit3("Text Color", color))
+            {
+                c["r"] = color[0];
+                c["g"] = color[1];
+                c["b"] = color[2];
+            }
+        }
+
+        void DrawButtonInfoEditor(nlohmann::json& j)
+        {
+            char action[64]; strcpy(action, j["action"].get<std::string>().c_str());
+            if (ImGui::InputText("Action", action, sizeof(action)))
+                j["action"] = action;
+
+            char type[64]; strcpy(type, j["type"].get<std::string>().c_str());
+            if (ImGui::InputText("Type", type, sizeof(type)))
+                j["type"] = type;
+        }
+
+        void DrawScriptEditor(nlohmann::json& j)
+        {
+            char name[128];
+            strcpy(name, j["name"].get<std::string>().c_str());
+
+            if (ImGui::InputText("Script Name", name, sizeof(name)))
+                j["name"] = name;
+        }
+
+        void DrawJsonFields(nlohmann::json& j)
+        {
+            for (auto& [key, val] : j.items())
+            {
+                if (val.is_number_float())
+                {
+                    float f = val;
+                    if (ImGui::DragFloat(key.c_str(), &f))
+                        val = f;
+                }
+                else if (val.is_number_integer())
+                {
+                    int i = val;
+                    if (ImGui::DragInt(key.c_str(), &i))
+                        val = i;
+                }
+                else if (val.is_boolean())
+                {
+                    bool b = val;
+                    if (ImGui::Checkbox(key.c_str(), &b))
+                        val = b;
+                }
+                else if (val.is_string())
+                {
+                    char buf[128];
+                    strcpy(buf, val.get<std::string>().c_str());
+                    if (ImGui::InputText(key.c_str(), buf, sizeof(buf)))
+                        val = buf;
+                }
+                else if (val.is_object())
+                {
+                    if (ImGui::TreeNode(key.c_str()))
+                    {
+                        DrawJsonFields(val);
+                        ImGui::TreePop();
+                    }
+                }
+            }
         }
     };
 }

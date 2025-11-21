@@ -1,0 +1,23 @@
+{
+    "Animator": {
+        "isLooping": true,
+        "isPlaying": true,
+        "playbackSpeed": 1.0,
+        "spriteSheetName": ""
+    },
+    "Collider": {
+        "isStatic": false,
+        "radius": 20.0,
+        "shape": "Circle",
+        "type": "Solid"
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "slime_4_1",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": false
+    }
+}

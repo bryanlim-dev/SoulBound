@@ -17,6 +17,8 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 #include "fmod.hpp"
 
@@ -69,6 +71,14 @@ namespace NightSnack {
 	}
 
 
+	ResourceImage::ResourceImage(const std::string& filePath, unsigned char orginalUncroppedImaged, int width, int height, int channels)
+		: Resource(filePath, 0), m_imageData(nullptr), m_height(height), m_width(width), m_channels(channels)
+	{
+		//Allocate space for data
+		m_imageData = (unsigned char*)malloc(m_width * m_height * m_channels * sizeof(unsigned char));
+
+	}
+
 	ResourceImage::~ResourceImage()
 	{
 		//Check if the imageData exists incase
@@ -94,9 +104,25 @@ namespace NightSnack {
 			m_resourceLoaded = false;
 	}
 
-	//void ResourceImage::SaveFile() {
-	//	//Empty for now
-	//}
+	void ResourceImage::SaveFile() {
+
+		//Empty for now
+		if (!m_imageData || m_path.empty())
+			return;
+
+		if (stbi_write_png(m_path.c_str(), m_width, m_height, m_channels, m_imageData, m_width * m_channels))
+		{
+#if RESOURCE_DEBUG_MODE
+			std::cout << m_path << " has been saved!" << std::endl;
+#endif
+		}
+		else
+		{
+#if RESOURCE_DEBUG_MODE
+			std::cout << m_path << " cannot be saved!" << std::endl;
+#endif
+		}
+	}
 
 	unsigned char* ResourceImage::Image() const
 	{

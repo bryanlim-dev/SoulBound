@@ -36,38 +36,7 @@ namespace NightSnack {
 				continue;
 			}
 
-			//std::cout << "[INIT] Processing texture: " << textureName << " has " << cols
-			//	<< " columns, " << rows << " rows\n";
-
-			// Separate the texture into its different animation clips
-			// Etc 1 texture image has 2 animation clips from left to right
-			float frameWidth = 1.f / static_cast<float>(cols);
-			float frameHeight = 1.f / static_cast<float>(rows);
-
-			// Each row corresponds to one animation clip
-			for (int r{}; r < rows; ++r) {
-				AnimationClip clip;
-				clip.texture = tex;
-
-				std::string clipName = textureName + "_" + std::to_string(r);
-				//std::cout << "Creating AnimationClip: " << clipName << std::endl;
-
-				for (int c{}; c < cols; ++c) {
-					AnimationFrame frame;
-					frame.U0 = c * frameWidth;
-					frame.U1 = (c + 1) * frameWidth;
-					// Invert V coords because texture coords start from bottom left
-					// We want the coords from our sprite sheet to start from top left
-					frame.V0 = 1.f - (r + 1) * frameHeight;
-					frame.V1 = 1.f - r * frameHeight;
-					frame.timeDelay = 20.f; 
-
-					clip.frames.emplace_back(frame);
-				}
-
-				// Store this clip under this texture's animation set
-				m_animationClips[textureName][clipName] = clip;
-			}
+			CreateAnimationClips(textureName, tex, cols, rows);
 		}
 	}
 
@@ -75,20 +44,40 @@ namespace NightSnack {
 		// Iterate through all entities that have Animator component
 		for (Entity e : m_entities) {
 			auto& animator = m_coord.ModifyComponent<Animator>(e);
+			auto& ren = m_coord.GetComponent<Renderable>(e);
 
 			// Skip the updating of this sprite sheet
 			// User either did not properly initialized Texture[cols, rows] or
 			// User added an Animator component to a static texture
-			Texture* tex = m_coord.GetSystem<GraphicsSystem>()->GetTexture(animator.spriteSheetName);
-			if (tex == nullptr) { continue; }
+			//std::cout << "Renderable name: " << ren.materialName << std::endl;
+			Material* mat = m_coord.GetSystem<GraphicsSystem>()->GetMaterial(ren.materialName);
+			if (!mat) { continue; }
+			Texture* tex = mat->GetTexture();
+			if (!tex) {
+				//std::cout << "Texture does not exist\n";
+				continue;
+			}
+			//std::cout << "Spritesheet name: " << animator.spriteSheetName << std::endl;
 			if (tex->GetColumns() == 1 && tex->GetRows() == 1) {
-				std::cerr << "[AnimationSystem] Current Entity texture is treated as static. Initialize Texture[cols, rows] or remove Entity's Animator Component!\n";
+				std::cerr << "[AnimationSystem] Current Entity texture is treated as static. Ensure Texture name has [_cols_rows] or remove Entity's Animator Component!\n";
 				continue;
 			} 
 
 			// Skip if this Animator is not playing
 			if (!animator.isPlaying) {
 				continue;
+			}
+
+			// Get the spritesheet name based on the texture it is using
+			if (animator.spriteSheetName.empty() || animator.spriteSheetName != tex->GetTextureName()) {
+				//std::cout << "Spritesheet name: " << animator.spriteSheetName << std::endl;
+				animator.spriteSheetName = tex->GetTextureName();
+				// The texture has been changed for this Entity, but the animator is still using the old spritesheet
+				animator.currentAnimationClip.clear(); // Reset the current AnimationClip
+			}
+
+			if (m_animationClips.find(animator.spriteSheetName) == m_animationClips.end()) {
+				UpdateAnimationClipsMap();
 			}
 
 			// If Archetypes.json did not state the current animation clip, set the default clip
@@ -158,4 +147,101 @@ namespace NightSnack {
 			}
 		}
 	}
+
+	void AnimationSystem::UpdateAnimationClipsMap() {
+		// Initialize AnimationClips for any newly loaded textures
+
+		const auto& texturesMap = m_coord.GetSystem<GraphicsSystem>()->GetTexturesMap();
+
+		// Iterate through all the textures and extract the animations if needed
+		for (const auto& [textureName, texturePtr] : texturesMap) {
+			Texture* tex = texturePtr.get();
+			int cols = tex->GetColumns();
+			int rows = tex->GetRows();
+
+			// Skip static textures (1x1 means no animation)
+			if (cols == 1 && rows == 1) {
+				continue;
+			}
+
+			// Only create AnimationClips for newly loaded textures
+			if (m_animationClips.find(textureName) == m_animationClips.end()) {
+				CreateAnimationClips(textureName, tex, cols, rows);
+			}
+		}
+	}
+
+	void AnimationSystem::CreateAnimationClips(std::string textureName, Texture* tex, int cols, int rows) {
+		//std::cout << "[INIT] Processing texture: " << textureName << " has " << cols
+		//	<< " columns, " << rows << " rows\n";
+
+		// Separate the texture into its different animation clips
+		// Etc 1 texture image has 2 animation clips from left to right
+		float frameWidth = 1.f / static_cast<float>(cols);
+		float frameHeight = 1.f / static_cast<float>(rows);
+
+		// Each row corresponds to one animation clip
+		for (int r{}; r < rows; ++r) {
+			AnimationClip clip;
+			clip.texture = tex;
+
+			std::string clipName = textureName + "_" + std::to_string(r);
+			//std::cout << "Creating AnimationClip: " << clipName << std::endl;
+
+			for (int c{}; c < cols; ++c) {
+				AnimationFrame frame;
+				frame.U0 = c * frameWidth;
+				frame.U1 = (c + 1) * frameWidth;
+				// Invert V coords because texture coords start from bottom left
+				// We want the coords from our sprite sheet to start from top left
+				frame.V0 = 1.f - (r + 1) * frameHeight;
+				frame.V1 = 1.f - r * frameHeight;
+				frame.timeDelay = 20.f;
+
+				clip.frames.emplace_back(frame);
+			}
+
+			// Store this clip under this texture's animation set
+			m_animationClips[textureName][clipName] = clip;
+		}
+
+		//std::cout << "Created AnimationClip for: " << textureName << std::endl;
+	}
+
+	std::vector<std::string> AnimationSystem::GetSpritesheetAnimationClipsNames(Entity e) {
+		auto& animator = m_coord.GetComponent<Animator>(e);
+		std::vector<std::string> ret;
+
+		// This entity does not have a spritesheet/texture attached to it
+		if (animator.spriteSheetName.empty()) {
+			return {};
+		}
+
+		// Iterate through all AnimationClips in this spritesheet
+		for (const auto& [animClipName, animClip] : m_animationClips[animator.spriteSheetName]) {
+			// Collect the AnimationClip names
+			ret.emplace_back(animClipName);
+		}
+
+		return ret;
+	}
+
+	void AnimationSystem::SetCurrentAnimationClip(const std::string& animationClipName, Entity e) {
+
+		auto& animator = m_coord.ModifyComponent<Animator>(e);
+
+		// Check whether the Entity has a spritesheet attached to it
+		if (animator.spriteSheetName.empty()) {
+			std::cerr << "[AnimationSystem] Error: This Entity does not have a Spritesheet!\n";
+			return;
+		}
+
+		if (m_animationClips[animator.spriteSheetName].find(animationClipName) == m_animationClips[animator.spriteSheetName].end()) {
+			std::cerr << "[AnimationSystem] Error: This AnimationClip name does not exist!\n";
+			return;
+		}
+
+		animator.currentAnimationClip = animationClipName;
+	}
+
 } // NightSnack

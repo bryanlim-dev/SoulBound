@@ -116,6 +116,12 @@ namespace NightSnack
                             *m_selectedEntity = INVALID_ENTITY;
                         }
                     }
+                    if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY && ImGui::IsKeyPressed(ImGuiKey_Delete))
+                    {
+                        m_coord.DestroyEntity(*m_selectedEntity);
+                        m_uiNames->erase(*m_selectedEntity);
+                        *m_selectedEntity = INVALID_ENTITY;
+                    }
 
                     ImGui::EndTabItem();
                 }

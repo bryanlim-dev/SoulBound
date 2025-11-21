@@ -1,0 +1,13 @@
+{
+    "Collider": {
+        "isStatic": true,
+        "radius": 50.0,
+        "shape": "Circle",
+        "type": "Solid"
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "ColorMat",
+        "meshName": "circle"
+    }
+}

@@ -11,7 +11,7 @@
   "ScriptTest1": {
     "Renderable": {
       "meshName": "circle",
-      "materialName": "targetMat"
+      "materialName": "ColorMat"
     },
     "Script": { "name": "RotatorScript" }
   },
@@ -29,7 +29,7 @@
   "Backdrop": {
     "Renderable": {
       "meshName": "square",
-      "materialName": "backgroundMat"
+      "materialName": "ColorMat"
     }
   },
 
@@ -71,10 +71,11 @@
       "type": "GameMenu"
     },
     "Font": {
-      "fontType": "default",
+      "fontType": "",
       "text": "Play Audio",
       "fontSize": 0.2,
-      "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 }
+      "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 },
+      "offsetPosition": { "x": 0.0, "y": 0.0, "z": 0.0}
     },
     "Color": { "r": 1.0, "g": 0.4, "b": 0.0, "a": 1.0 }
   },
@@ -97,10 +98,11 @@
       "type": "GameMenu"
     },
     "Font": {
-      "fontType": "default",
+      "fontType": "",
       "text": "Play Audio 2",
       "fontSize": 0.2,
-      "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 }
+      "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 },
+      "offsetPosition": { "x": 0.0, "y": 0.0, "z": 0.0}
     },
     "Color": { "r": 1.0, "g": 0.4, "b": 0.0, "a": 1.0 }
   },
@@ -123,10 +125,11 @@
       "type": "GameMenu"
     },
     "Font": {
-      "fontType": "default",
+      "fontType": "",
       "text": "Play Audio 3",
       "fontSize": 0.2,
-      "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 }
+      "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 },
+      "offsetPosition": { "x": 0.0, "y": 0.0, "z": 0.0}
     },
     "Color": { "r": 1.0, "g": 0.4, "b": 0.0, "a": 1.0 }
   },
@@ -149,10 +152,11 @@
       "type": "GameMenu"
     },
     "Font": {
-      "fontType": "liberation",
+      "fontType": "",
       "text": "Stress Test",
       "fontSize": 0.3,
-      "textColor": { "r": 0.0, "g": 0.0, "b": 0.0 }
+      "textColor": { "r": 0.0, "g": 0.0, "b": 0.0 },
+      "offsetPosition": { "x": 0.0, "y": 0.0, "z": 0.0}
     },
     "Color": { "r": 1.0, "g": 1.0, "b": 1.0, "a": 1.0 }
   },
@@ -171,20 +175,21 @@
     },
     "Renderable": {
       "meshName": "square",
-      "materialName": "ghostMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
     },
     "Animator": {
-      "spriteSheetName": "../assets/ghost.png",
+      "spriteSheetName": "",
       "playbackSpeed": 1.0,
       "isPlaying": true,
       "isLooping": true
     },
     "Font": {
-      "fontType": "liberation",
+      "fontType": "",
       "text": "Ghost",
       "fontSize": 0.5,
-      "textColor": { "r": 0.5, "g": 0.9, "b": 0.5 }
+      "textColor": { "r": 0.5, "g": 0.9, "b": 0.5 },
+      "offsetPosition": { "x": 0.0, "y": 0.0, "z": 0.0}
     }
   },
 
@@ -206,11 +211,11 @@
     },
     "Renderable": {
       "meshName": "square",
-      "materialName": "ghostMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
     },
     "Animator": {
-      "spriteSheetName": "../assets/ghost.png",
+      "spriteSheetName": "",
       "playbackSpeed": 1.0,
       "isPlaying": true,
       "isLooping": true
@@ -235,11 +240,11 @@
     },
     "Renderable": {
       "meshName": "square",
-      "materialName": "ghostMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
     },
     "Animator": {
-      "spriteSheetName": "../assets/ghost.png",
+      "spriteSheetName": "",
       "playbackSpeed": 1.0,
       "isPlaying": true,
       "isLooping": true
@@ -250,7 +255,7 @@
   "Control": {
     "Renderable": {
       "meshName": "square",
-      "materialName": "targetMat"
+      "materialName": "ColorMat"
     }
   },
 
@@ -358,11 +363,11 @@
     },
     "Renderable": {
       "meshName": "square",
-      "materialName": "slimeMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
     },
     "Animator": {
-      "spriteSheetName": "../assets/slime.png",
+      "spriteSheetName": "",
       "playbackSpeed": 2.0,
       "isPlaying": true,
       "isLooping": true
@@ -372,10 +377,11 @@
       "jumpSpeed": 600.0
     }, 
     "Font": {
-      "fontType": "default",
+      "fontType": "",
       "text": "Player",
       "fontSize": 0.5,
-      "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 }
+      "textColor": { "r": 0.65, "g": 0.75, "b": 0.9 },
+      "offsetPosition": { "x": 0.0, "y": 0.0, "z": 0.0}
     }
   },
   
@@ -392,7 +398,7 @@
     },
     "Renderable": {
       "meshName": "circle",
-      "materialName": "bananaMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
     }
   },
@@ -426,7 +432,7 @@
     },
     "Renderable": {
       "meshName": "circle",
-      "materialName": "bananaMat",
+      "materialName": "ColorMat",
       "isWireframe" : false
     }
   }

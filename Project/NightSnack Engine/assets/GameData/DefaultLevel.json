@@ -4,17 +4,17 @@
     "Transform": {
       "Position": { "x": 0.0, "y": 0.0, "z": 2.0 },
       "Rotation": 0.0,
-      "Scale": { "x": 0.0, "y": 0.0 }},
-    "Layer": "GameUI"
-    },
+      "Scale": { "x": 0.0, "y": 0.0 },
+      "Layer": "GameUI"
+    }},
 
     { "prefab": "Backdrop",
     "Transform": {
       "Position": { "x": 0.0, "y": 0.0, "z": 0.0 },
       "Rotation": 0.0,
-      "Scale": { "x": 1920.0, "y": 1080.0 }},
-    "Layer": "Background"
-    },
+      "Scale": { "x": 1920.0, "y": 1080.0 },
+      "Layer": "Background"
+    }},
 
     { "prefab": "Player",
     "Transform": {
@@ -105,32 +105,32 @@
     "Transform": {
       "Position": { "x": 1200.0, "y": 350.0, "z": 1.0 },
       "Rotation": 0.0,
-      "Scale": { "x": 100.0, "y": 100.0 }},
-    "Layer": "GameUI"
-    },
+      "Scale": { "x": 100.0, "y": 100.0 },
+      "Layer": "GameUI"
+    }},
 
     { "prefab": "ButtonAudio",
     "Transform": {
       "Position": { "x": 900.0, "y": 100.0, "z": 1.0 },
       "Rotation": 0.0,
-      "Scale": { "x": 200.0, "y": 100.0 }},
-    "Layer": "GameUI"
-    },
+      "Scale": { "x": 200.0, "y": 100.0 },
+      "Layer": "GameUI"
+    }},
 
     { "prefab": "ButtonAudio2",
     "Transform": {
       "Position": { "x": 1200.0, "y": 100.0, "z": 1.0 },
       "Rotation": 0.0,
-      "Scale": { "x": 200.0, "y": 100.0 }},
-    "Layer": "GameUI"
-    },
+      "Scale": { "x": 200.0, "y": 100.0 },
+      "Layer": "GameUI"
+    }},
 
     { "prefab": "ButtonAudio3",
     "Transform": {
       "Position": { "x": 1500.0, "y": 100.0, "z": 1.0 },
       "Rotation": 0.0,
-      "Scale": { "x": 200.0, "y": 100.0 }},
-    "Layer": "GameUI"
-    }
+      "Scale": { "x": 200.0, "y": 100.0 },
+      "Layer": "GameUI"
+    }}
   ]
 }

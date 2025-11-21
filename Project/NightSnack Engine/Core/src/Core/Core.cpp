@@ -9,7 +9,7 @@
  * Description:
  * Defines member functions of CoreEngine class.
  *
- * Copyright � 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -84,26 +84,26 @@ namespace NightSnack {
 
 		AddSystem<ApplicationSystem>(std::move(windowTitle), m_coord, core_dispatcher);
 		AddSystem<InputSystem>(m_coord, core_dispatcher);
-
 		AddSystem<AudioSystem>(m_coord, core_dispatcher);
 
-		AddSystem<GameUI>(m_coord, core_dispatcher);
 
-		AddSystem<EntityFactory>(m_coord, core_dispatcher, "../assets/GameData/Archetypes/Archetypes.json","../assets/GameData/Archetypes/AIStatesArchetypes.json", "../assets/GameData/DefaultLevel.json");
-
-		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
-
-		AddSystem<CameraSystem>(m_coord, core_dispatcher);
 		AddSystem<PhysicsSystem>(m_coord, core_dispatcher);
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
-
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<AnimationSystem>(m_coord, core_dispatcher);
+
+
+		AddSystem<GameUI>(m_coord, core_dispatcher);
+		AddSystem<CameraSystem>(m_coord, core_dispatcher);
+		AddSystem<EntityFactory>(m_coord, core_dispatcher, "../../assets/GameData");
+		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
+
+
 		AddSystem<TextSystem>(m_coord, core_dispatcher);
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
+		AddSystem<Scripting::ScriptManager>(m_coord, core_dispatcher);
 
 		AddSystem<FiniteStateMachine>(m_coord);
-		AddSystem<Scripting::ScriptManager>(m_coord, core_dispatcher);
 
 
 		// Buffer all entities' signatures to properly initialize all systems' set of entities

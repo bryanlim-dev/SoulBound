@@ -94,6 +94,8 @@ namespace NightSnack {
 		bool m_toggleEditor = false;
 		bool m_isPlaying = true;
 
+		Tilemap m_tilemap;
+
 		// Panels and shared data
 		std::shared_ptr<std::unordered_map<Entity, std::string>> m_uiNames;
 		std::shared_ptr<Entity> m_selectedEntity;
@@ -203,8 +205,8 @@ namespace NightSnack {
 		m_selectedEntity = std::make_shared<Entity>(INVALID_ENTITY);
 		m_uiNames		 = std::make_shared<std::unordered_map<Entity, std::string>>();
 		m_hierarchyPanel = std::make_unique<HierarchyPanel>(m_coord, m_selectedEntity, m_uiNames);
-		m_inspectorPanel = std::make_unique<InspectorPanel>(m_coord, m_selectedEntity, m_uiNames);
-		m_scenePanel	 = std::make_unique<ScenePanel>(m_coord, m_selectedEntity);
+		m_inspectorPanel = std::make_unique<InspectorPanel>(m_coord, m_selectedEntity, m_uiNames, m_tilemap);
+		m_scenePanel	 = std::make_unique<ScenePanel>(m_coord, m_selectedEntity, m_tilemap);
 		m_optionsPanel	 = std::make_unique<OptionsPanel>(m_coord);
 		m_assetsPanel	 = std::make_unique<AssetsPanel>(m_coord);
 	}
@@ -267,8 +269,8 @@ namespace NightSnack {
 		auto factory = m_coord.GetSystem<EntityFactory>();
 		if (factory)
 		{
-			factory->UnLoadLevel();
-			factory->LoadLevel("../assets/GameData/DefaultLevel.json");
+			factory->UnloadLevel();
+			factory->LoadLevel("DefaultLevel");
 			m_scenePanel->CreateEditorCamera();
 		}
 	}
@@ -309,7 +311,7 @@ namespace NightSnack {
 			
 			// Split the dockspace into 4 regions
 			ImGuiID dock_id_left, dock_id_right, dock_id_top, dock_id_bottom, dock_id_center;
-			ImGuiID dock_id_left_top, dock_id_left_bottom, dock_id_center_right, dock_id_bottom_right;
+			ImGuiID dock_id_left_top, dock_id_left_bottom, dock_id_center_right, dock_id_bottom_right, dock_id_right_top, dock_id_right_bottom;
 
 			ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.20f, &dock_id_left, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Right, 0.25f, &dock_id_right, &dock_id_center);
@@ -318,6 +320,7 @@ namespace NightSnack {
 			ImGui::DockBuilderSplitNode(dock_id_left, ImGuiDir_Down, 1.0f / 3.0f, &dock_id_left_bottom, &dock_id_left_top);
 			ImGui::DockBuilderSplitNode(dock_id_center, ImGuiDir_Right, 0.3f, &dock_id_center_right, &dock_id_center);
 			ImGui::DockBuilderSplitNode(dock_id_bottom, ImGuiDir_Right, 0.5f, &dock_id_bottom_right, &dock_id_bottom);
+			ImGui::DockBuilderSplitNode(dock_id_center_right, ImGuiDir_Down, 0.5f, &dock_id_right_bottom, &dock_id_right_top);
 
 
 			// Dock panels to regions
@@ -326,7 +329,8 @@ namespace NightSnack {
 			ImGui::DockBuilderDockWindow("Inspector", dock_id_right);
 			ImGui::DockBuilderDockWindow("Scene", dock_id_center);
 			ImGui::DockBuilderDockWindow("Assets", dock_id_bottom);
-			ImGui::DockBuilderDockWindow("Asset Properties", dock_id_center_right);
+			ImGui::DockBuilderDockWindow("Asset Properties", dock_id_right_top);
+			ImGui::DockBuilderDockWindow("Tile Editor", dock_id_right_bottom);
 			ImGui::DockBuilderDockWindow("Properties:", dock_id_bottom_right);
 
 			ImGui::DockBuilderFinish(dockspace_id);
@@ -342,19 +346,44 @@ namespace NightSnack {
 	inline void ImguiSystem::DrawMenuBar() {
 		if (ImGui::BeginMenuBar())
 		{
-			// Implemented at later date
 			if (ImGui::BeginMenu("File"))
 			{
-				//if (ImGui::MenuItem("New")) {}
-				if (ImGui::MenuItem("Open")) {
+				// Save current level
+				std::string levelName = "MyLevel";
+				ImGui::InputText("Level Name", levelName.data(), levelName.size());
+				ImGui::SameLine();
+				static bool overwrite = true;
+				ImGui::Checkbox("Overwrite", &overwrite);
+				ImGui::SameLine();
+				if (ImGui::Button("Save")) {
 					auto factory = m_coord.GetSystem<EntityFactory>();
 					if (factory)
 					{
-						factory->LoadLevel("../assets/GameData/DefaultLevel.json");
+						factory->SaveLevel(levelName, overwrite);
 					}
 				}
-				//if (ImGui::MenuItem("Save")) {}
+
+				// Load level by name
+				std::string loadLevelName = "MyLevel";
+				ImGui::InputText("Load Level", loadLevelName.data(), loadLevelName.size());
+				ImGui::SameLine();
+				if (ImGui::Button("Load")) {
+					auto factory = m_coord.GetSystem<EntityFactory>();
+					if (factory)
+					{
+						factory->UnloadLevel();
+						factory->LoadLevel(loadLevelName);
+					}
+				}
+
 				ImGui::Separator();
+				if (ImGui::MenuItem("Open Default Level")) {
+					auto factory = m_coord.GetSystem<EntityFactory>();
+					if (factory)
+					{
+						factory->LoadLevel("DefaultLevel");
+					}
+				}
 				//if (ImGui::MenuItem("Exit")) {}
 				ImGui::EndMenu();
 			}

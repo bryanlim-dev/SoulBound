@@ -30,6 +30,7 @@ namespace NightSnack {
     // ================================================================================================
     // COMPONENTS
     // ================================================================================================
+    //When updating this update the one in Engine.cs
     enum class LayerType : std::uint8_t {
         _ENGINE,
         BACKGROUND,
@@ -43,7 +44,7 @@ namespace NightSnack {
         float rot;
         Vec2 scale;
 
-        LayerType layer{ LayerType::GAMELAYER };
+        LayerType layer;
     };
 
     struct Force {
@@ -66,6 +67,7 @@ namespace NightSnack {
         float invInertia;
 
         float restitution;
+        float gravitymult;
 
         bool useGravity;
         bool useRotate; 
@@ -75,6 +77,7 @@ namespace NightSnack {
         std::string name;
     };
 
+    //When updating this update the one in Engine.cs
     enum class ShapeType { AABB, Circle };
     enum class ColliderType {
         Solid,   // Blocks movement
@@ -128,8 +131,8 @@ namespace NightSnack {
     // All renderable entities will have this component
     // Each renderable will have a Mesh, Material, Shader, Texture tied to them
     struct Renderable {
-        std::string meshName{};
-        std::string materialName{};
+        std::string meshName{ "square" };
+        std::string materialName{ "ColorMat" };
         bool isWireframe{ false };
         bool wasModified{ true };
 
@@ -151,10 +154,11 @@ namespace NightSnack {
     };
 
     struct Font {
-        std::string fontType{ "default" };
-        std::string text{};
+        std::string fontType;
+        std::string text;
         float fontSize{ 1.f };
         Vec3 textColor{ 1.f, 1.f, 1.f };
+        Vec3 offsetPosition{ 0.f, 0.f, 0.f };
     };
 
     // Only camera objects will have this component
@@ -212,6 +216,17 @@ namespace NightSnack {
         t.pos = { pos.value("x", 0.0f), pos.value("y", 0.0f), pos.value("z", 0.0f) };
         t.rot = j.value("Rotation", 0.0f);
         t.scale = { scl.value("x", 1.0f), scl.value("y", 1.0f) };
+
+        // entity layer
+        std::string l = j.value("Layer", "");
+        if (l == "_Engine") { t.layer = LayerType::_ENGINE; }
+        else if (l == "Background") { t.layer = LayerType::BACKGROUND; }
+        else if (l == "Foreground") { t.layer = LayerType::FOREGROUND; }
+        else if (l == "GameUI") { t.layer = LayerType::GAMEUI; }
+        else if (l == "_Engine2") { t.layer = LayerType::_ENGINE2; }
+        else {
+            t.layer = LayerType::GAMELAYER;
+        }
     }
     
     inline void from_json(const json& j, PlayerController& p) {
@@ -274,6 +289,8 @@ namespace NightSnack {
         j.at("fontSize").get_to(f.fontSize);
         auto clr = j.at("textColor");
         f.textColor = { clr.value("r", 0.0f), clr.value("g", 0.0f), clr.value("b", 0.0f) };
+        auto offsetPos = j.at("offsetPosition");
+        f.offsetPosition = { offsetPos.value("x", 0.0f), offsetPos.value("y", 0.0f), offsetPos.value("z", 0.0f) };
     }
 
     // Animator ===================================================
@@ -332,7 +349,7 @@ namespace NightSnack {
         else if (shapeStr == "Circle") c.shape = ShapeType::Circle;
 
         if (typeStr == "Solid") c.type = ColliderType::Solid;
-        if (typeStr == "Ground") c.type = ColliderType::Ground;
+        //else if (typeStr == "Ground") c.type = ColliderType::Ground;
         else if (typeStr == "Trigger") c.type = ColliderType::Trigger;
 
         j.at("isStatic").get_to(c.isStatic);
