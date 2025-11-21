@@ -39,9 +39,9 @@ namespace NightSnack
 	{
 	}
 
-	void FiniteStateMachine::Update(int steps)
+	void FiniteStateMachine::Update()
 	{
-		for (int stepCount = 0; stepCount < steps; ++stepCount)
+		for (int stepCount = 0; stepCount < m_coord.steps; ++stepCount)
 		{
 			float dt = m_coord.GetSystem<ApplicationSystem>()->GetDT();
 

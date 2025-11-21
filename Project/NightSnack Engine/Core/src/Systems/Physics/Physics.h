@@ -73,7 +73,7 @@ namespace NightSnack {
             AddLayer(LayerType::GAMELAYER);
 
             // Initialize collision grid;
-            m_gridCols = 60; m_gridRows = 40;
+            m_gridCols = 30; m_gridRows = 15;
             m_gridWidth = 2500.f; m_gridHeight = 1250.f;
             m_cellSize.x = m_gridWidth / (float) m_gridCols;
             m_cellSize.y = m_gridHeight / (float) m_gridRows;
@@ -92,7 +92,7 @@ namespace NightSnack {
         Reference to Coordinator.
         */
         /************************************************************************/
-        void Update(int steps) override;
+        void Update() override;
 
         // Required by ISystem base class;
         Signature GetSignature() const override { return m_systemSignature; }

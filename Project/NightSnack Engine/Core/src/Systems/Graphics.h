@@ -118,7 +118,7 @@ namespace NightSnack {
 		The number of steps in the simulation
 		*/
 		/************************************************************************/
-		void Update(int steps) override;
+		void Update() override;
 
 		/************************************************************************/
 		/*!

@@ -40,7 +40,7 @@ namespace NightSnack {
 		}
 	}
 
-	void AnimationSystem::Update(int steps) {
+	void AnimationSystem::Update() {
 		// Iterate through all entities that have Animator component
 		for (Entity e : m_entities) {
 			auto& animator = m_coord.ModifyComponent<Animator>(e);
@@ -94,7 +94,7 @@ namespace NightSnack {
 			auto& clip = m_animationClips[animator.spriteSheetName][animator.currentAnimationClip];
 			auto& currentFrame = clip.frames[animator.currentFrameIndex];
 
-			animator.currentTime += steps * animator.playbackSpeed;
+			animator.currentTime += m_coord.steps * animator.playbackSpeed;
 
 			// Move to next animation frame if needed
 			if (animator.currentTime >= currentFrame.timeDelay) {

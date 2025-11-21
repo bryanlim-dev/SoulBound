@@ -90,7 +90,7 @@ namespace NightSnack {
 		Currently does not do anything, but is required to be defined by ISystem.
 		*/
 		/************************************************************************/
-		void Update(int steps) override;
+		void Update() override;
 
 		/************************************************************************/
 		/*!

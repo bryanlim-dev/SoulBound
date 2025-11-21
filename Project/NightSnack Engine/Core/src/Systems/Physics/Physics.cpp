@@ -21,13 +21,13 @@
 namespace NightSnack {
 
 	// Main update function;
-	void PhysicsSystem::Update(int steps) {
+	void PhysicsSystem::Update() {
 		// Skip Physics if in debug mode
 		if (debugMode && !stepRequest) {
 			return;
 		}
 
-		for (int s{}; s < steps; ++s) {
+		for (int s{}; s < m_coord.steps; ++s) {
 
 			for (Layer& l : m_layers) {
 				// Skip inactive and empty layers;
