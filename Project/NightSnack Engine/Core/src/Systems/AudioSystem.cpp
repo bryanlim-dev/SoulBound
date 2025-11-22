@@ -102,7 +102,7 @@ namespace NightSnack {
     // scans a directory and loads all audio files
     void AudioSystem::ScanAudioDirectory(const std::string& folderPath, bool isBGM)
     {
-        std::cout << "[Audio] Current path: " << fs::current_path() << '\n';
+        //std::cout << "[Audio] Current path: " << fs::current_path() << '\n';
         fs::path fp = std::filesystem::canonical(RESOURCE_PATH + folderPath);
 
         try {
@@ -116,7 +116,7 @@ namespace NightSnack {
                 if (entry.is_regular_file() && IsValidAudioFile(entry.path().filename().string())) {
 
                     std::string file = folderPath + "/" + entry.path().filename().string();
-                    std::cout << "[Audio] Attempting to load audio: " << file << "\n\n";
+                    //std::cout << "[Audio] Attempting to load audio: " << file << "\n\n";
                     if (LoadSoundFile(file, isBGM)) {
                         loadedCount++;
                     }
@@ -173,7 +173,7 @@ namespace NightSnack {
         std::string key = ExtractKeyFromPath(filepath);
 
         size_t soundID = 0;
-        std::cout << "[Audio] Calling RM with filepath: " << filepath << "\n\n";
+        //std::cout << "[Audio] Calling RM with filepath: " << filepath << "\n\n";
         LOAD_RESULT result = m_resourceMgr.lock()->LoadSound(filepath, soundID, m_fmodSystem.lock().get());
 
         if (result == LOAD_SUCCESS || result == LOAD_SUCCESS_STOPPED_UNLOAD)
