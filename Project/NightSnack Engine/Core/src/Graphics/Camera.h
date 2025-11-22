@@ -41,7 +41,7 @@ namespace NightSnack {
 		* @brief update to ensure the camera follows the player
 		* @param steps simulation steps
 		*/
-		void Update(int steps) override;
+		void Update() override;
 
 		/**
 		 * @brief retrieve the system signature

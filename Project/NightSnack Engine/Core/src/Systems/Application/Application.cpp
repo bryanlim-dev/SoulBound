@@ -109,8 +109,7 @@ namespace NightSnack {
 	}
 
 	// Update function called every frame
-	void ApplicationSystem::Update(int steps) {
-		(void)steps;
+	void ApplicationSystem::Update() {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		PollEvents();

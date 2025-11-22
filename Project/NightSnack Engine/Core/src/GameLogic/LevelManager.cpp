@@ -2,7 +2,7 @@
 
 namespace NightSnack::Scene {
 
-	void LevelManager::LoadLevel(std::string const& filename) {
+	void SceneManager::LoadLevel(std::string const& filename) {
 
 		size_t levelKey = 0;
 		try {
@@ -25,7 +25,7 @@ namespace NightSnack::Scene {
 		}
 	}
 
-	void LevelManager::UnloadLevel() {
+	void SceneManager::UnloadLevel() {
 
 	}
 

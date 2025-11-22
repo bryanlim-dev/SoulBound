@@ -80,7 +80,7 @@ namespace NightSnack {
         * @brief update the audio system
         * @param steps number of simulation steps
         */
-        void Update(int steps) override;
+        void Update() override;
 
         /**
          * @brief loads all game audio files by scanning audio directories

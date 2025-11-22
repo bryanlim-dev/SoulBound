@@ -63,7 +63,7 @@ namespace NightSnack {
 			Number of steps to update.
 		*/
 		/************************************************************************/
-		void Update(int steps) override;
+		void Update() override;
 
 		/************************************************************************/
 		/*!
@@ -168,6 +168,7 @@ namespace NightSnack {
 					switch (event.inputAction) {
 					case InputEvent::InputAction::ToggleUIEditor:
 						SetEditorEnabled(!m_toggleEditor);
+						m_coord.TogglePause();
 						break;
 					}
 				}
@@ -212,8 +213,7 @@ namespace NightSnack {
 	}
 
 	// Sets up and draws UI panels
-	inline void ImguiSystem::Update(int steps) {
-		(void)steps;
+	inline void ImguiSystem::Update() {
 
 		if (!m_toggleEditor) { return; }
 

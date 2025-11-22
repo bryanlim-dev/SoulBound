@@ -136,8 +136,7 @@ namespace NightSnack {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
-	void TextSystem::Update(int steps) {
-		(void)steps;
+	void TextSystem::Update() {
 
 		//if (!m_coord.GetSystem<ImguiSystem>()->GetEditorActive()) {
 		
@@ -180,14 +179,32 @@ namespace NightSnack {
 				glm::mat4 viewToUse = isUILayer ? glm::mat4(1.f) : view;
 
 				auto& pos = m_coord.GetComponent<Transform>(e).pos;
+				auto& scl = m_coord.GetComponent<Transform>(e).scale;
 				auto& txt = m_coord.ModifyComponent<Font>(e);
+				auto& UIpos = m_coord.GetComponent<Transform>(e).UIbasePos;
+				auto& UIscale = m_coord.GetComponent<Transform>(e).UIbaseScale;
+
+				// Translate the position and scale of UI layer objects based on the current screen resolution
+				if (isUILayer) {
+					// By default, the base screen resolution is 1600, 900
+					float ratioPosX = UIpos.x / 1600.f;
+					float ratioPosY = UIpos.y / 900.f;
+					float ratioScaleX = UIscale.x / 1600.f;
+					float ratioScaleY = UIscale.y / 900.f;
+
+					// Get the new position and scaling based on the current screen resolution
+					m_coord.ModifyComponent<Transform>(e).pos.x = ratioPosX * screenW;
+					m_coord.ModifyComponent<Transform>(e).pos.y = ratioPosY * screenH;
+					m_coord.ModifyComponent<Transform>(e).scale.x = ratioScaleX * screenW;
+					m_coord.ModifyComponent<Transform>(e).scale.y = ratioScaleY * screenH;
+				}
 
 				// Flip the y pos for entities on the UI layer
-				float posYToUse = isUILayer ? screenH - pos.y : pos.y;
+				float finalPosY = isUILayer ? screenH - pos.y : pos.y;
 
 				// Offset the base position based on the offset position
-				float posXToUse = pos.x + txt.offsetPosition.x;
-				posYToUse += txt.offsetPosition.y;
+				float finalPosX = pos.x + txt.offsetPosition.x;
+				finalPosY += txt.offsetPosition.y;
 
 				// If it is empty, make it use the default font, which is the first font in the map
 				if (txt.fontType.empty()) {
@@ -195,7 +212,7 @@ namespace NightSnack {
 				}
 
 				// Render the actual text string
-				RenderText(txt.text, posXToUse, posYToUse, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType);
+				RenderText(txt.text, finalPosX, finalPosY, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType);
 			}
 		}
 		glDisable(GL_BLEND);

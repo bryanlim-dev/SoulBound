@@ -21,10 +21,8 @@ namespace NightSnack {
         m_mainCamera(INVALID_ENTITY),
         m_player(INVALID_ENTITY) {}
 
-    void CameraSystem::Update(int steps)
+    void CameraSystem::Update()
     {
-        (void)steps;
-
         // use local reference to the coordinator
         Coordinator& coord = *m_coord;
 

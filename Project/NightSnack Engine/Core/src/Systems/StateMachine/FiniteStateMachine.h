@@ -59,7 +59,7 @@ namespace NightSnack
 		interger of how many times to peform the update
 		*/
 		/************************************************************************/
-		void Update(int steps) override;
+		void Update() override;
 
 
 		/************************************************************************/

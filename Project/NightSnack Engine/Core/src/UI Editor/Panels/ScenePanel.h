@@ -869,6 +869,7 @@ namespace NightSnack
 	inline void ScenePanel::HandleEntityPicking(float mouseWorldX, float mouseWorldY)
 	{
 		Entity topEntity = INVALID_ENTITY;
+		LayerType layer = LayerType::_ENGINE;	// Lowest
 		float topZ = -1e9f;
 		for (Entity e : m_coord.GetLivingEntities())
 		{
@@ -882,10 +883,15 @@ namespace NightSnack
 				mouseWorldY >= t.pos.y - halfH && mouseWorldY <= t.pos.y + halfH)
 			{
 				float z = t.pos.z;
-				if (z > topZ)
-				{
-					topEntity = e;
+				LayerType l = t.layer;
+				if (l == layer && z > topZ) {
 					topZ = z;
+					topEntity = e;
+				}
+				if (l > layer) {
+					layer = l;
+					topZ = z;
+					topEntity = e;
 				}
 			}
 		}

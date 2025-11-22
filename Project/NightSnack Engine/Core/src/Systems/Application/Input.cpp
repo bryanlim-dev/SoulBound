@@ -46,8 +46,7 @@ namespace NightSnack {
 		m_dispatcher = &dispatcher;
 	}
 
-	void InputSystem::Update(int steps) {
-		(void)steps;
+	void InputSystem::Update() {
 
 		// Find current mouse position (World)
 		float Hvp = static_cast<float>(m_coord.GetWindowHeight());
