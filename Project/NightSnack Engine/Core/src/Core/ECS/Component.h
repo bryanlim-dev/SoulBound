@@ -216,14 +216,21 @@ namespace NightSnack {
     inline void from_json(json const& j, Transform& t) {
         auto pos = j.at("Position");
         auto scl = j.at("Scale");
-        auto UIpos = j.at("UIBasePosition");
-        auto UIscale = j.at("UIBaseScale");
+
+        if (j.contains("UIBasePosition"))
+        {
+			auto UIpos = j.at("UIBasePosition");
+            t.UIbasePos = { UIpos.value("x", 0.0f), UIpos.value("y", 0.0f), UIpos.value("z", 0.0f) };
+        }
+        if (j.contains("UIBaseScale"))
+		{
+			auto UIscale = j.at("UIBaseScale");
+            t.UIbaseScale = { UIscale.value("x", 0.0f), UIscale.value("y", 0.0f), UIscale.value("z", 0.0f) };
+        }
+
         t.pos = { pos.value("x", 0.0f), pos.value("y", 0.0f), pos.value("z", 0.0f) };
         t.rot = j.value("Rotation", 0.0f);
         t.scale = { scl.value("x", 1.0f), scl.value("y", 1.0f) };
-
-        t.UIbasePos = { UIpos.value("x", 0.0f), UIpos.value("y", 0.0f), UIpos.value("z", 0.0f) };
-        t.UIbaseScale = { UIscale.value("x", 0.0f), UIscale.value("y", 0.0f), UIscale.value("z", 0.0f) };
 
         // entity layer
         std::string l = j.value("Layer", "");
