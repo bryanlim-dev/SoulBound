@@ -102,17 +102,22 @@ namespace NightSnack {
     // scans a directory and loads all audio files
     void AudioSystem::ScanAudioDirectory(const std::string& folderPath, bool isBGM)
     {
+        std::cout << "[Audio] Current path: " << fs::current_path() << '\n';
+        fs::path fp = std::filesystem::canonical(RESOURCE_PATH + folderPath);
+
         try {
-            if (!fs::exists(folderPath)) {
-                std::cerr << "[AudioSystem] Directory not found: " << folderPath << "\n";
+            if (!fs::exists(fp)) {
+                std::cerr << "[AudioSystem] Directory not found: " << fp << "\n";
                 return;
             }
 
             int loadedCount = 0;
-            for (const auto& entry : fs::directory_iterator(folderPath)) {
-                if (entry.is_regular_file() && IsValidAudioFile(entry.path().string())) {
+            for (const auto& entry : fs::directory_iterator(fp)) {
+                if (entry.is_regular_file() && IsValidAudioFile(entry.path().filename().string())) {
 
-                    if (LoadSoundFile(entry.path().string(), isBGM)) {
+                    std::string file = folderPath + "/" + entry.path().filename().string();
+                    std::cout << "[Audio] Attempting to load audio: " << file << "\n\n";
+                    if (LoadSoundFile(file, isBGM)) {
                         loadedCount++;
                     }
                 }
@@ -124,7 +129,7 @@ namespace NightSnack {
         }
         catch (const std::exception& e) {
             std::cerr << "[AudioSystem] Error scanning directory " << folderPath
-                << ": " << e.what() << "\n";
+                << ": " << e.what() << "\n\n";
         }
     }
 
@@ -168,6 +173,7 @@ namespace NightSnack {
         std::string key = ExtractKeyFromPath(filepath);
 
         size_t soundID = 0;
+        std::cout << "[Audio] Calling RM with filepath: " << filepath << "\n\n";
         LOAD_RESULT result = m_resourceMgr.lock()->LoadSound(filepath, soundID, m_fmodSystem.lock().get());
 
         if (result == LOAD_SUCCESS || result == LOAD_SUCCESS_STOPPED_UNLOAD)

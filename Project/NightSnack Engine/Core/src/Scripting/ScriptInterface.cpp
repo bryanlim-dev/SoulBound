@@ -482,7 +482,7 @@ namespace NightSnack::Scripting {
     // --------------------------------------------------------------
     void ScriptInterface::PlaySound(const std::string& path) {
         //m_coord.GetSystem<AudioSystem>()->PlayAudio(soundPath);
-        //std::cout << "Playing sound: " << path << '\n';
+        std::cout << "Playing sound: " << path << '\n';
     }
 
     // Time
@@ -492,7 +492,7 @@ namespace NightSnack::Scripting {
 
     // Logging
     void ScriptInterface::Log(const std::string& msg) {
-        //std::cout << "[Script] " << msg << '\n';
+        std::cout << "[Script] " << msg << '\n';
     }
 
     //Create Entity

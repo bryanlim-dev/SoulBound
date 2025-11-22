@@ -95,47 +95,47 @@ namespace NightSnack
                 HandleExternalFileDrop();
             }
 
-            ImGui::Begin("Assets");
+            //ImGui::Begin("Assets");
 
-            DrawToolbar();
-            ImGui::Separator();
+            //DrawToolbar();
+            //ImGui::Separator();
 
-            // Two-column layout: Left = folder tree, Right = content view
-            ImGui::Columns(2, "AssetColumns", true);
+            //// Two-column layout: Left = folder tree, Right = content view
+            //ImGui::Columns(2, "AssetColumns", true);
 
-            // Left column - Folder tree
-            ImGui::BeginChild("FolderTree", ImVec2(0, 0), true);
-            ImGui::Text("Project");
-            ImGui::Separator();
-            DrawFolderTree(m_assetsRoot);
+            //// Left column - Folder tree
+            //ImGui::BeginChild("FolderTree", ImVec2(0, 0), true);
+            //ImGui::Text("Project");
+            //ImGui::Separator();
+            //DrawFolderTree(m_assetsRoot);
 
-            // Add scripts folder if it exists
-            if (fs::exists(m_scriptsRoot))
-            {
-                DrawFolderTree(m_scriptsRoot);
-            }
-            ImGui::EndChild();
+            //// Add scripts folder if it exists
+            //if (fs::exists(m_scriptsRoot))
+            //{
+            //    DrawFolderTree(m_scriptsRoot);
+            //}
+            //ImGui::EndChild();
 
-            ImGui::NextColumn();
+            //ImGui::NextColumn();
 
-            // Right column - Content view
-            ImGui::BeginChild("ContentView", ImVec2(0, 0), true);
-            DrawContentView();
-            ImGui::EndChild();
+            //// Right column - Content view
+            //ImGui::BeginChild("ContentView", ImVec2(0, 0), true);
+            //DrawContentView();
+            //ImGui::EndChild();
 
-            ImGui::Columns(1);
-            ImGui::End();
+            //ImGui::Columns(1);
+            //ImGui::End();
 
-            // Preview/Properties panel (separate window)
-            if (m_showAssetProperties && !m_selectedAssetPath.empty())
-            {
-                DrawAssetProperties();
-            }
+            //// Preview/Properties panel (separate window)
+            //if (m_showAssetProperties && !m_selectedAssetPath.empty())
+            //{
+            //    DrawAssetProperties();
+            //}
 
-            if (m_showImportDialog)
-            {
-                DrawImportDialog();
-            }
+            //if (m_showImportDialog)
+            //{
+            //    DrawImportDialog();
+            //}
 
         }
 

@@ -29,7 +29,8 @@ namespace NightSnack {
 	Resource::~Resource()
 	{
 #if RESOURCE_DEBUG_MODE
-		std::cout << m_path << " is deleted!" << std::endl;
+		std::filesystem::path fp = m_path;
+		std::cout << fp.filename() << " is deleted!" << std::endl;
 #endif
 	}
 
