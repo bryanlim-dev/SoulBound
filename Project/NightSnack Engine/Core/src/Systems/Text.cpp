@@ -39,7 +39,9 @@ namespace NightSnack {
 	}
 
 	void TextSystem::LoadFonts() {
-		std::filesystem::path assetsFilePath = "../assets/Font";
+		std::filesystem::path assetsFilePath = std::filesystem::canonical(
+			RESOURCE_PATH + std::string{ "Font" }
+		);
 
 		if (!std::filesystem::exists(assetsFilePath)) {
 			std::cerr << "[TextSystem] Error: Assets Font directory cannot be found!\n";
@@ -54,15 +56,15 @@ namespace NightSnack {
 			}
 
 			// Only load the fonts that are in this assets folder
-			std::filesystem::path filePath = entry.path();
-			std::string extension = filePath.extension().string();
+			std::string extension = entry.path().extension().string();
 
 			// Only load fonts with the correct extensions
 			if (extension != ".ttf") {
 				continue;
 			}
+			std::string filePath = std::string{ "Font/" } + entry.path().filename().string();
 
-			CreateFont(filePath.string());
+			CreateFont(filePath);
 		}
 	}
 

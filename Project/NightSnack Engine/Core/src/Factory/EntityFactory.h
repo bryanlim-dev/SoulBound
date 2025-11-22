@@ -41,8 +41,8 @@ namespace NightSnack {
 		will help with entity creation.
 		*/
 		/************************************************************************/
-		EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& gameDataPath)
-			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord }, GAMEDATA_DIR{ gameDataPath } {
+		EntityFactory(Coordinator& coord, EventDispatcher& disp)
+			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord } {
 
 			// Register component loaders in PrefabManager.
 			m_prefabManager.Initialize();
@@ -193,7 +193,7 @@ namespace NightSnack {
 		std::unordered_multimap<std::string, Entity> prefabToEntities;	// Hot reloading prefabs;
 		std::vector<std::string> m_prefabNames;
 
-		std::filesystem::path GAMEDATA_DIR;
+		//std::filesystem::path GAMEDATA_DIR;
 
 		// ---------------------------------------------------------------------
 

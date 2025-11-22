@@ -91,10 +91,10 @@ namespace NightSnack {
         //std::cout << "[AudioSystem] Scanning audio directories...\n";
 
         // Scan SFX directory
-        ScanAudioDirectory("../assets/Sound/SFX", false);
+        ScanAudioDirectory("Sound/SFX", false);
 
         // Scan BGM directory
-        ScanAudioDirectory("../assets/Sound/Music", true);
+        ScanAudioDirectory("Sound/Music", true);
 
         //std::cout << "[AudioSystem] Audio loading complete.\n";
     }

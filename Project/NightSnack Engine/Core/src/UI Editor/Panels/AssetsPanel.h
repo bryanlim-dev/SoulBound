@@ -52,16 +52,16 @@ namespace NightSnack
         */
         AssetsPanel(Coordinator& coord) :
             m_coord(coord),
-            m_assetsRoot("../assets"),
-            m_scriptsRoot("../../../NightSnack Engine/ManagedScripts"),
+            m_assetsRoot(RESOURCE_PATH),
+            m_scriptsRoot(SCRIPTS_PATH),
             m_currentDirectory(m_assetsRoot),
             m_thumbnailSize(96.0f),
             m_selectedAssetPath(""),
             m_showAssetProperties(false),
             m_showImportDialog(false),
-            m_prefabsPanel(coord, "../../../NightSnack Engine/assets/GameData/Archetypes/Archetypes.json"),
-            m_filesPanel(coord, "../assets"),
-            m_scriptsPanel(coord, "../../../NightSnack Engine/ManagedScripts")
+            m_prefabsPanel(coord, PREFABS_PATH),
+            m_filesPanel(coord, RESOURCE_PATH),
+            m_scriptsPanel(coord, SCRIPTS_PATH)
         {
             m_prefabNames.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
             for (std::string const& s : coord.GetSystem<EntityFactory>()->GetPrefabNames())
@@ -73,6 +73,8 @@ namespace NightSnack
             {
                 m_prefabMats.insert({ n, m });
             }
+            std::cout << "\n\nBREAKPOINT 1 \n\n";
+
         }
 
         /**
@@ -133,6 +135,7 @@ namespace NightSnack
             {
                 DrawImportDialog();
             }
+
         }
 
     private:
@@ -402,11 +405,14 @@ namespace NightSnack
         */
         void DrawItemThumbnail(const AssetItem& item)
         {
+            std::cout << "[AssetPanel] item fullpath: " << item.fullPath.filename().string() << '\n';
+
+
             switch (item.type)
             {
             case AssetType::Image:
             {
-                ImTextureID texID = GetOrLoadTexture(item.fullPath.string());
+                ImTextureID texID = GetOrLoadTexture(item.fullPath.filename().string());
                 if (texID)
                 {
                     ImGui::ImageButton(

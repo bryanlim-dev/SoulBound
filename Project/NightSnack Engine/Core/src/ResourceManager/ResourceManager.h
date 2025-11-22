@@ -24,6 +24,7 @@
 #include <typeindex>
 #include <vector>
 #include <fmod.hpp>
+#include <filesystem>
 
 #include "ResourceManager/Resource.h"
 #include "Core/ECS/ISystem.h"

@@ -58,7 +58,11 @@ namespace NightSnack {
 			Hvp = static_cast<float>(coord.GetWindowHeight());
 			Wvp = static_cast<float>(coord.GetWindowWidth());
 
+<<<<<<< Updated upstream
 			std::string path = std::filesystem::current_path().string();
+=======
+			//std::string path = std::filesystem::current_path().string();
+>>>>>>> Stashed changes
 			//std::cout << path << '\n';
 
 			Init();

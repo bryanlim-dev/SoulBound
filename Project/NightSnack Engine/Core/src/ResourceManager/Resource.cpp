@@ -260,7 +260,7 @@ namespace NightSnack {
 		if (m_archetypeMap.size())
 			ConvertArchtypeToJson();
 
-		std::ofstream outFile(m_path.c_str());
+		std::ofstream outFile(m_path);
 
 		if (outFile.is_open())
 		{

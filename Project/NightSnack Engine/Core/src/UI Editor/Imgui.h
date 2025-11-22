@@ -233,7 +233,7 @@ namespace NightSnack {
 		if (m_showInspector && m_inspectorPanel) m_inspectorPanel->Draw();
 		if (m_showScene && m_scenePanel) m_scenePanel->Draw();
 		if (m_showOptions && m_optionsPanel) m_optionsPanel->Draw();
-		if (m_showAssets && m_assetsPanel) m_assetsPanel->Draw();
+		//if (m_showAssets && m_assetsPanel) m_assetsPanel->Draw();
 
 
 		// render

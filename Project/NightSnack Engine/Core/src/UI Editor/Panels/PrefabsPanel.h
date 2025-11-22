@@ -28,7 +28,7 @@ namespace NightSnack
             : m_coord(coord),
             m_archetypesRoot(archetypesRoot)
         {
-            LoadArchetypes();
+            //LoadArchetypes();
         }
 
         /**

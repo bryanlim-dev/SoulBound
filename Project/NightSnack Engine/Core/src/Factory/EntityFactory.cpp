@@ -168,11 +168,16 @@ namespace NightSnack {
         m_previousLevelKey = m_currentLevelKey;
         m_currentLevelKey = key;
 
-        for (auto const& item : level["Entities"]) {
-            Create(item["prefab"], item["Transform"]);
+        try {
+            for (auto const& item : level["Entities"]) {
+                Create(item["prefab"], item["Transform"]);
+            }
+            for (Entity e : m_coord.GetLivingEntities()) {
+                m_coord.BufferEntitySignature(e);
+            }
         }
-        for (Entity e : m_coord.GetLivingEntities()) {
-            m_coord.BufferEntitySignature(e);
+        catch (...) {
+            std::cerr << "[EntityFactory]: Failed to created entities for Level '" << levelName << "'\n";
         }
     }
 
@@ -184,7 +189,7 @@ namespace NightSnack {
         // Clear prefab keys.
         m_prefabKeys.clear();
         // Reread json files from "GameData/Prefabs", assign keys into m_prefabKeys.
-        std::filesystem::path path = GAMEDATA_DIR / "Prefabs";
+        std::filesystem::path path = std::filesystem::canonical(RESOURCE_PATH + std::string{ "GameData/Prefabs" });
         LoadJsonFolder(m_prefabKeys, path.string());
     }
     void EntityFactory::ReloadLevels() {
@@ -195,17 +200,20 @@ namespace NightSnack {
         // Clear level keys.
         m_levelKeys.clear();
         // Reread json files from "GameData/Levels", assign keys into m_levelKeys.
-        std::filesystem::path path = GAMEDATA_DIR / "Levels";
+        std::filesystem::path path = std::filesystem::canonical(RESOURCE_PATH + std::string{ "GameData/Levels" });
         LoadJsonFolder(m_levelKeys, path.string());
     }
 
     // Loads all json files within a folder given a directory path
     void EntityFactory::LoadJsonFolder(std::unordered_map<std::string, size_t>& map, std::string const& path) {
 
+        std::cout << "[EntityFactory] Reading Json Folder '" << path << "'\n";
+
         // Iterate through entries in directory.
         for (auto const& entry : std::filesystem::directory_iterator(path))
         {
             size_t key = 0;
+            //std::cout << "[Entity Factory] Attempting to read: " << entry.path() << '\n';
             LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(entry.path().string(), key);
             if (result == LOAD_FAIL_BADPATH) {
                 std::cerr << "Failed to read json file: " << entry.path() << '\n';
@@ -219,11 +227,11 @@ namespace NightSnack {
     bool EntityFactory::SaveLevel(std::string const& levelName, bool overwrite) {
 
         // Output file path
-        std::filesystem::path outPath = GAMEDATA_DIR / "Levels" / (levelName + ".json");
+        std::filesystem::path outPath = "GameData/Levels" + (levelName + ".json");
 
         // Check if a prefab already exists with the same name
         if (std::filesystem::exists(outPath) && !overwrite) {
-            std::cout << "There already exists a level named '" << levelName << "' at '" << GAMEDATA_DIR / "Levels" << '\n';
+            std::cout << "There already exists a level named '" << levelName << "' at '" << "GameData/Levels" << '\n';
             return false;
         }
 
@@ -289,11 +297,11 @@ namespace NightSnack {
     bool EntityFactory::SaveAsPrefab(Entity e, std::string const& prefabName, bool overwrite) {
 
         // Output file path
-        std::filesystem::path outPath = GAMEDATA_DIR / "Prefabs" / (prefabName + ".json");
+        std::filesystem::path outPath = "GameData/Prefabs" + (prefabName + ".json");
 
         // Check if a prefab already exists with the same name
         if (std::filesystem::exists(outPath) && !overwrite) {
-            std::cout << "There already exists a prefab named '" << prefabName << "' at '" << GAMEDATA_DIR / "Prefabs" << '\n';
+            std::cout << "There already exists a prefab named '" << prefabName << "' at '" << "GameData/Prefabs" << '\n';
             return false;
         }
         // JSON object that will become the prefab content
@@ -467,16 +475,22 @@ namespace NightSnack {
     // Create "Prefabs" and "Levels" folder in "assets/GameData" if they don't exist.
     void EntityFactory::CreateFolders() const {
         // Create prefabs folder if not existing
-        std::filesystem::path prefabs = GAMEDATA_DIR / "Prefabs";
+        std::filesystem::path prefabs = RESOURCE_PATH + std::string{ "GameData/Prefabs" };
         if (!std::filesystem::exists(prefabs)) {
             std::filesystem::create_directories(prefabs);
             std::cout << "[EntityFactory] Created 'Prefabs' folder\n";
         }
+        else {
+            std::cout << "[EntityFactory] 'Prefabs' folder already exists\n";
+        }
         // Same for levels folder
-        std::filesystem::path levels = GAMEDATA_DIR / "Levels";
+        std::filesystem::path levels = RESOURCE_PATH + std::string{ "GameData/Levels" };
         if (!std::filesystem::exists(levels)) {
             std::filesystem::create_directories(levels);
             std::cout << "[EntityFactory] Created 'Levels' folder\n";
+        }
+        else {
+            std::cout << "[EntityFactory] 'Levels' folder already exists\n";
         }
     }
 

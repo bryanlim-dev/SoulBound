@@ -22,13 +22,13 @@ namespace NightSnack {
 
 	void GraphicsSystem::Init() {
 		// Default Shader;
-		auto debugShader = std::make_unique<Shader>("../assets/shaders/debug_vs.vert", "../assets/shaders/debug_fs.frag");
+		auto debugShader = std::make_unique<Shader>("shaders/debug_vs.vert", "shaders/debug_fs.frag");
 		AddShader("debug", std::move(debugShader));
-		auto colorShader = std::make_unique<Shader>("../assets/shaders/color_vs.vert", "../assets/shaders/color_fs.frag");
+		auto colorShader = std::make_unique<Shader>("shaders/color_vs.vert", "shaders/color_fs.frag");
 		AddShader("color", std::move(colorShader));
-		auto textureShader = std::make_unique<Shader>("../assets/shaders/texture_vs.vert", "../assets/shaders/texture_fs.frag");
+		auto textureShader = std::make_unique<Shader>("shaders/texture_vs.vert", "shaders/texture_fs.frag");
 		AddShader("texture", std::move(textureShader));
-		auto textShader = std::make_unique<Shader>("../assets/shaders/text_vs.vert", "../assets/shaders/text_fs.frag");
+		auto textShader = std::make_unique<Shader>("shaders/text_vs.vert", "shaders/text_fs.frag");
 		AddShader("text", std::move(textShader));
 
 		// Meshes;
@@ -425,7 +425,9 @@ namespace NightSnack {
 	}
 
 	void GraphicsSystem::LoadTextures() {
-		std::filesystem::path assetsFilePath = "../assets";
+		std::filesystem::path assetsFilePath = std::filesystem::canonical(
+			RESOURCE_PATH
+		);
 
 		if (!std::filesystem::exists(assetsFilePath)) {
 			std::cerr << "[GraphicsSystem] Error: Assets directory cannot be found!\n";
@@ -443,18 +445,24 @@ namespace NightSnack {
 			std::filesystem::path filePath = entry.path();
 			std::string extension = filePath.extension().string();
 
+			//std::cout << "[Graphics] Checking extension of: " << filePath << '\n';
 			// Only load image files with the correct extensions
 			if (extension != ".png" && extension != ".jpg" && extension != ".jpeg") {
 				continue;
 			}
 
+<<<<<<< Updated upstream
 			CreateTexture(filePath.string());
 			
+=======
+			CreateTexture(filePath.filename().string());
+
+>>>>>>> Stashed changes
 			// If it is a new texture, it means that there is no existing material for it
 			// Create new material with this texture combination
 			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.string()));
 			// Name of the material will be based on the texture file path, but the name only
-			AddMaterial(filePath.stem().string(), std::move(newMat));
+			AddMaterial(filePath.filename().stem().string(), std::move(newMat));
 		}
 	}
 
@@ -477,6 +485,7 @@ namespace NightSnack {
 		// Texture name provided no columns or rows, thus treat it as a static texture
 		if (firstUnderscore == std::string::npos || secondUnderscore == std::string::npos) {
 			auto tex = std::make_unique<Texture>(textureFilePath, rm);
+			//std::cout << "[Graphics] Created Texture: " << textureFilePath << '\n';
 			AddTexture(textureFilePath, std::move(tex));
 			return;
 		}
@@ -488,6 +497,7 @@ namespace NightSnack {
 		int numRow = std::stoi(numRowStr);
 
 		auto tex = std::make_unique<Texture>(textureFilePath, rm, numCol, numRow);
+		//std::cout << "[Graphics] Created Texture: " << textureFilePath << '\n';
 		AddTexture(textureFilePath, std::move(tex));
 
 		// Dispatch a GraphicsEvent
@@ -629,15 +639,21 @@ namespace NightSnack {
 		cameraSig.set(GetComponentTypeID<Camera>());
 		cameraSig.set(GetComponentTypeID<Transform>());
 
+		static bool inst = true;
+
 		// Iterate through all living Entities in the COORDINATOR instead
 		// Since the GraphicsSystem will not have a Camera Entity
 		for (const Entity e : m_coord.GetLivingEntities()) {
 			if ((m_coord.GetEntitySignature(e) & cameraSig) == cameraSig &&
 				m_coord.GetComponent<Camera>(e).isMainCam) { // This camera Entity is the main camera
+				inst = true;
 				return e;
 			}
 		}
-		std::cerr << "Error: No main camera found in scene!\n";
+		if (inst) {
+			std::cerr << "Error: No main camera found in scene!\n";
+			inst = false;
+		}
 		return INVALID_ENTITY;
 	}
 

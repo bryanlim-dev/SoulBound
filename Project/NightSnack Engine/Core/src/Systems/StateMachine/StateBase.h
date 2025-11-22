@@ -348,7 +348,7 @@ namespace NightSnack
 		std::string stateMachineStr;
 		j.at("StateMachine").get_to(stateMachineStr); //State Machine Archytype
 
-		c = CreateStateFromArchetypeJson(stateMachineStr, "../assets/GameData/Archetypes/AIStatesArchetypes.json");
+		c = CreateStateFromArchetypeJson(stateMachineStr, "GameData/Archetypes/AIStatesArchetypes.json");
 	}
 
 

@@ -224,9 +224,7 @@ namespace NightSnack {
         else if (l == "Foreground") { t.layer = LayerType::FOREGROUND; }
         else if (l == "GameUI") { t.layer = LayerType::GAMEUI; }
         else if (l == "_Engine2") { t.layer = LayerType::_ENGINE2; }
-        else {
-            t.layer = LayerType::GAMELAYER;
-        }
+        else { t.layer = LayerType::GAMELAYER; }
     }
     
     inline void from_json(const json& j, PlayerController& p) {
