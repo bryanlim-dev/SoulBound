@@ -7,29 +7,16 @@
 #include <fstream>
 #include <string>
 #include <iostream>
-#include <json.hpp>
-using json = nlohmann::json;
-
-namespace NightSnack::Serializer {
-
-	// SaveLevelToFile
-	// LoadLevelFromFile
-	// Default naming convention
-
-	// SavePrefab
-	// LoadPrefab
-
-
-}	// NightSnack::Serializer
-
 
 namespace NightSnack::Scene {
 
-	class LevelManager : public ISystem {
+	class SceneManager : public ISystem {
 
-		LevelManager(Coordinator& coord, EventDispatcher& disp) 
+		SceneManager(Coordinator& coord, EventDispatcher& disp)
 			: m_coord{ coord }, m_dispatcher{ &disp } {
 		
+			CacheLevel();
+
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					/*switch (event.inputAction) {
@@ -45,7 +32,7 @@ namespace NightSnack::Scene {
 
 		}
 
-		void Update(int steps) override {}
+		void Update() override {}
 
 		void LoadLevel(std::string const& filename);
 		void RestartLevel() {}
@@ -55,6 +42,9 @@ namespace NightSnack::Scene {
 
 		bool SaveLevel() {}
 
+		void CacheLevel();
+		void RestoreLevel();
+
 		// Required by ISystem base class;
 		Signature GetSignature() const override { return m_systemSignature; }
 		std::string GetName() const override { return "LevelManager"; }
@@ -63,6 +53,8 @@ namespace NightSnack::Scene {
 		Signature m_systemSignature{};
 		EventDispatcher* m_dispatcher = nullptr;
 		Coordinator& m_coord;
+
+		std::vector<std::pair<std::string, Transform>> m_levelCache;
 
 		json m_currentLevel{};
 	};
@@ -74,14 +66,33 @@ namespace NightSnack::Scene {
 	// Level management in game
 	// Swap scenes
 
-	// in Editor
-	// Load create new level from default
-	// Save level to file
-	// Load level from file
+	// Take snapshot of current world
 
+	inline void SceneManager::CacheLevel() {
 
+		std::set<Entity> entities = m_coord.GetLivingEntities();
+		if (entities.empty()) { return; }
 
+		m_levelCache.clear();
+		m_levelCache.reserve(entities.size());
+		
+		for (Entity e : entities) {
+			m_levelCache.emplace_back(std::make_pair(
+				m_coord.GetSystem<EntityFactory>()->GetEntityPrefabName(e),
+				m_coord.GetComponent<Transform>(e)));
+		}
+	}
 
+	inline void SceneManager::RestoreLevel() {
 
+		if (m_levelCache.empty()) { return; }
+
+		auto const& factory = m_coord.GetSystem<EntityFactory>();
+		factory->UnloadLevel();
+
+		for (auto const& unit : m_levelCache) {
+			factory->Create(unit.first, unit.second);
+		}
+	}
 
 }	// NightSnack::Scene

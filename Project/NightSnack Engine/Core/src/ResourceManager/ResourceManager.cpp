@@ -131,9 +131,8 @@ namespace NightSnack {
 		m_resourceFontMap.clear();
 	}
 
-	void ResourceManager::Update(int steps)
+	void ResourceManager::Update()
 	{
-		(void)steps;
 		DeleteFlaggedResources();
 	}
 
@@ -246,6 +245,46 @@ namespace NightSnack {
 
 		//Return nullptr if failed to load
 		return nullptr;
+	}
+
+	void ResourceManager::SaveCroppedImageResource(const std::size_t orginalKey, const std::string& newFileName, int startingX, int startingY, int newHeight, int newWidth)
+	{
+		if (m_resourceImageMap.find(orginalKey) == m_resourceImageMap.end())
+		{
+			return;
+		}
+
+		int orginalHeight = m_resourceImageMap[orginalKey]->Height();
+		int orginalWidth = m_resourceImageMap[orginalKey]->Width();
+		int channels = m_resourceImageMap[orginalKey]->Channels();
+		unsigned char* orginalImg = m_resourceImageMap[orginalKey]->Image();
+
+		unsigned char* croppedImg = (unsigned char*)malloc(newHeight * newWidth * channels * sizeof(unsigned char));
+
+		if (croppedImg)
+		{
+			for (int y = 0; y < newHeight; ++y) {
+				for (int x = 0; x < newWidth; ++x) {
+
+					//Calc pixel pos of original image
+					int srcIndex = ((startingY + y) * orginalWidth + (startingX + x)) * channels;
+					//Calc dest to place pixel
+					int dstIndex = (y * newWidth + x) * channels;
+
+					// Copy pixel data for all channels
+					for (int c = 0; c < channels; ++c) {
+						croppedImg[dstIndex + c] = orginalImg[srcIndex + c];
+					}
+				}
+			}
+
+			ResourceImage savedImaged(newFileName, *croppedImg, newWidth, newHeight, channels);
+			savedImaged.SaveFile();
+
+			free(croppedImg);
+			croppedImg = NULL;
+		}
+
 	}
 
 #pragma endregion

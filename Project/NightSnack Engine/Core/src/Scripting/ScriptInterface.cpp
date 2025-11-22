@@ -408,10 +408,58 @@ namespace NightSnack::Scripting {
 
 #pragma endregion
 
+    // --------------------------------------------------------------
+    // Renderable Inputs
+    // --------------------------------------------------------------
+#pragma region Renderable
+    Renderabl ScriptInterface::GetRenderable(Entity e) {
 
- // --------------------------------------------------------------
-// Key Inputs
-// --------------------------------------------------------------
+        Renderable t = m_coord.GetComponent<Renderable>(e);
+        Renderabl result;
+
+        result.meshName = t.meshName;
+        result.materialName = t.materialName;
+        result.isWireframe = t.isWireframe;
+        result.wasModified = t.wasModified;
+
+        return result;
+    }
+
+    void ScriptInterface::SetRenderable(Entity e, Renderabl rend)
+    {
+        Renderable& t = m_coord.ModifyComponent<Renderable>(e);
+        t.meshName = rend.meshName;
+        t.materialName = rend.materialName;
+        t.isWireframe = rend.isWireframe;
+        //t.wasModified = rend.wasModified;
+    }
+
+    std::string ScriptInterface::GetMeshName(Entity e){
+        return m_coord.GetComponent<Renderable>(e).meshName;
+    }
+    void ScriptInterface::SetMeshName(Entity e, std::string name){
+        m_coord.ModifyComponent<Renderable>(e).meshName = name;
+    }
+
+    std::string ScriptInterface::GetMaterialName(Entity e){
+        return m_coord.GetComponent<Renderable>(e).materialName;
+    }
+    void ScriptInterface::SetMaterialName(Entity e, std::string name){
+        m_coord.GetSystem<GraphicsSystem>()->UpdateTextureOfMaterial(name, e);
+    }
+
+    bool ScriptInterface::GetIsWireframe(Entity e)
+    {
+        return m_coord.GetComponent<Renderable>(e).isWireframe;
+    }
+
+    void ScriptInterface::SetIsWireframe(Entity e, bool wire){
+        m_coord.ModifyComponent<Renderable>(e).isWireframe = wire;
+    }
+
+
+#pragma endregion
+
     // --------------------------------------------------------------
     // Key Inputs
     // --------------------------------------------------------------

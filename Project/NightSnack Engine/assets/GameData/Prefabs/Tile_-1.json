@@ -1,7 +1,18 @@
 {
+    "Collider": {
+        "height": 24.0,
+        "isStatic": true,
+        "shape": "AABB",
+        "type": "Ground",
+        "width": 24.0
+    },
     "Renderable": {
         "isWireframe": false,
         "materialName": "",
         "meshName": "square"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": false
     }
 }

@@ -22,7 +22,6 @@
 namespace NightSnack {
 
 	static float accumulatedTime = 0.0f;
-	static int numberOfSteps = 0;
 
 	// ------------------------------------------------------------------------------------------------
 	// CORE
@@ -113,6 +112,7 @@ namespace NightSnack {
 
 		// Set to 0 to disable frame cap
 		m_coord.GetSystem<ApplicationSystem>()->SetFrameCap(0.f);
+		m_coord.Unpause();
 	}
 
 	// Function should be called upon termination of program;
@@ -155,28 +155,27 @@ namespace NightSnack {
 		m_coord.GetSystem<ApplicationSystem>()->StartFrame();
 
 		// Fixed DT with Accumulated time implementation;
-		numberOfSteps = 0;	// reset step count per frame;
+		m_coord.steps = 0;	// reset step count per frame;
 		float dt = m_coord.GetSystem<ApplicationSystem>()->GetDT();	// compute actual game loop time;
 		accumulatedTime += dt;
 
 		// Obtain number of steps this loop;
 		while (accumulatedTime >= FixedDT) { 
 			accumulatedTime -= FixedDT;
-			++numberOfSteps;
+			++m_coord.steps;
 		}
-		if (m_paused) {
-			numberOfSteps = 0;
-			return;
+		if (m_coord.IsPaused()) {
+			m_coord.steps = 0;
 		}
-		if (numberOfSteps > 15) {
-			numberOfSteps = 15;
+		if (m_coord.steps > 15) {
+			m_coord.steps = 15;
 		}
 
 		// Iterate through Systems and Update them through Coordinator;
 		for (auto& System : m_systems) {
 
 			m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer(System->GetName());
-			System->Update(numberOfSteps);
+			System->Update();
 			m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer(System->GetName());
 		}
 

@@ -122,6 +122,13 @@ namespace NightSnack::Scripting {
         float r{}, g{}, b{}, a{};
     };
 
+    struct CORE_API Renderabl {
+        std::string meshName{};
+        std::string materialName{};
+        bool isWireframe{ false };
+        bool wasModified{ true };
+    };
+
 
 
     // Handle to a game object (Similar to Entity ID)

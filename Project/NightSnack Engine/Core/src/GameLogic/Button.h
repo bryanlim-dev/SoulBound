@@ -7,8 +7,8 @@
  * Description:
  *	This file defines a Button class and a GameUI system for handling UI buttons.
  *	Takes care of button hover and click interactions, executing associated actions.
- *
- * Copyright   2025 DigiPen Institute of Technology Singapore.
+ * 
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -159,9 +159,8 @@ namespace NightSnack {
 		* @brief updates and handle button interactions
 		* @param steps number of simulation steps
 		*/
-		void Update(int steps) override
+		void Update() override
 		{
-			(void)steps;
 
 			// get mouse x and y position
 			float mouseX = m_coord.GetSystem<InputSystem>()->GetMousePosX();

@@ -18,8 +18,9 @@ namespace ManagedScripts
             //uint id2 = Engine.CreateEntityArchetype("RedBall", pos);
 
             ////Transform Test
-            //Engine.SetLayer(id1, LayerType.GAMEUI);
-            //Engine.SetLayer(id2, LayerType.BACKGROUND);
+            
+            ////Engine.SetLayer(id1, LayerType.GAMEUI);
+            ////Engine.SetLayer(id2, LayerType.BACKGROUND);
 
             ////Rigibody Test
             //Vector2 dir;
@@ -47,7 +48,15 @@ namespace ManagedScripts
 
             ////Color Test
             //Engine.SetRGBA(id2, new Colors(0, 1, 0, 0.25f));
-            //Log($"Ball 1 color: {Color}");
+            //Log($"Ball 1 color: {Engine.GetRGBA(id1)}");
+
+            ////Renderable test
+            //Engine.SetMeshName(id2, "square");
+            //Log($"Ball 2 Mesh Name: {Engine.GetMeshName(id2)}");
+            //Log($"Ball 2 Material Name: {Engine.GetMaterialName(id2)}");
+            //Engine.SetIsWireframe(id2 , true);
+
+            //Engine.SetMaterialName(id1, "../assets\\slime_2_2.png");
 
             //Log("RotatorScript started!");
             //Log($"Initial rotation: {Rotation}");
