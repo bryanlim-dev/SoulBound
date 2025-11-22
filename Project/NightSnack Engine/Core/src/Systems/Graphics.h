@@ -60,11 +60,7 @@ namespace NightSnack {
 			lastHvp = Hvp;
 			lastWvp = Wvp;
 
-<<<<<<< Updated upstream
-			std::string path = std::filesystem::current_path().string();
-=======
 			//std::string path = std::filesystem::current_path().string();
->>>>>>> Stashed changes
 			//std::cout << path << '\n';
 
 			Init();

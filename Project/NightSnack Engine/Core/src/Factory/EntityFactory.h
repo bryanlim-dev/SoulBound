@@ -57,18 +57,18 @@ namespace NightSnack {
 
 			// Setup input events;
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
-				if (event.pressed == InputEvent::InputActionState::Pressed) {
-					switch (event.inputAction) {
+				//if (event.pressed == InputEvent::InputActionState::Pressed) {
+				//	switch (event.inputAction) {
 
-					//case InputEvent::InputAction::StressTest:
-					//	ReloadPrefabs();
-					//	for (auto const& [name, key] : m_prefabKeys) {
-					//		std::cout << name << ", ";
-					//	}
-					//	std::cout << '\n';
-					//	break;
-					}
-				}
+				//	//case InputEvent::InputAction::StressTest:
+				//	//	ReloadPrefabs();
+				//	//	for (auto const& [name, key] : m_prefabKeys) {
+				//	//		std::cout << name << ", ";
+				//	//	}
+				//	//	std::cout << '\n';
+				//	//	break;
+				//	}
+				//}
 				});
 		}
 

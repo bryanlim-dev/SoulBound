@@ -329,22 +329,13 @@ namespace NightSnack
 				//	if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_PREFAB")) {
 				//		const char* droppedPath = static_cast<const char*>(payload->Data);
 
-<<<<<<< Updated upstream
-						// Dropped path: ../assets\GameData\Prefabs\Ghost.json
-						//std::cout << "Dropped path: " << droppedPath << "\n";
-=======
 				//		// Dropped path: ../assets\GameData\Prefabs\Ghost.json
 				//		std::cout << "Dropped path: " << droppedPath << "\n";
->>>>>>> Stashed changes
 
 				//		// Get the Prefab name from the path, which is 'Ghost' in this case
 				//		std::filesystem::path filePath(droppedPath);
 
-<<<<<<< Updated upstream
-						//std::cout << "Creating entity from prefab: " << filePath.stem().string() << "\n";
-=======
 				//		std::cout << "Creating entity from prefab: " << filePath.filename().string() << "\n";
->>>>>>> Stashed changes
 
 				//		Transform trans{};
 
@@ -358,11 +349,7 @@ namespace NightSnack
 
 				//		m_coord.GetSystem<EntityFactory>()->Create(filePath.filename().string(), trans);
 
-<<<<<<< Updated upstream
-						//std::cout << "Transform: " << trans.pos.x << ", " << trans.pos.y << std::endl;
-=======
 				//		std::cout << "Transform: " << trans.pos.x << ", " << trans.pos.y << std::endl;
->>>>>>> Stashed changes
 
 				//	}
 				//}

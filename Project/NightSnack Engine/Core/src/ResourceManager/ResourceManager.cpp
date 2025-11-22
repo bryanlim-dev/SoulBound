@@ -179,12 +179,8 @@ namespace NightSnack {
 		}
 		else
 		{
-<<<<<<< Updated upstream
 			//std::cout << "Loaded image " << newResource->Path() << std::endl;
-=======
-			std::cout << "Loaded image " << fp.filename() << std::endl;
->>>>>>> Stashed changes
-
+			// 
 			//Insert the loaded image into the map only if managed to load
 			m_resourceImageMap.insert({imageKey, std::move(newResource) });
 			totalResourcesLoaded++;
@@ -313,11 +309,7 @@ namespace NightSnack {
 		//Check if resource alr exists
 		if (m_resourceTxtFileMap.find(txtKey) != m_resourceTxtFileMap.end())
 		{
-<<<<<<< Updated upstream
 			//std::cout << filePath << " already exists" << std::endl;
-=======
-			std::cout << fp.filename() << " already exists" << std::endl;
->>>>>>> Stashed changes
 
 			//Check if it was flagged for deletion
 			if (m_resourceTxtFileMap[txtKey]->FlaggedForDeletion())
@@ -344,11 +336,8 @@ namespace NightSnack {
 		}
 		else
 		{
-<<<<<<< Updated upstream
+
 			//std::cout << "Loaded txt " << newResource->Path() << std::endl;
-=======
-			std::cout << "Loaded txt " << fp.filename() << std::endl;
->>>>>>> Stashed changes
 
 			//Insert the loaded image into the map only if managed to load
 			m_resourceTxtFileMap.insert({ txtKey, std::move(newResource) });
@@ -415,11 +404,7 @@ namespace NightSnack {
 		//Check if resource alr exists
 		if (m_resourceJsonMap.find(jsonKey) != m_resourceJsonMap.end())
 		{
-<<<<<<< Updated upstream
 			//std::cout << filePath << " already exists" << std::endl;
-=======
-			std::cout << fp.filename() << " already exists" << std::endl;
->>>>>>> Stashed changes
 
 			//Check if it was flagged for deletion
 			if (m_resourceJsonMap[jsonKey]->FlaggedForDeletion())
@@ -446,12 +431,9 @@ namespace NightSnack {
 		}
 		else
 		{
-<<<<<<< Updated upstream
-			//std::cout << "Loaded json " << newResource->Path() << std::endl;
-=======
-			std::cout << "Loaded json " << fp.filename() << std::endl;
->>>>>>> Stashed changes
 
+			//std::cout << "Loaded json " << newResource->Path() << std::endl;
+			// 
 			//Insert the loaded image into the map only if managed to load
 			m_resourceJsonMap.insert({ jsonKey, std::move(newResource) });
 			totalResourcesLoaded++;
@@ -532,12 +514,9 @@ namespace NightSnack {
 		//Check if resource alr exists
 		if (m_resourceSoundMap.find(soundKey) != m_resourceSoundMap.end())
 		{
-<<<<<<< Updated upstream
-			//std::cout << filePath << " already exists" << std::endl;
-=======
-			std::cout << fp.filename() << " already exists" << std::endl;
->>>>>>> Stashed changes
 
+			//std::cout << filePath << " already exists" << std::endl;
+			// 
 			//Check if it was flagged for deletion
 			if (m_resourceSoundMap[soundKey]->FlaggedForDeletion())
 			{
@@ -563,11 +542,8 @@ namespace NightSnack {
 		}
 		else
 		{
-<<<<<<< Updated upstream
+
 			//std::cout << "Loaded sound " << newResource->Path() << std::endl;
-=======
-			std::cout << "Loaded sound " << fp.filename() << std::endl;
->>>>>>> Stashed changes
 
 			//Insert the loaded image into the map only if managed to load
 			m_resourceSoundMap.insert({ soundKey, std::move(newResource) });
@@ -663,11 +639,8 @@ namespace NightSnack {
 		}
 		else
 		{
-<<<<<<< Updated upstream
+
 			//std::cout << "Loaded sound " << newResource->Path() << std::endl;
-=======
-			std::cout << "Loaded sound " << fp.filename() << std::endl;
->>>>>>> Stashed changes
 
 			//Insert the loaded image into the map only if managed to load
 			m_resourceFontMap.insert({ fontKey, std::move(newResource) });

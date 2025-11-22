@@ -275,7 +275,7 @@ namespace NightSnack
             bool isStatic = j["isStatic"];
 
             char shapeBuf[64];
-            strcpy(shapeBuf, shape.c_str());
+            strcpy_s(shapeBuf, shape.c_str());
             if (ImGui::InputText("Shape", shapeBuf, sizeof(shapeBuf)))
             {
                 shape = shapeBuf;
@@ -283,7 +283,7 @@ namespace NightSnack
             j["shape"] = shape;
 
             char typeBuf[64];
-            strcpy(typeBuf, type.c_str());
+            strcpy_s(typeBuf, type.c_str());
             if (ImGui::InputText("Type", typeBuf, sizeof(typeBuf)))
             {
                 type = typeBuf;
