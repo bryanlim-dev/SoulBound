@@ -47,7 +47,6 @@ namespace NightSnack {
 	}
 
 	void InputSystem::Update() {
-
 		// Find current mouse position (World)
 		float Hvp = static_cast<float>(m_coord.GetWindowHeight());
 		float Wvp = static_cast<float>(m_coord.GetWindowWidth());
@@ -121,6 +120,9 @@ namespace NightSnack {
 		case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
 		case GLFW_KEY_RIGHT: return InputEvent::InputAction::PlayerMoveRight;
 		case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJump;
+
+			// Window tests
+		case GLFW_KEY_ESCAPE: return InputEvent::InputAction::ExitFullscreen;
 
 			// Debug tests
 		//case GLFW_KEY_TAB: return InputEvent::InputAction::ToggleSystemTimers;

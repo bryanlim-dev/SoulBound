@@ -91,6 +91,8 @@ namespace NightSnack {
         /************************************************************************/
         void Update() override {
 
+            if (m_coord.IsPaused()) return;
+
             m_player = FindPlayer(m_coord);
 
             if (m_player == INVALID_ENTITY) { return; }
