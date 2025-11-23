@@ -428,17 +428,20 @@ namespace NightSnack {
 	}
 
 	void GraphicsSystem::LoadTextures() {
-		std::filesystem::path assetsFilePath = std::filesystem::canonical(
-			RESOURCE_PATH
+		std::filesystem::path resourcePath = std::filesystem::canonical(
+			RESOURCE_PATH // "NightSnack Engine/assets"
 		);
 
-		if (!std::filesystem::exists(assetsFilePath)) {
+		std::filesystem::path assetsPath = resourcePath.parent_path() / "build" / "assets";
+		assetsPath = assetsPath.lexically_normal();
+		
+		if (!std::filesystem::exists(assetsPath)) {
 			std::cerr << "[GraphicsSystem] Error: Assets directory cannot be found!\n";
 			return;
 		}
 
 		// Iterate through entries in directory
-		for (auto const& entry : std::filesystem::directory_iterator(assetsFilePath)) {
+		for (auto const& entry : std::filesystem::directory_iterator(assetsPath)) {
 			// Skip through folders
 			if (entry.is_directory()) {
 				continue;
@@ -458,9 +461,10 @@ namespace NightSnack {
 
 			// If it is a new texture, it means that there is no existing material for it
 			// Create new material with this texture combination
-			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.string()));
+			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.filename().string()));
 			// Name of the material will be based on the texture file path, but the name only
 			AddMaterial(filePath.filename().stem().string(), std::move(newMat));
+			//std::cout << "Created Material: " << filePath.filename().stem().string() << std::endl;
 		}
 	}
 
@@ -511,21 +515,22 @@ namespace NightSnack {
 		auto& ren = m_coord.ModifyComponent<Renderable>(e);
 
 		std::filesystem::path filePath = textureFilePath;
-
+		
 		// Check whether the current texture exists
-		Texture* tex = GetTexture(filePath.string());
+		Texture* tex = GetTexture(filePath.filename().string());
 		if (!tex) {
 			// This is a new texture, add it to the resource map
-			CreateTexture(filePath.string());
+			CreateTexture(filePath.filename().string());
 
 			// If it is a new texture, it means that there is no existing material for it
 			// Create new material with this texture combination
 			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.string()));
+			std::string matName = filePath.filename().stem().string();
 			// Name of the material will be the texture file path, but the name only
-			AddMaterial(filePath.stem().string(), std::move(newMat));
+			AddMaterial(matName, std::move(newMat));
 
 			// Change the name of this Renderable's material name to the new material name
-			ren.materialName = filePath.stem().string();
+			ren.materialName = matName;
 			////std::cout << "New texture detected!\n";
 			////std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
 			////std::cout << "and this texture name is: " << m_materials[ren.materialName]->GetTexture()->GetTextureName() << std::endl;
@@ -543,8 +548,8 @@ namespace NightSnack {
 
 				// If it exists already, change the name of this Renderable's material to the existing material name
 				////std::cout << "Checking for texture name: " << textureFileName << std::endl;
-				if (filePath.string() == matTex->GetTextureName()) {
-					ren.materialName = filePath.stem().string();
+				if (filePath.filename().string() == matTex->GetTextureName()) {
+					ren.materialName = filePath.filename().stem().string();
 					found = true;
 					////std::cout << "Material for this texture exists too!\n";
 					break;
@@ -554,11 +559,12 @@ namespace NightSnack {
 			if (!found) {
 				////std::cout << "Material for this texture doesnt exist yet, creating one ...\n";
 				// if it does not exist, create new material with this texture combination
-				auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.string()));
+				auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.filename().string()));
+				std::string matName = filePath.filename().stem().string();
 				// Name of the material will be the texture file path, but the name only
-				AddMaterial(filePath.stem().string(), std::move(newMat));
+				AddMaterial(matName, std::move(newMat));
 				// change the name of this Renderable's material name to the new material name
-				ren.materialName = filePath.stem().string();
+				ren.materialName = matName;
 			}
 			////std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
 		}

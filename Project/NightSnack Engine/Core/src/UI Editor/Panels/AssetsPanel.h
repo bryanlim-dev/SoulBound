@@ -53,15 +53,15 @@ namespace NightSnack
         */
         AssetsPanel(Coordinator& coord) :
             m_coord(coord),
-            m_assetsRoot(RESOURCE_PATH),
+            m_assetsRoot(GetRuntimeAssetsPath()),
             m_scriptsRoot(SCRIPTS_PATH),
             m_currentDirectory(m_assetsRoot),
             m_thumbnailSize(96.0f),
             m_selectedAssetPath(""),
             m_showAssetProperties(false),
             m_showImportDialog(false),
-            m_prefabsPanel(coord, PREFABS_PATH),
-            m_filesPanel(coord, RESOURCE_PATH),
+            m_prefabsPanel(coord, GetRunTimePrefabsPath().string()),
+            m_filesPanel(coord, m_assetsRoot.string()),
             m_scriptsPanel(coord, SCRIPTS_PATH)
         {
             m_prefabNames.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
@@ -76,6 +76,22 @@ namespace NightSnack
             }
             std::cout << "\n\nBREAKPOINT 1 \n\n";
 
+        }
+
+        static std::filesystem::path GetRuntimeAssetsPath() {
+            std::filesystem::path resourcePath = std::filesystem::canonical(
+                RESOURCE_PATH // "NightSnack Engine/assets"
+            );
+            std::filesystem::path assetsPath = resourcePath.parent_path() / "build" / "assets";
+            return assetsPath;
+        }
+
+        static std::filesystem::path GetRunTimePrefabsPath() {
+            std::filesystem::path prefabsPath = std::filesystem::canonical(
+                PREFABS_PATH // "NightSnack Engine/assets/GameData/Prefabs"
+            );
+            std::filesystem::path finalPrefabsPath = prefabsPath.parent_path().parent_path().parent_path() / "build" / "assets" / "GameData" / "Archetypes" / "Archetypes.json";
+            return finalPrefabsPath.lexically_normal();
         }
 
         /**
@@ -95,47 +111,47 @@ namespace NightSnack
                 HandleExternalFileDrop();
             }
 
-            //ImGui::Begin("Assets");
+            ImGui::Begin("Assets");
 
-            //DrawToolbar();
-            //ImGui::Separator();
+            DrawToolbar();
+            ImGui::Separator();
 
-            //// Two-column layout: Left = folder tree, Right = content view
-            //ImGui::Columns(2, "AssetColumns", true);
+            // Two-column layout: Left = folder tree, Right = content view
+            ImGui::Columns(2, "AssetColumns", true);
 
-            //// Left column - Folder tree
-            //ImGui::BeginChild("FolderTree", ImVec2(0, 0), true);
-            //ImGui::Text("Project");
-            //ImGui::Separator();
-            //DrawFolderTree(m_assetsRoot);
+            // Left column - Folder tree
+            ImGui::BeginChild("FolderTree", ImVec2(0, 0), true);
+            ImGui::Text("Project");
+            ImGui::Separator();
+            DrawFolderTree(m_assetsRoot);
 
-            //// Add scripts folder if it exists
-            //if (fs::exists(m_scriptsRoot))
-            //{
-            //    DrawFolderTree(m_scriptsRoot);
-            //}
-            //ImGui::EndChild();
+            // Add scripts folder if it exists
+            if (fs::exists(m_scriptsRoot))
+            {
+                DrawFolderTree(m_scriptsRoot);
+            }
+            ImGui::EndChild();
 
-            //ImGui::NextColumn();
+            ImGui::NextColumn();
 
-            //// Right column - Content view
-            //ImGui::BeginChild("ContentView", ImVec2(0, 0), true);
-            //DrawContentView();
-            //ImGui::EndChild();
+            // Right column - Content view
+            ImGui::BeginChild("ContentView", ImVec2(0, 0), true);
+            DrawContentView();
+            ImGui::EndChild();
 
-            //ImGui::Columns(1);
-            //ImGui::End();
+            ImGui::Columns(1);
+            ImGui::End();
 
-            //// Preview/Properties panel (separate window)
-            //if (m_showAssetProperties && !m_selectedAssetPath.empty())
-            //{
-            //    DrawAssetProperties();
-            //}
+            // Preview/Properties panel (separate window)
+            if (m_showAssetProperties && !m_selectedAssetPath.empty())
+            {
+                DrawAssetProperties();
+            }
 
-            //if (m_showImportDialog)
-            //{
-            //    DrawImportDialog();
-            //}
+            if (m_showImportDialog)
+            {
+                DrawImportDialog();
+            }
 
         }
 

@@ -323,38 +323,38 @@ namespace NightSnack
 					}
 				}
 
-				//// drag and drop image
-				//if (ImGui::BeginDragDropTarget())
-				//{
-				//	if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_PREFAB")) {
-				//		const char* droppedPath = static_cast<const char*>(payload->Data);
+				// drag and drop image
+				if (ImGui::BeginDragDropTarget())
+				{
+					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_PREFAB")) {
+						const char* droppedPath = static_cast<const char*>(payload->Data);
 
-				//		// Dropped path: ../assets\GameData\Prefabs\Ghost.json
-				//		std::cout << "Dropped path: " << droppedPath << "\n";
+						// Dropped path: ../assets\GameData\Prefabs\Ghost.json
+						std::cout << "Dropped path: " << droppedPath << "\n";
 
-				//		// Get the Prefab name from the path, which is 'Ghost' in this case
-				//		std::filesystem::path filePath(droppedPath);
+						// Get the Prefab name from the path, which is 'Ghost' in this case
+						std::filesystem::path filePath(droppedPath);
 
-				//		std::cout << "Creating entity from prefab: " << filePath.filename().string() << "\n";
+						std::cout << "Creating entity from prefab: " << filePath.filename().stem().string() << "\n";
 
-				//		Transform trans{};
+						Transform trans{};
 
-				//		trans.pos.x = mouseWorldX + m_dragOffset.x;
-				//		trans.pos.y = mouseWorldY + m_dragOffset.y;
-				//		trans.pos.z = 0.f;
-				//		// default layer...
-				//		trans.layer = LayerType::GAMELAYER;
+						trans.pos.x = mouseWorldX + m_dragOffset.x;
+						trans.pos.y = mouseWorldY + m_dragOffset.y;
+						trans.pos.z = 0.f;
+						// default layer...
+						trans.layer = LayerType::GAMELAYER;
 
-				//		trans.scale = Vec2{ 50.f, 50.f };	// default scale...
+						trans.scale = Vec2{ 50.f, 50.f };	// default scale...
 
-				//		m_coord.GetSystem<EntityFactory>()->Create(filePath.filename().string(), trans);
+						m_coord.GetSystem<EntityFactory>()->Create(filePath.filename().stem().string(), trans);
 
-				//		std::cout << "Transform: " << trans.pos.x << ", " << trans.pos.y << std::endl;
+						std::cout << "Transform: " << trans.pos.x << ", " << trans.pos.y << std::endl;
 
-				//	}
-				//}
+					}
+				}
 
-				//ImGui::EndDragDropTarget();
+				ImGui::EndDragDropTarget();
 			}
 			// Draw tool bar for mouse tool selection
 			DrawToolBar();
