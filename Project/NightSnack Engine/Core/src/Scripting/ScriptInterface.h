@@ -145,6 +145,64 @@ namespace NightSnack::Scripting {
 #pragma endregion
 
 
+#pragma region Animator
+        Animat GetAnimator(Entity e);
+        void SetAnimator(Entity e, Animat rend);
+
+        std::string GetAnimatorCurrentAnimationClip(Entity e);
+        void SetAnimatorCurrentAnimationClip(Entity e, std::string name);
+
+        std::string GetAnimatorSpriteSheetName(Entity e);
+        void SetAnimatorSpriteSheetName(Entity e, std::string name);
+
+        int GetAnimatorCurrentFrameIndex(Entity e);
+        void SetAnimatorCurrentFrameIndex(Entity e, int index);
+
+        float GetAnimatorCurrentTime(Entity e);
+        void SetAnimatorCurrentTime(Entity e, float time);
+
+        float GetAnimatorPlaybackSpeed(Entity e);
+        void SetAnimatorPlaybackSpeed(Entity e, float spd);
+
+        bool GetAnimatorIsPlaying(Entity e);
+        void SetAnimatorIsPlaying(Entity e, bool playing);
+
+        bool GetAnimatorIsLooping(Entity e);
+        void SetAnimatorIsLooping(Entity e, bool loop);
+
+        bool GetAnimatorLastFacingRight(Entity e);
+        void SetAnimatorLastFacingRight(Entity e, bool right);
+
+        vec2 GetAnimatorUVTopLeft(Entity e);
+        void SetAnimatorUVTopLeft(Entity e, vec2 uv);
+
+        vec2 GetAnimatorUVBottomRight(Entity e);
+        void SetAnimatorUVBottomRight(Entity e, vec2 uv);
+
+
+#pragma endregion
+
+#pragma region Font
+        Fon GetFont(Entity e);
+        void SetFont(Entity e, Fon rend);
+
+        std::string GetFontType(Entity e);
+        void SetFontType(Entity e, std::string name);
+
+        std::string GetFontText(Entity e);
+        void SetFontText(Entity e, std::string txt);
+
+        float GetFontSize(Entity e);
+        void SetFontSize(Entity e, float sz);
+
+        vec3 GetFontTextColor(Entity e);
+        void SetFontTextColor(Entity e, vec3 col);
+
+        vec3 GetFontOffsetPosition(Entity e);
+        void SetFontOffsetPosition(Entity e, vec3 pos);
+
+#pragma endregion
+
 #pragma region Key/Inputs
         // Input
         bool IsKeyPressed(int key);

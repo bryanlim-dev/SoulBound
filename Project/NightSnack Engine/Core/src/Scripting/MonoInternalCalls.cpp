@@ -341,6 +341,169 @@ extern "C" {
     }
 #pragma endregion
 
+    // --------------------------------------------------------------
+
+#pragma region Animator
+    // currentAnimationClip --------------
+    static MonoString* NightSnack_GetAnimatorCurrentAnimationClip(uint32_t id) {
+        if (!g_scriptInterface) { return NULL; }
+        return NightSnack::Scripting::StringToMonoString(g_scriptInterface->GetAnimatorCurrentAnimationClip(id));
+    }
+    static void NightSnack_SetAnimatorCurrentAnimationClip(uint32_t id, MonoString* name) {
+        if (!g_scriptInterface || !name) { return; }
+        char* cStr = mono_string_to_utf8(name);
+        g_scriptInterface->SetAnimatorCurrentAnimationClip(id, std::string{ cStr });
+    }
+
+    // spriteSheetName --------------
+    static MonoString* NightSnack_GetAnimatorSpriteSheetName(uint32_t id) {
+        if (!g_scriptInterface) { return NULL; }
+        return NightSnack::Scripting::StringToMonoString(g_scriptInterface->GetAnimatorSpriteSheetName(id));
+    }
+    static void NightSnack_SetAnimatorSpriteSheetName(uint32_t id, MonoString* name) {
+        if (!g_scriptInterface || !name) { return; }
+        char* cStr = mono_string_to_utf8(name);
+        g_scriptInterface->SetAnimatorSpriteSheetName(id, std::string{ cStr });
+    }
+
+    // currentFrameIndex --------------
+    static void NightSnack_GetAnimatorCurrentFrameIndex(uint32_t id, int* outindex) {
+        if (!g_scriptInterface || !outindex) { return; }
+        *outindex = g_scriptInterface->GetAnimatorCurrentFrameIndex(id);
+    }
+    static void NightSnack_SetAnimatorCurrentFrameIndex(uint32_t id, int* index) {
+        if (!g_scriptInterface || !index) { return; }
+        g_scriptInterface->SetAnimatorCurrentFrameIndex(id, *index);
+    }
+
+    // currentTime --------------
+    static void NightSnack_GetAnimatorCurrentTime(uint32_t id, float* outTime) {
+        if (!g_scriptInterface || !outTime) { return; }
+        *outTime = g_scriptInterface->GetAnimatorCurrentTime(id);
+    }
+    static void NightSnack_SetAnimatorCurrentTime(uint32_t id, float* time) {
+        if (!g_scriptInterface || !time) { return; }
+        g_scriptInterface->SetAnimatorCurrentTime(id, *time);
+    }
+
+    // playbackSpeed --------------
+    static void NightSnack_GetAnimatorPlaybackSpeed(uint32_t id, float* outSpeed) {
+        if (!g_scriptInterface || !outSpeed) { return; }
+        *outSpeed = g_scriptInterface->GetAnimatorPlaybackSpeed(id);
+    }
+    static void NightSnack_SetAnimatorPlaybackSpeed(uint32_t id, float* speed) {
+        if (!g_scriptInterface || !speed) { return; }
+        g_scriptInterface->SetAnimatorPlaybackSpeed(id, *speed);
+    }
+
+    // isPlaying --------------
+    static void NightSnack_GetAnimatorIsPlaying(uint32_t id, bool* outPlaying) {
+        if (!g_scriptInterface || !outPlaying) { return; }
+        *outPlaying = g_scriptInterface->GetAnimatorIsPlaying(id);
+    }
+    static void NightSnack_SetAnimatorIsPlaying(uint32_t id, bool* playing) {
+        if (!g_scriptInterface || !playing) { return; }
+        g_scriptInterface->SetAnimatorIsPlaying(id, *playing);
+    }
+
+    // isLooping --------------
+    static void NightSnack_GetAnimatorIsLooping(uint32_t id, bool* outLoop) {
+        if (!g_scriptInterface || !outLoop) { return; }
+        *outLoop = g_scriptInterface->GetAnimatorIsLooping(id);
+    }
+    static void NightSnack_SetAnimatorIsLooping(uint32_t id, bool* loop) {
+        if (!g_scriptInterface || !loop) { return; }
+        g_scriptInterface->SetAnimatorIsLooping(id, *loop);
+    }
+
+    // lastFacingRight --------------
+    static void NightSnack_GetAnimatorLastFacingRight(uint32_t id, bool* outLastFacingRight) {
+        if (!g_scriptInterface || !outLastFacingRight) { return; }
+        *outLastFacingRight = g_scriptInterface->GetAnimatorLastFacingRight(id);
+    }
+    static void NightSnack_SetAnimatorLastFacingRight(uint32_t id, bool* lastFacingRight) {
+        if (!g_scriptInterface || !lastFacingRight) { return; }
+        g_scriptInterface->SetAnimatorLastFacingRight(id, *lastFacingRight);
+    }
+
+    // uvTopLeft -----------------
+    static void NightSnack_GetAnimatorUVTopLeft(uint32_t id, NightSnack::Scripting::vec2* outUV) {
+        if (!g_scriptInterface || !outUV) { return; }
+        *outUV = g_scriptInterface->GetAnimatorUVTopLeft(id);
+    }
+    static void NightSnack_SetAnimatorUVTopLeft(uint32_t id, NightSnack::Scripting::vec2* uv) {
+        if (!g_scriptInterface || !uv) { return; }
+        g_scriptInterface->SetAnimatorUVTopLeft(id, *uv);
+    }
+
+    // uvBottomRight -----------------
+    static void NightSnack_GetAnimatorUVBottomRight(uint32_t id, NightSnack::Scripting::vec2* outUV) {
+        if (!g_scriptInterface || !outUV) { return; }
+        *outUV = g_scriptInterface->GetAnimatorUVBottomRight(id);
+    }
+    static void NightSnack_SetAnimatorUVBottomRight(uint32_t id, NightSnack::Scripting::vec2* uv) {
+        if (!g_scriptInterface || !uv) { return; }
+        g_scriptInterface->SetAnimatorUVBottomRight(id, *uv);
+    }
+#pragma endregion
+
+
+    // --------------------------------------------------------------
+    
+#pragma region Font
+
+    // fontType --------------
+    static MonoString* NightSnack_GetFontType(uint32_t id) {
+        if (!g_scriptInterface) { return NULL; }
+        return NightSnack::Scripting::StringToMonoString(g_scriptInterface->GetFontType(id));
+    }
+    static void NightSnack_SetFontType(uint32_t id, MonoString* name) {
+        if (!g_scriptInterface || !name) { return; }
+        char* cStr = mono_string_to_utf8(name);
+        g_scriptInterface->SetFontType(id, std::string{ cStr });
+    }
+
+    // text --------------
+    static MonoString* NightSnack_GetFontText(uint32_t id) {
+        if (!g_scriptInterface) { return NULL; }
+        return NightSnack::Scripting::StringToMonoString(g_scriptInterface->GetFontText(id));
+    }
+    static void NightSnack_SetFontText(uint32_t id, MonoString* name) {
+        if (!g_scriptInterface || !name) { return; }
+        char* cStr = mono_string_to_utf8(name);
+        g_scriptInterface->SetFontText(id, std::string{ cStr });
+    }
+
+    // fontSize --------------
+    static void NightSnack_GetFontSize(uint32_t id, float* outSize) {
+        if (!g_scriptInterface || !outSize) { return; }
+        *outSize = g_scriptInterface->GetFontSize(id);
+    }
+    static void NightSnack_SetFontSize(uint32_t id, float* size) {
+        if (!g_scriptInterface || !size) { return; }
+        g_scriptInterface->SetFontSize(id, *size);
+    }	
+    
+    // textColor --------------
+    static void NightSnack_GetFontTextColor(uint32_t id, NightSnack::Scripting::vec3* outCol) {
+        if (!g_scriptInterface || !outCol) { return; }
+        *outCol = g_scriptInterface->GetFontTextColor(id);
+    }
+    static void NightSnack_SetFontTextColor(uint32_t id, NightSnack::Scripting::vec3* col) {
+        if (!g_scriptInterface || !col) { return; }
+        g_scriptInterface->SetFontTextColor(id, *col);
+    }
+
+    // offsetPosition --------------
+    static void NightSnack_GetFontOffsetPosition(uint32_t id, NightSnack::Scripting::vec3* outpos) {
+        if (!g_scriptInterface || !outpos) { return; }
+        *outpos = g_scriptInterface->GetFontOffsetPosition(id);
+    }
+    static void NightSnack_FontOffsetPosition(uint32_t id, NightSnack::Scripting::vec3* pos) {
+        if (!g_scriptInterface || !pos) { return; }
+        g_scriptInterface->SetFontOffsetPosition(id, *pos);
+    }
+#pragma endregion
 
     // --------------------------------------------------------------
 
@@ -518,6 +681,59 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::GetIsWireframe_Internal", (void*)NightSnack_GetIsWireframe);
         mono_add_internal_call("ManagedScripts.Engine::SetIsWireframe_Internal", (void*)NightSnack_SetIsWireframe);
 #pragma endregion
+
+#pragma region Animator
+        mono_add_internal_call("ManagedScripts.Engine::GetAnimatorCurrentClip_Internal", (void*)NightSnack_GetAnimatorCurrentAnimationClip);
+        mono_add_internal_call("ManagedScripts.Engine::SetAnimatorCurrentClip_Internal", (void*)NightSnack_SetAnimatorCurrentAnimationClip);
+        
+        mono_add_internal_call("ManagedScripts.Engine::GetAnimatorSpriteSheet_Internal", (void*)NightSnack_GetAnimatorSpriteSheetName);
+        mono_add_internal_call("ManagedScripts.Engine::SetAnimatorSpriteSheet_Internal", (void*)NightSnack_SetAnimatorSpriteSheetName);
+        
+        mono_add_internal_call("ManagedScripts.Engine::GetAnimatorCurrentFrameIndex_Internal", (void*)NightSnack_GetAnimatorCurrentFrameIndex);
+        mono_add_internal_call("ManagedScripts.Engine::SetAnimatorCurrentFrameIndex_Internal", (void*)NightSnack_SetAnimatorCurrentFrameIndex);
+        
+        mono_add_internal_call("ManagedScripts.Engine::GetAnimatorCurrentTime_Internal", (void*)NightSnack_GetAnimatorCurrentTime);
+        mono_add_internal_call("ManagedScripts.Engine::SetAnimatorCurrentTime_Internal", (void*)NightSnack_SetAnimatorCurrentTime);
+        
+        mono_add_internal_call("ManagedScripts.Engine::GetAnimatorCurrentPlaybackSpeed_Internal", (void*)NightSnack_GetAnimatorPlaybackSpeed);
+        mono_add_internal_call("ManagedScripts.Engine::SetAnimatorCurrentPlaybackSpeed_Internal", (void*)NightSnack_SetAnimatorPlaybackSpeed);
+        
+        mono_add_internal_call("ManagedScripts.Engine::GetAnimatorIsPlaying_Internal", (void*)NightSnack_GetAnimatorIsPlaying);
+        mono_add_internal_call("ManagedScripts.Engine::SetAnimatorIsPlaying_Internal", (void*)NightSnack_SetAnimatorIsPlaying);
+        
+        mono_add_internal_call("ManagedScripts.Engine::GetAnimatorIsLooping_Internal", (void*)NightSnack_GetAnimatorIsLooping);
+        mono_add_internal_call("ManagedScripts.Engine::SetAnimatorIsLooping_Internal", (void*)NightSnack_SetAnimatorIsLooping);
+        
+        mono_add_internal_call("ManagedScripts.Engine::GetAnimatorLastFacingRight_Internal", (void*)NightSnack_GetAnimatorLastFacingRight);
+        mono_add_internal_call("ManagedScripts.Engine::SetAnimatorLastFacingRight_Internal", (void*)NightSnack_SetAnimatorLastFacingRight);
+        
+        mono_add_internal_call("ManagedScripts.Engine::GetAnimatorUVTopLeft_Internal", (void*)NightSnack_GetAnimatorUVTopLeft);
+        mono_add_internal_call("ManagedScripts.Engine::SetAnimatorUVTopLeft_Internal", (void*)NightSnack_SetAnimatorUVTopLeft);
+        
+        mono_add_internal_call("ManagedScripts.Engine::GetAnimatorUVBottomRight_Internal", (void*)NightSnack_GetAnimatorUVBottomRight);
+        mono_add_internal_call("ManagedScripts.Engine::SetAnimatorUVBottomRight_Internal", (void*)NightSnack_SetAnimatorUVBottomRight);
+
+#pragma endregion
+
+#pragma region Fonts
+        //fontType
+        mono_add_internal_call("ManagedScripts.Engine::GetFontType_Internal", (void*)NightSnack_GetFontType);
+        mono_add_internal_call("ManagedScripts.Engine::SetFontType_Internal", (void*)NightSnack_SetFontType);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetFontText_Internal", (void*)NightSnack_GetFontText);
+        mono_add_internal_call("ManagedScripts.Engine::SetFontText_Internal", (void*)NightSnack_SetFontText);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetFontSize_Internal", (void*)NightSnack_GetFontSize);
+        mono_add_internal_call("ManagedScripts.Engine::SetFontSize_Internal", (void*)NightSnack_SetFontSize);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetFontColor_Internal", (void*)NightSnack_GetFontTextColor);
+        mono_add_internal_call("ManagedScripts.Engine::SetFontColor_Internal", (void*)NightSnack_SetFontTextColor);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetFontOffsetPosition_Internal", (void*)NightSnack_GetFontOffsetPosition);
+        mono_add_internal_call("ManagedScripts.Engine::SetFontOffsetPosition_Internal", (void*)NightSnack_FontOffsetPosition);
+
+#pragma endregion
+
 
 
 #pragma region Key/Inputs
