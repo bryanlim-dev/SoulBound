@@ -63,7 +63,7 @@ namespace NightSnack {
 			Number of steps to update.
 		*/
 		/************************************************************************/
-		void Update(int steps) override;
+		void Update() override;
 
 		/************************************************************************/
 		/*!
@@ -168,6 +168,7 @@ namespace NightSnack {
 					switch (event.inputAction) {
 					case InputEvent::InputAction::ToggleUIEditor:
 						SetEditorEnabled(!m_toggleEditor);
+						m_coord.TogglePause();
 						break;
 					}
 				}
@@ -212,8 +213,7 @@ namespace NightSnack {
 	}
 
 	// Sets up and draws UI panels
-	inline void ImguiSystem::Update(int steps) {
-		(void)steps;
+	inline void ImguiSystem::Update() {
 
 		if (!m_toggleEditor) { return; }
 
@@ -349,8 +349,8 @@ namespace NightSnack {
 			if (ImGui::BeginMenu("File"))
 			{
 				// Save current level
-				std::string levelName = "MyLevel";
-				ImGui::InputText("Level Name", levelName.data(), levelName.size());
+				static char levelName[128] = "MyLevel";
+				ImGui::InputText("Level Name", levelName, IM_ARRAYSIZE(levelName));
 				ImGui::SameLine();
 				static bool overwrite = true;
 				ImGui::Checkbox("Overwrite", &overwrite);
@@ -364,8 +364,8 @@ namespace NightSnack {
 				}
 
 				// Load level by name
-				std::string loadLevelName = "MyLevel";
-				ImGui::InputText("Load Level", loadLevelName.data(), loadLevelName.size());
+				static char loadLevelName[128] = "MyLevel";
+				ImGui::InputText("Load Level", loadLevelName, IM_ARRAYSIZE(loadLevelName));
 				ImGui::SameLine();
 				if (ImGui::Button("Load")) {
 					auto factory = m_coord.GetSystem<EntityFactory>();

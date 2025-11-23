@@ -1,4 +1,4 @@
- /******************************************************************************
+/******************************************************************************
  * File:        AudioSystem.cpp
  * Project:     NightSnack
  * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Audio system with channels to play audio
@@ -6,17 +6,20 @@
  * Description:
  * This file defines the AudioSystem class, which manages all game audio using FMOD.
  * Works with ResourceManager to load and cache sounds. Handles playing, pausing, stopping
- * and updating audio. All audio files are loaded centrally in this file.
+ * and updating audio. Automatically scans audio directories and loads all files.
  *
- * Copyright � 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
 #include "AudioSystem.h"
 #include <iostream>
 #include <algorithm>
+#include <filesystem>
 
 namespace NightSnack {
+
+    namespace fs = std::filesystem;
 
     // constructor initializes the audio system and loads all game audio
     AudioSystem::AudioSystem(Coordinator& coordinator, EventDispatcher& dispatcher)
@@ -37,11 +40,11 @@ namespace NightSnack {
             return;
         }
 
-        // load all game audio
+        // load all game audio from directories
         LoadAllGameAudio();
 
         // start playing main menu music by default
-        PlayBGM(m_audioKeys.mainMenu);
+        PlayBGM(AudioKeys::mainMenu);
     }
 
     // destructor cleans up resources and releases fmod system
@@ -52,6 +55,7 @@ namespace NightSnack {
             // note: don't release sounds here - resource manager handles that
             m_loadedSFX.clear();
             m_loadedBGM.clear();
+            m_keyToID.clear();
 
             m_fmodSystem.lock()->close();
             m_fmodSystem.lock()->release();
@@ -66,62 +70,143 @@ namespace NightSnack {
         if (!m_fmodSystem.expired())
         {
             m_initialized = true;
-            //std::cout << "[AudioSystem] Initialized successfully.\n";
             return true;
         }
-        else // it is assigned to nullptr if it wasn't loaded properly
+        else
         {
             return false;
         }
     }
 
     // updates the fmod system
-    void AudioSystem::Update(int steps)
+    void AudioSystem::Update()
     {
-        (void)steps;
-
         if (!m_fmodSystem.expired())
             m_fmodSystem.lock()->update();
     }
 
-    // loads all game audio files
+    // loads all game audio files by scanning directories
     void AudioSystem::LoadAllGameAudio()
     {
-        // load sfx
-        LoadSoundFile("../assets/Sound/SFX/sound_button_temp.wav", m_audioKeys.buttonClick);
-        LoadSoundFile("../assets/Sound/SFX/Jump.wav", m_audioKeys.playerJump);
-        LoadSoundFile("../assets/Sound/SFX/Block_Hit.wav", m_audioKeys.playerHit);
+        std::cout << "[AudioSystem] Scanning audio directories...\n";
 
-        // add more sfx here as needed
+        // Scan SFX directory
+        ScanAudioDirectory("../assets/Sound/SFX", false);
 
-        // load bgm
-        LoadSoundFile("../assets/Sound/Music/MansionTheme.wav", m_audioKeys.mainMenu);
+        // Scan BGM directory
+        ScanAudioDirectory("../assets/Sound/Music", true);
 
-        // add more bgm here as needed
+        std::cout << "[AudioSystem] Audio loading complete.\n";
     }
 
-    // loads a single sound file and assigns it a key
-    bool AudioSystem::LoadSoundFile(const std::string& filepath, size_t& outKey)
+    // scans a directory and loads all audio files
+    void AudioSystem::ScanAudioDirectory(const std::string& folderPath, bool isBGM)
     {
-        if (m_resourceMgr.expired() || m_fmodSystem.expired()) 
+        try {
+            if (!fs::exists(folderPath)) {
+                std::cerr << "[AudioSystem] Directory not found: " << folderPath << "\n";
+                return;
+            }
+
+            int loadedCount = 0;
+            for (const auto& entry : fs::directory_iterator(folderPath)) {
+                if (entry.is_regular_file() && IsValidAudioFile(entry.path().string())) {
+
+                    if (LoadSoundFile(entry.path().string(), isBGM)) {
+                        loadedCount++;
+                    }
+                }
+            }
+
+            std::string audioType = isBGM ? "BGM" : "SFX";
+            std::cout << "[AudioSystem] Loaded " << loadedCount << " " << audioType
+                << " files from: " << folderPath << "\n";
+        }
+        catch (const std::exception& e) {
+            std::cerr << "[AudioSystem] Error scanning directory " << folderPath
+                << ": " << e.what() << "\n";
+        }
+    }
+
+    // checks if a file has a valid audio extension
+    bool AudioSystem::IsValidAudioFile(const std::string& filepath) const
+    {
+        static const std::string validExtensions[] = { ".wav", ".mp3", };
+
+        std::string ext = fs::path(filepath).extension().string();
+
+        // convert to lowercase for comparison
+        std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+        for (const auto& validExt : validExtensions) 
         {
-            //std::cerr << "[AudioSystem] Cannot load sound - system not ready.\n";
+            if (ext == validExt) 
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // extracts filename without extension to use as key
+    std::string AudioSystem::ExtractKeyFromPath(const std::string& filepath) const
+    {
+        fs::path p(filepath);
+        std::string filename = p.stem().string();
+        return filename;
+    }
+
+    // loads a single sound file and assigns it a string key based on filename
+    bool AudioSystem::LoadSoundFile(const std::string& filepath, bool isBGM)
+    {
+        if (m_resourceMgr.expired() || m_fmodSystem.expired())
+        {
+            std::cerr << "[AudioSystem] Cannot load sound - system not ready.\n";
             return false;
         }
 
-        LOAD_RESULT result = m_resourceMgr.lock()->LoadSound(filepath, outKey, m_fmodSystem.lock().get());
+        std::string key = ExtractKeyFromPath(filepath);
 
-        if (result == LOAD_SUCCESS || result == LOAD_SUCCESS_STOPPED_UNLOAD) 
+        size_t soundID = 0;
+        LOAD_RESULT result = m_resourceMgr.lock()->LoadSound(filepath, soundID, m_fmodSystem.lock().get());
+
+        if (result == LOAD_SUCCESS || result == LOAD_SUCCESS_STOPPED_UNLOAD)
         {
-            //std::cout << "[AudioSystem] Loaded: " << filepath << " (key: " << outKey << ")\n";
+            m_keyToID[key] = soundID;
+            FMOD::Sound* sound = m_resourceMgr.lock()->GetSound(soundID);
+
+            if (isBGM) {
+                m_loadedBGM[key] = sound;
+                if (sound) {
+                    sound->setMode(FMOD_LOOP_NORMAL);
+                }
+            }
+            else {
+                m_loadedSFX[key] = sound;
+            }
+
+            std::cout << "[AudioSystem] Loaded: " << filepath << " (key: " << key << ")\n";
             return true;
         }
-        else if (result == LOAD_FAIL_PREEXIST) 
+        else if (result == LOAD_FAIL_PREEXIST)
         {
-            //std::cout << "[AudioSystem] Already loaded: " << filepath << "\n";
+            m_keyToID[key] = soundID;
+            FMOD::Sound* sound = m_resourceMgr.lock()->GetSound(soundID);
+
+            if (isBGM) {
+                m_loadedBGM[key] = sound;
+                if (sound) {
+                    sound->setMode(FMOD_LOOP_NORMAL);
+                }
+            }
+            else {
+                m_loadedSFX[key] = sound;
+            }
+
+            std::cout << "[AudioSystem] Already loaded: " << filepath << "\n";
             return true;
         }
-        else 
+        else
         {
             std::cerr << "[AudioSystem] Failed to load: " << filepath << "\n";
             return false;
@@ -129,95 +214,62 @@ namespace NightSnack {
     }
 
     // plays a sound effect using the default sfx volume
-    void AudioSystem::PlaySFX(const size_t soundID)
+    void AudioSystem::PlaySFX(const std::string& soundKey)
     {
         if (!m_initialized || m_resourceMgr.expired() || m_fmodSystem.expired())
             return;
 
-        FMOD::Sound* sound = nullptr;
-
-        auto it = m_loadedSFX.find(soundID);
-        if (it == m_loadedSFX.end())
-        {
-            sound = m_resourceMgr.lock()->GetSound(soundID);
-            if (!sound)
-            {
-                std::cerr << "[AudioSystem] SFX not found: " << soundID << "\n";
-                return;
-            }
-            m_loadedSFX[soundID] = sound;
-        }
-        else
-        {
-            sound = it->second;
+        auto it = m_loadedSFX.find(soundKey);
+        if (it == m_loadedSFX.end()) {
+            std::cerr << "[AudioSystem] SFX not found: " << soundKey << "\n";
+            return;
         }
 
+        FMOD::Sound* sound = it->second;
         FMOD::Channel* channel = nullptr;
         m_fmodSystem.lock()->playSound(sound, nullptr, false, &channel);
 
-        if (channel) 
+        if (channel)
         {
             channel->setVolume(m_sfxVolume * m_masterVolume);
         }
     }
 
     // plays a sound effect with a specified volume
-    void AudioSystem::PlaySFXWithVolume(const size_t soundID, float volume)
+    void AudioSystem::PlaySFXWithVolume(const std::string& soundKey, float volume)
     {
         if (!m_initialized || m_resourceMgr.expired() || m_fmodSystem.expired())
             return;
 
-        FMOD::Sound* sound = nullptr;
-
-        auto it = m_loadedSFX.find(soundID);
-        if (it == m_loadedSFX.end())
-        {
-            sound = m_resourceMgr.lock()->GetSound(soundID);
-            if (!sound)
-            {
-                std::cerr << "[AudioSystem] SFX not found: " << soundID << "\n";
-                return;
-            }
-            m_loadedSFX[soundID] = sound;
-        }
-        else
-        {
-            sound = it->second;
+        auto it = m_loadedSFX.find(soundKey);
+        if (it == m_loadedSFX.end()) {
+            std::cerr << "[AudioSystem] SFX not found: " << soundKey << "\n";
+            return;
         }
 
+        FMOD::Sound* sound = it->second;
         FMOD::Channel* channel = nullptr;
         m_fmodSystem.lock()->playSound(sound, nullptr, false, &channel);
 
-        if (channel) 
+        if (channel)
         {
             channel->setVolume(volume * m_masterVolume);
         }
     }
 
-    // plays background music by ID
-    void AudioSystem::PlayBGM(const size_t bgmID)
+    // plays background music by string key
+    void AudioSystem::PlayBGM(const std::string& bgmKey)
     {
         if (!m_initialized || m_resourceMgr.expired() || m_fmodSystem.expired())
             return;
 
-        FMOD::Sound* bgm = nullptr;
+        auto it = m_loadedBGM.find(bgmKey);
+        if (it == m_loadedBGM.end()) {
+            std::cerr << "[AudioSystem] BGM not found: " << bgmKey << "\n";
+            return;
+        }
 
-        auto it = m_loadedBGM.find(bgmID);
-        if (it == m_loadedBGM.end())
-        {
-            bgm = m_resourceMgr.lock()->GetSound(bgmID);
-            if (!bgm)
-            {
-                std::cerr << "[AudioSystem] BGM not found: " << bgmID << "\n";
-                return;
-            }
-            bgm->setMode(FMOD_LOOP_NORMAL);
-            m_loadedBGM[bgmID] = bgm;
-        }
-        else
-        {
-            bgm = it->second;
-        }
+        FMOD::Sound* bgm = it->second;
 
         if (m_bgmChannel)
         {
@@ -229,13 +281,13 @@ namespace NightSnack {
 
         m_fmodSystem.lock()->playSound(bgm, nullptr, false, &m_bgmChannel);
 
-        if (m_bgmChannel) 
+        if (m_bgmChannel)
         {
             m_bgmChannel->setVolume(m_bgmVolume * m_masterVolume);
         }
 
         m_bgmPaused = false;
-        //std::cout << "[AudioSystem] Playing BGM: " << bgmID << "\n";
+        std::cout << "[AudioSystem] Playing BGM: " << bgmKey << "\n";
     }
 
     // stops the currently playing background music

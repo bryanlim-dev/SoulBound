@@ -35,7 +35,7 @@ namespace NightSnack {
 
 		virtual std::set<Entity>& entities() { return m_entities; }
 		// Every system must define an Update function;
-		virtual void Update(int steps) = 0;
+		virtual void Update() = 0;
 		// Every system must expose its signature;
 		virtual Signature GetSignature() const = 0;
 		// Retrieve name of system

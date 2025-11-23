@@ -304,6 +304,7 @@ namespace NightSnack
             if (ImGui::Combo("##LayerCombo", &currentLayer, layerNames, IM_ARRAYSIZE(layerNames))) {
                 std::cout << "original: " << static_cast<int>(t.layer) << ", new: " << currentLayer << std::endl;
                 t.layer = static_cast<LayerType>(currentLayer);
+                m_coord.BufferEntitySignature(entity);
 				std::cout << "Now: " << static_cast<int>(t.layer) << std::endl;
             }
         }
@@ -328,15 +329,24 @@ namespace NightSnack
             ImGui::TableSetColumnIndex(1); ImGui::Text("X");
             ImGui::TableSetColumnIndex(2); ImGui::Text("Y");
 
+            // Display the respective position based on its entity layer
+            float pos[2];
+            float scale[2];
+            if (t.layer == LayerType::GAMEUI) {
+                pos[0] = t.UIbasePos.x; pos[1] = t.UIbasePos.y;
+                scale[0] = t.UIbaseScale.x; scale[1] = t.UIbaseScale.y;
+            } else {
+                pos[0] = t.pos.x; pos[1] = t.pos.y;
+                scale[0] = t.scale.x; scale[1] = t.scale.y;
+            }
+
             // Position row
-            float pos[2] = { t.pos.x, t.pos.y };
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Position");
             ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); 
             ImGui::InputFloat("##posx", &pos[0], 0.0f, 0.0f, "%.2f");
             ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN); 
             ImGui::InputFloat("##posy", &pos[1], 0.0f, 0.0f, "%.2f");
-            t.pos.x = pos[0]; t.pos.y = pos[1];
 
             // Rotation row
             float rot = t.rot;
@@ -347,14 +357,21 @@ namespace NightSnack
             t.rot = rot;
 
             // Scale row
-            float scale[2] = { t.scale.x, t.scale.y };
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Scale");
             ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); 
             ImGui::InputFloat("##scalex", &scale[0], 0.0f, 0.0f, "%.2f");
             ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN); 
             ImGui::InputFloat("##scaley", &scale[1], 0.0f, 0.0f, "%.2f");
-            t.scale.x = scale[0]; t.scale.y = scale[1];
+
+            // Update the respective position based on its entity layer
+            if (t.layer == LayerType::GAMEUI) {
+                t.UIbasePos.x = pos[0]; t.UIbasePos.y = pos[1];
+                t.UIbaseScale.x = scale[0]; t.UIbaseScale.y = scale[1];
+            } else {
+                t.pos.x = pos[0]; t.pos.y = pos[1];
+                t.scale.x = scale[0]; t.scale.y = scale[1];
+            }
 
             ImGui::EndTable();
         }
@@ -522,7 +539,7 @@ namespace NightSnack
         if (!m_coord.HasComponent<Renderable>(*m_selectedEntity))
             return;
 
-        auto& renderable = m_coord.ModifyComponent<Renderable>(*m_selectedEntity);
+        auto& renderable = m_coord.GetComponent<Renderable>(*m_selectedEntity);
         auto graphics = m_coord.GetSystem<GraphicsSystem>();
 
         if (ImGui::BeginTable("RendererTable", 2, ImGuiTableFlags_SizingFixedFit))
@@ -568,11 +585,15 @@ namespace NightSnack
 			// isWireframe checkbox
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Wireframe");
-            ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##Wireframe", &renderable.isWireframe);
+            bool wireframe = renderable.isWireframe;
+            ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##Wireframe", &wireframe);
+            if (wireframe != renderable.isWireframe) {
+                m_coord.ModifyComponent<Renderable>(*m_selectedEntity).isWireframe = wireframe;
+            }
 			// wasModified checkbox
-            ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0); ImGui::Text("Was Modified");
-            ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##WasModified", &renderable.wasModified);
+            //ImGui::TableNextRow();
+            //ImGui::TableSetColumnIndex(0); ImGui::Text("Was Modified");
+            //ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##WasModified", &renderable.wasModified);
 
             ImGui::EndTable();
         }

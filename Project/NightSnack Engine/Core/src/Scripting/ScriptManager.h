@@ -70,7 +70,7 @@ namespace NightSnack::Scripting {
 		~ScriptManager() { Shutdown(); }
 		
 		// Main Update function;
-		void Update(int steps) override;
+		void Update() override;
 
 		// Create a script instance attached to an entity;
 		void* AttachScript(Entity e, std::string const& scriptClassName);

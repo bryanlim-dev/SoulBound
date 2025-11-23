@@ -57,6 +57,8 @@ namespace NightSnack {
 			// Initialize viewport dimensions;
 			Hvp = static_cast<float>(coord.GetWindowHeight());
 			Wvp = static_cast<float>(coord.GetWindowWidth());
+			lastHvp = Hvp;
+			lastWvp = Wvp;
 
 			std::string path = std::filesystem::current_path().string();
 			std::cout << path << '\n';
@@ -118,7 +120,7 @@ namespace NightSnack {
 		The number of steps in the simulation
 		*/
 		/************************************************************************/
-		void Update(int steps) override;
+		void Update() override;
 
 		/************************************************************************/
 		/*!
@@ -453,7 +455,7 @@ namespace NightSnack {
 		to the mesh and material resources used by the entity.
 		*/
 		/************************************************************************/
-		void ResolveRenderable(Entity e, Renderable const& r);
+		void ResolveRenderable(Entity e, Renderable& r);
 
 		/************************************************************************/
 		/*!
@@ -500,6 +502,10 @@ namespace NightSnack {
 		/************************************************************************/
 		Vec3 ScreenToWorld(Vec3 const& screenPos);
 
+		bool ScreenSizeChanged();
+
+		void TranslateUIEntities();
+
 		void DebugRenderableInformation();
 
 		bool m_enableDebugDraw{ false };
@@ -509,6 +515,7 @@ namespace NightSnack {
 
 		// Viewport dimensions;
 		float Hvp, Wvp;
+		float lastHvp, lastWvp;
 
 		Signature m_systemSignature{};
 		// Reference to Coordinator;

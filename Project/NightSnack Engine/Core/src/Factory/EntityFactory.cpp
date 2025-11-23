@@ -15,8 +15,7 @@
 namespace NightSnack {
 
     // unused for now...
-    void EntityFactory::Update(int steps) {
-        (void)steps;
+    void EntityFactory::Update() {
 
         static bool printed = false;
         if (!printed) {
@@ -266,6 +265,8 @@ namespace NightSnack {
                 { "Position", { {"x", t.pos.x}, {"y", t.pos.y}, {"z", t.pos.z} } },
                 { "Rotation", t.rot },
                 { "Scale",    { {"x", t.scale.x}, {"y", t.scale.y} } },
+                { "UIBasePosition", { {"x", t.UIbasePos.x}, {"y", t.UIbasePos.y}, {"z", t.UIbasePos.z} } },
+				{ "UIBaseScale",    { {"x", t.UIbaseScale.x}, {"y", t.UIbaseScale.y} } },
                 { "Layer", layer }
             };
 

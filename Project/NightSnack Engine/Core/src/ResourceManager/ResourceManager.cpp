@@ -131,9 +131,8 @@ namespace NightSnack {
 		m_resourceFontMap.clear();
 	}
 
-	void ResourceManager::Update(int steps)
+	void ResourceManager::Update()
 	{
-		(void)steps;
 		DeleteFlaggedResources();
 	}
 
