@@ -76,7 +76,7 @@ namespace NightSnack {
 		if (mainCam == INVALID_ENTITY) return;
 
 		if (ScreenSizeChanged()) {
-			TranslateUIEntities();
+			TranslateUIEntities(mainCam);
 			lastHvp = Hvp;
 			lastWvp = Wvp;
 		}
@@ -701,7 +701,9 @@ namespace NightSnack {
 		return (lastHvp != Hvp || lastWvp != Wvp);
 	}
 
-	void GraphicsSystem::TranslateUIEntities() {
+	void GraphicsSystem::TranslateUIEntities(Entity mainCam) {
+		auto& camInfo = m_coord.GetComponent<Camera>(mainCam);
+
 		// Only translate entities on the GAMEUI layer
 		for (Layer& l : m_layers) {
 			if (l.Empty() || !l.IsVisible() || l.Type() != LayerType::GAMEUI) { continue; }
@@ -717,11 +719,10 @@ namespace NightSnack {
 				auto& UIscale = m_coord.GetComponent<Transform>(e).UIbaseScale;
 
 				// Translate the position and scale of UI layer objects based on the current screen resolution
-				// By default, the base screen resolution is 1600, 900
-				float ratioPosX = UIpos.x / 1600.f;
-				float ratioPosY = UIpos.y / 900.f;
-				float ratioScaleX = UIscale.x / 1600.f;
-				float ratioScaleY = UIscale.y / 900.f;
+				float ratioPosX = UIpos.x / camInfo.width;
+				float ratioPosY = UIpos.y / camInfo.height;
+				float ratioScaleX = UIscale.x / camInfo.width;
+				float ratioScaleY = UIscale.y / camInfo.height;
 
 				// Get the new position and scaling based on the current screen resolution
 				m_coord.ModifyComponent<Transform>(e).pos.x = ratioPosX * Wvp;

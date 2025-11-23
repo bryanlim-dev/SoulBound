@@ -504,7 +504,7 @@ namespace NightSnack {
 
 		bool ScreenSizeChanged();
 
-		void TranslateUIEntities();
+		void TranslateUIEntities(Entity mainCam);
 
 		void DebugRenderableInformation();
 
