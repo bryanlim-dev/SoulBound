@@ -67,6 +67,26 @@ extern "C" {
         g_scriptInterface->SetScale(id, *scale);
     }
 
+    // UIbasePos --------------
+    static void NightSnack_GetUIBasePos(uint32_t id, NightSnack::Scripting::vec3* outpos) {
+        if (!g_scriptInterface || !outpos) { return; }
+        *outpos = g_scriptInterface->GetUIBasePos(id);
+    }
+    static void NightSnack_SetUIBasePos(uint32_t id, NightSnack::Scripting::vec3* pos) {
+        if (!g_scriptInterface || !pos) { return; }
+        g_scriptInterface->SetUIBasePos(id, *pos);
+    }
+
+    // UIbaseScale -----------------
+    static void NightSnack_GetUIBaseScale(uint32_t id, NightSnack::Scripting::vec2* scale) {
+        if (!g_scriptInterface || !scale) { return; }
+        *scale = g_scriptInterface->GetUIBaseScale(id);
+    }
+    static void NightSnack_SetUIBaseScale(uint32_t id, NightSnack::Scripting::vec2* scale) {
+        if (!g_scriptInterface || !scale) { return; }
+        g_scriptInterface->SetUIBaseScale(id, *scale);
+    }
+
     // Layer -----------------
     static void NightSnack_GetLayer(uint32_t id, uint8_t* layer) {
         if (!g_scriptInterface || !layer) { return; }
@@ -584,6 +604,12 @@ namespace NightSnack::Scripting {
 
         mono_add_internal_call("ManagedScripts.Engine::GetScale_Internal", (void*)NightSnack_GetScale);
         mono_add_internal_call("ManagedScripts.Engine::SetScale_Internal", (void*)NightSnack_SetScale);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetUIBasePos_Internal", (void*)NightSnack_GetUIBasePos);
+        mono_add_internal_call("ManagedScripts.Engine::SetUIBasePos_Internal", (void*)NightSnack_SetUIBasePos);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetUIBaseScale_Internal", (void*)NightSnack_GetUIBaseScale);
+        mono_add_internal_call("ManagedScripts.Engine::SetUIBaseScale_Internal", (void*)NightSnack_SetUIBaseScale);
 
         mono_add_internal_call("ManagedScripts.Engine::GetLayer_Internal", (void*)NightSnack_GetLayer);
         mono_add_internal_call("ManagedScripts.Engine::SetLayer_Internal", (void*)NightSnack_SetLayer);

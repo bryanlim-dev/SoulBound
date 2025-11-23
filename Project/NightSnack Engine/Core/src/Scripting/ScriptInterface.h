@@ -44,6 +44,12 @@ namespace NightSnack::Scripting {
         vec2 GetScale(Entity e);
         void SetScale(Entity e, vec2 scale);
 
+        vec3 GetUIBasePos(Entity e);
+        void SetUIBasePos(Entity e, vec3 pos);
+
+        vec2 GetUIBaseScale(Entity e);
+        void SetUIBaseScale(Entity e, vec2 scal);
+
         LayerType GetLayer(Entity e);
         void SetLayer(Entity e, LayerType lay);
 #pragma endregion

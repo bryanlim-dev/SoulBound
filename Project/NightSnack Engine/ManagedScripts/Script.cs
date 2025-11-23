@@ -28,6 +28,17 @@ namespace ManagedScripts
             get => Engine.GetScale(EntityId);
             set => Engine.SetScale(EntityId, value);
         }
+        protected Vector3 UIBasePos
+        {
+            get => Engine.GetUIBasePos(EntityId);
+            set => Engine.SetUIBasePos(EntityId, value);
+        }
+        
+        protected Vector2 UIBaseScale
+        {
+            get => Engine.GetUIBaseScale(EntityId);
+            set => Engine.SetUIBaseScale(EntityId, value);
+        }
 
         protected LayerType Layer
         {

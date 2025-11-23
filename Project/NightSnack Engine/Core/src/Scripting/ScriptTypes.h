@@ -60,6 +60,10 @@ namespace NightSnack::Scripting {
         vec3 pos{};
         float rot{};
         vec2 scale{};
+
+        Vec3 UIbasePos{ 0.f, 0.f, 0.f };
+        Vec2 UIbaseScale{ 0.f, 0.f };
+
         NightSnack::LayerType layer = NightSnack::LayerType::_ENGINE;
         //NightSnack::Transform ToNative() {
         //    NightSnack::Transform t;
