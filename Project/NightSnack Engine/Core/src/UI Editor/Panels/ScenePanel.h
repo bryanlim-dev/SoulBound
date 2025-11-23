@@ -157,12 +157,25 @@ namespace NightSnack
 				}
 
 				CalculateMouseWorldPosition(imageTopLeft, imageSize, mouseWorldX, mouseWorldY);
+				ImVec2 mouse = ImGui::GetMousePos();
+				bool overToolbar = mouse.x >= m_toolbarMin.x && mouse.x <= m_toolbarMax.x &&
+					mouse.y >= m_toolbarMin.y && mouse.y <= m_toolbarMax.y;
 
 				// Displays mouse world position
 				DrawMouseInfo(mouseWorldX, mouseWorldY, imageTopLeft);
 
 				if (ImGui::IsItemHovered() && ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
 				{
+					if (overToolbar && m_isDragging == false)
+					{
+						// Prevent entity hover, selection, and dragging when over toolbar
+						m_hoveredEntity = INVALID_ENTITY;
+						DrawToolBar();
+						// Early return to skip input handling
+						ImGui::End();
+						return;
+					}
+
 					ImGuiIO& io = ImGui::GetIO();
 					auto& camMod = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
 
@@ -283,7 +296,8 @@ namespace NightSnack
 					}
 
 					// Tile Painting
-					if (currentTool == SceneTool::Paint && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+					if (currentTool == SceneTool::Paint && ImGui::IsMouseDown(ImGuiMouseButton_Left) 
+						&& m_tilemap.tileOverlayEnabled && m_tilemap.showTileEditor)
 					{
 						// Calculate grid position
 						float grid = m_tilemap.gridSize;
@@ -388,7 +402,7 @@ namespace NightSnack
 		bool m_isMultiSelecting = false;
 		ImVec2 m_selectStart, m_selectEnd;
 
-		Entity m_backgroundEntity;      // Current background entity ID
+		Entity m_backgroundEntity;
 
 		// Camera entity and saved camera data
 		Entity m_editorCameraEntity = INVALID_ENTITY;
@@ -411,6 +425,7 @@ namespace NightSnack
 
 		// Current scene tool
 		SceneTool currentTool = SceneTool::Select;
+		ImVec2 m_toolbarMin, m_toolbarMax;
 
 		// Tilemap for object snapping and tile painting
 		Tilemap& m_tilemap;
@@ -999,11 +1014,15 @@ namespace NightSnack
 		// Tool bar overlay position
 		ImVec2 toolBarPos = ImVec2(imageTopLeft.x + 12, imageTopLeft.y + 12);
 		float buttonWidth[4] = { 60.0f, 60.0f, 90.0f, 60.0f };
+		float totalWidth = buttonWidth[0] + buttonWidth[1] + buttonWidth[2] + buttonWidth[3] + 30.0f;
+		m_toolbarMin = toolBarPos;
+		m_toolbarMax = ImVec2(toolBarPos.x + totalWidth, toolBarPos.y + 32);
+
+		// Tool names and corresponding enums
 		const char* toolNames[4] = { "View", "Select", "MultiSelect", "Paint" };
 		SceneTool toolEnums[4] = { SceneTool::PanZoom, SceneTool::Select, SceneTool::MultiSelect, SceneTool::Paint };
 
 		// Draw background
-		float totalWidth = buttonWidth[0] + buttonWidth[1] + buttonWidth[2] + buttonWidth[3] + 30.0f;
 		drawList->AddRectFilled(
 			toolBarPos,
 			ImVec2(toolBarPos.x + totalWidth, toolBarPos.y + 32),
