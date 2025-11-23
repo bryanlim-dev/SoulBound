@@ -144,14 +144,6 @@ namespace NightSnack::Scripting {
         void SetIsWireframe(Entity e, bool wire);
 #pragma endregion
 
-#pragma region Font
-        std::string GetFontType(Entity e);
-        void SetFontType(Entity e, std::string name);
-
-        std::string GetFontText(Entity e);
-        void SetFontText(Entity e, std::string txt);
-
-#pragma endregion
 
 #pragma region Animator
         Animat GetAnimator(Entity e);
@@ -187,8 +179,29 @@ namespace NightSnack::Scripting {
         vec2 GetAnimatorUVBottomRight(Entity e);
         void SetAnimatorUVBottomRight(Entity e, vec2 uv);
 
+
 #pragma endregion
 
+#pragma region Font
+        Fon GetFont(Entity e);
+        void SetFont(Entity e, Fon rend);
+
+        std::string GetFontType(Entity e);
+        void SetFontType(Entity e, std::string name);
+
+        std::string GetFontText(Entity e);
+        void SetFontText(Entity e, std::string txt);
+
+        float GetFontSize(Entity e);
+        void SetFontSize(Entity e, float sz);
+
+        vec3 GetFontTextColor(Entity e);
+        void SetFontTextColor(Entity e, vec3 col);
+
+        vec3 GetFontOffsetPosition(Entity e);
+        void SetFontOffsetPosition(Entity e, vec3 pos);
+
+#pragma endregion
 
 #pragma region Key/Inputs
         // Input

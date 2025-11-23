@@ -590,6 +590,29 @@ namespace NightSnack::Scripting {
     // Font Inputs
     // --------------------------------------------------------------
 #pragma region Font
+    Fon ScriptInterface::GetFont(Entity e) {
+
+        Font t = m_coord.GetComponent<Font>(e);
+        Fon result;
+
+        result.fontType = t.fontType;
+        result.text = t.text;
+        result.fontSize = t.fontSize;
+        result.textColor = t.textColor;
+        result.offsetPosition = t.offsetPosition;
+        return result;
+    }
+
+    void ScriptInterface::SetFont(Entity e, Fon rend)
+    {
+        Font& t = m_coord.ModifyComponent<Font>(e);
+        t.fontType = rend.fontType;
+        t.text = rend.text;
+        t.fontSize = rend.fontSize;
+        t.textColor = rend.textColor;
+        t.offsetPosition = rend.offsetPosition;
+    }
+
     std::string ScriptInterface::GetFontType(Entity e) {
         return m_coord.GetComponent<Font>(e).fontType;
     }
@@ -598,10 +621,44 @@ namespace NightSnack::Scripting {
     }
 
     std::string ScriptInterface::GetFontText(Entity e) {
-        return m_coord.GetComponent<Font>(e).text;
+        if (m_coord.HasComponent<Font>(e))
+            return m_coord.GetComponent<Font>(e).text;
+        else
+            return "ERROR!";
     }
     void ScriptInterface::SetFontText(Entity e, std::string txt) {
         m_coord.ModifyComponent<Font>(e).text = txt;
+    }
+
+    float ScriptInterface::GetFontSize(Entity e)
+    {
+        return m_coord.GetComponent<Font>(e).fontSize;
+    }
+    void ScriptInterface::SetFontSize(Entity e, float sz)
+    {
+        m_coord.ModifyComponent<Font>(e).fontSize = sz;
+    }
+
+    vec3 ScriptInterface::GetFontTextColor(Entity e)
+    {
+        Vec3 color = m_coord.GetComponent<Font>(e).textColor;
+        vec3 result = vec3(color.x, color.y, color.z);
+        return result;
+    }
+    void ScriptInterface::SetFontTextColor(Entity e, vec3 col)
+    {
+        m_coord.ModifyComponent<Font>(e).textColor = Vec3(col.x, col.y, col.z);
+    }
+
+    vec3 ScriptInterface::GetFontOffsetPosition(Entity e)
+    {
+        Vec3 pos = m_coord.GetComponent<Font>(e).textColor;
+        vec3 result = vec3(pos.x, pos.y, pos.z);
+        return result;
+    }
+    void ScriptInterface::SetFontOffsetPosition(Entity e, vec3 pos)
+    {
+        m_coord.ModifyComponent<Font>(e).textColor = Vec3(pos.x, pos.y, pos.z);
     }
 
 

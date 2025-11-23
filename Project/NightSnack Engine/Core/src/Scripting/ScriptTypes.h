@@ -144,7 +144,7 @@ namespace NightSnack::Scripting {
         Vec2 uvBottomRight{ 1.f, 1.f };
     };
 
-    struct CORE_API Font {
+    struct CORE_API Fon {
         std::string fontType{};
         std::string text{};
         float fontSize{ 1.f };

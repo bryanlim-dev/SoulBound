@@ -449,6 +449,63 @@ extern "C" {
 
 
     // --------------------------------------------------------------
+    
+#pragma region Font
+
+    // fontType --------------
+    static MonoString* NightSnack_GetFontType(uint32_t id) {
+        if (!g_scriptInterface) { return NULL; }
+        return NightSnack::Scripting::StringToMonoString(g_scriptInterface->GetFontType(id));
+    }
+    static void NightSnack_SetFontType(uint32_t id, MonoString* name) {
+        if (!g_scriptInterface || !name) { return; }
+        char* cStr = mono_string_to_utf8(name);
+        g_scriptInterface->SetFontType(id, std::string{ cStr });
+    }
+
+    // text --------------
+    static MonoString* NightSnack_GetFontText(uint32_t id) {
+        if (!g_scriptInterface) { return NULL; }
+        return NightSnack::Scripting::StringToMonoString(g_scriptInterface->GetFontText(id));
+    }
+    static void NightSnack_SetFontText(uint32_t id, MonoString* name) {
+        if (!g_scriptInterface || !name) { return; }
+        char* cStr = mono_string_to_utf8(name);
+        g_scriptInterface->SetFontText(id, std::string{ cStr });
+    }
+
+    // fontSize --------------
+    static void NightSnack_GetFontSize(uint32_t id, float* outSize) {
+        if (!g_scriptInterface || !outSize) { return; }
+        *outSize = g_scriptInterface->GetFontSize(id);
+    }
+    static void NightSnack_SetFontSize(uint32_t id, float* size) {
+        if (!g_scriptInterface || !size) { return; }
+        g_scriptInterface->SetFontSize(id, *size);
+    }	
+    
+    // textColor --------------
+    static void NightSnack_GetFontTextColor(uint32_t id, NightSnack::Scripting::vec3* outCol) {
+        if (!g_scriptInterface || !outCol) { return; }
+        *outCol = g_scriptInterface->GetFontTextColor(id);
+    }
+    static void NightSnack_SetFontTextColor(uint32_t id, NightSnack::Scripting::vec3* col) {
+        if (!g_scriptInterface || !col) { return; }
+        g_scriptInterface->SetFontTextColor(id, *col);
+    }
+
+    // offsetPosition --------------
+    static void NightSnack_GetFontOffsetPosition(uint32_t id, NightSnack::Scripting::vec3* outpos) {
+        if (!g_scriptInterface || !outpos) { return; }
+        *outpos = g_scriptInterface->GetFontOffsetPosition(id);
+    }
+    static void NightSnack_FontOffsetPosition(uint32_t id, NightSnack::Scripting::vec3* pos) {
+        if (!g_scriptInterface || !pos) { return; }
+        g_scriptInterface->SetFontOffsetPosition(id, *pos);
+    }
+#pragma endregion
+
+    // --------------------------------------------------------------
 
 #pragma region Key/Buttons
     // Input - Is Key Pressed (just pressed this frame)
@@ -657,6 +714,26 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::SetAnimatorUVBottomRight_Internal", (void*)NightSnack_SetAnimatorUVBottomRight);
 
 #pragma endregion
+
+#pragma region Fonts
+        //fontType
+        mono_add_internal_call("ManagedScripts.Engine::GetFontType_Internal", (void*)NightSnack_GetFontType);
+        mono_add_internal_call("ManagedScripts.Engine::SetFontType_Internal", (void*)NightSnack_SetFontType);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetFontText_Internal", (void*)NightSnack_GetFontText);
+        mono_add_internal_call("ManagedScripts.Engine::SetFontText_Internal", (void*)NightSnack_SetFontText);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetFontSize_Internal", (void*)NightSnack_GetFontSize);
+        mono_add_internal_call("ManagedScripts.Engine::SetFontSize_Internal", (void*)NightSnack_SetFontSize);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetFontColor_Internal", (void*)NightSnack_GetFontTextColor);
+        mono_add_internal_call("ManagedScripts.Engine::SetFontColor_Internal", (void*)NightSnack_SetFontTextColor);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetFontOffsetPosition_Internal", (void*)NightSnack_GetFontOffsetPosition);
+        mono_add_internal_call("ManagedScripts.Engine::SetFontOffsetPosition_Internal", (void*)NightSnack_FontOffsetPosition);
+
+#pragma endregion
+
 
 
 #pragma region Key/Inputs
