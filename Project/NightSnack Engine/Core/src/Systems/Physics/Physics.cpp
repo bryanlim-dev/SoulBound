@@ -22,6 +22,8 @@ namespace NightSnack {
 
 	// Main update function;
 	void PhysicsSystem::Update() {
+		if (m_coord.IsPaused()) return;
+
 		// Skip Physics if in debug mode
 		if (debugMode && !stepRequest) {
 			return;

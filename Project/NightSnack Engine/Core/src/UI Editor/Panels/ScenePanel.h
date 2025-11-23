@@ -364,9 +364,9 @@ namespace NightSnack
 						std::cout << "Transform: " << trans.pos.x << ", " << trans.pos.y << std::endl;
 
 					}
+					ImGui::EndDragDropTarget();
 				}
 
-				ImGui::EndDragDropTarget();
 			}
 			// Draw tool bar for mouse tool selection
 			DrawToolBar();
