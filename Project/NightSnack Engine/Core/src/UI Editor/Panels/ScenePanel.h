@@ -157,12 +157,25 @@ namespace NightSnack
 				}
 
 				CalculateMouseWorldPosition(imageTopLeft, imageSize, mouseWorldX, mouseWorldY);
+				ImVec2 mouse = ImGui::GetMousePos();
+				bool overToolbar = mouse.x >= m_toolbarMin.x && mouse.x <= m_toolbarMax.x &&
+					mouse.y >= m_toolbarMin.y && mouse.y <= m_toolbarMax.y;
 
 				// Displays mouse world position
 				DrawMouseInfo(mouseWorldX, mouseWorldY, imageTopLeft);
 
 				if (ImGui::IsItemHovered() && ImGui::IsWindowHovered(ImGuiHoveredFlags_AllowWhenBlockedByActiveItem))
 				{
+					if (overToolbar && m_isDragging == false)
+					{
+						// Prevent entity hover, selection, and dragging when over toolbar
+						m_hoveredEntity = INVALID_ENTITY;
+						DrawToolBar();
+						// Early return to skip input handling
+						ImGui::End();
+						return;
+					}
+
 					ImGuiIO& io = ImGui::GetIO();
 					auto& camMod = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
 
@@ -243,7 +256,7 @@ namespace NightSnack
 					}
 
 					// Entity Picking
-					if (!m_isDragging && currentTool == SceneTool::Select)
+					if (currentTool == SceneTool::Select && !m_isDragging && !IsMouseOverGizmo())
 					{
 						HandleEntityPicking(mouseWorldX, mouseWorldY);
 
@@ -283,7 +296,8 @@ namespace NightSnack
 					}
 
 					// Tile Painting
-					if (currentTool == SceneTool::Paint && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+					if (currentTool == SceneTool::Paint && ImGui::IsMouseDown(ImGuiMouseButton_Left) 
+						&& m_tilemap.tileOverlayEnabled && m_tilemap.showTileEditor)
 					{
 						// Calculate grid position
 						float grid = m_tilemap.gridSize;
@@ -353,6 +367,11 @@ namespace NightSnack
 					ImGui::EndDragDropTarget();
 				}
 
+				// Draw gizmos for selected entity
+				if (currentTool == SceneTool::Select && m_selectedEntity && *m_selectedEntity != INVALID_ENTITY)
+				{
+					DrawGizmos(imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+				}
 			}
 			// Draw tool bar for mouse tool selection
 			DrawToolBar();
@@ -388,7 +407,7 @@ namespace NightSnack
 		bool m_isMultiSelecting = false;
 		ImVec2 m_selectStart, m_selectEnd;
 
-		Entity m_backgroundEntity;      // Current background entity ID
+		Entity m_backgroundEntity;
 
 		// Camera entity and saved camera data
 		Entity m_editorCameraEntity = INVALID_ENTITY;
@@ -411,6 +430,7 @@ namespace NightSnack
 
 		// Current scene tool
 		SceneTool currentTool = SceneTool::Select;
+		ImVec2 m_toolbarMin, m_toolbarMax;
 
 		// Tilemap for object snapping and tile painting
 		Tilemap& m_tilemap;
@@ -420,6 +440,14 @@ namespace NightSnack
 		std::vector<std::pair<int, int>> m_paintPath;
 		enum class PaintAction { None, Create, Delete };
 		PaintAction m_paintAction = PaintAction::None;
+
+		// Gizmos state
+		enum class GizmoPart { None, MoveX, MoveY, Rotate, ScaleX, ScaleY };
+		GizmoPart m_gizmoActivePart = GizmoPart::None;
+		bool m_gizmoHovering = false;
+		bool m_gizmoDragging = false;
+		ImVec2 m_gizmoDragStartMouse;
+		float m_gizmoStartValue; // for position/rotation/scale
 
 		/************************************************************************/
 		/*!
@@ -652,6 +680,34 @@ namespace NightSnack
 		/************************************************************************/
 		void PaintTile(int gridX, int gridY, PaintAction action);
 
+		/************************************************************************/
+		/*!
+		\brief
+			Draws gizmos such as selection boxes and handles.
+
+		\param[in] imageTopLeft
+			- Top-left corner of the image in world space.
+
+		\param[in] imageSize
+			- Size of the image in world space.
+
+		\param[in] worldLeft
+			- Left boundary of the world in world space.
+
+		\param[in] worldRight
+			- Right boundary of the world in world space.
+
+		\param[in] worldBottom
+			- Bottom boundary of the world in world space.
+
+		\param[in] worldTop
+			- Top boundary of the world in world space.
+		*/
+		/************************************************************************/
+		void DrawGizmos(const ImVec2& imageTopLeft, const ImVec2& imageSize, 
+			float worldLeft, float worldRight, float worldBottom, float worldTop);
+
+		bool IsMouseOverGizmo() const { return m_gizmoHovering || m_gizmoDragging; }
 	};
 
 	//-----------------------------------------------//
@@ -999,11 +1055,15 @@ namespace NightSnack
 		// Tool bar overlay position
 		ImVec2 toolBarPos = ImVec2(imageTopLeft.x + 12, imageTopLeft.y + 12);
 		float buttonWidth[4] = { 60.0f, 60.0f, 90.0f, 60.0f };
+		float totalWidth = buttonWidth[0] + buttonWidth[1] + buttonWidth[2] + buttonWidth[3] + 30.0f;
+		m_toolbarMin = toolBarPos;
+		m_toolbarMax = ImVec2(toolBarPos.x + totalWidth, toolBarPos.y + 32);
+
+		// Tool names and corresponding enums
 		const char* toolNames[4] = { "View", "Select", "MultiSelect", "Paint" };
 		SceneTool toolEnums[4] = { SceneTool::PanZoom, SceneTool::Select, SceneTool::MultiSelect, SceneTool::Paint };
 
 		// Draw background
-		float totalWidth = buttonWidth[0] + buttonWidth[1] + buttonWidth[2] + buttonWidth[3] + 30.0f;
 		drawList->AddRectFilled(
 			toolBarPos,
 			ImVec2(toolBarPos.x + totalWidth, toolBarPos.y + 32),
@@ -1154,6 +1214,126 @@ namespace NightSnack
 
 		// Record painted tile
 		m_paintedTiles[tilePos] = std::make_pair(currentTile, tileEntity);
+	}
+
+	inline void ScenePanel::DrawGizmos(const ImVec2& imageTopLeft, const ImVec2& imageSize,
+		float worldLeft, float worldRight, float worldBottom, float worldTop)
+	{
+		m_gizmoHovering = false;
+
+		// Get selected entity's transform
+		auto& t = m_coord.GetComponent<Transform>(*m_selectedEntity);
+
+		// World position of the entity
+		float wx = t.pos.x, wy = t.pos.y;
+
+		// Convert to screen position
+		ImVec2 center = WorldToScreen(wx, wy, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+		ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+		// Gizmo sizes
+		float arrowLength = 60.0f;
+		float arrowThickness = 4.0f;
+		float circleRadius = 30.0f;
+		float handleRadius = 10.0f;
+		float scaleHandleSize = 14.0f;
+
+		// Axis in screen
+		ImVec2 xDir = ImVec2(arrowLength, 0);
+		ImVec2 yDir = ImVec2(0, -arrowLength);
+
+		// Arrow end points
+		ImVec2 xEnd = ImVec2(center.x + xDir.x, center.y + xDir.y);
+		ImVec2 yEnd = ImVec2(center.x + yDir.x, center.y + yDir.y);
+
+		// Mouse position
+		ImVec2 mouse = ImGui::GetMousePos();
+
+		// X-axis Arrow (red)
+		ImVec2 arrowTipX = xEnd;
+		ImVec2 arrowBaseL = ImVec2(xEnd.x - 16, xEnd.y - 6);
+		ImVec2 arrowBaseR = ImVec2(xEnd.x - 16, xEnd.y + 6);
+		drawList->AddLine(center, ImVec2(xEnd.x - 12, xEnd.y), IM_COL32(255, 0, 0, 255), arrowThickness);
+		drawList->AddTriangleFilled(arrowTipX, arrowBaseL, arrowBaseR, IM_COL32(255, 0, 0, 255));
+
+		// Y-axis Arrow (green)
+		ImVec2 arrowTipY = yEnd;
+		ImVec2 arrowBaseL_Y = ImVec2(yEnd.x - 6, yEnd.y + 16);
+		ImVec2 arrowBaseR_Y = ImVec2(yEnd.x + 6, yEnd.y + 16);
+		drawList->AddLine(center, ImVec2(yEnd.x, yEnd.y + 12), IM_COL32(0, 255, 0, 255), arrowThickness);
+		drawList->AddTriangleFilled(arrowTipY, arrowBaseL_Y, arrowBaseR_Y, IM_COL32(0, 255, 0, 255));
+
+		// Rotation Circle (blue)
+		ImVec2 delta = ImVec2(mouse.x - center.x, mouse.y - center.y);
+		float dist = sqrtf(delta.x * delta.x + delta.y * delta.y);
+		float distToCircle = std::abs(dist - circleRadius);
+		bool hoverRot = distToCircle < 8.0f;
+		ImU32 rotColor = hoverRot ? IM_COL32(100, 100, 255, 255) : IM_COL32(0, 128, 255, 180);
+		drawList->AddCircle(center, circleRadius, rotColor, 64, 3.0f);
+
+		// X-axis Scale
+		ImVec2 xScaleMin = ImVec2(xEnd.x + 8, xEnd.y - scaleHandleSize * 0.5f);
+		ImVec2 xScaleMax = ImVec2(xEnd.x + 8 + scaleHandleSize, xEnd.y + scaleHandleSize * 0.5f);
+		bool hoverScaleX = mouse.x >= xScaleMin.x && mouse.x <= xScaleMax.x && mouse.y >= xScaleMin.y && mouse.y <= xScaleMax.y;
+		ImU32 scaleXColor = hoverScaleX ? IM_COL32(255, 200, 100, 255) : IM_COL32(255, 200, 0, 255);
+		drawList->AddRectFilled(xScaleMin, xScaleMax, scaleXColor, 2.0f);
+
+		// Y-axis Scale
+		ImVec2 yScaleMin = ImVec2(yEnd.x - scaleHandleSize * 0.5f, yEnd.y - 8 - scaleHandleSize);
+		ImVec2 yScaleMax = ImVec2(yEnd.x + scaleHandleSize * 0.5f, yEnd.y - 8);
+		bool hoverScaleY = mouse.x >= yScaleMin.x && mouse.x <= yScaleMax.x && mouse.y >= yScaleMin.y && mouse.y <= yScaleMax.y;
+		ImU32 scaleYColor = hoverScaleY ? IM_COL32(200, 255, 100, 255) : IM_COL32(200, 255, 0, 255);
+		drawList->AddRectFilled(yScaleMin, yScaleMax, scaleYColor, 2.0f);
+
+		bool hoverX = ImLengthSqr(ImVec2(mouse.x - xEnd.x, mouse.y - xEnd.y)) < handleRadius * handleRadius * 2;
+		bool hoverY = ImLengthSqr(ImVec2(mouse.x - yEnd.x, mouse.y - yEnd.y)) < handleRadius * handleRadius * 2;
+		if (hoverX || hoverY || hoverRot || hoverScaleX || hoverScaleY) m_gizmoHovering = true;
+
+		// Handle interaction
+		if (!m_gizmoDragging && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
+		{
+			if		(hoverX)	  { m_gizmoActivePart = GizmoPart::MoveX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.pos.x; }
+			else if (hoverY)	  { m_gizmoActivePart = GizmoPart::MoveY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.pos.y; }
+			else if (hoverRot)	  { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.rot; }
+			else if (hoverScaleX) { m_gizmoActivePart = GizmoPart::ScaleX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.scale.x; }
+			else if (hoverScaleY) { m_gizmoActivePart = GizmoPart::ScaleY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.scale.y; }
+		}
+		if (m_gizmoDragging && ImGui::IsMouseDown(ImGuiMouseButton_Left))
+		{
+			ImVec2 delta = ImVec2(mouse.x - m_gizmoDragStartMouse.x, mouse.y - m_gizmoDragStartMouse.y);
+			auto& t = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
+			if (m_gizmoActivePart == GizmoPart::MoveX)
+			{
+				t.pos.x = m_gizmoStartValue + delta.x * (worldRight - worldLeft) / imageSize.x;
+			}
+			else if (m_gizmoActivePart == GizmoPart::MoveY)
+			{
+				t.pos.y = m_gizmoStartValue - delta.y * (worldTop - worldBottom) / imageSize.y;
+			}
+			else if (m_gizmoActivePart == GizmoPart::Rotate)
+			{
+				ImVec2 center = WorldToScreen(t.pos.x, t.pos.y, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+				float startAngle = atan2f(m_gizmoDragStartMouse.y - center.y, m_gizmoDragStartMouse.x - center.x);
+				float currAngle = atan2f(mouse.y - center.y, mouse.x - center.x);
+				constexpr float RAD2DEG = 180.0f / 3.14159265f;
+				t.rot = m_gizmoStartValue - (currAngle - startAngle) * RAD2DEG;
+			}
+			else if (m_gizmoActivePart == GizmoPart::ScaleX)
+			{
+				float scaleDelta = delta.x * (worldRight - worldLeft) / imageSize.x;
+				t.scale.x = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+			}
+			else if (m_gizmoActivePart == GizmoPart::ScaleY)
+			{
+				float scaleDelta = -delta.y * (worldTop - worldBottom) / imageSize.y;
+				t.scale.y = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+			}
+		}
+		if (m_gizmoDragging && ImGui::IsMouseReleased(ImGuiMouseButton_Left))
+		{
+			m_gizmoDragging = false;
+			m_gizmoActivePart = GizmoPart::None;
+		}
 	}
 
 } // NightSnack
