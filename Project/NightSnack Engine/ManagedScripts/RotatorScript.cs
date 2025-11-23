@@ -24,6 +24,10 @@ namespace ManagedScripts
 
             ////Engine.SetLayer(id1, LayerType.GAMEUI);
             ////Engine.SetLayer(id2, LayerType.BACKGROUND);
+            //Engine.SetUIBasePos(id1, new Vector3(1, 1, 0));
+            //Engine.SetUIBaseScale(id1, new Vector2(1, 1));
+            //Log($"Ball 1 UI Pos: {Engine.GetUIBasePos(id1)}");
+            //Log($"Ball 1 UI Scale: {Engine.GetUIBaseScale(id1)}");
 
             ////Rigibody Test
             //Vector2 dir;
@@ -69,8 +73,8 @@ namespace ManagedScripts
             //Engine.SetFontType(id3, "liberation-mono");
             //Log($"Ball 3 Font Name: {Engine.GetFontType(id3)}");
             //Engine.SetFontSize(id3, 3);
-            //Engine.SetFontColor(id3, new Vector3(0,1,0));
-            
+            //Engine.SetFontColor(id3, new Vector3(0, 1, 0));
+
 
             //Log("RotatorScript started!");
             //Log($"Initial rotation: {Rotation}");

@@ -50,6 +50,7 @@ namespace NightSnack::Scripting {
         trans.scale = Vec2(t.scale.x, t.scale.y);
         trans.layer = t.layer;
     }
+
     // Position ----
     vec3 ScriptInterface::GetPosition(Entity e) {
         Vec3 position = m_coord.GetComponent<Transform>(e).pos;
@@ -76,6 +77,27 @@ namespace NightSnack::Scripting {
     }
     void ScriptInterface::SetScale(Entity e, vec2 scal) {
         Vec2& scale = m_coord.ModifyComponent<Transform>(e).scale;
+        scale = Vec2(scal.x, scal.y);
+    }
+
+    // UIbasePos -------
+    vec3 ScriptInterface::GetUIBasePos(Entity e) {
+        Vec3 position = m_coord.GetComponent<Transform>(e).UIbasePos;
+        vec3 result = vec3(position.x, position.y, position.z);
+        return result;
+    }
+    void ScriptInterface::SetUIBasePos(Entity e, vec3 pos) {
+        Vec3& position = m_coord.ModifyComponent<Transform>(e).UIbasePos;
+        position = Vec3(pos.x, pos.y, pos.z);
+    }
+
+    // Scale -------
+    vec2 ScriptInterface::GetUIBaseScale(Entity e) {
+        Vec2 scale = m_coord.GetComponent<Transform>(e).UIbaseScale;
+        return vec2(scale.x, scale.y);
+    }
+    void ScriptInterface::SetUIBaseScale(Entity e, vec2 scal) {
+        Vec2& scale = m_coord.ModifyComponent<Transform>(e).UIbaseScale;
         scale = Vec2(scal.x, scal.y);
     }
 

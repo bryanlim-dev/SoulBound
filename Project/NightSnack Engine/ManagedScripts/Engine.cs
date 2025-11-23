@@ -40,6 +40,18 @@ namespace ManagedScripts
 
         // ----------------------
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetUIBasePos_Internal(uint entityId, out Vector3 position);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetUIBasePos_Internal(uint entityId, ref Vector3 position);
+
+        // ----------------------
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetUIBaseScale_Internal(uint entityId, out Vector2 scale);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetUIBaseScale_Internal(uint entityId, ref Vector2 scale);
+
+        // ----------------------
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void GetLayer_Internal(uint entityId, out LayerType layer);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetLayer_Internal(uint entityId, ref LayerType layer);
@@ -389,7 +401,29 @@ namespace ManagedScripts
             SetScale_Internal(entityId, ref scale);
         }
 
-        //Layer Typw
+        //UIbasePos
+        public static Vector3 GetUIBasePos(uint entityId)
+        {
+            GetUIBasePos_Internal(entityId, out Vector3 pos);
+            return pos;
+        }
+        public static void SetUIBasePos(uint entityId, Vector3 position)
+        {
+            SetUIBasePos_Internal(entityId, ref position);
+        }
+
+        //UIbaseScale
+        public static Vector2 GetUIBaseScale(uint entityId)
+        {
+            GetUIBaseScale_Internal(entityId, out Vector2 scale);
+            return scale;
+        }
+        public static void SetUIBaseScale(uint entityId, Vector2 scale)
+        {
+            SetUIBaseScale_Internal(entityId, ref scale);
+        }
+
+        //Layer Type
         public static LayerType GetLayer(uint entityId)
         {
             GetLayer_Internal(entityId, out LayerType layer);
