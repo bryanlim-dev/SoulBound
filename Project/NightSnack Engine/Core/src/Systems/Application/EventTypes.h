@@ -60,6 +60,8 @@ namespace NightSnack {
             CrashTest,          // C
             PhysicsDebugStep,   // P
 
+            // Window events
+            ExitFullscreen,   // ESC
 
             // Mouse events
             ClickLMB,           // LMB

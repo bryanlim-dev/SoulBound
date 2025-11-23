@@ -196,8 +196,11 @@ namespace NightSnack {
 		const std::vector<std::string>& GetDroppedFiles() const { return s_droppedFiles; }
 		void ClearDroppedFiles() { s_droppedFiles.clear(); }
 
-		static int m_appWidth;
-		static int m_appHeight;
+		static int m_appWidth, m_appHeight;
+		// Window's 'windowed' properties to store
+		static int m_appWindowedWidth, m_appWindowedHeight;
+		static int m_appWindowedPosX, m_appWindowedPosY;
+		static bool m_appToPause, m_appChangedPauseState, m_appIsFullscreen;
 	private:
 		/************************************************************************/
 		/*!
@@ -207,9 +210,19 @@ namespace NightSnack {
 		/************************************************************************/
 		static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 
+		static void WindowIconifyCallback(GLFWwindow* window, int iconified);
+
+		static void WindowFocusCallback(GLFWwindow* window, int focused);
+
+		static void WindowMaximizeCallback(GLFWwindow* window, int maximized);
+
+		static void EnterFullscreen();
+		void ExitFullscreen();
+
 		// Window properties
-		GLFWwindow* m_windowHandle{ nullptr };
+		static GLFWwindow* m_windowHandle;
 		std::string m_appTitle;
+		bool m_previousPauseState = false;
 
 		// Tick Tocker
 		Timer m_timer;

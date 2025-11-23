@@ -4,7 +4,7 @@
  * Author(s):	Lim Wei Jie (Primary, 100%) - Created Application system to
  *			    handle window creation, OpenGL context and Time Handling
  *
- * Description: This file contains the definitions of the Application System, 
+ * Description: This file contains the definitions of the Application System,
  *				which manages the application window, OpenGL context, and timing.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
@@ -20,6 +20,14 @@ namespace NightSnack {
 	std::vector<std::string> ApplicationSystem::s_droppedFiles;
 	int ApplicationSystem::m_appWidth = 1600;
 	int ApplicationSystem::m_appHeight = 900;
+	int ApplicationSystem::m_appWindowedWidth = 1600;
+	int ApplicationSystem::m_appWindowedHeight = 900;
+	int ApplicationSystem::m_appWindowedPosX = 0;
+	int ApplicationSystem::m_appWindowedPosY = 0;
+	bool ApplicationSystem::m_appToPause = false;
+	bool ApplicationSystem::m_appChangedPauseState = false;
+	bool ApplicationSystem::m_appIsFullscreen = false;
+	GLFWwindow* ApplicationSystem::m_windowHandle = nullptr;
 
 	// Required OpenGL version;
 	static constexpr int REQUIRED_GL_MAJOR = 4;
@@ -69,6 +77,9 @@ namespace NightSnack {
 		// Set viewport and callback;
 		glViewport(0, 0, m_appWidth, m_appHeight);
 		glfwSetFramebufferSizeCallback(m_windowHandle, FramebufferSizeCallback);
+		glfwSetWindowIconifyCallback(m_windowHandle, WindowIconifyCallback); // Application window is minimized
+		glfwSetWindowFocusCallback(m_windowHandle, WindowFocusCallback); // Application window loses focus
+		glfwSetWindowMaximizeCallback(m_windowHandle, WindowMaximizeCallback); // Application window is maximized
 
 		// file drop callback
 		glfwSetDropCallback(m_windowHandle, FileDropCallback);
@@ -98,21 +109,39 @@ namespace NightSnack {
 		// Subscribe to input events
 		m_dispatcher->Subscribe<InputEvent>([this, &Coord](const InputEvent& event) {
 			if (event.pressed == InputEvent::InputActionState::Pressed) {
-				//switch (event.inputAction) {
+				switch (event.inputAction) {
+				case InputEvent::InputAction::ExitFullscreen:
+					ExitFullscreen();
+					break;
+
 				//case InputEvent::InputAction::ToggleSystemTimers:
 					// Toggle switch for System Timers Debug Mode
 					//systemTimersEnabled = !systemTimersEnabled;
 					//break;
-				//}
+				}
 			}
 			});
 	}
 
 	// Update function called every frame
 	void ApplicationSystem::Update() {
+		PollEvents();
+
+		// There is a change in application focus state
+		if (!m_appChangedPauseState) {
+			// Pause the application if the application will be minimized
+			if (m_appToPause) {
+				m_previousPauseState = m_coord.IsPaused(); // Store the current pause state first, basing on level editor mode
+				m_coord.Pause();
+			} else if (!m_previousPauseState) {
+				// Only unpause the application if the application is being restored 
+				// and the application was not currently paused (level editor mode)
+				m_coord.Unpause();
+			}
+			m_appChangedPauseState = true;
+		}
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		PollEvents();
 
 		size_t livingEntities = m_coord.GetEntityNum();
 		std::string instanced = m_coord.GetSystem<GraphicsSystem>()->GetEnableInstancedRendering() ? "Yes" : "No";
@@ -126,6 +155,12 @@ namespace NightSnack {
 		SetWindowTitle(GetNativeHandle(), title.c_str());
 
 		if (systemTimersEnabled) { m_timer.DisplaySystemTimers(); }
+
+		// If the application window is not in fullscreen mode, keep updating the window properties
+		if (!m_appIsFullscreen) {
+			glfwGetWindowPos(m_windowHandle, &m_appWindowedPosX, &m_appWindowedPosY);
+			glfwGetWindowSize(m_windowHandle, &m_appWindowedWidth, &m_appWindowedHeight);
+		}
 	}
 
 	// Poll for and process events
@@ -163,15 +198,79 @@ namespace NightSnack {
 		glViewport(0, 0, width, height);
 	}
 
+	void ApplicationSystem::WindowIconifyCallback(GLFWwindow* window, int iconified) {
+		(void)window;
+
+		// iconified == true means the window is minimized
+		m_appToPause = iconified ? true : false;
+		m_appChangedPauseState = false;
+
+		// iconified == false means the window is restored
+		if (!iconified && m_appIsFullscreen) {
+			// This scenario is for when the application was in fullscreen mode when it minimized, and is now being restored 
+			// Manually resize the monitor and remove the borders, to avoid windows taskbar from showing up
+			EnterFullscreen();
+		}
+	}
+
+	void ApplicationSystem::WindowFocusCallback(GLFWwindow* window, int focused) {
+		// User press ALT-TAB or clicked away, causing the window to lose focus
+		if (!focused) {
+			// Minimize the window whenever the window is not in focus
+			glfwIconifyWindow(window);
+		}
+	}
+
+	void ApplicationSystem::WindowMaximizeCallback(GLFWwindow* window, int maximized) {
+		// Only check if the user press the maximize window button
+		if (maximized && !m_appIsFullscreen) {
+			EnterFullscreen();
+			m_appIsFullscreen = true;
+		}
+	}
+
+	void ApplicationSystem::EnterFullscreen() {
+		// Enter full screen mode without any window bars
+
+		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+		// Remove borders
+		glfwSetWindowAttrib(m_windowHandle, GLFW_DECORATED, GLFW_FALSE);
+		glfwSetWindowAttrib(m_windowHandle, GLFW_RESIZABLE, GLFW_FALSE);
+
+		// Resize to monitor
+		glfwSetWindowPos(m_windowHandle, 0, 0);
+		glfwSetWindowSize(m_windowHandle, mode->width, mode->height);
+	}
+
+	void ApplicationSystem::ExitFullscreen() {
+		// Restore previous windowed mode position and size
+		if (m_appIsFullscreen) {
+			// Restore the window first, to update the window's properties like the maximise/minimise button
+			glfwRestoreWindow(m_windowHandle);
+
+			// Add back borders
+			glfwSetWindowAttrib(m_windowHandle, GLFW_DECORATED, GLFW_TRUE);
+			glfwSetWindowAttrib(m_windowHandle, GLFW_RESIZABLE, GLFW_TRUE);
+
+			// Resize to previous window properties
+			glfwSetWindowPos(m_windowHandle, m_appWindowedPosX, m_appWindowedPosY);
+			glfwSetWindowSize(m_windowHandle, m_appWindowedWidth, m_appWindowedHeight);
+			
+			m_appIsFullscreen = false;
+		}
+	}
+
 	// file drop call back
-	void ApplicationSystem::FileDropCallback(GLFWwindow* window, int count, const char** paths) 
+	void ApplicationSystem::FileDropCallback(GLFWwindow* window, int count, const char** paths)
 	{
 		(void)window;
 
 		s_droppedFiles.clear();
 		std::cout << "[FileDrop] Received " << count << " file(s):\n";
 
-		for (int i = 0; i < count; i++) 
+		for (int i = 0; i < count; i++)
 		{
 			s_droppedFiles.push_back(std::string(paths[i]));
 			std::cout << "[FileDrop]   [" << i << "] " << paths[i] << "\n";
