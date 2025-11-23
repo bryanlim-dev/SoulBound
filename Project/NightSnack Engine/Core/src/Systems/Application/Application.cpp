@@ -127,11 +127,11 @@ namespace NightSnack {
 	void ApplicationSystem::Update() {
 		PollEvents();
 
+		// There is a change in application focus state
 		if (!m_appChangedPauseState) {
-			//m_appToPause ? m_coord.Pause() : m_coord.Unpause();
 			// Pause the application if the application will be minimized
 			if (m_appToPause) {
-				m_previousPauseState = m_coord.IsPaused();
+				m_previousPauseState = m_coord.IsPaused(); // Store the current pause state first, basing on level editor mode
 				m_coord.Pause();
 			} else if (!m_previousPauseState) {
 				// Only unpause the application if the application is being restored 
@@ -140,8 +140,6 @@ namespace NightSnack {
 			}
 			m_appChangedPauseState = true;
 		}
-
-		//m_previousPauseState = m_coord.IsPaused();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
