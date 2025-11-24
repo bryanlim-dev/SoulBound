@@ -109,6 +109,7 @@ namespace NightSnack
             DrawFolderTree(m_assetsRoot);
 
             // Add scripts folder if it exists
+            m_scriptsRoot = std::filesystem::canonical(m_scriptsRoot);
             if (fs::exists(m_scriptsRoot))
             {
                 DrawFolderTree(m_scriptsRoot);
