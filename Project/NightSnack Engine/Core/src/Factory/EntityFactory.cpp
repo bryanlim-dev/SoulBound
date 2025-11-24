@@ -167,15 +167,13 @@ namespace NightSnack {
             std::cerr << "Failed to read json file: " << filepath << '\n';
         }
         m_prefabKeys[prefab] = key;
+        json const& j = GetArchetypes(key);
 
         // Update entities which use this prefab
         for (auto it = entities.first; it != entities.second; ++it ) {
 
             Entity e = it->second;
-
-            Transform t = m_coord.GetComponent<Transform>(e);
-            m_toBeDestroyed.insert(e);
-            Create(prefab, t);
+            m_prefabManager.UpdateComponents(e, j);
         }
     }
 
