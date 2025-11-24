@@ -50,6 +50,7 @@ namespace NightSnack::Scripting {
         trans.scale = Vec2(t.scale.x, t.scale.y);
         trans.layer = t.layer;
     }
+
     // Position ----
     vec3 ScriptInterface::GetPosition(Entity e) {
         Vec3 position = m_coord.GetComponent<Transform>(e).pos;
@@ -76,6 +77,27 @@ namespace NightSnack::Scripting {
     }
     void ScriptInterface::SetScale(Entity e, vec2 scal) {
         Vec2& scale = m_coord.ModifyComponent<Transform>(e).scale;
+        scale = Vec2(scal.x, scal.y);
+    }
+
+    // UIbasePos -------
+    vec3 ScriptInterface::GetUIBasePos(Entity e) {
+        Vec3 position = m_coord.GetComponent<Transform>(e).UIbasePos;
+        vec3 result = vec3(position.x, position.y, position.z);
+        return result;
+    }
+    void ScriptInterface::SetUIBasePos(Entity e, vec3 pos) {
+        Vec3& position = m_coord.ModifyComponent<Transform>(e).UIbasePos;
+        position = Vec3(pos.x, pos.y, pos.z);
+    }
+
+    // Scale -------
+    vec2 ScriptInterface::GetUIBaseScale(Entity e) {
+        Vec2 scale = m_coord.GetComponent<Transform>(e).UIbaseScale;
+        return vec2(scale.x, scale.y);
+    }
+    void ScriptInterface::SetUIBaseScale(Entity e, vec2 scal) {
+        Vec2& scale = m_coord.ModifyComponent<Transform>(e).UIbaseScale;
         scale = Vec2(scal.x, scal.y);
     }
 
@@ -459,6 +481,212 @@ namespace NightSnack::Scripting {
 
 
 #pragma endregion
+
+    // --------------------------------------------------------------
+    // Animator Inputs
+    // --------------------------------------------------------------
+#pragma region Animator
+    Animat ScriptInterface::GetAnimator(Entity e) {
+
+        Animator t = m_coord.GetComponent<Animator>(e);
+        Animat result;
+
+        result.currentAnimationClip = t.currentAnimationClip;
+        result.spriteSheetName = t.spriteSheetName;
+        result.currentFrameIndex = t.currentFrameIndex;
+        result.currentTime = t.currentTime;
+        result.playbackSpeed = t.playbackSpeed;
+        result.isPlaying = t.isPlaying;
+        result.isLooping = t.isLooping;
+        result.lastFacingRight = t.lastFacingRight;
+        result.uvTopLeft = t.uvTopLeft;
+        result.uvBottomRight = t.uvBottomRight;
+
+        return result;
+    }
+
+    void ScriptInterface::SetAnimator(Entity e, Animat rend)
+    {
+        Animator& t = m_coord.ModifyComponent<Animator>(e);
+        t.currentAnimationClip = rend.currentAnimationClip;
+        t.spriteSheetName = rend.spriteSheetName;
+        t.currentFrameIndex = rend.currentFrameIndex;
+        t.currentTime = rend.currentTime;
+        t.playbackSpeed = rend.playbackSpeed;
+        t.isPlaying = rend.isPlaying;
+        t.isLooping = rend.isLooping;
+        t.lastFacingRight = rend.lastFacingRight;
+        t.uvTopLeft = rend.uvTopLeft;
+        t.uvBottomRight = rend.uvBottomRight;
+    }
+
+    //---currentAnimationClip---
+    std::string ScriptInterface::GetAnimatorCurrentAnimationClip(Entity e) {
+        return m_coord.GetComponent<Animator>(e).currentAnimationClip;
+    }
+    void ScriptInterface::SetAnimatorCurrentAnimationClip(Entity e, std::string name) {
+        m_coord.GetSystem<AnimationSystem>()->SetCurrentAnimationClip(name, e);
+    }
+
+    //---spriteSheetName---
+    std::string ScriptInterface::GetAnimatorSpriteSheetName(Entity e) {
+        return m_coord.GetComponent<Animator>(e).spriteSheetName;
+    }
+    void ScriptInterface::SetAnimatorSpriteSheetName(Entity e, std::string name) {
+        m_coord.ModifyComponent<Animator>(e).spriteSheetName = name; //May not be needed
+    }
+
+    //---currentFrameIndex---
+    int ScriptInterface::GetAnimatorCurrentFrameIndex(Entity e) {
+        return m_coord.GetComponent<Animator>(e).currentFrameIndex;
+    }
+    void ScriptInterface::SetAnimatorCurrentFrameIndex(Entity e, int index) {
+        m_coord.ModifyComponent<Animator>(e).currentFrameIndex = index;
+    }
+
+    //---currentTime---
+    float ScriptInterface::GetAnimatorCurrentTime(Entity e) {
+        return m_coord.GetComponent<Animator>(e).currentTime;
+    }
+    void ScriptInterface::SetAnimatorCurrentTime(Entity e, float time) {
+        m_coord.ModifyComponent<Animator>(e).currentTime = time;
+    }
+
+    //---playbackSpeed---
+    float ScriptInterface::GetAnimatorPlaybackSpeed(Entity e) {
+        return m_coord.GetComponent<Animator>(e).playbackSpeed;
+    }
+    void ScriptInterface::SetAnimatorPlaybackSpeed(Entity e, float spd) {
+        m_coord.ModifyComponent<Animator>(e).playbackSpeed = spd;
+    }
+
+    //---isPlaying---
+    bool ScriptInterface::GetAnimatorIsPlaying(Entity e) {
+        return m_coord.GetComponent<Animator>(e).isPlaying;
+    }
+    void ScriptInterface::SetAnimatorIsPlaying(Entity e, bool playing) {
+        m_coord.ModifyComponent<Animator>(e).isPlaying = playing;
+    }
+
+    //---isLooping---
+    bool ScriptInterface::GetAnimatorIsLooping(Entity e) {
+        return m_coord.GetComponent<Animator>(e).isLooping;
+    }
+    void ScriptInterface::SetAnimatorIsLooping(Entity e, bool loop) {
+        m_coord.ModifyComponent<Animator>(e).isLooping = loop;
+    }
+
+    //---lastFacingRight---
+    bool ScriptInterface::GetAnimatorLastFacingRight(Entity e) {
+        return m_coord.GetComponent<Animator>(e).lastFacingRight;
+    }
+    void ScriptInterface::SetAnimatorLastFacingRight(Entity e, bool right) {
+        m_coord.ModifyComponent<Animator>(e).lastFacingRight = right;
+    }
+
+    //---uvTopLeft---
+    vec2 ScriptInterface::GetAnimatorUVTopLeft(Entity e) {
+        Vec2 uv = m_coord.GetComponent<Animator>(e).uvTopLeft;
+        return vec2(uv.x, uv.y);
+    }
+    void ScriptInterface::SetAnimatorUVTopLeft(Entity e, vec2 uv) {
+        Vec2& uvComponent = m_coord.ModifyComponent<Animator>(e).uvTopLeft;
+        uvComponent.x = uv.x;
+        uvComponent.y = uv.y;
+    }
+
+    //---uvBottomRight---
+    vec2 ScriptInterface::GetAnimatorUVBottomRight(Entity e) {
+        Vec2 uv = m_coord.GetComponent<Animator>(e).uvBottomRight;
+        return vec2(uv.x, uv.y);
+    }
+    void ScriptInterface::SetAnimatorUVBottomRight(Entity e, vec2 uv) {
+        Vec2& uvComponent = m_coord.ModifyComponent<Animator>(e).uvBottomRight;
+        uvComponent.x = uv.x;
+        uvComponent.y = uv.y;
+    }
+
+#pragma endregion
+
+    // --------------------------------------------------------------
+    // Font Inputs
+    // --------------------------------------------------------------
+#pragma region Font
+    Fon ScriptInterface::GetFont(Entity e) {
+
+        Font t = m_coord.GetComponent<Font>(e);
+        Fon result;
+
+        result.fontType = t.fontType;
+        result.text = t.text;
+        result.fontSize = t.fontSize;
+        result.textColor = t.textColor;
+        result.offsetPosition = t.offsetPosition;
+        return result;
+    }
+
+    void ScriptInterface::SetFont(Entity e, Fon rend)
+    {
+        Font& t = m_coord.ModifyComponent<Font>(e);
+        t.fontType = rend.fontType;
+        t.text = rend.text;
+        t.fontSize = rend.fontSize;
+        t.textColor = rend.textColor;
+        t.offsetPosition = rend.offsetPosition;
+    }
+
+    std::string ScriptInterface::GetFontType(Entity e) {
+        return m_coord.GetComponent<Font>(e).fontType;
+    }
+    void ScriptInterface::SetFontType(Entity e, std::string name) {
+        m_coord.ModifyComponent<Font>(e).fontType = name;
+    }
+
+    std::string ScriptInterface::GetFontText(Entity e) {
+        if (m_coord.HasComponent<Font>(e))
+            return m_coord.GetComponent<Font>(e).text;
+        else
+            return "ERROR!";
+    }
+    void ScriptInterface::SetFontText(Entity e, std::string txt) {
+        m_coord.ModifyComponent<Font>(e).text = txt;
+    }
+
+    float ScriptInterface::GetFontSize(Entity e)
+    {
+        return m_coord.GetComponent<Font>(e).fontSize;
+    }
+    void ScriptInterface::SetFontSize(Entity e, float sz)
+    {
+        m_coord.ModifyComponent<Font>(e).fontSize = sz;
+    }
+
+    vec3 ScriptInterface::GetFontTextColor(Entity e)
+    {
+        Vec3 color = m_coord.GetComponent<Font>(e).textColor;
+        vec3 result = vec3(color.x, color.y, color.z);
+        return result;
+    }
+    void ScriptInterface::SetFontTextColor(Entity e, vec3 col)
+    {
+        m_coord.ModifyComponent<Font>(e).textColor = Vec3(col.x, col.y, col.z);
+    }
+
+    vec3 ScriptInterface::GetFontOffsetPosition(Entity e)
+    {
+        Vec3 pos = m_coord.GetComponent<Font>(e).textColor;
+        vec3 result = vec3(pos.x, pos.y, pos.z);
+        return result;
+    }
+    void ScriptInterface::SetFontOffsetPosition(Entity e, vec3 pos)
+    {
+        m_coord.ModifyComponent<Font>(e).textColor = Vec3(pos.x, pos.y, pos.z);
+    }
+
+
+#pragma endregion
+
+
 
     // --------------------------------------------------------------
     // Key Inputs

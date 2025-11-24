@@ -139,15 +139,10 @@ namespace NightSnack {
 	}
 
 	void TextSystem::Update() {
-
-		//if (!m_coord.GetSystem<ImguiSystem>()->GetEditorActive()) {
-		
 		// Find the main camera and render accordingly
 		Entity mainCam = m_coord.GetSystem<GraphicsSystem>()->FindCamera();
 		if (mainCam == INVALID_ENTITY) return;
 		Draw(mainCam, true);
-
-		//}
 	}
 
 	void TextSystem::Draw(Entity camera, bool isGameCamera) {
@@ -189,10 +184,10 @@ namespace NightSnack {
 				// Translate the position and scale of UI layer objects based on the current screen resolution
 				if (isUILayer) {
 					// By default, the base screen resolution is 1600, 900
-					float ratioPosX = UIpos.x / 1600.f;
-					float ratioPosY = UIpos.y / 900.f;
-					float ratioScaleX = UIscale.x / 1600.f;
-					float ratioScaleY = UIscale.y / 900.f;
+					float ratioPosX = UIpos.x / camInfo.width;
+					float ratioPosY = UIpos.y / camInfo.height;
+					float ratioScaleX = UIscale.x / camInfo.width;
+					float ratioScaleY = UIscale.y / camInfo.height;
 
 					// Get the new position and scaling based on the current screen resolution
 					m_coord.ModifyComponent<Transform>(e).pos.x = ratioPosX * screenW;

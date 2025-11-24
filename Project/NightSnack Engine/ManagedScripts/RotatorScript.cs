@@ -13,14 +13,21 @@ namespace ManagedScripts
             //pos.X = 100;
             //pos.Y = 100;
             //pos.Z = 0;
-            //uint id1 = Engine.CreateEntityArchetype("RedBall", pos);
+            //uint id1 = Engine.CreateEntityArchetype("BlueBallScripting", pos);
             //pos.X = 200;
-            //uint id2 = Engine.CreateEntityArchetype("RedBall", pos);
+            //uint id2 = Engine.CreateEntityArchetype("BlueBallScripting2", pos);
+            //pos.X = 300;
+            //pos.Y = -100;
+            //uint id3 = Engine.CreateEntityArchetype("BlueBallScripting3", pos);
 
             ////Transform Test
-            
+
             ////Engine.SetLayer(id1, LayerType.GAMEUI);
             ////Engine.SetLayer(id2, LayerType.BACKGROUND);
+            //Engine.SetUIBasePos(id1, new Vector3(1, 1, 0));
+            //Engine.SetUIBaseScale(id1, new Vector2(1, 1));
+            //Log($"Ball 1 UI Pos: {Engine.GetUIBasePos(id1)}");
+            //Log($"Ball 1 UI Scale: {Engine.GetUIBaseScale(id1)}");
 
             ////Rigibody Test
             //Vector2 dir;
@@ -53,10 +60,21 @@ namespace ManagedScripts
             ////Renderable test
             //Engine.SetMeshName(id2, "square");
             //Log($"Ball 2 Mesh Name: {Engine.GetMeshName(id2)}");
+            //Engine.SetMaterialName(id2, "../assets\\slime_2_2.png");
             //Log($"Ball 2 Material Name: {Engine.GetMaterialName(id2)}");
-            //Engine.SetIsWireframe(id2 , true);
 
-            //Engine.SetMaterialName(id1, "../assets\\slime_2_2.png");
+            //Engine.SetIsWireframe(id1, true);
+
+            ////Animator Test
+            ////Engine.SetAnimatorCurrentClip(id2, Engine.GetMaterialName(id2)); //Not needed
+            //Engine.SetAnimatorIsPlaying(id2, true);
+
+            ////Font test
+            //Engine.SetFontType(id3, "liberation-mono");
+            //Log($"Ball 3 Font Name: {Engine.GetFontType(id3)}");
+            //Engine.SetFontSize(id3, 3);
+            //Engine.SetFontColor(id3, new Vector3(0, 1, 0));
+
 
             //Log("RotatorScript started!");
             //Log($"Initial rotation: {Rotation}");

@@ -10,7 +10,7 @@
  * This file contains the definition of ImguiSystem which handles the 
  * ImGui user interface for the editor.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -168,10 +168,8 @@ namespace NightSnack {
 					switch (event.inputAction) {
 					case InputEvent::InputAction::ToggleUIEditor:
 						SetEditorEnabled(!m_toggleEditor);
-
 						if (m_toggleEditor) { m_coord.Pause(); }
 						else { m_coord.Unpause(); }
-
 						break;
 					}
 				}
@@ -231,9 +229,9 @@ namespace NightSnack {
 		// Panels Drawing
 		if (m_showHierarchy && m_hierarchyPanel) m_hierarchyPanel->Draw();
 		if (m_showInspector && m_inspectorPanel) m_inspectorPanel->Draw();
-		if (m_showScene && m_scenePanel) m_scenePanel->Draw();
-		if (m_showOptions && m_optionsPanel) m_optionsPanel->Draw();
-		if (m_showAssets && m_assetsPanel) m_assetsPanel->Draw();
+		if (m_showScene && m_scenePanel)		 m_scenePanel->Draw();
+		if (m_showOptions && m_optionsPanel)	 m_optionsPanel->Draw();
+		if (m_showAssets && m_assetsPanel)		 m_assetsPanel->Draw();
 
 
 		// render
@@ -312,7 +310,7 @@ namespace NightSnack {
 			ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
 			ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
 			
-			// Split the dockspace into 4 regions
+			// Split the dockspace into regions
 			ImGuiID dock_id_left, dock_id_right, dock_id_top, dock_id_bottom, dock_id_center;
 			ImGuiID dock_id_left_top, dock_id_left_bottom, dock_id_center_right, dock_id_bottom_right, dock_id_right_top, dock_id_right_bottom;
 

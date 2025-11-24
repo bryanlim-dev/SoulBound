@@ -76,6 +76,7 @@ namespace NightSnack {
         */
         /************************************************************************/
         void Update() override {
+            if (m_coord.IsPaused()) return;
 
             // Pause movement updates if in Physics debug mode
             if (debugMode && !stepRequest) {

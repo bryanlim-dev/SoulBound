@@ -153,7 +153,7 @@ namespace NightSnack {
         bool lastFacingRight{ false };
         // The active region of the texture to sample from
         Vec2 uvTopLeft{ 0.f, 0.f };
-        Vec2 uvBottomRight{ 1.f, 1.f };
+        Vec2 uvBottomRight{ 1.f, 1.f }; 
     };
 
     struct Font {

@@ -81,6 +81,15 @@ namespace NightSnack {
     // updates the fmod system
     void AudioSystem::Update()
     {
+        if (m_coord.IsPaused()) {
+            if (IsBGMPlaying()) {
+                PauseBGM();
+            }
+            return;
+        } else if (!IsBGMPlaying()) {
+            ResumeBGM();
+        }
+
         if (!m_fmodSystem.expired())
             m_fmodSystem.lock()->update();
     }
