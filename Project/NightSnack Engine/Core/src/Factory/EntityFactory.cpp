@@ -217,7 +217,7 @@ namespace NightSnack {
         // Clear prefab keys.
         m_prefabKeys.clear();
         // Reread json files from "GameData/Prefabs", assign keys into m_prefabKeys.
-        std::filesystem::path path = std::filesystem::canonical(RESOURCE_PATH + std::string{ "GameData/Prefabs" });
+        std::filesystem::path path = std::filesystem::canonical(PREFABS_PATH);
         LoadJsonFolder(m_prefabKeys, path.string());
     }
     void EntityFactory::ReloadLevels() {
@@ -228,7 +228,7 @@ namespace NightSnack {
         // Clear level keys.
         m_levelKeys.clear();
         // Reread json files from "GameData/Levels", assign keys into m_levelKeys.
-        std::filesystem::path path = std::filesystem::canonical(RESOURCE_PATH + std::string{ "GameData/Levels" });
+        std::filesystem::path path = std::filesystem::canonical(LEVELS_PATH);
         LoadJsonFolder(m_levelKeys, path.string());
     }
 
@@ -256,7 +256,7 @@ namespace NightSnack {
     bool EntityFactory::SaveLevel(std::string const& levelName, bool overwrite) {
 
         // Output file path
-        std::filesystem::path outPath = "GameData/Levels" + (levelName + ".json");
+        std::filesystem::path outPath = std::filesystem::path(LEVELS_PATH) / (levelName + ".json");
 
         // Check if a prefab already exists with the same name
         if (std::filesystem::exists(outPath) && !overwrite) {
@@ -328,7 +328,7 @@ namespace NightSnack {
     bool EntityFactory::SaveAsPrefab(Entity e, std::string const& prefabName, bool overwrite) {
 
         // Output file path
-        std::filesystem::path outPath = "GameData/Prefabs" + (prefabName + ".json");
+        std::filesystem::path outPath = std::filesystem::path(PREFABS_PATH) / (prefabName + ".json");
 
         // Check if a prefab already exists with the same name
         if (std::filesystem::exists(outPath) && !overwrite) {

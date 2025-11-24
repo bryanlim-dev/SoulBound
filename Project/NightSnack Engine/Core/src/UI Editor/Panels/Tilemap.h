@@ -30,7 +30,9 @@ namespace NightSnack
         int tileRows = 8;
         int tileCols = 8;
         int selectedTile = -1; // index of selected tile
-        ImTextureID tileTextureID{};
+        ImTextureID tileTextureID;
+        std::shared_ptr<Texture> tileTextureObj;
+
 
 
         /************************************************************************/
@@ -165,7 +167,8 @@ namespace NightSnack
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE"))
             {
                 const char* droppedPath = static_cast<const char*>(payload->Data);
-                tileTexturePath = droppedPath;
+                std::filesystem::path absPath = std::filesystem::absolute(droppedPath);
+                tileTexturePath = absPath.string();
 
                 // Load texture using ResourceManager
                 auto resourceMgr = coord.GetSystem<ResourceManager>();
@@ -175,7 +178,8 @@ namespace NightSnack
                     resourceMgr->LoadImage(tileTexturePath, imageKey);
                     int width, height, channels;
                     unsigned char* pixels = resourceMgr->GetImage(imageKey, width, height, channels);
-                    if (pixels) {
+                    if (pixels)
+                    {
                         GLuint texID = 0;
                         glGenTextures(1, &texID);
                         glBindTexture(GL_TEXTURE_2D, texID);

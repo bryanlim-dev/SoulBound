@@ -24,6 +24,7 @@
 #include "Panels/AllPanels.h"
 
 #include "Systems/Application/Application.h"
+#include "GameLogic/SceneManager.h"
 
 namespace NightSnack {
 
@@ -267,13 +268,7 @@ namespace NightSnack {
 
 	// Resets the game to initial state
 	inline void ImguiSystem::ResetGame() {
-		auto factory = m_coord.GetSystem<EntityFactory>();
-		if (factory)
-		{
-			factory->UnloadLevel();
-			factory->LoadLevel("DefaultLevel");
-			m_scenePanel->CreateEditorCamera();
-		}
+		//m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
 	}
 
 	// Sets up the main dockspace for the editor panels
@@ -407,6 +402,7 @@ namespace NightSnack {
 					{
 						m_isPlaying = true;
 						SetSimulationPaused(false);
+						m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
 					}
 				}
 				else
@@ -434,12 +430,12 @@ namespace NightSnack {
 					ImGui::EndDisabled();
 				}
 
-				// Reset
-				if (ImGui::MenuItem("Reset"))
+				// Stop
+				if (ImGui::MenuItem("Stop"))
 				{
 					m_isPlaying = false;
 					SetSimulationPaused(true);
-					ResetGame();
+					m_coord.GetSystem<Scene::SceneManager>()->RestoreLevel();
 				}
 
 				ImGui::EndMenu();
@@ -454,6 +450,7 @@ namespace NightSnack {
 			Init();
 
 			m_scenePanel->ResetTexture();
+			m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
 		}
 		else if (!enabled && ImGui::GetCurrentContext()) {
 			// Destroys Editor Camera

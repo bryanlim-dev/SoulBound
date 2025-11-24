@@ -1199,8 +1199,8 @@ namespace NightSnack
 		Collider c;
 		c.shape = ShapeType::AABB;
 		c.type = ColliderType::Ground;
-		//c.width = grid;
-		//c.height = grid;
+		c.width = grid;
+		c.height = grid;
 		m_coord.AddComponent(tileEntity, c);
 
 		// Update material texture of tile
@@ -1266,8 +1266,8 @@ namespace NightSnack
 		drawList->AddTriangleFilled(arrowTipY, arrowBaseL_Y, arrowBaseR_Y, IM_COL32(0, 255, 0, 255));
 
 		// Rotation Circle (blue)
-		ImVec2 delta = ImVec2(mouse.x - center.x, mouse.y - center.y);
-		float dist = sqrtf(delta.x * delta.x + delta.y * delta.y);
+		ImVec2 deltaRot = ImVec2(mouse.x - center.x, mouse.y - center.y);
+		float dist = sqrtf(deltaRot.x * deltaRot.x + deltaRot.y * deltaRot.y);
 		float distToCircle = std::abs(dist - circleRadius);
 		bool hoverRot = distToCircle < 8.0f;
 		ImU32 rotColor = hoverRot ? IM_COL32(100, 100, 255, 255) : IM_COL32(0, 128, 255, 180);
@@ -1302,33 +1302,33 @@ namespace NightSnack
 		}
 		if (m_gizmoDragging && ImGui::IsMouseDown(ImGuiMouseButton_Left))
 		{
-			ImVec2 delta1 = ImVec2(mouse.x - m_gizmoDragStartMouse.x, mouse.y - m_gizmoDragStartMouse.y);
-			auto& t = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
+			ImVec2 delta = ImVec2(mouse.x - m_gizmoDragStartMouse.x, mouse.y - m_gizmoDragStartMouse.y);
+			auto& trans = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
 			if (m_gizmoActivePart == GizmoPart::MoveX)
 			{
-				t.pos.x = m_gizmoStartValue + delta1.x * (worldRight - worldLeft) / imageSize.x;
+				trans.pos.x = m_gizmoStartValue + delta.x * (worldRight - worldLeft) / imageSize.x;
 			}
 			else if (m_gizmoActivePart == GizmoPart::MoveY)
 			{
-				t.pos.y = m_gizmoStartValue - delta1.y * (worldTop - worldBottom) / imageSize.y;
+				trans.pos.y = m_gizmoStartValue - delta.y * (worldTop - worldBottom) / imageSize.y;
 			}
 			else if (m_gizmoActivePart == GizmoPart::Rotate)
 			{
-				ImVec2 center1 = WorldToScreen(t.pos.x, t.pos.y, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
-				float startAngle = atan2f(m_gizmoDragStartMouse.y - center1.y, m_gizmoDragStartMouse.x - center1.x);
-				float currAngle = atan2f(mouse.y - center1.y, mouse.x - center1.x);
+				ImVec2 centerTrans = WorldToScreen(trans.pos.x, trans.pos.y, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+				float startAngle = atan2f(m_gizmoDragStartMouse.y - centerTrans.y, m_gizmoDragStartMouse.x - centerTrans.x);
+				float currAngle = atan2f(mouse.y - centerTrans.y, mouse.x - centerTrans.x);
 				constexpr float RAD2DEG = 180.0f / 3.14159265f;
-				t.rot = m_gizmoStartValue - (currAngle - startAngle) * RAD2DEG;
+				trans.rot = m_gizmoStartValue - (currAngle - startAngle) * RAD2DEG;
 			}
 			else if (m_gizmoActivePart == GizmoPart::ScaleX)
 			{
 				float scaleDelta = delta.x * (worldRight - worldLeft) / imageSize.x;
-				t.scale.x = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+				trans.scale.x = std::max(1.0f, m_gizmoStartValue + scaleDelta);
 			}
 			else if (m_gizmoActivePart == GizmoPart::ScaleY)
 			{
 				float scaleDelta = -delta.y * (worldTop - worldBottom) / imageSize.y;
-				t.scale.y = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+				trans.scale.y = std::max(1.0f, m_gizmoStartValue + scaleDelta);
 			}
 		}
 		if (m_gizmoDragging && ImGui::IsMouseReleased(ImGuiMouseButton_Left))

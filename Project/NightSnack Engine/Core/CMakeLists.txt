@@ -33,6 +33,7 @@ target_compile_definitions(Core
         RESOURCE_PATH=\"../../assets/\"
         SCRIPTS_PATH=\"../../ManagedScripts/\"
         PREFABS_PATH=\"../../assets/GameData/Prefabs/\"
+	LEVELS_PATH=\"../../assets/GameData/Levels/\"
 )
 
 # Include directories

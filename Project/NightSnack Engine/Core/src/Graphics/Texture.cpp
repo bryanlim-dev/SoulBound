@@ -78,4 +78,12 @@ namespace NightSnack {
 		return m_rows;
 	}
 
+	int Texture::GetWidth() const {
+		return m_width;
+	}
+
+	int Texture::GetHeight() const {
+		return m_height;
+	}
+
 }	// NightSnack
