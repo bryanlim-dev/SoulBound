@@ -28,6 +28,17 @@ namespace ManagedScripts
             get => Engine.GetScale(EntityId);
             set => Engine.SetScale(EntityId, value);
         }
+        protected Vector3 UIBasePos
+        {
+            get => Engine.GetUIBasePos(EntityId);
+            set => Engine.SetUIBasePos(EntityId, value);
+        }
+        
+        protected Vector2 UIBaseScale
+        {
+            get => Engine.GetUIBaseScale(EntityId);
+            set => Engine.SetUIBaseScale(EntityId, value);
+        }
 
         protected LayerType Layer
         {
@@ -171,7 +182,105 @@ namespace ManagedScripts
             get => Engine.GetIsWireframe(EntityId);
             set => Engine.SetIsWireframe(EntityId, value);
         }
-        #endregion  
+        #endregion
+
+        #region Animator
+        //protected string AnimatorCurrentClip
+        //{
+        //    get => Engine.GetAnimatorCurrentClip(EntityId);
+        //    set => Engine.SetAnimatorCurrentClip(EntityId, value);
+        //}
+
+        //protected string AnimatorSpriteSheet
+        //{
+        //    get => Engine.GetAnimatorSpriteSheet(EntityId);
+        //    set => Engine.SetAnimatorSpriteSheet(EntityId, value);
+        //}
+
+        protected int AnimatorCurrentFrameIndex
+        {
+            get => Engine.GetAnimatorCurrentFrameIndex(EntityId);
+            set => Engine.SetAnimatorCurrentFrameIndex(EntityId, value);
+        }
+
+        protected float AnimatorCurrentTime
+        {
+            get => Engine.GetAnimatorCurrentTime(EntityId);
+            set => Engine.SetAnimatorCurrentTime(EntityId, value);
+        }
+
+        protected float AnimatorCurrentPlaybackSpeed
+        {
+            get => Engine.GetAnimatorCurrentPlaybackSpeed(EntityId);
+            set => Engine.SetAnimatorCurrentPlaybackSpeed(EntityId, value);
+        }
+
+        protected bool AnimatorIsPlaying
+        {
+            get => Engine.GetAnimatorIsPlaying(EntityId);
+            set => Engine.SetAnimatorIsPlaying(EntityId, value);
+        }
+
+        protected bool AnimatorIsLooping
+        {
+            get => Engine.GetAnimatorIsLooping(EntityId);
+            set => Engine.SetAnimatorIsLooping(EntityId, value);
+        }
+
+        protected bool AnimatorLastFacingRight
+        {
+            get => Engine.GetAnimatorLastFacingRight(EntityId);
+            set => Engine.SetAnimatorLastFacingRight(EntityId, value);
+        }
+
+        //protected Vector2 AnimatorUVTopLeft
+        //{
+        //    get => Engine.GetAnimatorUVTopLeft(EntityId);
+        //    set => Engine.SetAnimatorUVTopLeft(EntityId, value);
+        //}
+
+        //protected Vector2 AnimatorUVBottomRight
+        //{
+        //    get => Engine.GetAnimatorUVBottomRight(EntityId);
+        //    set => Engine.SetAnimatorUVTBottomRight(EntityId, value);
+        //}
+
+
+
+
+        #endregion
+
+        #region Font
+        protected string FontType
+        {
+            get => Engine.GetFontType(EntityId);
+            set => Engine.SetFontType(EntityId, value);
+        }
+        protected string FontText
+        {
+            get => Engine.GetFontText(EntityId);
+            set => Engine.SetFontText(EntityId, value);
+        }
+        protected float FontSize
+        {
+            get => Engine.GetFontSize(EntityId);
+            set => Engine.SetFontSize(EntityId, value);
+        }
+        protected Vector3 FontColor
+        {
+            get => Engine.GetFontColor(EntityId);
+            set => Engine.SetFontColor(EntityId, value);
+        }
+
+        protected Vector3 FontOffsetPosition
+        {
+            get => Engine.GetFontOffsetPosition(EntityId);
+            set => Engine.SetFontOffsetPosition(EntityId, value);
+        }
+
+
+
+        #endregion
 
         protected float DeltaTime => Engine.DeltaTime;
         //protected float Time => Engine.Time;

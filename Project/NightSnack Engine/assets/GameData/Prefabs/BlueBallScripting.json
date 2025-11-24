@@ -1,0 +1,31 @@
+{
+    "Collider": {
+        "height": 200.0,
+        "isStatic": false,
+        "shape": "AABB",
+        "type": "Solid",
+        "width": 200.0
+    },
+    "Color": {
+        "a": 0.0,
+        "b": 1.0,
+        "g": 0.0,
+        "r": 1.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "ColorMat",
+        "meshName": "circle"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": false
+    },
+    "Animator": {
+        "isLooping": true,
+        "isPlaying": true,
+        "playbackSpeed": 1.0,
+        "spriteSheetName": ""
+    }
+
+}
