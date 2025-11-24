@@ -331,6 +331,37 @@ namespace ManagedScripts
         #endregion
 
         // ----------------------------
+        // Camera Internal for Scripts
+        // ----------------------------
+        #region Camera
+        //isMainCam
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetCameraIsMain_Internal(uint entityId, out bool main);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCameraIsMain_Internal(uint entityId, ref bool main);
+
+
+        //zoom
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetCameraZoom_Internal(uint entityId, out float zoom);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCameraZoom_Internal(uint entityId, ref float zoom);
+
+        //width
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetCameraWidth_Internal(uint entityId, out float width);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCameraWidth_Internal(uint entityId, ref float width);
+
+        //height
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetCameraHeight_Internal(uint entityId, out float height);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCameraHeight_Internal(uint entityId, ref float height);
+
+        #endregion
+
+        // ----------------------------
         // Key/Buttons Internal for Scripts
         // ----------------------------
         #region Key/Buttons
@@ -885,6 +916,13 @@ namespace ManagedScripts
         {
             SetFontOffsetPosition_Internal(entityId, ref position);
         }
+
+        #endregion
+
+        // ----------------------------
+        // Camera API for Scripts
+        // ----------------------------
+        #region Camera
 
         #endregion
 

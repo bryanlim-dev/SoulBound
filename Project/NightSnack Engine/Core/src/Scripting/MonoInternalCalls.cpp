@@ -467,7 +467,6 @@ extern "C" {
     }
 #pragma endregion
 
-
     // --------------------------------------------------------------
     
 #pragma region Font
@@ -523,6 +522,12 @@ extern "C" {
         if (!g_scriptInterface || !pos) { return; }
         g_scriptInterface->SetFontOffsetPosition(id, *pos);
     }
+#pragma endregion
+
+    // --------------------------------------------------------------
+    
+#pragma region Camera
+
 #pragma endregion
 
     // --------------------------------------------------------------
