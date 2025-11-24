@@ -103,10 +103,10 @@ namespace NightSnack {
                         pos.y += velocity.y * FixedDT;
 
                         // Limit movement to borders of screen;
-                        if (pos.y > m_coord.GetWindowHeight() / 2.f) { pos.y = m_coord.GetWindowHeight() / 2.f; }
-                        if (pos.y < -m_coord.GetWindowHeight() / 2.f) { pos.y = -m_coord.GetWindowHeight() / 2.f; }
-                        if (pos.x > m_coord.GetWindowWidth() / 2.f) { pos.x = m_coord.GetWindowWidth() / 2.f; }
-                        if (pos.x < -m_coord.GetWindowWidth() / 2.f) { pos.x = -m_coord.GetWindowWidth() / 2.f; }
+                        //if (pos.y > m_coord.GetWindowHeight() / 2.f) { pos.y = m_coord.GetWindowHeight() / 2.f; }
+                        //if (pos.y < -m_coord.GetWindowHeight() / 2.f) { pos.y = -m_coord.GetWindowHeight() / 2.f; }
+                        //if (pos.x > m_coord.GetWindowWidth() / 2.f) { pos.x = m_coord.GetWindowWidth() / 2.f; }
+                        //if (pos.x < -m_coord.GetWindowWidth() / 2.f) { pos.x = -m_coord.GetWindowWidth() / 2.f; }
 
                         // Do more stuff here if necessary...
 
