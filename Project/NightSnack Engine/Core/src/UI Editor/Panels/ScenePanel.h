@@ -389,6 +389,12 @@ namespace NightSnack
 		/************************************************************************/
 		void ResetTexture();
 
+		/************************************************************************/
+		/*!
+		\brief
+			Creates the editor camera entity.
+		*/
+		/************************************************************************/
 		void CreateEditorCamera();
 
 		/************************************************************************/
@@ -398,6 +404,8 @@ namespace NightSnack
 		*/
 		/************************************************************************/
 		void DestroyEditorCamera();
+
+		void DisableEditorCameraIsMain();
 
 	private:
 		GLuint m_sceneTexture = 0;
@@ -729,6 +737,12 @@ namespace NightSnack
 	// Create the editor camera entity.
 	inline void ScenePanel::CreateEditorCamera()
 	{
+		// Remove existing editor camera entity if any
+		if (m_editorCameraEntity != INVALID_ENTITY && m_coord.GetLivingEntities().count(m_editorCameraEntity))
+		{
+			DestroyEditorCamera();
+		}
+
 		// Create a dedicated editor camera entity for Scene
 		auto factory = m_coord.GetSystem<EntityFactory>();
 		if (factory)
@@ -762,6 +776,17 @@ namespace NightSnack
 		{
 			m_coord.DestroyEntity(m_editorCameraEntity);
 			m_editorCameraEntity = INVALID_ENTITY;
+		}
+	}
+
+	// Disable the editor camera's main camera status.
+	inline void ScenePanel::DisableEditorCameraIsMain()
+	{
+		if (m_editorCameraEntity != INVALID_ENTITY &&
+			m_coord.GetLivingEntities().count(m_editorCameraEntity))
+		{
+			auto& cam = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
+			cam.isMainCam = false;
 		}
 	}
 
@@ -1186,7 +1211,6 @@ namespace NightSnack
 
 		Renderable r;
 		r.meshName = "square";
-		r.materialName = "tile_mat_" + std::to_string(tileEntity);
 		r.isWireframe = false;
 		r.wasModified = true;
 		m_coord.AddComponent(tileEntity, r);
@@ -1211,7 +1235,8 @@ namespace NightSnack
 		}
 
 		// Save tile as prefab if not already existing
-		std::string prefabName = "Tile_" + std::to_string(currentTile);
+		auto& tileR = m_coord.GetComponent<Renderable>(tileEntity);
+		std::string prefabName = "Tile_" + tileR.materialName;
 		factory->SaveAsPrefab(tileEntity, prefabName, true);
 
 		// Record painted tile
