@@ -179,6 +179,56 @@
             "Transform": {
                 "Layer": "GameLayer",
                 "Position": {
+                    "x": 250.0,
+                    "y": -200.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 100.0
+                }
+            },
+            "prefab": "Ghost"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": 750.0,
+                    "y": 150.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 100.0
+                }
+            },
+            "prefab": "Ghost"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
                     "x": 100.0,
                     "y": -245.0,
                     "z": 0.0

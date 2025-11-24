@@ -74,8 +74,6 @@ namespace NightSnack
             {
                 m_prefabMats.insert({ n, m });
             }
-            std::cout << "\n\nBREAKPOINT 1 \n\n";
-
         }
 
         /**
@@ -171,7 +169,7 @@ namespace NightSnack
         */
         void DrawToolbar()
         {
-            // Back button
+            // back button
             if (m_currentDirectory != m_assetsRoot && m_currentDirectory != m_scriptsRoot)
             {
                 if (ImGui::Button("<- Back"))
@@ -185,10 +183,13 @@ namespace NightSnack
             ImGui::Text("Path: %s", m_currentDirectory.string().c_str());
 
             ImGui::SameLine(ImGui::GetWindowWidth() - 100);
+
             if (ImGui::Button("Refresh"))
             {
                 m_loadedTextures.clear();
                 m_textureObjects.clear();
+
+                //std::cout << "Refreshed" << std::endl;
             }
         }
 
@@ -412,7 +413,7 @@ namespace NightSnack
         */
         void DrawItemThumbnail(const AssetItem& item)
         {
-            std::cout << "[AssetPanel] item fullpath: " << item.fullPath.filename().string() << '\n';
+            //std::cout << "[AssetPanel] item fullpath: " << item.fullPath.filename().string() << '\n';
 
 
             switch (item.type)

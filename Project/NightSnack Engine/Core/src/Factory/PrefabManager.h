@@ -124,7 +124,11 @@ namespace NightSnack {
 				// If found, use lambda function to insert data;
 				if (it != m_componentLoaders.end()) {
 					it->second(e, compData, m_coord);
-					//std::cerr << "Updated Component [" << compName << "] to Entity: " << e << '\n';
+					std::cerr << "Updated Component [" << compName << "] to Entity: " << e << '\n';
+					for (auto c : compData) {
+						std::cerr << c << "\n";
+					}
+					std::cerr << "\n";
 				}
 				else {
 					std::cerr << "Unknown component: " << compName << "\n";

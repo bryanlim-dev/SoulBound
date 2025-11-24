@@ -158,16 +158,19 @@ namespace NightSnack {
         // Unload old prefab version
         size_t key = 0;
         key = m_prefabKeys[prefab];
-        m_toBeUnloaded.emplace_back(key);
 
         // Read new version
-        std::string filepath = RESOURCE_PATH + std::string{ "GameData/Prefabs" } + prefab + ".json";
-        LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(filepath, key);
-        if (result == LOAD_FAIL_BADPATH) {
-            std::cerr << "Failed to read json file: " << filepath << '\n';
+        std::filesystem::path path = RESOURCE_PATH + std::string{ "GameData/Prefabs/" } + prefab + ".json";
+        std::ifstream ifs(path);
+        if (!ifs) {
+			std::cerr << "Failed to read json file: " << path << '\n';
+			return;
         }
-        m_prefabKeys[prefab] = key;
-        json const& j = GetArchetypes(key);
+        json j;
+        ifs >> j;
+
+		// Update primary json stored in ResourceManager
+		m_coord.GetSystem<ResourceManager>()->UpdateJson(key, j);
 
         // Update entities which use this prefab
         for (auto it = entities.first; it != entities.second; ++it ) {
@@ -175,6 +178,8 @@ namespace NightSnack {
             Entity e = it->second;
             m_prefabManager.UpdateComponents(e, j);
         }
+
+        Create(prefab, Transform{ Vec3{}, 0.f, Vec2{50.f,50.f} });
     }
 
     json const& EntityFactory::GetArchetypes(size_t key) const {
