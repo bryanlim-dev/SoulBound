@@ -32,6 +32,7 @@ namespace NightSnack {
         }
         m_toBeDestroyed.clear();
 
+        // Unload discarded json files
         for (size_t key : m_toBeUnloaded) {
             m_coord.GetSystem<ResourceManager>()->UnloadJson(key);
         }
@@ -58,6 +59,7 @@ namespace NightSnack {
 
         m_coord.ModifyComponent<Transform>(e) = trans;
         entityToPrefab[e] = name;
+        prefabToEntities.insert({ name, e });
 
         m_coord.BufferEntitySignature(e);
 
@@ -74,6 +76,7 @@ namespace NightSnack {
 
         m_coord.ModifyComponent<Transform>(e) = trans;
         entityToPrefab[e] = name;
+        prefabToEntities.insert({ name, e });
 
         m_coord.BufferEntitySignature(e);
 
@@ -91,6 +94,7 @@ namespace NightSnack {
 
         m_coord.ModifyComponent<Transform>(e) = trans;
         entityToPrefab[e] = name;
+        prefabToEntities.insert({name, e});
 
         m_coord.BufferEntitySignature(clone);
 
@@ -137,12 +141,6 @@ namespace NightSnack {
                 materials.insert({ it->first, mat });
             }
         }
-        //for (auto& [name, data] : GetArchetypes().items()) {
-        //	if (data.contains("Renderable")) {
-        //		std::string mat = data["Renderable"]["materialName"];
-        //		materials.insert({ name, mat });
-        //	}
-        //}
         return materials;
     }
 
@@ -152,6 +150,33 @@ namespace NightSnack {
             return it->second;
         }
         return "UnknownPrefab";
+    }
+
+    void EntityFactory::UpdatePrefab(std::string const& prefab) {
+        auto entities = prefabToEntities.equal_range(prefab);
+
+        // Unload old prefab version
+        size_t key = 0;
+        key = m_prefabKeys[prefab];
+        m_toBeUnloaded.emplace_back(key);
+
+        // Read new version
+        std::string filepath = RESOURCE_PATH + std::string{ "GameData/Prefabs" } + prefab + ".json";
+        LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(filepath, key);
+        if (result == LOAD_FAIL_BADPATH) {
+            std::cerr << "Failed to read json file: " << filepath << '\n';
+        }
+        m_prefabKeys[prefab] = key;
+
+        // Update entities which use this prefab
+        for (auto it = entities.first; it != entities.second; ++it ) {
+
+            Entity e = it->second;
+
+            Transform t = m_coord.GetComponent<Transform>(e);
+            m_toBeDestroyed.insert(e);
+            Create(prefab, t);
+        }
     }
 
     json const& EntityFactory::GetArchetypes(size_t key) const {
@@ -207,7 +232,7 @@ namespace NightSnack {
     // Loads all json files within a folder given a directory path
     void EntityFactory::LoadJsonFolder(std::unordered_map<std::string, size_t>& map, std::string const& path) {
 
-        std::cout << "[EntityFactory] Reading Json Folder '" << path << "'\n";
+        //std::cout << "[EntityFactory] Reading Json Folder '" << path << "'\n";
 
         // Iterate through entries in directory.
         for (auto const& entry : std::filesystem::directory_iterator(path))
@@ -215,6 +240,7 @@ namespace NightSnack {
             size_t key = 0;
             //std::cout << "[Entity Factory] Attempting to read: " << entry.path() << '\n';
             LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(entry.path().string(), key);
+            //std::cout << "[EntityFactory] entry.path: " << entry.path() << '\n';
             if (result == LOAD_FAIL_BADPATH) {
                 std::cerr << "Failed to read json file: " << entry.path() << '\n';
                 continue;

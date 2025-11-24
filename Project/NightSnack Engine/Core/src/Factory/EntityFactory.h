@@ -77,6 +77,8 @@ namespace NightSnack {
 		// Resets m_levelKeys and loads all json files in "GameData/Levels"
 		void ReloadLevels();
 
+		void UpdatePrefab(std::string const& prefab);
+
 		// Saves all entities in the current level
 		bool SaveLevel(std::string const& levelName, bool overwrite);
 		// Creates entities found in a level (levelName does not have prefix, just "DefaultLevel" or "Level0" etc...)
