@@ -222,6 +222,7 @@ namespace NightSnack {
 	}
 
 	void ApplicationSystem::WindowMaximizeCallback(GLFWwindow* window, int maximized) {
+		(void)window;
 		// Only check if the user press the maximize window button
 		if (maximized && !m_appIsFullscreen) {
 			EnterFullscreen();

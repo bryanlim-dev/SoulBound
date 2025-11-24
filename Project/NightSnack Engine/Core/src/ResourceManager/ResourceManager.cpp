@@ -257,7 +257,7 @@ namespace NightSnack {
 			return;
 		}
 
-		int orginalHeight = m_resourceImageMap[orginalKey]->Height();
+		//int orginalHeight = m_resourceImageMap[orginalKey]->Height();
 		int orginalWidth = m_resourceImageMap[orginalKey]->Width();
 		int channels = m_resourceImageMap[orginalKey]->Channels();
 		unsigned char* orginalImg = m_resourceImageMap[orginalKey]->Image();
@@ -391,7 +391,7 @@ namespace NightSnack {
 #pragma endregion
 
 #pragma region Json
-	LOAD_RESULT ResourceManager::LoadJson(std::string filePath, std::size_t& jsonKey)
+	LOAD_RESULT ResourceManager::LoadJson(std::string filePath, std::size_t& jsonKey, bool overwrite)
 	{
 		//std::cout << "RM: ";
 
@@ -402,9 +402,9 @@ namespace NightSnack {
 		jsonKey = ConstructMapKey(fp.string());
 
 		//Check if resource alr exists
-		if (m_resourceJsonMap.find(jsonKey) != m_resourceJsonMap.end())
+		if (m_resourceJsonMap.find(jsonKey) != m_resourceJsonMap.end() && !overwrite)
 		{
-			//std::cout << filePath << " already exists" << std::endl;
+			std::cout << filePath << " already exists" << std::endl;
 
 			//Check if it was flagged for deletion
 			if (m_resourceJsonMap[jsonKey]->FlaggedForDeletion())
@@ -425,7 +425,7 @@ namespace NightSnack {
 		//This checks if it is loaded or now
 		if (!newResource->Loaded())
 		{
-			//std::cout << "Failed to load json" << std::endl;
+			std::cout << "Failed to load json" << std::endl;
 
 			return LOAD_FAIL_BADPATH;
 		}
@@ -471,6 +471,11 @@ namespace NightSnack {
 		ResourceJson* jsn = GetJsonResource(jsonKey);
 		return jsn->GetJsonRaw();
 	}
+
+void ResourceManager::UpdateJson(size_t key, nlohmann::json const& newJson)
+{
+	m_resourceJsonMap[key]->GetJsonRaw() = newJson;
+}
 
 	ResourceJson* ResourceManager::GetJsonResource(const std::size_t jsonKey)
 	{
@@ -948,7 +953,7 @@ namespace NightSnack {
 	void ResourceManager::DeleteFlaggedResources()
 	{
 		//This keeps changing so auto of the vec
-		for (auto resourcePair : m_deletionVec)
+		for (auto& resourcePair : m_deletionVec)
 		{
 			//If it was unflagged somewhere inbetween do not delete
 

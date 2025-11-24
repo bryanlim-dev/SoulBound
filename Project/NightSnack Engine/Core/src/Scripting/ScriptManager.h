@@ -28,7 +28,7 @@
 
 namespace NightSnack::Scripting {
 
-	class CORE_API ScriptManager : public ISystem {
+	class ScriptManager : public ISystem {
 
 	public:
 		/************************************************************************/

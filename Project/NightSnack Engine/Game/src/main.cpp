@@ -26,18 +26,9 @@ int main()
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	// Create Core engine
-	NightSnack::CoreEngine core;
+	NightSnack::CoreApp core;
 	core.StartUp("Data/WindowConfig.json");
 	core.Run();
- 	core.Terminate();
-
-	//std::cout << "Current directory: " << std::filesystem::current_path().string() << '\n';
-	//std::cout << RESOURCE_PATH << '\n';
-	//	
-	//std::filesystem::path fp = std::filesystem::canonical(
-	//	std::filesystem::current_path() / RESOURCE_PATH
-	//);
-	//std::cout << "Assets dir: " << fp << '\n';
 
 	return 0;
 

@@ -30,7 +30,7 @@ namespace NightSnack
         int tileRows = 8;
         int tileCols = 8;
         int selectedTile = -1; // index of selected tile
-        ImTextureID tileTextureID;
+        ImTextureID tileTextureID{};
 
 
         /************************************************************************/
@@ -74,7 +74,7 @@ namespace NightSnack
         */
         /************************************************************************/
         void DrawTilemapOverlay(const ImVec2& imageTopLeft, const ImVec2& imageSize,
-            float worldLeft, float worldRight, float worldBottom, float worldTop);
+            float worldLeft, float worldRight, float worldBottom, float worldTop) const;
 
         /************************************************************************/
         /*!
@@ -130,7 +130,7 @@ namespace NightSnack
     }
 
     inline void Tilemap::DrawTilemapOverlay(const ImVec2& imageTopLeft, const ImVec2& imageSize,
-        float worldLeft, float worldRight, float worldBottom, float worldTop)
+        float worldLeft, float worldRight, float worldBottom, float worldTop) const
 
     {
         if (!tileOverlayEnabled) return;

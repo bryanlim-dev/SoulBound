@@ -87,9 +87,9 @@ namespace NightSnack {
 					case InputEvent::InputAction::ToggleInstancedRendering:
 						m_enableInstancedRendering = !m_enableInstancedRendering;
 						break;
-					case InputEvent::InputAction::CrashTest:
-						CrashLogger::ForceCrash("Forced crash from GraphicsSystem for testing");
-						break;
+					//case InputEvent::InputAction::CrashTest:
+					//	CrashLogger::ForceCrash("Forced crash from GraphicsSystem for testing");
+					//	break;
 					}
 				}
 			});
@@ -502,7 +502,7 @@ namespace NightSnack {
 		/************************************************************************/
 		Vec3 ScreenToWorld(Vec3 const& screenPos);
 
-		bool ScreenSizeChanged();
+		bool ScreenSizeChanged() const noexcept;
 
 		void TranslateUIEntities(Entity mainCam);
 

@@ -75,6 +75,7 @@ namespace NightSnack {
 	ResourceImage::ResourceImage(const std::string& filePath, unsigned char orginalUncroppedImaged, int width, int height, int channels)
 		: Resource(filePath, 0), m_imageData(nullptr), m_height(height), m_width(width), m_channels(channels)
 	{
+		(void)orginalUncroppedImaged;
 		//Allocate space for data
 		m_imageData = (unsigned char*)malloc(m_width * m_height * m_channels * sizeof(unsigned char));
 

@@ -10,7 +10,7 @@
  * This file contains the definition of ImguiSystem which handles the 
  * ImGui user interface for the editor.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -168,10 +168,8 @@ namespace NightSnack {
 					switch (event.inputAction) {
 					case InputEvent::InputAction::ToggleUIEditor:
 						SetEditorEnabled(!m_toggleEditor);
-
 						if (m_toggleEditor) { m_coord.Pause(); }
 						else { m_coord.Unpause(); }
-
 						break;
 					}
 				}

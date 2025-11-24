@@ -176,7 +176,7 @@ namespace NightSnack {
 				glm::mat4 viewToUse = isUILayer ? glm::mat4(1.f) : view;
 
 				auto& pos = m_coord.GetComponent<Transform>(e).pos;
-				auto& scl = m_coord.GetComponent<Transform>(e).scale;
+				//auto& scl = m_coord.GetComponent<Transform>(e).scale;
 				auto& txt = m_coord.ModifyComponent<Font>(e);
 				auto& UIpos = m_coord.GetComponent<Transform>(e).UIbasePos;
 				auto& UIscale = m_coord.GetComponent<Transform>(e).UIbaseScale;

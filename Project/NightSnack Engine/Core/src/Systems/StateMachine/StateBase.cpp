@@ -152,7 +152,7 @@ namespace NightSnack
             //Valid in map
             states.currState = states.stateMap[firstState];
         }
-        else
+        else {}
             //std::cout << "INVALID first state! State: " << firstState << std::endl;
 
         return states;
