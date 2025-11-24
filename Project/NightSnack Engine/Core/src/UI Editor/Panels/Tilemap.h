@@ -30,7 +30,7 @@ namespace NightSnack
         int tileRows = 8;
         int tileCols = 8;
         int selectedTile = -1; // index of selected tile
-        ImTextureID tileTextureID;
+        ImTextureID tileTextureID{};
 
 
         /************************************************************************/

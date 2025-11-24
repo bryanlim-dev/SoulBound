@@ -257,7 +257,7 @@ namespace NightSnack {
 			return;
 		}
 
-		int orginalHeight = m_resourceImageMap[orginalKey]->Height();
+		//int orginalHeight = m_resourceImageMap[orginalKey]->Height();
 		int orginalWidth = m_resourceImageMap[orginalKey]->Width();
 		int channels = m_resourceImageMap[orginalKey]->Channels();
 		unsigned char* orginalImg = m_resourceImageMap[orginalKey]->Image();

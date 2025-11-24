@@ -38,8 +38,8 @@ namespace NightSnack
     {
         std::string name;
         fs::path fullPath;
-        AssetType type;
-        bool isDirectory;
+        AssetType type{ AssetType::Other };
+        bool isDirectory{};
     };
 
     /**

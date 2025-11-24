@@ -729,8 +729,8 @@ namespace NightSnack {
 				if (e == INVALID_ENTITY) { break; }
 
 				// Obtain entity components
-				auto& pos = m_coord.GetComponent<Transform>(e).pos;
-				auto& scl = m_coord.GetComponent<Transform>(e).scale;
+				//auto& pos = m_coord.GetComponent<Transform>(e).pos;
+				//auto& scl = m_coord.GetComponent<Transform>(e).scale;
 				auto& UIpos = m_coord.GetComponent<Transform>(e).UIbasePos;
 				auto& UIscale = m_coord.GetComponent<Transform>(e).UIbaseScale;
 

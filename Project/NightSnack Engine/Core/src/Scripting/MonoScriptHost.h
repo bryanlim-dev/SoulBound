@@ -29,7 +29,7 @@ typedef struct _MonoMethod MonoMethod;
 
 namespace NightSnack::Scripting {
 
-    class CORE_API MonoScriptHost {
+    class MonoScriptHost {
     public:
         // Constructor Destructor
         MonoScriptHost();
