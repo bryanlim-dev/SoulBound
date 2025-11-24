@@ -367,8 +367,8 @@ namespace NightSnack {
 					auto factory = m_coord.GetSystem<EntityFactory>();
 					if (factory)
 					{
-						factory->UnloadLevel();
 						factory->LoadLevel(loadLevelName);
+						m_scenePanel->DisableEditorCameraIsMain();
 					}
 				}
 
@@ -436,6 +436,7 @@ namespace NightSnack {
 					m_isPlaying = false;
 					SetSimulationPaused(true);
 					m_coord.GetSystem<Scene::SceneManager>()->RestoreLevel();
+					m_scenePanel->DisableEditorCameraIsMain();
 				}
 
 				ImGui::EndMenu();
@@ -450,6 +451,7 @@ namespace NightSnack {
 			Init();
 
 			m_scenePanel->ResetTexture();
+			m_scenePanel->DisableEditorCameraIsMain();
 			m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
 		}
 		else if (!enabled && ImGui::GetCurrentContext()) {
