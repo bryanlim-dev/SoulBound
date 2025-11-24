@@ -83,14 +83,13 @@ namespace NightSnack {
                 return;
             }
 
-            // Accumulated Time FixedDT;
             for (int s{}; s < m_coord.steps; ++s) {
-
                 // Iterate through all Entities this system can access;
                 for (Layer& l : m_layers) {
                     if (!l.IsActive()) { continue; }
 
-                    for (Entity e : l.Entities()) {
+                    for (Entity e : l.Entities()) 
+                    {
                         if (e == INVALID_ENTITY) { break; }
 
                         // First obtain references to components of interest;
@@ -104,10 +103,10 @@ namespace NightSnack {
                         pos.y += velocity.y * FixedDT;
 
                         // Limit movement to borders of screen;
-                        if (pos.y > m_coord.GetWindowHeight() / 2.f) { pos.y = m_coord.GetWindowHeight() / 2.f; }
-                        if (pos.y < -m_coord.GetWindowHeight() / 2.f) { pos.y = -m_coord.GetWindowHeight() / 2.f; }
-                        if (pos.x > m_coord.GetWindowWidth() / 2.f) { pos.x = m_coord.GetWindowWidth() / 2.f; }
-                        if (pos.x < -m_coord.GetWindowWidth() / 2.f) { pos.x = -m_coord.GetWindowWidth() / 2.f; }
+                        //if (pos.y > m_coord.GetWindowHeight() / 2.f) { pos.y = m_coord.GetWindowHeight() / 2.f; }
+                        //if (pos.y < -m_coord.GetWindowHeight() / 2.f) { pos.y = -m_coord.GetWindowHeight() / 2.f; }
+                        //if (pos.x > m_coord.GetWindowWidth() / 2.f) { pos.x = m_coord.GetWindowWidth() / 2.f; }
+                        //if (pos.x < -m_coord.GetWindowWidth() / 2.f) { pos.x = -m_coord.GetWindowWidth() / 2.f; }
 
                         // Do more stuff here if necessary...
 

@@ -57,7 +57,7 @@ namespace NightSnack
 	{
 		if (!states.currState)
 		{
-			std::cout << "Entity id: " << id << " has no current state!" << std::endl;
+			//std::cout << "Entity id: " << id << " has no current state!" << std::endl;
 			return;
 		}
 
@@ -142,7 +142,7 @@ namespace NightSnack
 
 		//stateCountdown->InsertStateComponent("Int", std::make_shared<int>(3));
 		//int* x = (stateCountdown->GetStateComponent<int>("Int").get());
-		//std::cout << "Int checker: " << x << std::endl;
+		////std::cout << "Int checker: " << x << std::endl;
 
 		movmenetLeftState.reset();
 		movemementRightState.reset();

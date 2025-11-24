@@ -13,18 +13,18 @@
         "width": 100.0
     },
     "Font": {
-        "fontSize": 0.5,
+        "fontSize": 0.949999988079071,
         "fontType": "buggy-font",
-        "text": "Ghost",
-        "textColor": {
-            "b": 0.5,
-            "g": 0.8999999761581421,
-            "r": 0.5
-        },
-        "offsetPosition" : {
+        "offsetPosition": {
             "x": 0.0,
             "y": 0.0,
             "z": 0.0
+        },
+        "text": "Ghost",
+        "textColor": {
+            "b": 0.16792598366737366,
+            "g": 0.7310924530029297,
+            "r": 0.27204081416130066
         }
     },
     "Renderable": {

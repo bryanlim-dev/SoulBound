@@ -48,7 +48,7 @@ namespace NightSnack {
 			m_dispatcher->Subscribe<GraphicsEvent>([this](const GraphicsEvent& event) {
 				switch (event.graphicsAction) {
 				case GraphicsEvent::GraphicsAction::CreateTexture:
-					//std::cout << "[ANIMATIONSYSTEM] received event\n";
+					////std::cout << "[ANIMATIONSYSTEM] received event\n";
 					UpdateAnimationClipsMap();
 					break;
 				}

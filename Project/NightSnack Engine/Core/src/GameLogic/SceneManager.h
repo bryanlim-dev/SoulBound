@@ -11,11 +11,9 @@
 namespace NightSnack::Scene {
 
 	class SceneManager : public ISystem {
-
+	public:
 		SceneManager(Coordinator& coord, EventDispatcher& disp)
 			: m_coord{ coord }, m_dispatcher{ &disp } {
-		
-			CacheLevel();
 
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
 				if (event.pressed == InputEvent::InputActionState::Pressed) {

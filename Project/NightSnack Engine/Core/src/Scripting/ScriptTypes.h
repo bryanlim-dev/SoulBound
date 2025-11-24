@@ -20,7 +20,7 @@ namespace NightSnack::Scripting {
     // Entity IDs;
 	using Entity = std::uint32_t;
 
-    struct CORE_API vec2 {
+    struct vec2 {
         float x, y;
 
         vec2(float x1=0, float y1=0) 
@@ -34,7 +34,7 @@ namespace NightSnack::Scripting {
         //}
     };
 
-    struct CORE_API vec3 {
+    struct vec3 {
         float x, y, z;
 
         vec3(float x1=0, float y1=0, float z1=0) 
@@ -48,7 +48,7 @@ namespace NightSnack::Scripting {
         //}
     };
 
-    struct CORE_API vec4 {
+    struct vec4 {
         float x, y, z, w;
 
         vec4(float x1 = 0, float y1 = 0, float z1 = 0, float w1 = 0)
@@ -56,7 +56,7 @@ namespace NightSnack::Scripting {
         }
     };
 
-    struct CORE_API Trans {
+    struct Trans {
         vec3 pos{};
         float rot{};
         vec2 scale{};
@@ -81,7 +81,7 @@ namespace NightSnack::Scripting {
         //}
     };
 
-    struct CORE_API Forc {
+    struct Forc {
         // Direction force
         vec2 direction{};
         float magnitude{};
@@ -90,7 +90,7 @@ namespace NightSnack::Scripting {
         bool isActive = false;
     };
 
-    struct CORE_API RigidBod {
+    struct RigidBod {
 
         Forc force{};
         Vec2 vel{};
@@ -106,7 +106,7 @@ namespace NightSnack::Scripting {
         bool useRotate{};
     };
 
-    struct CORE_API Collide {
+    struct Collide {
         NightSnack::ShapeType shape{ NightSnack::ShapeType::AABB };     // AABB or Circle
         NightSnack::ColliderType type{ NightSnack::ColliderType::Solid };   // Solid or Trigger
         bool isStatic{ true };       // true = immovable (walls), false = dynamic (player)
@@ -122,11 +122,11 @@ namespace NightSnack::Scripting {
     };
 
     //Color
-    struct CORE_API Colo {
+    struct Colo {
         float r{}, g{}, b{}, a{};
     };
 
-    struct CORE_API Renderabl {
+    struct Renderabl {
         std::string meshName{};
         std::string materialName{};
         bool isWireframe{ false };
@@ -134,7 +134,7 @@ namespace NightSnack::Scripting {
     };
 
     // An entity will have 1 Animator, comprising of many animations
-    struct CORE_API Animat {
+    struct Animat {
         std::string currentAnimationClip{};
         std::string spriteSheetName{};
         int currentFrameIndex{ 0 };
@@ -148,7 +148,7 @@ namespace NightSnack::Scripting {
         Vec2 uvBottomRight{ 1.f, 1.f };
     };
 
-    struct CORE_API Fon {
+    struct Fon {
         std::string fontType{};
         std::string text{};
         float fontSize{ 1.f };
@@ -157,7 +157,7 @@ namespace NightSnack::Scripting {
     };
 
     // Handle to a game object (Similar to Entity ID)
-    struct CORE_API GameObjectHandle {
+    struct GameObjectHandle {
         uint32_t id;
 
         GameObjectHandle(uint32_t id = 0) : id(id) {}

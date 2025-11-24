@@ -271,6 +271,8 @@ namespace NightSnack
 							{
 								auto& rb = m_coord.ModifyComponent<RigidBody>(m_hoveredEntity);
 								m_gravityBackup[m_hoveredEntity] = rb.useGravity;
+								rb.accel = Vec2{};
+								rb.vel = Vec2{};
 								rb.useGravity = false;
 							}
 						}
@@ -347,7 +349,7 @@ namespace NightSnack
 						// Get the Prefab name from the path, which is 'Ghost' in this case
 						std::filesystem::path filePath(droppedPath);
 
-						std::cout << "Creating entity from prefab: " << filePath.stem().string() << "\n";
+						std::cout << "Creating entity from prefab: " << filePath.filename().stem().string() << "\n";
 
 						Transform trans{};
 
@@ -359,7 +361,7 @@ namespace NightSnack
 
 						trans.scale = Vec2{ 50.f, 50.f };	// default scale...
 
-						m_coord.GetSystem<EntityFactory>()->Create(filePath.stem().string(), trans);
+						m_coord.GetSystem<EntityFactory>()->Create(filePath.filename().stem().string(), trans);
 
 						std::cout << "Transform: " << trans.pos.x << ", " << trans.pos.y << std::endl;
 
@@ -1013,18 +1015,18 @@ namespace NightSnack
 			return;
 		}
 
-		std::cout << "[Scene] Loaded image with key: " << imageKey << "\n";
+		//std::cout << "[Scene] Loaded image with key: " << imageKey << "\n";
 
 		// remove old background if exists
 		if (m_backgroundEntity != INVALID_ENTITY)
 		{
 			m_coord.DestroyEntity(m_backgroundEntity);
-			std::cout << "[Scene] Removed old background entity\n";
+			//std::cout << "[Scene] Removed old background entity\n";
 		}
 
 		// create new entity
 		m_backgroundEntity = m_coord.CreateEntity();
-		std::cout << "[Scene] Created entity: " << m_backgroundEntity << "\n";
+		//std::cout << "[Scene] Created entity: " << m_backgroundEntity << "\n";
 
 		// add Transform component (position, rotation, scale)
 		// Position at mouse location in world space
@@ -1043,7 +1045,7 @@ namespace NightSnack
 		m_coord.AddComponent(m_backgroundEntity, renderable);
 
 
-		std::cout << "[Scene] Background created at (" << mouseX << ", " << mouseY << ")\n";
+		//std::cout << "[Scene] Background created at (" << mouseX << ", " << mouseY << ")\n";
 	}
 
 	// Draw the tool bar for selecting mouse tools.
@@ -1222,10 +1224,10 @@ namespace NightSnack
 		m_gizmoHovering = false;
 
 		// Get selected entity's transform
-		auto& t = m_coord.GetComponent<Transform>(*m_selectedEntity);
+		auto& t1 = m_coord.GetComponent<Transform>(*m_selectedEntity);
 
 		// World position of the entity
-		float wx = t.pos.x, wy = t.pos.y;
+		float wx = t1.pos.x, wy = t1.pos.y;
 
 		// Convert to screen position
 		ImVec2 center = WorldToScreen(wx, wy, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
@@ -1264,8 +1266,8 @@ namespace NightSnack
 		drawList->AddTriangleFilled(arrowTipY, arrowBaseL_Y, arrowBaseR_Y, IM_COL32(0, 255, 0, 255));
 
 		// Rotation Circle (blue)
-		ImVec2 delta = ImVec2(mouse.x - center.x, mouse.y - center.y);
-		float dist = sqrtf(delta.x * delta.x + delta.y * delta.y);
+		ImVec2 deltaRot = ImVec2(mouse.x - center.x, mouse.y - center.y);
+		float dist = sqrtf(deltaRot.x * deltaRot.x + deltaRot.y * deltaRot.y);
 		float distToCircle = std::abs(dist - circleRadius);
 		bool hoverRot = distToCircle < 8.0f;
 		ImU32 rotColor = hoverRot ? IM_COL32(100, 100, 255, 255) : IM_COL32(0, 128, 255, 180);
@@ -1292,41 +1294,41 @@ namespace NightSnack
 		// Handle interaction
 		if (!m_gizmoDragging && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 		{
-			if		(hoverX)	  { m_gizmoActivePart = GizmoPart::MoveX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.pos.x; }
-			else if (hoverY)	  { m_gizmoActivePart = GizmoPart::MoveY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.pos.y; }
-			else if (hoverRot)	  { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.rot; }
-			else if (hoverScaleX) { m_gizmoActivePart = GizmoPart::ScaleX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.scale.x; }
-			else if (hoverScaleY) { m_gizmoActivePart = GizmoPart::ScaleY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.scale.y; }
+			if		(hoverX)	  { m_gizmoActivePart = GizmoPart::MoveX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.x; }
+			else if (hoverY)	  { m_gizmoActivePart = GizmoPart::MoveY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.y; }
+			else if (hoverRot)	  { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.rot; }
+			else if (hoverScaleX) { m_gizmoActivePart = GizmoPart::ScaleX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.x; }
+			else if (hoverScaleY) { m_gizmoActivePart = GizmoPart::ScaleY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.y; }
 		}
 		if (m_gizmoDragging && ImGui::IsMouseDown(ImGuiMouseButton_Left))
 		{
 			ImVec2 delta = ImVec2(mouse.x - m_gizmoDragStartMouse.x, mouse.y - m_gizmoDragStartMouse.y);
-			auto& t = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
+			auto& trans = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
 			if (m_gizmoActivePart == GizmoPart::MoveX)
 			{
-				t.pos.x = m_gizmoStartValue + delta.x * (worldRight - worldLeft) / imageSize.x;
+				trans.pos.x = m_gizmoStartValue + delta.x * (worldRight - worldLeft) / imageSize.x;
 			}
 			else if (m_gizmoActivePart == GizmoPart::MoveY)
 			{
-				t.pos.y = m_gizmoStartValue - delta.y * (worldTop - worldBottom) / imageSize.y;
+				trans.pos.y = m_gizmoStartValue - delta.y * (worldTop - worldBottom) / imageSize.y;
 			}
 			else if (m_gizmoActivePart == GizmoPart::Rotate)
 			{
-				ImVec2 center = WorldToScreen(t.pos.x, t.pos.y, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
-				float startAngle = atan2f(m_gizmoDragStartMouse.y - center.y, m_gizmoDragStartMouse.x - center.x);
-				float currAngle = atan2f(mouse.y - center.y, mouse.x - center.x);
+				ImVec2 centerTrans = WorldToScreen(trans.pos.x, trans.pos.y, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+				float startAngle = atan2f(m_gizmoDragStartMouse.y - centerTrans.y, m_gizmoDragStartMouse.x - centerTrans.x);
+				float currAngle = atan2f(mouse.y - centerTrans.y, mouse.x - centerTrans.x);
 				constexpr float RAD2DEG = 180.0f / 3.14159265f;
-				t.rot = m_gizmoStartValue - (currAngle - startAngle) * RAD2DEG;
+				trans.rot = m_gizmoStartValue - (currAngle - startAngle) * RAD2DEG;
 			}
 			else if (m_gizmoActivePart == GizmoPart::ScaleX)
 			{
 				float scaleDelta = delta.x * (worldRight - worldLeft) / imageSize.x;
-				t.scale.x = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+				trans.scale.x = std::max(1.0f, m_gizmoStartValue + scaleDelta);
 			}
 			else if (m_gizmoActivePart == GizmoPart::ScaleY)
 			{
 				float scaleDelta = -delta.y * (worldTop - worldBottom) / imageSize.y;
-				t.scale.y = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+				trans.scale.y = std::max(1.0f, m_gizmoStartValue + scaleDelta);
 			}
 		}
 		if (m_gizmoDragging && ImGui::IsMouseReleased(ImGuiMouseButton_Left))

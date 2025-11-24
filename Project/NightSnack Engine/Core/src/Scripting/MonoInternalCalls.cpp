@@ -588,7 +588,7 @@ extern "C" {
 namespace NightSnack::Scripting {
 
     void RegisterMonoInternalCalls(ScriptInterface* scriptInterface) {
-        std::cout << "[Mono] Registering internal calls..." << std::endl;
+        //std::cout << "[Mono] Registering internal calls..." << std::endl;
 
         // Store global reference
         g_scriptInterface = scriptInterface;
@@ -775,7 +775,7 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::CreateEntityArchetype_Internal", (void*)NightSnack_CreateEntityArchetype);
 
 
-        std::cout << "[Mono] Internal calls registered successfully" << std::endl;
+        //std::cout << "[Mono] Internal calls registered successfully" << std::endl;
     }
 
 } // NightSnack::Scripting

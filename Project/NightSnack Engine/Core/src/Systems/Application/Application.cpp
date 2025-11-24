@@ -83,7 +83,7 @@ namespace NightSnack {
 
 		// file drop callback
 		glfwSetDropCallback(m_windowHandle, FileDropCallback);
-		// std::cout << "[Application] File drop callback initialized\n";
+		// //std::cout << "[Application] File drop callback initialized\n";
 
 		// Disable Depth testing since the primary way of rendering is using Layers 
 		glDisable(GL_DEPTH_TEST);
@@ -222,6 +222,7 @@ namespace NightSnack {
 	}
 
 	void ApplicationSystem::WindowMaximizeCallback(GLFWwindow* window, int maximized) {
+		(void)window;
 		// Only check if the user press the maximize window button
 		if (maximized && !m_appIsFullscreen) {
 			EnterFullscreen();
@@ -268,12 +269,12 @@ namespace NightSnack {
 		(void)window;
 
 		s_droppedFiles.clear();
-		std::cout << "[FileDrop] Received " << count << " file(s):\n";
+		////std::cout << "[FileDrop] Received " << count << " file(s):\n";
 
 		for (int i = 0; i < count; i++)
 		{
 			s_droppedFiles.push_back(std::string(paths[i]));
-			std::cout << "[FileDrop]   [" << i << "] " << paths[i] << "\n";
+			////std::cout << "[FileDrop]   [" << i << "] " << paths[i] << "\n";
 		}
 	}
 
