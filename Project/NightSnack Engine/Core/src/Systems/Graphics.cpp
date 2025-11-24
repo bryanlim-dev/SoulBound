@@ -432,16 +432,17 @@ namespace NightSnack {
 			RESOURCE_PATH // "NightSnack Engine/assets"
 		);
 
-		std::filesystem::path assetsPath = resourcePath.parent_path() / "build" / "assets";
-		assetsPath = assetsPath.lexically_normal();
+		resourcePath = resourcePath.lexically_normal();
 		
-		if (!std::filesystem::exists(assetsPath)) {
+		//std::cout << "Resource path: " << resourcePath << std::endl;
+
+		if (!std::filesystem::exists(resourcePath)) {
 			std::cerr << "[GraphicsSystem] Error: Assets directory cannot be found!\n";
 			return;
 		}
 
 		// Iterate through entries in directory
-		for (auto const& entry : std::filesystem::directory_iterator(assetsPath)) {
+		for (auto const& entry : std::filesystem::directory_iterator(resourcePath)) {
 			// Skip through folders
 			if (entry.is_directory()) {
 				continue;
