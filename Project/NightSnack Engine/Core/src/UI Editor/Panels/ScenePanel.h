@@ -1224,10 +1224,10 @@ namespace NightSnack
 		m_gizmoHovering = false;
 
 		// Get selected entity's transform
-		auto& t = m_coord.GetComponent<Transform>(*m_selectedEntity);
+		auto& t1 = m_coord.GetComponent<Transform>(*m_selectedEntity);
 
 		// World position of the entity
-		float wx = t.pos.x, wy = t.pos.y;
+		float wx = t1.pos.x, wy = t1.pos.y;
 
 		// Convert to screen position
 		ImVec2 center = WorldToScreen(wx, wy, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
@@ -1294,29 +1294,29 @@ namespace NightSnack
 		// Handle interaction
 		if (!m_gizmoDragging && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 		{
-			if		(hoverX)	  { m_gizmoActivePart = GizmoPart::MoveX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.pos.x; }
-			else if (hoverY)	  { m_gizmoActivePart = GizmoPart::MoveY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.pos.y; }
-			else if (hoverRot)	  { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.rot; }
-			else if (hoverScaleX) { m_gizmoActivePart = GizmoPart::ScaleX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.scale.x; }
-			else if (hoverScaleY) { m_gizmoActivePart = GizmoPart::ScaleY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t.scale.y; }
+			if		(hoverX)	  { m_gizmoActivePart = GizmoPart::MoveX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.x; }
+			else if (hoverY)	  { m_gizmoActivePart = GizmoPart::MoveY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.y; }
+			else if (hoverRot)	  { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.rot; }
+			else if (hoverScaleX) { m_gizmoActivePart = GizmoPart::ScaleX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.x; }
+			else if (hoverScaleY) { m_gizmoActivePart = GizmoPart::ScaleY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.y; }
 		}
 		if (m_gizmoDragging && ImGui::IsMouseDown(ImGuiMouseButton_Left))
 		{
-			ImVec2 delta = ImVec2(mouse.x - m_gizmoDragStartMouse.x, mouse.y - m_gizmoDragStartMouse.y);
+			ImVec2 delta1 = ImVec2(mouse.x - m_gizmoDragStartMouse.x, mouse.y - m_gizmoDragStartMouse.y);
 			auto& t = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
 			if (m_gizmoActivePart == GizmoPart::MoveX)
 			{
-				t.pos.x = m_gizmoStartValue + delta.x * (worldRight - worldLeft) / imageSize.x;
+				t.pos.x = m_gizmoStartValue + delta1.x * (worldRight - worldLeft) / imageSize.x;
 			}
 			else if (m_gizmoActivePart == GizmoPart::MoveY)
 			{
-				t.pos.y = m_gizmoStartValue - delta.y * (worldTop - worldBottom) / imageSize.y;
+				t.pos.y = m_gizmoStartValue - delta1.y * (worldTop - worldBottom) / imageSize.y;
 			}
 			else if (m_gizmoActivePart == GizmoPart::Rotate)
 			{
-				ImVec2 center = WorldToScreen(t.pos.x, t.pos.y, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
-				float startAngle = atan2f(m_gizmoDragStartMouse.y - center.y, m_gizmoDragStartMouse.x - center.x);
-				float currAngle = atan2f(mouse.y - center.y, mouse.x - center.x);
+				ImVec2 center1 = WorldToScreen(t.pos.x, t.pos.y, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+				float startAngle = atan2f(m_gizmoDragStartMouse.y - center1.y, m_gizmoDragStartMouse.x - center1.x);
+				float currAngle = atan2f(mouse.y - center1.y, mouse.x - center1.x);
 				constexpr float RAD2DEG = 180.0f / 3.14159265f;
 				t.rot = m_gizmoStartValue - (currAngle - startAngle) * RAD2DEG;
 			}

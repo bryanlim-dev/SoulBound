@@ -134,7 +134,7 @@ namespace NightSnack::Scripting {
     };
 
     // An entity will have 1 Animator, comprising of many animations
-    struct CORE_API Animat {
+    struct Animat {
         std::string currentAnimationClip{};
         std::string spriteSheetName{};
         int currentFrameIndex{ 0 };
@@ -148,7 +148,7 @@ namespace NightSnack::Scripting {
         Vec2 uvBottomRight{ 1.f, 1.f };
     };
 
-    struct CORE_API Fon {
+    struct Fon {
         std::string fontType{};
         std::string text{};
         float fontSize{ 1.f };

@@ -953,7 +953,7 @@ void ResourceManager::UpdateJson(size_t key, nlohmann::json const& newJson)
 	void ResourceManager::DeleteFlaggedResources()
 	{
 		//This keeps changing so auto of the vec
-		for (auto resourcePair : m_deletionVec)
+		for (auto& resourcePair : m_deletionVec)
 		{
 			//If it was unflagged somewhere inbetween do not delete
 

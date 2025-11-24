@@ -715,7 +715,7 @@ namespace NightSnack {
 		m_renderCache.erase(e);
 	}
 
-	bool GraphicsSystem::ScreenSizeChanged() {
+	bool GraphicsSystem::ScreenSizeChanged() const noexcept {
 		return (lastHvp != Hvp || lastWvp != Wvp);
 	}
 

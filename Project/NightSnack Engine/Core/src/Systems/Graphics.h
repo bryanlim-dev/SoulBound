@@ -502,7 +502,7 @@ namespace NightSnack {
 		/************************************************************************/
 		Vec3 ScreenToWorld(Vec3 const& screenPos);
 
-		bool ScreenSizeChanged();
+		bool ScreenSizeChanged() const noexcept;
 
 		void TranslateUIEntities(Entity mainCam);
 
