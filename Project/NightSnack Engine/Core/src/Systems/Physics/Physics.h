@@ -78,6 +78,9 @@ namespace NightSnack {
             m_cellSize.x = m_gridWidth / (float) m_gridCols;
             m_cellSize.y = m_gridHeight / (float) m_gridRows;
             m_gridCenter = {};
+
+            m_grid1.resize(m_gridCols);
+            m_grid2.resize(m_gridRows);
         }
 
         /************************************************************************/

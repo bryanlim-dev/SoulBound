@@ -22,7 +22,7 @@ namespace NightSnack
     void StateBase::Enter(Entity entityID, Coordinator& coord)
     {
         m_isExit = false;
-        //std::cout << "ID: " << entityID << ", State Enter: " << m_stateName << std::endl;
+        ////std::cout << "ID: " << entityID << ", State Enter: " << m_stateName << std::endl;
 
         if (m_enterFunction)
             m_enterFunction(entityID, coord);
@@ -61,7 +61,7 @@ namespace NightSnack
     void StateBase::Exit(Entity entityID, Coordinator& coord)
     {
         m_isExit = false;
-        //std::cout << "ID: " << entityID << ", State Exit: " << m_stateName << std::endl;
+        ////std::cout << "ID: " << entityID << ", State Exit: " << m_stateName << std::endl;
 
         if (m_exitFunction)
             m_exitFunction(entityID, coord);
@@ -135,7 +135,7 @@ namespace NightSnack
                     statePtr->InsertStateTransition(states.stateMap[transitionTarget], GetTransitionFunction(transitionFunc));
                 }
                 else
-                    std::cout << "INVALID Transition add attempted! State: " << stateName << " to " << transitionTarget << std::endl;
+                    std::cerr << "INVALID Transition add attempted! State: " << stateName << " to " << transitionTarget << std::endl;
             }
 
             //Insert into map
@@ -153,7 +153,7 @@ namespace NightSnack
             states.currState = states.stateMap[firstState];
         }
         else
-            std::cout << "INVALID first state! State: " << firstState << std::endl;
+            //std::cout << "INVALID first state! State: " << firstState << std::endl;
 
         return states;
     }

@@ -65,7 +65,7 @@ namespace NightSnack
 		//	std::function<void(float, Entity)> updateFunction = [](float, Entity) { /* Default is empty by Design*/ })
 		//	:m_entityID(id), m_stateName(stateKeyName), m_coord(coord){
 		//	m_updateFunction = updateFunction;
-		//	//std::cout << "State adresss in constructor: " << this << "\n";
+		//	////std::cout << "State adresss in constructor: " << this << "\n";
 		//}
 
 		/************************************************************************/
@@ -348,7 +348,7 @@ namespace NightSnack
 		std::string stateMachineStr;
 		j.at("StateMachine").get_to(stateMachineStr); //State Machine Archytype
 
-		c = CreateStateFromArchetypeJson(stateMachineStr, "../assets/GameData/Archetypes/AIStatesArchetypes.json");
+		c = CreateStateFromArchetypeJson(stateMachineStr, "GameData/Archetypes/AIStatesArchetypes.json");
 	}
 
 

@@ -60,8 +60,8 @@ namespace NightSnack {
 			lastHvp = Hvp;
 			lastWvp = Wvp;
 
-			std::string path = std::filesystem::current_path().string();
-			std::cout << path << '\n';
+			//std::string path = std::filesystem::current_path().string();
+			//std::cout << path << '\n';
 
 			Init();
 

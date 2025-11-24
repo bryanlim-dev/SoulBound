@@ -168,8 +168,10 @@ namespace NightSnack {
 					switch (event.inputAction) {
 					case InputEvent::InputAction::ToggleUIEditor:
 						SetEditorEnabled(!m_toggleEditor);
+
 						if (m_toggleEditor) { m_coord.Pause(); }
 						else { m_coord.Unpause(); }
+
 						break;
 					}
 				}

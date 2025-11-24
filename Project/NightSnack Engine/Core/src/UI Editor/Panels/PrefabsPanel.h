@@ -275,7 +275,7 @@ namespace NightSnack
             bool isStatic = j["isStatic"];
 
             char shapeBuf[64];
-            strcpy(shapeBuf, shape.c_str());
+            strcpy_s(shapeBuf, shape.c_str());
             if (ImGui::InputText("Shape", shapeBuf, sizeof(shapeBuf)))
             {
                 shape = shapeBuf;
@@ -283,7 +283,7 @@ namespace NightSnack
             j["shape"] = shape;
 
             char typeBuf[64];
-            strcpy(typeBuf, type.c_str());
+            strcpy_s(typeBuf, type.c_str());
             if (ImGui::InputText("Type", typeBuf, sizeof(typeBuf)))
             {
                 type = typeBuf;
@@ -314,11 +314,11 @@ namespace NightSnack
 
         void DrawRenderableEditor(nlohmann::json& j)
         {
-            char mesh[128]; strcpy(mesh, j["meshName"].get<std::string>().c_str());
+            char mesh[128]; strcpy_s(mesh, j["meshName"].get<std::string>().c_str());
             if (ImGui::InputText("Mesh", mesh, sizeof(mesh)))
                 j["meshName"] = mesh;
 
-            char mat[128]; strcpy(mat, j["materialName"].get<std::string>().c_str());
+            char mat[128]; strcpy_s(mat, j["materialName"].get<std::string>().c_str());
             if (ImGui::InputText("Material", mat, sizeof(mat)))
                 j["materialName"] = mat;
 
@@ -352,7 +352,7 @@ namespace NightSnack
 
         void DrawAnimatorEditor(nlohmann::json& j)
         {
-            char buf[128]; strcpy(buf, j["spriteSheetName"].get<std::string>().c_str());
+            char buf[128]; strcpy_s(buf, j["spriteSheetName"].get<std::string>().c_str());
             if (ImGui::InputText("Sprite Sheet", buf, sizeof(buf)))
                 j["spriteSheetName"] = buf;
 
@@ -372,7 +372,7 @@ namespace NightSnack
 
         void DrawFontEditor(nlohmann::json& j)
         {
-            char text[128]; strcpy(text, j["text"].get<std::string>().c_str());
+            char text[128]; strcpy_s(text, j["text"].get<std::string>().c_str());
             if (ImGui::InputText("Text", text, sizeof(text)))
                 j["text"] = text;
 
@@ -393,11 +393,11 @@ namespace NightSnack
 
         void DrawButtonInfoEditor(nlohmann::json& j)
         {
-            char action[64]; strcpy(action, j["action"].get<std::string>().c_str());
+            char action[64]; strcpy_s(action, j["action"].get<std::string>().c_str());
             if (ImGui::InputText("Action", action, sizeof(action)))
                 j["action"] = action;
 
-            char type[64]; strcpy(type, j["type"].get<std::string>().c_str());
+            char type[64]; strcpy_s(type, j["type"].get<std::string>().c_str());
             if (ImGui::InputText("Type", type, sizeof(type)))
                 j["type"] = type;
         }
@@ -405,7 +405,7 @@ namespace NightSnack
         void DrawScriptEditor(nlohmann::json& j)
         {
             char name[128];
-            strcpy(name, j["name"].get<std::string>().c_str());
+            strcpy_s(name, j["name"].get<std::string>().c_str());
 
             if (ImGui::InputText("Script Name", name, sizeof(name)))
                 j["name"] = name;
@@ -436,7 +436,7 @@ namespace NightSnack
                 else if (val.is_string())
                 {
                     char buf[128];
-                    strcpy(buf, val.get<std::string>().c_str());
+                    strcpy_s(buf, val.get<std::string>().c_str());
                     if (ImGui::InputText(key.c_str(), buf, sizeof(buf)))
                         val = buf;
                 }

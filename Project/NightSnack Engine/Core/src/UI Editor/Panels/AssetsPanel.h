@@ -7,7 +7,7 @@
  * Unified assets panel displaying all assets in a hierarchical folder structure.
  * Integrates Images, Files, Scripts, and Prefabs in one view.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -53,16 +53,16 @@ namespace NightSnack
         */
         AssetsPanel(Coordinator& coord) :
             m_coord(coord),
-            m_assetsRoot("../assets"),
-            m_scriptsRoot("../../../NightSnack Engine/ManagedScripts"),
+            m_assetsRoot(RESOURCE_PATH),
+            m_scriptsRoot(SCRIPTS_PATH),
             m_currentDirectory(m_assetsRoot),
             m_thumbnailSize(96.0f),
             m_selectedAssetPath(""),
             m_showAssetProperties(false),
             m_showImportDialog(false),
-            m_prefabsPanel(coord, "../../../NightSnack Engine/assets/GameData/Archetypes/Archetypes.json"),
-            m_filesPanel(coord, "../assets"),
-            m_scriptsPanel(coord, "../../../NightSnack Engine/ManagedScripts")
+            m_prefabsPanel(coord, PREFABS_PATH),
+            m_filesPanel(coord, RESOURCE_PATH),
+            m_scriptsPanel(coord, SCRIPTS_PATH)
         {
             m_prefabNames.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
             for (std::string const& s : coord.GetSystem<EntityFactory>()->GetPrefabNames())
@@ -74,6 +74,8 @@ namespace NightSnack
             {
                 m_prefabMats.insert({ n, m });
             }
+            std::cout << "\n\nBREAKPOINT 1 \n\n";
+
         }
 
         /**
@@ -105,6 +107,7 @@ namespace NightSnack
             ImGui::BeginChild("FolderTree", ImVec2(0, 0), true);
             ImGui::Text("Project");
             ImGui::Separator();
+            m_assetsRoot = std::filesystem::canonical(m_assetsRoot);
             DrawFolderTree(m_assetsRoot);
 
             // Add scripts folder if it exists
@@ -134,6 +137,7 @@ namespace NightSnack
             {
                 DrawImportDialog();
             }
+
         }
 
     private:
@@ -357,7 +361,7 @@ namespace NightSnack
                     if (item.type == AssetType::Image)
                     {
                         ImGui::SetDragDropPayload("ASSET_IMAGE", pathStr.c_str(), pathStr.size() + 1);
-                        ImTextureID texID = GetOrLoadTexture(pathStr);
+                        ImTextureID texID = GetOrLoadTexture(item.fullPath.filename().string());
                         if (texID)
                         {
                             ImGui::Image(texID, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
@@ -408,11 +412,14 @@ namespace NightSnack
         */
         void DrawItemThumbnail(const AssetItem& item)
         {
+            std::cout << "[AssetPanel] item fullpath: " << item.fullPath.filename().string() << '\n';
+
+
             switch (item.type)
             {
             case AssetType::Image:
             {
-                ImTextureID texID = GetOrLoadTexture(item.fullPath.string());
+                ImTextureID texID = GetOrLoadTexture(item.fullPath.filename().string());
                 if (texID)
                 {
                     ImGui::ImageButton(
@@ -474,7 +481,7 @@ namespace NightSnack
                 case AssetType::Image:
                 {
                     ImGui::Text("Preview:");
-                    ImTextureID texID = GetOrLoadTexture(m_selectedAssetPath);
+                    ImTextureID texID = GetOrLoadTexture(selectedPath.filename().string());
                     if (texID)
                     {
                         ImGui::Image(texID, ImVec2(200, 200), ImVec2(0, 1), ImVec2(1, 0));
@@ -552,7 +559,7 @@ namespace NightSnack
                         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
                         if (ImGui::Button("Delete", ImVec2(120, 0)))
                         {
-                            DeleteAsset(m_selectedAssetPath);
+                            DeleteAsset(selectedPath.filename().string());
                             ImGui::CloseCurrentPopup();
                         }
                         ImGui::PopStyleColor();

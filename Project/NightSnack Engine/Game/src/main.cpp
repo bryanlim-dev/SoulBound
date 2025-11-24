@@ -18,6 +18,8 @@
 
 #include "Core/Core.h"
 
+#include <filesystem>
+
 int main()
 {
 	// Enable memory leak checking at program exit
@@ -25,9 +27,17 @@ int main()
 
 	// Create Core engine
 	NightSnack::CoreEngine core;
-	core.StartUp("../assets/Data/WindowConfig.json");
+	core.StartUp("Data/WindowConfig.json");
 	core.Run();
  	core.Terminate();
+
+	//std::cout << "Current directory: " << std::filesystem::current_path().string() << '\n';
+	//std::cout << RESOURCE_PATH << '\n';
+	//	
+	//std::filesystem::path fp = std::filesystem::canonical(
+	//	std::filesystem::current_path() / RESOURCE_PATH
+	//);
+	//std::cout << "Assets dir: " << fp << '\n';
 
 	return 0;
 
