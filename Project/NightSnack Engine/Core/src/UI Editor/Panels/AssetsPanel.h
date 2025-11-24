@@ -54,7 +54,7 @@ namespace NightSnack
         AssetsPanel(Coordinator& coord) :
             m_coord(coord),
             m_assetsRoot(GetRuntimeAssetsPath()),
-            m_scriptsRoot(SCRIPTS_PATH),
+            m_scriptsRoot(GetRunTimeScriptsPath()),
             m_currentDirectory(m_assetsRoot),
             m_thumbnailSize(96.0f),
             m_selectedAssetPath(""),
@@ -62,7 +62,7 @@ namespace NightSnack
             m_showImportDialog(false),
             m_prefabsPanel(coord, GetRunTimePrefabsPath().string()),
             m_filesPanel(coord, m_assetsRoot.string()),
-            m_scriptsPanel(coord, SCRIPTS_PATH)
+            m_scriptsPanel(coord, GetRunTimeScriptsPath().string())
         {
             m_prefabNames.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
             for (std::string const& s : coord.GetSystem<EntityFactory>()->GetPrefabNames())
@@ -92,6 +92,14 @@ namespace NightSnack
             );
             std::filesystem::path finalPrefabsPath = prefabsPath.parent_path().parent_path().parent_path() / "build" / "assets" / "GameData" / "Archetypes" / "Archetypes.json";
             return finalPrefabsPath.lexically_normal();
+        }
+
+        static std::filesystem::path GetRunTimeScriptsPath() {
+            std::filesystem::path scriptsPath = std::filesystem::canonical(
+                SCRIPTS_PATH // "NightSnack Engine/assets/ManagedScripts"
+            );
+            std::filesystem::path finalScriptsPath = scriptsPath.parent_path() / "ManagedScripts";
+            return finalScriptsPath.lexically_normal();
         }
 
         /**
