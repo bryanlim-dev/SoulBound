@@ -209,6 +209,24 @@ namespace NightSnack::Scripting {
 
 #pragma endregion
 
+#pragma region Camera
+        Cam GetCamera(Entity e);
+        void SetCamera(Entity e, Cam cam);
+
+        bool GetCameraIsMain(Entity e);
+        void SetCameraIsMain(Entity e, bool main);
+
+        float GetCameraZoom(Entity e);
+        void SetCameraZoom(Entity e, float main);
+        
+        float GetCameraWidth(Entity e);
+        void SetCameraWidth(Entity e, float main);
+
+        float GetCameraHeight(Entity e);
+        void SetCameraHeight(Entity e, float main);
+#pragma endregion
+
+
 #pragma region Key/Inputs
         // Input
         bool IsKeyPressed(int key);

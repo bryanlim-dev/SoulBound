@@ -11,6 +11,6 @@
         "meshName": "square"
     },
     "Script": {
-        "name": "HoverScript"
+        "name": ["HoverScript"]
     }
 }

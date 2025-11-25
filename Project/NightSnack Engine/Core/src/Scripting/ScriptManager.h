@@ -95,7 +95,7 @@ namespace NightSnack::Scripting {
 		std::unique_ptr<ScriptInterface> m_scriptInterface;
 
 		// Map entity ID to script instance
-		std::unordered_map<Entity, void*> m_entityScripts;
+		std::multimap<Entity, void*> m_entityScripts;
 
 		bool debugMode = false;
 		bool stepRequest = false;

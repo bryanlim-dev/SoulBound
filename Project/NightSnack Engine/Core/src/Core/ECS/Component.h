@@ -77,7 +77,8 @@ namespace NightSnack {
     };
 
     struct Script {
-        std::string name;
+        std::list<std::string> names;
+        //std::string name;
     };
 
     //When updating this update the one in Engine.cs
@@ -384,8 +385,14 @@ namespace NightSnack {
     }
     // STATES ==================================================
     //States from_json function is within StateBase.h
+    
+    // SCRIPTING ==================================================
     inline void from_json(const json& j, Script& s) {
-        j.at("name").get_to(s.name);
+        //j.at("name").get_to(s.name);
+        for (const auto& names : j["name"])
+        {
+            s.names.push_back(names.get<std::string>());
+        }
     }
 
 }   // NightSnack
