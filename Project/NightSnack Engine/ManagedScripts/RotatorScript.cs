@@ -5,6 +5,7 @@ namespace ManagedScripts
 {
     public class RotatorScript : Script
     {
+        [Expose]
         private const float rotationSpeed = 50.0f; // degrees per second
 
         public override void OnStart()
