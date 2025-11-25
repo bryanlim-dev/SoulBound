@@ -331,6 +331,37 @@ namespace ManagedScripts
         #endregion
 
         // ----------------------------
+        // Camera Internal for Scripts
+        // ----------------------------
+        #region Camera
+        //isMainCam
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetCameraIsMain_Internal(uint entityId, out bool main);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCameraIsMain_Internal(uint entityId, ref bool main);
+
+
+        //zoom
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetCameraZoom_Internal(uint entityId, out float zoom);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCameraZoom_Internal(uint entityId, ref float zoom);
+
+        //width
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetCameraWidth_Internal(uint entityId, out float width);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCameraWidth_Internal(uint entityId, ref float width);
+
+        //height
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetCameraHeight_Internal(uint entityId, out float height);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCameraHeight_Internal(uint entityId, ref float height);
+
+        #endregion
+
+        // ----------------------------
         // Key/Buttons Internal for Scripts
         // ----------------------------
         #region Key/Buttons
@@ -886,6 +917,55 @@ namespace ManagedScripts
             SetFontOffsetPosition_Internal(entityId, ref position);
         }
 
+        #endregion
+
+        // ----------------------------
+        // Camera API for Scripts
+        // ----------------------------
+        #region Camera
+        //isMainCam
+        public static bool GetCameraIsMain(uint entityId)
+        {
+            GetCameraIsMain_Internal(entityId, out bool main);
+            return main;
+        }
+        public static void SetCameraIsMain(uint entityId, bool main)
+        {
+            SetCameraIsMain_Internal(entityId, ref main);
+        }
+
+        //zoom
+        public static float GetCameraZoom(uint entityId)
+        {
+            GetCameraZoom_Internal(entityId, out float zoom);
+            return zoom;
+        }
+        public static void SetCameraZoom(uint entityId, float zoom)
+        {
+            SetCameraZoom_Internal(entityId, ref zoom);
+        }
+
+        //width
+        public static float GetCameraWidth(uint entityId)
+        {
+            GetCameraWidth_Internal(entityId, out float width);
+            return width;
+        }
+        public static void SetCameraWidth(uint entityId, float width)
+        {
+            SetCameraWidth_Internal(entityId, ref width);
+        }
+
+        //height
+        public static float GetCameraHeight(uint entityId)
+        {
+            GetCameraHeight_Internal(entityId, out float height);
+            return height;
+        }
+        public static void SetCameraHeight(uint entityId, float height)
+        {
+            SetCameraHeight_Internal(entityId, ref height);
+        }
         #endregion
 
         // ----------------------------

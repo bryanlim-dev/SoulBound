@@ -38,6 +38,8 @@ namespace NightSnack::Scripting {
         result.rot = t.rot;
         result.scale = vec2(t.scale.x, t.scale.y);
         result.layer = t.layer;
+        result.UIbasePos = t.UIbasePos;
+        result.UIbaseScale = t.UIbaseScale;
 
         return result;
     }
@@ -49,6 +51,8 @@ namespace NightSnack::Scripting {
         trans.rot = t.rot;
         trans.scale = Vec2(t.scale.x, t.scale.y);
         trans.layer = t.layer;
+        trans.UIbasePos = t.UIbasePos;
+        trans.UIbaseScale = t.UIbaseScale;
     }
 
     // Position ----
@@ -686,6 +690,65 @@ namespace NightSnack::Scripting {
 
 #pragma endregion
 
+    // --------------------------------------------------------------
+    // Camera Inputs
+    // --------------------------------------------------------------
+#pragma region Camera
+
+    Cam ScriptInterface::GetCamera(Entity e)
+    {
+        Camera t = m_coord.GetComponent<Camera>(e);
+        Cam result;
+
+        result.isMainCam = t.isMainCam;
+        result.zoom = t.zoom;
+        result.height = t.height;
+        result.width = t.width;
+        return result;
+    }
+
+    void ScriptInterface::SetCamera(Entity e, Cam cam)
+    {
+        Camera& t = m_coord.ModifyComponent<Camera>(e);
+        t.isMainCam = cam.isMainCam;
+        t.zoom = cam.zoom;
+        t.height = cam.height;
+        t.width = cam.width;
+    }
+
+    //---isMainCam---
+    bool ScriptInterface::GetCameraIsMain(Entity e) {
+        return m_coord.GetComponent<Camera>(e).isMainCam;
+    }
+    void ScriptInterface::SetCameraIsMain(Entity e, bool main) {
+        m_coord.ModifyComponent<Camera>(e).isMainCam = main;
+    }
+
+    //---zoom---
+    float ScriptInterface::GetCameraZoom(Entity e) {
+        return m_coord.GetComponent<Camera>(e).zoom;
+    }
+    void ScriptInterface::SetCameraZoom(Entity e, float zoom) {
+        m_coord.ModifyComponent<Camera>(e).zoom = zoom;
+    }
+
+    //---width---
+    float ScriptInterface::GetCameraWidth(Entity e) {
+        return m_coord.GetComponent<Camera>(e).width;
+    }
+    void ScriptInterface::SetCameraWidth(Entity e, float width) {
+        m_coord.ModifyComponent<Camera>(e).width = width;
+    }
+
+    //---height---
+    float ScriptInterface::GetCameraHeight(Entity e) {
+        return m_coord.GetComponent<Camera>(e).height;
+    }
+    void ScriptInterface::SetCameraHeight(Entity e, float height) {
+        m_coord.ModifyComponent<Camera>(e).height = height;
+    }
+
+#pragma endregion
 
 
     // --------------------------------------------------------------

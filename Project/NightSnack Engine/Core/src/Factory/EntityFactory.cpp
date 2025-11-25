@@ -481,7 +481,7 @@ namespace NightSnack {
         if (m_coord.HasComponent<Script>(e)) {
             Script const& s = m_coord.GetComponent<Script>(e);
             j["Script"] = {
-                {"name", s.name}
+                {"name", s.names}
             };
         }
         //  ---------------------------------------------------------------
