@@ -44,7 +44,7 @@ namespace NightSnack {
         LoadAllGameAudio();
 
         // start playing main menu music by default
-        PlayBGM(AudioKeys::mainMenu);
+        PlayBGM("mainMenu");
     }
 
     // destructor cleans up resources and releases fmod system

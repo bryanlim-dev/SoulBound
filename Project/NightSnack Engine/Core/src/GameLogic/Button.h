@@ -327,8 +327,8 @@ namespace NightSnack {
 				// Play button click sound
 				if (audioSystem)
 				{
-					const auto& audioKeys = audioSystem->GetAudioKeys();
-					audioSystem->PlaySFX(audioKeys.buttonClick);
+					//const auto& audioKeys = audioSystem->GetAudioKeys();
+					audioSystem->PlaySFX("buttonClick");
 					//std::cout << "Playing click sound\n";
 				}
 				break;
@@ -337,8 +337,8 @@ namespace NightSnack {
 				// Play button click sound
 				if (audioSystem)
 				{
-					const auto& audioKeys = audioSystem->GetAudioKeys();
-					audioSystem->PlaySFX(audioKeys.playerJump);
+					//const auto& audioKeys = audioSystem->GetAudioKeys();
+					audioSystem->PlaySFX("playerJump");
 					//std::cout << "Playing jump sound\n";
 				}
 				break;
@@ -347,8 +347,8 @@ namespace NightSnack {
 				// Play button click sound
 				if (audioSystem)
 				{
-					const auto& audioKeys = audioSystem->GetAudioKeys();
-					audioSystem->PlaySFX(audioKeys.playerHit);
+					//const auto& audioKeys = audioSystem->GetAudioKeys();
+					audioSystem->PlaySFX("playerHit");
 					//std::cout << "Playing hit sound\n";
 				}
 				break;
