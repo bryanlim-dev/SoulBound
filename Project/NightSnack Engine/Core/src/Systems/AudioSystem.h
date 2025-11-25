@@ -25,26 +25,26 @@
 
 namespace NightSnack {
 
-    /**
-     * @struct AudioKeys
-     * @brief stores keys for sound effects and background music using string identifiers
-     */
-    struct AudioKeys {
-        // SFX
+    ///**
+    // * @struct AudioKeys
+    // * @brief stores keys for sound effects and background music using string identifiers
+    // */
+    //struct AudioKeys {
+    //    // SFX
 
-        // UI sounds
-        static constexpr const char* buttonClick = "buttonClick";
+    //    // UI sounds
+    //    static constexpr const char* buttonClick = "buttonClick";
 
-        // In game sounds
-        static constexpr const char* playerJump = "playerJump";
-        static constexpr const char* playerHit = "playerHit";
-        static constexpr const char* playerCollect = "playerCollect";
-        static constexpr const char* playerHurt = "playerHurt";
-        static constexpr const char* playerSlap = "playerSlap";
+    //    // In game sounds
+    //    static constexpr const char* playerJump = "playerJump";
+    //    static constexpr const char* playerHit = "playerHit";
+    //    static constexpr const char* playerCollect = "playerCollect";
+    //    static constexpr const char* playerHurt = "playerHurt";
+    //    static constexpr const char* playerSlap = "playerSlap";
 
-        // BGM
-        static constexpr const char* mainMenu = "mainMenu";
-    };
+    //    // BGM
+    //    static constexpr const char* mainMenu = "mainMenu";
+    //};
 
     /**
      * @enum AUDIO_RESULT
@@ -94,11 +94,11 @@ namespace NightSnack {
          */
         void LoadAllGameAudio();
 
-        /**
-         * @brief retrieve audio keys to access sound
-         * @return reference to AudioKeys struct
-         */
-        const AudioKeys& GetAudioKeys() const { return m_audioKeys; }
+        ///**
+        // * @brief retrieve audio keys to access sound
+        // * @return reference to AudioKeys struct
+        // */
+        //const AudioKeys& GetAudioKeys() const { return m_audioKeys; }
 
         // SFX Functions
 
@@ -214,7 +214,7 @@ namespace NightSnack {
         std::unordered_map<std::string, size_t> m_keyToID;
 
         // Audio keys for all game sounds
-        AudioKeys m_audioKeys;
+        //AudioKeys m_audioKeys;
 
         // State
         bool m_initialized;
