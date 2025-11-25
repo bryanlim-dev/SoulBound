@@ -527,6 +527,45 @@ extern "C" {
     // --------------------------------------------------------------
     
 #pragma region Camera
+    // isMainCam --------------
+    static void NightSnack_GetCameraIsMain(uint32_t id, bool* outMain) {
+        if (!g_scriptInterface || !outMain) { return; }
+        *outMain = g_scriptInterface->GetCameraIsMain(id);
+    }
+    static void NightSnack_SetCameraIsMain(uint32_t id, bool* main) {
+        if (!g_scriptInterface || !main) { return; }
+        g_scriptInterface->SetCameraIsMain(id, *main);
+    }
+
+    // zoom --------------
+    static void NightSnack_GetCameraZoom(uint32_t id, float* outZoom) {
+        if (!g_scriptInterface || !outZoom) { return; }
+        *outZoom = g_scriptInterface->GetCameraZoom(id);
+    }
+    static void NightSnack_SetCameraZoom(uint32_t id, float* zoom) {
+        if (!g_scriptInterface || !zoom) { return; }
+        g_scriptInterface->SetCameraZoom(id, *zoom);
+    }
+
+    // width --------------
+    static void NightSnack_GetCameraWidth(uint32_t id, float* outWidth) {
+        if (!g_scriptInterface || !outWidth) { return; }
+        *outWidth = g_scriptInterface->GetCameraWidth(id);
+    }
+    static void NightSnack_SetCameraWidth(uint32_t id, float* width) {
+        if (!g_scriptInterface || !width) { return; }
+        g_scriptInterface->SetCameraWidth(id, *width);
+    }
+
+    // height --------------
+    static void NightSnack_GetCameraHeight(uint32_t id, float* outHeight) {
+        if (!g_scriptInterface || !outHeight) { return; }
+        *outHeight = g_scriptInterface->GetCameraHeight(id);
+    }
+    static void NightSnack_SetCameraHeight(uint32_t id, float* height) {
+        if (!g_scriptInterface || !height) { return; }
+        g_scriptInterface->SetCameraHeight(id, *height);
+    }
 
 #pragma endregion
 
@@ -765,6 +804,21 @@ namespace NightSnack::Scripting {
 
 #pragma endregion
 
+#pragma region Camera
+
+        mono_add_internal_call("ManagedScripts.Engine::GetCameraIsMain_Internal", (void*)NightSnack_GetCameraIsMain);
+        mono_add_internal_call("ManagedScripts.Engine::SetCameraIsMain_Internal", (void*)NightSnack_SetCameraIsMain);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetCameraZoom_Internal", (void*)NightSnack_GetCameraZoom);
+        mono_add_internal_call("ManagedScripts.Engine::SetCameraZoom_Internal", (void*)NightSnack_SetCameraZoom);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetCameraWidth_Internal", (void*)NightSnack_GetCameraWidth);
+        mono_add_internal_call("ManagedScripts.Engine::SetCameraWidth_Internal", (void*)NightSnack_SetCameraWidth);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetCameraHeight_Internal", (void*)NightSnack_GetCameraHeight);
+        mono_add_internal_call("ManagedScripts.Engine::SetCameraHeight_Internal", (void*)NightSnack_SetCameraHeight);
+
+#pragma endregion
 
 
 #pragma region Key/Inputs

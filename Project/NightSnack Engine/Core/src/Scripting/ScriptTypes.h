@@ -156,6 +156,13 @@ namespace NightSnack::Scripting {
         Vec3 offsetPosition{ 0.f, 0.f, 0.f };
     };
 
+    struct Cam {
+        bool isMainCam{ true };
+        float zoom{ 1.f };
+        float width{ 1600.f };
+        float height{ 900.f };
+    };
+
     // Handle to a game object (Similar to Entity ID)
     struct GameObjectHandle {
         uint32_t id;

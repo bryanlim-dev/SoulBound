@@ -923,7 +923,49 @@ namespace ManagedScripts
         // Camera API for Scripts
         // ----------------------------
         #region Camera
+        //isMainCam
+        public static bool GetCameraIsMain(uint entityId)
+        {
+            GetCameraIsMain_Internal(entityId, out bool main);
+            return main;
+        }
+        public static void SetCameraIsMain(uint entityId, bool main)
+        {
+            SetCameraIsMain_Internal(entityId, ref main);
+        }
 
+        //zoom
+        public static float GetCameraZoom(uint entityId)
+        {
+            GetCameraZoom_Internal(entityId, out float zoom);
+            return zoom;
+        }
+        public static void SetCameraZoom(uint entityId, float zoom)
+        {
+            SetCameraZoom_Internal(entityId, ref zoom);
+        }
+
+        //width
+        public static float GetCameraWidth(uint entityId)
+        {
+            GetCameraWidth_Internal(entityId, out float width);
+            return width;
+        }
+        public static void SetCameraWidth(uint entityId, float width)
+        {
+            SetCameraWidth_Internal(entityId, ref width);
+        }
+
+        //height
+        public static float GetCameraHeight(uint entityId)
+        {
+            GetCameraHeight_Internal(entityId, out float height);
+            return height;
+        }
+        public static void SetCameraHeight(uint entityId, float height)
+        {
+            SetCameraHeight_Internal(entityId, ref height);
+        }
         #endregion
 
         // ----------------------------
