@@ -389,6 +389,8 @@ namespace NightSnack {
 		/************************************************************************/
 		const std::unordered_map<std::string, std::unique_ptr<Shader>>& GetShadersMap() const { return m_shaders; }
 
+		const std::vector<std::string> GetMaterialMapStrings() const;
+
 		/************************************************************************/
 		/*!
 		\brief

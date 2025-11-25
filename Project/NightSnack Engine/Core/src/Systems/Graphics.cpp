@@ -759,6 +759,14 @@ namespace NightSnack {
 		}
 	}
 
+	const std::vector<std::string> GraphicsSystem::GetMaterialMapStrings() const {
+		std::vector<std::string> materials{};
+		for (const auto& [matName, mat] : m_materials) {
+			materials.emplace_back(matName);
+		}
+		return materials;
+	}
+
 	void GraphicsSystem::DebugRenderableInformation() {
 
 		// Materials
