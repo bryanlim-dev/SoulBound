@@ -366,8 +366,12 @@ namespace NightSnack
 
                     if (item.type == AssetType::Image)
                     {
+                        // Make the file path of the image to be the relative path from the RESOURCE_PATH
+                        std::filesystem::path relPath = std::filesystem::relative(item.fullPath, m_assetsRoot);
+                        pathStr = relPath.string();
+                        
                         ImGui::SetDragDropPayload("ASSET_IMAGE", pathStr.c_str(), pathStr.size() + 1);
-                        ImTextureID texID = GetOrLoadTexture(item.fullPath.filename().string());
+                        ImTextureID texID = GetOrLoadTexture(pathStr);
                         if (texID)
                         {
                             ImGui::Image(texID, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
@@ -425,11 +429,14 @@ namespace NightSnack
             {
             case AssetType::Image:
             {
-                ImTextureID texID = GetOrLoadTexture(item.fullPath.filename().string());
+                // Use the relative file path instead
+                std::filesystem::path relPath = std::filesystem::relative(item.fullPath, m_assetsRoot);
+                ImTextureID texID = GetOrLoadTexture(relPath.string());
                 if (texID)
                 {
                     ImGui::ImageButton(
-                        item.fullPath.string().c_str(),
+                        //item.fullPath.string().c_str(),
+                        relPath.string().c_str(),
                         texID,
                         ImVec2(m_thumbnailSize, m_thumbnailSize),
                         ImVec2(0, 1), ImVec2(1, 0));
@@ -487,7 +494,11 @@ namespace NightSnack
                 case AssetType::Image:
                 {
                     ImGui::Text("Preview:");
-                    ImTextureID texID = GetOrLoadTexture(selectedPath.filename().string());
+                    // Use the relative file path instead
+                    std::filesystem::path relPath = std::filesystem::canonical(selectedPath);
+                    ImTextureID texID = GetOrLoadTexture(relPath.string());
+                    
+                    //ImTextureID texID = GetOrLoadTexture(selectedPath.filename().string());
                     if (texID)
                     {
                         ImGui::Image(texID, ImVec2(200, 200), ImVec2(0, 1), ImVec2(1, 0));

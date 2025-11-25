@@ -146,6 +146,8 @@ namespace NightSnack {
 
 		void LoadTextures();
 
+		void IterateFolder(const std::filesystem::path& folderPath);
+
 		/************************************************************************/
 		/*!
 		\brief
