@@ -1,7 +1,14 @@
 {
+    "Animator": {
+        "isLooping": true,
+        "isPlaying": true,
+        "playbackSpeed": 1.0,
+        "spriteSheetName": ""
+    },
     "Collider": {
         "height": 200.0,
         "isStatic": false,
+        "radius": 1.0,
         "shape": "AABB",
         "type": "Solid",
         "width": 200.0
@@ -20,12 +27,5 @@
     "RigidBody": {
         "mass": 1.0,
         "useGravity": false
-    },
-    "Animator": {
-        "isLooping": true,
-        "isPlaying": true,
-        "playbackSpeed": 1.0,
-        "spriteSheetName": ""
     }
-
 }

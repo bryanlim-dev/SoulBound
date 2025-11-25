@@ -106,10 +106,8 @@ namespace NightSnack
             }
 
             // save prefab button if changes are made
-            if (!m_prefabModified)
-            {
-                ImGui::BeginDisabled();
-            }
+            ImGui::BeginDisabled(!m_prefabModified);
+
 
             if (ImGui::Button("Save Prefab"))
             {
@@ -117,10 +115,7 @@ namespace NightSnack
                 m_prefabModified = false;
             }
 
-            if (!m_prefabModified)
-            {
-                ImGui::EndDisabled();
-            }
+            ImGui::EndDisabled();
         }
 
     private:
@@ -161,6 +156,18 @@ namespace NightSnack
                         // parse and store the JSON data
                         nlohmann::json prefabData = nlohmann::json::parse(file);
                         m_archetypes[prefabName] = prefabData;
+
+                        //if (j["name"].is_array()) {
+                        //    // Handle as array
+                        //    for (const auto& name : j["name"]) {
+                        //        s.names.push_back(name.get<std::string>());
+                        //    }
+                        //}
+                        //else {
+                        //    m_archetypes[prefabName] = prefabData;
+                        //}
+
+						//from_json(prefabData, m_archetypes[prefabName]);
                         m_prefabNames.push_back(prefabName);
 
                         file.close();
@@ -216,7 +223,7 @@ namespace NightSnack
 
                 // reload all entities using this prefab
                 m_coord.GetSystem<EntityFactory>()->UpdatePrefab(prefabName);
-            }\
+            }
             catch (const std::exception& e)
             {
                 std::cerr << "Error saving prefab " << prefabName << ": " << e.what() << std::endl;
@@ -306,7 +313,9 @@ namespace NightSnack
             float p[3] = { pos["x"], pos["y"], pos["z"] };
             if (ImGui::DragFloat3("Position", p, 0.1f))
             {
-                pos["x"] = p[0]; pos["y"] = p[1]; pos["z"] = p[2];
+                pos["x"] = p[0];
+                pos["y"] = p[1];
+                pos["z"] = p[2];
                 m_prefabModified = true;
             }
 
@@ -320,7 +329,8 @@ namespace NightSnack
             float s[2] = { scale["x"], scale["y"] };
             if (ImGui::DragFloat2("Scale", s, 0.1f))
             {
-                scale["x"] = s[0]; scale["y"] = s[1];
+                scale["x"] = s[0];
+                scale["y"] = s[1];
                 m_prefabModified = true;
             }
         }
@@ -344,7 +354,7 @@ namespace NightSnack
             float mass = j["mass"];
             bool useGravity = j["useGravity"];
 
-            if (ImGui::DragFloat("Mass", &mass, 0.1f))
+            if (ImGui::DragFloat("Mass", &mass, 0.1f, 0.0f, 1000.0f))
             {
                 j["mass"] = mass;
                 m_prefabModified = true;
@@ -359,55 +369,78 @@ namespace NightSnack
 
         void DrawColliderEditor(nlohmann::json& j)
         {
+            // Shape dropdown
             std::string shape = j["shape"];
+            const char* shapes[] = { "Circle", "AABB" };
+            int currentShapeIdx = 0;
+
+            for (int i = 0; i < IM_ARRAYSIZE(shapes); i++)
+            {
+                if (shape == shapes[i])
+                {
+                    currentShapeIdx = i;
+                    break;
+                }
+            }
+
+            if (ImGui::Combo("Shape", &currentShapeIdx, shapes, IM_ARRAYSIZE(shapes)))
+            {
+                j["shape"] = shapes[currentShapeIdx];
+                shape = shapes[currentShapeIdx];
+                m_prefabModified = true;
+            }
+
+            // Type dropdown
             std::string type = j["type"];
+            const char* types[] = { "Solid", "Trigger" };
+            int currentTypeIdx = 0;
+
+            for (int i = 0; i < IM_ARRAYSIZE(types); i++)
+            {
+                if (type == types[i])
+                {
+                    currentTypeIdx = i;
+                    break;
+                }
+            }
+
+            if (ImGui::Combo("Type", &currentTypeIdx, types, IM_ARRAYSIZE(types)))
+            {
+                j["type"] = types[currentTypeIdx];
+                type = types[currentTypeIdx];
+                m_prefabModified = true;
+            }
+
+            // Static checkbox
             bool isStatic = j["isStatic"];
-
-            char shapeBuf[64];
-            strcpy_s(shapeBuf, shape.c_str());
-            if (ImGui::InputText("Shape", shapeBuf, sizeof(shapeBuf)))
-            {
-                shape = shapeBuf;
-                m_prefabModified = true;
-            }
-            j["shape"] = shape;
-
-            char typeBuf[64];
-            strcpy_s(typeBuf, type.c_str());
-            if (ImGui::InputText("Type", typeBuf, sizeof(typeBuf)))
-            {
-                type = typeBuf;
-                m_prefabModified = true;
-            }
-            j["type"] = type;
-
             if (ImGui::Checkbox("Static", &isStatic))
             {
+                j["isStatic"] = isStatic;
                 m_prefabModified = true;
             }
-            j["isStatic"] = isStatic;
 
+            // Shape-specific properties
             if (shape == "Circle")
             {
                 float radius = j["radius"];
-                if (ImGui::DragFloat("Radius", &radius))
+                if (ImGui::DragFloat("Radius", &radius, 0.1f, 0.1f, 100.0f))
                 {
                     j["radius"] = radius;
                     m_prefabModified = true;
                 }
             }
-            else
+            else if (shape == "AABB")
             {
                 float w = j["width"];
                 float h = j["height"];
 
-                if (ImGui::DragFloat("Width", &w))
+                if (ImGui::DragFloat("Width", &w, 0.1f, 0.1f, 100.0f))
                 {
                     j["width"] = w;
                     m_prefabModified = true;
                 }
 
-                if (ImGui::DragFloat("Height", &h))
+                if (ImGui::DragFloat("Height", &h, 0.1f, 0.1f, 100.0f))
                 {
                     j["height"] = h;
                     m_prefabModified = true;
@@ -417,96 +450,115 @@ namespace NightSnack
 
         void DrawRenderableEditor(nlohmann::json& j)
         {
-            char mesh[128]; strcpy_s(mesh, j["meshName"].get<std::string>().c_str());
-            if (ImGui::InputText("Mesh", mesh, sizeof(mesh)))
+            // Mesh name input
+            std::string meshName = j["meshName"];
+            char meshBuf[128];
+            strcpy_s(meshBuf, meshName.c_str());
+
+            if (ImGui::InputText("Mesh", meshBuf, sizeof(meshBuf)))
             {
-                j["meshName"] = mesh;
+                j["meshName"] = std::string(meshBuf);
                 m_prefabModified = true;
             }
 
-            char mat[128]; strcpy_s(mat, j["materialName"].get<std::string>().c_str());
-            if (ImGui::InputText("Material", mat, sizeof(mat)))
+            // Material name input
+            std::string matName = j["materialName"];
+            char matBuf[128];
+            strcpy_s(matBuf, matName.c_str());
+
+            if (ImGui::InputText("Material", matBuf, sizeof(matBuf)))
             {
-                j["materialName"] = mat;
+                j["materialName"] = std::string(matBuf);
                 m_prefabModified = true;
             }
 
-            bool wf = j.contains("isWireframe") ? j["isWireframe"].get<bool>() : false;
-            if (ImGui::Checkbox("Wireframe", &wf))
+            // Wireframe checkbox
+            bool wireframe = j.contains("isWireframe") ? j["isWireframe"].get<bool>() : false;
+            if (ImGui::Checkbox("Wireframe", &wireframe))
             {
-                j["isWireframe"] = wf;
+                j["isWireframe"] = wireframe;
                 m_prefabModified = true;
             }
         }
 
         void DrawPlayerControllerEditor(nlohmann::json& j)
         {
-            float move = j["moveSpeed"];
-            float jump = j["jumpSpeed"];
+            float moveSpeed = j["moveSpeed"];
+            float jumpSpeed = j["jumpSpeed"];
 
-            if (ImGui::DragFloat("Move Speed", &move, 1.0f))
+            if (ImGui::DragFloat("Move Speed", &moveSpeed, 1.0f, 0.0f, 1000.0f))
             {
+                j["moveSpeed"] = moveSpeed;
                 m_prefabModified = true;
             }
 
-            if (ImGui::DragFloat("Jump Speed", &jump, 1.0f))
+            if (ImGui::DragFloat("Jump Speed", &jumpSpeed, 1.0f, 0.0f, 1000.0f))
             {
+                j["jumpSpeed"] = jumpSpeed;
                 m_prefabModified = true;
             }
-
-            j["moveSpeed"] = move;
-            j["jumpSpeed"] = jump;
         }
 
         void DrawAnimatorEditor(nlohmann::json& j)
         {
-            char buf[128]; strcpy_s(buf, j["spriteSheetName"].get<std::string>().c_str());
+            // Sprite sheet input
+            std::string spriteSheet = j["spriteSheetName"];
+            char buf[128];
+            strcpy_s(buf, spriteSheet.c_str());
+
             if (ImGui::InputText("Sprite Sheet", buf, sizeof(buf)))
             {
-                j["spriteSheetName"] = buf;
+                j["spriteSheetName"] = std::string(buf);
                 m_prefabModified = true;
             }
 
+            // Playback speed slider
             float speed = j["playbackSpeed"];
-            bool playing = j["isPlaying"];
-            bool looping = j["isLooping"];
-
-            if (ImGui::DragFloat("Playback Speed", &speed, 0.05f))
+            if (ImGui::SliderFloat("Playback Speed", &speed, 0.0f, 5.0f))
             {
+                j["playbackSpeed"] = speed;
                 m_prefabModified = true;
             }
 
+            // Playing checkbox
+            bool playing = j["isPlaying"];
             if (ImGui::Checkbox("Playing", &playing))
             {
+                j["isPlaying"] = playing;
                 m_prefabModified = true;
             }
 
+            // Looping checkbox
+            bool looping = j["isLooping"];
             if (ImGui::Checkbox("Looping", &looping))
             {
+                j["isLooping"] = looping;
                 m_prefabModified = true;
             }
-
-            j["playbackSpeed"] = speed;
-            j["isPlaying"] = playing;
-            j["isLooping"] = looping;
         }
 
         void DrawFontEditor(nlohmann::json& j)
         {
-            char text[128]; strcpy_s(text, j["text"].get<std::string>().c_str());
-            if (ImGui::InputText("Text", text, sizeof(text)))
+            // Text input
+            std::string text = j["text"];
+            char textBuf[256];
+            strcpy_s(textBuf, text.c_str());
+
+            if (ImGui::InputTextMultiline("Text", textBuf, sizeof(textBuf), ImVec2(-1, 60)))
             {
-                j["text"] = text;
+                j["text"] = std::string(textBuf);
                 m_prefabModified = true;
             }
 
-            float size = j["fontSize"];
-            if (ImGui::DragFloat("Size", &size, 0.05f))
+            // Font size input
+            float fontSize = j["fontSize"];
+            if (ImGui::DragFloat("Font Size", &fontSize, 0.5f, 0.2f, 10.0f))
             {
+                j["fontSize"] = fontSize;
                 m_prefabModified = true;
             }
-            j["fontSize"] = size;
 
+            // Text color picker
             auto& c = j["textColor"];
             float color[3] = { c["r"], c["g"], c["b"] };
 
@@ -521,31 +573,106 @@ namespace NightSnack
 
         void DrawButtonInfoEditor(nlohmann::json& j)
         {
-            char action[64]; strcpy_s(action, j["action"].get<std::string>().c_str());
-            if (ImGui::InputText("Action", action, sizeof(action)))
+            // Action dropdown (common button actions)
+            std::string action = j["action"];
+            const char* actions[] = {
+                "StartGame", "LoadLevel", "Quit", "Pause",
+                "Resume", "Settings", "MainMenu", "Custom"
+            };
+            int currentActionIdx = 0;
+            bool isCustomAction = true;
+
+            for (int i = 0; i < IM_ARRAYSIZE(actions); i++)
             {
-                j["action"] = action;
+                if (action == actions[i])
+                {
+                    currentActionIdx = i;
+                    isCustomAction = false;
+                    break;
+                }
+            }
+
+            if (ImGui::Combo("Action", &currentActionIdx, actions, IM_ARRAYSIZE(actions)))
+            {
+                j["action"] = actions[currentActionIdx];
+                action = actions[currentActionIdx];
                 m_prefabModified = true;
             }
 
-            char type[64]; strcpy_s(type, j["type"].get<std::string>().c_str());
-            if (ImGui::InputText("Type", type, sizeof(type)))
+            // Custom action input if "Custom" is selected
+            if (currentActionIdx == IM_ARRAYSIZE(actions) - 1)
             {
-                j["type"] = type;
+                char customAction[128];
+                strcpy_s(customAction, action.c_str());
+
+                if (ImGui::InputText("Custom Action", customAction, sizeof(customAction)))
+                {
+                    j["action"] = std::string(customAction);
+                    m_prefabModified = true;
+                }
+            }
+
+            // Type dropdown
+            std::string type = j["type"];
+            const char* types[] = { "Normal", "Toggle", "Radio" };
+            int currentTypeIdx = 0;
+
+            for (int i = 0; i < IM_ARRAYSIZE(types); i++)
+            {
+                if (type == types[i])
+                {
+                    currentTypeIdx = i;
+                    break;
+                }
+            }
+
+            if (ImGui::Combo("Button Type", &currentTypeIdx, types, IM_ARRAYSIZE(types)))
+            {
+                j["type"] = types[currentTypeIdx];
                 m_prefabModified = true;
             }
         }
 
         void DrawScriptEditor(nlohmann::json& j)
         {
-            char name[128];
-            strcpy_s(name, j["name"].get<std::string>().c_str());
+            // Script name input
+            std::vector<std::string> scriptNames;
+            for (std::string const& s : j["name"]) {
+				scriptNames.push_back(s);
+            }
+            std::string scriptDisplay = scriptNames[0];
+            for (int i{ 1 }; i < scriptNames.size(); ++i) {
+				scriptDisplay += ", " + scriptNames[i];
+            }
 
-            if (ImGui::InputText("Script Name", name, sizeof(name)))
+            char nameBuf[128];
+            strcpy_s(nameBuf, scriptDisplay.c_str());
+
+            if (ImGui::InputText("Scripts ", nameBuf, sizeof(nameBuf)))
             {
-                j["name"] = name;
+                j["name"].clear();
+                for (auto& s : SplitScripts(nameBuf)) {
+                    j["name"].push_back(s);
+                }
                 m_prefabModified = true;
             }
+        }
+
+        std::vector<std::string> SplitScripts(std::string const& s) {
+            std::stringstream iss{ s };
+            std::string script;
+
+			std::vector<std::string> scripts;
+
+			while (std::getline(iss, script, ',')) {
+				// trim whitespace
+				script.erase(0, script.find_first_not_of(" \t\n\r\f\v"));
+				script.erase(script.find_last_not_of(" \t\n\r\f\v") + 1);
+				if (!script.empty()) {
+					scripts.push_back(script);
+				}
+			}
+            return scripts;
         }
 
         void DrawJsonFields(nlohmann::json& j)
@@ -555,9 +682,9 @@ namespace NightSnack
                 if (val.is_number_float())
                 {
                     float f = val;
-                    if (ImGui::DragFloat(key.c_str(), &f))
+                    if (ImGui::DragFloat(key.c_str(), &f, 0.1f))
                     {
-                        val = f;
+                        j[key] = f;
                         m_prefabModified = true;
                     }
                 }
@@ -566,7 +693,7 @@ namespace NightSnack
                     int i = val;
                     if (ImGui::DragInt(key.c_str(), &i))
                     {
-                        val = i;
+                        j[key] = i;
                         m_prefabModified = true;
                     }
                 }
@@ -575,17 +702,19 @@ namespace NightSnack
                     bool b = val;
                     if (ImGui::Checkbox(key.c_str(), &b))
                     {
-                        val = b;
+                        j[key] = b;
                         m_prefabModified = true;
                     }
                 }
                 else if (val.is_string())
                 {
-                    char buf[128];
-                    strcpy_s(buf, val.get<std::string>().c_str());
+                    std::string str = val;
+                    char buf[256];
+                    strcpy_s(buf, str.c_str());
+
                     if (ImGui::InputText(key.c_str(), buf, sizeof(buf)))
                     {
-                        val = buf;
+                        j[key] = std::string(buf);
                         m_prefabModified = true;
                     }
                 }
@@ -596,6 +725,11 @@ namespace NightSnack
                         DrawJsonFields(val);
                         ImGui::TreePop();
                     }
+                }
+                else if (val.is_array())
+                {
+                    ImGui::Text("%s: [Array - %zu elements]", key.c_str(), val.size());
+                    
                 }
             }
         }
