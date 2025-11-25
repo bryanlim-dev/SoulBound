@@ -52,7 +52,7 @@ namespace NightSnack {
 
 	std::string Shader::LoadFile(const std::string& path) {
 
-		std::ifstream file(path);
+		std::ifstream file(RESOURCE_PATH + path);
 
 		if (!file.is_open())
 			throw std::runtime_error("Failed to open Shader File: " + path);

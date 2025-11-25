@@ -90,6 +90,10 @@ namespace NightSnack {
 
 		int GetRows() const;
 
+		int GetWidth() const;
+
+		int GetHeight() const;
+
 	private:
 
 		std::string m_textureName{};

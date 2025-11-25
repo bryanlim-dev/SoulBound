@@ -63,7 +63,12 @@ namespace NightSnack {
 			m_componentLoaders[name] = [](Entity e, json const& data, Coordinator& coord) {
 				T component{};
 				from_json(data, component);
-				coord.AddComponent<T>(e, component);
+
+				if (coord.HasComponent<T>(e))
+					coord.ModifyComponent<T>(e) = component;
+
+				else
+					coord.AddComponent<T>(e, component);
 				};
 		}
 
@@ -109,6 +114,26 @@ namespace NightSnack {
 				}
 			}
 			return e;
+		}
+
+		void UpdateComponents(Entity e, json const& prefab) {
+			// Update all components from prefab definition;
+			for (auto& [compName, compData] : prefab.items()) {
+				// Look for component loader with std::string component name;
+				auto it = m_componentLoaders.find(compName);
+				// If found, use lambda function to insert data;
+				if (it != m_componentLoaders.end()) {
+					it->second(e, compData, m_coord);
+					std::cerr << "Updated Component [" << compName << "] to Entity: " << e << '\n';
+					for (auto c : compData) {
+						std::cerr << c << "\n";
+					}
+					std::cerr << "\n";
+				}
+				else {
+					std::cerr << "Unknown component: " << compName << "\n";
+				}
+			}
 		}
 
 	private:

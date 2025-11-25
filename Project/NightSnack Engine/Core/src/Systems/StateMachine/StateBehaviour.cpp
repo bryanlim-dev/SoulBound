@@ -50,7 +50,7 @@ namespace NightSnack
 				//Player x pos smaller than entity's
 				if (coord.GetComponent<Transform>(player).pos.x <= coord.GetComponent<Transform>(ownerID).pos.x)
 				{
-					//std::cout << "Player Left Side: Player.x : " << coord.GetComponent<Transform>(player).pos.x << ", Entity: " << coord.GetComponent<Transform>(ownerID).pos.x << std::endl;
+					////std::cout << "Player Left Side: Player.x : " << coord.GetComponent<Transform>(player).pos.x << ", Entity: " << coord.GetComponent<Transform>(ownerID).pos.x << std::endl;
 					return true;
 				}
 			}
@@ -65,7 +65,7 @@ namespace NightSnack
 			{
 				if (coord.GetComponent<Transform>(player).pos.x >= coord.GetComponent<Transform>(ownerID).pos.x)
 				{
-					//std::cout << "Player Right Side: Player.x : " << coord.GetComponent<Transform>(player).pos.x << ", Entity: " << coord.GetComponent<Transform>(ownerID).pos.x << std::endl;
+					////std::cout << "Player Right Side: Player.x : " << coord.GetComponent<Transform>(player).pos.x << ", Entity: " << coord.GetComponent<Transform>(ownerID).pos.x << std::endl;
 					return true;
 				}
 			}
@@ -79,7 +79,7 @@ namespace NightSnack
 			{
 				if (coord.GetComponent<Collider>(ownerID).colliding)
 				{
-					//std::cout << "Entity Colliding!" << std::endl;
+					////std::cout << "Entity Colliding!" << std::endl;
 					return true;
 				}
 				//return coord.GetComponent<Collider>(ownerID).colliding;
@@ -147,7 +147,7 @@ namespace NightSnack
 	{
 		m_currTime -= dt;
 
-		//std::cout << "Time: " << m_currTime << std::endl;
+		////std::cout << "Time: " << m_currTime << std::endl;
 		//Prevent underflow incase something cathastropic
 		if (m_currTime < 0)
 			m_currTime = 0;

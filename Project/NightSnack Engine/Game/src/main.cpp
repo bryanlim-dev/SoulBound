@@ -18,16 +18,17 @@
 
 #include "Core/Core.h"
 
+#include <filesystem>
+
 int main()
 {
 	// Enable memory leak checking at program exit
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	// Create Core engine
-	NightSnack::CoreEngine core;
-	core.StartUp("../assets/Data/WindowConfig.json");
+	NightSnack::CoreApp core;
+	core.StartUp("Data/WindowConfig.json");
 	core.Run();
- 	core.Terminate();
 
 	return 0;
 

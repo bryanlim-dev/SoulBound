@@ -45,6 +45,7 @@ namespace NightSnack
                 "Transform",
                 "Physics",
                 "Tilemap",
+                "Camera",
                 "Rigidbody",
                 "Collider",
                 "Renderer",
@@ -82,6 +83,7 @@ namespace NightSnack
                     if (compName == "Transform") { hasComponent = m_coord.HasComponent<Transform>(*m_selectedEntity); }
                     if (compName == "Physics")   { hasComponent = true; }
 					if (compName == "Tilemap")   { hasComponent = true; }
+					if (compName == "Camera")    { hasComponent = m_coord.HasComponent<Camera>(*m_selectedEntity); }
                     if (compName == "Rigidbody") { hasComponent = m_coord.HasComponent<RigidBody>(*m_selectedEntity); }
                     if (compName == "Collider")  { hasComponent = m_coord.HasComponent<Collider>(*m_selectedEntity); }
                     if (compName == "Renderer")  { hasComponent = m_coord.HasComponent<Renderable>(*m_selectedEntity); }
@@ -127,7 +129,8 @@ namespace NightSnack
                         {
                             if (compName == "Transform") { TransformComponent(); }
                             if (compName == "Physics")   { PhysicsComponent(); }
-							if (compName == "Tilemap")      { TilemapComponent(); }
+							if (compName == "Tilemap")   { TilemapComponent(); }
+							if (compName == "Camera")    { CameraComponent(); }
                             if (compName == "Rigidbody") { RigidBodyComponent(); }
                             if (compName == "Collider")  { ColliderComponent(); }
                             if (compName == "Renderer")  { RendererComponent(); }
@@ -197,6 +200,15 @@ namespace NightSnack
         */
         /************************************************************************/
         void TilemapComponent();
+
+        /************************************************************************/
+        /*!
+        \brief
+            Draws Camera component details which includes camera type, zoom,
+			and other camera-related properties.
+        */
+        /************************************************************************/
+        void CameraComponent();
 
         /************************************************************************/
         /*!
@@ -302,10 +314,10 @@ namespace NightSnack
             ImGui::SameLine();
             ImGui::SetNextItemWidth(120.0f);
             if (ImGui::Combo("##LayerCombo", &currentLayer, layerNames, IM_ARRAYSIZE(layerNames))) {
-                std::cout << "original: " << static_cast<int>(t.layer) << ", new: " << currentLayer << std::endl;
+                //std::cout << "original: " << static_cast<int>(t.layer) << ", new: " << currentLayer << std::endl;
                 t.layer = static_cast<LayerType>(currentLayer);
                 m_coord.BufferEntitySignature(entity);
-				std::cout << "Now: " << static_cast<int>(t.layer) << std::endl;
+				//std::cout << "Now: " << static_cast<int>(t.layer) << std::endl;
             }
         }
 
@@ -461,6 +473,49 @@ namespace NightSnack
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("UseGravity");
             ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##useGravity", &rb.useGravity);
+
+            ImGui::EndTable();
+        }
+    }
+
+    // Draws Camera component details which includes camera type, zoom,
+    inline void InspectorPanel::CameraComponent()
+    {
+        if (!m_coord.HasComponent<Camera>(*m_selectedEntity))
+            return;
+        auto& cam = m_coord.ModifyComponent<Camera>(*m_selectedEntity);
+
+        if (ImGui::BeginTable("CameraTable", 2, ImGuiTableFlags_SizingFixedFit))
+        {
+            ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+
+            // Is Main Camera
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Is Main Cam");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Checkbox("##IsMainCam", &cam.isMainCam);
+
+            // Zoom
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Zoom");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##Zoom", &cam.zoom, 0.1f, 1.0f, "%.2f");
+
+            // Width
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Width");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##Width", &cam.width, 1.0f, 10.0f, "%.0f");
+
+            // Height
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Height");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##Height", &cam.height, 1.0f, 10.0f, "%.0f");
 
             ImGui::EndTable();
         }
@@ -710,14 +765,19 @@ namespace NightSnack
 
         auto& script = m_coord.GetComponent<Script>(*m_selectedEntity);
 
-        if (ImGui::BeginTable("ScriptTable", 2, ImGuiTableFlags_SizingFixedFit))
+        if (ImGui::BeginTable("ScriptTable", 1 + script.names.size(), ImGuiTableFlags_SizingFixedFit))
         {
             ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 120.0f);
 
             ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0); ImGui::Text("Script");
-            ImGui::TableSetColumnIndex(1); ImGui::TextDisabled("%s", script.name.c_str());
+            int indexCount = 0;
+            ImGui::TableSetColumnIndex(indexCount); ImGui::Text("Script");
+            for (std::string names : script.names)
+            {
+                indexCount++;
+                ImGui::TableSetColumnIndex(indexCount); ImGui::TextDisabled("%s", names.c_str());
+            }
 
             ImGui::EndTable();
         }
