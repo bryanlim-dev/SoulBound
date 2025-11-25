@@ -49,15 +49,15 @@ namespace NightSnack {
 			// Skip the updating of this sprite sheet
 			// User either did not properly initialized Texture[cols, rows] or
 			// User added an Animator component to a static texture
-			//std::cout << "Renderable name: " << ren.materialName << std::endl;
+			////std::cout << "Renderable name: " << ren.materialName << std::endl;
 			Material* mat = m_coord.GetSystem<GraphicsSystem>()->GetMaterial(ren.materialName);
 			if (!mat) { continue; }
 			Texture* tex = mat->GetTexture();
 			if (!tex) {
-				//std::cout << "Texture does not exist\n";
+				////std::cout << "Texture does not exist\n";
 				continue;
 			}
-			//std::cout << "Spritesheet name: " << animator.spriteSheetName << std::endl;
+			////std::cout << "Spritesheet name: " << animator.spriteSheetName << std::endl;
 			if (tex->GetColumns() == 1 && tex->GetRows() == 1) {
 				std::cerr << "[AnimationSystem] Current Entity texture is treated as static. Ensure Texture name has [_cols_rows] or remove Entity's Animator Component!\n";
 				continue;
@@ -70,7 +70,7 @@ namespace NightSnack {
 
 			// Get the spritesheet name based on the texture it is using
 			if (animator.spriteSheetName.empty() || animator.spriteSheetName != tex->GetTextureName()) {
-				//std::cout << "Spritesheet name: " << animator.spriteSheetName << std::endl;
+				////std::cout << "Spritesheet name: " << animator.spriteSheetName << std::endl;
 				animator.spriteSheetName = tex->GetTextureName();
 				// The texture has been changed for this Entity, but the animator is still using the old spritesheet
 				animator.currentAnimationClip.clear(); // Reset the current AnimationClip
@@ -84,7 +84,7 @@ namespace NightSnack {
 			if (animator.currentAnimationClip.empty()) {
 				// Set the first Animation Clip to be the default clip
 				animator.currentAnimationClip = m_animationClips[animator.spriteSheetName].begin()->first;
-				//std::cout << "Empty current clip changed to: " << animator.currentAnimationClip << std::endl;
+				////std::cout << "Empty current clip changed to: " << animator.currentAnimationClip << std::endl;
 			} 
 
 			// Here, there is a current Animation Clip being played
@@ -172,7 +172,7 @@ namespace NightSnack {
 	}
 
 	void AnimationSystem::CreateAnimationClips(std::string textureName, Texture* tex, int cols, int rows) {
-		//std::cout << "[INIT] Processing texture: " << textureName << " has " << cols
+		////std::cout << "[INIT] Processing texture: " << textureName << " has " << cols
 		//	<< " columns, " << rows << " rows\n";
 
 		// Separate the texture into its different animation clips
@@ -186,7 +186,7 @@ namespace NightSnack {
 			clip.texture = tex;
 
 			std::string clipName = textureName + "_" + std::to_string(r);
-			//std::cout << "Creating AnimationClip: " << clipName << std::endl;
+			////std::cout << "Creating AnimationClip: " << clipName << std::endl;
 
 			for (int c{}; c < cols; ++c) {
 				AnimationFrame frame;
@@ -205,7 +205,7 @@ namespace NightSnack {
 			m_animationClips[textureName][clipName] = clip;
 		}
 
-		//std::cout << "Created AnimationClip for: " << textureName << std::endl;
+		////std::cout << "Created AnimationClip for: " << textureName << std::endl;
 	}
 
 	std::vector<std::string> AnimationSystem::GetSpritesheetAnimationClipsNames(Entity e) {

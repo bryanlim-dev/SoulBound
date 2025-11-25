@@ -39,7 +39,9 @@ namespace NightSnack {
 	}
 
 	void TextSystem::LoadFonts() {
-		std::filesystem::path assetsFilePath = "../assets/Font";
+		std::filesystem::path assetsFilePath = std::filesystem::canonical(
+			RESOURCE_PATH + std::string{ "Font" }
+		);
 
 		if (!std::filesystem::exists(assetsFilePath)) {
 			std::cerr << "[TextSystem] Error: Assets Font directory cannot be found!\n";
@@ -54,15 +56,15 @@ namespace NightSnack {
 			}
 
 			// Only load the fonts that are in this assets folder
-			std::filesystem::path filePath = entry.path();
-			std::string extension = filePath.extension().string();
+			std::string extension = entry.path().extension().string();
 
 			// Only load fonts with the correct extensions
 			if (extension != ".ttf") {
 				continue;
 			}
+			std::string filePath = std::string{ "Font/" } + entry.path().filename().string();
 
-			CreateFont(filePath.string());
+			CreateFont(filePath);
 		}
 	}
 
@@ -106,7 +108,7 @@ namespace NightSnack {
 		for (unsigned char c = 0; c < 128; ++c) {
 			// Load and render character glyph
 			if (FT_Load_Char(face, c, FT_LOAD_RENDER)) {
-				std::cout << "Error: Failed to load Glyph\n";
+				//std::cout << "Error: Failed to load Glyph\n";
 				continue;
 			}
 			// Generate texture from glyph bitmap
@@ -137,15 +139,10 @@ namespace NightSnack {
 	}
 
 	void TextSystem::Update() {
-
-		//if (!m_coord.GetSystem<ImguiSystem>()->GetEditorActive()) {
-		
 		// Find the main camera and render accordingly
 		Entity mainCam = m_coord.GetSystem<GraphicsSystem>()->FindCamera();
 		if (mainCam == INVALID_ENTITY) return;
 		Draw(mainCam, true);
-
-		//}
 	}
 
 	void TextSystem::Draw(Entity camera, bool isGameCamera) {
@@ -179,7 +176,7 @@ namespace NightSnack {
 				glm::mat4 viewToUse = isUILayer ? glm::mat4(1.f) : view;
 
 				auto& pos = m_coord.GetComponent<Transform>(e).pos;
-				auto& scl = m_coord.GetComponent<Transform>(e).scale;
+				//auto& scl = m_coord.GetComponent<Transform>(e).scale;
 				auto& txt = m_coord.ModifyComponent<Font>(e);
 				auto& UIpos = m_coord.GetComponent<Transform>(e).UIbasePos;
 				auto& UIscale = m_coord.GetComponent<Transform>(e).UIbaseScale;
@@ -187,10 +184,10 @@ namespace NightSnack {
 				// Translate the position and scale of UI layer objects based on the current screen resolution
 				if (isUILayer) {
 					// By default, the base screen resolution is 1600, 900
-					float ratioPosX = UIpos.x / 1600.f;
-					float ratioPosY = UIpos.y / 900.f;
-					float ratioScaleX = UIscale.x / 1600.f;
-					float ratioScaleY = UIscale.y / 900.f;
+					float ratioPosX = UIpos.x / camInfo.width;
+					float ratioPosY = UIpos.y / camInfo.height;
+					float ratioScaleX = UIscale.x / camInfo.width;
+					float ratioScaleY = UIscale.y / camInfo.height;
 
 					// Get the new position and scaling based on the current screen resolution
 					m_coord.ModifyComponent<Transform>(e).pos.x = ratioPosX * screenW;
@@ -222,7 +219,7 @@ namespace NightSnack {
 	{
 		// Make sure the font exists
 		if (m_fontCharacters.find(fontName) == m_fontCharacters.end()) {
-			std::cout << "ERROR: Font '" << fontName << "' not found!" << std::endl;
+			//std::cout << "ERROR: Font '" << fontName << "' not found!" << std::endl;
 			return;
 		}
 

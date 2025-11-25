@@ -29,7 +29,8 @@ namespace NightSnack {
 	Resource::~Resource()
 	{
 #if RESOURCE_DEBUG_MODE
-		std::cout << m_path << " is deleted!" << std::endl;
+		std::filesystem::path fp = m_path;
+		std::cout << fp.filename() << " is deleted!" << std::endl;
 #endif
 	}
 
@@ -74,6 +75,7 @@ namespace NightSnack {
 	ResourceImage::ResourceImage(const std::string& filePath, unsigned char orginalUncroppedImaged, int width, int height, int channels)
 		: Resource(filePath, 0), m_imageData(nullptr), m_height(height), m_width(width), m_channels(channels)
 	{
+		(void)orginalUncroppedImaged;
 		//Allocate space for data
 		m_imageData = (unsigned char*)malloc(m_width * m_height * m_channels * sizeof(unsigned char));
 
@@ -260,7 +262,7 @@ namespace NightSnack {
 		if (m_archetypeMap.size())
 			ConvertArchtypeToJson();
 
-		std::ofstream outFile(m_path.c_str());
+		std::ofstream outFile(m_path);
 
 		if (outFile.is_open())
 		{

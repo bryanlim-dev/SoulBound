@@ -37,8 +37,12 @@ namespace NightSnack::Scripting {
             entityNum = m_entities.size();
             // Attach scripts;
             for (Entity e : m_entities) {
-                std::cout << "Script[" << m_coord.GetComponent<Script>(e).name << "] attached to Entity: " << e << '\n';
-                AttachScript(e, m_coord.GetComponent<Script>(e).name);
+                //std::cout << "Script[" << m_coord.GetComponent<Script>(e).name << "] attached to Entity: " << e << '\n';
+                //AttachScript(e, m_coord.GetComponent<Script>(e).name);
+                for (const std::string& scriptName : m_coord.GetComponent<Script>(e).names)
+                {
+                    AttachScript(e, scriptName);
+                }
             }
             m_attached = true;
         }
@@ -100,8 +104,8 @@ namespace NightSnack::Scripting {
         m_monoHost->SetScriptEntityId(instance, e);
 
         // Store mapping
-        m_entityScripts[e] = instance;
-        //std::cout << "[ScriptManager] Script attached successfully\n";
+        m_entityScripts.insert({ e, instance });
+        ////std::cout << "[ScriptManager] Script attached successfully\n";
         return instance;
     }
 

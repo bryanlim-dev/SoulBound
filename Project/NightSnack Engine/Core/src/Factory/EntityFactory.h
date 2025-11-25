@@ -41,8 +41,8 @@ namespace NightSnack {
 		will help with entity creation.
 		*/
 		/************************************************************************/
-		EntityFactory(Coordinator& coord, EventDispatcher& disp, std::string const& gameDataPath)
-			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord }, GAMEDATA_DIR{ gameDataPath } {
+		EntityFactory(Coordinator& coord, EventDispatcher& disp)
+			: m_coord{ coord }, m_dispatcher{ &disp }, m_prefabManager{ coord } {
 
 			// Register component loaders in PrefabManager.
 			m_prefabManager.Initialize();
@@ -56,26 +56,28 @@ namespace NightSnack {
 			LoadLevel("DefaultLevel");
 
 			// Setup input events;
-			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
-				if (event.pressed == InputEvent::InputActionState::Pressed) {
-					switch (event.inputAction) {
+			//m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
+			//	if (event.pressed == InputEvent::InputActionState::Pressed) {
+			//		switch (event.inputAction) {
 
-					case InputEvent::InputAction::StressTest:
-						ReloadPrefabs();
-						for (auto const& [name, key] : m_prefabKeys) {
-							std::cout << name << ", ";
-						}
-						std::cout << '\n';
-						break;
-					}
-				}
-				});
+			//		case InputEvent::InputAction::StressTest:
+			//			ReloadPrefabs();
+			//			for (auto const& [name, key] : m_prefabKeys) {
+			//				std::cout << name << ", ";
+			//			}
+			//			std::cout << '\n';
+			//			break;
+			//		}
+			//	}
+			//	});
 		}
 
 		// Resets m_prefabKeys and loads all json files in "GameData/Prefabs"
 		void ReloadPrefabs();
 		// Resets m_levelKeys and loads all json files in "GameData/Levels"
 		void ReloadLevels();
+
+		void UpdatePrefab(std::string const& prefab);
 
 		// Saves all entities in the current level
 		bool SaveLevel(std::string const& levelName, bool overwrite);
@@ -193,7 +195,7 @@ namespace NightSnack {
 		std::unordered_multimap<std::string, Entity> prefabToEntities;	// Hot reloading prefabs;
 		std::vector<std::string> m_prefabNames;
 
-		std::filesystem::path GAMEDATA_DIR;
+		//std::filesystem::path GAMEDATA_DIR;
 
 		// ---------------------------------------------------------------------
 

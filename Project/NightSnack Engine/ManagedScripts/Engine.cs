@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Runtime.CompilerServices;
 
 namespace ManagedScripts
@@ -36,6 +37,18 @@ namespace ManagedScripts
         private static extern void GetScale_Internal(uint entityId, out Vector2 scale);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetScale_Internal(uint entityId, ref Vector2 scale);
+
+        // ----------------------
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetUIBasePos_Internal(uint entityId, out Vector3 position);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetUIBasePos_Internal(uint entityId, ref Vector3 position);
+
+        // ----------------------
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetUIBaseScale_Internal(uint entityId, out Vector2 scale);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetUIBaseScale_Internal(uint entityId, ref Vector2 scale);
 
         // ----------------------
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -215,6 +228,139 @@ namespace ManagedScripts
         //wasModified is not here, it is just a flag
 
         #endregion
+
+        // ----------------------------
+        // Font Internal for Scripts
+        // ----------------------------
+        #region Font
+        
+        //fontType
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetFontType_Internal(uint entityId);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetFontType_Internal(uint entityId, string fontType);
+
+        //text
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetFontText_Internal(uint entityId);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetFontText_Internal(uint entityId, string fontType);
+
+        //fontSize
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetFontSize_Internal(uint entityId, out float size);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetFontSize_Internal(uint entityId, ref float size);
+
+        //textColor
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetFontColor_Internal(uint entityId, out Vector3 col);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetFontColor_Internal(uint entityId, ref Vector3 col);
+
+        //offsetPosition
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetFontOffsetPosition_Internal(uint entityId, out Vector3 pos);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetFontOffsetPosition_Internal(uint entityId, ref Vector3 pos);
+        #endregion
+
+        // ----------------------------
+        // Animator Internal for Scripts
+        // ----------------------------
+        #region Animator
+        //---- currentAnimatorClip
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetAnimatorCurrentClip_Internal(uint entityId);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimatorCurrentClip_Internal(uint entityId, string clipName);
+
+        //---- spriteSheetName
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetAnimatorSpriteSheet_Internal(uint entityId);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimatorSpriteSheet_Internal(uint entityId, string sheet);
+
+        //---- currentFrameIndex
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimatorCurrentFrameIndex_Internal(uint entityId, out int frame);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimatorCurrentFrameIndex_Internal(uint entityId, ref int frame);
+
+        //---- currentTime
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimatorCurrentTime_Internal(uint entityId, out float time);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimatorCurrentTime_Internal(uint entityId, ref float time);
+        
+        //---- playbackSpeed
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimatorCurrentPlaybackSpeed_Internal(uint entityId, out float speed);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimatorCurrentPlaybackSpeed_Internal(uint entityId, ref float speed);
+
+        //---- isPlaying
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimatorIsPlaying_Internal(uint entityId, out bool playing);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimatorIsPlaying_Internal(uint entityId, ref bool playing);
+
+        //---- isLooping
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimatorIsLooping_Internal(uint entityId, out bool looping);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimatorIsLooping_Internal(uint entityId, ref bool looping);
+
+        //---- lastFacingRight
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimatorLastFacingRight_Internal(uint entityId, out bool facingRight);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimatorLastFacingRight_Internal(uint entityId, ref bool facingRight);
+
+        //---- uvTopLeft
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimatorUVTopLeft_Internal(uint entityId, out Vector2 uv);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimatorUVTopLeft_Internal(uint entityId, ref Vector2 uv);
+
+        //---- uvBottomRight
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAnimatorUVBottomRight_Internal(uint entityId, out Vector2 uv);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAnimatorUVBottomRight_Internal(uint entityId, ref Vector2 uv);
+        #endregion
+
+        // ----------------------------
+        // Camera Internal for Scripts
+        // ----------------------------
+        #region Camera
+        //isMainCam
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetCameraIsMain_Internal(uint entityId, out bool main);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCameraIsMain_Internal(uint entityId, ref bool main);
+
+
+        //zoom
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetCameraZoom_Internal(uint entityId, out float zoom);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCameraZoom_Internal(uint entityId, ref float zoom);
+
+        //width
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetCameraWidth_Internal(uint entityId, out float width);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCameraWidth_Internal(uint entityId, ref float width);
+
+        //height
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetCameraHeight_Internal(uint entityId, out float height);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCameraHeight_Internal(uint entityId, ref float height);
+
+        #endregion
+
         // ----------------------------
         // Key/Buttons Internal for Scripts
         // ----------------------------
@@ -286,7 +432,29 @@ namespace ManagedScripts
             SetScale_Internal(entityId, ref scale);
         }
 
-        //Layer Typw
+        //UIbasePos
+        public static Vector3 GetUIBasePos(uint entityId)
+        {
+            GetUIBasePos_Internal(entityId, out Vector3 pos);
+            return pos;
+        }
+        public static void SetUIBasePos(uint entityId, Vector3 position)
+        {
+            SetUIBasePos_Internal(entityId, ref position);
+        }
+
+        //UIbaseScale
+        public static Vector2 GetUIBaseScale(uint entityId)
+        {
+            GetUIBaseScale_Internal(entityId, out Vector2 scale);
+            return scale;
+        }
+        public static void SetUIBaseScale(uint entityId, Vector2 scale)
+        {
+            SetUIBaseScale_Internal(entityId, ref scale);
+        }
+
+        //Layer Type
         public static LayerType GetLayer(uint entityId)
         {
             GetLayer_Internal(entityId, out LayerType layer);
@@ -575,6 +743,228 @@ namespace ManagedScripts
         public static void SetIsWireframe(uint entityId, bool wire)
         {
             SetIsWireframe_Internal(entityId, ref wire);
+        }
+        #endregion
+
+        // ----------------------------
+        // Animator API for Scripts
+        // ----------------------------
+        #region Animator
+        //Not needed auto set in AnimationSystem
+        //public static string GetAnimatorCurrentClip(uint entityId)
+        //{
+        //    return GetAnimatorCurrentClip_Internal(entityId);
+        //}
+        //public static void SetAnimatorCurrentClip(uint entityId, string clipName)
+        //{
+        //    SetAnimatorCurrentClip_Internal(entityId, clipName);
+        //}
+
+
+        //Not needed auto set in AnimationSystem
+        //public static string GetAnimatorSpriteSheet(uint entityId)
+        //{
+        //    return GetAnimatorSpriteSheet_Internal(entityId);
+        //}
+        //public static void SetAnimatorSpriteSheet(uint entityId, string clipName)
+        //{
+        //    SetAnimatorSpriteSheet_Internal(entityId, clipName);
+        //}
+
+
+        public static int GetAnimatorCurrentFrameIndex(uint entityId)
+        {
+            GetAnimatorCurrentFrameIndex_Internal(entityId, out int frame);
+            return frame;
+        }
+        public static void SetAnimatorCurrentFrameIndex(uint entityId, int frame)
+        {
+            SetAnimatorCurrentFrameIndex_Internal(entityId, ref frame);
+        }
+
+
+        public static float GetAnimatorCurrentTime(uint entityId)
+        {
+            GetAnimatorCurrentTime_Internal(entityId, out float time);
+            return time;
+        }
+        public static void SetAnimatorCurrentTime(uint entityId, float time)
+        {
+            SetAnimatorCurrentTime_Internal(entityId, ref time);
+        }
+
+
+        public static float GetAnimatorCurrentPlaybackSpeed(uint entityId)
+        {
+            GetAnimatorCurrentPlaybackSpeed_Internal(entityId, out float speed);
+            return speed;
+        }
+        public static void SetAnimatorCurrentPlaybackSpeed(uint entityId, float speed)
+        {
+            SetAnimatorCurrentPlaybackSpeed_Internal(entityId, ref speed);
+        }
+
+        public static bool GetAnimatorIsPlaying(uint entityId)
+        {
+            GetAnimatorIsPlaying_Internal(entityId, out bool playing);
+            return playing;
+        }
+        public static void SetAnimatorIsPlaying(uint entityId, bool playing)
+        {
+            SetAnimatorIsPlaying_Internal(entityId, ref playing);
+        }
+
+
+        public static bool GetAnimatorIsLooping(uint entityId)
+        {
+            GetAnimatorIsLooping_Internal(entityId, out bool looping);
+            return looping;
+        }
+        public static void SetAnimatorIsLooping(uint entityId, bool looping)
+        {
+            SetAnimatorIsLooping_Internal(entityId, ref looping);
+        }
+
+
+        public static bool GetAnimatorLastFacingRight(uint entityId)
+        {
+            GetAnimatorLastFacingRight_Internal(entityId, out bool facingRight);
+            return facingRight;
+        }
+        public static void SetAnimatorLastFacingRight(uint entityId, bool facingRight)
+        {
+            SetAnimatorLastFacingRight_Internal(entityId, ref facingRight);
+        }
+
+        //Not needed auto set in AnimationSystem
+        //public static Vector2 GetAnimatorUVTopLeft(uint entityId)
+        //{
+        //    GetAnimatorUVTopLeft_Internal(entityId, out Vector2 uv);
+        //    return uv;
+        //}
+        //public static void SetAnimatorUVTopLeft(uint entityId, Vector2 uv)
+        //{
+        //    SetAnimatorUVTopLeft_Internal(entityId, ref uv);
+        //}
+
+
+        //Not needed auto set in AnimationSystem
+        //public static Vector2 GetAnimatorUVBottomRight(uint entityId)
+        //{
+        //    GetAnimatorUVBottomRight_Internal(entityId, out Vector2 uv);
+        //    return uv;
+        //}
+        //public static void SetAnimatorUVTBottomRight(uint entityId, Vector2 uv)
+        //{
+        //    SetAnimatorUVBottomRight_Internal(entityId, ref uv);
+        //}
+        #endregion
+
+        // ----------------------------
+        // Font API for Scripts
+        // ----------------------------
+        #region Font
+        //fontType
+        public static string GetFontType(uint entityId)
+        {
+            return GetFontType_Internal(entityId);
+        }
+        public static void SetFontType(uint entityId, string str)
+        {
+            SetFontType_Internal(entityId, str);
+        }
+
+        //text
+        public static string GetFontText(uint entityId)
+        {
+            return GetFontText_Internal(entityId);
+        }
+        public static void SetFontText(uint entityId, string str)
+        {
+            SetFontText_Internal(entityId, str);
+        }
+
+        //text
+        public static float GetFontSize(uint entityId)
+        {
+            GetFontSize_Internal(entityId, out float size);
+            return size;
+        }
+        public static void SetFontSize(uint entityId, float size)
+        {
+            SetFontSize_Internal(entityId, ref size);
+        }
+
+        //textColor
+        public static Vector3 GetFontColor(uint entityId)
+        {
+            GetFontColor_Internal(entityId, out Vector3 color);
+            return color;
+        }
+        public static void SetFontColor(uint entityId, Vector3 color)
+        {
+            SetFontColor_Internal(entityId, ref color);
+        }
+
+        //offsetPosition
+        public static Vector3 GetFontOffsetPosition(uint entityId)
+        {
+            GetFontOffsetPosition_Internal(entityId, out Vector3 pos);
+            return pos;
+        }
+        public static void SetFontOffsetPosition(uint entityId, Vector3 position)
+        {
+            SetFontOffsetPosition_Internal(entityId, ref position);
+        }
+
+        #endregion
+
+        // ----------------------------
+        // Camera API for Scripts
+        // ----------------------------
+        #region Camera
+        //isMainCam
+        public static bool GetCameraIsMain(uint entityId)
+        {
+            GetCameraIsMain_Internal(entityId, out bool main);
+            return main;
+        }
+        public static void SetCameraIsMain(uint entityId, bool main)
+        {
+            SetCameraIsMain_Internal(entityId, ref main);
+        }
+
+        //zoom
+        public static float GetCameraZoom(uint entityId)
+        {
+            GetCameraZoom_Internal(entityId, out float zoom);
+            return zoom;
+        }
+        public static void SetCameraZoom(uint entityId, float zoom)
+        {
+            SetCameraZoom_Internal(entityId, ref zoom);
+        }
+
+        //width
+        public static float GetCameraWidth(uint entityId)
+        {
+            GetCameraWidth_Internal(entityId, out float width);
+            return width;
+        }
+        public static void SetCameraWidth(uint entityId, float width)
+        {
+            SetCameraWidth_Internal(entityId, ref width);
+        }
+
+        //height
+        public static float GetCameraHeight(uint entityId)
+        {
+            GetCameraHeight_Internal(entityId, out float height);
+            return height;
+        }
+        public static void SetCameraHeight(uint entityId, float height)
+        {
+            SetCameraHeight_Internal(entityId, ref height);
         }
         #endregion
 

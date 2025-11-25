@@ -60,8 +60,8 @@ namespace NightSnack {
 			lastHvp = Hvp;
 			lastWvp = Wvp;
 
-			std::string path = std::filesystem::current_path().string();
-			std::cout << path << '\n';
+			//std::string path = std::filesystem::current_path().string();
+			//std::cout << path << '\n';
 
 			Init();
 
@@ -87,9 +87,9 @@ namespace NightSnack {
 					case InputEvent::InputAction::ToggleInstancedRendering:
 						m_enableInstancedRendering = !m_enableInstancedRendering;
 						break;
-					case InputEvent::InputAction::CrashTest:
-						CrashLogger::ForceCrash("Forced crash from GraphicsSystem for testing");
-						break;
+					//case InputEvent::InputAction::CrashTest:
+					//	CrashLogger::ForceCrash("Forced crash from GraphicsSystem for testing");
+					//	break;
 					}
 				}
 			});
@@ -502,9 +502,9 @@ namespace NightSnack {
 		/************************************************************************/
 		Vec3 ScreenToWorld(Vec3 const& screenPos);
 
-		bool ScreenSizeChanged();
+		bool ScreenSizeChanged() const noexcept;
 
-		void TranslateUIEntities();
+		void TranslateUIEntities(Entity mainCam);
 
 		void DebugRenderableInformation();
 

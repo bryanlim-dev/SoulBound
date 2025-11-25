@@ -10,7 +10,7 @@
  * This file contains the definition of ImguiSystem which handles the 
  * ImGui user interface for the editor.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -24,6 +24,7 @@
 #include "Panels/AllPanels.h"
 
 #include "Systems/Application/Application.h"
+#include "GameLogic/SceneManager.h"
 
 namespace NightSnack {
 
@@ -168,7 +169,8 @@ namespace NightSnack {
 					switch (event.inputAction) {
 					case InputEvent::InputAction::ToggleUIEditor:
 						SetEditorEnabled(!m_toggleEditor);
-						m_coord.TogglePause();
+						if (m_toggleEditor) { m_coord.Pause(); }
+						else { m_coord.Unpause(); }
 						break;
 					}
 				}
@@ -228,9 +230,9 @@ namespace NightSnack {
 		// Panels Drawing
 		if (m_showHierarchy && m_hierarchyPanel) m_hierarchyPanel->Draw();
 		if (m_showInspector && m_inspectorPanel) m_inspectorPanel->Draw();
-		if (m_showScene && m_scenePanel) m_scenePanel->Draw();
-		if (m_showOptions && m_optionsPanel) m_optionsPanel->Draw();
-		if (m_showAssets && m_assetsPanel) m_assetsPanel->Draw();
+		if (m_showScene && m_scenePanel)		 m_scenePanel->Draw();
+		if (m_showOptions && m_optionsPanel)	 m_optionsPanel->Draw();
+		if (m_showAssets && m_assetsPanel)		 m_assetsPanel->Draw();
 
 
 		// render
@@ -266,13 +268,7 @@ namespace NightSnack {
 
 	// Resets the game to initial state
 	inline void ImguiSystem::ResetGame() {
-		auto factory = m_coord.GetSystem<EntityFactory>();
-		if (factory)
-		{
-			factory->UnloadLevel();
-			factory->LoadLevel("DefaultLevel");
-			m_scenePanel->CreateEditorCamera();
-		}
+		//m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
 	}
 
 	// Sets up the main dockspace for the editor panels
@@ -309,7 +305,7 @@ namespace NightSnack {
 			ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
 			ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
 			
-			// Split the dockspace into 4 regions
+			// Split the dockspace into regions
 			ImGuiID dock_id_left, dock_id_right, dock_id_top, dock_id_bottom, dock_id_center;
 			ImGuiID dock_id_left_top, dock_id_left_bottom, dock_id_center_right, dock_id_bottom_right, dock_id_right_top, dock_id_right_bottom;
 
@@ -349,8 +345,8 @@ namespace NightSnack {
 			if (ImGui::BeginMenu("File"))
 			{
 				// Save current level
-				std::string levelName = "MyLevel";
-				ImGui::InputText("Level Name", levelName.data(), levelName.size());
+				static char levelName[128] = "MyLevel";
+				ImGui::InputText("Level Name", levelName, IM_ARRAYSIZE(levelName));
 				ImGui::SameLine();
 				static bool overwrite = true;
 				ImGui::Checkbox("Overwrite", &overwrite);
@@ -364,15 +360,15 @@ namespace NightSnack {
 				}
 
 				// Load level by name
-				std::string loadLevelName = "MyLevel";
-				ImGui::InputText("Load Level", loadLevelName.data(), loadLevelName.size());
+				static char loadLevelName[128] = "MyLevel";
+				ImGui::InputText("Load Level", loadLevelName, IM_ARRAYSIZE(loadLevelName));
 				ImGui::SameLine();
 				if (ImGui::Button("Load")) {
 					auto factory = m_coord.GetSystem<EntityFactory>();
 					if (factory)
 					{
-						factory->UnloadLevel();
 						factory->LoadLevel(loadLevelName);
+						m_scenePanel->DisableEditorCameraIsMain();
 					}
 				}
 
@@ -406,6 +402,7 @@ namespace NightSnack {
 					{
 						m_isPlaying = true;
 						SetSimulationPaused(false);
+						m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
 					}
 				}
 				else
@@ -433,12 +430,13 @@ namespace NightSnack {
 					ImGui::EndDisabled();
 				}
 
-				// Reset
-				if (ImGui::MenuItem("Reset"))
+				// Stop
+				if (ImGui::MenuItem("Stop"))
 				{
 					m_isPlaying = false;
 					SetSimulationPaused(true);
-					ResetGame();
+					m_coord.GetSystem<Scene::SceneManager>()->RestoreLevel();
+					m_scenePanel->DisableEditorCameraIsMain();
 				}
 
 				ImGui::EndMenu();
@@ -453,6 +451,8 @@ namespace NightSnack {
 			Init();
 
 			m_scenePanel->ResetTexture();
+			m_scenePanel->DisableEditorCameraIsMain();
+			m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
 		}
 		else if (!enabled && ImGui::GetCurrentContext()) {
 			// Destroys Editor Camera

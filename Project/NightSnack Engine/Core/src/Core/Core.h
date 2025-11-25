@@ -29,7 +29,7 @@
 
 namespace NightSnack {
 
-	class CORE_API CoreEngine {
+	class CoreEngine {
 
 	public:
 
@@ -153,6 +153,21 @@ namespace NightSnack {
 		// Shift unwanted Systems to the end of the vector, then uses erase() to remove them;
 		m_systems.erase(std::remove(m_systems.begin(), m_systems.end(), system), m_systems.end());
 	}
+
+	// ---------------------------------------------------------------------------------------------------------
+	class CORE_API CoreApp {
+
+	public:
+		CoreApp() : c_engine{ new CoreEngine } {}
+		~CoreApp() { delete c_engine; }
+
+		void StartUp(std::string const& configFile) { c_engine->StartUp(configFile); }
+		void Run() { c_engine->Run(); }
+
+	private:
+		CoreEngine* c_engine;
+	};
+
 
 }	// NightSnack
 
