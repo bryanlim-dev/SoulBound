@@ -31,9 +31,16 @@ namespace NightSnack {
      */
     struct AudioKeys {
         // SFX
+
+        // UI sounds
         static constexpr const char* buttonClick = "buttonClick";
+
+        // In game sounds
         static constexpr const char* playerJump = "playerJump";
         static constexpr const char* playerHit = "playerHit";
+        static constexpr const char* playerCollect = "playerCollect";
+        static constexpr const char* playerHurt = "playerHurt";
+        static constexpr const char* playerSlap = "playerSlap";
 
         // BGM
         static constexpr const char* mainMenu = "mainMenu";
