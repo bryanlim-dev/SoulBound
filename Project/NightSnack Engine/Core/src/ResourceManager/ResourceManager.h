@@ -24,6 +24,7 @@
 #include <typeindex>
 #include <vector>
 #include <fmod.hpp>
+#include <filesystem>
 
 #include "ResourceManager/Resource.h"
 #include "Core/ECS/ISystem.h"
@@ -337,7 +338,7 @@ namespace NightSnack {
 		LOAD_FAIL_BADPATH -	Resource fails to load due to bad file bath.
 		*/
 		/************************************************************************/
-		LOAD_RESULT LoadJson(std::string filePath, std::size_t& imageKey);
+		LOAD_RESULT LoadJson(std::string filePath, std::size_t& imageKey, bool overwrite = 0);
 
 		/************************************************************************/
 		/*!
@@ -378,6 +379,8 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		nlohmann::json& GetJsonRaw(const std::size_t jsonKey);
+
+		void UpdateJson(size_t key, nlohmann::json const& newJson);
 
 		/************************************************************************/
 		/*!

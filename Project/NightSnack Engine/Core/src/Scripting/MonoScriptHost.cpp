@@ -40,7 +40,7 @@ namespace NightSnack::Scripting {
     // Initializes Mono and creates app domain.
     bool MonoScriptHost::Initialize() {
         if (m_initialized) {
-            std::cout << "[Mono] Already initialized\n";
+            //std::cout << "[Mono] Already initialized\n";
             return true;
         }
 
@@ -249,7 +249,7 @@ namespace NightSnack::Scripting {
 
         if (c) {
             m_classCache[fullName] = c;
-            std::cout << "[Mono] Cached class: " << fullName << '\n';
+            //std::cout << "[Mono] Cached class: " << fullName << '\n';
         }
         else {
             std::cerr << "[Mono] ERROR: Class not found: " << fullName << '\n';
