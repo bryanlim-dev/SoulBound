@@ -765,14 +765,19 @@ namespace NightSnack
 
         auto& script = m_coord.GetComponent<Script>(*m_selectedEntity);
 
-        if (ImGui::BeginTable("ScriptTable", 2, ImGuiTableFlags_SizingFixedFit))
+        if (ImGui::BeginTable("ScriptTable", 1 + script.names.size(), ImGuiTableFlags_SizingFixedFit))
         {
             ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 120.0f);
 
             ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0); ImGui::Text("Script");
-            ImGui::TableSetColumnIndex(1); ImGui::TextDisabled("%s", script.name.c_str());
+            int indexCount = 0;
+            ImGui::TableSetColumnIndex(indexCount); ImGui::Text("Script");
+            for (std::string names : script.names)
+            {
+                indexCount++;
+                ImGui::TableSetColumnIndex(indexCount); ImGui::TextDisabled("%s", names.c_str());
+            }
 
             ImGui::EndTable();
         }
