@@ -251,7 +251,8 @@ namespace NightSnack
 					}*/
 					if (m_multiSelectedEntities.empty() && m_selectedEntity && *m_selectedEntity != INVALID_ENTITY && ImGui::IsKeyPressed(ImGuiKey_Delete))
 					{
-						if (m_coord.HasComponent<Transform>(*m_selectedEntity)) {
+						if (m_coord.HasComponent<Transform>(*m_selectedEntity))
+						{
 							auto factory = m_coord.GetSystem<EntityFactory>();
 							auto prefabName = factory->GetEntityPrefabName(*m_selectedEntity);
 							auto transform = m_coord.GetComponent<Transform>(*m_selectedEntity);
