@@ -180,20 +180,6 @@ namespace NightSnack
             }
         }
 
-        /*void EditPrefab(std::string const& prefabName) {
-             access json with prefabname
-             m_archetypes[prefabName];
-
-             edit the selected json
-
-
-             save the json to file; the actual json file
-
-             reload all entities with this prefab
-            m_coord.GetSystem<EntityFactory>()->UpdatePrefab(prefabName);
-
-        }*/
-
         void EditPrefab(const std::string& prefabName) 
         {
             if (!m_archetypes.contains(prefabName))
@@ -450,29 +436,75 @@ namespace NightSnack
 
         void DrawRenderableEditor(nlohmann::json& j)
         {
-            // Mesh name input
+            // Mesh dropdown
             std::string meshName = j["meshName"];
-            char meshBuf[128];
-            strcpy_s(meshBuf, meshName.c_str());
+            const char* meshes[] = { "square", "circle" };
+            int currentMeshIdx = 0;
 
-            if (ImGui::InputText("Mesh", meshBuf, sizeof(meshBuf)))
+            for (int i = 0; i < IM_ARRAYSIZE(meshes); i++)
             {
-                j["meshName"] = std::string(meshBuf);
+                if (meshName == meshes[i])
+                {
+                    currentMeshIdx = i;
+                    break;
+                }
+            }
+
+            if (ImGui::Combo("Mesh", &currentMeshIdx, meshes, IM_ARRAYSIZE(meshes)))
+            {
+                j["meshName"] = meshes[currentMeshIdx];
                 m_prefabModified = true;
             }
 
-            // Material name input
+            // material dropdown
             std::string matName = j["materialName"];
-            char matBuf[128];
-            strcpy_s(matBuf, matName.c_str());
 
-            if (ImGui::InputText("Material", matBuf, sizeof(matBuf)))
+            auto graphicsSystem = m_coord.GetSystem<GraphicsSystem>();
+            std::vector<std::string> availableMaterials;
+
+            if (graphicsSystem) {
+                availableMaterials = graphicsSystem->GetMaterialMapStrings();
+                //std::cout << "Loaded " << availableMaterials.size() << " materials from GraphicsSystem.\n";
+            }
+            else {
+                // Fallback if graphics system is not available
+                availableMaterials = { "ColorMat" };
+            }
+
+            // find current material index
+            int currentMatIdx = 0;
+            bool foundMaterial = false;
+            for (int i = 0; i < availableMaterials.size(); i++)
             {
-                j["materialName"] = std::string(matBuf);
+                if (matName == availableMaterials[i])
+                {
+                    currentMatIdx = i;
+                    foundMaterial = true;
+                    break;
+                }
+            }
+
+            // if current material not found, default to first one
+            if (!foundMaterial && !availableMaterials.empty()) {
+                currentMatIdx = 0;
+                j["materialName"] = availableMaterials[0];
                 m_prefabModified = true;
             }
 
-            // Wireframe checkbox
+            // create C-style array for ImGui
+            std::vector<const char*> materialNames;
+            for (const auto& mat : availableMaterials)
+            {
+                materialNames.push_back(mat.c_str());
+            }
+
+            if (ImGui::Combo("Material", &currentMatIdx, materialNames.data(), static_cast<int>(materialNames.size())))
+            {
+                j["materialName"] = availableMaterials[currentMatIdx];
+                m_prefabModified = true;
+            }
+
+            // wireframe checkbox
             bool wireframe = j.contains("isWireframe") ? j["isWireframe"].get<bool>() : false;
             if (ImGui::Checkbox("Wireframe", &wireframe))
             {
