@@ -44,7 +44,7 @@ namespace NightSnack {
         LoadAllGameAudio();
 
         // start playing main menu music by default
-        PlayBGM(AudioKeys::mainMenu);
+        PlayBGM("mainMenu");
     }
 
     // destructor cleans up resources and releases fmod system
@@ -187,16 +187,20 @@ namespace NightSnack {
 
         if (result == LOAD_SUCCESS || result == LOAD_SUCCESS_STOPPED_UNLOAD)
         {
+			// map key to ID
             m_keyToID[key] = soundID;
+			// get sound pointer from resource manager
             FMOD::Sound* sound = m_resourceMgr.lock()->GetSound(soundID);
 
             if (isBGM) {
+				// store bg pointer and set to loop
                 m_loadedBGM[key] = sound;
                 if (sound) {
                     sound->setMode(FMOD_LOOP_NORMAL);
                 }
             }
             else {
+				// store sfx pointer
                 m_loadedSFX[key] = sound;
             }
 

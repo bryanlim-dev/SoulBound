@@ -432,33 +432,41 @@ namespace NightSnack {
 			RESOURCE_PATH // "NightSnack Engine/assets"
 		);
 
+		resourcePath /= "Sprites";  // "NightSnack Engine/assets/Sprites"
 		resourcePath = resourcePath.lexically_normal();
 		
 		//std::cout << "Resource path: " << resourcePath << std::endl;
 
 		if (!std::filesystem::exists(resourcePath)) {
-			std::cerr << "[GraphicsSystem] Error: Assets directory cannot be found!\n";
+			std::cerr << "[GraphicsSystem] Error: Sprites directory cannot be found!\n";
 			return;
 		}
 
-		// Iterate through entries in directory
-		for (auto const& entry : std::filesystem::directory_iterator(resourcePath)) {
-			// Skip through folders
+		// Recursively load all texture files within assets/Sprites folder
+		IterateFolder(resourcePath);
+	}
+
+	void GraphicsSystem::IterateFolder(const std::filesystem::path& folderPath) {
+		//std::cout << "Iterating folder: " << folderPath.string() << std::endl;
+		for (auto const& entry : std::filesystem::directory_iterator(folderPath)) {
+			// If this entry is a folder, go inside this folder and iterate through it
 			if (entry.is_directory()) {
+				IterateFolder(entry.path());
 				continue;
 			}
 
-			// Only load the texture assets that are in this assets folder
+			// This entry is a file
 			std::filesystem::path filePath = entry.path();
 			std::string extension = filePath.extension().string();
 
-			//std::cout << "[Graphics] Checking extension of: " << filePath << '\n';
 			// Only load image files with the correct extensions
 			if (extension != ".png" && extension != ".jpg" && extension != ".jpeg") {
 				continue;
 			}
 
-			CreateTexture(filePath.filename().string());
+			// Path relative to the asset root
+			std::filesystem::path relativePath = std::filesystem::relative(filePath, std::filesystem::canonical(RESOURCE_PATH));
+			CreateTexture(relativePath.string());
 
 			// If it is a new texture, it means that there is no existing material for it
 			// Create new material with this texture combination
@@ -486,9 +494,9 @@ namespace NightSnack {
 		size_t lastDot = textureFilePath.find_last_of('.');
 
 		// Texture name provided no columns or rows, thus treat it as a static texture
-		if (firstUnderscore == std::string::npos || secondUnderscore == std::string::npos) {
+		if (firstUnderscore == std::string::npos || secondUnderscore == std::string::npos || lastDot == std::string::npos || secondUnderscore > lastDot) {
 			auto tex = std::make_unique<Texture>(textureFilePath, rm);
-			//std::cout << "[Graphics] Created Texture: " << textureFilePath << '\n';
+			//std::cout << "[Graphics] Created Static Texture: " << textureFilePath << '\n';
 			AddTexture(textureFilePath, std::move(tex));
 			return;
 		}
@@ -500,7 +508,7 @@ namespace NightSnack {
 		int numRow = std::stoi(numRowStr);
 
 		auto tex = std::make_unique<Texture>(textureFilePath, rm, numCol, numRow);
-		//std::cout << "[Graphics] Created Texture: " << textureFilePath << '\n';
+		//std::cout << "[Graphics] Created Animated Texture: " << textureFilePath << '\n';
 		AddTexture(textureFilePath, std::move(tex));
 
 		// Dispatch a GraphicsEvent
@@ -518,10 +526,10 @@ namespace NightSnack {
 		std::filesystem::path filePath = textureFilePath;
 		
 		// Check whether the current texture exists
-		Texture* tex = GetTexture(filePath.filename().string());
+		Texture* tex = GetTexture(filePath.string());
 		if (!tex) {
 			// This is a new texture, add it to the resource map
-			CreateTexture(filePath.filename().string());
+			CreateTexture(filePath.string());
 
 			// If it is a new texture, it means that there is no existing material for it
 			// Create new material with this texture combination
@@ -549,7 +557,7 @@ namespace NightSnack {
 
 				// If it exists already, change the name of this Renderable's material to the existing material name
 				////std::cout << "Checking for texture name: " << textureFileName << std::endl;
-				if (filePath.filename().string() == matTex->GetTextureName()) {
+				if (filePath.string() == matTex->GetTextureName()) {
 					ren.materialName = filePath.filename().stem().string();
 					found = true;
 					////std::cout << "Material for this texture exists too!\n";
@@ -560,7 +568,7 @@ namespace NightSnack {
 			if (!found) {
 				////std::cout << "Material for this texture doesnt exist yet, creating one ...\n";
 				// if it does not exist, create new material with this texture combination
-				auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.filename().string()));
+				auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.string()));
 				std::string matName = filePath.filename().stem().string();
 				// Name of the material will be the texture file path, but the name only
 				AddMaterial(matName, std::move(newMat));
@@ -751,18 +759,26 @@ namespace NightSnack {
 		}
 	}
 
+	const std::vector<std::string> GraphicsSystem::GetMaterialMapStrings() const {
+		std::vector<std::string> materials{};
+		for (const auto& [matName, mat] : m_materials) {
+			materials.emplace_back(matName);
+		}
+		return materials;
+	}
+
 	void GraphicsSystem::DebugRenderableInformation() {
 
 		// Materials
-		//std::cout << "===== MATERIALS IN STORE =====\n";
+		std::cout << "===== MATERIALS IN STORE =====\n";
 		for (auto& [matName, material] : m_materials) {
-			//std::cout << matName << std::endl;
+			std::cout << matName << std::endl;
 		}
 
 		// Textures
-		//std::cout << "===== TEXTURES IN STORE =====\n";
+		std::cout << "===== TEXTURES IN STORE =====\n";
 		for (auto& [texName, texture] : m_textures) {
-			//std::cout << texName << std::endl;
+			std::cout << texName << std::endl;
 		}
 	}
 

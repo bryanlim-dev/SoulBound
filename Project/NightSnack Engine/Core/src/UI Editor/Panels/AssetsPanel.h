@@ -98,17 +98,21 @@ namespace NightSnack
             DrawToolbar();
             ImGui::Separator();
 
-            // Two-column layout: Left = folder tree, Right = content view
+            float totalWidth = ImGui::GetContentRegionAvail().x;
+
+            // two-column layout
             ImGui::Columns(2, "AssetColumns", true);
 
-            // Left column - Folder tree
+            ImGui::SetColumnWidth(0, totalWidth * 0.3f);
+
+            // Left column
             ImGui::BeginChild("FolderTree", ImVec2(0, 0), true);
             ImGui::Text("Project");
             ImGui::Separator();
             m_assetsRoot = std::filesystem::canonical(m_assetsRoot);
             DrawFolderTree(m_assetsRoot);
 
-            // Add scripts folder if it exists
+            // add scripts folder if it exists
             m_scriptsRoot = std::filesystem::canonical(m_scriptsRoot);
             if (fs::exists(m_scriptsRoot))
             {
@@ -118,7 +122,7 @@ namespace NightSnack
 
             ImGui::NextColumn();
 
-            // Right column - Content view
+            // right column
             ImGui::BeginChild("ContentView", ImVec2(0, 0), true);
             DrawContentView();
             ImGui::EndChild();
@@ -126,7 +130,7 @@ namespace NightSnack
             ImGui::Columns(1);
             ImGui::End();
 
-            // Preview/Properties panel (separate window)
+            // preview/Properties panel
             if (m_showAssetProperties && !m_selectedAssetPath.empty())
             {
                 DrawAssetProperties();
@@ -362,8 +366,12 @@ namespace NightSnack
 
                     if (item.type == AssetType::Image)
                     {
+                        // Make the file path of the image to be the relative path from the RESOURCE_PATH
+                        std::filesystem::path relPath = std::filesystem::relative(item.fullPath, m_assetsRoot);
+                        pathStr = relPath.string();
+                        
                         ImGui::SetDragDropPayload("ASSET_IMAGE", pathStr.c_str(), pathStr.size() + 1);
-                        ImTextureID texID = GetOrLoadTexture(item.fullPath.filename().string());
+                        ImTextureID texID = GetOrLoadTexture(pathStr);
                         if (texID)
                         {
                             ImGui::Image(texID, ImVec2(64, 64), ImVec2(0, 1), ImVec2(1, 0));
@@ -421,11 +429,14 @@ namespace NightSnack
             {
             case AssetType::Image:
             {
-                ImTextureID texID = GetOrLoadTexture(item.fullPath.filename().string());
+                // Use the relative file path instead
+                std::filesystem::path relPath = std::filesystem::relative(item.fullPath, m_assetsRoot);
+                ImTextureID texID = GetOrLoadTexture(relPath.string());
                 if (texID)
                 {
                     ImGui::ImageButton(
-                        item.fullPath.string().c_str(),
+                        //item.fullPath.string().c_str(),
+                        relPath.string().c_str(),
                         texID,
                         ImVec2(m_thumbnailSize, m_thumbnailSize),
                         ImVec2(0, 1), ImVec2(1, 0));
@@ -483,7 +494,11 @@ namespace NightSnack
                 case AssetType::Image:
                 {
                     ImGui::Text("Preview:");
-                    ImTextureID texID = GetOrLoadTexture(selectedPath.filename().string());
+                    // Use the relative file path instead
+                    std::filesystem::path relPath = std::filesystem::canonical(selectedPath);
+                    ImTextureID texID = GetOrLoadTexture(relPath.string());
+                    
+                    //ImTextureID texID = GetOrLoadTexture(selectedPath.filename().string());
                     if (texID)
                     {
                         ImGui::Image(texID, ImVec2(200, 200), ImVec2(0, 1), ImVec2(1, 0));
