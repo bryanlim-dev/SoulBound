@@ -96,6 +96,7 @@ namespace NightSnack {
 		bool m_isPlaying = true;
 
 		Tilemap m_tilemap;
+		UndoSystem* m_undoSystem = nullptr;
 
 		// Panels and shared data
 		std::shared_ptr<std::unordered_map<Entity, std::string>> m_uiNames;
@@ -171,6 +172,14 @@ namespace NightSnack {
 						SetEditorEnabled(!m_toggleEditor);
 						if (m_toggleEditor) { m_coord.Pause(); }
 						else { m_coord.Unpause(); }
+						break;
+
+					case InputEvent::InputAction::UndoStep:
+						auto factory = m_coord.GetSystem<EntityFactory>();
+						if (factory)
+						{
+							NightSnack::UndoSystem::Instance().PerformUndo(m_coord, *factory);
+						}
 						break;
 					}
 				}

@@ -251,6 +251,14 @@ namespace NightSnack
 					}*/
 					if (m_multiSelectedEntities.empty() && m_selectedEntity && *m_selectedEntity != INVALID_ENTITY && ImGui::IsKeyPressed(ImGuiKey_Delete))
 					{
+						if (m_coord.HasComponent<Transform>(*m_selectedEntity)) {
+							auto factory = m_coord.GetSystem<EntityFactory>();
+							auto prefabName = factory->GetEntityPrefabName(*m_selectedEntity);
+							auto transform = m_coord.GetComponent<Transform>(*m_selectedEntity);
+							NightSnack::UndoSystem::Instance().Push(
+								NightSnack::EntityDeleteSnapshot{ *m_selectedEntity, prefabName, transform }
+							);
+						}
 						m_coord.DestroyEntity(*m_selectedEntity);
 						*m_selectedEntity = INVALID_ENTITY;
 					}
@@ -263,6 +271,7 @@ namespace NightSnack
 						if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !m_isDragging && m_hoveredEntity != INVALID_ENTITY) {
 							*m_selectedEntity = m_hoveredEntity;
 							auto& t = m_coord.GetComponent<Transform>(m_hoveredEntity);
+							NightSnack::UndoSystem::Instance().Push(NightSnack::TransformSnapshot{ *m_selectedEntity, t });
 							m_dragOffset.x = t.pos.x - mouseWorldX;
 							m_dragOffset.y = t.pos.y - mouseWorldY;
 							m_isDragging = true;
