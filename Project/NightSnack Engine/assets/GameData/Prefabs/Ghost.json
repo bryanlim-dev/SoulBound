@@ -6,12 +6,12 @@
         "spriteSheetName": ""
     },
     "Collider": {
-        "height": 1.0,
+        "height": 100.0,
         "isStatic": false,
         "radius": 70.9000015258789,
-        "shape": "Circle",
+        "shape": "AABB",
         "type": "Solid",
-        "width": 1.0
+        "width": 100.0
     },
     "Font": {
         "fontSize": 0.699999988079071,

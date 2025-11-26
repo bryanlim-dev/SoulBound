@@ -236,7 +236,7 @@ namespace NightSnack {
     void EntityFactory::LoadJsonFolder(std::unordered_map<std::string, size_t>& map, std::string const& path) {
 
         std::string fullpath = RESOURCE_PATH + ("GameData/" + path);
-        std::cout << "[EntityFactory] Reading Json Folder '" << fullpath << "'\n";
+        //std::cout << "[EntityFactory] Reading Json Folder '" << fullpath << "'\n";
 
         // Iterate through entries in directory.
         for (auto const& entry : std::filesystem::directory_iterator(fullpath))
@@ -244,7 +244,7 @@ namespace NightSnack {
             size_t key = 0;
 
             std::string entrypath = "GameData/" + path + entry.path().filename().string();
-            std::cout << "[Entity Factory] Attempting to read: " << entrypath << '\n';
+            //std::cout << "[Entity Factory] Attempting to read: " << entrypath << '\n';
       
             LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(entrypath, key);
             //std::cout << "[EntityFactory] entry.path: " << entry.path() << '\n';

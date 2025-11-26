@@ -491,7 +491,7 @@ void ResourceManager::UpdateJson(size_t key, nlohmann::json const& newJson)
 	void ResourceManager::SaveJsonFile(std::string filePath, std::unordered_map<std::string, Archtype> const& newArchtypeMap)
 	{
 		std::filesystem::path fp = std::filesystem::canonical(
-			std::filesystem::current_path() / RESOURCE_PATH / filePath
+			std::filesystem::current_path() / PRIME_RESOURCE_PATH / filePath
 		);
 		ResourceJson jsonResouce(newArchtypeMap, fp.string());
 		jsonResouce.SaveFile();
