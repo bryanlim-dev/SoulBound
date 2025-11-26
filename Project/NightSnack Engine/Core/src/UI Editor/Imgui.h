@@ -413,7 +413,7 @@ namespace NightSnack {
 						*m_selectedEntity = INVALID_ENTITY;
 						m_scenePanel->DestroyEditorCamera();
 						m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
-						//m_scenePanel->CreateEditorCamera();
+						m_scenePanel->CreateEditorCamera();
 
 						m_coord.Unpause();
 					}
