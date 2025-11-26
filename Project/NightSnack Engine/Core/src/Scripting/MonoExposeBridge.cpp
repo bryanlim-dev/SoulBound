@@ -3,6 +3,7 @@
 #include "mono/metadata/reflection.h"
 #include "mono/jit/jit.h"
 #include "mono/metadata/assembly.h"
+#include <iostream>
 
 namespace NightSnack::Scripting {
 	void MonoExposeBridge::LoadScriptExposedFields(void* scriptInstance)
@@ -54,9 +55,123 @@ namespace NightSnack::Scripting {
 		//Shove the data into a map
 		m_sciptsToFieldsMap.insert({ scriptInstance, fieldVec });
 	}
-
-	void MonoExposeBridge::UnloadAllFields()
+	const std::vector<ExposedField>& MonoExposeBridge::GetExposedFields(void* scriptInstance)
 	{
+		//LoadScriptExposedFields(scriptInstance);
+
+		//Find the vector belonging to the script
+		auto it = m_sciptsToFieldsMap.find(scriptInstance);
+		if (it == m_sciptsToFieldsMap.end())
+			return std::vector<ExposedField>(); //Not found return empty vec
+
+		return it->second;
+	}
+
+	ExposedValue MonoExposeBridge::ReadValue(void* scriptInstance, const ExposedField& field)
+	{
+		ExposedValue result;
+		MonoObject* monoObj = reinterpret_cast<MonoObject*>(scriptInstance);
+
+		//Temporary storage buffer
+		std::vector<uint8_t> tempBuffer;
+		tempBuffer.resize(field.m_sizeBytes);
+
+		mono_field_get_value(monoObj, field.m_monoField, tempBuffer.data());
+
+		switch (field.m_valueType)
+		{
+		case MonoValueType::MONO_INT:
+			memcpy(&result.m_i, tempBuffer.data(), sizeof(int32_t));
+			break;
+
+		case MonoValueType::MONO_FLOAT:
+			memcpy(&result.m_f, tempBuffer.data(), sizeof(float));
+			break;
+
+		case MonoValueType::MONO_BOOL:
+			memcpy(&result.m_b, tempBuffer.data(), sizeof(bool));
+			break;
+
+		case MonoValueType::MONO_STRING:
+		{
+			MonoString* str = nullptr;
+			mono_field_get_value(monoObj, field.m_monoField, &str);
+			if (str)
+			{
+				char* raw = mono_string_to_utf8(str);
+				result.m_s = raw;
+				mono_free(raw);
+			}
+			break;
+		}
+
+		default:
+			result.m_structs = tempBuffer;
+			break;
+		}
+
+		return result;
+	}
+
+	void MonoExposeBridge::WriteValue(void* scriptInstance, const ExposedField& field, const ExposedValue& value)
+	{
+		MonoObject* monoObj = reinterpret_cast<MonoObject*>(scriptInstance);
+
+		//Get the type of value
+		switch (field.m_valueType)
+		{
+		case MonoValueType::MONO_INT:
+			mono_field_set_value(monoObj, field.m_monoField, (void*)&value.m_i);
+			return;
+
+		case MonoValueType::MONO_FLOAT:
+			mono_field_set_value(monoObj, field.m_monoField, (void*)&value.m_f);
+			return;
+
+		case MonoValueType::MONO_BOOL:
+			mono_field_set_value(monoObj, field.m_monoField, (void*)&value.m_b);
+			return;
+
+		case MonoValueType::MONO_STRING:
+		{
+			MonoString* str = mono_string_new(mono_domain_get(), value.m_s.c_str());
+			mono_field_set_value(monoObj, field.m_monoField, (void*)str);
+		}
+		return;
+
+		default:
+			mono_field_set_value(monoObj, field.m_monoField, (void*)value.m_structs.data());
+			return;
+		}
+	}
+
+	void MonoExposeBridge::PrintAllExposedFields()
+	{
+		int scriptIdx = 0;
+		for (auto& pair : m_sciptsToFieldsMap)
+		{
+			void* scriptInstance = pair.first;
+			const std::vector<ExposedField>& fields = pair.second;
+
+			std::cout << "Script Instance" << scriptInstance << ", fields: " << fields.size() << std::endl;
+
+			for (auto& field : fields)
+			{
+				std::cout << "Field: " << field.m_name << std::endl;
+				std::cout << "Typename: " << field.m_typeName << std::endl;
+				std::cout << "ValueType: " << (int)field.m_valueType << std::endl;
+				std::cout << "Byte size: " << field.m_sizeBytes << std::endl;
+				std::cout << "MonoField: " << field.m_monoField << std::endl;
+			}
+				std::cout << std::endl;
+
+			scriptIdx++;
+		}
+	}
+
+	void MonoExposeBridge::UnloadAll()
+	{
+		m_sciptsToFieldsMap.clear();
 	}
 
 	bool MonoExposeBridge::FieldHasExposeAttribute(MonoClass* monoClass, MonoClassField* field)

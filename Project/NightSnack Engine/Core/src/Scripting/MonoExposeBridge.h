@@ -50,12 +50,20 @@ namespace NightSnack::Scripting {
 
 		void LoadScriptExposedFields(void* scriptInstance);
 
-		void UnloadAllFields();
+		const std::vector<ExposedField>& GetExposedFields(void* scriptInstance);
+
+		ExposedValue ReadValue(void* scriptInstance, const ExposedField& field);
+		void WriteValue(void* scriptInstance, const ExposedField& field, const ExposedValue& value);
+		
+		void UnloadAll();
+
+		void PrintAllExposedFields();
 
 	private:
 		bool FieldHasExposeAttribute(MonoClass* monoClass, MonoClassField* field);
 		MonoValueType MapMonoType(MonoClass* clas, size_t& outSize);
 
-		std::multimap<void*, std::vector<ExposedField>> m_sciptsToFieldsMap;
+		//Map of vector of exposed fields for each script
+		std::map<void*, std::vector<ExposedField>> m_sciptsToFieldsMap;
 	};
 }

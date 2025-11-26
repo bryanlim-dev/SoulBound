@@ -58,7 +58,30 @@ namespace NightSnack::Scripting {
         if (debugMode) stepRequest = false; // reset step request
     }
 
-	void ScriptManager::Initialize() {
+    MonoExposeBridge& ScriptManager::GetMonoExposeBridge()
+    {
+        return m_monoExposeBridge;
+    }
+
+    void ScriptManager::LoadEntityExposedFields(Entity e)
+    {
+        UnloadEntityExposedFields();
+
+        //No scripts
+        if (m_entityScripts.find(e) == m_entityScripts.end())
+            return;
+
+        auto range = m_entityScripts.equal_range(e);
+        for (auto it = range.first; it != range.second; ++it)
+            m_monoExposeBridge.LoadScriptExposedFields(it->second);
+    }
+
+    void ScriptManager::UnloadEntityExposedFields()
+    {
+        m_monoExposeBridge.UnloadAll();
+    }
+
+    void ScriptManager::Initialize() {
 
         // Create script interface (bridge to engine)
         m_scriptInterface = std::make_unique<ScriptInterface>(m_coord);

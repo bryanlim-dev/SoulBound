@@ -19,7 +19,7 @@
 #include "Core/ECS/Coordinator.h"
 #include "ScriptInterface.h"
 #include "Scripting/MonoScriptHost.h"
-
+#include "Scripting/MonoExposeBridge.h"
 #include "ImportExport.h"
 
 #include <string>
@@ -81,6 +81,11 @@ namespace NightSnack::Scripting {
 		Signature GetSignature() const override { return m_systemSignature; }
 		std::string GetName() const { return "ScriptManager"; }
 
+
+		MonoExposeBridge& GetMonoExposeBridge();
+		void LoadEntityExposedFields(Entity e);
+		void UnloadEntityExposedFields();
+
 	private:
 		// Helper functions
 		void Initialize();
@@ -102,6 +107,8 @@ namespace NightSnack::Scripting {
 		bool m_attached = false;
 
 		size_t entityNum;
+
+		MonoExposeBridge m_monoExposeBridge;
 	};
 
 }	// NightSnack

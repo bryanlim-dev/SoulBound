@@ -15,6 +15,7 @@
 #include "AllPanels.h"
 #include <stb_image.h>
 #include <filesystem>
+#include <Scripting/ScriptManager.h>
 
 namespace NightSnack
 {
@@ -763,7 +764,11 @@ namespace NightSnack
         if (!m_coord.HasComponent<Script>(*m_selectedEntity))
             return;
 
+        m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->LoadEntityExposedFields(*m_selectedEntity);
+        
         auto& script = m_coord.GetComponent<Script>(*m_selectedEntity);
+        NightSnack::Scripting::MonoExposeBridge& bridge = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetMonoExposeBridge();
+        //bridge.PrintAllExposedFields();
 
         if (ImGui::BeginTable("ScriptTable", 1 + script.names.size(), ImGuiTableFlags_SizingFixedFit))
         {
