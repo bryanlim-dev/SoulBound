@@ -180,6 +180,10 @@ namespace NightSnack
             }
         }
 
+        /**
+        * @brief saves modified prefab data back to JSON file and updates entities
+        * @param prefabName name of the prefab to save
+        */
         void EditPrefab(const std::string& prefabName) 
         {
             if (!m_archetypes.contains(prefabName))
@@ -291,6 +295,10 @@ namespace NightSnack
             }
         }
 
+        /**
+        * @brief draws editor UI for Transform component properties
+        * @param j JSON data for the Transform component
+        */
         void DrawTransformEditor(nlohmann::json& j)
         {
             auto& pos = j["Position"];
@@ -321,6 +329,10 @@ namespace NightSnack
             }
         }
 
+        /**
+        * @brief draws editor UI for Color component properties
+        * @param j JSON data for the Color component
+        */
         void DrawColorEditor(nlohmann::json& j)
         {
             float color[4] = { j["r"], j["g"], j["b"], j["a"] };
@@ -335,6 +347,10 @@ namespace NightSnack
             }
         }
 
+        /**
+        * @brief draws editor UI for RigidBody component properties
+        * @param j JSON data for the RigidBody component
+        */
         void DrawRigidBodyEditor(nlohmann::json& j)
         {
             float mass = j["mass"];
@@ -353,6 +369,10 @@ namespace NightSnack
             }
         }
 
+        /**
+        * @brief draws editor UI for Collider component properties
+        * @param j JSON data for the Collider component
+        */
         void DrawColliderEditor(nlohmann::json& j)
         {
             // Shape dropdown
@@ -434,6 +454,10 @@ namespace NightSnack
             }
         }
 
+        /**
+        * @brief draws editor UI for Renderable component properties
+        * @param j JSON data for the Renderable component
+        */
         void DrawRenderableEditor(nlohmann::json& j)
         {
             // Mesh dropdown
@@ -513,6 +537,10 @@ namespace NightSnack
             }
         }
 
+        /**
+        * @brief draws editor UI for PlayerController component properties
+        * @param j JSON data for the PlayerController component
+        */
         void DrawPlayerControllerEditor(nlohmann::json& j)
         {
             float moveSpeed = j["moveSpeed"];
@@ -531,6 +559,10 @@ namespace NightSnack
             }
         }
 
+        /**
+        * @brief draws editor UI for Animator component properties
+        * @param j JSON data for the Animator component
+        */
         void DrawAnimatorEditor(nlohmann::json& j)
         {
             // Sprite sheet input
@@ -569,6 +601,10 @@ namespace NightSnack
             }
         }
 
+        /**
+        * @brief draws editor UI for Font component properties
+        * @param j JSON data for the Font component
+        */
         void DrawFontEditor(nlohmann::json& j)
         {
             // Text input
@@ -603,6 +639,10 @@ namespace NightSnack
             }
         }
 
+        /**
+        * @brief draws editor UI for ButtonInfo component properties
+        * @param j JSON data for the ButtonInfo component
+        */
         void DrawButtonInfoEditor(nlohmann::json& j)
         {
             // Action dropdown (common button actions)
@@ -665,6 +705,10 @@ namespace NightSnack
             }
         }
 
+        /**
+        * @brief draws editor UI for Script component properties
+        * @param j JSON data for the Script component
+        */
         void DrawScriptEditor(nlohmann::json& j)
         {
             // Script name input
@@ -690,6 +734,11 @@ namespace NightSnack
             }
         }
 
+        /**
+        * @brief splits comma-separated script names into individual script names
+        * @param s comma-separated string of script names
+        * @return vector of individual script names
+        */
         std::vector<std::string> SplitScripts(std::string const& s) {
             std::stringstream iss{ s };
             std::string script;
@@ -707,6 +756,10 @@ namespace NightSnack
             return scripts;
         }
 
+        /**
+        * @brief generic JSON field editor for unknown component types
+        * @param j JSON data to edit
+        */
         void DrawJsonFields(nlohmann::json& j)
         {
             for (auto& [key, val] : j.items())
