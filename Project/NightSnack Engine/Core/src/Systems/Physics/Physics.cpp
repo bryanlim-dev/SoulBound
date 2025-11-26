@@ -160,6 +160,9 @@ namespace NightSnack {
 
 						if (!CheckCollision(next, t2, c1, c2)) { continue; }
 						c1.colliding = true;
+						c2.colliding = true;
+						// If is Trigger, only check for collision and do not perform overlap correction/force transfer
+						if (c1.type == ColliderType::Trigger) { continue; }
 
 						// Not colliding yet;
 						next.pos = t1.pos;

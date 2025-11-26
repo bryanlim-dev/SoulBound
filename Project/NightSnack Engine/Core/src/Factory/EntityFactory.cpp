@@ -500,13 +500,13 @@ namespace NightSnack {
         // Write to file
         std::ofstream ofs(outPath);
         if (!ofs.is_open()) {
-            std::cerr << "Failed to write prefab file: " << outPath << "\n";
+            std::cerr << "[EntityFactory] Failed to write prefab file: " << outPath << "\n";
             return false;
         }
         // pretty-print with 4-space indent
         ofs << std::setw(4) << j;
         ofs.close();
-        std::cout << "Saved prefab to: " << outPath << "\n";
+        std::cout << "[EntityFactory] Saved prefab to: " << outPath << "\n";
 
         // Update mapping of current entity to new created prefab
         entityToPrefab[e] = prefabName;

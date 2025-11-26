@@ -83,37 +83,37 @@ namespace NightSnack {
                 return;
             }
 
-            for (int s{}; s < m_coord.steps; ++s) {
+            //for (int s{}; s < m_coord.steps; ++s) {
                 // Iterate through all Entities this system can access;
-                for (Layer& l : m_layers) {
-                    if (!l.IsActive()) { continue; }
+            for (Layer& l : m_layers) {
+                if (!l.IsActive()) { continue; }
 
-                    for (Entity e : l.Entities()) 
-                    {
-                        if (e == INVALID_ENTITY) { break; }
+                for (Entity e : l.Entities()) 
+                {
+                    if (e == INVALID_ENTITY) { break; }
 
-                        // First obtain references to components of interest;
-                        auto& pos = m_coord.ModifyComponent<Transform>(e).pos;
-                        auto& velocity = m_coord.ModifyComponent<RigidBody>(e).vel;
+                    // First obtain references to components of interest;
+                    auto& pos = m_coord.ModifyComponent<Transform>(e).pos;
+                    auto& velocity = m_coord.ModifyComponent<RigidBody>(e).vel;
 
-                        // Get more components here if necessary...
+                    // Get more components here if necessary...
 
-                        // Do stuff that you want to do with the components;
-                        pos.x += velocity.x * FixedDT;
-                        pos.y += velocity.y * FixedDT;
+                    // Do stuff that you want to do with the components;
+                    pos.x += velocity.x * FixedDT;
+                    pos.y += velocity.y * FixedDT;
 
-                        // Limit movement to borders of screen;
-                        //if (pos.y > m_coord.GetWindowHeight() / 2.f) { pos.y = m_coord.GetWindowHeight() / 2.f; }
-                        //if (pos.y < -m_coord.GetWindowHeight() / 2.f) { pos.y = -m_coord.GetWindowHeight() / 2.f; }
-                        //if (pos.x > m_coord.GetWindowWidth() / 2.f) { pos.x = m_coord.GetWindowWidth() / 2.f; }
-                        //if (pos.x < -m_coord.GetWindowWidth() / 2.f) { pos.x = -m_coord.GetWindowWidth() / 2.f; }
+                    // Limit movement to borders of screen;
+                    //if (pos.y > m_coord.GetWindowHeight() / 2.f) { pos.y = m_coord.GetWindowHeight() / 2.f; }
+                    //if (pos.y < -m_coord.GetWindowHeight() / 2.f) { pos.y = -m_coord.GetWindowHeight() / 2.f; }
+                    //if (pos.x > m_coord.GetWindowWidth() / 2.f) { pos.x = m_coord.GetWindowWidth() / 2.f; }
+                    //if (pos.x < -m_coord.GetWindowWidth() / 2.f) { pos.x = -m_coord.GetWindowWidth() / 2.f; }
 
-                        // Do more stuff here if necessary...
+                    // Do more stuff here if necessary...
 
-                        if (debugMode) stepRequest = false; // reset step request
-                    }
+                    if (debugMode) stepRequest = false; // reset step request
                 }
             }
+            //}
         }
 
         // Required by ISystem base class;

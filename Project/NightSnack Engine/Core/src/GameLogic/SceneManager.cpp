@@ -2,31 +2,33 @@
 
 namespace NightSnack::Scene {
 
-	void SceneManager::LoadLevel(std::string const& filename) {
+	// Take snapshot of current world
+	void SceneManager::CacheLevel() {
 
-		size_t levelKey = 0;
-		try {
-			LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(filename, levelKey);
-			if (result == LOAD_FAIL_BADPATH) {
-				throw std::runtime_error("Failed to open archetypes file due to bad file path: " + filename);
-			}
-		}
-		catch (json::parse_error& e) {
-			throw std::runtime_error("JSON parse error at byte " + std::to_string(e.byte) + ": " + e.what());
-		}
+		std::set<Entity> entities = m_coord.GetLivingEntities();
+		if (entities.empty()) { return; }
 
-		m_currentLevel = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(levelKey);
+		m_levelCache.clear();
+		m_levelCache.reserve(entities.size());
 
-		for (auto const& item : m_currentLevel["Entities"]) {
-			m_coord.GetSystem<EntityFactory>()->Create(item["prefab"], item["Transform"]);
-		}
-		for (Entity e : m_coord.GetLivingEntities()) {
-			m_coord.BufferEntitySignature(e);
+		for (Entity e : entities) {
+			m_levelCache.emplace_back(std::make_pair(
+				m_coord.GetSystem<EntityFactory>()->GetEntityPrefabName(e),
+				m_coord.GetComponent<Transform>(e)));
 		}
 	}
 
-	void SceneManager::UnloadLevel() {
+	// Restore scene to cached level
+	void SceneManager::RestoreLevel() {
 
+		if (m_levelCache.empty()) { return; }
+
+		auto const& factory = m_coord.GetSystem<EntityFactory>();
+		factory->UnloadLevel();
+
+		for (auto const& unit : m_levelCache) {
+			factory->Create(unit.first, unit.second);
+		}
 	}
 
 }	// NightSnack

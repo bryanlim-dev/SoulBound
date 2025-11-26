@@ -19,6 +19,8 @@
 #include "ResourceManager/ResourceHelper/ResourceSystemHelper.h"
 #include "../Systems/StateMachine/FiniteStateMachine.h"
 
+#define EDITOR
+
 namespace NightSnack {
 
 	static float accumulatedTime = 0.0f;
@@ -90,6 +92,7 @@ namespace NightSnack {
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<AnimationSystem>(m_coord, core_dispatcher);
+		AddSystem<TextSystem>(m_coord, core_dispatcher);
 
 
 		AddSystem<GameUI>(m_coord, core_dispatcher);
@@ -97,14 +100,12 @@ namespace NightSnack {
 		AddSystem<EntityFactory>(m_coord, core_dispatcher);
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
 		AddSystem<Scene::SceneManager>(m_coord, core_dispatcher);
-
-
-		AddSystem<TextSystem>(m_coord, core_dispatcher);
-		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
 		AddSystem<Scripting::ScriptManager>(m_coord, core_dispatcher);
-
 		AddSystem<FiniteStateMachine>(m_coord);
 
+#ifdef EDITOR
+		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
+#endif
 
 		// Buffer all entities' signatures to properly initialize all systems' set of entities
 		for (Entity e : m_coord.GetLivingEntities()) {
@@ -126,7 +127,10 @@ namespace NightSnack {
 
 	void CoreEngine::Run() {
 		try {
+
+#ifndef EDITOR
 			m_coord.Unpause();
+#endif
 			while (!m_coord.GetSystem<ApplicationSystem>()->ShouldClose()) {
 				Update();
 			}

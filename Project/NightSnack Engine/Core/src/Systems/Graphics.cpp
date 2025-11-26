@@ -363,6 +363,10 @@ namespace NightSnack {
 					glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
 					glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
 
+					glm::vec3 colliderColor{};
+					if (col.colliding) { colliderColor = glm::vec3(1.f, 0.f, 0.f); } // Red color
+					else { colliderColor = glm::vec3(0.f, 1.f, 0.f); } // Green color
+
 					switch (col.shape) {
 					case ShapeType::AABB:
 					{
@@ -371,7 +375,7 @@ namespace NightSnack {
 						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, rot, Vec2{ col.width, col.height });
 						glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 						shader->SetMat4("uDebugMVP", debugMVP);
-						shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
+						shader->SetVec3("uEntityColor", colliderColor);
 						GetMesh("AABBColliderMesh")->Draw();
 					}
 					break;
@@ -383,7 +387,7 @@ namespace NightSnack {
 						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, rot, Vec2{ col.radius, col.radius });
 						glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 						shader->SetMat4("uDebugMVP", debugMVP);
-						shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
+						shader->SetVec3("uEntityColor", colliderColor);
 						GetMesh("CircleColliderMesh")->Draw();
 					}
 					break;
@@ -432,7 +436,7 @@ namespace NightSnack {
 			RESOURCE_PATH // "NightSnack Engine/assets"
 		);
 
-		resourcePath /= "Sprites";  // "NightSnack Engine/assets/Sprites"
+		//resourcePath /= "Sprites";  // "NightSnack Engine/assets/Sprites"
 		resourcePath = resourcePath.lexically_normal();
 		
 		//std::cout << "Resource path: " << resourcePath << std::endl;

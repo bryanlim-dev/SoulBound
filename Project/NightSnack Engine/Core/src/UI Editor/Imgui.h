@@ -92,8 +92,8 @@ namespace NightSnack {
 		EventDispatcher* m_dispatcher = nullptr;
 
 		// Editor state
-		bool m_toggleEditor = false;
-		bool m_isPlaying = true;
+		bool m_toggleEditor = true;
+		bool m_isPlaying = false;
 
 		Tilemap m_tilemap;
 
@@ -405,7 +405,7 @@ namespace NightSnack {
 						*m_selectedEntity = INVALID_ENTITY;
 						m_scenePanel->DestroyEditorCamera();
 						m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
-						m_scenePanel->CreateEditorCamera();
+						//m_scenePanel->CreateEditorCamera();
 					}
 				}
 				else
