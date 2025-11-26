@@ -765,7 +765,7 @@ namespace NightSnack
 
         auto& script = m_coord.GetComponent<Script>(*m_selectedEntity);
 
-        if (ImGui::BeginTable("ScriptTable", 1 + script.names.size(), ImGuiTableFlags_SizingFixedFit))
+        if (ImGui::BeginTable("ScriptTable", 1 + (int)script.names.size(), ImGuiTableFlags_SizingFixedFit))
         {
             ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 120.0f);

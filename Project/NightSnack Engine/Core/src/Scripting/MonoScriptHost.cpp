@@ -45,7 +45,7 @@ namespace NightSnack::Scripting {
         }
 
         // Set Mono assembly search path
-        mono_set_assemblies_path("../bin");
+        mono_set_assemblies_path("./lib");
 
         // Initialize Mono JIT
         m_rootDomain = mono_jit_init("NightSnackEngine");

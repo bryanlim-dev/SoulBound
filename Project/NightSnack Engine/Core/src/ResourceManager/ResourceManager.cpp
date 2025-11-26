@@ -395,8 +395,9 @@ namespace NightSnack {
 	{
 		//std::cout << "RM: ";
 
+		//std::cout << "[RESOURCE] " << std::filesystem::current_path() << '\n';
 		std::filesystem::path fp = std::filesystem::canonical(
-			std::filesystem::current_path() / RESOURCE_PATH / filePath
+			RESOURCE_PATH + filePath
 		);
 
 		jsonKey = ConstructMapKey(fp.string());
