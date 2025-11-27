@@ -6,7 +6,7 @@ namespace ManagedScripts
     public class RotatorScript : Script
     {
         [Expose]
-        public const float rotationSpeed = 50.0f; // degrees per second
+        public  float rotationSpeed = 50.0f; // degrees per second
         [Expose]
         public bool testBool = false;
         [Expose]
