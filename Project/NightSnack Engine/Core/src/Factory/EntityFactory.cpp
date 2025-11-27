@@ -332,7 +332,8 @@ namespace NightSnack {
     bool EntityFactory::SaveAsPrefab(Entity e, std::string const& prefabName, bool overwrite) {
 
         // Output file path
-        std::filesystem::path outPath = std::filesystem::path(PREFABS_PATH) / (prefabName + ".json");
+        std::filesystem::path outPath = std::filesystem::path(PRIME_PREFABS_PATH) / (prefabName + ".json");
+        std::filesystem::path currdir = std::filesystem::path(PREFABS_PATH) / (prefabName + ".json");
 
         // Check if a prefab already exists with the same name
         if (std::filesystem::exists(outPath) && !overwrite) {
@@ -512,16 +513,35 @@ namespace NightSnack {
         // Write to file
         std::ofstream ofs(outPath);
         if (!ofs.is_open()) {
-            std::cerr << "[EntityFactory] Failed to write prefab file: " << outPath << "\n";
+            std::cerr << "[EntityFactory] Failed to write to prime prefab file: " << outPath << "\n";
             return false;
         }
-        // pretty-print with 4-space indent
         ofs << std::setw(4) << j;
         ofs.close();
-        std::cout << "[EntityFactory] Saved prefab to: " << outPath << "\n";
+        std::cout << "[EntityFactory] Saved prefab to prime: " << outPath << "\n";
 
-        // Update mapping of current entity to new created prefab
+        std::ofstream cfs(currdir);
+        if (!cfs.is_open()) {
+            std::cerr << "[EntityFactory] Failed to save and reload prefab file: " << currdir << "\n";
+            return false;
+        }
+        cfs << std::setw(4) << j;
+        cfs.close();
+        std::cout << "[EntityFactory] Saved prefab to: " << currdir << "\n";
+
+        // Use ResourceManager to load new prefab file
+        std::string prefabpath = "GameData/Prefabs/" + prefabName + ".json";
+        LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(prefabpath, m_prefabKeys[prefabName]);
+        //std::cout << "[EntityFactory] entry.path: " << entry.path() << '\n';
+        if (result == LOAD_FAIL_BADPATH) {
+            std::cerr << "[EntityFactory] RM failed to read json file: " << prefabpath << '\n';
+            return false;
+        }
+
+        // Update mappings of current entity to new created prefab
         entityToPrefab[e] = prefabName;
+        prefabToEntities.insert({ prefabName, e });
+        m_prefabNames.push_back(prefabName);
 
         return true;
     }
