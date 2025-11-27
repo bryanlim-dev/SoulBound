@@ -58,6 +58,16 @@ namespace NightSnack::Scripting {
         if (debugMode) stepRequest = false; // reset step request
     }
 
+    std::vector<void*> ScriptManager::GetEntityScripts(Entity e)
+    {
+        if (m_entityScripts.find(e) == m_entityScripts.end())
+        {
+            return std::vector<void*>();
+        }
+
+        return m_entityScripts[e];
+    }
+
     std::string ScriptManager::GetScriptName(void* script)
     {
         if (!script)
@@ -81,9 +91,15 @@ namespace NightSnack::Scripting {
         if (m_entityScripts.find(e) == m_entityScripts.end())
             return;
 
-        auto range = m_entityScripts.equal_range(e);
-        for (auto it = range.first; it != range.second; ++it)
-            m_monoExposeBridge.LoadScriptExposedFields(it->second);
+        //Loop thru each script in the vector
+        for (void* instance : m_entityScripts[e])
+        {
+            m_monoExposeBridge.LoadScriptExposedFields(instance);
+        }
+
+        //auto range = m_entityScripts.equal_range(e);
+        //for (auto it = range.first; it != range.second; ++it)
+        //    m_monoExposeBridge.LoadScriptExposedFields(it->second);
     }
 
     void ScriptManager::UnloadEntityExposedFields()
@@ -136,8 +152,14 @@ namespace NightSnack::Scripting {
         // Set the entity ID on the script
         m_monoHost->SetScriptEntityId(instance, e);
 
+        //If dont have a entry in the map, add it
+        if (m_entityScripts.find(e) == m_entityScripts.end())
+        {
+            m_entityScripts.insert({ e, std::vector<void*>()});
+        }
+
         // Store mapping
-        m_entityScripts.insert({ e, instance });
+        m_entityScripts[e].push_back(instance);
         m_scriptNameMap.insert({instance,  m_monoHost->GetScriptName(instance) }); //Insert name into a map
         ////std::cout << "[ScriptManager] Script attached successfully\n";
         return instance;
@@ -151,9 +173,12 @@ namespace NightSnack::Scripting {
         }
 
         // Destroy script instance
-        m_monoHost->DestroyScriptInstance(it->second);
+        for (void* instance : it->second)
+        {
+            m_monoHost->DestroyScriptInstance(instance);
+        }
         // Remove from map
-        m_entityScripts.erase(it);
+        m_entityScripts[e].clear();
     }
 
 }	// NightSnack

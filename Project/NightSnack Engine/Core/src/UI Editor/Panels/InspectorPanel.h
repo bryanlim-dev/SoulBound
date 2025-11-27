@@ -770,6 +770,7 @@ namespace NightSnack
         NightSnack::Scripting::MonoExposeBridge& bridge = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetMonoExposeBridge();
         //bridge.PrintAllExposedFields();
 
+
         if (ImGui::BeginTable("ScriptTable", 1 + script.names.size(), ImGuiTableFlags_SizingFixedFit))
         {
             ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
@@ -778,11 +779,18 @@ namespace NightSnack
             ImGui::TableNextRow();
             int indexCount = 0;
             ImGui::TableSetColumnIndex(indexCount); ImGui::Text("Script");
-            for (std::string names : script.names)
+            for (void* instance : m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetEntityScripts(*m_selectedEntity))
+            {
+                std::string scrName = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetScriptName(instance);
+                indexCount++;
+                ImGui::TableSetColumnIndex(indexCount); ImGui::TextDisabled("%s", scrName.c_str());
+            }
+
+            /*for (std::string names : script.names)
             {
                 indexCount++;
                 ImGui::TableSetColumnIndex(indexCount); ImGui::TextDisabled("%s", names.c_str());
-            }
+            }*/
 
             ImGui::EndTable();
         }
