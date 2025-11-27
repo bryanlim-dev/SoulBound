@@ -767,7 +767,7 @@ namespace NightSnack
         m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->LoadEntityExposedFields(*m_selectedEntity);
 
         auto& script = m_coord.GetComponent<Script>(*m_selectedEntity);
-        if (ImGui::BeginTable("ScriptTable", 1 + (int)script.names.size(), ImGuiTableFlags_SizingFixedFit))
+        //if (ImGui::BeginTable("ScriptTable", 1 + (int)script.names.size(), ImGuiTableFlags_SizingFixedFit))
         //NightSnack::Scripting::MonoExposeBridge& bridge = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetMonoExposeBridge();
         //bridge.PrintAllExposedFields();
 
