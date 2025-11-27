@@ -123,7 +123,7 @@ namespace NightSnack::Scripting {
         RegisterMonoInternalCalls(m_scriptInterface.get());
 
         // Load script assembly
-        if (!m_monoHost->LoadAssembly("../bin/ManagedScripts.dll")) {
+        if (!m_monoHost->LoadAssembly("./assets/Scripts/ManagedScripts.dll")) {
             std::cerr << "[ScriptManager] Failed to load ManagedScripts.dll\n";
             return;
         }

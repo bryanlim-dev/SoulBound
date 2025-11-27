@@ -15,8 +15,8 @@
 #include <bit>
 
 #include "Physics.h"
+#include "Systems/Graphics.h"
 #include "Collision.h"
-#include "Systems/PlayerController.h"
 
 namespace NightSnack {
 
@@ -28,6 +28,10 @@ namespace NightSnack {
 		if (debugMode && !stepRequest) {
 			return;
 		}
+
+		Entity cam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
+		Transform const& t = m_coord.GetComponent<Transform>(cam);
+		m_gridCenter = Vec2{ t.pos.x, t.pos.y };
 
 		for (int s{}; s < m_coord.steps; ++s) {
 
@@ -158,15 +162,18 @@ namespace NightSnack {
 						next.pos.x += r1.vel.x * FixedDT;
 						next.pos.y += r1.vel.y * FixedDT;
 
-						if (!CheckCollision(next, t2, c1, c2)) { continue; }
+						if (!CheckCollision(next, t2, c1, c2) && !CheckTunneling(t1, t2, r1)) { continue; }
 						c1.colliding = true;
+						c2.colliding = true;
+						// If is Trigger, only check for collision and do not perform overlap correction/force transfer
+						if (c1.type == ColliderType::Trigger) { continue; }
 
 						// Not colliding yet;
 						next.pos = t1.pos;
 						for (int i{}; i < 4; ++i) {
 							next.pos.x += r1.vel.x * FixedDT * 0.25f;
 							next.pos.y += r1.vel.y * FixedDT * 0.25f;
-							if (CheckCollision(next, t2, c1, c2)) {
+							if (CheckCollision(next, t2, c1, c2) || CheckTunneling(next, t2, r1)) {
 								next.pos.x -= r1.vel.x * FixedDT * 0.25f;
 								next.pos.y -= r1.vel.y * FixedDT * 0.25f;
 								break;
@@ -241,6 +248,31 @@ namespace NightSnack {
 			}
 		}
 	}
+
+	bool PhysicsSystem::CheckTunneling(Transform const& t1, Transform const& t2, RigidBody const& r1) {
+
+		// Obtain vector from current e1 to e2;
+		Vec2 dir{ t2.pos.x - t1.pos.x, t2.pos.y - t1.pos.y };
+		if (dir.magnitude() != 0.f) { dir.normalize(); }
+		
+		// Obtain vector from next e1 to e2;
+		Vec2 nextpos = { t1.pos.x + (r1.vel.x * FixedDT), t1.pos.y + (r1.vel.y * FixedDT) };
+		Vec2 nextdir { t2.pos.x - nextpos.x, t2.pos.y - nextpos.y };
+		if (nextdir.magnitude() != 0.f) { nextdir.normalize(); }
+
+		// Normalized direction of travel of e1;
+		Vec2 normal;
+		if (r1.vel.magnitude() != 0.f)
+			normal = r1.vel.normalized();
+		else
+			return false;	// No velocity, not possible to tunnel
+
+		if (dir.dot(normal) * nextdir.dot(normal) <= 0.f) {
+			return true;
+		}
+		return false;
+	}
+
 	bool PhysicsSystem::CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2) {
 		
 		if (c1.shape == ShapeType::AABB && c2.shape == ShapeType::AABB) {

@@ -45,9 +45,6 @@ namespace NightSnack {
 
         // load all game audio from directories
         LoadAllGameAudio();
-
-        // start playing main menu music by default
-        PlayBGM("mainMenu");
     }
 
     // destructor cleans up resources and releases fmod system
@@ -84,6 +81,13 @@ namespace NightSnack {
     // updates the fmod system
     void AudioSystem::Update()
     {
+        static bool first = true;
+        if (first) {
+            // start playing main menu music
+            PlayBGM("mainMenu");
+            first = false;
+        }
+
         if (m_coord.IsPaused()) {
             if (IsBGMPlaying()) {
                 PauseBGM();

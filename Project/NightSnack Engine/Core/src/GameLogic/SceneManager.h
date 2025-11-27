@@ -32,14 +32,6 @@ namespace NightSnack::Scene {
 
 		void Update() override {}
 
-		void LoadLevel(std::string const& filename);
-		void RestartLevel() {}
-		void PauseGame() {}
-
-		void UnloadLevel();
-
-		bool SaveLevel() {}
-
 		void CacheLevel();
 		void RestoreLevel();
 
@@ -64,33 +56,6 @@ namespace NightSnack::Scene {
 	// Level management in game
 	// Swap scenes
 
-	// Take snapshot of current world
-
-	inline void SceneManager::CacheLevel() {
-
-		std::set<Entity> entities = m_coord.GetLivingEntities();
-		if (entities.empty()) { return; }
-
-		m_levelCache.clear();
-		m_levelCache.reserve(entities.size());
-		
-		for (Entity e : entities) {
-			m_levelCache.emplace_back(std::make_pair(
-				m_coord.GetSystem<EntityFactory>()->GetEntityPrefabName(e),
-				m_coord.GetComponent<Transform>(e)));
-		}
-	}
-
-	inline void SceneManager::RestoreLevel() {
-
-		if (m_levelCache.empty()) { return; }
-
-		auto const& factory = m_coord.GetSystem<EntityFactory>();
-		factory->UnloadLevel();
-
-		for (auto const& unit : m_levelCache) {
-			factory->Create(unit.first, unit.second);
-		}
-	}
+	
 
 }	// NightSnack::Scene

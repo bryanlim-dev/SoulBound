@@ -203,15 +203,27 @@ namespace NightSnack
                 std::ofstream file(filePath);
                 if (!file.is_open())
                 {
-                    std::cerr << "Failed to open prefab file for writing: " << filePath << std::endl;
+                    std::cerr << "Failed to HotReload: " << filePath << std::endl;
                     return;
                 }
-
                 // write the JSON with formatting (4 space indent for easier reading of the json file)
                 file << m_archetypes[prefabName].dump(4);
                 file.close();
+                std::cout << "Prefab HotReloaded: " << prefabName << std::endl;
 
-                std::cout << "Prefab saved: " << prefabName << std::endl;
+                // Update Prime file
+                std::filesystem::path primePath = PRIME_PREFABS_PATH + (prefabName + ".json");
+                std::ofstream primefile(primePath);
+                if (!primefile.is_open())
+                {
+                    std::filesystem::path curr = std::filesystem::current_path();
+                    std::cerr << "Failed to save to Prime file: " << primePath << " from [" << curr << ']' << std::endl;
+                    return;
+                }
+                // write the JSON with formatting (4 space indent for easier reading of the json file)
+                primefile << m_archetypes[prefabName].dump(4);
+                primefile.close();
+                std::cout << "Prefab saved to Prime file: " << prefabName << std::endl;
 
                 // reload all entities using this prefab
                 m_coord.GetSystem<EntityFactory>()->UpdatePrefab(prefabName);
