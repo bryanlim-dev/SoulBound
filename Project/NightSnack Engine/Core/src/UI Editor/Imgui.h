@@ -402,7 +402,10 @@ namespace NightSnack {
 					{
 						m_isPlaying = true;
 						SetSimulationPaused(false);
+						*m_selectedEntity = INVALID_ENTITY;
+						m_scenePanel->DestroyEditorCamera();
 						m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
+						m_scenePanel->CreateEditorCamera();
 					}
 				}
 				else
@@ -435,7 +438,9 @@ namespace NightSnack {
 				{
 					m_isPlaying = false;
 					SetSimulationPaused(true);
+					*m_selectedEntity = INVALID_ENTITY;
 					m_coord.GetSystem<Scene::SceneManager>()->RestoreLevel();
+					m_scenePanel->CreateEditorCamera();
 					m_scenePanel->DisableEditorCameraIsMain();
 				}
 
@@ -450,12 +455,16 @@ namespace NightSnack {
 		if (enabled && !ImGui::GetCurrentContext()) {
 			Init();
 
+			*m_selectedEntity = INVALID_ENTITY;
 			m_scenePanel->ResetTexture();
-			m_scenePanel->DisableEditorCameraIsMain();
+			m_scenePanel->DestroyEditorCamera();
 			m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
+			m_scenePanel->CreateEditorCamera();
+			m_scenePanel->DisableEditorCameraIsMain();
 		}
 		else if (!enabled && ImGui::GetCurrentContext()) {
 			// Destroys Editor Camera
+			*m_selectedEntity = INVALID_ENTITY;
 			m_scenePanel->DestroyEditorCamera();
 
 			// Properly shutdown backends before destroying context

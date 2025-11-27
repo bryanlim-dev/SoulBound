@@ -179,7 +179,7 @@ namespace NightSnack {
             m_prefabManager.UpdateComponents(e, j);
         }
 
-        Create(prefab, Transform{ Vec3{}, 0.f, Vec2{50.f,50.f} });
+        //Create(prefab, Transform{ Vec3{}, 0.f, Vec2{50.f,50.f} });
     }
 
     json const& EntityFactory::GetArchetypes(size_t key) const {
@@ -370,13 +370,13 @@ namespace NightSnack {
             // Shape & dimensions
             if (c.shape == ShapeType::AABB) {
                 col["shape"] = "AABB";
-                col["width"] = c.width;
-                col["height"] = c.height;
             }
             else if (c.shape == ShapeType::Circle) {
                 col["shape"] = "Circle";
-                col["radius"] = c.radius;
             }
+            col["width"] = c.width;
+            col["height"] = c.height;
+            col["radius"] = c.radius;
 
             j["Collider"] = col;
         }
@@ -485,6 +485,13 @@ namespace NightSnack {
             };
         }
         //  ---------------------------------------------------------------
+		if (m_coord.HasComponent<PlayerController>(e)) {    // temp
+			PlayerController const& p = m_coord.GetComponent<PlayerController>(e);
+			j["PlayerController"] = {
+				{"moveSpeed", p.moveSpeed},
+				{"jumpSpeed", p.jumpSpeed}
+			};
+		}
 
         // Write to file
         std::ofstream ofs(outPath);
@@ -556,6 +563,26 @@ namespace NightSnack {
             RemoveEntity(entities[i]);
         }
         std::cout << "Prefabs transferred\n";
+    }
+
+    void EntityFactory::GlobalPrefabReload() {
+
+        std::vector<std::pair<Entity, std::string>> entities;
+
+		for (std::string& s : GetPrefabNames()) {
+            Entity e = Create(s, Transform{ Vec3{}, 0.f, Vec2{50.f,50.f} });
+            entities.push_back({ e, s });
+		}
+
+        for (auto const& [e, name] : entities) {
+            SaveAsPrefab(e, name, 1);
+        }
+
+		// Remove all created entities
+		for (auto const& [e, name] : entities) {
+			RemoveEntity(e);
+		}
+
     }
 
 }	// NightSnack
