@@ -895,7 +895,7 @@ namespace NightSnack
                 m_prefabModified = true;
             }
 
-            //lLoop checkbox
+            //loop checkbox
             bool loop = j["loop"];
             if (ImGui::Checkbox("Loop", &loop)) 
             {
