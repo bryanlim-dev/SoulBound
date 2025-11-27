@@ -16,8 +16,13 @@ namespace ManagedScripts
         [SerializeField]
         public Vector3 testVec3 = new Vector3(2, 4, 6);
 
+        public Transform transform;
+
         public override void OnStart()
         {
+            transform = new Transform(EntityId);
+            //Log($"Entity Script ID: {EntityId}");
+
             //Vector3 pos;
             //pos.X = 100;
             //pos.Y = 100;
@@ -94,7 +99,7 @@ namespace ManagedScripts
         public override void OnUpdate()
         {
             // Get current rotation
-            float rotation = Rotation;
+            float rotation = transform.Rotation;
 
             // Rotate around Y axis
             rotation += rotationSpeed * DeltaTime;
@@ -106,7 +111,7 @@ namespace ManagedScripts
             }
 
             // Set back to ECS
-            Rotation = rotation;
+            transform.Rotation = rotation;
 
             //// Log every 45 degrees
             //if ((int)rotation % 45 == 0 && rotation > 0)
