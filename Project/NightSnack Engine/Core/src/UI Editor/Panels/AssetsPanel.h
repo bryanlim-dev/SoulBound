@@ -53,16 +53,16 @@ namespace NightSnack
         */
         AssetsPanel(Coordinator& coord) :
             m_coord(coord),
-            m_assetsRoot(RESOURCE_PATH),
-            m_scriptsRoot(SCRIPTS_PATH),
+            m_assetsRoot(PRIME_RESOURCE_PATH),
+            m_scriptsRoot(PRIME_SCRIPTS_PATH),
             m_currentDirectory(m_assetsRoot),
             m_thumbnailSize(96.0f),
             m_selectedAssetPath(""),
             m_showAssetProperties(false),
             m_showImportDialog(false),
-            m_prefabsPanel(coord, PREFABS_PATH),
-            m_filesPanel(coord, RESOURCE_PATH),
-            m_scriptsPanel(coord, SCRIPTS_PATH)
+            m_prefabsPanel(coord, PRIME_PREFABS_PATH),
+            m_filesPanel(coord, PRIME_RESOURCE_PATH),
+            m_scriptsPanel(coord, PRIME_SCRIPTS_PATH)
         {
             m_prefabNames.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
             for (std::string const& s : coord.GetSystem<EntityFactory>()->GetPrefabNames())
