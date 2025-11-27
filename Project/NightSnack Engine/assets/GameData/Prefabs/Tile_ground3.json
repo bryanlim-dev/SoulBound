@@ -2,8 +2,9 @@
     "Collider": {
         "height": 16.0,
         "isStatic": true,
+        "radius": 0.5,
         "shape": "AABB",
-        "type": "Ground",
+        "type": "Solid",
         "width": 16.0
     },
     "Renderable": {
