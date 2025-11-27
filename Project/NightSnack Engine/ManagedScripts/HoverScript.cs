@@ -5,8 +5,11 @@ namespace ManagedScripts
 {
     public class HoverScript : Script
     {
-        private float moveSpeed = 150.0f;
-        private float time = 0.0f;
+        [Expose]
+        public float moveSpeed = 150.0f;
+        [Expose]
+        public float time = 0.0f;
+
 
         public override void OnStart()
         {

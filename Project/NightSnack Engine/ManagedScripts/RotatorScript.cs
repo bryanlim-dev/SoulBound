@@ -5,7 +5,16 @@ namespace ManagedScripts
 {
     public class RotatorScript : Script
     {
-        private const float rotationSpeed = 50.0f; // degrees per second
+        [Expose]
+        public  float rotationSpeed = 50.0f; // degrees per second
+        [Expose]
+        public bool testBool = false;
+        [Expose]
+        public string testStr = "EasyPeasy";
+        [Expose]
+        public Vector2 testVec2 = new Vector2(1,5);
+        [Expose]
+        public Vector3 testVec3 = new Vector3(2, 4, 6);
 
         public override void OnStart()
         {
