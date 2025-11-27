@@ -432,7 +432,7 @@ namespace NightSnack {
 			RESOURCE_PATH // "NightSnack Engine/assets"
 		);
 
-		resourcePath /= "Sprites";  // "NightSnack Engine/assets/Sprites"
+		//resourcePath /= "Sprites";  // "NightSnack Engine/assets/Sprites"
 		resourcePath = resourcePath.lexically_normal();
 		
 		//std::cout << "Resource path: " << resourcePath << std::endl;
