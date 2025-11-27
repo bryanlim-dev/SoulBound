@@ -322,8 +322,30 @@ namespace NightSnack
             }
         }
 
-		// Prefab of the entity
+		// Current Prefab display
+        std::string entityName = (*m_uiNames)[entity];
+		std::string prefabName = factory ? factory->GetEntityPrefabName(entity) : "UnknownPrefab";
+        ImGui::Dummy(ImVec2(0.0f, 5.0f));
+        ImGui::Columns(2, nullptr, false);
+        ImGui::Text("Prefab: %s", prefabName.c_str());
+        ImGui::NextColumn();
 
+        // Save / Overwrite entity's prefab
+        if (ImGui::Button("Save Prefab"))
+        {
+            // Overwrite if prefab with same name exists
+            bool exists = false;
+            for (const auto& name : factory->GetPrefabNames())
+            {
+                if (name == entityName)
+                {
+                    exists = true;
+                    break;
+                }
+            }
+            factory->SaveAsPrefab(entity, entityName, exists);
+        }
+        ImGui::Columns(1);
     }
 
 	// Draws Transform component details which includes position, rotation, and scale.
