@@ -40,5 +40,12 @@
     "RigidBody": {
         "mass": 1.0,
         "useGravity": true
+    },
+    "Audio" : {
+        "audioKey" : "playerHit",
+        "isPlaying" : false,
+        "loop" : false,
+        "playOnStart" : false,
+        "volume" : 1.0
     }
 }

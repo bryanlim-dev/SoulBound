@@ -1,4 +1,11 @@
 {
+    "Audio": {
+        "audioKey": "playerHit",
+        "isPlaying": false,
+        "loop": false,
+        "playOnStart": false,
+        "volume": 1.0
+    },
     "Collider": {
         "height": 200.0,
         "isStatic": false,
