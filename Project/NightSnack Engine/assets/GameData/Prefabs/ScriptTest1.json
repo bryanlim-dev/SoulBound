@@ -1,8 +1,20 @@
 {
+    "Collider": {
+        "height": 10.0,
+        "isStatic": true,
+        "radius": 30.0,
+        "shape": "Circle",
+        "type": "Trigger",
+        "width": 10.0
+    },
     "Renderable": {
         "isWireframe": false,
         "materialName": "ColorMat",
         "meshName": "circle"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": false
     },
     "Script": {
         "name": [

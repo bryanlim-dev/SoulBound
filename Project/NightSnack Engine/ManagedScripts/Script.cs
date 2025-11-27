@@ -61,112 +61,129 @@ namespace ManagedScripts
         #endregion
 
         #region RigidBody
-        #region Force
-        public Vector2 ForceDirection
+        public class RigidBody
         {
-            get => Engine.GetForceDirection(EntityId);
-            set => Engine.SetForceDirection(EntityId, value);
-        }
-        public float ForceMagnitude
-        {
-            get => Engine.GetForceMagnitude(EntityId);
-            set => Engine.SetForceMagnitude(EntityId, value);
-        }
-        public float ForceLifetime
-        {
-            get => Engine.GetForceLifetime(EntityId);
-            set => Engine.SetForceLifetime(EntityId, value);
-        }
-        public bool ForceActive 
-        {
-            get => Engine.GetForceActive(EntityId);
-            set => Engine.SetForceActive(EntityId, value);
-        }
-        #endregion //Force
+            private uint EntityId;
 
-        public Vector2 Velocity
-        {
-            get => Engine.GetVelocity(EntityId);
-            set => Engine.SetVelocity(EntityId, value);
-        }
-        public Vector2 Accleration
-        {
-            get => Engine.GetAcceleration(EntityId);
-            set => Engine.SetAcceleration(EntityId, value);
-        }
-        public float InvMass
-        {
-            get => Engine.GetInvMass(EntityId);
-            set => Engine.SetInvMass(EntityId, value);
-        }
-        public float InvInertia
-        {
-            get => Engine.GetInvInertia(EntityId);
-            set => Engine.SetInvInertia(EntityId, value);
-        }
-        public float Restitution
-        {
-            get => Engine.GetRestitution(EntityId);
-            set => Engine.SetRestitution(EntityId, value);
-        }
-        public bool UseGravity
-        {
-            get => Engine.GetUseGravity(EntityId);
-            set => Engine.SetUseGravity(EntityId, value);
-        }
-        public bool UseRotate
-        {
-            get => Engine.GetUseRotate(EntityId);
-            set => Engine.SetUseRotate(EntityId, value);
+            public RigidBody(uint id)
+            {
+                EntityId = id;
+            }
+            #region Force
+            public Vector2 ForceDirection
+            {
+                get => Engine.GetForceDirection(EntityId);
+                set => Engine.SetForceDirection(EntityId, value);
+            }
+            public float ForceMagnitude
+            {
+                get => Engine.GetForceMagnitude(EntityId);
+                set => Engine.SetForceMagnitude(EntityId, value);
+            }
+            public float ForceLifetime
+            {
+                get => Engine.GetForceLifetime(EntityId);
+                set => Engine.SetForceLifetime(EntityId, value);
+            }
+            public bool ForceActive
+            {
+                get => Engine.GetForceActive(EntityId);
+                set => Engine.SetForceActive(EntityId, value);
+            }
+            #endregion //Force
+
+            public Vector2 Velocity
+            {
+                get => Engine.GetVelocity(EntityId);
+                set => Engine.SetVelocity(EntityId, value);
+            }
+            public Vector2 Accleration
+            {
+                get => Engine.GetAcceleration(EntityId);
+                set => Engine.SetAcceleration(EntityId, value);
+            }
+            public float InvMass
+            {
+                get => Engine.GetInvMass(EntityId);
+                set => Engine.SetInvMass(EntityId, value);
+            }
+            public float InvInertia
+            {
+                get => Engine.GetInvInertia(EntityId);
+                set => Engine.SetInvInertia(EntityId, value);
+            }
+            public float Restitution
+            {
+                get => Engine.GetRestitution(EntityId);
+                set => Engine.SetRestitution(EntityId, value);
+            }
+            public bool UseGravity
+            {
+                get => Engine.GetUseGravity(EntityId);
+                set => Engine.SetUseGravity(EntityId, value);
+            }
+            public bool UseRotate
+            {
+                get => Engine.GetUseRotate(EntityId);
+                set => Engine.SetUseRotate(EntityId, value);
+            }
         }
         #endregion //Rigidbody
 
         #region Collider
+        public class Collider
+        {
+            private uint EntityId;
 
-        public ColliderType ColType
-        {
-            get => Engine.GetColliderType(EntityId);
-            set => Engine.SetColliderType(EntityId, value);
-        }
-        public ShapeType ColShape
-        {
-            get => Engine.GetColliderShapeType(EntityId);
-            set => Engine.SeColliderShapeType(EntityId, value);
-        }
+            public Collider(uint id)
+            {
+                EntityId = id;
+            }
+            public ColliderType ColType
+            {
+                get => Engine.GetColliderType(EntityId);
+                set => Engine.SetColliderType(EntityId, value);
+            }
+            public ShapeType ColShape
+            {
+                get => Engine.GetColliderShapeType(EntityId);
+                set => Engine.SeColliderShapeType(EntityId, value);
+            }
 
-        public bool ColStatic
-        {
-            get => Engine.GetColliderStatic(EntityId);
-            set => Engine.SetColliderStatic(EntityId, value);
-        }
+            public bool ColStatic
+            {
+                get => Engine.GetColliderStatic(EntityId);
+                set => Engine.SetColliderStatic(EntityId, value);
+            }
 
-        public float ColHeight
-        {
-            get => Engine.GetColliderHeight(EntityId);
-            set => Engine.SetColliderHeight(EntityId, value);
-        }
+            public float ColHeight
+            {
+                get => Engine.GetColliderHeight(EntityId);
+                set => Engine.SetColliderHeight(EntityId, value);
+            }
 
-        public float ColWidth
-        {
-            get => Engine.GetColliderWidth(EntityId);
-            set => Engine.SetColliderWidth(EntityId, value);
-        }
-        public float ColRadius
-        {
-            get => Engine.GetColliderRadius(EntityId);
-            set => Engine.SetColliderRadius(EntityId, value);
-        }
+            public float ColWidth
+            {
+                get => Engine.GetColliderWidth(EntityId);
+                set => Engine.SetColliderWidth(EntityId, value);
+            }
+            public float ColRadius
+            {
+                get => Engine.GetColliderRadius(EntityId);
+                set => Engine.SetColliderRadius(EntityId, value);
+            }
 
-        public bool ColGrounded
-        {
-            get => Engine.GetColliderGrounded(EntityId);
-            set => Engine.SetColliderGrounded(EntityId, value);
-        }
+            public bool ColGrounded
+            {
+                get => Engine.GetColliderGrounded(EntityId);
+                set => Engine.SetColliderGrounded(EntityId, value);
+            }
 
-        public bool ColColliding
-        {
-            get => Engine.GetColliderColliding(EntityId);
-            set => Engine.SetColliderColliding(EntityId, value);
+            public bool ColColliding
+            {
+                get => Engine.GetColliderColliding(EntityId);
+                set => Engine.SetColliderColliding(EntityId, value);
+            }
         }
 
         #endregion

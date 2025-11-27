@@ -17,10 +17,20 @@ namespace ManagedScripts
         public Vector3 testVec3 = new Vector3(2, 4, 6);
 
         public Transform transform;
+        public RigidBody rigidBody;
+        public Collider collider;
 
         public override void OnStart()
         {
+            //Class tests
             transform = new Transform(EntityId);
+            rigidBody = new RigidBody(EntityId);
+            collider = new Collider(EntityId);
+
+            rigidBody.UseGravity = true;
+            collider.ColType = ColliderType.Solid;
+            collider.ColStatic = false;
+
             //Log($"Entity Script ID: {EntityId}");
 
             //Vector3 pos;
