@@ -9,7 +9,7 @@
         "height": 30.0,
         "isStatic": false,
         "radius": 15.0,
-        "shape": "AABB",
+        "shape": "Circle",
         "type": "Solid",
         "width": 30.0
     },
@@ -34,7 +34,7 @@
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "ColorMat",
+        "materialName": "slime_4_1",
         "meshName": "square"
     },
     "RigidBody": {

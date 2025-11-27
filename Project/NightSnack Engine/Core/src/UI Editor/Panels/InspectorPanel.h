@@ -7,7 +7,7 @@
  * Inspector panel showing details of selected entity. Displays components and
  * their properties, allowing real-time editing of parameters.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -767,7 +767,8 @@ namespace NightSnack
         m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->LoadEntityExposedFields(*m_selectedEntity);
 
         auto& script = m_coord.GetComponent<Script>(*m_selectedEntity);
-        NightSnack::Scripting::MonoExposeBridge& bridge = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetMonoExposeBridge();
+        //if (ImGui::BeginTable("ScriptTable", 1 + (int)script.names.size(), ImGuiTableFlags_SizingFixedFit))
+        //NightSnack::Scripting::MonoExposeBridge& bridge = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetMonoExposeBridge();
         //bridge.PrintAllExposedFields();
 
 
@@ -819,7 +820,9 @@ namespace NightSnack
 
                         ImGui::TableNextRow();
 
-                        for (auto fields : bridge.GetExposedFields(instance))
+                        auto& bridge = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetMonoExposeBridge();
+
+                        for (auto& fields : bridge.GetExposedFields(instance))
                         {
                             Scripting::ExposedValue val = bridge.ReadValue(instance, fields);
                             ImGui::TableSetColumnIndex(0); ImGui::TextDisabled("%s: ", fields.m_name.c_str());
