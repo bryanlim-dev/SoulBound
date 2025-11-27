@@ -7,6 +7,7 @@
  * This file defines the AudioSystem class, which manages all game audio using FMOD.
  * Works with ResourceManager to load and cache sounds. Handles playing, pausing, stopping
  * and updating audio. Automatically scans audio directories and loads all files.
+ * Handles the audio component playing and stopping for entity-specific sounds.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -142,32 +143,30 @@ namespace NightSnack {
         for (Entity e : m_entities) {
             Audio& a = m_coord.ModifyComponent<Audio>(e);
             
-			std::cout << "[AudioSystem] Audio Component - Key: " << a.audioKey
+			/*std::cout << "[AudioSystem] Audio Component - Key: " << a.audioKey
 				<< ", isPlaying: " << a.isPlaying
 				<< ", volume: " << a.volume
-				<< ", loop: " << a.loop << "\n";
+				<< ", loop: " << a.loop << "\n";*/
 
             if (a.playOnStart)
             {
                 PlayAudio(a, e);
-                a.playOnStart = false; // Only auto-play once
-                std::cout << "[AudioSystem] Playing audio: " << a.audioKey << "\n";
+                a.playOnStart = false; // only auto-play once
+                //std::cout << "[AudioSystem] Playing audio: " << a.audioKey << "\n";
             }
-            else if (a.isPlaying) {
+            else if (a.isPlaying) 
+            {
                 PlayAudio(a, e);
                 a.isPlaying = false;
             }
 
             if (!a.loop) 
-            {
+			{
+				// ensure channel is set to no loop
 				m_entityChannels[e]->setMode(FMOD_LOOP_OFF);
 				m_entityChannels[e]->setLoopCount(0);
             }
-
-            /*if (a.stop)
-				StopAudio(a);*/
         }
-
     }
 
     // loads all game audio files by scanning directories
@@ -209,8 +208,8 @@ namespace NightSnack {
             }
 
             std::string audioType = isBGM ? "BGM" : "SFX";
-            std::cout << "[AudioSystem] Loaded " << loadedCount << " " << audioType
-                << " files from: " << folderPath << "\n";
+            /*std::cout << "[AudioSystem] Loaded " << loadedCount << " " << audioType
+                << " files from: " << folderPath << "\n";*/
         }
         catch (const std::exception& e) {
             std::cerr << "[AudioSystem] Error scanning directory " << folderPath
@@ -280,7 +279,7 @@ namespace NightSnack {
                 m_loadedSFX[key] = sound;
             }
 
-            std::cout << "[AudioSystem] Loaded: " << filepath << " (key: " << key << ")\n";
+            //std::cout << "[AudioSystem] Loaded: " << filepath << " (key: " << key << ")\n";
             return true;
         }
         else if (result == LOAD_FAIL_PREEXIST)
@@ -483,8 +482,7 @@ namespace NightSnack {
         return m_sfxVolume;
     }
 
-     //for audio component
-
+    // for audio component
     void AudioSystem::PlayAudio(Audio& audio, Entity entity)
     {
         FMOD::Channel* channel = nullptr;
@@ -511,12 +509,12 @@ namespace NightSnack {
         // set loop properties on the channel
         if (audio.loop) {
             channel->setMode(FMOD_LOOP_NORMAL);
-            channel->setLoopCount(-1); // Infinite loops
+            channel->setLoopCount(-1); // infinite loops
             std::cout << "[AudioSystem] Set to LOOP: " << audio.audioKey << std::endl;
         }
         else {
             channel->setMode(FMOD_LOOP_OFF);
-            channel->setLoopCount(0); // No looping
+            channel->setLoopCount(0); // no looping
             std::cout << "[AudioSystem] Set to NO LOOP: " << audio.audioKey << std::endl;
         }
 
@@ -524,28 +522,12 @@ namespace NightSnack {
         channel->setVolume(audio.volume * m_masterVolume);
         m_entityChannels[entity] = channel;
 
-        std::cout << "[AudioSystem] Playing: " << audio.audioKey
+        /*std::cout << "[AudioSystem] Playing: " << audio.audioKey
             << " (loop: " << audio.loop
-            << ", entity: " << entity << ")" << std::endl;
+            << ", entity: " << entity << ")" << std::endl;*/
     }
- 
 
-  void AudioSystem::StopAudio(Entity entity) 
-{
-    auto it = m_entityChannels.find(entity);
-    if (it != m_entityChannels.end() && it->second) {
-        it->second->stop();
-        m_entityChannels.erase(it);
-        std::cout << "[AudioSystem] Stopped audio for entity: " << entity << std::endl;
-    }
-    
-    // Update component state
-    if (m_coord.HasComponent<Audio>(entity)) {
-        auto& audio = m_coord.ModifyComponent<Audio>(entity);
-        audio.isPlaying = false;
-    }
-}
-
+    // getter for audio keys to edit in prefab panel
     std::vector<std::string> AudioSystem::GetAvailableAudioKeys() const 
     {
         std::vector<std::string> keys;
