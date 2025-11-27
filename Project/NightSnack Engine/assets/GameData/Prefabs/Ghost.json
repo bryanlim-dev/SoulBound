@@ -5,6 +5,13 @@
         "playbackSpeed": 1.0,
         "spriteSheetName": ""
     },
+    "Audio": {
+        "audioKey": "playerJump",
+        "isPlaying": false,
+        "loop": true,
+        "playOnStart": false,
+        "volume": 1.0
+    },
     "Collider": {
         "height": 1.0,
         "isStatic": false,
@@ -30,7 +37,7 @@
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "ghost_4_1",
+        "materialName": "ColorMat",
         "meshName": "square"
     },
     "RigidBody": {

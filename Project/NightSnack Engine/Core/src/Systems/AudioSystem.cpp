@@ -133,8 +133,8 @@ namespace NightSnack {
             }
 
             std::string audioType = isBGM ? "BGM" : "SFX";
-            //std::cout << "[AudioSystem] Loaded " << loadedCount << " " << audioType
-            //    << " files from: " << folderPath << "\n";
+            std::cout << "[AudioSystem] Loaded " << loadedCount << " " << audioType
+                << " files from: " << folderPath << "\n";
         }
         catch (const std::exception& e) {
             std::cerr << "[AudioSystem] Error scanning directory " << folderPath
@@ -204,7 +204,7 @@ namespace NightSnack {
                 m_loadedSFX[key] = sound;
             }
 
-            //std::cout << "[AudioSystem] Loaded: " << filepath << " (key: " << key << ")\n";
+            std::cout << "[AudioSystem] Loaded: " << filepath << " (key: " << key << ")\n";
             return true;
         }
         else if (result == LOAD_FAIL_PREEXIST)
@@ -405,6 +405,53 @@ namespace NightSnack {
     float AudioSystem::GetSFXVolume() const
     {
         return m_sfxVolume;
+    }
+
+     //for audio component
+
+  
+
+    void AudioSystem::PlayAudio(Entity entity) 
+    {
+		if (!m_coord.HasComponent<Audio>(entity)) return;
+
+        auto& audio = m_coord.ModifyComponent<Audio>(entity);
+
+        //auto it = m_audioComponents.find(entity);
+        //if (it == m_audioComponents.end()) return;
+
+        //AudioComponent& ac = it->second;
+        audio.isPlaying = true;
+        
+        PlaySFXWithVolume(audio.audioKey, audio.volume);
+    }
+
+    void AudioSystem::StopAudio(Entity entity) 
+    {
+        if (!m_coord.HasComponent<Audio>(entity)) return;
+
+        auto& audio = m_coord.ModifyComponent<Audio>(entity);
+        //auto it = m_audioComponents.find(entity);
+       
+        audio.isPlaying = false;
+        // mark as not playing
+        //it->second.isPlaying = false;
+	
+        // Individual SFX stopping would require enhanced channel management
+    }
+
+    std::vector<std::string> AudioSystem::GetAvailableAudioKeys() const 
+    {
+        std::vector<std::string> keys;
+        for (const auto& [key, sound] : m_loadedSFX) 
+        {
+            keys.push_back(key);
+        }
+        for (const auto& [key, sound] : m_loadedBGM) 
+        {
+            keys.push_back(key);
+        }
+        return keys;
     }
 
     Signature AudioSystem::GetSignature() const

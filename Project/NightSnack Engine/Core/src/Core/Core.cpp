@@ -62,6 +62,7 @@ namespace NightSnack {
 
 		m_coord.RegisterComponent<Renderable>();	// Graphics;
 		m_coord.RegisterComponent<Color>();
+		m_coord.RegisterComponent<Audio>();
 		m_coord.RegisterComponent<Camera>();
 
 		m_coord.RegisterComponent<PlayerController>();

@@ -493,6 +493,18 @@ namespace NightSnack {
 			};
 		}
 
+        // audio
+        if (m_coord.HasComponent<Audio>(e)) {
+            Audio const& a = m_coord.GetComponent<Audio>(e);
+            j["Audio"] = {
+                {"audioKey", a.audioKey},
+                {"isPlaying", a.isPlaying},
+                {"loop", a.loop},
+                {"playOnStart", a.playOnStart},
+                { "volume", a.volume }
+            };
+        }
+
         // Write to file
         std::ofstream ofs(outPath);
         if (!ofs.is_open()) {

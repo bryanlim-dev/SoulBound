@@ -77,6 +77,7 @@ namespace NightSnack
                     else if (componentName == "Font")               DrawFontEditor(componentData);
                     else if (componentName == "ButtonInfo")         DrawButtonInfoEditor(componentData);
                     else if (componentName == "Script")             DrawScriptEditor(componentData);
+                    else if (componentName == "Audio")              DrawAudioEditor(componentData);
 
                     else {
                         // Fallback generic editor
@@ -817,6 +818,85 @@ namespace NightSnack
                     
                 }
             }
+        }
+
+        void DrawAudioEditor(nlohmann::json& j)
+        {
+            // Get available audio keys for dropdown
+            auto audioSystem = m_coord.GetSystem<AudioSystem>();
+            std::vector<std::string> availableAudio;
+            if (audioSystem) {
+                availableAudio = audioSystem->GetAvailableAudioKeys();
+            }
+            else {
+                availableAudio = { "No audio system available" };
+            }
+
+            // audio key dropdown
+            std::string audioKey = j["audioKey"];
+            int currentAudioIdx = 0;
+            bool foundAudio = false;
+
+            for (int i = 0; i < availableAudio.size(); i++) 
+            {
+                if (audioKey == availableAudio[i]) {
+                    currentAudioIdx = i;
+                    foundAudio = true;
+                    break;
+                }
+            }
+
+            // if current audio not found, default to first one
+            if (!foundAudio && !availableAudio.empty() && availableAudio[0] != "No audio system available") 
+            {
+                currentAudioIdx = 0;
+                j["audioKey"] = availableAudio[0];
+                m_prefabModified = true;
+            }
+
+            std::vector<const char*> audioNames;
+            for (const auto& audioName : availableAudio) 
+            {
+                audioNames.push_back(audioName.c_str());
+            }
+
+            if (ImGui::Combo("Audio Key", &currentAudioIdx, audioNames.data(), static_cast<int>(audioNames.size()))) 
+            {
+                j["audioKey"] = availableAudio[currentAudioIdx];
+                m_prefabModified = true;
+            }
+
+            // volume slider
+            float volume = j["volume"];
+            if (ImGui::SliderFloat("Volume", &volume, 0.0f, 1.0f, "%.2f")) 
+            {
+                j["volume"] = volume;
+                m_prefabModified = true;
+            }
+
+            //lLoop checkbox
+            bool loop = j["loop"];
+            if (ImGui::Checkbox("Loop", &loop)) 
+            {
+                j["loop"] = loop;
+                m_prefabModified = true;
+            }
+
+            // play on start checkbox
+            bool playOnStart = j["playOnStart"];
+            if (ImGui::Checkbox("Play on Start", &playOnStart)) 
+            {
+                j["playOnStart"] = playOnStart;
+                m_prefabModified = true;
+            }
+
+            //// 3D audio checkbox
+            //bool is3D = j["is3D"];
+            //if (ImGui::Checkbox("3D Audio", &is3D)) 
+            //{
+            //    j["is3D"] = is3D;
+            //    m_prefabModified = true;
+            //}
         }
     };
 }

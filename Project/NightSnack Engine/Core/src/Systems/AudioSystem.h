@@ -181,6 +181,15 @@ namespace NightSnack {
          */
         float GetSFXVolume() const;
 
+        //Audio Component Management
+        /*void AddAudioComponent(Entity entity, const AudioComponent& component);
+        void RemoveAudioComponent(Entity entity);
+        AudioComponent* GetAudioComponent(Entity entity);*/
+        void PlayAudio(Entity entity);
+        void StopAudio(Entity entity);
+
+        std::vector<std::string> GetAvailableAudioKeys() const;
+
         // ISystem overrides
 
         /**
@@ -215,6 +224,8 @@ namespace NightSnack {
 
         // Audio keys for all game sounds
         //AudioKeys m_audioKeys;
+
+        //std::unordered_map<Entity, AudioComponent> m_audioComponents;
 
         // State
         bool m_initialized;

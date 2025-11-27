@@ -173,6 +173,16 @@ namespace NightSnack {
         float height{ 900.f };
     };
 
+	// Audio component
+    struct Audio {
+        std::string audioKey;
+        float volume = 1.0f;
+        bool loop = false;
+        bool playOnStart = false;
+        //bool is3D = false;
+        bool isPlaying = false;
+    };
+
     enum ButtonType {
         GAMEMENU,
         SETTINGS,
@@ -382,6 +392,17 @@ namespace NightSnack {
         // Optional runtime-only flags (not usually in prefab JSON)
         c.isGrounded = j.value("isGrounded", false);
         c.colliding = j.value("colliding", false);
+    }
+
+    // Audio
+    inline void from_json(const json& j, Audio& a) {
+        j.at("audioKey").get_to(a.audioKey);
+        j.at("volume").get_to(a.volume);
+        j.at("loop").get_to(a.loop);
+        j.at("playOnStart").get_to(a.playOnStart);
+        // j.at("is3D").get_to(a.is3D);
+        j.at("isPlaying").get_to(a.isPlaying);
+
     }
     // STATES ==================================================
     //States from_json function is within StateBase.h

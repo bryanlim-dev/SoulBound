@@ -55,8 +55,6 @@ namespace NightSnack {
 			// Create Default level.
 			LoadLevel("DefaultLevel");
 
-			GlobalPrefabReload();
-
 			// Setup input events;
 			//m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
 			//	if (event.pressed == InputEvent::InputActionState::Pressed) {
