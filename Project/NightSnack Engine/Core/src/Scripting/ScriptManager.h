@@ -81,10 +81,13 @@ namespace NightSnack::Scripting {
 		Signature GetSignature() const override { return m_systemSignature; }
 		std::string GetName() const { return "ScriptManager"; }
 
+		std::string GetScriptName(void* script);
 
 		MonoExposeBridge& GetMonoExposeBridge();
 		void LoadEntityExposedFields(Entity e);
 		void UnloadEntityExposedFields();
+
+
 
 	private:
 		// Helper functions
@@ -101,6 +104,7 @@ namespace NightSnack::Scripting {
 
 		// Map entity ID to script instance
 		std::multimap<Entity, void*> m_entityScripts;
+		std::map<void*, std::string> m_scriptNameMap;
 
 		bool debugMode = false;
 		bool stepRequest = false;

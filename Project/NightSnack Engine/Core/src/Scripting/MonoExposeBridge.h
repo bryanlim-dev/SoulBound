@@ -29,6 +29,7 @@ namespace NightSnack::Scripting {
 		MonoClassField* m_monoField = nullptr; //handle for get/set
 		MonoValueType m_valueType{}; //Type of value
 		size_t m_sizeBytes{}; //byte size for structs
+		MonoClass* m_scriptInstance = nullptr;
 	};
 
 	struct ExposedValue {

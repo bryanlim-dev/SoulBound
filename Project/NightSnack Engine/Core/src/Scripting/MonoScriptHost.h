@@ -61,6 +61,8 @@ namespace NightSnack::Scripting {
         // Check if initialized
         bool IsInitialized() const { return m_initialized; }
 
+        std::string GetScriptName(void* instance);
+
     private:
         MonoDomain* m_rootDomain;
         MonoDomain* m_appDomain;

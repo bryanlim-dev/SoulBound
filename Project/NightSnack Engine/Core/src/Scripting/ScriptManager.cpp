@@ -58,6 +58,16 @@ namespace NightSnack::Scripting {
         if (debugMode) stepRequest = false; // reset step request
     }
 
+    std::string ScriptManager::GetScriptName(void* script)
+    {
+        if (!script)
+         return "";
+        if (m_scriptNameMap.find(script) == m_scriptNameMap.end())
+         return "";
+
+         return m_scriptNameMap[script];
+    }
+
     MonoExposeBridge& ScriptManager::GetMonoExposeBridge()
     {
         return m_monoExposeBridge;
@@ -128,6 +138,7 @@ namespace NightSnack::Scripting {
 
         // Store mapping
         m_entityScripts.insert({ e, instance });
+        m_scriptNameMap.insert({instance,  m_monoHost->GetScriptName(instance) }); //Insert name into a map
         ////std::cout << "[ScriptManager] Script attached successfully\n";
         return instance;
     }

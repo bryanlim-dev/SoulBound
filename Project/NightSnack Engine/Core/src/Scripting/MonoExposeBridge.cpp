@@ -45,6 +45,7 @@ namespace NightSnack::Scripting {
 			MonoClass* fieldClass = mono_class_from_mono_type(monoType);
 			const char* typeName = mono_class_get_name(fieldClass);
 			field.m_typeName = typeName;
+			field.m_scriptInstance = fieldClass;
 
 			// Map type to enum + struct size
 			field.m_valueType = MapMonoType(fieldClass, field.m_sizeBytes);
