@@ -755,28 +755,6 @@ namespace NightSnack
 		}
 
 		// Create a dedicated editor camera entity for Scene
-		/*auto factory = m_coord.GetSystem<EntityFactory>();
-		if (factory)
-		{
-			Transform editorTransform;
-			editorTransform.pos = m_editorCameraData.pos;
-			editorTransform.rot = m_editorCameraData.rot;
-			editorTransform.scale = m_editorCameraData.scale;
-			editorTransform.layer = LayerType::GAMEUI;
-			m_editorCameraEntity = factory->Create("Cam", editorTransform);
-
-			if (m_editorCameraEntity != INVALID_ENTITY)
-			{
-				if (!m_coord.HasComponent<Camera>(m_editorCameraEntity))
-				{
-					m_coord.AddComponent<Camera>(m_editorCameraEntity, Camera{});
-				}
-				auto& cam = m_coord.ModifyComponent<Camera>(m_editorCameraEntity);
-				cam.zoom = m_editorCameraData.zoom;
-				cam.isMainCam = false;
-			}
-		}*/
-
 		m_editorCameraEntity = m_coord.CreateEntity();
 
 		Transform editorTransform;

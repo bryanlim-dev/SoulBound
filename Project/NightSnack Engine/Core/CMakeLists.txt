@@ -36,6 +36,7 @@ target_compile_definitions(Core
         LEVELS_PATH=\"./assets/GameData/Levels/\"
         DATA_PATH=\"./assets/Data/\"
         PRIME_RESOURCE_PATH=\"../../../assets/\"
+	PRIME_SCRIPTS_PATH=\"../../../ManagedScripts/\"
         PRIME_PREFABS_PATH=\"../../../assets/GameData/Prefabs/\"
 )
 
