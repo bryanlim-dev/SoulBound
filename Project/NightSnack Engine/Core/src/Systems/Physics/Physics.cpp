@@ -15,8 +15,8 @@
 #include <bit>
 
 #include "Physics.h"
+#include "Systems/Graphics.h"
 #include "Collision.h"
-#include "Systems/PlayerController.h"
 
 namespace NightSnack {
 
@@ -28,6 +28,10 @@ namespace NightSnack {
 		if (debugMode && !stepRequest) {
 			return;
 		}
+
+		Entity cam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
+		Transform const& t = m_coord.GetComponent<Transform>(cam);
+		m_gridCenter = Vec2{ t.pos.x, t.pos.y };
 
 		for (int s{}; s < m_coord.steps; ++s) {
 

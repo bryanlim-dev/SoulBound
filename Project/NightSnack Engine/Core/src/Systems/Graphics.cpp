@@ -666,6 +666,7 @@ namespace NightSnack {
 			if ((m_coord.GetEntitySignature(e) & cameraSig) == cameraSig &&
 				m_coord.GetComponent<Camera>(e).isMainCam) { // This camera Entity is the main camera
 				inst = true;
+				m_camera = e;
 				return e;
 			}
 		}
