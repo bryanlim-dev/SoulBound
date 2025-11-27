@@ -189,10 +189,21 @@ namespace ManagedScripts
         #endregion
 
         #region Color
-        public Colors Color
+
+        public class Color
         {
-            get => Engine.GetRGBA(EntityId);
-            set => Engine.SetRGBA(EntityId, value);
+            private uint EntityId;
+
+            public Color(uint id)
+            {
+                EntityId = id;
+            }
+
+            public Colors RGBA
+            {
+                get => Engine.GetRGBA(EntityId);
+                set => Engine.SetRGBA(EntityId, value);
+            }
         }
         #endregion
 

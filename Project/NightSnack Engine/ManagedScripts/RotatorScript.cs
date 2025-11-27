@@ -19,6 +19,7 @@ namespace ManagedScripts
         public Transform transform;
         public RigidBody rigidBody;
         public Collider collider;
+        public Color color;
 
         public override void OnStart()
         {
@@ -26,10 +27,12 @@ namespace ManagedScripts
             transform = new Transform(EntityId);
             rigidBody = new RigidBody(EntityId);
             collider = new Collider(EntityId);
+            color = new Color(EntityId);
 
             rigidBody.UseGravity = true;
             collider.ColType = ColliderType.Solid;
             collider.ColStatic = false;
+            color.RGBA = new Colors(0.5f, 0, 0, 1);
 
             //Log($"Entity Script ID: {EntityId}");
 
