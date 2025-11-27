@@ -2,6 +2,7 @@
     "Collider": {
         "height": 10.0,
         "isStatic": false,
+        "radius": 0.5,
         "shape": "AABB",
         "type": "Solid",
         "width": 10.0

@@ -6,14 +6,15 @@
         "spriteSheetName": ""
     },
     "Collider": {
-        "height": 100.0,
+        "height": 1.0,
         "isStatic": false,
-        "shape": "AABB",
+        "radius": 70.9000015258789,
+        "shape": "Circle",
         "type": "Solid",
-        "width": 100.0
+        "width": 1.0
     },
     "Font": {
-        "fontSize": 0.949999988079071,
+        "fontSize": 0.699999988079071,
         "fontType": "buggy-font",
         "offsetPosition": {
             "x": 0.0,
@@ -22,9 +23,9 @@
         },
         "text": "Ghost",
         "textColor": {
-            "b": 0.16792598366737366,
-            "g": 0.7310924530029297,
-            "r": 0.27204081416130066
+            "b": 0.16862745583057404,
+            "g": 0.0,
+            "r": 0.2705882489681244
         }
     },
     "Renderable": {

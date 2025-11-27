@@ -2,14 +2,16 @@
     "Animator": {
         "isLooping": false,
         "isPlaying": false,
-        "playbackSpeed": 1.0,
+        "playbackSpeed": 1.305999994277954,
         "spriteSheetName": ""
     },
     "Collider": {
+        "height": 1.0,
         "isStatic": false,
         "radius": 20.0,
         "shape": "Circle",
-        "type": "Solid"
+        "type": "Solid",
+        "width": 1.0
     },
     "Renderable": {
         "isWireframe": false,

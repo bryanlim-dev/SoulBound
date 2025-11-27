@@ -1,10 +1,11 @@
 {
     "Collider": {
-        "height": 100.0,
+        "height": 1.0,
         "isStatic": true,
-        "shape": "AABB",
-        "type": "Ground",
-        "width": 1600.0
+        "radius": 1.0,
+        "shape": "Circle",
+        "type": "Solid",
+        "width": 1.0
     },
     "Color": {
         "a": 1.0,

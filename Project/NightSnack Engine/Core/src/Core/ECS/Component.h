@@ -371,12 +371,12 @@ namespace NightSnack {
         if (c.shape == ShapeType::AABB) {
             j.at("width").get_to(c.width);
             j.at("height").get_to(c.height);
-            c.radius = 0.f;
+            c.radius = 0.5f;
         }
         else if (c.shape == ShapeType::Circle) {
             j.at("radius").get_to(c.radius);
-            c.width = 0.f;
-            c.height = 0.f;
+            c.width = 1.f;
+            c.height = 1.f;
         }
 
         // Optional runtime-only flags (not usually in prefab JSON)
