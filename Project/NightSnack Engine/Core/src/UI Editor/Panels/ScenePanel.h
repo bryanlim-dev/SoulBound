@@ -39,8 +39,8 @@ namespace NightSnack
 			Constructor for ScenePanel that sets up editor camera entity and framebuffer.
 		*/
 		/************************************************************************/
-		ScenePanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity, Tilemap& tilemap)
-			: m_coord(coord), m_selectedEntity(selectedEntity), m_tilemap(tilemap)
+		ScenePanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity, std::shared_ptr<std::unordered_map<Entity, std::string>> uiNames, Tilemap& tilemap)
+			: m_coord(coord), m_selectedEntity(selectedEntity), m_uiNames(uiNames), m_tilemap(tilemap)
 		{
 			// Create editor camera entity
 			CreateEditorCamera();
@@ -251,6 +251,15 @@ namespace NightSnack
 					}*/
 					if (m_multiSelectedEntities.empty() && m_selectedEntity && *m_selectedEntity != INVALID_ENTITY && ImGui::IsKeyPressed(ImGuiKey_Delete))
 					{
+						if (m_coord.HasComponent<Transform>(*m_selectedEntity))
+						{
+							auto factory = m_coord.GetSystem<EntityFactory>();
+							auto prefabName = factory->GetEntityPrefabName(*m_selectedEntity);
+							auto transform = m_coord.GetComponent<Transform>(*m_selectedEntity);
+							NightSnack::UndoSystem::Instance().Push(
+								NightSnack::EntityDeleteSnapshot{ *m_selectedEntity, prefabName, transform }
+							);
+						}
 						m_coord.DestroyEntity(*m_selectedEntity);
 						*m_selectedEntity = INVALID_ENTITY;
 					}
@@ -263,6 +272,7 @@ namespace NightSnack
 						if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !m_isDragging && m_hoveredEntity != INVALID_ENTITY) {
 							*m_selectedEntity = m_hoveredEntity;
 							auto& t = m_coord.GetComponent<Transform>(m_hoveredEntity);
+							NightSnack::UndoSystem::Instance().Push(NightSnack::TransformSnapshot{ *m_selectedEntity, t });
 							m_dragOffset.x = t.pos.x - mouseWorldX;
 							m_dragOffset.y = t.pos.y - mouseWorldY;
 							m_isDragging = true;
@@ -359,7 +369,7 @@ namespace NightSnack
 						// default layer...
 						trans.layer = LayerType::GAMELAYER;
 
-						trans.scale = Vec2{ 50.f, 50.f };	// default scale...
+						trans.scale = Vec2{ 100.f, 100.f };	// default scale...
 
 						m_coord.GetSystem<EntityFactory>()->Create(filePath.filename().stem().string(), trans);
 
@@ -413,6 +423,7 @@ namespace NightSnack
 
 		// Selected entity in the scene
 		std::shared_ptr<Entity> m_selectedEntity;
+		std::shared_ptr<std::unordered_map<Entity, std::string>> m_uiNames;
 		std::set<Entity> m_multiSelectedEntities;
 		bool m_isMultiSelecting = false;
 		ImVec2 m_selectStart, m_selectEnd;
@@ -744,7 +755,7 @@ namespace NightSnack
 		}
 
 		// Create a dedicated editor camera entity for Scene
-		auto factory = m_coord.GetSystem<EntityFactory>();
+		/*auto factory = m_coord.GetSystem<EntityFactory>();
 		if (factory)
 		{
 			Transform editorTransform;
@@ -764,6 +775,25 @@ namespace NightSnack
 				cam.zoom = m_editorCameraData.zoom;
 				cam.isMainCam = false;
 			}
+		}*/
+
+		m_editorCameraEntity = m_coord.CreateEntity();
+
+		Transform editorTransform;
+		editorTransform.pos = m_editorCameraData.pos;
+		editorTransform.rot = m_editorCameraData.rot;
+		editorTransform.scale = m_editorCameraData.scale;
+		editorTransform.layer = LayerType::GAMEUI;
+		m_coord.AddComponent(m_editorCameraEntity, editorTransform);
+
+		Camera cam;
+		cam.zoom = m_editorCameraData.zoom;
+		cam.isMainCam = false;
+		m_coord.AddComponent(m_editorCameraEntity, cam);
+
+		if (m_uiNames)
+		{
+			(*m_uiNames)[m_editorCameraEntity] = "SceneCam";
 		}
 	}
 
@@ -774,6 +804,10 @@ namespace NightSnack
 		if (m_editorCameraEntity != INVALID_ENTITY &&
 			m_coord.GetLivingEntities().count(m_editorCameraEntity))
 		{
+			if (m_uiNames)
+			{
+				m_uiNames->erase(m_editorCameraEntity);
+			}
 			m_coord.DestroyEntity(m_editorCameraEntity);
 			m_editorCameraEntity = INVALID_ENTITY;
 		}
