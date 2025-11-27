@@ -5,15 +5,15 @@ namespace ManagedScripts
 {
     public class RotatorScript : Script
     {
-        [Expose]
+        [SerializeField]
         public  float rotationSpeed = 50.0f; // degrees per second
-        [Expose]
+        [SerializeField]
         public bool testBool = false;
-        [Expose]
+        [SerializeField]
         public string testStr = "EasyPeasy";
-        [Expose]
+        [SerializeField]
         public Vector2 testVec2 = new Vector2(1,5);
-        [Expose]
+        [SerializeField]
         public Vector3 testVec3 = new Vector3(2, 4, 6);
 
         public override void OnStart()

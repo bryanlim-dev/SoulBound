@@ -5,9 +5,9 @@ namespace ManagedScripts
 {
     public class HoverScript : Script
     {
-        [Expose]
+        [SerializeField]
         public float moveSpeed = 150.0f;
-        [Expose]
+        [SerializeField]
         public float time = 0.0f;
 
 

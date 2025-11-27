@@ -30,7 +30,7 @@ namespace NightSnack::Scripting {
 		//Loop through all exposed fields
 		while ((monoField = mono_class_get_fields(monoClass, &it)) != nullptr)
 		{
-			//Check for [Expose]
+			//Check for [SerializeField]
 			if (!FieldHasExposeAttribute(monoClass, monoField))
 				continue; // None, ignore this one
 
@@ -224,7 +224,7 @@ namespace NightSnack::Scripting {
 		//Mono Image apprently stores data not pictures
 		MonoImage* image = mono_class_get_image(monoClass);
 
-		MonoClass* exposeAttrClass = mono_class_from_name(image, "ManagedScripts", "ExposeAttribute");
+		MonoClass* exposeAttrClass = mono_class_from_name(image, "ManagedScripts", "SerializeFieldAttribute");
 
 		//Check if got attribute loaded
 		if (exposeAttrClass == nullptr)
