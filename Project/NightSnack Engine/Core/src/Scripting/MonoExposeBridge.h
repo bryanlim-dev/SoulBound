@@ -22,7 +22,7 @@ namespace NightSnack::Scripting {
 		MONO_UNSUPPORTED
 	};
 
-	//Struct on [Exposed] variable info
+	//Struct on [SerializeField] variable info
 	struct ExposedField
 	{
 		std::string m_name{}; //C# field name

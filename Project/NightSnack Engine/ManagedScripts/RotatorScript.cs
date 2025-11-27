@@ -5,19 +5,40 @@ namespace ManagedScripts
 {
     public class RotatorScript : Script
     {
-        [Expose]
+        [SerializeField]
         public  float rotationSpeed = 50.0f; // degrees per second
-        [Expose]
+        [SerializeField]
         public bool testBool = false;
-        [Expose]
+        [SerializeField]
         public string testStr = "EasyPeasy";
-        [Expose]
+        [SerializeField]
         public Vector2 testVec2 = new Vector2(1,5);
-        [Expose]
+        [SerializeField]
         public Vector3 testVec3 = new Vector3(2, 4, 6);
+
+        public Transform transform;
+        public RigidBody rigidBody;
+        public Collider collider;
+        public Color color;
+        public Renderer renderer;
 
         public override void OnStart()
         {
+            //Class tests
+            transform = new Transform(EntityId);
+            rigidBody = new RigidBody(EntityId);
+            collider = new Collider(EntityId);
+            color = new Color(EntityId);
+            renderer = new Renderer(EntityId);
+
+            rigidBody.UseGravity = true;
+            collider.ColType = ColliderType.Solid;
+            collider.ColStatic = false;
+            color.RGBA = new Colors(0.5f, 0, 0, 1);
+            renderer.IsWireframe = true;
+
+            //Log($"Entity Script ID: {EntityId}");
+
             //Vector3 pos;
             //pos.X = 100;
             //pos.Y = 100;
@@ -69,7 +90,7 @@ namespace ManagedScripts
             ////Renderable test
             //Engine.SetMeshName(id2, "square");
             //Log($"Ball 2 Mesh Name: {Engine.GetMeshName(id2)}");
-            //Engine.SetMaterialName(id2, "../assets\\slime_2_2.png");
+            //Engine.SetMaterialName(id2, "slime_2_2.png");
             //Log($"Ball 2 Material Name: {Engine.GetMaterialName(id2)}");
 
             //Engine.SetIsWireframe(id1, true);
@@ -84,6 +105,7 @@ namespace ManagedScripts
             //Engine.SetFontSize(id3, 3);
             //Engine.SetFontColor(id3, new Vector3(0, 1, 0));
 
+            //PlaySound("Sound/SFX/button_click.mp3");
 
             //Log("RotatorScript started!");
             //Log($"Initial rotation: {Rotation}");
@@ -93,7 +115,7 @@ namespace ManagedScripts
         public override void OnUpdate()
         {
             // Get current rotation
-            float rotation = Rotation;
+            float rotation = transform.Rotation;
 
             // Rotate around Y axis
             rotation += rotationSpeed * DeltaTime;
@@ -105,7 +127,7 @@ namespace ManagedScripts
             }
 
             // Set back to ECS
-            Rotation = rotation;
+            transform.Rotation = rotation;
 
             //// Log every 45 degrees
             //if ((int)rotation % 45 == 0 && rotation > 0)

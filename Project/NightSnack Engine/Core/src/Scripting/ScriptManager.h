@@ -46,22 +46,22 @@ namespace NightSnack::Scripting {
 			m_systemSignature.set(GetComponentTypeID<Transform>());
 			m_systemSignature.set(GetComponentTypeID<Script>());
 
-			// Event dispatcher initialisations
-			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
-				if (event.pressed == InputEvent::InputActionState::Pressed) {
-					switch (event.inputAction) {
-					case InputEvent::InputAction::PhysicsDebugMode:
-						debugMode = !debugMode;
-						break;
-					case InputEvent::InputAction::PhysicsDebugStep:
-						stepRequest = true;
-						break;
-					case InputEvent::InputAction::EndStressTest:
-						m_attached = false;
-						break;
-					}
-				}
-				});
+			//// Event dispatcher initialisations
+			//m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
+			//	if (event.pressed == InputEvent::InputActionState::Pressed) {
+			//		switch (event.inputAction) {
+			//		case InputEvent::InputAction::PhysicsDebugMode:
+			//			debugMode = !debugMode;
+			//			break;
+			//		case InputEvent::InputAction::PhysicsDebugStep:
+			//			stepRequest = true;
+			//			break;
+			//		case InputEvent::InputAction::EndStressTest:
+			//			m_attached = false;
+			//			break;
+			//		}
+			//	}
+			//	});
 
 			Initialize();
 			entityNum = m_entities.size();
@@ -75,7 +75,7 @@ namespace NightSnack::Scripting {
 		// Create a script instance attached to an entity;
 		void* AttachScript(Entity e, std::string const& scriptClassName);
 		// Remove script from entity;
-		void RemoveScript(Entity e);
+		void RemoveScripts(Entity e);
 
 		// Required by ISystem base class;
 		Signature GetSignature() const override { return m_systemSignature; }
@@ -88,7 +88,7 @@ namespace NightSnack::Scripting {
 		void LoadEntityExposedFields(Entity e);
 		void UnloadEntityExposedFields();
 
-
+		void RefreshScripts() { m_attached = false; }
 
 	private:
 		// Helper functions

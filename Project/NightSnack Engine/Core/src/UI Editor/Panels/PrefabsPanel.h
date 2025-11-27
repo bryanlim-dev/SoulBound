@@ -114,6 +114,7 @@ namespace NightSnack
             {
                 EditPrefab(prefabName);
                 m_prefabModified = false;
+                m_coord.GetSystem<Scripting::ScriptManager>()->RefreshScripts();
             }
 
             ImGui::EndDisabled();

@@ -5,7 +5,7 @@
 # ------------------------------------------------------------ #
 
 # Minimum version of CMake required
-cmake_minimum_required(VERSION 3.30.3)
+cmake_minimum_required(VERSION 3.23.1)
 
 # ------------------------------------------------------------
 # Project Setup
