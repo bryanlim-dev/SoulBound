@@ -28,7 +28,7 @@ target_link_libraries(Game PRIVATE Core)
 
 # Set output name and Visual Studio debugging directory
 set_target_properties(Game PROPERTIES
-    OUTPUT_NAME "NightSnack"
+    OUTPUT_NAME "SoulBound"
     VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:Game>"
 )
 
@@ -69,7 +69,7 @@ add_custom_target(copy_assets ALL
         "${GAME_OUTPUT_DIR}"
 
     DEPENDS ${ASSET_FILES}
-    COMMENT "Copying assets and DLLs to NightSnack folder..."
+    COMMENT "Copying assets and DLLs to SoulBound folder..."
 )
 
 # Copy Mono lib directory

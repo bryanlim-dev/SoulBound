@@ -315,9 +315,11 @@ namespace NightSnack {
 			}
 		}
 
+#ifdef EDITOR
 		// Render debug drawing visualizations only after rendering all scene objects
 		if (m_enableDebugDraw)
 			RenderDebugDrawing(camera);
+#endif
 	}
 
 	void GraphicsSystem::RenderDebugDrawing(Entity camera) {

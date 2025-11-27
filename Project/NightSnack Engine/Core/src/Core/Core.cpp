@@ -19,7 +19,7 @@
 #include "ResourceManager/ResourceHelper/ResourceSystemHelper.h"
 #include "../Systems/StateMachine/FiniteStateMachine.h"
 
-#define EDITOR
+//#define EDITOR
 
 namespace NightSnack {
 
