@@ -200,7 +200,10 @@ namespace NightSnack {
 		// Window's 'windowed' properties to store
 		static int m_appWindowedWidth, m_appWindowedHeight;
 		static int m_appWindowedPosX, m_appWindowedPosY;
-		static bool m_appToPause, m_appChangedPauseState, m_appIsFullscreen;
+		static bool m_appToPause, m_appChangedPauseState;
+		static bool m_appIsFullscreen; // User pressed F11 key to toggle fullscreen mode
+		static bool m_appIsFullscreenViaButton; // User pressed the window's maximize button
+		static bool m_pressedMaximizeButton;
 	private:
 		/************************************************************************/
 		/*!
