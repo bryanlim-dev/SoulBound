@@ -15,6 +15,7 @@
 #include "AllPanels.h"
 #include <stb_image.h>
 #include <filesystem>
+#include <Scripting/ScriptManager.h>
 
 namespace NightSnack
 {
@@ -763,24 +764,94 @@ namespace NightSnack
         if (!m_coord.HasComponent<Script>(*m_selectedEntity))
             return;
 
+        m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->LoadEntityExposedFields(*m_selectedEntity);
+
         auto& script = m_coord.GetComponent<Script>(*m_selectedEntity);
+        NightSnack::Scripting::MonoExposeBridge& bridge = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetMonoExposeBridge();
+        //bridge.PrintAllExposedFields();
 
-        if (ImGui::BeginTable("ScriptTable", 1 + script.names.size(), ImGuiTableFlags_SizingFixedFit))
+
+        if (ImGui::BeginTable("ScriptTable", 2, ImGuiTableFlags_SizingFixedFit))
         {
-            ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
-            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+            ImGui::TableSetupColumn("Outer Padding", ImGuiTableColumnFlags_WidthFixed, 10.0f);
+            ImGui::TableSetupColumn("Outer Label", ImGuiTableColumnFlags_WidthStretch);
 
-            ImGui::TableNextRow();
-            int indexCount = 0;
-            ImGui::TableSetColumnIndex(indexCount); ImGui::Text("Script");
-            for (std::string names : script.names)
+            //Loop through each script instance
+            for (void* instance : m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetEntityScripts(*m_selectedEntity))
             {
-                indexCount++;
-                ImGui::TableSetColumnIndex(indexCount); ImGui::TextDisabled("%s", names.c_str());
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(1);
+
+                std::string scrName = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetScriptName(instance);
+                
+                //Make a header for each script
+                if (ImGui::CollapsingHeader(scrName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    //Inner table
+                    if (ImGui::BeginTable(scrName.c_str(), 2, ImGuiTableFlags_SizingFixedFit))
+                    {
+
+                        ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+                        ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+                        ImGui::TableNextRow();
+
+                        for (auto fields : bridge.GetExposedFields(instance))
+                        {
+                            Scripting::ExposedValue val = bridge.ReadValue(instance, fields);
+                            ImGui::TableSetColumnIndex(0); ImGui::TextDisabled("%s: ", fields.m_name.c_str());
+
+                            //Render values based on which what type
+                            switch (fields.m_valueType)
+                            {
+                                //int
+                            case Scripting::MonoValueType::MONO_INT:
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("%i", val.m_i);
+                                break;
+                            case Scripting::MonoValueType::MONO_BOOL:
+                                ImGui::TableSetColumnIndex(1); ImGui::Checkbox(" ", &val.m_b);
+                                break;
+                            case Scripting::MonoValueType::MONO_FLOAT:
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("%.5f", val.m_f);
+                                break;
+                            case Scripting::MonoValueType::MONO_STRING:
+                                ImGui::TableSetColumnIndex(1); ImGui::Text(val.m_s.c_str());
+                                break;
+                            case Scripting::MonoValueType::MONO_VECTOR2:
+                            {
+                                Vec2 vec = bridge.ConvertVec2(val);
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("x: %.5f", vec.x);
+                                ImGui::TableNextRow();
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("y: %.5f", vec.y);
+                                break;
+                            }
+                            case Scripting::MonoValueType::MONO_VECTOR3:
+                            {
+                                Vec3 vec = bridge.ConvertVec3(val);
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("x: %.5f", vec.x);
+                                ImGui::TableNextRow();
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("y: %.5f", vec.y);
+                                ImGui::TableNextRow();
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("z: %.5f", vec.z);
+                                break;
+                            }
+                            case Scripting::MonoValueType::MONO_UNSUPPORTED:
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("Unsupported type!");
+                                break;
+                            }
+                            ImGui::TableNextRow();
+                            ImGui::TableNextRow();
+                        } //End exposed field
+
+                        ImGui::EndTable();
+                    } //End individual script table
+                }//End CollapsingHeader
+
+                ImGui::TableNextRow();
             }
 
             ImGui::EndTable();
-        }
+        } //End entire script table
     }
 
     inline void InspectorPanel::AddComponentButton()
