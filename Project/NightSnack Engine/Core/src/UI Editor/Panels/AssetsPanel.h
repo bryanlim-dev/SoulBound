@@ -381,6 +381,10 @@ namespace NightSnack
                     {
                         ImGui::SetDragDropPayload("ASSET_AUDIO", pathStr.c_str(), pathStr.size() + 1);
                     }
+                    else if (item.type == AssetType::Script)
+                    {
+                        ImGui::SetDragDropPayload("ASSET_SCRIPT", pathStr.c_str(), pathStr.size() + 1);
+                    }
 
                     else
                     {

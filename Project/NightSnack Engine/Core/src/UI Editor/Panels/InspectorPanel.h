@@ -771,16 +771,39 @@ namespace NightSnack
         //bridge.PrintAllExposedFields();
 
 
-        if (ImGui::BeginTable("ScriptTable", 2, ImGuiTableFlags_SizingFixedFit))
+        if (ImGui::BeginTable("ScriptTable", 1, ImGuiTableFlags_SizingFixedFit))
         {
-            ImGui::TableSetupColumn("Outer Padding", ImGuiTableColumnFlags_WidthFixed, 10.0f);
             ImGui::TableSetupColumn("Outer Label", ImGuiTableColumnFlags_WidthStretch);
 
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0);
+            ImGui::TextColored(ImVec4(0.2f, 0.6f, 1.0f, 1.0f), "%s", "<Add Script>");
+
+            //Drag and drop new scripts
+            if (ImGui::BeginDragDropTarget())
+            {
+                ImVec2 rect_min = ImGui::GetItemRectMin();
+                ImVec2 rect_max = ImGui::GetItemRectMax(); 
+                ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 80));
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_SCRIPT")) {
+
+
+                    std::filesystem::path filePath = static_cast<const char*>(payload->Data);
+
+                    std::string scriptName = filePath.filename().stem().string();
+                    std::cout << "Accepted script: " << scriptName << std::endl;
+
+                    m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->AttachScript(*m_selectedEntity, scriptName);
+                }
+                ImGui::EndDragDropTarget();
+            }
+
+            ImGui::Indent(10.0f);
             //Loop through each script instance
             for (void* instance : m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetEntityScripts(*m_selectedEntity))
             {
                 ImGui::TableNextRow();
-                ImGui::TableSetColumnIndex(1);
+                ImGui::TableSetColumnIndex(0);
 
                 std::string scrName = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetScriptName(instance);
                 
