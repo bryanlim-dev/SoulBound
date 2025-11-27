@@ -5,15 +5,15 @@ namespace ManagedScripts
 {
     public class RotatorScript : Script
     {
-        [Expose]
+        [SerializeField]
         public  float rotationSpeed = 50.0f; // degrees per second
-        [Expose]
+        [SerializeField]
         public bool testBool = false;
-        [Expose]
+        [SerializeField]
         public string testStr = "EasyPeasy";
-        [Expose]
+        [SerializeField]
         public Vector2 testVec2 = new Vector2(1,5);
-        [Expose]
+        [SerializeField]
         public Vector3 testVec3 = new Vector3(2, 4, 6);
 
         public override void OnStart()
@@ -69,7 +69,7 @@ namespace ManagedScripts
             ////Renderable test
             //Engine.SetMeshName(id2, "square");
             //Log($"Ball 2 Mesh Name: {Engine.GetMeshName(id2)}");
-            //Engine.SetMaterialName(id2, "../assets\\slime_2_2.png");
+            //Engine.SetMaterialName(id2, "slime_2_2.png");
             //Log($"Ball 2 Material Name: {Engine.GetMaterialName(id2)}");
 
             //Engine.SetIsWireframe(id1, true);
@@ -84,6 +84,7 @@ namespace ManagedScripts
             //Engine.SetFontSize(id3, 3);
             //Engine.SetFontColor(id3, new Vector3(0, 1, 0));
 
+            //PlaySound("Sound/SFX/button_click.mp3");
 
             //Log("RotatorScript started!");
             //Log($"Initial rotation: {Rotation}");
