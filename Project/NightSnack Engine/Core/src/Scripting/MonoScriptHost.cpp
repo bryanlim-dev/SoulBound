@@ -229,6 +229,18 @@ namespace NightSnack::Scripting {
         }
     }
 
+    std::string MonoScriptHost::GetScriptName(void* instance)
+    {
+        if (instance)
+        {
+            MonoObject* obj = static_cast<MonoObject*>(instance);
+            MonoClass* c = mono_object_get_class(obj);
+            return mono_class_get_name(c);
+        }
+        else
+            return "";
+    }
+
     // Helper functions ----------------------------------
 
     MonoClass* MonoScriptHost::GetClass(std::string const& namespaceName, std::string const& className) {

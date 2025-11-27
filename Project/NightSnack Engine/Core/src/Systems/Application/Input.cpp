@@ -79,7 +79,6 @@ namespace NightSnack {
 		case GLFW_KEY_D: return KeyboardKeys::D;
 		case GLFW_KEY_H: return KeyboardKeys::H;
 		case GLFW_KEY_SPACE: return KeyboardKeys::SPACE;
-		case GLFW_KEY_ESCAPE: return KeyboardKeys::ESC;
 		case GLFW_KEY_RIGHT: return KeyboardKeys::RIGHT_ARROW;
 		case GLFW_KEY_LEFT: return KeyboardKeys::LEFT_ARROW;
 		case GLFW_KEY_UP: return KeyboardKeys::UP_ARROW;
@@ -122,7 +121,7 @@ namespace NightSnack {
 		case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJump;
 
 			// Window tests
-		case GLFW_KEY_ESCAPE: return InputEvent::InputAction::ExitFullscreen;
+		case GLFW_KEY_F11: return InputEvent::InputAction::ToggleFullscreen;
 
 			// Debug tests
 		//case GLFW_KEY_TAB: return InputEvent::InputAction::ToggleSystemTimers;

@@ -34,7 +34,7 @@
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "slime_4_1",
+        "materialName": "ColorMat",
         "meshName": "square"
     },
     "RigidBody": {
