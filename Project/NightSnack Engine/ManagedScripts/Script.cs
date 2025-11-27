@@ -13,6 +13,7 @@ namespace ManagedScripts
 
         // Convenience properties
         #region Transform
+
         protected Vector3 Position
         {
             get => Engine.GetPosition(EntityId);

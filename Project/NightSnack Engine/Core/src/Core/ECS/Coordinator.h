@@ -91,6 +91,7 @@ namespace NightSnack {
 		/************************************************************************/
 		template <typename T>
 		void AddComponent(Entity e, T component);
+		void AddComponent(Entity e, Collider c);
 
 		/************************************************************************/
 		/*!
@@ -292,6 +293,39 @@ namespace NightSnack {
 		// Inform the SystemManager that Entity e's Signature has changed;
 		m_systemManager->EntitySignatureChanged(e, sig, GetComponent<Transform>(e).layer);
 
+	}
+	inline void Coordinator::AddComponent(Entity e, Collider c) {
+
+		if (HasComponent<Collider>(e)) {
+			std::cerr << "Error: Entity " << e << " already has this component!!\n";
+			return;
+		}
+		
+		// Collider default size
+		Transform const& t = GetComponent<Transform>(e);
+		if (HasComponent<Renderable>(e)) {
+			Renderable const& r = GetComponent<Renderable>(e);
+			if (r.meshName == "circle")
+				c.shape = ShapeType::Circle;
+			else
+				c.shape = ShapeType::AABB;
+		}
+		if (c.width == 0.f) { c.width = t.scale.x; }
+		if (c.height == 0.f) { c.height = t.scale.y; }
+		if (c.radius == 0.f) { c.radius = (t.scale.x + t.scale.y) / 2.f; }
+
+		// Add component
+		m_componentManager->AddComponent(e, c);
+
+		// Obtain the Entity's component Signature;
+		Signature sig = m_entityManager->GetSignature(e);
+		// Modify the Signature to contain specified Component of type T;
+		sig.set(GetComponentTypeID<Collider>(), true);
+
+		// Update the actual Signature of Entity e;
+		m_entityManager->SetSignature(e, sig);
+		// Inform the SystemManager that Entity e's Signature has changed;
+		m_systemManager->EntitySignatureChanged(e, sig, GetComponent<Transform>(e).layer);
 	}
 
 	template <typename T>

@@ -19,7 +19,7 @@
 #include "Core/ECS/Coordinator.h"
 #include "ScriptInterface.h"
 #include "Scripting/MonoScriptHost.h"
-
+#include "Scripting/MonoExposeBridge.h"
 #include "ImportExport.h"
 
 #include <string>
@@ -81,6 +81,15 @@ namespace NightSnack::Scripting {
 		Signature GetSignature() const override { return m_systemSignature; }
 		std::string GetName() const { return "ScriptManager"; }
 
+		std::vector<void*> GetEntityScripts(Entity e);
+		std::string GetScriptName(void* script);
+
+		MonoExposeBridge& GetMonoExposeBridge();
+		void LoadEntityExposedFields(Entity e);
+		void UnloadEntityExposedFields();
+
+
+
 	private:
 		// Helper functions
 		void Initialize();
@@ -95,13 +104,16 @@ namespace NightSnack::Scripting {
 		std::unique_ptr<ScriptInterface> m_scriptInterface;
 
 		// Map entity ID to script instance
-		std::multimap<Entity, void*> m_entityScripts;
+		std::map<Entity, std::vector<void*>> m_entityScripts;
+		std::map<void*, std::string> m_scriptNameMap;
 
 		bool debugMode = false;
 		bool stepRequest = false;
 		bool m_attached = false;
 
 		size_t entityNum;
+
+		MonoExposeBridge m_monoExposeBridge;
 	};
 
 }	// NightSnack
