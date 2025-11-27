@@ -1,0 +1,40 @@
+{
+    "Animator": {
+        "isLooping": true,
+        "isPlaying": true,
+        "playbackSpeed": 1.0,
+        "spriteSheetName": ""
+    },
+    "Collider": {
+        "height": 100.0,
+        "isStatic": false,
+        "radius": 70.9000015258789,
+        "shape": "AABB",
+        "type": "Solid",
+        "width": 100.0
+    },
+    "Font": {
+        "fontSize": 0.699999988079071,
+        "fontType": "buggy-font",
+        "offsetPosition": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "text": "Ghost",
+        "textColor": {
+            "b": 0.16862745583057404,
+            "g": 0.0,
+            "r": 0.2705882489681244
+        }
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "ghost_4_1",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": false
+    }
+}
