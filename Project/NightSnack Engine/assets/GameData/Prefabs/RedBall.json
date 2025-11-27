@@ -1,6 +1,6 @@
 {
     "Audio": {
-        "audioKey": "playerHit",
+        "audioKey": "playerCollect",
         "isPlaying": false,
         "loop": false,
         "playOnStart": false,

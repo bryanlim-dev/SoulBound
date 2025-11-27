@@ -181,6 +181,7 @@ namespace NightSnack {
         bool playOnStart = false;
         //bool is3D = false;
         bool isPlaying = false;
+        //bool stop = false;
     };
 
     enum ButtonType {

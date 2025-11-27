@@ -185,7 +185,7 @@ namespace NightSnack {
         /*void AddAudioComponent(Entity entity, const AudioComponent& component);
         void RemoveAudioComponent(Entity entity);
         AudioComponent* GetAudioComponent(Entity entity);*/
-        void PlayAudio(Entity entity);
+        void PlayAudio(Audio& a, Entity entity);
         void StopAudio(Entity entity);
 
         std::vector<std::string> GetAvailableAudioKeys() const;
@@ -212,9 +212,14 @@ namespace NightSnack {
         EventDispatcher* m_dispatcher;
         Coordinator& m_coord;
 
+		Signature m_systemSignature{};
+
         // FMOD
         std::weak_ptr<FMOD::System> m_fmodSystem;
         FMOD::Channel* m_bgmChannel;
+
+        std::unordered_map<Entity, FMOD::Channel*> m_entityChannels;
+
 
         // Sound caches - maps string keys to sound pointers
         std::unordered_map<std::string, FMOD::Sound*> m_loadedSFX;

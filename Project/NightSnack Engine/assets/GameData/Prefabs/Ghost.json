@@ -1,14 +1,14 @@
 {
     "Animator": {
-        "isLooping": true,
-        "isPlaying": true,
+        "isLooping": false,
+        "isPlaying": false,
         "playbackSpeed": 1.0,
         "spriteSheetName": ""
     },
     "Audio": {
-        "audioKey": "playerJump",
+        "audioKey": "playerHurt",
         "isPlaying": false,
-        "loop": true,
+        "loop": false,
         "playOnStart": false,
         "volume": 1.0
     },

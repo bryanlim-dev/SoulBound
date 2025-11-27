@@ -34,6 +34,8 @@ namespace NightSnack {
         m_bgmVolume(0.7f),
         m_sfxVolume(1.0f)
     {
+        m_systemSignature.set(GetComponentTypeID<Audio>());
+
         // initialize fmod first
         if (!Init()) {
             std::cerr << "[AudioSystem] Failed to initialize FMOD!\n";
@@ -85,13 +87,87 @@ namespace NightSnack {
             if (IsBGMPlaying()) {
                 PauseBGM();
             }
+  
+            // Pause all entity audio channels
+            for (auto& [entity, channel] : m_entityChannels) {
+                if (channel) {
+                    bool isPaused;
+                    channel->getPaused(&isPaused);
+                    if (!isPaused) {
+                        channel->setPaused(true);
+                    }
+                }
+            }
             return;
         } else if (!IsBGMPlaying()) {
             ResumeBGM();
         }
 
+		// resume all entity audio channels
+        for (auto& [entity, channel] : m_entityChannels) {
+            if (channel) {
+                bool isPaused;
+                channel->getPaused(&isPaused);
+                if (isPaused) {
+                    channel->setPaused(false);
+                }
+            }
+        }
+
         if (!m_fmodSystem.expired())
             m_fmodSystem.lock()->update();
+
+        // Clean up finished channels
+        for (auto it = m_entityChannels.begin(); it != m_entityChannels.end(); ) {
+            bool isPlaying = false;
+            if (it->second) 
+            {
+                it->second->isPlaying(&isPlaying);
+            }
+
+            if (!isPlaying) 
+            {
+                // Update the audio component state
+                if (m_coord.HasComponent<Audio>(it->first)) {
+                    auto& audio = m_coord.ModifyComponent<Audio>(it->first);
+                    audio.isPlaying = false;
+                }
+                it = m_entityChannels.erase(it);
+            }
+            else {
+                ++it;
+            }
+        }
+
+        for (Entity e : m_entities) {
+            Audio& a = m_coord.ModifyComponent<Audio>(e);
+            
+			std::cout << "[AudioSystem] Audio Component - Key: " << a.audioKey
+				<< ", isPlaying: " << a.isPlaying
+				<< ", volume: " << a.volume
+				<< ", loop: " << a.loop << "\n";
+
+            if (a.playOnStart)
+            {
+                PlayAudio(a, e);
+                a.playOnStart = false; // Only auto-play once
+                std::cout << "[AudioSystem] Playing audio: " << a.audioKey << "\n";
+            }
+            else if (a.isPlaying) {
+                PlayAudio(a, e);
+                a.isPlaying = false;
+            }
+
+            if (!a.loop) 
+            {
+				m_entityChannels[e]->setMode(FMOD_LOOP_OFF);
+				m_entityChannels[e]->setLoopCount(0);
+            }
+
+            /*if (a.stop)
+				StopAudio(a);*/
+        }
+
     }
 
     // loads all game audio files by scanning directories
@@ -409,36 +485,66 @@ namespace NightSnack {
 
      //for audio component
 
-  
-
-    void AudioSystem::PlayAudio(Entity entity) 
+    void AudioSystem::PlayAudio(Audio& audio, Entity entity)
     {
-		if (!m_coord.HasComponent<Audio>(entity)) return;
+        FMOD::Channel* channel = nullptr;
 
-        auto& audio = m_coord.ModifyComponent<Audio>(entity);
+        size_t id = m_keyToID[audio.audioKey];
+        FMOD::Sound* sound = m_resourceMgr.lock()->GetSound(id);
+        if (!sound) return;
 
-        //auto it = m_audioComponents.find(entity);
-        //if (it == m_audioComponents.end()) return;
+        // stop previous channel for this entity if exists
+        auto existingIt = m_entityChannels.find(entity);
+        if (existingIt != m_entityChannels.end() && existingIt->second) {
+            existingIt->second->stop();
+            m_entityChannels.erase(existingIt);
+        }
 
-        //AudioComponent& ac = it->second;
-        audio.isPlaying = true;
-        
-        PlaySFXWithVolume(audio.audioKey, audio.volume);
+        // play the sound to get the channel
+        FMOD_RESULT result = m_fmodSystem.lock()->playSound(sound, nullptr, false, &channel);
+
+        if (result != FMOD_OK || !channel) {
+            std::cerr << "[AudioSystem] Failed to play sound: " << audio.audioKey << std::endl;
+            return;
+        }
+
+        // set loop properties on the channel
+        if (audio.loop) {
+            channel->setMode(FMOD_LOOP_NORMAL);
+            channel->setLoopCount(-1); // Infinite loops
+            std::cout << "[AudioSystem] Set to LOOP: " << audio.audioKey << std::endl;
+        }
+        else {
+            channel->setMode(FMOD_LOOP_OFF);
+            channel->setLoopCount(0); // No looping
+            std::cout << "[AudioSystem] Set to NO LOOP: " << audio.audioKey << std::endl;
+        }
+
+        // set volume and store channel
+        channel->setVolume(audio.volume * m_masterVolume);
+        m_entityChannels[entity] = channel;
+
+        std::cout << "[AudioSystem] Playing: " << audio.audioKey
+            << " (loop: " << audio.loop
+            << ", entity: " << entity << ")" << std::endl;
     }
+ 
 
-    void AudioSystem::StopAudio(Entity entity) 
-    {
-        if (!m_coord.HasComponent<Audio>(entity)) return;
-
+  void AudioSystem::StopAudio(Entity entity) 
+{
+    auto it = m_entityChannels.find(entity);
+    if (it != m_entityChannels.end() && it->second) {
+        it->second->stop();
+        m_entityChannels.erase(it);
+        std::cout << "[AudioSystem] Stopped audio for entity: " << entity << std::endl;
+    }
+    
+    // Update component state
+    if (m_coord.HasComponent<Audio>(entity)) {
         auto& audio = m_coord.ModifyComponent<Audio>(entity);
-        //auto it = m_audioComponents.find(entity);
-       
         audio.isPlaying = false;
-        // mark as not playing
-        //it->second.isPlaying = false;
-	
-        // Individual SFX stopping would require enhanced channel management
     }
+}
 
     std::vector<std::string> AudioSystem::GetAvailableAudioKeys() const 
     {
@@ -456,8 +562,7 @@ namespace NightSnack {
 
     Signature AudioSystem::GetSignature() const
     {
-        Signature sig;
-        return sig;
+        return m_systemSignature;
     }
 
     std::string AudioSystem::GetName() const
