@@ -8,7 +8,7 @@
  * Functions include:
  * - Update -> called by CoreEngine::Update()
  * - Initialize and Shutdown
- * - AttachScript and RemoveScript
+ * - AttachScript and RemoveScripts
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -31,7 +31,7 @@ namespace NightSnack::Scripting {
         // Reattach entity scripts when Level is reloaded
         if (!m_attached || entityNum != m_entities.size()) {
             for (Entity e{}; e < MAX_ENTITIES; ++e) {
-                RemoveScript(e);
+                RemoveScripts(e);
             }
 
             entityNum = m_entities.size();
@@ -161,12 +161,16 @@ namespace NightSnack::Scripting {
         // Store mapping
         m_entityScripts[e].push_back(instance);
         m_scriptNameMap.insert({instance,  m_monoHost->GetScriptName(instance) }); //Insert name into a map
+        //m_coord.ModifyComponent<Script>(e).names.push_back(scriptName);
+
+        std::cout << "ScriptManager Create:" << m_scriptNameMap[instance] << std::endl;
+
         ////std::cout << "[ScriptManager] Script attached successfully\n";
         return instance;
     }
 
     // Remove an entity's script
-    void ScriptManager::RemoveScript(Entity e) {
+    void ScriptManager::RemoveScripts(Entity e) {
         auto it = m_entityScripts.find(e);
         if (it == m_entityScripts.end()) {
             return;
@@ -175,10 +179,14 @@ namespace NightSnack::Scripting {
         // Destroy script instance
         for (void* instance : it->second)
         {
+            std::cout << "ScriptManager Desotry:" << m_scriptNameMap[instance] << std::endl;
             m_monoHost->DestroyScriptInstance(instance);
+            m_scriptNameMap.erase(instance);
         }
         // Remove from map
         m_entityScripts[e].clear();
+
+        //m_coord.ModifyComponent<Script>(e).names.clear();
     }
 
 }	// NightSnack

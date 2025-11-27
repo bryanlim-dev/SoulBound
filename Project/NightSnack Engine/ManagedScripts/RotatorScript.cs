@@ -84,6 +84,7 @@ namespace ManagedScripts
             //Engine.SetFontSize(id3, 3);
             //Engine.SetFontColor(id3, new Vector3(0, 1, 0));
 
+            //PlaySound("Sound/SFX/button_click.mp3");
 
             //Log("RotatorScript started!");
             //Log($"Initial rotation: {Rotation}");
