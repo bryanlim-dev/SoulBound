@@ -1,0 +1,529 @@
+{
+    "Entities": [
+        {
+            "Transform": {
+                "Layer": "GameUI",
+                "Position": {
+                    "x": -1194.2833251953125,
+                    "y": 1376.287109375,
+                    "z": 5.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 0.0,
+                    "y": 0.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "prefab": "Cam"
+        },
+        {
+            "Transform": {
+                "Layer": "Background",
+                "Position": {
+                    "x": -1088.928466796875,
+                    "y": 1717.437744140625,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 1920.0,
+                    "y": 1080.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 1920.0,
+                    "y": 1080.0
+                }
+            },
+            "prefab": "Backdrop"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -1194.2833251953125,
+                    "y": 1376.287109375,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 30.0,
+                    "y": 30.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 30.0,
+                    "y": 30.0
+                }
+            },
+            "prefab": "Player"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -469.1766052246094,
+                    "y": 1432.4158935546875,
+                    "z": 0.0
+                },
+                "Rotation": 128.80020141601563,
+                "Scale": {
+                    "x": 30.0,
+                    "y": 30.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 30.0,
+                    "y": 30.0
+                }
+            },
+            "prefab": "ScriptTest1"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -783.3612060546875,
+                    "y": 1294.7171630859375,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 30.0,
+                    "y": 30.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 30.0,
+                    "y": 30.0
+                }
+            },
+            "prefab": "ScriptTest2"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -876.9893188476563,
+                    "y": 1550.5057373046875,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 100.0
+                }
+            },
+            "prefab": "RedBall"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -545.0790405273438,
+                    "y": 1312.8067626953125,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 100.0
+                }
+            },
+            "prefab": "Ghost"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -502.74908447265625,
+                    "y": 1517.4375,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 100.0
+                }
+            },
+            "prefab": "Ghost"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -476.6272888183594,
+                    "y": 1597.032470703125,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 100.0
+                }
+            },
+            "prefab": "Ghost"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -828.1470336914063,
+                    "y": 1311.6561279296875,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 20.0,
+                    "y": 20.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 20.0,
+                    "y": 20.0
+                }
+            },
+            "prefab": "EntityStateBall"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -1075.831787109375,
+                    "y": 1359.3623046875,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 20.0,
+                    "y": 20.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 20.0,
+                    "y": 20.0
+                }
+            },
+            "prefab": "EntityStateBallType2"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -335.8175354003906,
+                    "y": 1373.949951171875,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 50.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 50.0,
+                    "y": 50.0
+                }
+            },
+            "prefab": "Control"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": 117.72755432128906,
+                    "y": 1578.5809326171875,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 400.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 400.0
+                }
+            },
+            "prefab": "WireframeWall"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -84.29753112792969,
+                    "y": 1629.738525390625,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 800.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 800.0
+                }
+            },
+            "prefab": "Wall"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -2254.3408203125,
+                    "y": 1637.0469970703125,
+                    "z": 0.0
+                },
+                "Rotation": -46.685707092285156,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 800.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 800.0
+                }
+            },
+            "prefab": "Wall"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -993.9212646484375,
+                    "y": 1435.527099609375,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 1600.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 1600.0,
+                    "y": 100.0
+                }
+            },
+            "prefab": "Ground"
+        },
+        {
+            "Transform": {
+                "Layer": "GameUI",
+                "Position": {
+                    "x": 1200.0,
+                    "y": 350.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 1200.0,
+                    "y": 350.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 100.0
+                }
+            },
+            "prefab": "ButtonStressTest"
+        },
+        {
+            "Transform": {
+                "Layer": "GameUI",
+                "Position": {
+                    "x": 900.0,
+                    "y": 100.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 200.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 900.0,
+                    "y": 100.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 200.0,
+                    "y": 100.0
+                }
+            },
+            "prefab": "ButtonAudio"
+        },
+        {
+            "Transform": {
+                "Layer": "GameUI",
+                "Position": {
+                    "x": 1200.0,
+                    "y": 100.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 200.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 1200.0,
+                    "y": 100.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 200.0,
+                    "y": 100.0
+                }
+            },
+            "prefab": "ButtonAudio2"
+        },
+        {
+            "Transform": {
+                "Layer": "GameUI",
+                "Position": {
+                    "x": 1500.0,
+                    "y": 100.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 200.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 1500.0,
+                    "y": 100.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 200.0,
+                    "y": 100.0
+                }
+            },
+            "prefab": "ButtonAudio3"
+        },
+        {
+            "Transform": {
+                "Layer": "GameUI",
+                "Position": {
+                    "x": 161.61740112304688,
+                    "y": 26.208160400390625,
+                    "z": 2.0
+                },
+                "Rotation": 1.0,
+                "Scale": {
+                    "x": 1.0,
+                    "y": 1.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "prefab": "Cam"
+        }
+    ]
+}
