@@ -22,11 +22,11 @@ namespace NightSnack {
 	int ApplicationSystem::m_appHeight = 900;
 	int ApplicationSystem::m_appWindowedWidth = 1600;
 	int ApplicationSystem::m_appWindowedHeight = 900;
-	int ApplicationSystem::m_appWindowedPosX = 0;
-	int ApplicationSystem::m_appWindowedPosY = 0;
+	int ApplicationSystem::m_appWindowedPosX = 200;
+	int ApplicationSystem::m_appWindowedPosY = 130;
 	bool ApplicationSystem::m_appToPause = false;
 	bool ApplicationSystem::m_appChangedPauseState = false;
-	bool ApplicationSystem::m_appIsFullscreen = false;
+	bool ApplicationSystem::m_appIsFullscreen = true; // By default, the application is in full screen
 	GLFWwindow* ApplicationSystem::m_windowHandle = nullptr;
 
 	// Required OpenGL version;
@@ -57,6 +57,7 @@ namespace NightSnack {
 
 		// Create window;
 		m_windowHandle = glfwCreateWindow(m_appWidth, m_appHeight, m_appTitle.c_str(), nullptr, nullptr);
+		EnterFullscreen(); // By default, start with fullscreen
 		if (!m_windowHandle)
 		{
 			std::cerr << "Failed to create GLFW window\n";
@@ -110,8 +111,8 @@ namespace NightSnack {
 		m_dispatcher->Subscribe<InputEvent>([this, &Coord](const InputEvent& event) {
 			if (event.pressed == InputEvent::InputActionState::Pressed) {
 				switch (event.inputAction) {
-				case InputEvent::InputAction::ExitFullscreen:
-					ExitFullscreen();
+				case InputEvent::InputAction::ToggleFullscreen:
+					m_appIsFullscreen ? ExitFullscreen() : EnterFullscreen();
 					break;
 
 				//case InputEvent::InputAction::ToggleSystemTimers:
@@ -226,12 +227,15 @@ namespace NightSnack {
 		// Only check if the user press the maximize window button
 		if (maximized && !m_appIsFullscreen) {
 			EnterFullscreen();
-			m_appIsFullscreen = true;
 		}
 	}
 
 	void ApplicationSystem::EnterFullscreen() {
 		// Enter full screen mode without any window bars
+
+		if (!m_appIsFullscreen) {
+			m_appIsFullscreen = true;
+		}
 
 		GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 		const GLFWvidmode* mode = glfwGetVideoMode(monitor);
