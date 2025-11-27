@@ -55,6 +55,8 @@ namespace NightSnack {
 			// Create Default level.
 			LoadLevel("DefaultLevel");
 
+			GlobalPrefabReload();
+
 			// Setup input events;
 			//m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
 			//	if (event.pressed == InputEvent::InputActionState::Pressed) {
@@ -201,6 +203,8 @@ namespace NightSnack {
 
 		// Split Monolithic Json file (containing all archetypes) into individual prefab json files.
 		void TransferPrefabs(std::string const& monolith);
+
+		void GlobalPrefabReload();
 
 		// Reads all json files from a given directory
 		// Stores the json keys in the map, with the filenames as accessors (Level1, PlayerPrefab, etc...)

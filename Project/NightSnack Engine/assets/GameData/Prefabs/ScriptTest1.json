@@ -5,6 +5,8 @@
         "meshName": "circle"
     },
     "Script": {
-        "name": ["RotatorScript", "HoverScript"]
+        "name": [
+            "RotatorScript"
+        ]
     }
 }

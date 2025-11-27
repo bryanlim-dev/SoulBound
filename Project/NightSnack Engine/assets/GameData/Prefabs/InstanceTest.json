@@ -1,9 +1,11 @@
 {
     "Collider": {
+        "height": 1.0,
         "isStatic": true,
         "radius": 50.0,
         "shape": "Circle",
-        "type": "Solid"
+        "type": "Solid",
+        "width": 1.0
     },
     "Renderable": {
         "isWireframe": false,
