@@ -10,6 +10,7 @@ namespace ManagedScripts
         [Expose]
         public float time = 0.0f;
 
+
         public override void OnStart()
         {
             Log("HoverScript started!");

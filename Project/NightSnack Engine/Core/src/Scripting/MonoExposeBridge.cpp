@@ -3,6 +3,8 @@
 #include "mono/metadata/reflection.h"
 #include "mono/jit/jit.h"
 #include "mono/metadata/assembly.h"
+#include "mono/metadata/metadata.h"
+
 #include <iostream>
 
 namespace NightSnack::Scripting {
@@ -28,9 +30,18 @@ namespace NightSnack::Scripting {
 		//Loop through all exposed fields
 		while ((monoField = mono_class_get_fields(monoClass, &it)) != nullptr)
 		{
-			// Check for [Expose]
+			//Check for [Expose]
 			if (!FieldHasExposeAttribute(monoClass, monoField))
 				continue; // None, ignore this one
+
+			uint32_t flags = mono_field_get_flags(monoField);
+			//Skip static   
+			if (flags & MONO_FIELD_ATTR_STATIC)
+				continue;
+
+			//Skip const fields  
+			if (flags & MONO_FIELD_ATTR_LITERAL)
+				continue;
 
 			//Has has a exposed value
 			//Get variables and put them into struct
@@ -45,7 +56,7 @@ namespace NightSnack::Scripting {
 			MonoClass* fieldClass = mono_class_from_mono_type(monoType);
 			const char* typeName = mono_class_get_name(fieldClass);
 			field.m_typeName = typeName;
-			field.m_scriptInstance = fieldClass;
+			field.m_scriptInstance = monoObj;
 
 			// Map type to enum + struct size
 			field.m_valueType = MapMonoType(fieldClass, field.m_sizeBytes);
@@ -169,6 +180,33 @@ namespace NightSnack::Scripting {
 			scriptIdx++;
 		}
 	}
+
+	Vec2 MonoExposeBridge::ConvertVec2(const ExposedValue& value)
+	{
+		Vec2 result{};
+
+		//Make sure struct size is correct
+		if (value.m_structs.size() != sizeof(Vec2))
+			return result;
+
+		memcpy(&result, value.m_structs.data(), sizeof(Vec2));
+
+		return result;
+	}
+
+	Vec3 MonoExposeBridge::ConvertVec3(const ExposedValue& value)
+	{
+		Vec3 result{};
+
+		//Make sure struct size is correct
+		if (value.m_structs.size() != sizeof(Vec3))
+			return result;
+
+		memcpy(&result, value.m_structs.data(), sizeof(Vec3));
+
+		return result;
+	}
+
 
 	void MonoExposeBridge::UnloadAll()
 	{

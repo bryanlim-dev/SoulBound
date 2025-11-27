@@ -7,6 +7,7 @@
 #include "mono/metadata/class.h"
 #include "mono/metadata/object.h"
 #include "mono/metadata/attrdefs.h"
+#include "../Core/ECS/Component.h"
 
 namespace NightSnack::Scripting {
 	//Types of enums supported
@@ -29,7 +30,7 @@ namespace NightSnack::Scripting {
 		MonoClassField* m_monoField = nullptr; //handle for get/set
 		MonoValueType m_valueType{}; //Type of value
 		size_t m_sizeBytes{}; //byte size for structs
-		MonoClass* m_scriptInstance = nullptr;
+		MonoObject* m_scriptInstance = nullptr;
 	};
 
 	struct ExposedValue {
@@ -59,6 +60,9 @@ namespace NightSnack::Scripting {
 		void UnloadAll();
 
 		void PrintAllExposedFields();
+
+		static Vec2 ConvertVec2(const ExposedValue& value);
+		static Vec3 ConvertVec3(const ExposedValue& value);
 
 	private:
 		bool FieldHasExposeAttribute(MonoClass* monoClass, MonoClassField* field);
