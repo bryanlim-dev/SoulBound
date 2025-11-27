@@ -20,6 +20,7 @@ namespace ManagedScripts
         public RigidBody rigidBody;
         public Collider collider;
         public Color color;
+        public Renderer renderer;
 
         public override void OnStart()
         {
@@ -28,11 +29,13 @@ namespace ManagedScripts
             rigidBody = new RigidBody(EntityId);
             collider = new Collider(EntityId);
             color = new Color(EntityId);
+            renderer = new Renderer(EntityId);
 
             rigidBody.UseGravity = true;
             collider.ColType = ColliderType.Solid;
             collider.ColStatic = false;
             color.RGBA = new Colors(0.5f, 0, 0, 1);
+            renderer.IsWireframe = true;
 
             //Log($"Entity Script ID: {EntityId}");
 

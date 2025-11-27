@@ -208,20 +208,29 @@ namespace ManagedScripts
         #endregion
 
         #region Renderable
-        public string MeshName
+        public class Renderer
         {
-            get => Engine.GetMeshName(EntityId);
-            set => Engine.SetMeshName(EntityId, value);
-        }
-        public string MaterialName
-        {
-            get => Engine.GetMaterialName(EntityId);
-            set => Engine.SetMaterialName(EntityId, value);
-        }
-        public bool IsWireframe
-        {
-            get => Engine.GetIsWireframe(EntityId);
-            set => Engine.SetIsWireframe(EntityId, value);
+            private uint EntityId;
+
+            public Renderer(uint id)
+            {
+                EntityId = id;
+            }
+            public string MeshName
+            {
+                get => Engine.GetMeshName(EntityId);
+                set => Engine.SetMeshName(EntityId, value);
+            }
+            public string MaterialName
+            {
+                get => Engine.GetMaterialName(EntityId);
+                set => Engine.SetMaterialName(EntityId, value);
+            }
+            public bool IsWireframe
+            {
+                get => Engine.GetIsWireframe(EntityId);
+                set => Engine.SetIsWireframe(EntityId, value);
+            }
         }
         #endregion
 
