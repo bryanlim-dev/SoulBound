@@ -235,97 +235,114 @@ namespace ManagedScripts
         #endregion
 
         #region Animator
-        //public string AnimatorCurrentClip
-        //{
-        //    get => Engine.GetAnimatorCurrentClip(EntityId);
-        //    set => Engine.SetAnimatorCurrentClip(EntityId, value);
-        //}
-
-        //public string AnimatorSpriteSheet
-        //{
-        //    get => Engine.GetAnimatorSpriteSheet(EntityId);
-        //    set => Engine.SetAnimatorSpriteSheet(EntityId, value);
-        //}
-
-        public int AnimatorCurrentFrameIndex
+        public class Animnator
         {
-            get => Engine.GetAnimatorCurrentFrameIndex(EntityId);
-            set => Engine.SetAnimatorCurrentFrameIndex(EntityId, value);
+            private uint EntityId;
+
+            public Animnator(uint id)
+            {
+                EntityId = id;
+            }
+            //public string AnimatorCurrentClip
+            //{
+            //    get => Engine.GetAnimatorCurrentClip(EntityId);
+            //    set => Engine.SetAnimatorCurrentClip(EntityId, value);
+            //}
+
+            //public string AnimatorSpriteSheet
+            //{
+            //    get => Engine.GetAnimatorSpriteSheet(EntityId);
+            //    set => Engine.SetAnimatorSpriteSheet(EntityId, value);
+            //}
+
+            public int AnimatorCurrentFrameIndex
+            {
+                get => Engine.GetAnimatorCurrentFrameIndex(EntityId);
+                set => Engine.SetAnimatorCurrentFrameIndex(EntityId, value);
+            }
+
+            public float AnimatorCurrentTime
+            {
+                get => Engine.GetAnimatorCurrentTime(EntityId);
+                set => Engine.SetAnimatorCurrentTime(EntityId, value);
+            }
+
+            public float AnimatorCurrentPlaybackSpeed
+            {
+                get => Engine.GetAnimatorCurrentPlaybackSpeed(EntityId);
+                set => Engine.SetAnimatorCurrentPlaybackSpeed(EntityId, value);
+            }
+
+            public bool AnimatorIsPlaying
+            {
+                get => Engine.GetAnimatorIsPlaying(EntityId);
+                set => Engine.SetAnimatorIsPlaying(EntityId, value);
+            }
+
+            public bool AnimatorIsLooping
+            {
+                get => Engine.GetAnimatorIsLooping(EntityId);
+                set => Engine.SetAnimatorIsLooping(EntityId, value);
+            }
+
+            public bool AnimatorLastFacingRight
+            {
+                get => Engine.GetAnimatorLastFacingRight(EntityId);
+                set => Engine.SetAnimatorLastFacingRight(EntityId, value);
+            }
+
+            //public Vector2 AnimatorUVTopLeft
+            //{
+            //    get => Engine.GetAnimatorUVTopLeft(EntityId);
+            //    set => Engine.SetAnimatorUVTopLeft(EntityId, value);
+            //}
+
+            //public Vector2 AnimatorUVBottomRight
+            //{
+            //    get => Engine.GetAnimatorUVBottomRight(EntityId);
+            //    set => Engine.SetAnimatorUVTBottomRight(EntityId, value);
+            //}
         }
-
-        public float AnimatorCurrentTime
-        {
-            get => Engine.GetAnimatorCurrentTime(EntityId);
-            set => Engine.SetAnimatorCurrentTime(EntityId, value);
-        }
-
-        public float AnimatorCurrentPlaybackSpeed
-        {
-            get => Engine.GetAnimatorCurrentPlaybackSpeed(EntityId);
-            set => Engine.SetAnimatorCurrentPlaybackSpeed(EntityId, value);
-        }
-
-        public bool AnimatorIsPlaying
-        {
-            get => Engine.GetAnimatorIsPlaying(EntityId);
-            set => Engine.SetAnimatorIsPlaying(EntityId, value);
-        }
-
-        public bool AnimatorIsLooping
-        {
-            get => Engine.GetAnimatorIsLooping(EntityId);
-            set => Engine.SetAnimatorIsLooping(EntityId, value);
-        }
-
-        public bool AnimatorLastFacingRight
-        {
-            get => Engine.GetAnimatorLastFacingRight(EntityId);
-            set => Engine.SetAnimatorLastFacingRight(EntityId, value);
-        }
-
-        //public Vector2 AnimatorUVTopLeft
-        //{
-        //    get => Engine.GetAnimatorUVTopLeft(EntityId);
-        //    set => Engine.SetAnimatorUVTopLeft(EntityId, value);
-        //}
-
-        //public Vector2 AnimatorUVBottomRight
-        //{
-        //    get => Engine.GetAnimatorUVBottomRight(EntityId);
-        //    set => Engine.SetAnimatorUVTBottomRight(EntityId, value);
-        //}
-
-
 
 
         #endregion
 
         #region Font
-        public string FontType
+        public class Font
         {
-            get => Engine.GetFontType(EntityId);
-            set => Engine.SetFontType(EntityId, value);
-        }
-        public string FontText
-        {
-            get => Engine.GetFontText(EntityId);
-            set => Engine.SetFontText(EntityId, value);
-        }
-        public float FontSize
-        {
-            get => Engine.GetFontSize(EntityId);
-            set => Engine.SetFontSize(EntityId, value);
-        }
-        public Vector3 FontColor
-        {
-            get => Engine.GetFontColor(EntityId);
-            set => Engine.SetFontColor(EntityId, value);
-        }
+            private uint EntityId;
 
-        public Vector3 FontOffsetPosition
-        {
-            get => Engine.GetFontOffsetPosition(EntityId);
-            set => Engine.SetFontOffsetPosition(EntityId, value);
+            public Font(uint id)
+            {
+                EntityId = id;
+            }
+
+            public string FontType
+            {
+                get => Engine.GetFontType(EntityId);
+                set => Engine.SetFontType(EntityId, value);
+            }
+            public string FontText
+            {
+                get => Engine.GetFontText(EntityId);
+                set => Engine.SetFontText(EntityId, value);
+            }
+            public float FontSize
+            {
+                get => Engine.GetFontSize(EntityId);
+                set => Engine.SetFontSize(EntityId, value);
+            }
+            public Vector3 FontColor
+            {
+                get => Engine.GetFontColor(EntityId);
+                set => Engine.SetFontColor(EntityId, value);
+            }
+
+            public Vector3 FontOffsetPosition
+            {
+                get => Engine.GetFontOffsetPosition(EntityId);
+                set => Engine.SetFontOffsetPosition(EntityId, value);
+            }
         }
 
 
