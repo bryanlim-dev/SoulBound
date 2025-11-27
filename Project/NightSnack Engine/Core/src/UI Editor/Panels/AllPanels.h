@@ -18,6 +18,7 @@
 #include "Core/ECS/Coordinator.h"
 #include "Core/ECS/Component.h"
 
+#include "UI Editor/UndoSystem.h"
 #include "Tilemap.h"
 #include "HierarchyPanel.h"
 #include "InspectorPanel.h"
