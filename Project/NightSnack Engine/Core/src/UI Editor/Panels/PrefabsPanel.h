@@ -714,22 +714,30 @@ namespace NightSnack
         {
             // Script name input
             std::vector<std::string> scriptNames;
-            for (std::string const& s : j["name"]) {
-				scriptNames.push_back(s);
-            }
-            std::string scriptDisplay = scriptNames[0];
-            for (int i{ 1 }; i < scriptNames.size(); ++i) {
-				scriptDisplay += ", " + scriptNames[i];
-            }
-
             char nameBuf[128];
-            strcpy_s(nameBuf, scriptDisplay.c_str());
+
+            if (!j["name"].empty()) {
+                for (std::string const& s : j["name"]) {
+                    scriptNames.push_back(s);
+                }
+
+                std::string scriptDisplay = scriptNames[0];
+                for (int i{ 1 }; i < scriptNames.size(); ++i) {
+				    scriptDisplay += ", " + scriptNames[i];
+                }
+                strcpy_s(nameBuf, scriptDisplay.c_str());
+            }
+            else {
+                strcpy_s(nameBuf, "");
+            }
 
             if (ImGui::InputText("Scripts ", nameBuf, sizeof(nameBuf)))
             {
                 j["name"].clear();
-                for (auto& s : SplitScripts(nameBuf)) {
-                    j["name"].push_back(s);
+                if (nameBuf) {
+                    for (auto& s : SplitScripts(nameBuf)) {
+                        j["name"].push_back(s);
+                    }
                 }
                 m_prefabModified = true;
             }
