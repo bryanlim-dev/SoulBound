@@ -69,7 +69,7 @@ namespace ManagedScripts
             ////Renderable test
             //Engine.SetMeshName(id2, "square");
             //Log($"Ball 2 Mesh Name: {Engine.GetMeshName(id2)}");
-            //Engine.SetMaterialName(id2, "../assets\\slime_2_2.png");
+            //Engine.SetMaterialName(id2, "slime_2_2.png");
             //Log($"Ball 2 Material Name: {Engine.GetMaterialName(id2)}");
 
             //Engine.SetIsWireframe(id1, true);
