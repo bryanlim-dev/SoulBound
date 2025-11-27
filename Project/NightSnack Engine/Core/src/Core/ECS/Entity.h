@@ -16,6 +16,8 @@
 #include <cstdint>
 #include <bitset>
 
+#define EDITOR
+
 namespace NightSnack {
 
 	// Maximum number of entities in the system;

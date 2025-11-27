@@ -1,12 +1,31 @@
 {
+    "Collider": {
+        "height": 10.0,
+        "isStatic": true,
+        "radius": 30.0,
+        "shape": "Circle",
+        "type": "Trigger",
+        "width": 10.0
+    },
+    "Color": {
+        "a": 1.0,
+        "b": 0.40995320677757263,
+        "g": 0.20682325959205627,
+        "r": 0.47766321897506714
+    },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "target",
+        "materialName": "ColorMat",
         "meshName": "circle"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": false
     },
     "Script": {
         "name": [
-            "RotatorScript"
+            "RotatorScript",
+            "HoverScript"
         ]
     }
 }

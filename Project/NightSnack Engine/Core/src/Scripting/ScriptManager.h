@@ -19,7 +19,7 @@
 #include "Core/ECS/Coordinator.h"
 #include "ScriptInterface.h"
 #include "Scripting/MonoScriptHost.h"
-
+#include "Scripting/MonoExposeBridge.h"
 #include "ImportExport.h"
 
 #include <string>
@@ -46,22 +46,22 @@ namespace NightSnack::Scripting {
 			m_systemSignature.set(GetComponentTypeID<Transform>());
 			m_systemSignature.set(GetComponentTypeID<Script>());
 
-			// Event dispatcher initialisations
-			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
-				if (event.pressed == InputEvent::InputActionState::Pressed) {
-					switch (event.inputAction) {
-					case InputEvent::InputAction::PhysicsDebugMode:
-						debugMode = !debugMode;
-						break;
-					case InputEvent::InputAction::PhysicsDebugStep:
-						stepRequest = true;
-						break;
-					case InputEvent::InputAction::EndStressTest:
-						m_attached = false;
-						break;
-					}
-				}
-				});
+			//// Event dispatcher initialisations
+			//m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
+			//	if (event.pressed == InputEvent::InputActionState::Pressed) {
+			//		switch (event.inputAction) {
+			//		case InputEvent::InputAction::PhysicsDebugMode:
+			//			debugMode = !debugMode;
+			//			break;
+			//		case InputEvent::InputAction::PhysicsDebugStep:
+			//			stepRequest = true;
+			//			break;
+			//		case InputEvent::InputAction::EndStressTest:
+			//			m_attached = false;
+			//			break;
+			//		}
+			//	}
+			//	});
 
 			Initialize();
 			entityNum = m_entities.size();
@@ -75,11 +75,20 @@ namespace NightSnack::Scripting {
 		// Create a script instance attached to an entity;
 		void* AttachScript(Entity e, std::string const& scriptClassName);
 		// Remove script from entity;
-		void RemoveScript(Entity e);
+		void RemoveScripts(Entity e);
 
 		// Required by ISystem base class;
 		Signature GetSignature() const override { return m_systemSignature; }
 		std::string GetName() const { return "ScriptManager"; }
+
+		std::vector<void*> GetEntityScripts(Entity e);
+		std::string GetScriptName(void* script);
+
+		MonoExposeBridge& GetMonoExposeBridge();
+		void LoadEntityExposedFields(Entity e);
+		void UnloadEntityExposedFields();
+
+		void RefreshScripts() { m_attached = false; }
 
 	private:
 		// Helper functions
@@ -95,13 +104,16 @@ namespace NightSnack::Scripting {
 		std::unique_ptr<ScriptInterface> m_scriptInterface;
 
 		// Map entity ID to script instance
-		std::multimap<Entity, void*> m_entityScripts;
+		std::map<Entity, std::vector<void*>> m_entityScripts;
+		std::map<void*, std::string> m_scriptNameMap;
 
 		bool debugMode = false;
 		bool stepRequest = false;
 		bool m_attached = false;
 
 		size_t entityNum;
+
+		MonoExposeBridge m_monoExposeBridge;
 	};
 
 }	// NightSnack

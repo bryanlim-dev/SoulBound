@@ -1,17 +1,24 @@
 {
     "Animator": {
-        "isLooping": true,
-        "isPlaying": true,
+        "isLooping": false,
+        "isPlaying": false,
         "playbackSpeed": 2.0,
         "spriteSheetName": ""
     },
+    "Audio": {
+        "audioKey": "playerHit",
+        "isPlaying": false,
+        "loop": false,
+        "playOnStart": false,
+        "volume": 1.0
+    },
     "Collider": {
-        "height": 10.300000190734863,
+        "height": 30.0,
         "isStatic": false,
-        "radius": 0.5,
-        "shape": "AABB",
+        "radius": 15.0,
+        "shape": "Circle",
         "type": "Solid",
-        "width": 10.800000190734863
+        "width": 30.0
     },
     "Font": {
         "fontSize": 0.5,

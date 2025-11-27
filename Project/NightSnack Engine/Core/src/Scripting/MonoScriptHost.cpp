@@ -20,6 +20,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <Core/ECS/Entity.h>
 
 namespace NightSnack::Scripting {
 
@@ -45,7 +46,7 @@ namespace NightSnack::Scripting {
         }
 
         // Set Mono assembly search path
-        mono_set_assemblies_path("../bin");
+        mono_set_assemblies_path("./lib");
 
         // Initialize Mono JIT
         m_rootDomain = mono_jit_init("NightSnackEngine");
@@ -121,7 +122,7 @@ namespace NightSnack::Scripting {
     }
 
     // Creates an instance of a script. namespaceName -> ManagedScripts, className -> name of C# script class
-    void* MonoScriptHost::CreateScriptInstance(std::string const& namespaceName, std::string const& className) {
+    void* MonoScriptHost::CreateScriptInstance(std::string const& namespaceName, std::string const& className, Entity owner) {
         if (!m_initialized || !m_assembly) {
             std::cerr << "[Mono] ERROR: Cannot create instance - not initialized or no assembly loaded\n";
             return nullptr;
@@ -146,6 +147,11 @@ namespace NightSnack::Scripting {
 
         // Store instance
         m_scriptInstances.push_back(instance);
+
+        //Set the entity ID on the script
+
+        SetScriptEntityId(instance, owner);
+//m_    
         // Call OnStart
         CallMethod(instance, "OnStart");
 
@@ -227,6 +233,18 @@ namespace NightSnack::Scripting {
         for (MonoObject* instance : m_scriptInstances) {
             CallMethod(instance, "OnUpdate");
         }
+    }
+
+    std::string MonoScriptHost::GetScriptName(void* instance)
+    {
+        if (instance)
+        {
+            MonoObject* obj = static_cast<MonoObject*>(instance);
+            MonoClass* c = mono_object_get_class(obj);
+            return mono_class_get_name(c);
+        }
+        else
+            return "";
     }
 
     // Helper functions ----------------------------------

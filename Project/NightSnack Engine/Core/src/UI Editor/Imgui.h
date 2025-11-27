@@ -92,8 +92,8 @@ namespace NightSnack {
 		EventDispatcher* m_dispatcher = nullptr;
 
 		// Editor state
-		bool m_toggleEditor = false;
-		bool m_isPlaying = true;
+		bool m_toggleEditor = true;
+		bool m_isPlaying = false;
 
 		Tilemap m_tilemap;
 		UndoSystem* m_undoSystem = nullptr;
@@ -159,6 +159,9 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void SetImThemeStyle();
+
+		void PlayGame();
+		void StopGame();
 	};
 
 	// Creates imgui context and initializes OpenGL for imgui panel
@@ -169,9 +172,13 @@ namespace NightSnack {
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
 					case InputEvent::InputAction::ToggleUIEditor:
+						// when Editor currently on -> turn off
+						if (m_toggleEditor) { PlayGame(); }
+
 						SetEditorEnabled(!m_toggleEditor);
-						if (m_toggleEditor) { m_coord.Pause(); }
-						else { m_coord.Unpause(); }
+
+						// when Editor off -> on
+						if (m_toggleEditor) { StopGame(); }
 						break;
 
 					case InputEvent::InputAction::UndoStep:
@@ -227,6 +234,7 @@ namespace NightSnack {
 	inline void ImguiSystem::Update() {
 
 		if (!m_toggleEditor) { return; }
+		if (!m_isPlaying) { m_coord.Pause(); }
 
 		// Start the ImGui frame
 		ImGui_ImplOpenGL3_NewFrame();
@@ -415,6 +423,8 @@ namespace NightSnack {
 						m_scenePanel->DestroyEditorCamera();
 						m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
 						m_scenePanel->CreateEditorCamera();
+
+						m_coord.Unpause();
 					}
 				}
 				else
@@ -445,7 +455,9 @@ namespace NightSnack {
 				// Stop
 				if (ImGui::MenuItem("Stop"))
 				{
+					m_coord.Pause();
 					m_isPlaying = false;
+
 					SetSimulationPaused(true);
 					*m_selectedEntity = INVALID_ENTITY;
 					m_coord.GetSystem<Scene::SceneManager>()->RestoreLevel();
@@ -466,9 +478,9 @@ namespace NightSnack {
 
 			*m_selectedEntity = INVALID_ENTITY;
 			m_scenePanel->ResetTexture();
-			m_scenePanel->DestroyEditorCamera();
-			m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
-			m_scenePanel->CreateEditorCamera();
+			//m_scenePanel->DestroyEditorCamera();
+			//m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
+			//m_scenePanel->CreateEditorCamera();
 			m_scenePanel->DisableEditorCameraIsMain();
 		}
 		else if (!enabled && ImGui::GetCurrentContext()) {
@@ -500,6 +512,26 @@ namespace NightSnack {
 					(InputEvent::InputAction::PhysicsDebugMode, InputEvent::InputActionState::Pressed));
 			}
 		}
+	}
+
+	inline void ImguiSystem::PlayGame() {
+
+		// Only Cache if not already playing
+		if (!m_isPlaying) {
+			m_scenePanel->DestroyEditorCamera();
+			m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
+		}
+
+		m_coord.Unpause();
+		m_isPlaying = true;
+	}
+	inline void ImguiSystem::StopGame() {
+
+		m_coord.Pause();
+		m_coord.GetSystem<Scene::SceneManager>()->RestoreLevel();
+		m_scenePanel->CreateEditorCamera();
+
+		m_isPlaying = false;
 	}
 
 	// Sets ImGui theme style

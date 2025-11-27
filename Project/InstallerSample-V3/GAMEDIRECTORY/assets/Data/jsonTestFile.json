@@ -1,0 +1,13 @@
+{
+  "testJson": {
+    "boolean" : true,
+    "interger" : "5",
+    "hotel" : "trivaga",
+    "subComponent" :
+    {
+      "subString" : "innerComponent",
+      "innerChar" : "a",
+      "innerIntArr" : ["1", "1", "2", "3", "5", "8", "13", "21"]
+    }
+  }
+}
