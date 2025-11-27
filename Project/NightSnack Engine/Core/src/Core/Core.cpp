@@ -19,8 +19,6 @@
 #include "ResourceManager/ResourceHelper/ResourceSystemHelper.h"
 #include "../Systems/StateMachine/FiniteStateMachine.h"
 
-//#define EDITOR
-
 namespace NightSnack {
 
 	static float accumulatedTime = 0.0f;

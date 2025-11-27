@@ -158,7 +158,7 @@ namespace NightSnack {
 						next.pos.x += r1.vel.x * FixedDT;
 						next.pos.y += r1.vel.y * FixedDT;
 
-						if (!CheckCollision(next, t2, c1, c2) && !CheckTunneling(t1, t2, r1, r2)) { continue; }
+						if (!CheckCollision(next, t2, c1, c2) && !CheckTunneling(t1, t2, r1)) { continue; }
 						c1.colliding = true;
 						c2.colliding = true;
 						// If is Trigger, only check for collision and do not perform overlap correction/force transfer
@@ -169,7 +169,7 @@ namespace NightSnack {
 						for (int i{}; i < 4; ++i) {
 							next.pos.x += r1.vel.x * FixedDT * 0.25f;
 							next.pos.y += r1.vel.y * FixedDT * 0.25f;
-							if (CheckCollision(next, t2, c1, c2) || CheckTunneling(next, t2, r1, r2)) {
+							if (CheckCollision(next, t2, c1, c2) || CheckTunneling(next, t2, r1)) {
 								next.pos.x -= r1.vel.x * FixedDT * 0.25f;
 								next.pos.y -= r1.vel.y * FixedDT * 0.25f;
 								break;
@@ -245,7 +245,7 @@ namespace NightSnack {
 		}
 	}
 
-	bool PhysicsSystem::CheckTunneling(Transform const& t1, Transform const& t2, RigidBody const& r1, RigidBody const& r2) {
+	bool PhysicsSystem::CheckTunneling(Transform const& t1, Transform const& t2, RigidBody const& r1) {
 
 		// Obtain vector from current e1 to e2;
 		Vec2 dir{ t2.pos.x - t1.pos.x, t2.pos.y - t1.pos.y };
