@@ -4,8 +4,8 @@
             "Transform": {
                 "Layer": "GameUI",
                 "Position": {
-                    "x": 282.5576477050781,
-                    "y": -410.8500061035156,
+                    "x": 561.3740234375,
+                    "y": -54.90169143676758,
                     "z": 5.0
                 },
                 "Rotation": 0.0,
@@ -54,14 +54,14 @@
             "Transform": {
                 "Layer": "GameLayer",
                 "Position": {
-                    "x": 282.5576477050781,
-                    "y": -410.8500061035156,
+                    "x": 561.3740234375,
+                    "y": -54.90169143676758,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 30.0,
-                    "y": 30.0
+                    "x": 20.0,
+                    "y": 20.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -79,11 +79,11 @@
             "Transform": {
                 "Layer": "GameLayer",
                 "Position": {
-                    "x": -469.1766052246094,
+                    "x": 13.222585678100586,
                     "y": 1432.4158935546875,
                     "z": 0.0
                 },
-                "Rotation": 300.0,
+                "Rotation": 253.5695343017578,
                 "Scale": {
                     "x": 30.0,
                     "y": 30.0
@@ -104,7 +104,7 @@
             "Transform": {
                 "Layer": "GameLayer",
                 "Position": {
-                    "x": -442.5586242675781,
+                    "x": 311.04022216796875,
                     "y": 1294.7171630859375,
                     "z": 0.0
                 },
@@ -255,7 +255,7 @@
                 "Layer": "GameLayer",
                 "Position": {
                     "x": -1075.831787109375,
-                    "y": -4412.13427734375,
+                    "y": -14507519.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
@@ -404,14 +404,14 @@
             "Transform": {
                 "Layer": "GameUI",
                 "Position": {
-                    "x": 1200.0,
-                    "y": 350.0,
+                    "x": 1440.0,
+                    "y": 420.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 100.0,
-                    "y": 100.0
+                    "x": 120.0,
+                    "y": 120.0
                 },
                 "UIBasePosition": {
                     "x": 1200.0,
@@ -429,14 +429,14 @@
             "Transform": {
                 "Layer": "GameUI",
                 "Position": {
-                    "x": 900.0,
-                    "y": 100.0,
+                    "x": 1080.0,
+                    "y": 120.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 200.0,
-                    "y": 100.0
+                    "x": 240.0,
+                    "y": 120.0
                 },
                 "UIBasePosition": {
                     "x": 900.0,
@@ -454,14 +454,14 @@
             "Transform": {
                 "Layer": "GameUI",
                 "Position": {
-                    "x": 1200.0,
-                    "y": 100.0,
+                    "x": 1440.0,
+                    "y": 120.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 200.0,
-                    "y": 100.0
+                    "x": 240.0,
+                    "y": 120.0
                 },
                 "UIBasePosition": {
                     "x": 1200.0,
@@ -479,14 +479,14 @@
             "Transform": {
                 "Layer": "GameUI",
                 "Position": {
-                    "x": 1500.0,
-                    "y": 100.0,
+                    "x": 1800.0,
+                    "y": 120.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 200.0,
-                    "y": 100.0
+                    "x": 240.0,
+                    "y": 120.0
                 },
                 "UIBasePosition": {
                     "x": 1500.0,
@@ -1805,56 +1805,6 @@
                 "Layer": "GameLayer",
                 "Position": {
                     "x": 472.0,
-                    "y": -424.0,
-                    "z": 0.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 16.0,
-                    "y": 16.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "prefab": "Tile_ground3"
-        },
-        {
-            "Transform": {
-                "Layer": "GameLayer",
-                "Position": {
-                    "x": 488.0,
-                    "y": -424.0,
-                    "z": 0.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 16.0,
-                    "y": 16.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "prefab": "Tile_ground3"
-        },
-        {
-            "Transform": {
-                "Layer": "GameLayer",
-                "Position": {
-                    "x": 504.0,
                     "y": -424.0,
                     "z": 0.0
                 },
@@ -7655,31 +7605,6 @@
                 "Layer": "GameLayer",
                 "Position": {
                     "x": 328.0,
-                    "y": -184.0,
-                    "z": 0.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 16.0,
-                    "y": 16.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "prefab": "Tile_ground3"
-        },
-        {
-            "Transform": {
-                "Layer": "GameLayer",
-                "Position": {
-                    "x": 328.0,
                     "y": -200.0,
                     "z": 0.0
                 },
@@ -9831,6 +9756,106 @@
                 "Position": {
                     "x": 0.0,
                     "y": 0.0,
+                    "z": 2.0
+                },
+                "Rotation": 1.0,
+                "Scale": {
+                    "x": 1.0,
+                    "y": 1.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "prefab": "Cam"
+        },
+        {
+            "Transform": {
+                "Layer": "GameUI",
+                "Position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 2.0
+                },
+                "Rotation": 1.0,
+                "Scale": {
+                    "x": 1.0,
+                    "y": 1.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "prefab": "Cam"
+        },
+        {
+            "Transform": {
+                "Layer": "GameUI",
+                "Position": {
+                    "x": 764.192626953125,
+                    "y": 47.76203155517578,
+                    "z": 2.0
+                },
+                "Rotation": 1.0,
+                "Scale": {
+                    "x": 1.0,
+                    "y": 1.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "prefab": "Cam"
+        },
+        {
+            "Transform": {
+                "Layer": "GameUI",
+                "Position": {
+                    "x": 744.8867797851563,
+                    "y": -163.43417358398438,
+                    "z": 2.0
+                },
+                "Rotation": 1.0,
+                "Scale": {
+                    "x": 1.0,
+                    "y": 1.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "prefab": "Cam"
+        },
+        {
+            "Transform": {
+                "Layer": "GameUI",
+                "Position": {
+                    "x": 545.0394287109375,
+                    "y": -48.64350128173828,
                     "z": 2.0
                 },
                 "Rotation": 1.0,
