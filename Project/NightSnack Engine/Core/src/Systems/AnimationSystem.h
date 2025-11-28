@@ -58,7 +58,8 @@ namespace NightSnack {
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
 					case InputEvent::InputAction::ChangeAnimation:
-						ChangeAnimation();
+						if (!m_coord.IsPaused())
+							ChangeAnimation();
 						break;
 					}
 				}
