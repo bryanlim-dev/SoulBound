@@ -72,10 +72,8 @@ namespace NightSnack {
 
         m_coord.ModifyComponent<Transform>(e) = trans;
 
-        if (!prefab["modified"] && prefab.contains("name") && prefab["name"].is_string()) {
-            entityToPrefab[e] = prefab["name"];
-            prefabToEntities.insert({ prefab["name"], e });
-        }
+        entityToPrefab[e] = prefab["name"];
+        prefabToEntities.insert({ prefab["name"], e });
 
         m_coord.BufferEntitySignature(e);
 
