@@ -375,7 +375,9 @@ namespace NightSnack
 
 						trans.scale = Vec2{ 100.f, 100.f };	// default scale...
 
-						m_coord.GetSystem<EntityFactory>()->Create(filePath.filename().stem().string(), trans);
+						// Record undo for entity creation by drag drop of prefab
+						NightSnack::UndoSystem::Instance().Push(NightSnack::EntityCreateSnapshot{
+							m_coord.GetSystem<EntityFactory>()->Create(filePath.filename().stem().string(), trans) });
 
 						std::cout << "Transform: " << trans.pos.x << ", " << trans.pos.y << std::endl;
 
