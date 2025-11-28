@@ -67,7 +67,7 @@ namespace NightSnack::Scripting {
 		//Shove the data into a map
 		m_sciptsToFieldsMap.insert({ scriptInstance, fieldVec });
 	}
-	const std::vector<ExposedField>& MonoExposeBridge::GetExposedFields(void* scriptInstance)
+	const std::vector<ExposedField> MonoExposeBridge::GetExposedFields(void* scriptInstance)
 	{
 		//LoadScriptExposedFields(scriptInstance);
 
@@ -81,6 +81,9 @@ namespace NightSnack::Scripting {
 
 	ExposedValue MonoExposeBridge::ReadValue(void* scriptInstance, const ExposedField& field)
 	{
+		if (scriptInstance == nullptr)
+			return ExposedValue{};
+
 		ExposedValue result;
 		MonoObject* monoObj = reinterpret_cast<MonoObject*>(scriptInstance);
 
