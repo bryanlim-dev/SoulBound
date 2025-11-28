@@ -66,8 +66,24 @@ namespace NightSnack {
 		return e;
 	}
 
+    Entity EntityFactory::Create(json const& prefab, Transform const& trans) {
+        Entity e = m_prefabManager.CreateFromPrefab(prefab);
+        if (e == INVALID_ENTITY) { return e; }
+
+        m_coord.ModifyComponent<Transform>(e) = trans;
+
+        if (!prefab["modified"] && prefab.contains("name") && prefab["name"].is_string()) {
+            entityToPrefab[e] = prefab["name"];
+            prefabToEntities.insert({ prefab["name"], e });
+        }
+
+        m_coord.BufferEntitySignature(e);
+
+        return e;
+    }
+
     // For creating entities at specific locations, scaling etc...
-    Entity EntityFactory::Create(std::string const& name, Transform trans) {
+    Entity EntityFactory::Create(std::string const& name, Transform const& trans) {
 
         size_t key = m_prefabKeys[name];
 
@@ -160,7 +176,7 @@ namespace NightSnack {
         key = m_prefabKeys[prefab];
 
         // Read new version
-        std::filesystem::path path = RESOURCE_PATH + std::string{ "GameData/Prefabs/" } + prefab + ".json";
+        std::filesystem::path path = PRIME_PREFABS_PATH + prefab + ".json";
         std::ifstream ifs(path);
         if (!ifs) {
 			std::cerr << "Failed to read json file: " << path << '\n';
@@ -198,7 +214,7 @@ namespace NightSnack {
 
         try {
             for (auto const& item : level["Entities"]) {
-                Create(item["prefab"], item["Transform"]);
+                Create(std::string{ item["prefab"] }, item["Transform"]);
             }
             for (Entity e : m_coord.GetLivingEntities()) {
                 m_coord.BufferEntitySignature(e);
@@ -260,7 +276,7 @@ namespace NightSnack {
     bool EntityFactory::SaveLevel(std::string const& levelName, bool overwrite) {
 
         // Output file path
-        std::filesystem::path outPath = std::filesystem::path(LEVELS_PATH) / (levelName + ".json");
+        std::filesystem::path outPath = std::filesystem::path(PRIME_LEVELS_PATH) / (levelName + ".json");
 
         // Check if a prefab already exists with the same name
         if (std::filesystem::exists(outPath) && !overwrite) {
@@ -276,10 +292,32 @@ namespace NightSnack {
         for (Entity e : m_coord.GetLivingEntities()) {
             json j;
 
-            std::string prefabName = entityToPrefab[e];
-            j["prefab"] = prefabName;
-
             Transform const& t = m_coord.GetComponent<Transform>(e);
+            std::string prefabName = entityToPrefab[e];
+
+            if (t.prefabModified) {
+                // Output file path
+                std::filesystem::path outPath = std::filesystem::path(PRIME_PREFABS_PATH) / (prefabName + ".json");
+                // Check if a prefab already exists with the same name
+                bool exists = std::filesystem::exists(outPath);
+                size_t cnt = 1;
+
+                std::string newPrefabName;
+                while (exists) {
+                    // prefab1, prefab2 etc...
+                    newPrefabName = prefabName + std::to_string(cnt);
+                    // check if new name already exists;
+                    std::filesystem::path outPath = std::filesystem::path(PRIME_PREFABS_PATH) / (newPrefabName + ".json");
+                    exists = std::filesystem::exists(outPath);
+                    cnt++;
+                }
+                j["prefab"] = newPrefabName;
+                SaveAsPrefab(e, newPrefabName);
+            }
+            else {
+                j["prefab"] = prefabName;
+            }
+
             std::string layer;
             switch (t.layer) {
             case LayerType::_ENGINE:
@@ -324,24 +362,31 @@ namespace NightSnack {
         ofs << std::setw(4) << level;
         ofs.close();
 
+        // Update ResourceManager -------------------------------------------
+        auto resource = m_coord.GetSystem<ResourceManager>();
+        if (m_levelKeys.find(levelName) != m_levelKeys.end()) {
+            // Level exists and was overwritten
+            resource->UpdateJson(m_levelKeys[levelName], level);
+        }
+        else {
+            // New Level has been saved
+            std::string loadPath = "../../../../assets/GameData/Levels/" + levelName + ".json";
+            resource->LoadJson(loadPath, m_levelKeys[levelName]);
+        }
+
         std::cout << "Saved level to: " << outPath << "\n";
         return true;
     }
 
-    // Save all current components of an Entity as a Prefab
-    bool EntityFactory::SaveAsPrefab(Entity e, std::string const& prefabName, bool overwrite) {
-
-        // Output file path
-        std::filesystem::path outPath = std::filesystem::path(PRIME_PREFABS_PATH) / (prefabName + ".json");
-        std::filesystem::path currdir = std::filesystem::path(PREFABS_PATH) / (prefabName + ".json");
-
-        // Check if a prefab already exists with the same name
-        if (std::filesystem::exists(outPath) && !overwrite) {
-            std::cout << "There already exists a prefab named '" << prefabName << "' at '" << "GameData/Prefabs" << '\n';
-            return false;
-        }
-        // JSON object that will become the prefab content
+    json EntityFactory::CacheEntityComponents(Entity e) const {
         json j;
+
+        auto it = entityToPrefab.find(e);
+        if (entityToPrefab.find(e) != entityToPrefab.end()) {
+            j["name"] = it->second;
+        }
+        if (m_coord.GetComponent<Transform>(e).prefabModified) j["modified"] = true;
+        else j["modified"] = false;
 
         // RIGIDBODY ------------------------------------------------------
         if (m_coord.HasComponent<RigidBody>(e)) {
@@ -414,14 +459,6 @@ namespace NightSnack {
                 {"height",    c.height}
             };
         }
-        // STATES ---------------------------------------------------------
-        //if (m_coord.HasComponent<States>(e)) {
-        //    States const& s = m_coord.GetComponent<States>(e);
-        //    j["States"] = {
-        //        {"States", { "StateMachine", s.}}
-        //    };
-        //}
-
         // ANIMATOR -------------------------------------------------------
         if (m_coord.HasComponent<Animator>(e)) {
             Animator const& a = m_coord.GetComponent<Animator>(e);
@@ -459,9 +496,6 @@ namespace NightSnack {
             case ButtonAction::PLAYAUDIO3:
                 action = "PlayAudio3";
                 break;
-            case ButtonAction::PLAYSTRESSTEST:
-                action = "StressTest";
-                break;
             case ButtonAction::CHANGELEVELS:
                 action = "ChangeLevel";
                 break;
@@ -490,15 +524,14 @@ namespace NightSnack {
             };
         }
         //  ---------------------------------------------------------------
-		if (m_coord.HasComponent<PlayerController>(e)) {    // temp
-			PlayerController const& p = m_coord.GetComponent<PlayerController>(e);
-			j["PlayerController"] = {
-				{"moveSpeed", p.moveSpeed},
-				{"jumpSpeed", p.jumpSpeed}
-			};
-		}
-
-        // audio
+        if (m_coord.HasComponent<PlayerController>(e)) {    // temp
+            PlayerController const& p = m_coord.GetComponent<PlayerController>(e);
+            j["PlayerController"] = {
+                {"moveSpeed", p.moveSpeed},
+                {"jumpSpeed", p.jumpSpeed}
+            };
+        }
+        // AUDIO ----------------------------------------------------------
         if (m_coord.HasComponent<Audio>(e)) {
             Audio const& a = m_coord.GetComponent<Audio>(e);
             j["Audio"] = {
@@ -509,6 +542,23 @@ namespace NightSnack {
                 { "volume", a.volume }
             };
         }
+        return j;
+    }
+
+    // Save all current components of an Entity as a Prefab
+    bool EntityFactory::SaveAsPrefab(Entity e, std::string const& prefabName, bool overwrite) {
+
+        // Output file path
+        std::filesystem::path outPath = std::filesystem::path(PRIME_PREFABS_PATH) / (prefabName + ".json");
+        std::filesystem::path currdir = std::filesystem::path(PREFABS_PATH) / (prefabName + ".json");
+
+        // Check if a prefab already exists with the same name
+        if (std::filesystem::exists(outPath) && !overwrite) {
+            std::cout << "There already exists a prefab named '" << prefabName << "' at '" << "GameData/Prefabs" << '\n';
+            return false;
+        }
+        // JSON object that will become the prefab content
+        json j = CacheEntityComponents(e);
 
         // Write to file
         std::ofstream ofs(outPath);
@@ -543,6 +593,8 @@ namespace NightSnack {
         prefabToEntities.insert({ prefabName, e });
         m_prefabNames.push_back(prefabName);
 
+        m_coord.ModifyComponent<Transform>(e).prefabModified = false;
+
         return true;
     }
 
@@ -574,6 +626,9 @@ namespace NightSnack {
             m_coord.DestroyEntity(e);
         }
         m_coord.ResetEverything();
+
+        entityToPrefab.clear();
+        prefabToEntities.clear();
     }
 
     // Helper function to split Monolithic Json file (containing all archetypes)

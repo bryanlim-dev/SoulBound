@@ -293,6 +293,7 @@ namespace NightSnack {
 		// Inform the SystemManager that Entity e's Signature has changed;
 		m_systemManager->EntitySignatureChanged(e, sig, GetComponent<Transform>(e).layer);
 
+		ModifyComponent<Transform>(e).prefabModified = true;
 	}
 	inline void Coordinator::AddComponent(Entity e, Collider c) {
 
@@ -326,6 +327,8 @@ namespace NightSnack {
 		m_entityManager->SetSignature(e, sig);
 		// Inform the SystemManager that Entity e's Signature has changed;
 		m_systemManager->EntitySignatureChanged(e, sig, GetComponent<Transform>(e).layer);
+
+		ModifyComponent<Transform>(e).prefabModified = true;
 	}
 
 	template <typename T>
@@ -348,6 +351,8 @@ namespace NightSnack {
 		m_entityManager->SetSignature(e, sig);
 		// Inform the SystemManager that Entity e's Signature has changed;
 		m_systemManager->EntitySignatureChanged(e, sig, GetComponent<Transform>(e).layer);
+
+		ModifyComponent<Transform>(e).prefabModified = true;
 	}
 
 	template <typename T>

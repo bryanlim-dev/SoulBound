@@ -41,13 +41,14 @@ namespace NightSnack {
     };
     struct Transform {
         Vec3 pos;
-        float rot;
+        float rot{};
         Vec2 scale;
 
         Vec3 UIbasePos{ 0.f, 0.f, 0.f };
         Vec2 UIbaseScale{ 0.f, 0.f };
 
         LayerType layer;
+        bool prefabModified{ false };
     };
 
     struct Force {
@@ -261,9 +262,13 @@ namespace NightSnack {
 
     // PHYSICS ====================================================
     inline void from_json(const json& j, RigidBody& r) {
-        float mass{};
-        j.at("mass").get_to(mass);
-        r.invMass = 1.f / mass;
+        float mass{ 1.f };
+        r.invMass = 1.f;
+
+        if (j.contains("mass")) {
+            j.at("mass").get_to(mass);
+            r.invMass = 1.f / mass;
+        }
 
         float inertia{ mass };
         if (j.contains("inertia")) {

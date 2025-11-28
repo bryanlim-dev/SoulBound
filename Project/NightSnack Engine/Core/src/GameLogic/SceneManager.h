@@ -44,9 +44,9 @@ namespace NightSnack::Scene {
 		EventDispatcher* m_dispatcher = nullptr;
 		Coordinator& m_coord;
 
-		std::vector<std::pair<std::string, Transform>> m_levelCache;
+		//std::vector<std::pair<std::string, Transform>> m_levelCache;
+		std::vector<std::pair<json, Transform>> m_levelCache;
 
-		json m_currentLevel{};
 	};
 
 	// LEVELS

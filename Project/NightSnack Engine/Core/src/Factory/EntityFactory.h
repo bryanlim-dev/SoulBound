@@ -55,21 +55,6 @@ namespace NightSnack {
 			// Create Default level.
 			LoadLevel("DefaultLevel");
 
-			// Setup input events;
-			//m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
-			//	if (event.pressed == InputEvent::InputActionState::Pressed) {
-			//		switch (event.inputAction) {
-
-			//		case InputEvent::InputAction::StressTest:
-			//			ReloadPrefabs();
-			//			for (auto const& [name, key] : m_prefabKeys) {
-			//				std::cout << name << ", ";
-			//			}
-			//			std::cout << '\n';
-			//			break;
-			//		}
-			//	}
-			//	});
 		}
 
 		// Resets m_prefabKeys and loads all json files in "GameData/Prefabs"
@@ -120,6 +105,20 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Creates an entity with a json storing component data.
+
+		\param prefab
+		Json containing component data to be used for entity creation.
+
+		\return
+		Returns ID of entity created.
+		*/
+		/************************************************************************/
+		Entity Create(json const& prefab, Transform const& trans);
+
+		/************************************************************************/
+		/*!
+		\brief
 		Creates an entity with the name of desired prefab and with a specific
 		transformation to be applied on the Entity.
 
@@ -132,7 +131,7 @@ namespace NightSnack {
 		Returns ID of entity created.
 		*/
 		/************************************************************************/
-		Entity Create(std::string const& name, Transform trans);
+		Entity Create(std::string const& name, Transform const& trans);
 
 		/************************************************************************/
 		/*!
@@ -160,7 +159,8 @@ namespace NightSnack {
 		/************************************************************************/
 		void RemoveEntity(Entity e);
 
-		bool SaveAsPrefab(Entity e, std::string const& prefabName, bool overwrite);
+		bool SaveAsPrefab(Entity e, std::string const& prefabName, bool overwrite = 0);
+		json CacheEntityComponents(Entity e) const;
 
 		void CreateFolders() const;
 
