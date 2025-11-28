@@ -396,6 +396,10 @@ namespace ManagedScripts
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateEntityArchetype_Internal(string archetypeName, Vector3 pos);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint GetPlayerID_Internal();
+
+
         //[MethodImpl(MethodImplOptions.InternalCall)]
         //private static extern float GetTime_Internal();
 
@@ -1007,6 +1011,11 @@ namespace ManagedScripts
         public static void PlaySound(string path) => PlaySound_Internal(path);
 
         public static uint CreateEntityArchetype(string archetypeName, Vector3 pos) => CreateEntityArchetype_Internal(archetypeName, pos);
+
+        public static uint GetPlayerID()
+        {
+            return GetPlayerID_Internal();
+        }
 
 
         public static float DeltaTime => GetDeltaTime_Internal();

@@ -818,6 +818,11 @@ namespace NightSnack::Scripting {
         m_coord.ModifyComponent<Transform>(entity).pos = Vec3{ pos.x, pos.x, pos.z };
         return entity;
     }
+
+    Entity ScriptInterface::GetPlayerID()
+    {
+        return m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();;
+    }
     // --------------------------------------------------------------
 
 }   // NightSnack::Scripting

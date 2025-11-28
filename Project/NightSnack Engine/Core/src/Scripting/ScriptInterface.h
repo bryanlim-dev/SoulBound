@@ -254,6 +254,8 @@ namespace NightSnack::Scripting {
         //Create Entity
         Entity CreateEntityArchetype(std::string archeTypeName, vec3 pos);
 
+        Entity GetPlayerID();
+
     private:
         Coordinator& m_coord;
     };

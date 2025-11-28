@@ -372,5 +372,7 @@ namespace ManagedScripts
         public bool IsKeyReleased(int key) => Engine.IsKeyReleased(key);
         public void PlaySound(string path) => Engine.PlaySound(path);
         public uint CreateEntityArchetype(string archetypeName, Vector3 pos) => Engine.CreateEntityArchetype(archetypeName, pos);
+        public uint GetPlayerID() => Engine.GetPlayerID();
+
     }
 }   // ManagedScripts
