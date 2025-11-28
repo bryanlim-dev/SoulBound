@@ -226,6 +226,14 @@ namespace NightSnack::Scripting {
         void SetCameraHeight(Entity e, float main);
 #pragma endregion
 
+#pragma region Scripting
+
+        bool GetScriptExists(Entity e, std::string str);
+        void CreateScript(Entity e, std::string str);
+
+#pragma endregion
+
+
 
 #pragma region Key/Inputs
         // Input

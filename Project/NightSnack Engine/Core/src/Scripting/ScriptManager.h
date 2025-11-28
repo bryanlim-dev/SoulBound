@@ -72,8 +72,8 @@ namespace NightSnack::Scripting {
 		// Main Update function;
 		void Update() override;
 
-		// Create a script instance attached to an entity;
-		void* AttachScript(Entity e, std::string const& scriptClassName);
+		//Creates a new script and modifies the Script component for the entity
+		bool CreateScript(Entity e, std::string scriptName);
 		// Remove script from entity;
 		void RemoveScripts(Entity e);
 
@@ -95,6 +95,8 @@ namespace NightSnack::Scripting {
 		void Initialize();
 		void Shutdown();
 
+		// Create a new script instance attached to an entity by name;
+		void* AttachScript(Entity e, std::string const& scriptClassName);
 	private:
 		Signature m_systemSignature{};
 		EventDispatcher* m_dispatcher{ nullptr };

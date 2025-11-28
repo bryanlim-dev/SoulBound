@@ -55,7 +55,7 @@ namespace NightSnack::Scene {
 		EventDispatcher* m_dispatcher = nullptr;
 		Coordinator& m_coord;
 
-		std::vector<std::pair<std::string, Transform>> m_levelCache;
+		std::vector<std::pair<json, Transform>> m_levelCache;
 		std::vector<std::pair<std::string, Transform>> m_overlayMenu;
 
 		std::vector<Entity> m_overlayEntites;
@@ -63,6 +63,7 @@ namespace NightSnack::Scene {
 		// Overlay menu
 		bool inGame = false;
 		bool overlayOn = false;
+
 	};
 
 	// LEVELS

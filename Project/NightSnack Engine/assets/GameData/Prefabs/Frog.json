@@ -1,0 +1,44 @@
+{
+    "Animator": {
+        "isLooping": true,
+        "isPlaying": true,
+        "playbackSpeed": 2.0,
+        "spriteSheetName": ""
+    },
+    "Collider": {
+        "height": 10.300000190734863,
+        "isStatic": false,
+        "radius": 0.5,
+        "shape": "AABB",
+        "type": "Solid",
+        "width": 10.800000190734863
+    },
+    "Font": {
+        "fontSize": 0.5,
+        "fontType": "buggy-font",
+        "offsetPosition": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "text": "Player",
+        "textColor": {
+            "b": 0.8999999761581421,
+            "g": 0.75,
+            "r": 0.6499999761581421
+        }
+    },
+    "PlayerController": {
+        "jumpSpeed": 600.0,
+        "moveSpeed": 300.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "slime_4_1",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": true
+    }
+}

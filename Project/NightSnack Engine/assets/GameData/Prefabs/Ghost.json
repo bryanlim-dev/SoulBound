@@ -37,7 +37,7 @@
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "ColorMat",
+        "materialName": "ghost_4_1",
         "meshName": "square"
     },
     "RigidBody": {

@@ -52,7 +52,7 @@ namespace NightSnack::Scripting {
 
 		void LoadScriptExposedFields(void* scriptInstance);
 
-		const std::vector<ExposedField>& GetExposedFields(void* scriptInstance);
+		const std::vector<ExposedField> GetExposedFields(void* scriptInstance);
 
 		ExposedValue ReadValue(void* scriptInstance, const ExposedField& field);
 		void WriteValue(void* scriptInstance, const ExposedField& field, const ExposedValue& value);

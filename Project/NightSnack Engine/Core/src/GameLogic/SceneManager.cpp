@@ -46,7 +46,7 @@ namespace NightSnack::Scene {
 
 		for (Entity e : entities) {
 			m_levelCache.emplace_back(std::make_pair(
-				m_coord.GetSystem<EntityFactory>()->GetEntityPrefabName(e),
+				m_coord.GetSystem<EntityFactory>()->CacheEntityComponents(e),
 				m_coord.GetComponent<Transform>(e)));
 		}
 	}

@@ -816,7 +816,7 @@ namespace NightSnack
                     std::string scriptName = filePath.filename().stem().string();
                     std::cout << "Accepted script: " << scriptName << std::endl;
 
-                    m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->AttachScript(*m_selectedEntity, scriptName);
+                    m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->CreateScript(*m_selectedEntity, scriptName);
                 }
                 ImGui::EndDragDropTarget();
             }
