@@ -7,7 +7,7 @@
  * Inspector panel showing details of selected entity. Displays components and
  * their properties, allowing real-time editing of parameters.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -15,6 +15,7 @@
 #include "AllPanels.h"
 #include <stb_image.h>
 #include <filesystem>
+#include <Scripting/ScriptManager.h>
 
 namespace NightSnack
 {
@@ -321,8 +322,30 @@ namespace NightSnack
             }
         }
 
-		// Prefab of the entity
+		// Current Prefab display
+        std::string entityName = (*m_uiNames)[entity];
+		std::string prefabName = factory ? factory->GetEntityPrefabName(entity) : "UnknownPrefab";
+        ImGui::Dummy(ImVec2(0.0f, 5.0f));
+        ImGui::Columns(2, nullptr, false);
+        ImGui::Text("Prefab: %s", prefabName.c_str());
+        ImGui::NextColumn();
 
+        // Save / Overwrite entity's prefab
+        if (ImGui::Button("Save Prefab"))
+        {
+            // Overwrite if prefab with same name exists
+            bool exists = false;
+            for (const auto& name : factory->GetPrefabNames())
+            {
+                if (name == entityName)
+                {
+                    exists = true;
+                    break;
+                }
+            }
+            factory->SaveAsPrefab(entity, entityName, exists);
+        }
+        ImGui::Columns(1);
     }
 
 	// Draws Transform component details which includes position, rotation, and scale.
@@ -763,24 +786,120 @@ namespace NightSnack
         if (!m_coord.HasComponent<Script>(*m_selectedEntity))
             return;
 
-        auto& script = m_coord.GetComponent<Script>(*m_selectedEntity);
+        m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->LoadEntityExposedFields(*m_selectedEntity);
 
-        if (ImGui::BeginTable("ScriptTable", 1 + script.names.size(), ImGuiTableFlags_SizingFixedFit))
+        //auto& script = m_coord.GetComponent<Script>(*m_selectedEntity);
+        //if (ImGui::BeginTable("ScriptTable", 1 + (int)script.names.size(), ImGuiTableFlags_SizingFixedFit))
+        //NightSnack::Scripting::MonoExposeBridge& bridge = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetMonoExposeBridge();
+        //bridge.PrintAllExposedFields();
+
+
+        if (ImGui::BeginTable("ScriptTable", 1, ImGuiTableFlags_SizingFixedFit))
         {
-            ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
-            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+            ImGui::TableSetupColumn("Outer Label", ImGuiTableColumnFlags_WidthStretch);
 
             ImGui::TableNextRow();
-            int indexCount = 0;
-            ImGui::TableSetColumnIndex(indexCount); ImGui::Text("Script");
-            for (std::string names : script.names)
+            ImGui::TableSetColumnIndex(0);
+            ImGui::TextColored(ImVec4(0.2f, 0.6f, 1.0f, 1.0f), "%s", "<Add Script>");
+
+            //Drag and drop new scripts
+            if (ImGui::BeginDragDropTarget())
             {
-                indexCount++;
-                ImGui::TableSetColumnIndex(indexCount); ImGui::TextDisabled("%s", names.c_str());
+                ImVec2 rect_min = ImGui::GetItemRectMin();
+                ImVec2 rect_max = ImGui::GetItemRectMax(); 
+                ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 80));
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_SCRIPT")) {
+
+
+                    std::filesystem::path filePath = static_cast<const char*>(payload->Data);
+
+                    std::string scriptName = filePath.filename().stem().string();
+                    std::cout << "Accepted script: " << scriptName << std::endl;
+
+                    m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->AttachScript(*m_selectedEntity, scriptName);
+                }
+                ImGui::EndDragDropTarget();
+            }
+
+            ImGui::Indent(10.0f);
+            //Loop through each script instance
+            for (void* instance : m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetEntityScripts(*m_selectedEntity))
+            {
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0);
+
+                std::string scrName = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetScriptName(instance);
+                
+                //Make a header for each script
+                if (ImGui::CollapsingHeader(scrName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    //Inner table
+                    if (ImGui::BeginTable(scrName.c_str(), 2, ImGuiTableFlags_SizingFixedFit))
+                    {
+
+                        ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+                        ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+                        ImGui::TableNextRow();
+
+                        auto& bridge = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetMonoExposeBridge();
+
+                        for (auto& fields : bridge.GetExposedFields(instance))
+                        {
+                            Scripting::ExposedValue val = bridge.ReadValue(instance, fields);
+                            ImGui::TableSetColumnIndex(0); ImGui::TextDisabled("%s: ", fields.m_name.c_str());
+
+                            //Render values based on which what type
+                            switch (fields.m_valueType)
+                            {
+                                //int
+                            case Scripting::MonoValueType::MONO_INT:
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("%i", val.m_i);
+                                break;
+                            case Scripting::MonoValueType::MONO_BOOL:
+                                ImGui::TableSetColumnIndex(1); ImGui::Checkbox(" ", &val.m_b);
+                                break;
+                            case Scripting::MonoValueType::MONO_FLOAT:
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("%.5f", val.m_f);
+                                break;
+                            case Scripting::MonoValueType::MONO_STRING:
+                                ImGui::TableSetColumnIndex(1); ImGui::Text(val.m_s.c_str());
+                                break;
+                            case Scripting::MonoValueType::MONO_VECTOR2:
+                            {
+                                Vec2 vec = bridge.ConvertVec2(val);
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("x: %.5f", vec.x);
+                                ImGui::TableNextRow();
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("y: %.5f", vec.y);
+                                break;
+                            }
+                            case Scripting::MonoValueType::MONO_VECTOR3:
+                            {
+                                Vec3 vec = bridge.ConvertVec3(val);
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("x: %.5f", vec.x);
+                                ImGui::TableNextRow();
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("y: %.5f", vec.y);
+                                ImGui::TableNextRow();
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("z: %.5f", vec.z);
+                                break;
+                            }
+                            case Scripting::MonoValueType::MONO_UNSUPPORTED:
+                                ImGui::TableSetColumnIndex(1); ImGui::Text("Unsupported type!");
+                                break;
+                            }
+                            ImGui::TableNextRow();
+                            ImGui::TableNextRow();
+                        } //End exposed field
+
+                        ImGui::EndTable();
+                    } //End individual script table
+                }//End CollapsingHeader
+
+                ImGui::TableNextRow();
             }
 
             ImGui::EndTable();
-        }
+        } //End entire script table
     }
 
     inline void InspectorPanel::AddComponentButton()
@@ -797,7 +916,7 @@ namespace NightSnack
         Entity e = *m_selectedEntity;
         if (!m_coord.HasComponent<Transform>(e))   missing.push_back({ "Transform", false, [this, e] { m_coord.AddComponent<Transform>(e, Transform{}); } });
         if (!m_coord.HasComponent<RigidBody>(e))   missing.push_back({ "Rigidbody", false, [this, e] { m_coord.AddComponent<RigidBody>(e, RigidBody{}); } });
-        if (!m_coord.HasComponent<Collider>(e))    missing.push_back({ "Collider", false, [this, e] { m_coord.AddComponent<Collider>(e, Collider{}); } });
+        if (!m_coord.HasComponent<Collider>(e))    missing.push_back({ "Collider", false, [this, e] { m_coord.AddComponent(e, Collider{}); } });
         if (!m_coord.HasComponent<Renderable>(e))  missing.push_back({ "Renderer", false, [this, e] { m_coord.AddComponent<Renderable>(e, Renderable{}); } });
 		if (!m_coord.HasComponent<Script>(e))      missing.push_back({ "Scripting", false, [this, e] { m_coord.AddComponent<Script>(e, Script{}); } });
         if (!m_coord.HasComponent<Animator>(e))    missing.push_back({ "Animator", false, [this, e] { m_coord.AddComponent<Animator>(e, Animator{}); } });
@@ -845,7 +964,7 @@ namespace NightSnack
         {
             addMenuItem("Transform", [this, e] { m_coord.AddComponent<Transform>(e, Transform{}); }, m_coord.HasComponent<Transform>(e));
             addMenuItem("Rigidbody", [this, e] { m_coord.AddComponent<RigidBody>(e, RigidBody{}); }, m_coord.HasComponent<RigidBody>(e));
-            addMenuItem("Collider", [this, e] { m_coord.AddComponent<Collider>(e, Collider{}); }, m_coord.HasComponent<Collider>(e));
+            addMenuItem("Collider", [this, e] { m_coord.AddComponent(e, Collider{}); }, m_coord.HasComponent<Collider>(e));
             addMenuItem("Renderer", [this, e] { m_coord.AddComponent<Renderable>(e, Renderable{}); }, m_coord.HasComponent<Renderable>(e));
             addMenuItem("Scripting", [this, e] { m_coord.AddComponent<Script>(e, Script{}); }, m_coord.HasComponent<Script>(e));
             addMenuItem("Animator", [this, e] { m_coord.AddComponent<Animator>(e, Animator{}); }, m_coord.HasComponent<Animator>(e));

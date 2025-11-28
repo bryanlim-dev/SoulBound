@@ -94,9 +94,9 @@ namespace NightSnack {
         bool isStatic{ true };       // true = immovable (walls), false = dynamic (player)
 
         // Shape data
-        float width{ 1.0f };   // AABB width
-        float height{ 1.0f };  // AABB height
-        float radius{ 0.5f };  // Circle radius
+        float width{ 0.f };   // AABB width
+        float height{ 0.f };  // AABB height
+        float radius{ 0.f };  // Circle radius
 
         // Collision state
         bool isGrounded{ false };
@@ -171,6 +171,17 @@ namespace NightSnack {
         float zoom{ 1.f };
         float width{ 1600.f };
         float height{ 900.f };
+    };
+
+	// Audio component
+    struct Audio {
+        std::string audioKey;
+        float volume = 1.0f;
+        bool loop = false;
+        bool playOnStart = false;
+        //bool is3D = false;
+        bool isPlaying = false;
+        //bool stop = false;
     };
 
     enum ButtonType {
@@ -368,20 +379,36 @@ namespace NightSnack {
 
         j.at("isStatic").get_to(c.isStatic);
 
-        if (c.shape == ShapeType::AABB) {
-            j.at("width").get_to(c.width);
-            j.at("height").get_to(c.height);
-            c.radius = 0.5f;
-        }
-        else if (c.shape == ShapeType::Circle) {
-            j.at("radius").get_to(c.radius);
-            c.width = 1.f;
-            c.height = 1.f;
-        }
+        //if (c.shape == ShapeType::AABB) {
+        //    j.at("width").get_to(c.width);
+        //    j.at("height").get_to(c.height);
+        //    c.radius = 0.5f;
+        //}
+        //else if (c.shape == ShapeType::Circle) {
+        //    j.at("radius").get_to(c.radius);
+        //    c.width = 1.f;
+        //    c.height = 1.f;
+        //}
+
+        c.width = c.height = c.radius = 0.f;
+        if (j.contains("width")) { j.at("width").get_to(c.width); }
+        if (j.contains("height")) { j.at("height").get_to(c.height); }
+        if (j.contains("radius")) { j.at("radius").get_to(c.radius); }
 
         // Optional runtime-only flags (not usually in prefab JSON)
         c.isGrounded = j.value("isGrounded", false);
         c.colliding = j.value("colliding", false);
+    }
+
+    // Audio
+    inline void from_json(const json& j, Audio& a) {
+        j.at("audioKey").get_to(a.audioKey);
+        j.at("volume").get_to(a.volume);
+        j.at("loop").get_to(a.loop);
+        j.at("playOnStart").get_to(a.playOnStart);
+        // j.at("is3D").get_to(a.is3D);
+        j.at("isPlaying").get_to(a.isPlaying);
+
     }
     // STATES ==================================================
     //States from_json function is within StateBase.h

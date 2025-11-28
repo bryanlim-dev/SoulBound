@@ -181,6 +181,21 @@ namespace NightSnack {
          */
         float GetSFXVolume() const;
 
+        /**
+         * @brief plays audio for a specific entity using audio component properties
+		 * @param a reference to the Audio component
+		 * @param entity the entity to play audio for
+         */
+        void PlayAudio(Audio& a, Entity entity);
+
+        //void StopAudio(Entity entity);
+
+		/**
+		 * @brief retrieves a list of all available audio keys
+		 * @return sorted list of available audio keys
+		 */
+        std::vector<std::string> GetAvailableAudioKeys() const;
+
         // ISystem overrides
 
         /**
@@ -203,9 +218,14 @@ namespace NightSnack {
         EventDispatcher* m_dispatcher;
         Coordinator& m_coord;
 
+		Signature m_systemSignature{};
+
         // FMOD
         std::weak_ptr<FMOD::System> m_fmodSystem;
         FMOD::Channel* m_bgmChannel;
+
+        std::unordered_map<Entity, FMOD::Channel*> m_entityChannels;
+
 
         // Sound caches - maps string keys to sound pointers
         std::unordered_map<std::string, FMOD::Sound*> m_loadedSFX;
@@ -215,6 +235,8 @@ namespace NightSnack {
 
         // Audio keys for all game sounds
         //AudioKeys m_audioKeys;
+
+        //std::unordered_map<Entity, AudioComponent> m_audioComponents;
 
         // State
         bool m_initialized;

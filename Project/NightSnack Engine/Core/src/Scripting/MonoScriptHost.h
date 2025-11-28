@@ -19,6 +19,8 @@
 #include <vector>
 #include <unordered_map>
 
+#include "../Core/ECS/Entity.h"
+
 // Forward declaration of types to avoid including Mono headers in public API
 typedef struct _MonoDomain MonoDomain;
 typedef struct _MonoAssembly MonoAssembly;
@@ -47,7 +49,7 @@ namespace NightSnack::Scripting {
         bool LoadAssembly(std::string const& path);
 
         // Script instance management
-        void* CreateScriptInstance(std::string const& namespaceName, std::string const& className);
+        void* CreateScriptInstance(std::string const& namespaceName, std::string const& className, Entity owner);
         void DestroyScriptInstance(void* instance);
 
         // Call script methods
@@ -60,6 +62,8 @@ namespace NightSnack::Scripting {
 
         // Check if initialized
         bool IsInitialized() const { return m_initialized; }
+
+        std::string GetScriptName(void* instance);
 
     private:
         MonoDomain* m_rootDomain;

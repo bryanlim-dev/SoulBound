@@ -167,8 +167,7 @@ namespace NightSnack
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE"))
             {
                 const char* droppedPath = static_cast<const char*>(payload->Data);
-                std::filesystem::path absPath = std::filesystem::absolute(droppedPath);
-                tileTexturePath = absPath.string();
+                tileTexturePath = droppedPath;
 
                 // Load texture using ResourceManager
                 auto resourceMgr = coord.GetSystem<ResourceManager>();

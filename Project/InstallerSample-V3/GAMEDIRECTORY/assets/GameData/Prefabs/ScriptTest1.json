@@ -1,0 +1,12 @@
+{
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "target",
+        "meshName": "circle"
+    },
+    "Script": {
+        "name": [
+            "RotatorScript"
+        ]
+    }
+}

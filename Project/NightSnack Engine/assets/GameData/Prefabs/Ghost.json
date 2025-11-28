@@ -1,17 +1,24 @@
 {
     "Animator": {
-        "isLooping": true,
-        "isPlaying": true,
+        "isLooping": false,
+        "isPlaying": false,
         "playbackSpeed": 1.0,
         "spriteSheetName": ""
     },
+    "Audio": {
+        "audioKey": "playerHurt",
+        "isPlaying": false,
+        "loop": false,
+        "playOnStart": false,
+        "volume": 1.0
+    },
     "Collider": {
-        "height": 1.0,
+        "height": 100.0,
         "isStatic": false,
         "radius": 70.9000015258789,
-        "shape": "Circle",
+        "shape": "AABB",
         "type": "Solid",
-        "width": 1.0
+        "width": 100.0
     },
     "Font": {
         "fontSize": 0.699999988079071,
@@ -30,7 +37,7 @@
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "ghost_4_1",
+        "materialName": "ColorMat",
         "meshName": "square"
     },
     "RigidBody": {
