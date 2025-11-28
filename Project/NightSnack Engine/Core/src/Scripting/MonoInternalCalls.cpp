@@ -570,6 +570,25 @@ extern "C" {
 #pragma endregion
 
     // --------------------------------------------------------------
+    
+#pragma region Scripting
+    static void NightSnack_GetScriptExists(uint32_t id, MonoString* name, bool* outExists) {
+        if (!g_scriptInterface || !name || !outExists) { return; }
+        char* cStr = mono_string_to_utf8(name);
+
+        *outExists = g_scriptInterface->GetScriptExists(id, cStr);
+    }
+
+    static void NightSnack_CreateScript(uint32_t id, MonoString* name) {
+        if (!g_scriptInterface || !name) { return; }
+        char* cStr = mono_string_to_utf8(name);
+
+        g_scriptInterface->CreateScript(id, cStr);
+    }
+#pragma endregion
+
+
+    // --------------------------------------------------------------
 
 #pragma region Key/Buttons
     // Input - Is Key Pressed (just pressed this frame)
@@ -818,6 +837,11 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::GetCameraHeight_Internal", (void*)NightSnack_GetCameraHeight);
         mono_add_internal_call("ManagedScripts.Engine::SetCameraHeight_Internal", (void*)NightSnack_SetCameraHeight);
 
+#pragma endregion
+
+#pragma region Scripting
+        mono_add_internal_call("ManagedScripts.Engine::GetScriptExists_Internal", (void*)NightSnack_GetScriptExists);
+        mono_add_internal_call("ManagedScripts.Engine::CreateScript_Internal", (void*)NightSnack_CreateScript);
 #pragma endregion
 
 

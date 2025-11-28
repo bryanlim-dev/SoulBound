@@ -37,6 +37,8 @@ namespace ManagedScripts
             color.RGBA = new Colors(0.5f, 0, 0, 1);
             renderer.IsWireframe = true;
 
+
+
             //Log($"Entity Script ID: {EntityId}");
 
             //Vector3 pos;
@@ -114,6 +116,8 @@ namespace ManagedScripts
 
         public override void OnUpdate()
         {
+
+
             // Get current rotation
             float rotation = transform.Rotation;
 
