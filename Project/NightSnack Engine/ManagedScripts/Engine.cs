@@ -362,6 +362,17 @@ namespace ManagedScripts
         #endregion
 
         // ----------------------------
+        // Scripting Internal for Scripts
+        // ----------------------------
+        #region Scripting
+        //---- isLooping
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetScriptExists_Internal(uint entityId, string scriptName, out bool exists);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void CreateScript_Internal(uint entityId, string scriptName);
+        #endregion
+
+        // ----------------------------
         // Key/Buttons Internal for Scripts
         // ----------------------------
         #region Key/Buttons
@@ -965,6 +976,22 @@ namespace ManagedScripts
         public static void SetCameraHeight(uint entityId, float height)
         {
             SetCameraHeight_Internal(entityId, ref height);
+        }
+        #endregion
+
+        // ----------------------------
+        // Scripting API for Scripts
+        // ----------------------------
+        #region Scripting
+        public static bool GetScriptExists(uint entityId, string str)
+        {
+            GetScriptExists_Internal(entityId, str, out bool exists);
+            return exists;
+        }
+        public static void CreateScript(uint entityId, string str)
+        {
+            CreateScript_Internal(entityId, str);
+
         }
         #endregion
 

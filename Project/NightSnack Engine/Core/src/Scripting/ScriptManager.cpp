@@ -138,36 +138,19 @@ namespace NightSnack::Scripting {
         m_scriptInterface.reset();
     }   
 
-    // Attach a script to an entity (ScriptName is the name of the C# class, but just use Script.name component)
-    // i.e. m_coord.GetComponent<Script>().name;
-    void* ScriptManager::AttachScript(Entity e, std::string const& scriptName) {
-
-        // Create script instance -> from ManagedScripts namespace
-        void* instance = m_monoHost->CreateScriptInstance("ManagedScripts", scriptName, e);
-        if (!instance) {
-            std::cerr << "[ScriptManager] Failed to create script instance\n";
-            return nullptr;
-        }
-
-        //Called in CreateScriptInstance
-        // Set the entity ID on the script
-        //m_monoHost->SetScriptEntityId(instance, e);
-
-        //If dont have a entry in the map, add it
-        if (m_entityScripts.find(e) == m_entityScripts.end())
+    bool ScriptManager::CreateScript(Entity e, std::string scriptName)
+    {
+        if (AttachScript(e, scriptName) != nullptr)
         {
-            m_entityScripts.insert({ e, std::vector<void*>()});
+            if (!m_coord.HasComponent<Script>(e))
+            {
+                m_coord.AddComponent(e, Script());
+            }
+
+            m_coord.ModifyComponent<Script>(e).names.push_back(scriptName);
+            return true;
         }
-
-        // Store mapping
-        m_entityScripts[e].push_back(instance);
-        m_scriptNameMap.insert({instance,  m_monoHost->GetScriptName(instance) }); //Insert name into a map
-        //m_coord.ModifyComponent<Script>(e).names.push_back(scriptName);
-
-        //std::cout << "ScriptManager Create:" << m_scriptNameMap[instance] << std::endl;
-
-        ////std::cout << "[ScriptManager] Script attached successfully\n";
-        return instance;
+        return false;
     }
 
     // Remove an entity's script
@@ -188,6 +171,39 @@ namespace NightSnack::Scripting {
         m_entityScripts[e].clear();
 
         //m_coord.ModifyComponent<Script>(e).names.clear();
+    }
+
+    // Attach a script to an entity (ScriptName is the name of the C# class, but just use Script.name component)
+    // i.e. m_coord.GetComponent<Script>().name;
+    void* ScriptManager::AttachScript(Entity e, std::string const& scriptName) {
+
+        // Create script instance -> from ManagedScripts namespace
+        void* instance = m_monoHost->CreateScriptInstance("ManagedScripts", scriptName, e);
+        if (!instance) {
+            std::cerr << "[ScriptManager] Failed to create script instance\n";
+            return nullptr;
+        }
+
+        //Called in CreateScriptInstance
+        // Set the entity ID on the script
+        //m_monoHost->SetScriptEntityId(instance, e);
+
+        //If dont have a entry in the map, add it
+        if (m_entityScripts.find(e) == m_entityScripts.end())
+        {
+            m_entityScripts.insert({ e, std::vector<void*>() });
+        }
+
+        // Store mapping
+        m_entityScripts[e].push_back(instance);
+        m_scriptNameMap.insert({ instance,  m_monoHost->GetScriptName(instance) }); //Insert name into a map
+
+        //m_coord.ModifyComponent<Script>(e).names.push_back(scriptName);
+
+        //std::cout << "ScriptManager Create:" << m_scriptNameMap[instance] << std::endl;
+
+        ////std::cout << "[ScriptManager] Script attached successfully\n";
+        return instance;
     }
 
 }	// NightSnack

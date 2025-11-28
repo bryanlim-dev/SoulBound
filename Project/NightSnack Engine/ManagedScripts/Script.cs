@@ -349,6 +349,19 @@ namespace ManagedScripts
 
         #endregion
 
+        #region Scripting
+        //public class Scripting
+        //{
+        //    private uint EntityId;
+
+        //    public Scripting(uint id)
+        //    {
+        //        EntityId = id;
+        //    }
+
+        //}
+        #endregion
+
         public float DeltaTime => Engine.DeltaTime;
         //public float Time => Engine.Time;
 

@@ -750,6 +750,34 @@ namespace NightSnack::Scripting {
 
 #pragma endregion
 
+    // --------------------------------------------------------------
+    // Scripting Inputs
+    // --------------------------------------------------------------
+
+#pragma region Scripting
+
+    bool ScriptInterface::GetScriptExists(Entity e, std::string str)
+    {
+        if(m_coord.HasComponent<Script>(e))
+        {
+            const auto& list = m_coord.GetComponent<Script>(e).names;
+            if (std::find(list.cbegin(), list.cend(), str) != list.cend()) //Find if script name is in list
+                return true;
+        }
+
+        //Either no script component or not in list of scripts
+        return false;
+    }
+
+    void ScriptInterface::CreateScript(Entity e, std::string str)
+    {
+
+        m_coord.GetSystem<ScriptManager>()->CreateScript(e, str);    
+           
+        
+    }
+#pragma endregion
+
 
     // --------------------------------------------------------------
     // Key Inputs
