@@ -281,6 +281,9 @@ namespace NightSnack {
 		m_assetsPanel.reset();
 		m_selectedEntity.reset();
 		m_uiNames.reset();
+
+		// Clears Undo stack upon reset
+		NightSnack::UndoSystem::Instance().Clear();
 	}
 
 	// Resets the game to initial state
@@ -362,7 +365,7 @@ namespace NightSnack {
 			if (ImGui::BeginMenu("File"))
 			{
 				// Save current level
-				static char levelName[128] = "MyLevel";
+				static char levelName[128] = "DefaultLevel";
 				ImGui::InputText("Level Name", levelName, IM_ARRAYSIZE(levelName));
 				ImGui::SameLine();
 				static bool overwrite = true;
@@ -372,6 +375,7 @@ namespace NightSnack {
 					auto factory = m_coord.GetSystem<EntityFactory>();
 					if (factory)
 					{
+						// Saves level and resets editor camera
 						m_scenePanel->DestroyEditorCamera();
 						factory->SaveLevel(levelName, overwrite);
 						m_scenePanel->CreateEditorCamera();
@@ -379,16 +383,20 @@ namespace NightSnack {
 				}
 
 				// Load level by name
-				static char loadLevelName[128] = "MyLevel";
+				static char loadLevelName[128] = "DefaultLevel";
 				ImGui::InputText("Load Level", loadLevelName, IM_ARRAYSIZE(loadLevelName));
 				ImGui::SameLine();
 				if (ImGui::Button("Load")) {
 					auto factory = m_coord.GetSystem<EntityFactory>();
 					if (factory)
 					{
+						// Loads level and resets editor camera
 						m_scenePanel->DestroyEditorCamera();
 						factory->LoadLevel(loadLevelName);
 						m_scenePanel->CreateEditorCamera();
+
+						// Clears Undo stack
+						NightSnack::UndoSystem::Instance().Clear();
 					}
 				}
 
@@ -397,12 +405,15 @@ namespace NightSnack {
 					auto factory = m_coord.GetSystem<EntityFactory>();
 					if (factory)
 					{
+						// Loads Default level
 						m_scenePanel->DestroyEditorCamera();
 						factory->LoadLevel("DefaultLevel");
 						m_scenePanel->CreateEditorCamera();
+
+						// Clears Undo stack
+						NightSnack::UndoSystem::Instance().Clear();
 					}
 				}
-				//if (ImGui::MenuItem("Exit")) {}
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("View"))
@@ -422,6 +433,7 @@ namespace NightSnack {
 				{
 					if (ImGui::MenuItem("Play"))
 					{
+						// Only Cache if not already playing
 						m_isPlaying = true;
 						SetSimulationPaused(false);
 						*m_selectedEntity = INVALID_ENTITY;
@@ -434,6 +446,7 @@ namespace NightSnack {
 				}
 				else
 				{
+					// Disable Play button when already playing
 					ImGui::BeginDisabled();
 					ImGui::MenuItem("Play");
 					ImGui::EndDisabled();
@@ -452,6 +465,7 @@ namespace NightSnack {
 				}
 				else
 				{
+					// Disable Pause button when already paused
 					ImGui::BeginDisabled();
 					ImGui::MenuItem("Pause");
 					ImGui::EndDisabled();
@@ -523,6 +537,7 @@ namespace NightSnack {
 
 		// Only Cache if not already playing
 		if (!m_isPlaying) {
+			// Cache current level state
 			m_scenePanel->DestroyEditorCamera();
 			m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
 			m_scenePanel->CreateEditorCamera();
@@ -533,7 +548,7 @@ namespace NightSnack {
 		m_isPlaying = true;
 	}
 	inline void ImguiSystem::StopGame() {
-
+		// Restore level to cached state
 		m_coord.Pause();
 		m_scenePanel->DestroyEditorCamera();
 		m_coord.GetSystem<Scene::SceneManager>()->RestoreLevel();
