@@ -72,15 +72,15 @@ namespace NightSnack {
 				// - rotating of an object (R)
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
-					case InputEvent::InputAction::ScaleUp:
-						ModifyEntityScale(coord, 1.1f);
-						break;
-					case InputEvent::InputAction::ScaleDown:
-						ModifyEntityScale(coord, 0.9f);
-						break;
-					case InputEvent::InputAction::Rotate:
-						ModifyEntityRotation(coord, 30.f);
-						break;
+					//case InputEvent::InputAction::ScaleUp:
+					//	ModifyEntityScale(coord, 1.1f);
+					//	break;
+					//case InputEvent::InputAction::ScaleDown:
+					//	ModifyEntityScale(coord, 0.9f);
+					//	break;
+					//case InputEvent::InputAction::Rotate:
+					//	ModifyEntityRotation(coord, 30.f);
+					//	break;
 					case InputEvent::InputAction::ToggleDebugDraw:
 						m_enableDebugDraw = !m_enableDebugDraw;
 						break;

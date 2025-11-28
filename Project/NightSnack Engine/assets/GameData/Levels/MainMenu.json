@@ -1,0 +1,54 @@
+{
+    "Entities": [
+        {
+            "Transform": {
+                "Layer": "GameUI",
+                "Position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 2.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 0.0,
+                    "y": 0.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "prefab": "Cam"
+        },
+        {
+            "Transform": {
+                "Layer": "Background",
+                "Position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 1920.0,
+                    "y": 1080.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 1920.0,
+                    "y": 1080.0
+                }
+            },
+            "prefab": "Backdrop"
+        }
+    ]
+}

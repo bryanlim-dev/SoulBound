@@ -261,9 +261,10 @@ namespace NightSnack {
 
         // Output file path
         std::filesystem::path outPath = std::filesystem::path(LEVELS_PATH) / (levelName + ".json");
+        std::filesystem::path primePath = std::filesystem::path(PRIME_LEVELS_PATH) / (levelName + ".json");
 
         // Check if a prefab already exists with the same name
-        if (std::filesystem::exists(outPath) && !overwrite) {
+        if (std::filesystem::exists(primePath) && !overwrite) {
             std::cout << "There already exists a level named '" << levelName << "' at '" << "GameData/Levels" << '\n';
             return false;
         }
@@ -315,16 +316,23 @@ namespace NightSnack {
             level["Entities"].push_back(j);
         }
         // Write file -------------------------------------------------------
-        std::ofstream ofs(outPath);
-        if (!ofs.is_open()) {
-            std::cerr << "Failed to write level file: " << outPath << "\n";
+        std::ofstream pfs(primePath);
+        if (!pfs.is_open()) {
+            std::cerr << "Failed to write level file: " << primePath << "\n";
             return false;
         }
+        pfs << std::setw(4) << level;
+        pfs.close();
 
+        std::ofstream ofs(outPath);
+        if (!ofs.is_open()) {
+            std::cerr << "Failed to write level file: " << outPath << '\n';
+            return false;
+        }
         ofs << std::setw(4) << level;
         ofs.close();
 
-        std::cout << "Saved level to: " << outPath << "\n";
+        std::cout << "Saved level to: " << outPath << " and " << primePath << "\n";
         return true;
     }
 
