@@ -479,7 +479,7 @@ namespace NightSnack {
 			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.filename().string()));
 			// Name of the material will be based on the texture file path, but the name only
 			AddMaterial(filePath.filename().stem().string(), std::move(newMat));
-			std::cout << "Created Material: " << filePath.filename().stem().string() << std::endl;
+			//std::cout << "Created Material: " << filePath.filename().stem().string() << std::endl;
 		}
 	}
 
@@ -502,7 +502,7 @@ namespace NightSnack {
 		// Texture name provided no columns or rows, thus treat it as a static texture
 		if (firstUnderscore == std::string::npos || secondUnderscore == std::string::npos || lastDot == std::string::npos || secondUnderscore > lastDot) {
 			auto tex = std::make_unique<Texture>(textureFilePath, rm);
-			std::cout << "[Graphics] Created Static Texture: " << textureFilePath << '\n';
+			//std::cout << "[Graphics] Created Static Texture: " << textureFilePath << '\n';
 			AddTexture(textureFilePath, std::move(tex));
 			return;
 		}

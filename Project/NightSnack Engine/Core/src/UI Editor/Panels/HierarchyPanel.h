@@ -94,7 +94,6 @@ namespace NightSnack
                     // Add Prefab button at the bottom of list
                     if (ImGui::Button("Create"))
                     {
-                        auto factory = m_coord.GetSystem<NightSnack::EntityFactory>();
                         factory->Create();
                     }
 

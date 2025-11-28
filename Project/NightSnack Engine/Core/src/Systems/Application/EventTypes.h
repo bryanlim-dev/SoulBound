@@ -37,6 +37,8 @@ namespace NightSnack {
             PlayerJump,
             ChangePlayer,       // Down arrow;
 
+            ChangeAnimation,    // X
+
             // Debug tests
             ToggleDebugDraw,    // T
             ToggleInstancedRendering, // I
