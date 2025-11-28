@@ -30,22 +30,6 @@ namespace NightSnack {
     public:
 
         enum class InputAction {
-            // Manipulation of a single textured object
-            ScaleUp,            // D
-            ScaleDown,          // A
-            Rotate,             // R
-
-            // Physics tests
-            DynamicBallTest,    // F
-            GravityBallTest,    // G
-
-            // Creation of entities
-            CreateSquare,       // 1
-            CreateCircle,       // 2
-            CreateBananaCircle, // 3 -> texture entity;
-            StressTest,         // Space
-            LayerTest,          // L
-            EndStressTest,      // Backspace
 
             // Player movement
             PlayerMoveLeft,     // Player controller with Arrow keys;
@@ -54,7 +38,6 @@ namespace NightSnack {
             ChangePlayer,       // Down arrow;
 
             // Debug tests
-            //ToggleSystemTimers, // TAB
             ToggleDebugDraw,    // T
             ToggleInstancedRendering, // I
             CrashTest,          // C
@@ -62,6 +45,7 @@ namespace NightSnack {
 
             // Window events
             ToggleFullscreen,   // F11
+            PauseGame,          // Escape
 
             // Mouse events
             ClickLMB,           // LMB

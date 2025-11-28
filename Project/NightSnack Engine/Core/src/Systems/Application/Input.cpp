@@ -97,24 +97,7 @@ namespace NightSnack {
 	InputEvent::InputAction InputSystem::TranslateGLFWKeyToAction(int glfwKey, int modifier) {
 		switch (glfwKey) {
 			// Map every single key/mouse press to their relevant input events
-
-			// Manipulation of a single textured object
-		case GLFW_KEY_A: return InputEvent::InputAction::ScaleDown;
-		case GLFW_KEY_D: return InputEvent::InputAction::ScaleUp;
-		case GLFW_KEY_R: return InputEvent::InputAction::Rotate;
-
-			// Physics tests
-		case GLFW_KEY_F: return InputEvent::InputAction::DynamicBallTest;
-		case GLFW_KEY_G: return InputEvent::InputAction::GravityBallTest;
-
-			// Creation of entities
-		case GLFW_KEY_1: return InputEvent::InputAction::CreateSquare;
-		case GLFW_KEY_2: return InputEvent::InputAction::CreateCircle;
-		case GLFW_KEY_3: return InputEvent::InputAction::CreateBananaCircle;
-		case GLFW_KEY_SPACE: return InputEvent::InputAction::StressTest;
-		case GLFW_KEY_BACKSPACE: return InputEvent::InputAction::EndStressTest;
-		case GLFW_KEY_L: return InputEvent::InputAction::LayerTest;
-
+			// 
 			// Player movement
 		case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
 		case GLFW_KEY_RIGHT: return InputEvent::InputAction::PlayerMoveRight;
@@ -122,6 +105,7 @@ namespace NightSnack {
 
 			// Window tests
 		case GLFW_KEY_F11: return InputEvent::InputAction::ToggleFullscreen;
+		case GLFW_KEY_ESCAPE: return InputEvent::InputAction::PauseGame;
 
 			// Debug tests
 		//case GLFW_KEY_TAB: return InputEvent::InputAction::ToggleSystemTimers;

@@ -2,6 +2,39 @@
 
 namespace NightSnack::Scene {
 
+	void SceneManager::CreateOverlayMenu() {
+
+		if (m_overlayMenu.empty()) { return; }
+		if (overlayOn) { return; }
+
+		// Create Entities for overlay menu
+		auto const& factory = m_coord.GetSystem<EntityFactory>();
+
+		for (auto const& unit : m_overlayMenu) {
+			Entity e = factory->Create(unit.first, unit.second);
+			m_overlayEntites.push_back(e);
+		}
+		overlayOn = true;
+	}
+
+	void SceneManager::RemoveOverlayMenu() {
+
+		if (!overlayOn) { return; }
+
+		// Set overlay Entities to be destroyed at the end of frame
+		auto const& factory = m_coord.GetSystem<EntityFactory>();
+
+		for (Entity e : m_overlayEntites) {
+			factory->RemoveEntity(e);
+		}
+		m_overlayEntites.clear();
+		overlayOn = false;
+	}
+
+	void SceneManager::SetOverlayMenu(std::string const& filename) {
+
+	}
+
 	// Take snapshot of current world
 	void SceneManager::CacheLevel() {
 

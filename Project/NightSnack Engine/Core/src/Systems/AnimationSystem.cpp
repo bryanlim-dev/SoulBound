@@ -41,6 +41,8 @@ namespace NightSnack {
 	}
 
 	void AnimationSystem::Update() {
+		if (m_coord.IsPaused()) return;
+
 		// Iterate through all entities that have Animator component
 		for (Entity e : m_entities) {
 			auto& animator = m_coord.ModifyComponent<Animator>(e);

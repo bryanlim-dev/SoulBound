@@ -53,7 +53,7 @@ namespace NightSnack {
 			ReloadPrefabs();
 			ReloadLevels();
 			// Create Default level.
-			LoadLevel("DefaultLevel");
+			LoadLevel("MainMenu");
 
 			// Setup input events;
 			//m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {

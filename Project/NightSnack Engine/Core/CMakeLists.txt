@@ -25,6 +25,10 @@ else()
     target_compile_options(Core PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
+if(MSVC)
+    target_link_options(Core PRIVATE /NODEFAULTLIB:LIBCMT)
+endif()
+
 # Define export macro for DLL with relative paths from executable location
 target_compile_definitions(Core 
     PRIVATE
