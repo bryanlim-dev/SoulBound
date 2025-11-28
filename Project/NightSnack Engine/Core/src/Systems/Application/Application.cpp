@@ -13,6 +13,7 @@
 
 #include "Application.h"
 #include "Systems/Graphics.h"
+#include "./Factory/EntityFactory.h"
 #include <iostream>
 
 namespace NightSnack {
@@ -29,6 +30,7 @@ namespace NightSnack {
 	bool ApplicationSystem::m_appIsFullscreen = true; // By default, the application is in full screen
 	bool ApplicationSystem::m_appIsFullscreenViaButton = false;
 	bool ApplicationSystem::m_pressedMaximizeButton = false;
+	bool ApplicationSystem::m_showFPS = false;
 	GLFWwindow* ApplicationSystem::m_windowHandle = nullptr;
 
 	// Required OpenGL version;
@@ -124,10 +126,10 @@ namespace NightSnack {
 
 					break;
 
-					//case InputEvent::InputAction::ToggleSystemTimers:
-						// Toggle switch for System Timers Debug Mode
-						//systemTimersEnabled = !systemTimersEnabled;
-						//break;
+				case InputEvent::InputAction::DisplayFPS:
+					m_showFPS = !m_showFPS;
+					ToggleFPSDisplay();
+					break;
 				}
 			}
 			});
@@ -193,6 +195,14 @@ namespace NightSnack {
 			glfwSetWindowMonitor(m_windowHandle, monitor, 0, 0, m_appWidth, m_appHeight, GLFW_DONT_CARE);
 
 			m_pressedMaximizeButton = false;
+		}
+
+		// Display FPS object in game if toggled on
+		if (m_showFPS && m_fpsEntity != INVALID_ENTITY && m_coord.HasComponent<Font>(m_fpsEntity))
+		{
+			float fps = GetTimer().GetFPS();
+			auto& font = m_coord.ModifyComponent<Font>(m_fpsEntity);
+			font.text = "FPS: " + std::to_string(static_cast<int>(fps));
 		}
 	}
 
@@ -324,6 +334,40 @@ namespace NightSnack {
 		{
 			s_droppedFiles.push_back(std::string(paths[i]));
 			////std::cout << "[FileDrop]   [" << i << "] " << paths[i] << "\n";
+		}
+	}
+
+	// Toggle FPS display on or off
+	void ApplicationSystem::ToggleFPSDisplay()
+	{
+		auto factory = m_coord.GetSystem<EntityFactory>();
+		if (!factory) { return; }
+
+		if (m_showFPS)
+		{
+			if (m_fpsEntity == INVALID_ENTITY)
+			{
+				m_fpsEntity = m_coord.CreateEntity();
+				Transform t;
+				t.UIbasePos = Vec3{ 150.f, 120.f, 0.f };
+				t.layer = LayerType::GAMEUI;
+				m_coord.AddComponent<Transform>(m_fpsEntity, t);
+
+				Font font;
+				font.fontSize = 0.7;
+				font.text = "FPS: 0";
+				font.fontType = "buggy-font";
+				font.textColor = Vec3{ 0.215f, 1.0f, 0.736f };
+				m_coord.AddComponent<Font>(m_fpsEntity, font);
+			}
+		}
+		else
+		{
+			if (m_fpsEntity != INVALID_ENTITY)
+			{
+				m_coord.DestroyEntity(m_fpsEntity);
+				m_fpsEntity = INVALID_ENTITY;
+			}
 		}
 	}
 

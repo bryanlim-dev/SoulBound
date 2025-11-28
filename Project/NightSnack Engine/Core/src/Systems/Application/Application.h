@@ -191,6 +191,17 @@ namespace NightSnack {
 		float GetFrameCap() { return frameCap; }
 		float GetDT() { return m_timer.GetDT(); }
 
+		/************************************************************************/
+		/*!
+		\brief
+		Fullscreen toggling.
+		*/
+		/************************************************************************/
+		static void EnterFullscreen();
+		void ExitFullscreen();
+
+		void ToggleFPSDisplay();
+
 		Signature GetSignature() const override { return m_systemSignature; }
 
 		const std::vector<std::string>& GetDroppedFiles() const { return s_droppedFiles; }
@@ -204,6 +215,8 @@ namespace NightSnack {
 		static bool m_appIsFullscreen; // User pressed F11 key to toggle fullscreen mode
 		static bool m_appIsFullscreenViaButton; // User pressed the window's maximize button
 		static bool m_pressedMaximizeButton;
+		static bool m_showFPS;
+		Entity m_fpsEntity = INVALID_ENTITY;
 	private:
 		/************************************************************************/
 		/*!
@@ -218,9 +231,6 @@ namespace NightSnack {
 		static void WindowFocusCallback(GLFWwindow* window, int focused);
 
 		static void WindowMaximizeCallback(GLFWwindow* window, int maximized);
-
-		static void EnterFullscreen();
-		void ExitFullscreen();
 
 		// Window properties
 		static GLFWwindow* m_windowHandle;

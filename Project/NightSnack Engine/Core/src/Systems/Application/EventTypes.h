@@ -62,6 +62,7 @@ namespace NightSnack {
             PhysicsDebugStep,   // P
 
             // Window events
+			DisplayFPS,         // F1
             ToggleFullscreen,   // F11
 
             // Mouse events
