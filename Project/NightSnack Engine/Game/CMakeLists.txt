@@ -89,31 +89,20 @@ add_custom_command(TARGET Game POST_BUILD
 )
 
 # Copy ManagedScripts.dll to assets/Scripts folder
-# add_custom_command(copy_managed_scripts ALL
-#     COMMAND ${CMAKE_COMMAND} -E make_directory
-#         "${GAME_OUTPUT_DIR}/assets/Scripts"
-#     COMMAND ${CMAKE_COMMAND} -E copy_directory
-#         "$<TARGET_FILE:ManagedScripts>"
-#         "${GAME_OUTPUT_DIR}/assets/Scripts/"
-#     COMMENT "Copying ManagedScripts.dll to assets/Scripts..."
-# )
-# # Copy ManagedScripts output directory to assets/Scripts
-add_custom_target(copy_managed_scripts ALL
+add_custom_command(TARGET Game POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory
         "${GAME_OUTPUT_DIR}/assets/Scripts"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "$<TARGET_FILE_DIR:ManagedScripts>"
-        "${GAME_OUTPUT_DIR}/assets/Scripts"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "$<TARGET_FILE:ManagedScripts>"
+        "${GAME_OUTPUT_DIR}/assets/Scripts/"
     COMMENT "Copying ManagedScripts.dll to assets/Scripts..."
 )
-add_dependencies(copy_managed_scripts ManagedScripts)
 
 # Ensure proper build order
 add_dependencies(Game 
     copy_assets 
     Core 
     ManagedScripts
-    copy_managed_scripts
 )
 
 # Add install rules (optional, for creating distributable packages)
