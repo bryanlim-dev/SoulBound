@@ -7,7 +7,7 @@
  * Inspector panel showing details of selected entity. Displays components and
  * their properties, allowing real-time editing of parameters.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -322,8 +322,30 @@ namespace NightSnack
             }
         }
 
-		// Prefab of the entity
+		// Current Prefab display
+        std::string entityName = (*m_uiNames)[entity];
+		std::string prefabName = factory ? factory->GetEntityPrefabName(entity) : "UnknownPrefab";
+        ImGui::Dummy(ImVec2(0.0f, 5.0f));
+        ImGui::Columns(2, nullptr, false);
+        ImGui::Text("Prefab: %s", prefabName.c_str());
+        ImGui::NextColumn();
 
+        // Save / Overwrite entity's prefab
+        if (ImGui::Button("Save Prefab"))
+        {
+            // Overwrite if prefab with same name exists
+            bool exists = false;
+            for (const auto& name : factory->GetPrefabNames())
+            {
+                if (name == entityName)
+                {
+                    exists = true;
+                    break;
+                }
+            }
+            factory->SaveAsPrefab(entity, entityName, exists);
+        }
+        ImGui::Columns(1);
     }
 
 	// Draws Transform component details which includes position, rotation, and scale.
@@ -766,8 +788,9 @@ namespace NightSnack
 
         m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->LoadEntityExposedFields(*m_selectedEntity);
 
-        auto& script = m_coord.GetComponent<Script>(*m_selectedEntity);
-        NightSnack::Scripting::MonoExposeBridge& bridge = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetMonoExposeBridge();
+        //auto& script = m_coord.GetComponent<Script>(*m_selectedEntity);
+        //if (ImGui::BeginTable("ScriptTable", 1 + (int)script.names.size(), ImGuiTableFlags_SizingFixedFit))
+        //NightSnack::Scripting::MonoExposeBridge& bridge = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetMonoExposeBridge();
         //bridge.PrintAllExposedFields();
 
 
@@ -819,7 +842,9 @@ namespace NightSnack
 
                         ImGui::TableNextRow();
 
-                        for (auto fields : bridge.GetExposedFields(instance))
+                        auto& bridge = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetMonoExposeBridge();
+
+                        for (auto& fields : bridge.GetExposedFields(instance))
                         {
                             Scripting::ExposedValue val = bridge.ReadValue(instance, fields);
                             ImGui::TableSetColumnIndex(0); ImGui::TextDisabled("%s: ", fields.m_name.c_str());

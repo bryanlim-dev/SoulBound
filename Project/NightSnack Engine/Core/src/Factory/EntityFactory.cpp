@@ -217,8 +217,8 @@ namespace NightSnack {
         // Clear prefab keys.
         m_prefabKeys.clear();
         // Reread json files from "GameData/Prefabs", assign keys into m_prefabKeys.
-        std::filesystem::path path = std::filesystem::canonical(PREFABS_PATH);
-        LoadJsonFolder(m_prefabKeys, path.string());
+        //std::filesystem::path path = std::filesystem::canonical(PREFABS_PATH);
+        LoadJsonFolder(m_prefabKeys, "Prefabs/");
     }
     void EntityFactory::ReloadLevels() {
         // Queue old keys to be unloaded.
@@ -228,21 +228,25 @@ namespace NightSnack {
         // Clear level keys.
         m_levelKeys.clear();
         // Reread json files from "GameData/Levels", assign keys into m_levelKeys.
-        std::filesystem::path path = std::filesystem::canonical(LEVELS_PATH);
-        LoadJsonFolder(m_levelKeys, path.string());
+        //std::filesystem::path path = std::filesystem::canonical(LEVELS_PATH);
+        LoadJsonFolder(m_levelKeys, "Levels/");
     }
 
     // Loads all json files within a folder given a directory path
     void EntityFactory::LoadJsonFolder(std::unordered_map<std::string, size_t>& map, std::string const& path) {
 
-        //std::cout << "[EntityFactory] Reading Json Folder '" << path << "'\n";
+        std::string fullpath = RESOURCE_PATH + ("GameData/" + path);
+        //std::cout << "[EntityFactory] Reading Json Folder '" << fullpath << "'\n";
 
         // Iterate through entries in directory.
-        for (auto const& entry : std::filesystem::directory_iterator(path))
+        for (auto const& entry : std::filesystem::directory_iterator(fullpath))
         {
             size_t key = 0;
-            //std::cout << "[Entity Factory] Attempting to read: " << entry.path() << '\n';
-            LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(entry.path().string(), key);
+
+            std::string entrypath = "GameData/" + path + entry.path().filename().string();
+            //std::cout << "[Entity Factory] Attempting to read: " << entrypath << '\n';
+      
+            LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(entrypath, key);
             //std::cout << "[EntityFactory] entry.path: " << entry.path() << '\n';
             if (result == LOAD_FAIL_BADPATH) {
                 std::cerr << "Failed to read json file: " << entry.path() << '\n';
@@ -328,7 +332,8 @@ namespace NightSnack {
     bool EntityFactory::SaveAsPrefab(Entity e, std::string const& prefabName, bool overwrite) {
 
         // Output file path
-        std::filesystem::path outPath = std::filesystem::path(PREFABS_PATH) / (prefabName + ".json");
+        std::filesystem::path outPath = std::filesystem::path(PRIME_PREFABS_PATH) / (prefabName + ".json");
+        std::filesystem::path currdir = std::filesystem::path(PREFABS_PATH) / (prefabName + ".json");
 
         // Check if a prefab already exists with the same name
         if (std::filesystem::exists(outPath) && !overwrite) {
@@ -493,19 +498,50 @@ namespace NightSnack {
 			};
 		}
 
+        // audio
+        if (m_coord.HasComponent<Audio>(e)) {
+            Audio const& a = m_coord.GetComponent<Audio>(e);
+            j["Audio"] = {
+                {"audioKey", a.audioKey},
+                {"isPlaying", a.isPlaying},
+                {"loop", a.loop},
+                {"playOnStart", a.playOnStart},
+                { "volume", a.volume }
+            };
+        }
+
         // Write to file
         std::ofstream ofs(outPath);
         if (!ofs.is_open()) {
-            std::cerr << "Failed to write prefab file: " << outPath << "\n";
+            std::cerr << "[EntityFactory] Failed to write to prime prefab file: " << outPath << "\n";
             return false;
         }
-        // pretty-print with 4-space indent
         ofs << std::setw(4) << j;
         ofs.close();
-        std::cout << "Saved prefab to: " << outPath << "\n";
+        std::cout << "[EntityFactory] Saved prefab to prime: " << outPath << "\n";
 
-        // Update mapping of current entity to new created prefab
+        std::ofstream cfs(currdir);
+        if (!cfs.is_open()) {
+            std::cerr << "[EntityFactory] Failed to save and reload prefab file: " << currdir << "\n";
+            return false;
+        }
+        cfs << std::setw(4) << j;
+        cfs.close();
+        std::cout << "[EntityFactory] Saved prefab to: " << currdir << "\n";
+
+        // Use ResourceManager to load new prefab file
+        std::string prefabpath = "GameData/Prefabs/" + prefabName + ".json";
+        LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(prefabpath, m_prefabKeys[prefabName]);
+        //std::cout << "[EntityFactory] entry.path: " << entry.path() << '\n';
+        if (result == LOAD_FAIL_BADPATH) {
+            std::cerr << "[EntityFactory] RM failed to read json file: " << prefabpath << '\n';
+            return false;
+        }
+
+        // Update mappings of current entity to new created prefab
         entityToPrefab[e] = prefabName;
+        prefabToEntities.insert({ prefabName, e });
+        m_prefabNames.push_back(prefabName);
 
         return true;
     }

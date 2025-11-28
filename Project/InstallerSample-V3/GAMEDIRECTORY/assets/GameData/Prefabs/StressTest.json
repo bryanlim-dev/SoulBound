@@ -1,0 +1,19 @@
+{
+    "Collider": {
+        "height": 1.0,
+        "isStatic": false,
+        "radius": 5.0,
+        "shape": "Circle",
+        "type": "Solid",
+        "width": 1.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "ColorMat",
+        "meshName": "circle"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": false
+    }
+}

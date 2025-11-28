@@ -315,9 +315,11 @@ namespace NightSnack {
 			}
 		}
 
+#ifdef EDITOR
 		// Render debug drawing visualizations only after rendering all scene objects
 		if (m_enableDebugDraw)
 			RenderDebugDrawing(camera);
+#endif
 	}
 
 	void GraphicsSystem::RenderDebugDrawing(Entity camera) {
@@ -363,6 +365,10 @@ namespace NightSnack {
 					glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
 					glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
 
+					glm::vec3 colliderColor{};
+					if (col.colliding) { colliderColor = glm::vec3(1.f, 0.f, 0.f); } // Red color
+					else { colliderColor = glm::vec3(0.f, 1.f, 0.f); } // Green color
+
 					switch (col.shape) {
 					case ShapeType::AABB:
 					{
@@ -371,7 +377,7 @@ namespace NightSnack {
 						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, rot, Vec2{ col.width, col.height });
 						glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 						shader->SetMat4("uDebugMVP", debugMVP);
-						shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
+						shader->SetVec3("uEntityColor", colliderColor);
 						GetMesh("AABBColliderMesh")->Draw();
 					}
 					break;
@@ -383,7 +389,7 @@ namespace NightSnack {
 						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, rot, Vec2{ col.radius, col.radius });
 						glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 						shader->SetMat4("uDebugMVP", debugMVP);
-						shader->SetVec3("uEntityColor", glm::vec3(0.f, 1.f, 0.f)); // Green color
+						shader->SetVec3("uEntityColor", colliderColor);
 						GetMesh("CircleColliderMesh")->Draw();
 					}
 					break;
@@ -473,7 +479,7 @@ namespace NightSnack {
 			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.filename().string()));
 			// Name of the material will be based on the texture file path, but the name only
 			AddMaterial(filePath.filename().stem().string(), std::move(newMat));
-			//std::cout << "Created Material: " << filePath.filename().stem().string() << std::endl;
+			std::cout << "Created Material: " << filePath.filename().stem().string() << std::endl;
 		}
 	}
 
@@ -481,7 +487,7 @@ namespace NightSnack {
 
 		// Texture already exists
 		if (GetTexture(textureFilePath)) {
-			////std::cout << "This texture already exists!\n";
+			std::cout << "This texture already exists!\n";
 			return;
 		}
 
@@ -496,7 +502,7 @@ namespace NightSnack {
 		// Texture name provided no columns or rows, thus treat it as a static texture
 		if (firstUnderscore == std::string::npos || secondUnderscore == std::string::npos || lastDot == std::string::npos || secondUnderscore > lastDot) {
 			auto tex = std::make_unique<Texture>(textureFilePath, rm);
-			//std::cout << "[Graphics] Created Static Texture: " << textureFilePath << '\n';
+			std::cout << "[Graphics] Created Static Texture: " << textureFilePath << '\n';
 			AddTexture(textureFilePath, std::move(tex));
 			return;
 		}
@@ -508,7 +514,7 @@ namespace NightSnack {
 		int numRow = std::stoi(numRowStr);
 
 		auto tex = std::make_unique<Texture>(textureFilePath, rm, numCol, numRow);
-		//std::cout << "[Graphics] Created Animated Texture: " << textureFilePath << '\n';
+		std::cout << "[Graphics] Created Animated Texture: " << textureFilePath << '\n';
 		AddTexture(textureFilePath, std::move(tex));
 
 		// Dispatch a GraphicsEvent
@@ -660,6 +666,7 @@ namespace NightSnack {
 			if ((m_coord.GetEntitySignature(e) & cameraSig) == cameraSig &&
 				m_coord.GetComponent<Camera>(e).isMainCam) { // This camera Entity is the main camera
 				inst = true;
+				m_camera = e;
 				return e;
 			}
 		}

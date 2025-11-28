@@ -116,6 +116,7 @@ namespace NightSnack {
         void ResolveCollisions();
         void ResolveOverlap(Transform& t1, Transform& t2, Collider& c1, Collider& c2, RigidBody& r1, RigidBody& r2);
         bool CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2);
+        bool CheckTunneling(Transform const& t1, Transform const& t2, RigidBody const& c1);
 
         float GetGravity() const { return gravity; }
         float GetDrag() const { return drag; }

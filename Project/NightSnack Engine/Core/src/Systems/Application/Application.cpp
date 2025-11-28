@@ -27,6 +27,8 @@ namespace NightSnack {
 	bool ApplicationSystem::m_appToPause = false;
 	bool ApplicationSystem::m_appChangedPauseState = false;
 	bool ApplicationSystem::m_appIsFullscreen = true; // By default, the application is in full screen
+	bool ApplicationSystem::m_appIsFullscreenViaButton = false;
+	bool ApplicationSystem::m_pressedMaximizeButton = false;
 	GLFWwindow* ApplicationSystem::m_windowHandle = nullptr;
 
 	// Required OpenGL version;
@@ -112,13 +114,20 @@ namespace NightSnack {
 			if (event.pressed == InputEvent::InputActionState::Pressed) {
 				switch (event.inputAction) {
 				case InputEvent::InputAction::ToggleFullscreen:
-					m_appIsFullscreen ? ExitFullscreen() : EnterFullscreen();
+					if (m_appIsFullscreenViaButton) {
+						// Maximized via button
+						ExitFullscreen();
+					} else {
+						// Toggled full screen using F11 key press
+						m_appIsFullscreen ? ExitFullscreen() : EnterFullscreen();
+					}
+
 					break;
 
-				//case InputEvent::InputAction::ToggleSystemTimers:
-					// Toggle switch for System Timers Debug Mode
-					//systemTimersEnabled = !systemTimersEnabled;
-					//break;
+					//case InputEvent::InputAction::ToggleSystemTimers:
+						// Toggle switch for System Timers Debug Mode
+						//systemTimersEnabled = !systemTimersEnabled;
+						//break;
 				}
 			}
 			});
@@ -158,9 +167,32 @@ namespace NightSnack {
 		if (systemTimersEnabled) { m_timer.DisplaySystemTimers(); }
 
 		// If the application window is not in fullscreen mode, keep updating the window properties
-		if (!m_appIsFullscreen) {
+		if (!m_appIsFullscreen && !m_appIsFullscreenViaButton) {
 			glfwGetWindowPos(m_windowHandle, &m_appWindowedPosX, &m_appWindowedPosY);
 			glfwGetWindowSize(m_windowHandle, &m_appWindowedWidth, &m_appWindowedHeight);
+		}
+
+		if (m_pressedMaximizeButton) {
+			// Restore the window first, to update the window's properties like the maximise/minimise button
+			glfwRestoreWindow(m_windowHandle);
+
+			GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+			const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+			// Remove borders
+			glfwSetWindowAttrib(m_windowHandle, GLFW_DECORATED, GLFW_FALSE);
+			glfwSetWindowAttrib(m_windowHandle, GLFW_RESIZABLE, GLFW_FALSE);
+
+			// Resize to monitor
+			glfwSetWindowPos(m_windowHandle, 0, 0);
+			glfwSetWindowSize(m_windowHandle, mode->width, mode->height);
+
+			m_appHeight = mode->height;
+			m_appWidth = mode->width;
+
+			glfwSetWindowMonitor(m_windowHandle, monitor, 0, 0, m_appWidth, m_appHeight, GLFW_DONT_CARE);
+
+			m_pressedMaximizeButton = false;
 		}
 	}
 
@@ -224,14 +256,16 @@ namespace NightSnack {
 
 	void ApplicationSystem::WindowMaximizeCallback(GLFWwindow* window, int maximized) {
 		(void)window;
-		// Only check if the user press the maximize window button
+		// This callback is called only when the user pressed the window's maximize button
 		if (maximized && !m_appIsFullscreen) {
-			EnterFullscreen();
+			m_appIsFullscreenViaButton = true;
+			m_pressedMaximizeButton = true;
 		}
 	}
 
 	void ApplicationSystem::EnterFullscreen() {
 		// Enter full screen mode without any window bars
+		// This function is called when the user toggles the F11 key to enter fullscreen mode
 
 		if (!m_appIsFullscreen) {
 			m_appIsFullscreen = true;
@@ -247,23 +281,34 @@ namespace NightSnack {
 		// Resize to monitor
 		glfwSetWindowPos(m_windowHandle, 0, 0);
 		glfwSetWindowSize(m_windowHandle, mode->width, mode->height);
+
+		m_appHeight = mode->height;
+		m_appWidth = mode->width;
 	}
 
 	void ApplicationSystem::ExitFullscreen() {
 		// Restore previous windowed mode position and size
+		// This function have a slightly different behaviour based on how the screen was maximized
+
+		// Restore the window first, to update the window's properties like the maximise/minimise button
+		glfwRestoreWindow(m_windowHandle);
+
+		// Add back borders
+		glfwSetWindowAttrib(m_windowHandle, GLFW_DECORATED, GLFW_TRUE);
+		glfwSetWindowAttrib(m_windowHandle, GLFW_RESIZABLE, GLFW_TRUE);
+
 		if (m_appIsFullscreen) {
-			// Restore the window first, to update the window's properties like the maximise/minimise button
-			glfwRestoreWindow(m_windowHandle);
-
-			// Add back borders
-			glfwSetWindowAttrib(m_windowHandle, GLFW_DECORATED, GLFW_TRUE);
-			glfwSetWindowAttrib(m_windowHandle, GLFW_RESIZABLE, GLFW_TRUE);
-
 			// Resize to previous window properties
 			glfwSetWindowPos(m_windowHandle, m_appWindowedPosX, m_appWindowedPosY);
 			glfwSetWindowSize(m_windowHandle, m_appWindowedWidth, m_appWindowedHeight);
-			
+
 			m_appIsFullscreen = false;
+
+		} else if (m_appIsFullscreenViaButton) {
+			// Switch back to windowed mode specifically
+			glfwSetWindowMonitor(m_windowHandle, NULL, m_appWindowedPosX, m_appWindowedPosY, m_appWindowedWidth, m_appWindowedHeight, GLFW_DONT_CARE);
+
+			m_appIsFullscreenViaButton = false;
 		}
 	}
 

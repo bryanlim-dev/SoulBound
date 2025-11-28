@@ -123,7 +123,7 @@ namespace NightSnack::Scripting {
         RegisterMonoInternalCalls(m_scriptInterface.get());
 
         // Load script assembly
-        if (!m_monoHost->LoadAssembly("../bin/ManagedScripts.dll")) {
+        if (!m_monoHost->LoadAssembly("./assets/Scripts/ManagedScripts.dll")) {
             std::cerr << "[ScriptManager] Failed to load ManagedScripts.dll\n";
             return;
         }
@@ -136,21 +136,22 @@ namespace NightSnack::Scripting {
         // Shutdown Mono
         m_monoHost.reset();
         m_scriptInterface.reset();
-    }
+    }   
 
     // Attach a script to an entity (ScriptName is the name of the C# class, but just use Script.name component)
     // i.e. m_coord.GetComponent<Script>().name;
     void* ScriptManager::AttachScript(Entity e, std::string const& scriptName) {
 
         // Create script instance -> from ManagedScripts namespace
-        void* instance = m_monoHost->CreateScriptInstance("ManagedScripts", scriptName);
+        void* instance = m_monoHost->CreateScriptInstance("ManagedScripts", scriptName, e);
         if (!instance) {
             std::cerr << "[ScriptManager] Failed to create script instance\n";
             return nullptr;
         }
 
+        //Called in CreateScriptInstance
         // Set the entity ID on the script
-        m_monoHost->SetScriptEntityId(instance, e);
+        //m_monoHost->SetScriptEntityId(instance, e);
 
         //If dont have a entry in the map, add it
         if (m_entityScripts.find(e) == m_entityScripts.end())
@@ -163,7 +164,7 @@ namespace NightSnack::Scripting {
         m_scriptNameMap.insert({instance,  m_monoHost->GetScriptName(instance) }); //Insert name into a map
         //m_coord.ModifyComponent<Script>(e).names.push_back(scriptName);
 
-        std::cout << "ScriptManager Create:" << m_scriptNameMap[instance] << std::endl;
+        //std::cout << "ScriptManager Create:" << m_scriptNameMap[instance] << std::endl;
 
         ////std::cout << "[ScriptManager] Script attached successfully\n";
         return instance;
@@ -179,7 +180,7 @@ namespace NightSnack::Scripting {
         // Destroy script instance
         for (void* instance : it->second)
         {
-            std::cout << "ScriptManager Desotry:" << m_scriptNameMap[instance] << std::endl;
+            //std::cout << "ScriptManager Desotry:" << m_scriptNameMap[instance] << std::endl;
             m_monoHost->DestroyScriptInstance(instance);
             m_scriptNameMap.erase(instance);
         }

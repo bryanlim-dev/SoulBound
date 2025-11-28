@@ -1,0 +1,24 @@
+{
+  "testJson": {
+    "boolean" : true,
+    "interger" : 5,
+    "hotel" : "trivaga",
+    "subComponent" :
+    {
+      "subString" : "innerComponent",
+      "innerChar" : "a",
+      "innerIntArr" : [1, 1, 2, 4, 6, 10, 16, 26, 32]
+    }
+  },
+
+  "2ndJson" :{
+    "stress" : true,
+    "assigments:" : 7,
+    "head" : ["brain", "ache", "stress", "gacha clacs", "held together by ducttape"],
+    "food" : {
+      "Noodles" : "Udon",
+      "Western" : "Fish n Chips",
+      "Fast" : "Nuggets"
+    }
+  }
+}

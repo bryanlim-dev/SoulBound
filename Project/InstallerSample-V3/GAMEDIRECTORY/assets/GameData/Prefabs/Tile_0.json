@@ -1,0 +1,19 @@
+{
+    "Collider": {
+        "height": 24.0,
+        "isStatic": true,
+        "radius": 0.5,
+        "shape": "AABB",
+        "type": "Solid",
+        "width": 24.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "TunnelEntrance",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": false
+    }
+}

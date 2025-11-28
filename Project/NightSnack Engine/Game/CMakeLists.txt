@@ -3,18 +3,22 @@
 # ------------------------------------------------------------ #
 project(Game)
 
-# Gather game-specific source files (if separate from engine)
-# If your game code is mixed with engine, just create main.cpp
+# Gather game-specific source files
 set(GAME_SOURCES
     src/main.cpp
 )
 
-# Create executable
+# Create executable (removed WIN32 to use console entry point)
 add_executable(Game ${GAME_SOURCES})
 
-# Set warning level
+# Set warning level and fix runtime library conflicts
 if(MSVC)
     target_compile_options(Game PRIVATE /W4 /permissive-)
+    # Fix LIBCMT conflict by ensuring consistent runtime library usage
+    target_link_options(Game PRIVATE 
+        $<$<CONFIG:Debug>:/NODEFAULTLIB:LIBCMT>
+        $<$<CONFIG:Release>:/NODEFAULTLIB:LIBCMTD>
+    )
 else()
     target_compile_options(Game PRIVATE -Wall -Wextra -Wpedantic)
 endif()
@@ -22,76 +26,76 @@ endif()
 # Link against Core engine
 target_link_libraries(Game PRIVATE Core)
 
+# Set output name and Visual Studio debugging directory
+set_target_properties(Game PROPERTIES
+    OUTPUT_NAME "SoulBound"
+    VS_DEBUGGER_WORKING_DIRECTORY "$<TARGET_FILE_DIR:Game>"
+)
+
 # ------------------------------------------------------------
 # Assets and DLL Handling
 # ------------------------------------------------------------
 # Gather all asset files (for dependency tracking)
 file(GLOB_RECURSE ASSET_FILES "${CMAKE_SOURCE_DIR}/assets/*")
 
+# Define output directory variable for cleaner commands
+set(GAME_OUTPUT_DIR "$<TARGET_FILE_DIR:Game>")
+
 # Copy assets and DLLs
 add_custom_target(copy_assets ALL
-    # Mirror assets folder to build output (only new files are copied)
+    # Copy assets folder to output directory
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_SOURCE_DIR}/assets"
-        "$<TARGET_FILE_DIR:Game>/assets"
-
-    # Mirror to build/assets (for convenience)
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${CMAKE_SOURCE_DIR}/assets"
-        "${CMAKE_BINARY_DIR}/assets"
+        "${GAME_OUTPUT_DIR}/assets"
 
     # Copy fmod debug dll
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_SOURCE_DIR}/extern/fmod/lib/fmodL.dll"
-        "$<TARGET_FILE_DIR:Game>"
+        "${GAME_OUTPUT_DIR}"
 
     # Copy fmod release dll
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_SOURCE_DIR}/extern/fmod/lib/fmod.dll"
-        "$<TARGET_FILE_DIR:Game>"
+        "${GAME_OUTPUT_DIR}"
 
     # Copy freetype dll
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_SOURCE_DIR}/extern/freetype/freetype.dll"
-        "$<TARGET_FILE_DIR:Game>"
+        "${GAME_OUTPUT_DIR}"
 
     # Copy mono dll
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_SOURCE_DIR}/extern/mono/lib/mono-2.0-sgen.dll"
-        "$<TARGET_FILE_DIR:Game>"
+        "${GAME_OUTPUT_DIR}"
 
     DEPENDS ${ASSET_FILES}
-    COMMENT "Copying assets and DLLs..."
+    COMMENT "Copying assets and DLLs to SoulBound folder..."
 )
 
-# Copy Mono .NET assemblies to Game output directory
-#add_custom_command(TARGET Game POST_BUILD
-#    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
-#        "${CMAKE_SOURCE_DIR}/extern/mono/mono-lib"
-#        "$<TARGET_FILE_DIR:Game>/mono-lib"
-#    COMMENT "Copying Mono assemblies..."
-#)
+# Copy Mono lib directory
 add_custom_command(TARGET Game POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${CMAKE_SOURCE_DIR}/extern/mono/lib"
-        "$<TARGET_FILE_DIR:Game>/../lib/"
-    COMMENT "Copying Mono dlls..."
+        "${GAME_OUTPUT_DIR}/lib/"
+    COMMENT "Copying Mono libraries..."
 )
 
 # Copy Core.dll to Game output directory
 add_custom_command(TARGET Game POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:Core>"
-        "$<TARGET_FILE_DIR:Game>"
-    COMMENT "Copying Core.dll to game directory"
+        "${GAME_OUTPUT_DIR}"
+    COMMENT "Copying Core.dll..."
 )
 
-# Copy ManagedScripts.dll
+# Copy ManagedScripts.dll to assets/Scripts folder
 add_custom_command(TARGET Game POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+        "${GAME_OUTPUT_DIR}/assets/Scripts"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:ManagedScripts>"
-        "$<TARGET_FILE_DIR:Game>"
-    COMMENT "Copying ManagedScripts.dll"
+        "${GAME_OUTPUT_DIR}/assets/Scripts/"
+    COMMENT "Copying ManagedScripts.dll to assets/Scripts..."
 )
 
 # Ensure proper build order
@@ -99,4 +103,29 @@ add_dependencies(Game
     copy_assets 
     Core 
     ManagedScripts
+)
+
+# Add install rules (optional, for creating distributable packages)
+install(TARGETS Game
+    RUNTIME DESTINATION .
+)
+
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/assets/"
+    DESTINATION assets
+)
+
+install(FILES 
+    "$<TARGET_FILE:Core>"
+    "${CMAKE_SOURCE_DIR}/extern/fmod/lib/fmod.dll"
+    "${CMAKE_SOURCE_DIR}/extern/freetype/freetype.dll"
+    "${CMAKE_SOURCE_DIR}/extern/mono/lib/mono-2.0-sgen.dll"
+    DESTINATION .
+)
+
+install(FILES "$<TARGET_FILE:ManagedScripts>"
+    DESTINATION assets/Scripts
+)
+
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/extern/mono/lib/"
+    DESTINATION lib
 )

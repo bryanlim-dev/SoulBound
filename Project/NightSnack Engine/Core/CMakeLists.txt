@@ -25,15 +25,19 @@ else()
     target_compile_options(Core PRIVATE -Wall -Wextra -Wpedantic)
 endif()
 
-# Define export macro for DLL
+# Define export macro for DLL with relative paths from executable location
 target_compile_definitions(Core 
     PRIVATE
         CORE_EXPORTS
     PUBLIC
-        RESOURCE_PATH=\"../../assets/\"
-        SCRIPTS_PATH=\"../../ManagedScripts/\"
-        PREFABS_PATH=\"../../assets/GameData/Prefabs/\"
-	LEVELS_PATH=\"../../assets/GameData/Levels/\"
+        RESOURCE_PATH=\"./assets/\"
+        SCRIPTS_PATH=\"./assets/Scripts/\"
+        PREFABS_PATH=\"./assets/GameData/Prefabs/\"
+        LEVELS_PATH=\"./assets/GameData/Levels/\"
+        DATA_PATH=\"./assets/Data/\"
+        PRIME_RESOURCE_PATH=\"../../../assets/\"
+	PRIME_SCRIPTS_PATH=\"../../../ManagedScripts/\"
+        PRIME_PREFABS_PATH=\"../../../assets/GameData/Prefabs/\"
 )
 
 # Include directories

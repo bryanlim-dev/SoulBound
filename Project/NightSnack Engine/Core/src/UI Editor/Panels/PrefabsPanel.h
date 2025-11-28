@@ -77,6 +77,7 @@ namespace NightSnack
                     else if (componentName == "Font")               DrawFontEditor(componentData);
                     else if (componentName == "ButtonInfo")         DrawButtonInfoEditor(componentData);
                     else if (componentName == "Script")             DrawScriptEditor(componentData);
+                    else if (componentName == "Audio")              DrawAudioEditor(componentData);
 
                     else {
                         // Fallback generic editor
@@ -202,15 +203,27 @@ namespace NightSnack
                 std::ofstream file(filePath);
                 if (!file.is_open())
                 {
-                    std::cerr << "Failed to open prefab file for writing: " << filePath << std::endl;
+                    std::cerr << "Failed to HotReload: " << filePath << std::endl;
                     return;
                 }
-
                 // write the JSON with formatting (4 space indent for easier reading of the json file)
                 file << m_archetypes[prefabName].dump(4);
                 file.close();
+                std::cout << "Prefab HotReloaded: " << prefabName << std::endl;
 
-                std::cout << "Prefab saved: " << prefabName << std::endl;
+                // Update Prime file
+                std::filesystem::path primePath = PRIME_PREFABS_PATH + (prefabName + ".json");
+                std::ofstream primefile(primePath);
+                if (!primefile.is_open())
+                {
+                    std::filesystem::path curr = std::filesystem::current_path();
+                    std::cerr << "Failed to save to Prime file: " << primePath << " from [" << curr << ']' << std::endl;
+                    return;
+                }
+                // write the JSON with formatting (4 space indent for easier reading of the json file)
+                primefile << m_archetypes[prefabName].dump(4);
+                primefile.close();
+                std::cout << "Prefab saved to Prime file: " << prefabName << std::endl;
 
                 // reload all entities using this prefab
                 m_coord.GetSystem<EntityFactory>()->UpdatePrefab(prefabName);
@@ -714,22 +727,30 @@ namespace NightSnack
         {
             // Script name input
             std::vector<std::string> scriptNames;
-            for (std::string const& s : j["name"]) {
-				scriptNames.push_back(s);
-            }
-            std::string scriptDisplay = scriptNames[0];
-            for (int i{ 1 }; i < scriptNames.size(); ++i) {
-				scriptDisplay += ", " + scriptNames[i];
-            }
-
             char nameBuf[128];
-            strcpy_s(nameBuf, scriptDisplay.c_str());
+
+            if (!j["name"].empty()) {
+                for (std::string const& s : j["name"]) {
+                    scriptNames.push_back(s);
+                }
+
+                std::string scriptDisplay = scriptNames[0];
+                for (int i{ 1 }; i < scriptNames.size(); ++i) {
+				    scriptDisplay += ", " + scriptNames[i];
+                }
+                strcpy_s(nameBuf, scriptDisplay.c_str());
+            }
+            else {
+                strcpy_s(nameBuf, "");
+            }
 
             if (ImGui::InputText("Scripts ", nameBuf, sizeof(nameBuf)))
             {
                 j["name"].clear();
-                for (auto& s : SplitScripts(nameBuf)) {
-                    j["name"].push_back(s);
+                if (nameBuf) {
+                    for (auto& s : SplitScripts(nameBuf)) {
+                        j["name"].push_back(s);
+                    }
                 }
                 m_prefabModified = true;
             }
@@ -818,6 +839,85 @@ namespace NightSnack
                     
                 }
             }
+        }
+
+        void DrawAudioEditor(nlohmann::json& j)
+        {
+            // Get available audio keys for dropdown
+            auto audioSystem = m_coord.GetSystem<AudioSystem>();
+            std::vector<std::string> availableAudio;
+            if (audioSystem) {
+                availableAudio = audioSystem->GetAvailableAudioKeys();
+            }
+            else {
+                availableAudio = { "No audio system available" };
+            }
+
+            // audio key dropdown
+            std::string audioKey = j["audioKey"];
+            int currentAudioIdx = 0;
+            bool foundAudio = false;
+
+            for (int i = 0; i < availableAudio.size(); i++) 
+            {
+                if (audioKey == availableAudio[i]) {
+                    currentAudioIdx = i;
+                    foundAudio = true;
+                    break;
+                }
+            }
+
+            // if current audio not found, default to first one
+            if (!foundAudio && !availableAudio.empty() && availableAudio[0] != "No audio system available") 
+            {
+                currentAudioIdx = 0;
+                j["audioKey"] = availableAudio[0];
+                m_prefabModified = true;
+            }
+
+            std::vector<const char*> audioNames;
+            for (const auto& audioName : availableAudio) 
+            {
+                audioNames.push_back(audioName.c_str());
+            }
+
+            if (ImGui::Combo("Audio Key", &currentAudioIdx, audioNames.data(), static_cast<int>(audioNames.size()))) 
+            {
+                j["audioKey"] = availableAudio[currentAudioIdx];
+                m_prefabModified = true;
+            }
+
+            // volume slider
+            float volume = j["volume"];
+            if (ImGui::SliderFloat("Volume", &volume, 0.0f, 1.0f, "%.2f")) 
+            {
+                j["volume"] = volume;
+                m_prefabModified = true;
+            }
+
+            //loop checkbox
+            bool loop = j["loop"];
+            if (ImGui::Checkbox("Loop", &loop)) 
+            {
+                j["loop"] = loop;
+                m_prefabModified = true;
+            }
+
+            // play on start checkbox
+            bool playOnStart = j["playOnStart"];
+            if (ImGui::Checkbox("Play on Start", &playOnStart)) 
+            {
+                j["playOnStart"] = playOnStart;
+                m_prefabModified = true;
+            }
+
+            //// 3D audio checkbox
+            //bool is3D = j["is3D"];
+            //if (ImGui::Checkbox("3D Audio", &is3D)) 
+            //{
+            //    j["is3D"] = is3D;
+            //    m_prefabModified = true;
+            //}
         }
     };
 }
