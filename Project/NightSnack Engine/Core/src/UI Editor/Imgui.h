@@ -365,7 +365,7 @@ namespace NightSnack {
 			if (ImGui::BeginMenu("File"))
 			{
 				// Save current level
-				static char levelName[128] = "MyLevel";
+				static char levelName[128] = "DefaultLevel";
 				ImGui::InputText("Level Name", levelName, IM_ARRAYSIZE(levelName));
 				ImGui::SameLine();
 				static bool overwrite = true;
@@ -383,7 +383,7 @@ namespace NightSnack {
 				}
 
 				// Load level by name
-				static char loadLevelName[128] = "MyLevel";
+				static char loadLevelName[128] = "DefaultLevel";
 				ImGui::InputText("Load Level", loadLevelName, IM_ARRAYSIZE(loadLevelName));
 				ImGui::SameLine();
 				if (ImGui::Button("Load")) {
