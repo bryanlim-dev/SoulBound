@@ -3,6 +3,8 @@
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/IEvent.h"
 #include "Factory/EntityFactory.h"
+#include "Systems/AudioSystem.h"
+#include "Scripting/ScriptManager.h"
 
 #include <fstream>
 #include <string>
@@ -32,15 +34,29 @@ namespace NightSnack::Scene {
 					}
 				}
 			});
+
+			// Reads level files
+			ReloadLevels();
+			// Create default level
+			LoadLevel("DefaultLevel");
 		}
 
 		void Update() override {}
+
+		// Resets m_levelKeys and loads all json files in "GameData/Levels"
+		void ReloadLevels();
 
 		// Spawn Overlay menu (Pause menu)
 		void CreateOverlayMenu();
 		void RemoveOverlayMenu();
 		
 		void SetOverlayMenu(std::string const& filename);
+
+		// Load Level - Sets up everything needed to spawn level
+		// Calls factory to create entities
+		// Sets up bgm and menus
+		void LoadLevel(std::string const& filename);
+		bool SaveLevel(std::string const& filename, bool overwrite = 0);
 
 		// Play/Pause functionality
 		void CacheLevel();
@@ -53,10 +69,15 @@ namespace NightSnack::Scene {
 	private:
 		Signature m_systemSignature{};
 		EventDispatcher* m_dispatcher = nullptr;
+
 		Coordinator& m_coord;
 
 		std::vector<std::pair<json, Transform>> m_levelCache;
 		std::vector<std::pair<std::string, Transform>> m_overlayMenu;
+
+		std::unordered_map<std::string, size_t> m_levelKeys;
+		size_t m_currentLevelKey{};
+		size_t m_previousLevelKey{};
 
 		std::vector<Entity> m_overlayEntites;
 

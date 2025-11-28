@@ -1,11 +1,12 @@
 {
+    "BGM": "mainMenu",
     "Entities": [
         {
             "Transform": {
                 "Layer": "GameUI",
                 "Position": {
-                    "x": 0.0,
-                    "y": 0.0,
+                    "x": -500.0,
+                    "y": 250.0,
                     "z": 5.0
                 },
                 "Rotation": 0.0,
@@ -404,14 +405,14 @@
             "Transform": {
                 "Layer": "GameUI",
                 "Position": {
-                    "x": 1200.0,
-                    "y": 350.0,
+                    "x": 1440.0,
+                    "y": 420.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 100.0,
-                    "y": 100.0
+                    "x": 120.0,
+                    "y": 120.0
                 },
                 "UIBasePosition": {
                     "x": 1200.0,
@@ -429,14 +430,14 @@
             "Transform": {
                 "Layer": "GameUI",
                 "Position": {
-                    "x": 900.0,
-                    "y": 100.0,
+                    "x": 1080.0,
+                    "y": 120.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 200.0,
-                    "y": 100.0
+                    "x": 240.0,
+                    "y": 120.0
                 },
                 "UIBasePosition": {
                     "x": 900.0,
@@ -454,14 +455,14 @@
             "Transform": {
                 "Layer": "GameUI",
                 "Position": {
-                    "x": 1200.0,
-                    "y": 100.0,
+                    "x": 1440.0,
+                    "y": 120.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 200.0,
-                    "y": 100.0
+                    "x": 240.0,
+                    "y": 120.0
                 },
                 "UIBasePosition": {
                     "x": 1200.0,
@@ -479,14 +480,14 @@
             "Transform": {
                 "Layer": "GameUI",
                 "Position": {
-                    "x": 1500.0,
-                    "y": 100.0,
+                    "x": 1800.0,
+                    "y": 120.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 200.0,
-                    "y": 100.0
+                    "x": 240.0,
+                    "y": 120.0
                 },
                 "UIBasePosition": {
                     "x": 1500.0,

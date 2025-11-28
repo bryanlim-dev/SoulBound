@@ -369,11 +369,11 @@ namespace NightSnack {
 				ImGui::Checkbox("Overwrite", &overwrite);
 				ImGui::SameLine();
 				if (ImGui::Button("Save")) {
-					auto factory = m_coord.GetSystem<EntityFactory>();
-					if (factory)
+					auto scene = m_coord.GetSystem<Scene::SceneManager>();
+					if (scene)
 					{
 						m_scenePanel->DestroyEditorCamera();
-						factory->SaveLevel(levelName, overwrite);
+						scene->SaveLevel(levelName, overwrite);
 						m_scenePanel->CreateEditorCamera();
 					}
 				}
@@ -383,22 +383,22 @@ namespace NightSnack {
 				ImGui::InputText("Load Level", loadLevelName, IM_ARRAYSIZE(loadLevelName));
 				ImGui::SameLine();
 				if (ImGui::Button("Load")) {
-					auto factory = m_coord.GetSystem<EntityFactory>();
-					if (factory)
+					auto scene = m_coord.GetSystem<Scene::SceneManager>();
+					if (scene)
 					{
 						m_scenePanel->DestroyEditorCamera();
-						factory->LoadLevel(loadLevelName);
+						scene->LoadLevel(loadLevelName);
 						m_scenePanel->CreateEditorCamera();
 					}
 				}
 
 				ImGui::Separator();
 				if (ImGui::MenuItem("Open Default Level")) {
-					auto factory = m_coord.GetSystem<EntityFactory>();
-					if (factory)
+					auto scene = m_coord.GetSystem<Scene::SceneManager>();
+					if (scene)
 					{
 						m_scenePanel->DestroyEditorCamera();
-						factory->LoadLevel("DefaultLevel");
+						scene->LoadLevel("DefaultLevel");
 						m_scenePanel->CreateEditorCamera();
 					}
 				}
@@ -463,7 +463,7 @@ namespace NightSnack {
 					m_coord.Pause();
 					m_isPlaying = false;
 
-					SetSimulationPaused(true);
+					//SetSimulationPaused(true);
 					*m_selectedEntity = INVALID_ENTITY;
 					m_scenePanel->DestroyEditorCamera();
 					m_coord.GetSystem<Scene::SceneManager>()->RestoreLevel();
@@ -530,11 +530,14 @@ namespace NightSnack {
 		}
 
 		m_coord.Unpause();
+		SetSimulationPaused(false);
 		m_isPlaying = true;
 	}
 	inline void ImguiSystem::StopGame() {
 
 		m_coord.Pause();
+		//SetSimulationPaused(true);
+
 		m_scenePanel->DestroyEditorCamera();
 		m_coord.GetSystem<Scene::SceneManager>()->RestoreLevel();
 		m_scenePanel->CreateEditorCamera();

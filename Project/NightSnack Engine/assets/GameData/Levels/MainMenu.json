@@ -1,4 +1,5 @@
 {
+    "BGM": "",
     "Entities": [
         {
             "Transform": {
@@ -30,7 +31,7 @@
                 "Layer": "Background",
                 "Position": {
                     "x": 0.0,
-                    "y": 0.0,
+                    "y": 1.995025634765625,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
@@ -50,5 +51,6 @@
             },
             "prefab": "Backdrop"
         }
-    ]
+    ],
+    "Name": "MainMenu"
 }

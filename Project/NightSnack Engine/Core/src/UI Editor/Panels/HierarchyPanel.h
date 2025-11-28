@@ -92,17 +92,10 @@ namespace NightSnack
                     }
 
                     // Add Prefab button at the bottom of list
-                    if (ImGui::Button("Add Prefab"))
+                    if (ImGui::Button("Create"))
                     {
                         auto factory = m_coord.GetSystem<NightSnack::EntityFactory>();
-                        Transform defaultTransform
-                        {
-                            Vec3(0.f, 145.f, 1.f),
-                            0.0f,
-                            Vec2(100.f, 100.f)
-                        };
-
-                        factory->Create(std::string{ "Ghost" }, defaultTransform);
+                        factory->Create();
                     }
 
                     // Delete button to remove selected entity

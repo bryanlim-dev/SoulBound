@@ -196,6 +196,12 @@ namespace NightSnack {
 		 */
         std::vector<std::string> GetAvailableAudioKeys() const;
 
+        /**
+         * @brief retrieves the audio key of current BGM
+         * @return std::string key of current BGM
+         */
+        std::string GetBGM() const;
+
         // ISystem overrides
 
         /**
@@ -241,6 +247,9 @@ namespace NightSnack {
         // State
         bool m_initialized;
         bool m_bgmPaused;
+
+        // CurrentBGM
+        std::string m_currentKeyBGM;
 
         // Volume levels
         float m_masterVolume;

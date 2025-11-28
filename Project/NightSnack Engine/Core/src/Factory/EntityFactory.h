@@ -48,28 +48,23 @@ namespace NightSnack {
 			m_prefabManager.Initialize();
 			// Create "Prefabs" and "Levels" folder in "assets/GameData" if they don't exist.
 			CreateFolders();
-
 			// Read Level and Prefab json files.
 			ReloadPrefabs();
-			ReloadLevels();
-			// Create Default level.
-			LoadLevel("MainMenu");
 
+			m_prefabKeys["++Default"] = 0;
 		}
 
 		// Resets m_prefabKeys and loads all json files in "GameData/Prefabs"
 		void ReloadPrefabs();
-		// Resets m_levelKeys and loads all json files in "GameData/Levels"
-		void ReloadLevels();
 
 		void UpdatePrefab(std::string const& prefab);
 
 		// Saves all entities in the current level
-		bool SaveLevel(std::string const& levelName, bool overwrite);
+		json SaveLevelEntities();
 		// Creates entities found in a level (levelName does not have prefix, just "DefaultLevel" or "Level0" etc...)
-		void LoadLevel(std::string const& levelName);
+		void CreateLevelEntities(json const& level);
 		// Destroys all entities and Resets all ECS managers.
-		void UnloadLevel();
+		void DestroyLevelEntities();
 
 		/************************************************************************/
 		/*!
@@ -88,6 +83,16 @@ namespace NightSnack {
 		/************************************************************************/
 		void PostUpdate();
 
+		/************************************************************************/
+		/*!
+		\brief
+		Creates an entity with no components.
+
+		\return
+		Returns ID of entity created.
+		*/
+		/************************************************************************/
+		Entity Create();
 		/************************************************************************/
 		/*!
 		\brief
@@ -136,19 +141,16 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Creates an entity by clone from a specific entity's prefab and applying a
-		transformation on the created entity.
+		Creates an entity by clone from a specific entity's prefab.
 
 		\param e
 		Entity to be cloned from.
-		\param trans
-		Transform of new entity.
 
 		\return
 		Returns ID of entity cloned.
 		*/
 		/************************************************************************/
-		Entity Clone(Entity e, Transform trans);
+		Entity Clone(Entity e);
 
 		/************************************************************************/
 		/*!
@@ -182,11 +184,8 @@ namespace NightSnack {
 		// Entities that have been marked for deletion
 		std::set<Entity> m_toBeDestroyed;
 
-		size_t m_currentLevelKey;
-		size_t m_previousLevelKey;
-
 		std::unordered_map<std::string, size_t> m_prefabKeys;
-		std::unordered_map<std::string, size_t> m_levelKeys;
+		//std::unordered_map<std::string, size_t> m_levelKeys;
 
 		std::vector<size_t> m_toBeUnloaded;
 

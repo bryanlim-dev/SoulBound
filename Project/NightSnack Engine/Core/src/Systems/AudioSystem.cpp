@@ -355,6 +355,8 @@ namespace NightSnack {
         }
     }
 
+    std::string AudioSystem::GetBGM() const { return m_currentKeyBGM; }
+
     // plays background music by string key
     void AudioSystem::PlayBGM(const std::string& bgmKey)
     {
@@ -385,6 +387,7 @@ namespace NightSnack {
         }
 
         m_bgmPaused = false;
+        m_currentKeyBGM = bgmKey;
         //std::cout << "[AudioSystem] Playing BGM: " << bgmKey << "\n";
     }
 
@@ -401,6 +404,7 @@ namespace NightSnack {
             }
         }
         m_bgmPaused = false;
+        m_currentKeyBGM = "";
     }
 
     // pauses the currently playing background music
