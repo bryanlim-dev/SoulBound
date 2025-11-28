@@ -102,6 +102,7 @@ namespace NightSnack {
 		case GLFW_KEY_A: return InputEvent::InputAction::ScaleDown;
 		case GLFW_KEY_D: return InputEvent::InputAction::ScaleUp;
 		case GLFW_KEY_R: return InputEvent::InputAction::Rotate;
+		case GLFW_KEY_X: return InputEvent::InputAction::ChangeAnimation;
 
 			// Physics tests
 		case GLFW_KEY_F: return InputEvent::InputAction::DynamicBallTest;

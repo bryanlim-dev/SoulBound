@@ -402,6 +402,31 @@
         },
         {
             "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -160.0,
+                    "y": -130.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 100.0
+                }
+            },
+            "prefab": "AnimatedRubric"
+        },
+        {
+            "Transform": {
                 "Layer": "GameUI",
                 "Position": {
                     "x": 1200.0,

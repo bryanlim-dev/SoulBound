@@ -34,6 +34,7 @@ namespace NightSnack {
             ScaleUp,            // D
             ScaleDown,          // A
             Rotate,             // R
+            ChangeAnimation,    // X
 
             // Physics tests
             DynamicBallTest,    // F
