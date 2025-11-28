@@ -367,7 +367,7 @@ namespace ManagedScripts
         #region Scripting
         //---- isLooping
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void GetScriptExists_Internal(uint entityId, string scriptName, out bool exists);
+        private static extern void HasScript_Internal(uint entityId, string scriptName, out bool exists);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void CreateScript_Internal(uint entityId, string scriptName);
         #endregion
@@ -983,9 +983,9 @@ namespace ManagedScripts
         // Scripting API for Scripts
         // ----------------------------
         #region Scripting
-        public static bool GetScriptExists(uint entityId, string str)
+        public static bool HasScript(uint entityId, string str)
         {
-            GetScriptExists_Internal(entityId, str, out bool exists);
+            HasScript_Internal(entityId, str, out bool exists);
             return exists;
         }
         public static void CreateScript(uint entityId, string str)

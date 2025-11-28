@@ -756,7 +756,7 @@ namespace NightSnack::Scripting {
 
 #pragma region Scripting
 
-    bool ScriptInterface::GetScriptExists(Entity e, std::string str)
+    bool ScriptInterface::HasScript(Entity e, std::string str)
     {
         if(m_coord.HasComponent<Script>(e))
         {
@@ -771,10 +771,7 @@ namespace NightSnack::Scripting {
 
     void ScriptInterface::CreateScript(Entity e, std::string str)
     {
-
         m_coord.GetSystem<ScriptManager>()->CreateScript(e, str);    
-           
-        
     }
 #pragma endregion
 

@@ -37,9 +37,12 @@ namespace ManagedScripts
             color.RGBA = new Colors(0.5f, 0, 0, 1);
             renderer.IsWireframe = true;
 
+            //System.Console.WriteLine("Rotator: OnStart"); 
 
-
+            //Log("AHHH");
             //Log($"Entity Script ID: {EntityId}");
+            //Log($"Has Script: {Engine.HasScript(EntityId, "RotatorScript")}");
+
 
             //Vector3 pos;
             //pos.X = 100;

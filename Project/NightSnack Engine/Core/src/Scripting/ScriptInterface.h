@@ -228,7 +228,7 @@ namespace NightSnack::Scripting {
 
 #pragma region Scripting
 
-        bool GetScriptExists(Entity e, std::string str);
+        bool HasScript(Entity e, std::string str);
         void CreateScript(Entity e, std::string str);
 
 #pragma endregion
