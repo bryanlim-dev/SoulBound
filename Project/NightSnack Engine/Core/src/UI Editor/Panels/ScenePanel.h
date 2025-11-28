@@ -251,16 +251,16 @@ namespace NightSnack
 					}*/
 					if (m_multiSelectedEntities.empty() && m_selectedEntity && *m_selectedEntity != INVALID_ENTITY && ImGui::IsKeyPressed(ImGuiKey_Delete))
 					{
+						auto factory = m_coord.GetSystem<EntityFactory>();
 						if (m_coord.HasComponent<Transform>(*m_selectedEntity))
 						{
-							auto factory = m_coord.GetSystem<EntityFactory>();
 							auto prefabName = factory->GetEntityPrefabName(*m_selectedEntity);
 							auto transform = m_coord.GetComponent<Transform>(*m_selectedEntity);
 							NightSnack::UndoSystem::Instance().Push(
 								NightSnack::EntityDeleteSnapshot{ *m_selectedEntity, prefabName, transform }
 							);
 						}
-						m_coord.DestroyEntity(*m_selectedEntity);
+						factory->RemoveEntity(*m_selectedEntity);
 						*m_selectedEntity = INVALID_ENTITY;
 					}
 
@@ -271,8 +271,12 @@ namespace NightSnack
 
 						if (ImGui::IsMouseClicked(ImGuiMouseButton_Left) && !m_isDragging && m_hoveredEntity != INVALID_ENTITY) {
 							*m_selectedEntity = m_hoveredEntity;
+
+							// Record transform for undo
 							auto& t = m_coord.GetComponent<Transform>(m_hoveredEntity);
 							NightSnack::UndoSystem::Instance().Push(NightSnack::TransformSnapshot{ *m_selectedEntity, t });
+
+							// Start dragging
 							m_dragOffset.x = t.pos.x - mouseWorldX;
 							m_dragOffset.y = t.pos.y - mouseWorldY;
 							m_isDragging = true;
@@ -1329,6 +1333,7 @@ namespace NightSnack
 		if (hoverX || hoverY || hoverRot || hoverScaleX || hoverScaleY) m_gizmoHovering = true;
 
 		// Handle interaction
+		auto& trans = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
 		if (!m_gizmoDragging && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 		{
 			if		(hoverX)	  { m_gizmoActivePart = GizmoPart::MoveX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.x; }
@@ -1336,11 +1341,14 @@ namespace NightSnack
 			else if (hoverRot)	  { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.rot; }
 			else if (hoverScaleX) { m_gizmoActivePart = GizmoPart::ScaleX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.x; }
 			else if (hoverScaleY) { m_gizmoActivePart = GizmoPart::ScaleY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.y; }
+
+			// Record transform snapshot for undo
+			if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) 
+				NightSnack::UndoSystem::Instance().Push(NightSnack::TransformSnapshot{ *m_selectedEntity, trans });
 		}
 		if (m_gizmoDragging && ImGui::IsMouseDown(ImGuiMouseButton_Left))
 		{
 			ImVec2 delta = ImVec2(mouse.x - m_gizmoDragStartMouse.x, mouse.y - m_gizmoDragStartMouse.y);
-			auto& trans = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
 			if (m_gizmoActivePart == GizmoPart::MoveX)
 			{
 				trans.pos.x = m_gizmoStartValue + delta.x * (worldRight - worldLeft) / imageSize.x;
