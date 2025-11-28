@@ -7,7 +7,7 @@
  * Description: This file contains the declarations of various event types 
  *              used in the engine.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -44,6 +44,7 @@ namespace NightSnack {
             PhysicsDebugStep,   // P
 
             // Window events
+			DisplayFPS,         // F1
             ToggleFullscreen,   // F11
             PauseGame,          // Escape
 

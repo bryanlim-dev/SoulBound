@@ -7,7 +7,7 @@
  * Options panel for configuring application settings. Includes audio volume controls
  * and debug options.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -106,16 +106,31 @@ namespace NightSnack
                 if (ImGui::BeginTabItem("Window"))
                 {
                     auto appSystem = m_coord.GetSystem<ApplicationSystem>();
+					static bool fullscreenEnabled = appSystem->m_appIsFullscreen || appSystem->m_appIsFullscreenViaButton;
                     static bool vsyncEnabled = true;
                     static bool frameCapEnabled = true;
                     static float frameCap = 60.0f;
 
                     if (appSystem)
                     {
+						// Initialize frame cap state
                         float currentCap = appSystem->GetFrameCap();
                         frameCapEnabled = (currentCap > 0.0f);
                         if (frameCapEnabled) { frameCap = currentCap; }
+
+                        // Initialize fullscreen state
+                        fullscreenEnabled = ApplicationSystem::m_appIsFullscreen || ApplicationSystem::m_appIsFullscreenViaButton;
+                        ImGui::Text("Fullscreen");
+                        ImGui::SameLine(100);
+                        if (ImGui::Checkbox("##FullscreenToggle", &fullscreenEnabled))
+                        {
+                            if (fullscreenEnabled)
+                                appSystem->EnterFullscreen();
+                            else
+                                appSystem->ExitFullscreen();
+                        }
                     }
+                    ImGui::Separator();
 
                     // VSync toggle
                     ImGui::Text("VSync");
@@ -129,9 +144,9 @@ namespace NightSnack
                     }
 
                     // Frame Cap toggle
-                    ImGui::SameLine(90);
+                    ImGui::SameLine(100);
                     ImGui::Text("FrameCap");
-                    ImGui::SameLine(160);
+                    ImGui::SameLine(170);
                     if (ImGui::Checkbox("##FrameCapEnable", &frameCapEnabled))
                     {
                         if (appSystem)

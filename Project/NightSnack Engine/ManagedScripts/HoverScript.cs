@@ -15,6 +15,8 @@ namespace ManagedScripts
         public override void OnStart()
         {
             transform = new Transform(EntityId);
+            //Log($"Player Script ID: {GetPlayerID()}");
+            //Engine.CreateScript(EntityId, "RotatorScript");
 
             //Log("HoverScript started!");
             //Log($"Initial Position: {Position.X}, {Position.Y}");

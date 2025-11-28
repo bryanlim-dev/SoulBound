@@ -53,6 +53,17 @@ namespace NightSnack {
 					break;
 				}
 			});
+
+			m_dispatcher->Subscribe<InputEvent>([this](const InputEvent& event) {
+				if (event.pressed == InputEvent::InputActionState::Pressed) {
+					switch (event.inputAction) {
+					case InputEvent::InputAction::ChangeAnimation:
+						if (!m_coord.IsPaused())
+							ChangeAnimation();
+						break;
+					}
+				}
+			});
 		}
 
 		/************************************************************************/
@@ -84,6 +95,8 @@ namespace NightSnack {
 		std::vector<std::string> GetSpritesheetAnimationClipsNames(Entity e);
 
 		void SetCurrentAnimationClip(const std::string& animationClipName, Entity e);
+
+		void ChangeAnimation();
 
 		/************************************************************************/
 		/*!

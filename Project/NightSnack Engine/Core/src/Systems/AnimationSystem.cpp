@@ -14,6 +14,7 @@
 
 #include "AnimationSystem.h"
 #include "Systems/Graphics.h"
+#include "Factory/EntityFactory.h"
 
 namespace NightSnack {
 
@@ -63,7 +64,7 @@ namespace NightSnack {
 			if (tex->GetColumns() == 1 && tex->GetRows() == 1) {
 				std::cerr << "[AnimationSystem] Current Entity texture is treated as static. Ensure Texture name has [_cols_rows] or remove Entity's Animator Component!\n";
 				continue;
-			} 
+			}
 
 			// Skip if this Animator is not playing
 			if (!animator.isPlaying) {
@@ -87,11 +88,11 @@ namespace NightSnack {
 				// Set the first Animation Clip to be the default clip
 				animator.currentAnimationClip = m_animationClips[animator.spriteSheetName].begin()->first;
 				////std::cout << "Empty current clip changed to: " << animator.currentAnimationClip << std::endl;
-			} 
+			}
 
 			// Here, there is a current Animation Clip being played
 			// Update the time/steps and switch to the next frame of the Animation Clip if needed to
-			
+
 			// Current animation clip and frame
 			auto& clip = m_animationClips[animator.spriteSheetName][animator.currentAnimationClip];
 			auto& currentFrame = clip.frames[animator.currentFrameIndex];
@@ -122,7 +123,7 @@ namespace NightSnack {
 			if (m_coord.HasComponent<RigidBody>(e)) {
 				// Has RigidBody component, set the UV coordinates according to where it moves
 				auto& rb = m_coord.GetComponent<RigidBody>(e);
-				
+
 				if (rb.vel.x < 0.f) {
 					animator.lastFacingRight = false;
 				} else if (rb.vel.x > 0.f) {
@@ -141,7 +142,7 @@ namespace NightSnack {
 					animator.uvBottomRight = { frame.U0, frame.V1 };
 				}
 
-			} else { 
+			} else {
 				// No RigidBody component, set the UV coordinates as default state
 				// Default is looking to the left
 				animator.uvTopLeft = { frame.U0, frame.V0 };
@@ -244,6 +245,39 @@ namespace NightSnack {
 		}
 
 		animator.currentAnimationClip = animationClipName;
+		// Restart by default whenever change Animation Clips
+		animator.currentTime = 0.f;
+		animator.currentFrameIndex = 0;
+	}
+
+	void AnimationSystem::ChangeAnimation() {
+		// Currently only change animation clip for the "AnimatedRubric" prefab
+		for (Entity e : m_entities) {
+
+			std::string prefabName = m_coord.GetSystem<EntityFactory>()->GetEntityPrefabName(e);
+			if (prefabName != "AnimatedRubric") { continue; }
+
+			auto& animator = m_coord.ModifyComponent<Animator>(e);
+
+			std::string currAnimClipName = animator.currentAnimationClip;
+			std::vector<std::string> animClipNames = GetSpritesheetAnimationClipsNames(e);
+
+			if (animClipNames.empty()) { return; }
+
+			// If there is no current Animation Clip
+			if (currAnimClipName.empty()) {
+				currAnimClipName = animClipNames[0]; // Assign the first clip by default
+				break;
+			}
+
+			for (const auto& name : animClipNames) {
+				// Assign a random clip to change
+				if (name != currAnimClipName) {
+					SetCurrentAnimationClip(name, e);
+					break;
+				}
+			}
+		}
 	}
 
 } // NightSnack

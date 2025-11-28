@@ -756,7 +756,7 @@ namespace NightSnack::Scripting {
 
 #pragma region Scripting
 
-    bool ScriptInterface::GetScriptExists(Entity e, std::string str)
+    bool ScriptInterface::HasScript(Entity e, std::string str)
     {
         if(m_coord.HasComponent<Script>(e))
         {
@@ -771,10 +771,7 @@ namespace NightSnack::Scripting {
 
     void ScriptInterface::CreateScript(Entity e, std::string str)
     {
-
         m_coord.GetSystem<ScriptManager>()->CreateScript(e, str);    
-           
-        
     }
 #pragma endregion
 
@@ -820,6 +817,11 @@ namespace NightSnack::Scripting {
         Entity entity= m_coord.GetSystem<EntityFactory>()->Create(archeTypeName);
         m_coord.ModifyComponent<Transform>(entity).pos = Vec3{ pos.x, pos.x, pos.z };
         return entity;
+    }
+
+    Entity ScriptInterface::GetPlayerID()
+    {
+        return m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();;
     }
     // --------------------------------------------------------------
 

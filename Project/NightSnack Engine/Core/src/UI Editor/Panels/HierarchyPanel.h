@@ -7,7 +7,7 @@
  * Hierarchy panel showing all entities in the scene. Able to select, add 
  * and delete entities.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -62,13 +62,13 @@ namespace NightSnack
                     ImU32 bgColor = IM_COL32(80, 180, 255, 60); // Light blue, semi-transparent
                     ImGui::GetWindowDrawList()->AddRectFilled(min, max, bgColor);
 
+                    auto factory = m_coord.GetSystem<EntityFactory>();
 
                     // Scene Dropdown list
                     if (ImGui::TreeNodeEx("Scene", ImGuiTreeNodeFlags_DefaultOpen))
                     {
 						ImGui::Indent(30.f);
                         const auto& entities = m_coord.GetLivingEntities();
-                        auto factory = m_coord.GetSystem<NightSnack::EntityFactory>();
 
 						// List all entities
                         for (Entity e : entities)
@@ -104,25 +104,12 @@ namespace NightSnack
                         ImGui::SameLine();
                         if (ImGui::Button("Delete"))
                         {
-                            m_coord.DestroyEntity(*m_selectedEntity);
-                            m_uiNames->erase(*m_selectedEntity);
-                            *m_selectedEntity = INVALID_ENTITY;
+                            DeleteEntity();
                         }
                     }
                     if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY && ImGui::IsKeyPressed(ImGuiKey_Delete))
                     {
-                        if (m_coord.HasComponent<Transform>(*m_selectedEntity))
-                        {
-                            auto factory = m_coord.GetSystem<EntityFactory>();
-                            auto prefabName = factory->GetEntityPrefabName(*m_selectedEntity);
-                            auto transform = m_coord.GetComponent<Transform>(*m_selectedEntity);
-                            NightSnack::UndoSystem::Instance().Push(
-                                NightSnack::EntityDeleteSnapshot{ *m_selectedEntity, prefabName, transform }
-                            );
-                        }
-                        m_coord.DestroyEntity(*m_selectedEntity);
-                        m_uiNames->erase(*m_selectedEntity);
-                        *m_selectedEntity = INVALID_ENTITY;
+                        DeleteEntity();
                     }
 
                     ImGui::EndTabItem();
@@ -138,5 +125,22 @@ namespace NightSnack
         Coordinator& m_coord;
         std::shared_ptr<Entity> m_selectedEntity;
         std::shared_ptr<std::unordered_map<Entity, std::string>> m_uiNames;
+
+        void DeleteEntity()
+        {
+            auto factory = m_coord.GetSystem<EntityFactory>();
+
+			// Record entity deletion for undo
+            auto prefabName = factory->GetEntityPrefabName(*m_selectedEntity);
+            auto transform = m_coord.GetComponent<Transform>(*m_selectedEntity);
+            NightSnack::UndoSystem::Instance().Push(
+                NightSnack::EntityDeleteSnapshot{ *m_selectedEntity, prefabName, transform }
+            );
+
+			// Remove entity from ECS
+            factory->RemoveEntity(*m_selectedEntity);
+            m_uiNames->erase(*m_selectedEntity);
+            *m_selectedEntity = INVALID_ENTITY;
+        }
     };
 }

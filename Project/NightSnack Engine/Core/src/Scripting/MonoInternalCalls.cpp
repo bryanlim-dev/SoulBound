@@ -572,17 +572,17 @@ extern "C" {
     // --------------------------------------------------------------
     
 #pragma region Scripting
-    static void NightSnack_GetScriptExists(uint32_t id, MonoString* name, bool* outExists) {
+    static void NightSnack_HasScript(uint32_t id, MonoString* name, bool* outExists) {
         if (!g_scriptInterface || !name || !outExists) { return; }
         char* cStr = mono_string_to_utf8(name);
 
-        *outExists = g_scriptInterface->GetScriptExists(id, cStr);
+        *outExists = g_scriptInterface->HasScript(id, cStr);
     }
 
     static void NightSnack_CreateScript(uint32_t id, MonoString* name) {
         if (!g_scriptInterface || !name) { return; }
-        char* cStr = mono_string_to_utf8(name);
 
+        char* cStr = mono_string_to_utf8(name);
         g_scriptInterface->CreateScript(id, cStr);
     }
 #pragma endregion
@@ -643,6 +643,13 @@ extern "C" {
         char* cStr = mono_string_to_utf8(archeType);
         return g_scriptInterface->CreateEntityArchetype(std::string(cStr), *pos);
     }
+
+    static uint32_t NightSnack_GetPlayerID() {
+        if (!g_scriptInterface) { return 0; }
+        return g_scriptInterface->GetPlayerID();
+    }
+
+
     // --------------------------------------------------------------
 
 
@@ -840,7 +847,7 @@ namespace NightSnack::Scripting {
 #pragma endregion
 
 #pragma region Scripting
-        mono_add_internal_call("ManagedScripts.Engine::GetScriptExists_Internal", (void*)NightSnack_GetScriptExists);
+        mono_add_internal_call("ManagedScripts.Engine::HasScript_Internal", (void*)NightSnack_HasScript);
         mono_add_internal_call("ManagedScripts.Engine::CreateScript_Internal", (void*)NightSnack_CreateScript);
 #pragma endregion
 
@@ -856,6 +863,7 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::GetDeltaTime_Internal", (void*)NightSnack_GetDeltaTime);
 
         mono_add_internal_call("ManagedScripts.Engine::CreateEntityArchetype_Internal", (void*)NightSnack_CreateEntityArchetype);
+        mono_add_internal_call("ManagedScripts.Engine::GetPlayerID_Internal", (void*)NightSnack_GetPlayerID);
 
 
         //std::cout << "[Mono] Internal calls registered successfully" << std::endl;

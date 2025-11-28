@@ -11,7 +11,7 @@
  * It will then dispatch Input Events via the Event Dispatcher.
  * Other Systems in the ECS can check for the state of the specific keys via Getter functions.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -104,6 +104,7 @@ namespace NightSnack {
 		case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJump;
 
 			// Window tests
+		case GLFW_KEY_F1: return InputEvent::InputAction::DisplayFPS;
 		case GLFW_KEY_F11: return InputEvent::InputAction::ToggleFullscreen;
 		case GLFW_KEY_ESCAPE: return InputEvent::InputAction::PauseGame;
 

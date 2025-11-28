@@ -367,7 +367,7 @@ namespace ManagedScripts
         #region Scripting
         //---- isLooping
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void GetScriptExists_Internal(uint entityId, string scriptName, out bool exists);
+        private static extern void HasScript_Internal(uint entityId, string scriptName, out bool exists);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void CreateScript_Internal(uint entityId, string scriptName);
         #endregion
@@ -395,6 +395,10 @@ namespace ManagedScripts
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateEntityArchetype_Internal(string archetypeName, Vector3 pos);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint GetPlayerID_Internal();
+
 
         //[MethodImpl(MethodImplOptions.InternalCall)]
         //private static extern float GetTime_Internal();
@@ -983,9 +987,9 @@ namespace ManagedScripts
         // Scripting API for Scripts
         // ----------------------------
         #region Scripting
-        public static bool GetScriptExists(uint entityId, string str)
+        public static bool HasScript(uint entityId, string str)
         {
-            GetScriptExists_Internal(entityId, str, out bool exists);
+            HasScript_Internal(entityId, str, out bool exists);
             return exists;
         }
         public static void CreateScript(uint entityId, string str)
@@ -1007,6 +1011,11 @@ namespace ManagedScripts
         public static void PlaySound(string path) => PlaySound_Internal(path);
 
         public static uint CreateEntityArchetype(string archetypeName, Vector3 pos) => CreateEntityArchetype_Internal(archetypeName, pos);
+
+        public static uint GetPlayerID()
+        {
+            return GetPlayerID_Internal();
+        }
 
 
         public static float DeltaTime => GetDeltaTime_Internal();
