@@ -91,8 +91,8 @@ namespace NightSnack
                         ImGui::TreePop();
                     }
 
-                    // Add Prefab button at the bottom of list
-                    if (ImGui::Button("Add Prefab"))
+                    // Add Entity button at the bottom of list
+                    if (ImGui::Button("Add Entity"))
                     {
 						// Create a default Ghost entity at specified position
                         Transform defaultTransform;
