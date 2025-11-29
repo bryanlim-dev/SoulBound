@@ -16,7 +16,7 @@
         "height": 30.0,
         "isStatic": false,
         "radius": 15.0,
-        "shape": "Circle",
+        "shape": "AABB",
         "type": "Solid",
         "width": 30.0
     },

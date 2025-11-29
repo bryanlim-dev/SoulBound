@@ -230,31 +230,6 @@
             "Transform": {
                 "Layer": "GameLayer",
                 "Position": {
-                    "x": 300.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 50.0,
-                    "y": 50.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 50.0,
-                    "y": 50.0
-                }
-            },
-            "prefab": "Control"
-        },
-        {
-            "Transform": {
-                "Layer": "GameLayer",
-                "Position": {
                     "x": -370.06268310546875,
                     "y": -90.28213500976563,
                     "z": 0.0
@@ -375,81 +350,6 @@
                 }
             },
             "prefab": "AnimatedRubric"
-        },
-        {
-            "Transform": {
-                "Layer": "GameUI",
-                "Position": {
-                    "x": 900.0,
-                    "y": 100.0,
-                    "z": 0.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 200.0,
-                    "y": 100.0
-                },
-                "UIBasePosition": {
-                    "x": 900.0,
-                    "y": 100.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 200.0,
-                    "y": 100.0
-                }
-            },
-            "prefab": "ButtonAudio"
-        },
-        {
-            "Transform": {
-                "Layer": "GameUI",
-                "Position": {
-                    "x": 1200.0,
-                    "y": 100.0,
-                    "z": 0.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 200.0,
-                    "y": 100.0
-                },
-                "UIBasePosition": {
-                    "x": 1200.0,
-                    "y": 100.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 200.0,
-                    "y": 100.0
-                }
-            },
-            "prefab": "ButtonAudio2"
-        },
-        {
-            "Transform": {
-                "Layer": "GameUI",
-                "Position": {
-                    "x": 1500.0,
-                    "y": 100.0,
-                    "z": 0.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 200.0,
-                    "y": 100.0
-                },
-                "UIBasePosition": {
-                    "x": 1500.0,
-                    "y": 100.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 200.0,
-                    "y": 100.0
-                }
-            },
-            "prefab": "ButtonAudio3"
         }
     ],
     "Name": "DefaultLevel"
