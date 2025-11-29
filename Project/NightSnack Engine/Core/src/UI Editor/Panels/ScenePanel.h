@@ -264,6 +264,13 @@ namespace NightSnack
 						*m_selectedEntity = INVALID_ENTITY;
 					}
 
+
+					// Draw gizmos for selected entity
+					if (currentTool == SceneTool::Select && m_selectedEntity && *m_selectedEntity != INVALID_ENTITY)
+					{
+						DrawGizmos(imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+					}
+
 					// Entity Picking
 					if (currentTool == SceneTool::Select && !m_isDragging && !IsMouseOverGizmo())
 					{
@@ -383,12 +390,6 @@ namespace NightSnack
 
 					}
 					ImGui::EndDragDropTarget();
-				}
-
-				// Draw gizmos for selected entity
-				if (currentTool == SceneTool::Select && m_selectedEntity && *m_selectedEntity != INVALID_ENTITY)
-				{
-					DrawGizmos(imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
 				}
 			}
 			// Draw tool bar for mouse tool selection
