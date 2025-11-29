@@ -55,14 +55,39 @@
             "Transform": {
                 "Layer": "GameLayer",
                 "Position": {
-                    "x": -25.838333129882813,
-                    "y": -17.993316650390625,
+                    "x": -12.0,
+                    "y": -84.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
                     "x": 265.0,
-                    "y": 120.0
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "prefab": "MainMenu-CreditButton"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -12.0,
+                    "y": 36.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 265.0,
+                    "y": 100.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -75,6 +100,56 @@
                 }
             },
             "prefab": "MainMenu-PlayButton"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -12.0,
+                    "y": -204.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 265.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "prefab": "MainMenu-SettingButton"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -12.0,
+                    "y": -324.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 265.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "prefab": "MainMenu-Exitbutton"
         }
     ],
     "Name": "MainMenu"

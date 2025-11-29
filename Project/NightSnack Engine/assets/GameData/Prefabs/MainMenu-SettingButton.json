@@ -1,0 +1,15 @@
+{
+    "Collider": {
+        "height": 0.0,
+        "isStatic": true,
+        "radius": 0.0,
+        "shape": "AABB",
+        "type": "Solid",
+        "width": 0.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "Settings",
+        "meshName": "square"
+    }
+}

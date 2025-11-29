@@ -1339,7 +1339,6 @@ namespace NightSnack
 
 		// Handle interaction
 		auto& trans = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
-		auto& col = m_coord.ModifyComponent<Collider>(*m_selectedEntity);
 		if (!m_gizmoDragging && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 		{
 			if		(hoverX)	  { m_gizmoActivePart = GizmoPart::MoveX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.x; }
@@ -1375,15 +1374,23 @@ namespace NightSnack
 			{
 				float scaleDelta = delta.x * (worldRight - worldLeft) / imageSize.x;
 				trans.scale.x = std::max(1.0f, m_gizmoStartValue + scaleDelta);
-				col.width = std::max(1.0f, m_gizmoStartValue + scaleDelta);
-				col.radius = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+
+				if (m_coord.HasComponent<Collider>(*m_selectedEntity)) {
+					auto& col = m_coord.ModifyComponent<Collider>(*m_selectedEntity);
+					col.width = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+					col.radius = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+				}
 			}
 			else if (m_gizmoActivePart == GizmoPart::ScaleY)
 			{
 				float scaleDelta = -delta.y * (worldTop - worldBottom) / imageSize.y;
 				trans.scale.y = std::max(1.0f, m_gizmoStartValue + scaleDelta);
-				col.height = std::max(1.0f, m_gizmoStartValue + scaleDelta);
-				col.radius = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+
+				if (m_coord.HasComponent<Collider>(*m_selectedEntity)) {
+					auto& col = m_coord.ModifyComponent<Collider>(*m_selectedEntity);
+					col.height = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+					col.radius = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+				}
 			}
 		}
 		if (m_gizmoDragging && ImGui::IsMouseReleased(ImGuiMouseButton_Left))

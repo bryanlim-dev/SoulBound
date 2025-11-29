@@ -86,7 +86,7 @@ namespace NightSnack
 					if (compName == "Tilemap")   { hasComponent = true; }
 					if (compName == "Camera")    { hasComponent = m_coord.HasComponent<Camera>(*m_selectedEntity); }
                     if (compName == "Rigidbody") { hasComponent = m_coord.HasComponent<RigidBody>(*m_selectedEntity); }
-                    if (compName == "Collider") { hasComponent = m_coord.HasComponent<Collider>(*m_selectedEntity); std::cerr << "Entity <" << *m_selectedEntity << "> has collider : " << hasComponent << '\n'; }
+                    if (compName == "Collider") { hasComponent = m_coord.HasComponent<Collider>(*m_selectedEntity); }
                     if (compName == "Renderer")  { hasComponent = m_coord.HasComponent<Renderable>(*m_selectedEntity); }
 					if (compName == "Scripting") { hasComponent = m_coord.HasComponent<Script>(*m_selectedEntity); }
                     if (compName == "Animator")  { hasComponent = m_coord.HasComponent<Animator>(*m_selectedEntity); }

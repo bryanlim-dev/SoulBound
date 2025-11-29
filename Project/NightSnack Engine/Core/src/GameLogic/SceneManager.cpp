@@ -62,11 +62,13 @@ namespace NightSnack::Scene {
 		if (m_levelKeys.find(levelname) != m_levelKeys.end()) {
 			// Level exists and was overwritten
 			resource->UpdateJson(m_levelKeys[levelname], level);
+			std::cerr << "[SceneManager] Updated existing level\n";
 		}
 		else {
 			// New Level has been saved
 			std::string loadPath = "../../../../assets/GameData/Levels/" + levelname + ".json";
 			resource->LoadJson(loadPath, m_levelKeys[levelname]);
+			std::cerr << "[SceneManager] Saved new level\n";
 		}
 		std::cout << "Saved level to: " << outPath << "\n";
 		return true;
