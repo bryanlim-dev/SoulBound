@@ -1,7 +1,8 @@
 /******************************************************************************
  * File:        ScriptManager.h
  * Project:     NightSnack
- * Author(s):	Chewn Thing Kwan
+ * Author(s):	Chewn Thing Kwan (Primary, 80%) - Created class and logic
+ *              Clement Ang Yang Ying (Secondary, 20%) - Added MonoExposeBridge integration/maps for scripts and modified functions
  *
  * Description:
  * This file defines class ScriptManager. 

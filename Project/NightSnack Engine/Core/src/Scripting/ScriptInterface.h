@@ -1,7 +1,8 @@
 /******************************************************************************
  * File:        ScriptInterface.h
  * Project:     NightSnack
- * Author(s):	Chewn Thing Kwan
+ * Author(s):	Chewn Thing Kwan - (Primary, 30%) - Created base file and Transform/Input/Sound functions
+                Clement Ang Yang Ying - (Secondary, 70%) - Added other component and entity functions
  *
  * Description:
  * This file declares class ScriptInterface which contain functions which can 

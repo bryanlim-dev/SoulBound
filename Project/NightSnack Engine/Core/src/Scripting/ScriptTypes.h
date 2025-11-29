@@ -1,7 +1,8 @@
 /******************************************************************************
  * File:        ScriptTypes.h
  * Project:     NightSnack
- * Author(s):	Chewn Thing Kwan
+ * Author(s):	Chewn Thing Kwan - (Primary, 40%) - Created file and Trans/vec2/3/GameObjectHandle
+ *              Clement Ang Yang Ying (Secondary, 60%) - Added other structs
  *
  * Description:
  * This file defines simple data structures that can cross the C++/C# boundary.

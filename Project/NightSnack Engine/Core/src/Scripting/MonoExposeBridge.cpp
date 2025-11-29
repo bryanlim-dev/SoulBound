@@ -1,3 +1,16 @@
+/******************************************************************************
+ * File:        MonoExposeBridge.cpp
+ * Project:     NightSnack
+ * Author(s):	Clement Ang Yang Ying (Primary, 100%) - Created class and logic
+ *
+ * Description:
+ * This file contains the deceleration of the class MonoExposeBridge. This class
+ * helps expose C# script fields marked with [SeralizeField] attribute to the engine.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "MonoExposeBridge.h"
 
 #include "mono/metadata/reflection.h"
