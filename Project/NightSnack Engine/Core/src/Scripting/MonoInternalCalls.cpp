@@ -2,7 +2,7 @@
  * File:        MonoInternalCalls.cpp
  * Project:     NightSnack
  * Author(s):	Chewn Thing Kwan (Primary, 30%) - Created base file and Transform/Input/Sound calls & inital C# linkage functions
- *              Clement Ang Yang Ying (Primary, 70%) - Created rest of component/entity function class & linkage
+ *              Clement Ang Yang Ying (Primary, 70%) - Created rest of component/entity function class & linkage, orgnized functions
  *
  * Description:
  * This file defines internal calls that will link:

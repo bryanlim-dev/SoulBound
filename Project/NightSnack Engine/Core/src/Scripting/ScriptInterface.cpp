@@ -2,7 +2,7 @@
  * File:        ScriptInterface.cpp
  * Project:     NightSnack
  * Author(s):	Chewn Thing Kwan - (Primary, 30%) - Created base file and Transform/Input/Sound functions
-				Clement Ang Yang Ying - (Secondary, 70%) - Added other component and entity functions
+				Clement Ang Yang Ying - (Secondary, 70%) - Added other component and entity functions, orgnized functions
  *
  * Description:
  * This file defines functions convert native component types to types visible
