@@ -17,6 +17,10 @@ namespace NightSnack::Scene {
 		if (level.contains("BGM")) audio->PlayBGM(level["BGM"]);
 		else audio->StopBGM();
 
+		// Refresh Scripts for loaded level
+		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();
+		script->RefreshScripts();
+
 		gameLoaded = true;
 	}
 
