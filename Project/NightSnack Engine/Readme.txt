@@ -15,7 +15,7 @@ Left Click: Interact with Editor
 
 ## Debug Controls
 ## --------------------------
-T: Activate debug-drawing
+O: Activate debug-drawing
 X: Change Animation for animation test
 F1: Display FPS
 Escape: Pauses Game Scene 
@@ -23,10 +23,9 @@ Escape: Pauses Game Scene
 
 ## Player Controls
 ## --------------------------
-Left-Arrow: Move Blue ball left
-Right-Arrow: Move Blue ball right
-Up-Arrow: "Jump" with Blue ball
-
+W: Player jump
+A: Moves player left
+D: Moves player right
 
 
 ## Step by Step Physics debug

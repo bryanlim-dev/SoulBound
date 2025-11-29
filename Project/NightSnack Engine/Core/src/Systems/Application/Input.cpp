@@ -99,9 +99,9 @@ namespace NightSnack {
 			// Map every single key/mouse press to their relevant input events
 			// 
 			// Player movement
-		case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
-		case GLFW_KEY_RIGHT: return InputEvent::InputAction::PlayerMoveRight;
-		case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJump;
+		case GLFW_KEY_A: return InputEvent::InputAction::PlayerMoveLeft;
+		case GLFW_KEY_D: return InputEvent::InputAction::PlayerMoveRight;
+		case GLFW_KEY_W: return InputEvent::InputAction::PlayerJump;
 
 			// Window tests
 		case GLFW_KEY_F1: return InputEvent::InputAction::DisplayFPS;
@@ -111,7 +111,7 @@ namespace NightSnack {
 
 			// Debug tests
 		//case GLFW_KEY_TAB: return InputEvent::InputAction::ToggleSystemTimers;
-		case GLFW_KEY_T: return InputEvent::InputAction::ToggleDebugDraw;
+		case GLFW_KEY_O: return InputEvent::InputAction::ToggleDebugDraw;
 		case GLFW_KEY_BACKSLASH: return InputEvent::InputAction::ToggleUIEditor;
 		case GLFW_KEY_X: return InputEvent::InputAction::ChangeAnimation;
 			// Mouse events

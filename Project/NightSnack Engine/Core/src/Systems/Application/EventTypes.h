@@ -32,15 +32,15 @@ namespace NightSnack {
         enum class InputAction {
 
             // Player movement
-            PlayerMoveLeft,     // Player controller with Arrow keys;
-            PlayerMoveRight,
-            PlayerJump,
-            ChangePlayer,       // Down arrow;
+            PlayerMoveLeft,     // A
+            PlayerMoveRight,    // D
+            PlayerJump,         // W
+            ChangePlayer,      // Down arrow;
 
             ChangeAnimation,    // X
 
             // Debug tests
-            ToggleDebugDraw,    // T
+            ToggleDebugDraw,    // O
             PhysicsDebugStep,   // P
 
             // Window events
