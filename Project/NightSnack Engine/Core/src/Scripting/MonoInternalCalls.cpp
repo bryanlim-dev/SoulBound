@@ -591,7 +591,13 @@ extern "C" {
 
         char* cStr = mono_string_to_utf8(name);
         g_scriptInterface->DeleteScript(id, cStr);
+    }
 
+    static MonoObject* NightSnack_GetScript(uint32_t id, MonoString* name) {
+        if (!g_scriptInterface || !name) { return nullptr; }
+
+        char* cStr = mono_string_to_utf8(name);
+        return g_scriptInterface->GetScript(id, cStr);
     }
 #pragma endregion
 
@@ -858,6 +864,7 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::HasScript_Internal", (void*)NightSnack_HasScript);
         mono_add_internal_call("ManagedScripts.Engine::CreateScript_Internal", (void*)NightSnack_CreateScript);
         mono_add_internal_call("ManagedScripts.Engine::DeleteScript_Internal", (void*)NightSnack_DeleteScript);
+        mono_add_internal_call("ManagedScripts.Engine::GetScript_Internal", (void*)NightSnack_GetScript);
 #pragma endregion
 
 

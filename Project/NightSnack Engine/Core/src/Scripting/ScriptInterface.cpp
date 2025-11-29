@@ -777,6 +777,31 @@ namespace NightSnack::Scripting {
     {
         m_coord.GetSystem<ScriptManager>()->RemoveScript(e, str);
     }
+
+    MonoObject* ScriptInterface::GetScript(Entity e, std::string str)
+    {
+        if (m_coord.HasComponent<Script>(e))
+        {
+            //Get scripts for this entity
+            auto scripts = m_coord.GetSystem<ScriptManager>()->GetEntityScripts(e);
+
+            // Iterate all scripts attached to this entity
+            for (void* scriptObj : scripts)
+            {
+                MonoObject* obj = reinterpret_cast<MonoObject*>(scriptObj);
+
+                if (!obj)
+                    continue;
+
+                MonoClass* scriptClass = mono_object_get_class(obj);
+                const char* className = mono_class_get_name(scriptClass);
+
+                if (str == className)
+                    return obj;
+            }
+		}
+        return nullptr;
+    }
 #pragma endregion
 
 

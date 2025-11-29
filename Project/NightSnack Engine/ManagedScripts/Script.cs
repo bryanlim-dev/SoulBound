@@ -360,6 +360,12 @@ namespace ManagedScripts
         //    }
 
         //}
+
+        //public T GetScript<T>(uint entityId, string name) where T : Script
+        //{
+        //    get => Engine.GetScript(entityId, name) as T;
+        //}
+
         #endregion
 
         public float DeltaTime => Engine.DeltaTime;

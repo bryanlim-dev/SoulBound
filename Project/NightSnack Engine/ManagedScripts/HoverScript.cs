@@ -10,6 +10,8 @@ namespace ManagedScripts
         [SerializeField]
         public float time = 0.0f;
 
+        RotatorScript rotate = null;
+
         public Transform transform;
 
         public override void OnStart()
@@ -27,7 +29,14 @@ namespace ManagedScripts
         public override void OnUpdate()
         {
             //Engine.DeleteScript(EntityId, "RotatorScript");
-            
+            //if (rotate == null)
+            //{
+            //    rotate = Engine.GetScript<RotatorScript>(EntityId, "RotatorScript");
+            //    Log($"Got RotatorScript: {rotate != null}, for ID: {EntityId}");
+            //    if (rotate != null)
+            //        rotate.rotationSpeed = 200.0f;
+            //}
+
             // Get current position
             Vector3 pos = transform.Position;
 

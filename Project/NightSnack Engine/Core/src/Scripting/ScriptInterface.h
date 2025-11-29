@@ -18,6 +18,7 @@
 #include "Core/ECS/Coordinator.h"
 #include "ScriptTypes.h"
 
+#include <mono/metadata/object.h>
 #include <string>
 
 namespace NightSnack::Scripting {
@@ -231,7 +232,7 @@ namespace NightSnack::Scripting {
         bool HasScript(Entity e, std::string str);
         void CreateScript(Entity e, std::string str);
         void DeleteScript(Entity e, std::string str);
-
+        MonoObject* GetScript(Entity e, std::string str);
 #pragma endregion
 
 

@@ -372,6 +372,8 @@ namespace ManagedScripts
         private static extern void CreateScript_Internal(uint entityId, string scriptName);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void DeleteScript_Internal(uint entityId, string scriptName);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Script GetScript_Internal(uint entityId, string scriptName);
         #endregion
 
         // ----------------------------
@@ -1003,6 +1005,11 @@ namespace ManagedScripts
         {
             DeleteScript_Internal(entityId, str);
 
+        }
+
+        public static T GetScript<T>(uint entityId, string str) where T : Script
+        {
+            return GetScript_Internal(entityId, str) as T;
         }
         #endregion
 
