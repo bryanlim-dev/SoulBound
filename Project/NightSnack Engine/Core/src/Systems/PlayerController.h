@@ -15,6 +15,7 @@
 
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/Input.h"
+#include "Systems/AudioSystem.h"
 
 struct PlayerFlags {
     bool movingLeft = false;
@@ -94,6 +95,7 @@ namespace NightSnack {
             if (m_coord.IsPaused()) return;
 
             m_player = FindPlayer(m_coord);
+            static bool landed = true;
 
             if (m_player == INVALID_ENTITY) { return; }
 
@@ -112,8 +114,17 @@ namespace NightSnack {
             if (m_flags.jumpRequested && m_coord.GetComponent<Collider>(m_player).isGrounded) {
                 vel.y = pcont.jumpSpeed;
                 m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
+                m_coord.GetSystem<AudioSystem>()->PlaySFX("playerJump");
+                landed = false;
             }
             m_flags.jumpRequested = false;
+
+            if (!m_coord.GetComponent<Collider>(m_player).isGrounded) landed = false;
+
+            if (!landed && m_coord.GetComponent<Collider>(m_player).isGrounded) {
+                m_coord.GetSystem<AudioSystem>()->PlaySFX("playerHurt");
+                landed = true;
+            }
         }
 
         /************************************************************************/

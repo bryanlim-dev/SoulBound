@@ -198,6 +198,7 @@ namespace NightSnack {
 
         LOADLEVEL,
         OPENMENU,
+        NOACTION,
         EXIT,
     };
     struct ButtonInfo {
@@ -358,6 +359,7 @@ namespace NightSnack {
         // Menu actions
         if (j["action"] == "LoadLevel") { b.action = ButtonAction::LOADLEVEL; }
         if (j["action"] == "OpenMenu") { b.action = ButtonAction::OPENMENU; }
+        if (j["action"] == "NoAction") { b.action = ButtonAction::NOACTION; }
         // Button type
         if (j["type"] == "Slider") { b.type = ButtonType::SLIDER; }
         if (j["type"] == "Clicker") { b.type = ButtonType::CLICKER; }

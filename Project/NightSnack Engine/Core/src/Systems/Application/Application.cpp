@@ -156,7 +156,7 @@ namespace NightSnack {
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		size_t livingEntities = m_coord.GetEntityNum();
+		//size_t livingEntities = m_coord.GetEntityNum();
 		std::string instanced = m_coord.GetSystem<GraphicsSystem>()->GetEnableInstancedRendering() ? "Yes" : "No";
 
 		std::string title = "NightSnack Engine";

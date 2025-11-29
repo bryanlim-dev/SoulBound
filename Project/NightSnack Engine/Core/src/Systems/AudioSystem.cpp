@@ -494,7 +494,7 @@ namespace NightSnack {
     {
         if (!m_coord.HasComponent<Audio>(e)) return;
         Audio const& a = m_coord.GetComponent<Audio>(e);
-        PlayAudio(a, e);
+        PlaySFX(a.audioKey);
     }
 
     // for audio component

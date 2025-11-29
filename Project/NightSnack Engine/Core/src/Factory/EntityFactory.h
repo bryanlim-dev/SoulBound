@@ -35,8 +35,7 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Constructor for Factory, requires coordinator, event dispatcher and
-		directory of "assets/GameData" (Original, not build copied version).
+		Constructor for Factory, requires coordinator and event dispatcher
 		Creates the prefabManager that will register all component loaders that
 		will help with entity creation.
 		*/
@@ -51,19 +50,54 @@ namespace NightSnack {
 			// Read Level and Prefab json files.
 			ReloadPrefabs();
 
+			// Default entity with no components.
 			m_prefabKeys["++Default"] = 0;
 		}
 
-		// Resets m_prefabKeys and loads all json files in "GameData/Prefabs"
+		/************************************************************************/
+		/*!
+		\brief
+		Resets m_prefabKeys and loads all json files in "GameData/Prefabs"
+		*/
+		/************************************************************************/
 		void ReloadPrefabs();
 
+		/************************************************************************/
+		/*!
+		\brief
+		Reloads a specific prefab -> Updates json stored by the RM
+		\param prefab
+		Name of prefab to reload.
+		*/
+		/************************************************************************/
 		void UpdatePrefab(std::string const& prefab);
 
-		// Saves all entities in the current level
+		/************************************************************************/
+		/*!
+		\brief
+		Saves all entities in the current level into a json file and returns it
+		\return
+		Level json, now containing all entity information.
+		*/
+		/************************************************************************/
 		json SaveLevelEntities();
-		// Creates entities found in a level (levelName does not have prefix, just "DefaultLevel" or "Level0" etc...)
+
+		/************************************************************************/
+		/*!
+		\brief
+		Creates entities found in a level from a level json file.
+		\param
+		Level json, containing information of entities to create.
+		*/
+		/************************************************************************/
 		void CreateLevelEntities(json const& level);
-		// Destroys all entities and Resets all ECS managers.
+
+		/************************************************************************/
+		/*!
+		\brief
+		Destroys all entities and Resets all ECS managers.
+		*/
+		/************************************************************************/
 		void DestroyLevelEntities();
 
 		/************************************************************************/
@@ -78,7 +112,7 @@ namespace NightSnack {
 		/*!
 		\brief
 		Performs necessary operations at end of Core update Loop like destroying
-		entities marked for deletion.
+		entities marked for deletion and unloading jsons.
 		*/
 		/************************************************************************/
 		void PostUpdate();
@@ -93,6 +127,7 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		Entity Create();
+
 		/************************************************************************/
 		/*!
 		\brief
@@ -161,15 +196,69 @@ namespace NightSnack {
 		/************************************************************************/
 		void RemoveEntity(Entity e);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Saves the component data of an entity to a prefab named "prefabName".
+
+		\param prefabName
+		Name of output prefab.
+
+		\param overwrite
+		Whether to overwrite an existing prefab, if 0 and existing, function will
+		not save and return false.
+		*/
+		/************************************************************************/
 		bool SaveAsPrefab(Entity e, std::string const& prefabName, bool overwrite = 0);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Store all entity component information into a json and returns it.
+		\return
+		Json containing the entity information.
+		*/
+		/************************************************************************/
 		json CacheEntityComponents(Entity e) const;
 
+		/************************************************************************/
+		/*!
+		\brief
+		Create "Prefabs" and "Levels" folder in "assets/GameData" if they don't exist.
+		*/
+		/************************************************************************/
 		void CreateFolders() const;
 
+		/************************************************************************/
+		/*!
+		\brief
+		Print names of loaded prefabs
+		*/
+		/************************************************************************/
 		void PrintPrefabNames() const;
+
+		/************************************************************************/
+		/*!
+		\brief
+		Obtain names of loaded prefabs
+		*/
+		/************************************************************************/
 		std::vector<std::string> GetPrefabNames() const;
+
+		/************************************************************************/
+		/*!
+		\brief
+		Obtain the prefab name of a specific entity
+		*/
+		/************************************************************************/
 		std::string GetEntityPrefabName(Entity e) const;
 
+		/************************************************************************/
+		/*!
+		\brief
+		Obtain materials of prefabs if they have a "Renderable" component
+		*/
+		/************************************************************************/
 		std::unordered_map<std::string, std::string> GetPrefabMaterials() const;
 
 		// Required functions from base class ISystem.
@@ -194,13 +283,10 @@ namespace NightSnack {
 		std::unordered_multimap<std::string, Entity> prefabToEntities;	// Hot reloading prefabs;
 		std::vector<std::string> m_prefabNames;
 
-		//std::filesystem::path GAMEDATA_DIR;
-
 		// ---------------------------------------------------------------------
-
 		// Split Monolithic Json file (containing all archetypes) into individual prefab json files.
 		void TransferPrefabs(std::string const& monolith);
-
+		// Rewrites all entity prefab jsons, to be used if need to update format of all json files 
 		void GlobalPrefabReload();
 
 		// Reads all json files from a given directory

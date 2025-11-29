@@ -22,12 +22,9 @@ namespace NightSnack {
             PrintPrefabNames();
             printed = true;
         }
-        //for (Entity e : m_coord.GetLivingEntities()) {
-        //    auto t = m_coord.GetComponent<Transform>(e);
-        //    std::cout << "Entity " << e << " Position<" << t.pos.x << ", " << t.pos.y << ", " << t.pos.z << ">\n";
-        //}
     }
 
+    // Called at the end of Core loop to unload prefabs and destroy entities.
     void EntityFactory::PostUpdate() {
 
         // Destroy all removed entities
@@ -93,6 +90,7 @@ namespace NightSnack {
 		return e;
 	}
 
+    // Create an entity with a json file of entity information and a Transform
     Entity EntityFactory::Create(json const& prefab, Transform const& trans) {
         Entity e = m_prefabManager.CreateFromPrefab(prefab);
         if (e == INVALID_ENTITY) { return e; }
@@ -148,10 +146,12 @@ namespace NightSnack {
 		return clone;
 	}
 
+    // Queue entity to be destroyed at end of Core loop
     void EntityFactory::RemoveEntity(Entity e) {
         m_toBeDestroyed.insert(e);
     }
 
+    // Print names of loaded prefabs
     void EntityFactory::PrintPrefabNames() const {
 
         std::vector<std::string> names = GetPrefabNames();
@@ -162,7 +162,7 @@ namespace NightSnack {
         }
         std::cout << '\n';
     }
-
+    // Obtain names of loaded prefabs
     std::vector<std::string> EntityFactory::GetPrefabNames() const {
 
         std::vector<std::string> names;
@@ -173,6 +173,7 @@ namespace NightSnack {
         return names;
     }
 
+    // Obtain materials of prefabs if they have a "Renderable" component
     std::unordered_map<std::string, std::string> EntityFactory::GetPrefabMaterials() const {
 
         std::unordered_map<std::string, std::string> materials;
@@ -191,6 +192,7 @@ namespace NightSnack {
         return materials;
     }
 
+    // Obtain the prefab name of a specific entity
     std::string EntityFactory::GetEntityPrefabName(Entity e) const {
         auto it = entityToPrefab.find(e);
         if (it != entityToPrefab.end()) {
@@ -199,6 +201,7 @@ namespace NightSnack {
         return "UnknownPrefab";
     }
 
+    // Reloads a specific prefab -> Updates json stored by the RM
     void EntityFactory::UpdatePrefab(std::string const& prefab) {
         auto entities = prefabToEntities.equal_range(prefab);
 
@@ -225,24 +228,17 @@ namespace NightSnack {
             Entity e = it->second;
             m_prefabManager.UpdateComponents(e, j);
         }
-
-        //Create(prefab, Transform{ Vec3{}, 0.f, Vec2{50.f,50.f} });
     }
 
+    // Get a specific json with a key from the RM
     json const& EntityFactory::GetArchetypes(size_t key) const {
         return m_coord.GetSystem<ResourceManager>()->GetJsonRaw(key);
     }
 
+    // Create all entities in a level given a level json
     void EntityFactory::CreateLevelEntities(json const& level) {
-
-        //size_t key = m_levelKeys[levelName];
-        //json const& level = GetArchetypes(key);
-        //m_previousLevelKey = m_currentLevelKey;
-        //m_currentLevelKey = key;
-
         // Resets ECS and destroys all current entities;
         DestroyLevelEntities();
-
         try {
             for (auto const& item : level["Entities"]) {
                 Create(std::string{ item["prefab"] }, item["Transform"]);
@@ -257,6 +253,7 @@ namespace NightSnack {
         }
     }
 
+    // Reload all prefabs in "./assets/Prefabs/"
     void EntityFactory::ReloadPrefabs() {
         // Queue old keys to be unloaded.
         for (auto const& [name, key] : m_prefabKeys) {
@@ -370,6 +367,7 @@ namespace NightSnack {
         return entities;
     }
 
+    // Store all entity component information into a json and returns it.
     json EntityFactory::CacheEntityComponents(Entity e) const {
         json j;
 
@@ -645,25 +643,20 @@ namespace NightSnack {
         }
         std::cout << "Prefabs transferred\n";
     }
-
+    // Rewrites all entity prefab jsons, to be used if need to update format of all json files 
     void EntityFactory::GlobalPrefabReload() {
-
         std::vector<std::pair<Entity, std::string>> entities;
 
 		for (std::string& s : GetPrefabNames()) {
             Entity e = Create(s, Transform{ Vec3{}, 0.f, Vec2{50.f,50.f} });
             entities.push_back({ e, s });
 		}
-
         for (auto const& [e, name] : entities) {
             SaveAsPrefab(e, name, 1);
         }
-
 		// Remove all created entities
 		for (auto const& [e, name] : entities) {
 			RemoveEntity(e);
 		}
-
     }
-
 }	// NightSnack

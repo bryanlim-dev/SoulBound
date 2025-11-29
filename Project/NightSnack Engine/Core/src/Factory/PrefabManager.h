@@ -118,6 +118,21 @@ namespace NightSnack {
 			return e;
 		}
 
+		/************************************************************************/
+		/*!
+		\brief
+		Very similar to CreateFromPrefab, but slightly refactored to use to reload
+		entity prefabs
+
+		\param prefabName
+		Name of desired prefab.
+		\param archetypes
+		Container of prefabs.
+
+		\return
+		ID of created entity.
+		*/
+		/************************************************************************/
 		void UpdateComponents(Entity e, json const& prefab) {
 			// Update all components from prefab definition;
 			for (auto& [compName, compData] : prefab.items()) {
