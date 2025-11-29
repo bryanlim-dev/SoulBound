@@ -73,6 +73,9 @@ namespace NightSnack
 						// List all entities
                         for (Entity e : entities)
                         {
+							// Hide SceneCam from hierarchy
+                            if (m_uiNames->count(e) && (*m_uiNames)[e] == "SceneCam") continue;
+
 							// Assign default UI name if not present
                             if (m_uiNames->find(e) == m_uiNames->end()) {
                                 (*m_uiNames)[e] = factory ? factory->GetEntityPrefabName(e) : "Entity " + std::to_string(e);
