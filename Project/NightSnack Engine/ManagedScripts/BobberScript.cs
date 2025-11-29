@@ -25,8 +25,8 @@ namespace ManagedScripts
             Vector3 pos = transform.Position;
 
             // Bob along Y-axis
-            pos.Y += (float)Math.Sin(time) * bobSpeed * DeltaTime;
-            time += DeltaTime;
+            pos.Y += (float)Math.Sin(time * 2.0f) * bobSpeed * DeltaTime;
+            time += DeltaTime / 2.0f;
 
             // Update ECS transform
             transform.Position = pos;

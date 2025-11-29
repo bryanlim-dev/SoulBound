@@ -11,5 +11,10 @@
         "isWireframe": false,
         "materialName": "Play",
         "meshName": "square"
+    },
+    "Script": {
+        "name": [
+            "WiggleScript"
+        ]
     }
 }

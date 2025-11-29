@@ -7,7 +7,7 @@ namespace ManagedScripts
     //e.g.
     //[SerializeField]
     //public const float rotationSpeed = 50.0f;
-    public sealed class SerializeFieldAttribute2 : Attribute
+    public sealed class SerializeFieldAttribute : Attribute
     {
         //Empty by design
         //Using _____Atribute allows ____ to be attached to variables
