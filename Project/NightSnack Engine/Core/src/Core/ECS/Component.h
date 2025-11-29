@@ -186,24 +186,24 @@ namespace NightSnack {
     };
 
     enum ButtonType {
-        GAMEMENU,
-        SETTINGS,
-        EXIT
+        CLICKER,
+        SLIDER,
+
+        INVALID_BUTTON
     };
     enum ButtonAction {
         PLAYAUDIO,
         PLAYAUDIO2,
         PLAYAUDIO3,
-        CHANGELEVELS
+
+        LOADLEVEL,
+        OPENMENU,
+        EXIT,
     };
     struct ButtonInfo {
         ButtonAction action;
         ButtonType type;
-
-        bool isHovered{ false };
-        bool wasClicked{ false };
-
-        //Vec2 screenPos{};
+        std::string target;
     };
 
     // Add more Components here if necessary...
@@ -338,25 +338,31 @@ namespace NightSnack {
     }
 
     inline void from_json(const json& j, ButtonInfo& b) {
+        if (!j.contains("action") 
+            || !j.contains("type") 
+            || !j.contains("target")) {
+            b.type = ButtonType::INVALID_BUTTON;
+            return;
+        }
+
         if (j["action"] == "PlayAudio") {
             b.action = ButtonAction::PLAYAUDIO;
         }
-
         if (j["action"] == "PlayAudio2") {
             b.action = ButtonAction::PLAYAUDIO2;
         }
-
         if (j["action"] == "PlayAudio3") {
             b.action = ButtonAction::PLAYAUDIO3;
         }
 
-        if (j["action"] == "ChangeLevel") {
-            b.action = ButtonAction::CHANGELEVELS;
-        }
+        // Menu actions
+        if (j["action"] == "LoadLevel") { b.action = ButtonAction::LOADLEVEL; }
+        if (j["action"] == "OpenMenu") { b.action = ButtonAction::OPENMENU; }
+        // Button type
+        if (j["type"] == "Slider") { b.type = ButtonType::SLIDER; }
+        if (j["type"] == "Clicker") { b.type = ButtonType::CLICKER; }
 
-        if (j["type"] == "GameMenu") {
-            b.type = ButtonType::GAMEMENU;
-        }
+        b.target = j["target"];
     }
 
     // COLLISION ==================================================
@@ -398,7 +404,10 @@ namespace NightSnack {
     // Audio
     inline void from_json(const json& j, Audio& a) {
         j.at("audioKey").get_to(a.audioKey);
+
+        if (j.contains("volume"))
         j.at("volume").get_to(a.volume);
+
         j.at("loop").get_to(a.loop);
         j.at("playOnStart").get_to(a.playOnStart);
         // j.at("is3D").get_to(a.is3D);

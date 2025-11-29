@@ -490,8 +490,15 @@ namespace NightSnack {
         return m_sfxVolume;
     }
 
+    void AudioSystem::PlayEntityAudio(Entity e) 
+    {
+        if (!m_coord.HasComponent<Audio>(e)) return;
+        Audio const& a = m_coord.GetComponent<Audio>(e);
+        PlayAudio(a, e);
+    }
+
     // for audio component
-    void AudioSystem::PlayAudio(Audio& audio, Entity entity)
+    void AudioSystem::PlayAudio(Audio const& audio, Entity entity)
     {
         FMOD::Channel* channel = nullptr;
 

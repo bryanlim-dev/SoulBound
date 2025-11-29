@@ -1,6 +1,81 @@
 #include "SceneManager.h"
 
+
+static bool ButtonCollisionCheck(float mx, float my, NightSnack::Transform const& t, NightSnack::Collider const& c) {
+	if (c.shape == NightSnack::ShapeType::Circle) {
+		float distsq = mx * mx + my + my;
+		if (c.radius * c.radius <= distsq) { return true; }
+	}
+	else {
+		float halfWidth = c.width * 0.5f;
+		float halfHeight = c.height * 0.5f;
+
+		float left = t.pos.x - halfWidth;
+		float right = t.pos.x + halfWidth;
+		float bottom = t.pos.y - halfHeight;
+		float top = t.pos.y + halfHeight;
+
+		return (mx >= left && mx <= right && my >= bottom && my <= top);
+	}
+	return false;
+}
+
 namespace NightSnack::Scene {
+
+	void SceneManager::Update() {
+		// If somehow no level is loaded, return to default scene
+		if (!m_gameLoaded) LoadLevel("MainMenu");
+
+		// In the event of mouseclick check collision of all buttons
+		if (m_mouseClicked) {
+			CheckButtonCollisions();
+			m_mouseClicked = false;
+		}
+	}
+
+	void SceneManager::RegisterButtons() {
+		Button loadButton(ButtonAction::LOADLEVEL, [](Coordinator& c, std::string const& s) {
+			if (s.empty()) { return; }
+			c.GetSystem<Scene::SceneManager>()->LoadLevel(s);
+		});
+		m_buttons.emplace(ButtonAction::LOADLEVEL, loadButton);
+
+		//Button menuButton(ButtonAction::OPENMENU, [](Coordinator& c, std::string const& s) {
+		//	if (s.empty()) { return; }
+		//	c.GetSystem<Scene::SceneManager>()->OpenMenu(s);
+		//	});
+		//m_buttons[ButtonAction::OPENMENU] = menuButton;
+	}
+
+	void SceneManager::CheckButtonCollisions() {
+		float mx = m_coord.GetSystem<InputSystem>()->GetMouseWorldPosX();
+		float my = m_coord.GetSystem<InputSystem>()->GetMouseWorldPosY();
+
+		for (Entity e : m_entities) {
+			// Get button info
+			ButtonInfo const& b = m_coord.GetComponent<ButtonInfo>(e);
+			if (b.type == INVALID_BUTTON) { continue; }
+
+			Transform const& t = m_coord.GetComponent<Transform>(e);
+			Collider const& c = m_coord.GetComponent<Collider>(e);
+
+			// Check collision with mouse
+			if (!ButtonCollisionCheck(mx, my, t, c)) { continue; }
+
+			std::unordered_map<ButtonAction, Button>::iterator it = m_buttons.find(b.action);
+			if (it != m_buttons.end()) {
+				// Play audio if available
+				m_coord.GetSystem<AudioSystem>()->PlayEntityAudio(e);
+				// Invoke button Callable;
+				it->second(m_coord, b.target);
+				// Only interact with 1 button
+				return;	
+			}
+			else {
+				std::cerr << "[SceneManager] Button action of Entity: " << e << "not registered\n";
+			}
+		}
+	}
 	
 	void SceneManager::LoadLevel(std::string const& levelname) {
 
@@ -21,7 +96,7 @@ namespace NightSnack::Scene {
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();
 		script->RefreshScripts();
 
-		gameLoaded = true;
+		m_gameLoaded = true;
 	}
 
 	bool SceneManager::SaveLevel(std::string const& levelname, bool overwrite) {
@@ -153,6 +228,9 @@ namespace NightSnack::Scene {
 	void SceneManager::ReloadLevels() {
 
 		// Clear level keys.
+		for (auto [n, key] : m_levelKeys) {
+			m_coord.GetSystem<ResourceManager>()->UnloadJson(key);
+		}
 		m_levelKeys.clear();
 
 		std::string fullpath = LEVELS_PATH;

@@ -9,11 +9,11 @@ namespace ManagedScripts
     public class WiggleScript : Script
     {
         [SerializeField]
-        public float wiggleAmount = 5.0f;   // Amount of wiggle
+        public float wiggleAmount = 4.0f;   // Amount of wiggle
         [SerializeField]
         public float interval = 2f;         // Time interval between wiggles
         [SerializeField]
-        public float duration = 0.3f;         // Time interval between wiggles
+        public float duration = 0.15f;      // Time interval between wiggles
         [SerializeField]
         public float time = 0.0f;
 

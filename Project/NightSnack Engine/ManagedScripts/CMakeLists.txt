@@ -22,4 +22,5 @@ set_target_properties(ManagedScripts PROPERTIES
     DOTNET_SDK "Microsoft.NET.Sdk"
     VS_GLOBAL_ROOTNAMESPACE "ManagedScripts"
     VS_DOTNET_REFERENCES "System;System.Core"
+    DOTNET_BUILD_ALWAYS true
 )

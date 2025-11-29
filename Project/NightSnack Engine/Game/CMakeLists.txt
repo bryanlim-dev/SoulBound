@@ -92,7 +92,7 @@ add_custom_command(TARGET Game POST_BUILD
 add_custom_command(TARGET Game POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory
         "${GAME_OUTPUT_DIR}/assets/Scripts"
-    COMMAND ${CMAKE_COMMAND} -E copy
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "$<TARGET_FILE:ManagedScripts>"
         "${GAME_OUTPUT_DIR}/assets/Scripts/"
     COMMENT "Copying ManagedScripts.dll to assets/Scripts..."

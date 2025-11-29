@@ -476,8 +476,8 @@ namespace NightSnack {
         // BUTTON ---------------------------------------------------------
         if (m_coord.HasComponent<ButtonInfo>(e)) {
             ButtonInfo const& b = m_coord.GetComponent<ButtonInfo>(e);
+            std::string action, type, target;
 
-            std::string action, type;
             switch (b.action) {
             case ButtonAction::PLAYAUDIO:
                 action = "PlayAudio";
@@ -488,25 +488,20 @@ namespace NightSnack {
             case ButtonAction::PLAYAUDIO3:
                 action = "PlayAudio3";
                 break;
-            case ButtonAction::CHANGELEVELS:
-                action = "ChangeLevel";
-                break;
-            default:
-                type = "Unknown";
-                break;
+
+            case ButtonAction::LOADLEVEL: action = "LoadLevel"; break;
+            case ButtonAction::OPENMENU: action = "OpenMenu"; break;
+            default: type = "Unknown"; break;
             }
+
             switch (b.type) {
-            case ButtonType::GAMEMENU:
-                type = "GameMenu";
-                break;
-            default:
-                type = "Unknown";
-                break;
+            case ButtonType::CLICKER: type = "Clicker"; break;
+            case ButtonType::SLIDER: type = "Slider"; break;
+            default: type = "Unknown";  break;
             }
-            j["ButtonInfo"] = {
-                {"action", action},
-                {"type", type}
-            };
+            target = b.target;
+
+            j["ButtonInfo"] = { {"action", action}, {"type", type}, {"target", target} };
         }
         // SCRIPT ---------------------------------------------------------
         if (m_coord.HasComponent<Script>(e)) {

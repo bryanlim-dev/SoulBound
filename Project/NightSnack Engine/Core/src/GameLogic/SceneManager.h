@@ -2,6 +2,8 @@
 
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/IEvent.h"
+#include "Systems/Application/Input.h"
+
 #include "Factory/EntityFactory.h"
 #include "Systems/AudioSystem.h"
 #include "Scripting/ScriptManager.h"
@@ -13,10 +15,33 @@
 
 namespace NightSnack::Scene {
 
+	class Button {
+	public:
+		// Construct button with action and callable
+		Button(ButtonAction a, void(*func)(Coordinator& c, std::string const&))
+			: m_action{ a }, m_callable{ func } {
+		}
+		Button(Button const& b) noexcept {
+			m_action = b.m_action;
+			m_callable = b.m_callable;
+		}
+		// Invoke callable, passing a string target
+		void operator()(Coordinator& c, std::string const& s) { m_callable(c, s); }
+
+	private:
+		ButtonAction m_action;
+		void(*m_callable)(Coordinator& c, std::string const&);
+	};
+
 	class SceneManager : public ISystem {
 	public:
 		SceneManager(Coordinator& coord, EventDispatcher& disp)
 			: m_coord{ coord }, m_dispatcher{ &disp } {
+
+			// set system signature
+			m_systemSignature.set(GetComponentTypeID<ButtonInfo>());
+			m_systemSignature.set(GetComponentTypeID<Transform>());
+			m_systemSignature.set(GetComponentTypeID<Collider>());
 
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
@@ -31,15 +56,20 @@ namespace NightSnack::Scene {
 							m_coord.Unpause();
 						}
 						break;
+					case InputEvent::InputAction::ClickLMB:
+						m_mouseClicked = true;
+						break;
 					}
 				}
 			});
 
 			// Reads level files
 			ReloadLevels();
+			// Register buttons
+			RegisterButtons();
 		}
 
-		void Update() override { if (!gameLoaded) LoadLevel("DefaultLevel"); }
+		void Update() override;
 
 		// Resets m_levelKeys and loads all json files in "GameData/Levels"
 		void ReloadLevels();
@@ -49,6 +79,8 @@ namespace NightSnack::Scene {
 		void RemoveOverlayMenu();
 		
 		void SetOverlayMenu(std::string const& filename);
+		void RegisterButtons();
+		void CheckButtonCollisions();
 
 		// Load Level - Sets up everything needed to spawn level
 		// Calls factory to create entities
@@ -67,11 +99,11 @@ namespace NightSnack::Scene {
 	private:
 		Signature m_systemSignature{};
 		EventDispatcher* m_dispatcher = nullptr;
-
 		Coordinator& m_coord;
 
 		std::vector<std::pair<json, Transform>> m_levelCache;
 		std::vector<std::pair<std::string, Transform>> m_overlayMenu;
+		std::unordered_map<ButtonAction, Button> m_buttons;
 
 		std::unordered_map<std::string, size_t> m_levelKeys;
 		size_t m_currentLevelKey{};
@@ -80,9 +112,9 @@ namespace NightSnack::Scene {
 		std::vector<Entity> m_overlayEntites;
 
 		// Overlay menu
-		bool gameLoaded = false;
+		bool m_gameLoaded = false;
 		bool overlayOn = false;
-
+		bool m_mouseClicked = false;
 	};
 
 	// LEVELS

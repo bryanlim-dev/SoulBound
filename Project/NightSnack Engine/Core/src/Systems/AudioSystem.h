@@ -186,7 +186,8 @@ namespace NightSnack {
 		 * @param a reference to the Audio component
 		 * @param entity the entity to play audio for
          */
-        void PlayAudio(Audio& a, Entity entity);
+        void PlayAudio(Audio const& audio, Entity entity);
+        void PlayEntityAudio(Entity e);
 
         //void StopAudio(Entity entity);
 
