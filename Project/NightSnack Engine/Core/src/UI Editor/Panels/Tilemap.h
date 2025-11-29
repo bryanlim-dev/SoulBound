@@ -124,6 +124,7 @@ namespace NightSnack
         int tileTextureHeight = 0;
     };
 
+	// Draw the settings for the tile overlay in the scene.
     inline void Tilemap::DrawTilemapSettings()
     {
         ImGui::Checkbox("Tile Overlay", &tileOverlayEnabled);
@@ -131,6 +132,7 @@ namespace NightSnack
         if (ImGui::Button("Open Tile Editor")) showTileEditor = true;
     }
 
+	// Draw the tilemap overlay on the scene panel.
     inline void Tilemap::DrawTilemapOverlay(const ImVec2& imageTopLeft, const ImVec2& imageSize,
         float worldLeft, float worldRight, float worldBottom, float worldTop) const
 
@@ -152,6 +154,7 @@ namespace NightSnack
         }
     }
 
+	// Draw the tile editor panel for selecting and placing tiles.
     inline void Tilemap::DrawTileEditor(Coordinator& coord, Entity selectedEntity)
     {
 		(void)selectedEntity; // Unused for now
@@ -201,11 +204,11 @@ namespace NightSnack
             ImGui::EndDragDropTarget();
         }
 
-        // --- Show drag instruction if no texture ---
+        // Show drag instruction if no texture
         if (!tileTextureID)
             ImGui::Text("Drag a texture from the Assets panel here.");
 
-        // --- Pan and Zoom Controls ---
+        // Pan and Zoom Controls
         ImVec2 windowPos = ImGui::GetWindowPos();
         ImVec2 windowSize = ImGui::GetWindowSize();
         ImVec2 mousePos = ImGui::GetMousePos();
@@ -242,7 +245,7 @@ namespace NightSnack
         }
 
         ImDrawList* draw_list = ImGui::GetWindowDrawList();
-        // --- Infinite Grid Drawing ---
+        // Infinite Grid Drawing
         ImVec2 gridOrigin = tileTextureID ? textureCenter : ImVec2(windowPos.x + windowSize.x * 0.5f, windowPos.y + windowSize.y * 0.5f);
         gridOrigin.x += editorPan.x;
         gridOrigin.y += editorPan.y;
@@ -262,7 +265,7 @@ namespace NightSnack
         for (float y = firstY; y <= bottom; y += scaledGridSize)
             draw_list->AddLine(ImVec2(left, y), ImVec2(right, y), gridColor);
 
-        // --- Draw Texture at Actual Pixel Size ---
+        // Draw Texture at Actual Pixel Size
         if (tileTextureID)
         {
             float texWidth = tileTextureWidth * editorZoom;
@@ -287,7 +290,7 @@ namespace NightSnack
             }
         }
 
-        // --- Tile Selection ---
+        // Tile Selection
         if (tileTextureID)
         {
             float cellWidth = gridSize * editorZoom;
@@ -317,6 +320,7 @@ namespace NightSnack
         ImGui::End();
     }
 
+	// Helper function to convert world to screen coordinates in image.
     inline ImVec2 Tilemap::WorldToScreen(float wx, float wy, float worldLeft, float worldRight,
         float worldBottom, float worldTop, ImVec2 imageTopLeft, ImVec2 imageSize)
     {
