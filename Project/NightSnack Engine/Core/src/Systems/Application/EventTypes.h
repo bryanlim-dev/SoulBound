@@ -7,7 +7,7 @@
  * Description: This file contains the declarations of various event types 
  *              used in the engine.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -30,23 +30,6 @@ namespace NightSnack {
     public:
 
         enum class InputAction {
-            // Manipulation of a single textured object
-            ScaleUp,            // D
-            ScaleDown,          // A
-            Rotate,             // R
-            ChangeAnimation,    // X
-
-            // Physics tests
-            DynamicBallTest,    // F
-            GravityBallTest,    // G
-
-            // Creation of entities
-            CreateSquare,       // 1
-            CreateCircle,       // 2
-            CreateBananaCircle, // 3 -> texture entity;
-            StressTest,         // Space
-            LayerTest,          // L
-            EndStressTest,      // Backspace
 
             // Player movement
             PlayerMoveLeft,     // Player controller with Arrow keys;
@@ -54,14 +37,16 @@ namespace NightSnack {
             PlayerJump,
             ChangePlayer,       // Down arrow;
 
+            ChangeAnimation,    // X
+
             // Debug tests
-            //ToggleSystemTimers, // TAB
             ToggleDebugDraw,    // T
             PhysicsDebugStep,   // P
 
             // Window events
 			DisplayFPS,         // F1
             ToggleFullscreen,   // F11
+            PauseGame,          // Escape
 
             // Mouse events
             ClickLMB,           // LMB

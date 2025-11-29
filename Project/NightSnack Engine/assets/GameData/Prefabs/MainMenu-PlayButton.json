@@ -1,0 +1,31 @@
+{
+    "ButtonInfo": {
+        "action": "LoadLevel",
+        "target": "DefaultLevel",
+        "type": "Clicker"
+    },
+    "Collider": {
+        "height": 100.0,
+        "isStatic": true,
+        "radius": 0.0,
+        "shape": "AABB",
+        "type": "Trigger",
+        "width": 265.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "Play",
+        "meshName": "square"
+    },
+    "Script": {
+        "name": [
+            "WiggleScript"
+        ]
+    },
+    "Audio": {
+        "audioKey": "buttonClick",
+        "loop": false,
+        "playOnStart": false,
+        "isPlaying": false
+    }
+}

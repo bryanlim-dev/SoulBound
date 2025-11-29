@@ -45,6 +45,9 @@ namespace NightSnack {
 			Init();
 
 			// Dispatcher lambda
+
+			// Graphics event
+			// Whenever a new texture has been created, update the AnimationClipsMap
 			m_dispatcher->Subscribe<GraphicsEvent>([this](const GraphicsEvent& event) {
 				switch (event.graphicsAction) {
 				case GraphicsEvent::GraphicsAction::CreateTexture:
@@ -54,6 +57,8 @@ namespace NightSnack {
 				}
 			});
 
+			// Input event
+			// Key press to change a single entity animation
 			m_dispatcher->Subscribe<InputEvent>([this](const InputEvent& event) {
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
@@ -81,21 +86,75 @@ namespace NightSnack {
 		Main update called by the core.
 		It updates the UV coordinates that will be used to render by the Graphics System, 
 		based on which frame of the current animation clip is playing.
-
-		\param[in] steps
-		The number of steps in the simulation
 		*/
 		/************************************************************************/
 		void Update() override;
 
+		/************************************************************************/
+		/*!
+		\brief
+		Update the AnimationClipsMap whenever a new texture has been created. 
+		Create AnimationClips from a created texture, based on its naming convention. 
+		*/
+		/************************************************************************/
 		void UpdateAnimationClipsMap(); 
 
+		/************************************************************************/
+		/*!
+		\brief
+		Create AnimationClips. 
+		Slice the texture into the respective number of Animation clips and Animation frames. 
+
+		\param[in] textureName
+		The name of the created texture.
+
+		\param[in] tex
+		Pointer to the texture image
+
+		\param[in] cols
+		The number of AnimationFrames to slice.
+
+		\param[in] rows
+		The number of AnimationClips to slice.
+		*/
+		/************************************************************************/
 		void CreateAnimationClips(std::string textureName, Texture* tex, int cols, int rows);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Get the names of all Animation Clip names, owned by a specific entity.
+
+		\param[in] e
+		The specified entity
+
+		\return 
+		A vector strings of all Animation Clip names that the entity owns. 
+		*/
+		/************************************************************************/
 		std::vector<std::string> GetSpritesheetAnimationClipsNames(Entity e);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Set the current animation clip for an entity
+
+		\param[in] animationClipName
+		The animation clip name to be the current one
+
+		\param[in] e
+		The specified entity
+		*/
+		/************************************************************************/
 		void SetCurrentAnimationClip(const std::string& animationClipName, Entity e);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Change the current animation clip of a single specified entity, to a random one, 
+		but within the same spritesheet. 
+		*/
+		/************************************************************************/
 		void ChangeAnimation();
 
 		/************************************************************************/

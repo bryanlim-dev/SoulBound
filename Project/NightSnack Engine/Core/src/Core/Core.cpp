@@ -94,7 +94,6 @@ namespace NightSnack {
 		AddSystem<TextSystem>(m_coord, core_dispatcher);
 
 
-		AddSystem<GameUI>(m_coord, core_dispatcher);
 		AddSystem<CameraSystem>(m_coord, core_dispatcher);
 		AddSystem<EntityFactory>(m_coord, core_dispatcher);
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);

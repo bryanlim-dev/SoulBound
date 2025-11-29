@@ -22,6 +22,10 @@ namespace NightSnack {
             PrintPrefabNames();
             printed = true;
         }
+        //for (Entity e : m_coord.GetLivingEntities()) {
+        //    auto t = m_coord.GetComponent<Transform>(e);
+        //    std::cout << "Entity " << e << " Position<" << t.pos.x << ", " << t.pos.y << ", " << t.pos.z << ">\n";
+        //}
     }
 
     void EntityFactory::PostUpdate() {
@@ -40,9 +44,32 @@ namespace NightSnack {
 
     }
 
+    // Default create an entity with no components (except transform)
+    Entity EntityFactory::Create() {
+
+        Entity e = m_coord.CreateEntity();
+        if (e == INVALID_ENTITY) { 
+            std::cerr << "[EntityFactory] Failed to default create Entity\n";
+            return e; 
+        }
+
+        Transform trans{ Vec3{0.f, 0.f, 0.f}, 0.f, Vec2{50.f, 50.f} };
+        trans.layer = LayerType::GAMELAYER;
+
+        m_coord.AddComponent<Transform>(e, trans);
+        entityToPrefab[e] = "++Default";
+        prefabToEntities.insert({ "++Default", e });
+
+        m_coord.BufferEntitySignature(e);
+
+        return e;
+    }
+
+    // Create with prefab name
     Entity EntityFactory::Create(std::string const& name) {
 
         size_t key = m_prefabKeys[name];
+        if (key == 0) return Create();
 
         Entity e = m_prefabManager.CreateFromPrefab(GetArchetypes(key));
         if (e == INVALID_ENTITY) { return e; }
@@ -51,7 +78,7 @@ namespace NightSnack {
 
         trans.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
         trans.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
-        trans.pos.z = 1.f;
+        trans.pos.z = 0.f;
         // default layer...
         trans.layer = LayerType::GAMELAYER;
 
@@ -84,6 +111,7 @@ namespace NightSnack {
     Entity EntityFactory::Create(std::string const& name, Transform const& trans) {
 
         size_t key = m_prefabKeys[name];
+        if (key == 0) return Create();
 
         Entity e = m_prefabManager.CreateFromPrefab(GetArchetypes(key));
         if (e == INVALID_ENTITY) { return e; }
@@ -98,20 +126,24 @@ namespace NightSnack {
 	}
 
     // Clone an entity prefab at specific locations, scaling etc...
-    Entity EntityFactory::Clone(Entity e, Transform trans) {
+    Entity EntityFactory::Clone(Entity e) {
 
         std::string name = entityToPrefab[e];
         size_t key = m_prefabKeys[name];
+        if (key == 0) return Create();
 
         Entity clone = m_prefabManager.CreateFromPrefab(GetArchetypes(key));
         if (clone == INVALID_ENTITY) { return clone; }
 
-        m_coord.ModifyComponent<Transform>(e) = trans;
-        entityToPrefab[e] = name;
-        prefabToEntities.insert({name, e});
+        Transform& t = m_coord.ModifyComponent<Transform>(clone);
+        t = m_coord.GetComponent<Transform>(e);
+        t.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
+        t.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
+
+        entityToPrefab[clone] = name;
+        prefabToEntities.insert({name, clone});
 
         m_coord.BufferEntitySignature(clone);
-
 
 		return clone;
 	}
@@ -148,6 +180,7 @@ namespace NightSnack {
 
         for (it = m_prefabKeys.begin(); it != m_prefabKeys.end(); ++it) {
 
+            if (it->second == 0) continue;
             json const& prefab = GetArchetypes(it->second);
 
             if (prefab.contains("Renderable")) {
@@ -200,26 +233,27 @@ namespace NightSnack {
         return m_coord.GetSystem<ResourceManager>()->GetJsonRaw(key);
     }
 
-    void EntityFactory::LoadLevel(std::string const& levelName) {
+    void EntityFactory::CreateLevelEntities(json const& level) {
 
-        size_t key = m_levelKeys[levelName];
-        json const& level = GetArchetypes(key);
+        //size_t key = m_levelKeys[levelName];
+        //json const& level = GetArchetypes(key);
+        //m_previousLevelKey = m_currentLevelKey;
+        //m_currentLevelKey = key;
 
         // Resets ECS and destroys all current entities;
-        UnloadLevel();
-        m_previousLevelKey = m_currentLevelKey;
-        m_currentLevelKey = key;
+        DestroyLevelEntities();
 
         try {
             for (auto const& item : level["Entities"]) {
                 Create(std::string{ item["prefab"] }, item["Transform"]);
-            }
-            for (Entity e : m_coord.GetLivingEntities()) {
-                m_coord.BufferEntitySignature(e);
+                //std::cout << "[EntityFactory] Creating prefab<" << item["prefab"] << "> at ("
+                //    << item["Transform"]["Position"]["x"] << ", "
+                //    << item["Transform"]["Position"]["y"] << ", "
+                //    << item["Transform"]["Position"]["z"] << ")\n";
             }
         }
         catch (...) {
-            std::cerr << "[EntityFactory]: Failed to created entities for Level '" << levelName << "'\n";
+            std::cerr << "[EntityFactory]: Failed to create entities for Level\n";
         }
     }
 
@@ -233,17 +267,6 @@ namespace NightSnack {
         // Reread json files from "GameData/Prefabs", assign keys into m_prefabKeys.
         //std::filesystem::path path = std::filesystem::canonical(PREFABS_PATH);
         LoadJsonFolder(m_prefabKeys, "Prefabs/");
-    }
-    void EntityFactory::ReloadLevels() {
-        // Queue old keys to be unloaded.
-        for (auto const& [name, key] : m_levelKeys) {
-            m_toBeUnloaded.emplace_back(key);
-        }
-        // Clear level keys.
-        m_levelKeys.clear();
-        // Reread json files from "GameData/Levels", assign keys into m_levelKeys.
-        //std::filesystem::path path = std::filesystem::canonical(LEVELS_PATH);
-        LoadJsonFolder(m_levelKeys, "Levels/");
     }
 
     // Loads all json files within a folder given a directory path
@@ -271,20 +294,9 @@ namespace NightSnack {
     }
 
     // Save all Living entities into a Level json file (Prefab Name and Transform)
-    bool EntityFactory::SaveLevel(std::string const& levelName, bool overwrite) {
+    json EntityFactory::SaveLevelEntities() {
 
-        // Output file path
-        std::filesystem::path outPath = std::filesystem::path(PRIME_LEVELS_PATH) / (levelName + ".json");
-
-        // Check if a prefab already exists with the same name
-        if (std::filesystem::exists(outPath) && !overwrite) {
-            std::cout << "There already exists a level named '" << levelName << "' at '" << "GameData/Levels" << '\n';
-            return false;
-        }
-
-        // Output json object
-        json level;
-        level["Entities"] = json::array();
+        json entities = json::array();
 
         // Iterate through living entities;
         for (Entity e : m_coord.GetLivingEntities()) {
@@ -292,6 +304,11 @@ namespace NightSnack {
 
             Transform const& t = m_coord.GetComponent<Transform>(e);
             std::string prefabName = entityToPrefab[e];
+            if (prefabName == "++Default" && !t.prefabModified) {
+                std::cerr << "Default entity not saved\n";
+                continue;
+            }
+            else if (t.prefabModified) prefabName = "Entity";
 
             if (t.prefabModified) {
                 // Output file path
@@ -305,8 +322,8 @@ namespace NightSnack {
                     // prefab1, prefab2 etc...
                     newPrefabName = prefabName + std::to_string(cnt);
                     // check if new name already exists;
-                    std::filesystem::path outPath = std::filesystem::path(PRIME_PREFABS_PATH) / (newPrefabName + ".json");
-                    exists = std::filesystem::exists(outPath);
+                    std::filesystem::path tempout = std::filesystem::path(PRIME_PREFABS_PATH) / (newPrefabName + ".json");
+                    exists = std::filesystem::exists(tempout);
                     cnt++;
                 }
                 j["prefab"] = newPrefabName;
@@ -348,32 +365,9 @@ namespace NightSnack {
             };
 
             // Insert into Level json
-            level["Entities"].push_back(j);
+            entities.push_back(j);
         }
-        // Write file -------------------------------------------------------
-        std::ofstream ofs(outPath);
-        if (!ofs.is_open()) {
-            std::cerr << "Failed to write level file: " << outPath << "\n";
-            return false;
-        }
-
-        ofs << std::setw(4) << level;
-        ofs.close();
-
-        // Update ResourceManager -------------------------------------------
-        auto resource = m_coord.GetSystem<ResourceManager>();
-        if (m_levelKeys.find(levelName) != m_levelKeys.end()) {
-            // Level exists and was overwritten
-            resource->UpdateJson(m_levelKeys[levelName], level);
-        }
-        else {
-            // New Level has been saved
-            std::string loadPath = "../../../../assets/GameData/Levels/" + levelName + ".json";
-            resource->LoadJson(loadPath, m_levelKeys[levelName]);
-        }
-
-        std::cout << "Saved level to: " << outPath << "\n";
-        return true;
+        return entities;
     }
 
     json EntityFactory::CacheEntityComponents(Entity e) const {
@@ -482,8 +476,8 @@ namespace NightSnack {
         // BUTTON ---------------------------------------------------------
         if (m_coord.HasComponent<ButtonInfo>(e)) {
             ButtonInfo const& b = m_coord.GetComponent<ButtonInfo>(e);
+            std::string action, type, target;
 
-            std::string action, type;
             switch (b.action) {
             case ButtonAction::PLAYAUDIO:
                 action = "PlayAudio";
@@ -494,25 +488,20 @@ namespace NightSnack {
             case ButtonAction::PLAYAUDIO3:
                 action = "PlayAudio3";
                 break;
-            case ButtonAction::CHANGELEVELS:
-                action = "ChangeLevel";
-                break;
-            default:
-                type = "Unknown";
-                break;
+
+            case ButtonAction::LOADLEVEL: action = "LoadLevel"; break;
+            case ButtonAction::OPENMENU: action = "OpenMenu"; break;
+            default: type = "Unknown"; break;
             }
+
             switch (b.type) {
-            case ButtonType::GAMEMENU:
-                type = "GameMenu";
-                break;
-            default:
-                type = "Unknown";
-                break;
+            case ButtonType::CLICKER: type = "Clicker"; break;
+            case ButtonType::SLIDER: type = "Slider"; break;
+            default: type = "Unknown";  break;
             }
-            j["ButtonInfo"] = {
-                {"action", action},
-                {"type", type}
-            };
+            target = b.target;
+
+            j["ButtonInfo"] = { {"action", action}, {"type", type}, {"target", target} };
         }
         // SCRIPT ---------------------------------------------------------
         if (m_coord.HasComponent<Script>(e)) {
@@ -557,6 +546,8 @@ namespace NightSnack {
         }
         // JSON object that will become the prefab content
         json j = CacheEntityComponents(e);
+        if (j.contains("name")) j.erase("name");
+        if (j.contains("modified")) j.erase("modified");
 
         // Write to file
         std::ofstream ofs(outPath);
@@ -619,7 +610,7 @@ namespace NightSnack {
     }
 
     // Destroys all entities and Resets all ECS managers.
-    void EntityFactory::UnloadLevel() {
+    void EntityFactory::DestroyLevelEntities() {
         for (Entity e{}; e < MAX_ENTITIES; ++e) {
             m_coord.DestroyEntity(e);
         }
@@ -627,6 +618,7 @@ namespace NightSnack {
 
         entityToPrefab.clear();
         prefabToEntities.clear();
+        m_prefabKeys["++Default"] = 0;
     }
 
     // Helper function to split Monolithic Json file (containing all archetypes)

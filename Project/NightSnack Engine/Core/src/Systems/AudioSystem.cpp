@@ -81,12 +81,12 @@ namespace NightSnack {
     // updates the fmod system
     void AudioSystem::Update()
     {
-        static bool first = true;
-        if (first) {
-            // start playing main menu music
-            PlayBGM("mainMenu");
-            first = false;
-        }
+        //static bool first = true;
+        //if (first) {
+        //    // start playing main menu music
+        //    PlayBGM("mainMenu");
+        //    first = false;
+        //}
 
         if (m_coord.IsPaused()) {
             if (IsBGMPlaying()) {
@@ -355,6 +355,8 @@ namespace NightSnack {
         }
     }
 
+    std::string AudioSystem::GetBGM() const { return m_currentKeyBGM; }
+
     // plays background music by string key
     void AudioSystem::PlayBGM(const std::string& bgmKey)
     {
@@ -385,6 +387,7 @@ namespace NightSnack {
         }
 
         m_bgmPaused = false;
+        m_currentKeyBGM = bgmKey;
         //std::cout << "[AudioSystem] Playing BGM: " << bgmKey << "\n";
     }
 
@@ -401,6 +404,7 @@ namespace NightSnack {
             }
         }
         m_bgmPaused = false;
+        m_currentKeyBGM = "";
     }
 
     // pauses the currently playing background music
@@ -486,8 +490,15 @@ namespace NightSnack {
         return m_sfxVolume;
     }
 
+    void AudioSystem::PlayEntityAudio(Entity e) 
+    {
+        if (!m_coord.HasComponent<Audio>(e)) return;
+        Audio const& a = m_coord.GetComponent<Audio>(e);
+        PlayAudio(a, e);
+    }
+
     // for audio component
-    void AudioSystem::PlayAudio(Audio& audio, Entity entity)
+    void AudioSystem::PlayAudio(Audio const& audio, Entity entity)
     {
         FMOD::Channel* channel = nullptr;
 

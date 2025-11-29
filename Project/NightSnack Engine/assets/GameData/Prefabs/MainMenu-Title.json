@@ -1,0 +1,12 @@
+{
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "SoulBound",
+        "meshName": "square"
+    },
+    "Script": {
+        "name": [
+            "BobberScript"
+        ]
+    }
+}

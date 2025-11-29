@@ -102,6 +102,7 @@ namespace NightSnack {
 
 			// Adds all components from prefab definition;
 			for (auto& [compName, compData] : prefab.items()) {
+				if (compName == "name" || compName == "modified") { continue; }
 				// Look for component loader with std::string component name;
 				auto it = m_componentLoaders.find(compName);
 				// If found, use lambda function to insert data;
@@ -120,12 +121,13 @@ namespace NightSnack {
 		void UpdateComponents(Entity e, json const& prefab) {
 			// Update all components from prefab definition;
 			for (auto& [compName, compData] : prefab.items()) {
+				if (compName == "name" || compName == "modified") { continue; }
 				// Look for component loader with std::string component name;
 				auto it = m_componentLoaders.find(compName);
 				// If found, use lambda function to insert data;
 				if (it != m_componentLoaders.end()) {
 					it->second(e, compData, m_coord);
-					std::cerr << "Updated Component [" << compName << "] to Entity: " << e << '\n';
+					//std::cerr << "Updated Component [" << compName << "] to Entity: " << e << '\n';
 					for (auto c : compData) {
 						std::cerr << c << "\n";
 					}

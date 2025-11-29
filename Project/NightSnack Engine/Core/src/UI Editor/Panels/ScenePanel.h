@@ -42,9 +42,6 @@ namespace NightSnack
 		ScenePanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity, std::shared_ptr<std::unordered_map<Entity, std::string>> uiNames, Tilemap& tilemap)
 			: m_coord(coord), m_selectedEntity(selectedEntity), m_uiNames(uiNames), m_tilemap(tilemap)
 		{
-			// Create editor camera entity
-			CreateEditorCamera();
-
 			// Create framebuffer and color/depth attachments
 			CreateFramebuffer(1600, 900);
 		}
@@ -75,6 +72,11 @@ namespace NightSnack
 		{
 			// Scene Panel
 			ImGui::Begin("Scene");
+
+			if (m_editorCameraEntity == INVALID_ENTITY) {
+				// Create editor camera entity
+				CreateEditorCamera();
+			}
 
 			// Get mouse world position variables
 			auto inputSystem = m_coord.GetSystem<InputSystem>();
@@ -195,6 +197,7 @@ namespace NightSnack
 						constexpr float panSpeed = 1.65f;
 						camTransform.pos.x -= dragDelta.x * (panSpeed / camMod.zoom);
 						camTransform.pos.y += dragDelta.y * (panSpeed / camMod.zoom);
+						camTransform.pos.z = 2.f;
 						m_editorCameraData.pos = camTransform.pos;
 						ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
 					}
@@ -1372,11 +1375,23 @@ namespace NightSnack
 			{
 				float scaleDelta = delta.x * (worldRight - worldLeft) / imageSize.x;
 				trans.scale.x = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+
+				if (m_coord.HasComponent<Collider>(*m_selectedEntity)) {
+					auto& col = m_coord.ModifyComponent<Collider>(*m_selectedEntity);
+					col.width = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+					col.radius = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+				}
 			}
 			else if (m_gizmoActivePart == GizmoPart::ScaleY)
 			{
 				float scaleDelta = -delta.y * (worldTop - worldBottom) / imageSize.y;
 				trans.scale.y = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+
+				if (m_coord.HasComponent<Collider>(*m_selectedEntity)) {
+					auto& col = m_coord.ModifyComponent<Collider>(*m_selectedEntity);
+					col.height = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+					col.radius = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+				}
 			}
 		}
 		if (m_gizmoDragging && ImGui::IsMouseReleased(ImGuiMouseButton_Left))

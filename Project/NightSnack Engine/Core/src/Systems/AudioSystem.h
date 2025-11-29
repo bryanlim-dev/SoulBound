@@ -186,7 +186,8 @@ namespace NightSnack {
 		 * @param a reference to the Audio component
 		 * @param entity the entity to play audio for
          */
-        void PlayAudio(Audio& a, Entity entity);
+        void PlayAudio(Audio const& audio, Entity entity);
+        void PlayEntityAudio(Entity e);
 
         //void StopAudio(Entity entity);
 
@@ -195,6 +196,12 @@ namespace NightSnack {
 		 * @return sorted list of available audio keys
 		 */
         std::vector<std::string> GetAvailableAudioKeys() const;
+
+        /**
+         * @brief retrieves the audio key of current BGM
+         * @return std::string key of current BGM
+         */
+        std::string GetBGM() const;
 
         // ISystem overrides
 
@@ -241,6 +248,9 @@ namespace NightSnack {
         // State
         bool m_initialized;
         bool m_bgmPaused;
+
+        // CurrentBGM
+        std::string m_currentKeyBGM;
 
         // Volume levels
         float m_masterVolume;

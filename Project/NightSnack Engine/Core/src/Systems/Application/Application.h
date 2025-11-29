@@ -1,8 +1,9 @@
 /******************************************************************************
  * File:        Application.h
  * Project:     NightSnack
- * Author(s):	Lim Wei Jie (Primary, 100%) - Created Application system to
+ * Author(s):	Lim Wei Jie (Primary, 60%) - Created Application system to
  *				handle window creation, OpenGL context and Time Handling
+ *				Goh Bei Lai (Secondary, 40%) - Implemented Interruption Handling logic. 
  *
  * Description: This file contains the declarations of the Application System,
  *				which manages the application window, OpenGL context, and timing.
@@ -194,10 +195,18 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Fullscreen toggling.
+		Enter fullscreen without any borders or windows taskbar. 
 		*/
 		/************************************************************************/
 		static void EnterFullscreen();
+
+		/************************************************************************/
+		/*!
+		\brief
+		Exit fullscreen and restore previous windowed mode position and size. 
+		Way of restoring depends on how it was maximized previously. 
+		*/
+		/************************************************************************/
 		void ExitFullscreen();
 
 		void ToggleFPSDisplay();
@@ -226,10 +235,28 @@ namespace NightSnack {
 		/************************************************************************/
 		static void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Callback function triggered by GLFW when the window toggles minimized state. 
+		*/
+		/************************************************************************/
 		static void WindowIconifyCallback(GLFWwindow* window, int iconified);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Callback function triggered by GLFW when the window toggles focus state. 
+		*/
+		/************************************************************************/
 		static void WindowFocusCallback(GLFWwindow* window, int focused);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Callback function triggered by GLFW when the window toggles maximized state.
+		*/
+		/************************************************************************/
 		static void WindowMaximizeCallback(GLFWwindow* window, int maximized);
 
 		// Window properties

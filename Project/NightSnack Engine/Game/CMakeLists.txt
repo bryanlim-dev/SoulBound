@@ -17,7 +17,7 @@ if(MSVC)
     # Fix LIBCMT conflict by ensuring consistent runtime library usage
     target_link_options(Game PRIVATE 
         $<$<CONFIG:Debug>:/NODEFAULTLIB:LIBCMT>
-        $<$<CONFIG:Release>:/NODEFAULTLIB:LIBCMTD>
+        #$<$<CONFIG:Release>:/NODEFAULTLIB:LIBCMTD>
     )
 else()
     target_compile_options(Game PRIVATE -Wall -Wextra -Wpedantic)

@@ -70,11 +70,12 @@ namespace NightSnack::Scripting {
 	const std::vector<ExposedField> MonoExposeBridge::GetExposedFields(void* scriptInstance)
 	{
 		//LoadScriptExposedFields(scriptInstance);
+		static std::vector<ExposedField> empty;
 
 		//Find the vector belonging to the script
 		auto it = m_sciptsToFieldsMap.find(scriptInstance);
 		if (it == m_sciptsToFieldsMap.end())
-			return std::vector<ExposedField>(); //Not found return empty vec
+			return empty; //Not found return empty vec
 
 		return it->second;
 	}

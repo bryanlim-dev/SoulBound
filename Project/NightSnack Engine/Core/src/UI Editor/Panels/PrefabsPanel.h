@@ -5,7 +5,8 @@
  *
  *
  * Description:
- * Displays archetypes from a JSON file in the Prefabs panel.
+ * Displays archetypes from a JSON file in the Prefabs panel. Handles the editing
+ * and saving of prefab data back to the JSON file.
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -841,6 +842,10 @@ namespace NightSnack
             }
         }
 
+        /**
+        * @brief draws editor UI for Audio component properties
+        * @param j JSON data for the Audio component
+        */
         void DrawAudioEditor(nlohmann::json& j)
         {
             // Get available audio keys for dropdown

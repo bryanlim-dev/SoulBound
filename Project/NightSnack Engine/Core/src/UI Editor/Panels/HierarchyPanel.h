@@ -7,7 +7,7 @@
  * Hierarchy panel showing all entities in the scene. Able to select, add 
  * and delete entities.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -73,6 +73,9 @@ namespace NightSnack
 						// List all entities
                         for (Entity e : entities)
                         {
+							// Hide SceneCam from hierarchy
+                            if (m_uiNames->count(e) && (*m_uiNames)[e] == "SceneCam") continue;
+
 							// Assign default UI name if not present
                             if (m_uiNames->find(e) == m_uiNames->end()) {
                                 (*m_uiNames)[e] = factory ? factory->GetEntityPrefabName(e) : "Entity " + std::to_string(e);
@@ -91,18 +94,10 @@ namespace NightSnack
                         ImGui::TreePop();
                     }
 
-                    // Add Entity button at the bottom of list
-                    if (ImGui::Button("Add Entity"))
+                    // Add Prefab button at the bottom of list
+                    if (ImGui::Button("Create"))
                     {
-						// Create a default Ghost entity at specified position
-                        Transform defaultTransform;
-						defaultTransform.pos = Vec3(0.f, 145.f, 1.f);
-						defaultTransform.scale = Vec2(100.f, 100.f);
-						defaultTransform.layer = LayerType::GAMELAYER;
-
-						// Record entity creation for undo
-                        NightSnack::UndoSystem::Instance().Push(NightSnack::EntityCreateSnapshot{
-                            factory->Create(std::string{ "Ghost" }, defaultTransform)});
+                        factory->Create();
                     }
 
                     // Delete button to remove selected entity
