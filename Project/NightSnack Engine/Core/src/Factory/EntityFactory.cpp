@@ -246,10 +246,10 @@ namespace NightSnack {
         try {
             for (auto const& item : level["Entities"]) {
                 Create(std::string{ item["prefab"] }, item["Transform"]);
-                std::cout << "[EntityFactory] Creating prefab<" << item["prefab"] << "> at ("
-                    << item["Transform"]["Position"]["x"] << ", "
-                    << item["Transform"]["Position"]["y"] << ", "
-                    << item["Transform"]["Position"]["z"] << ")\n";
+                //std::cout << "[EntityFactory] Creating prefab<" << item["prefab"] << "> at ("
+                //    << item["Transform"]["Position"]["x"] << ", "
+                //    << item["Transform"]["Position"]["y"] << ", "
+                //    << item["Transform"]["Position"]["z"] << ")\n";
             }
         }
         catch (...) {

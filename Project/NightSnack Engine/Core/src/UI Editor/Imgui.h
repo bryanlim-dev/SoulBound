@@ -446,7 +446,7 @@ namespace NightSnack {
 
 						// Only Cache if not already playing
 						m_isPlaying = true;
-						SetSimulationPaused(false);
+						//SetSimulationPaused(false);
 						*m_selectedEntity = INVALID_ENTITY;
 						m_scenePanel->DestroyEditorCamera();
 						m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
@@ -470,8 +470,9 @@ namespace NightSnack {
 					//bool isPaused = physics && physics->IsDebugMode();
 					if (ImGui::MenuItem("Pause"))
 					{
-						m_isPlaying = false;
-						SetSimulationPaused(true);
+						//m_isPlaying = false;
+						//SetSimulationPaused(true);
+						m_coord.Pause();
 					}
 				}
 				else
@@ -555,6 +556,7 @@ namespace NightSnack {
 		m_coord.Unpause();
 		SetSimulationPaused(false);
 		m_isPlaying = true;
+		SetSimulationPaused(false);
 	}
 	inline void ImguiSystem::StopGame() {
 		DisableFPSDisplay();

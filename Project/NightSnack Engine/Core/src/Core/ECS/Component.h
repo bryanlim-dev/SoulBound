@@ -194,8 +194,6 @@ namespace NightSnack {
         PLAYAUDIO,
         PLAYAUDIO2,
         PLAYAUDIO3,
-        PLAYSTRESSTEST,
-        //ENDSTRESSTEST,
         CHANGELEVELS
     };
     struct ButtonInfo {
@@ -351,14 +349,6 @@ namespace NightSnack {
         if (j["action"] == "PlayAudio3") {
             b.action = ButtonAction::PLAYAUDIO3;
         }
-
-        if (j["action"] == "StressTest") {
-            b.action = ButtonAction::PLAYSTRESSTEST;
-        }
-
-        /*if (j["action"] == "EndStressTest") {
-            b.action = ButtonAction::ENDSTRESSTEST;
-        }*/
 
         if (j["action"] == "ChangeLevel") {
             b.action = ButtonAction::CHANGELEVELS;
