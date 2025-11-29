@@ -159,10 +159,7 @@ namespace NightSnack {
 		size_t livingEntities = m_coord.GetEntityNum();
 		std::string instanced = m_coord.GetSystem<GraphicsSystem>()->GetEnableInstancedRendering() ? "Yes" : "No";
 
-		std::string title = "NightSnack Engine | FPS: " + std::to_string(static_cast<int>(GetTimer().GetFPS()))
-			+ " | Game Time: " + std::to_string(static_cast<int>(GetTimer().GetTotalSystemTime()))
-			+ " | Number of Entities: " + std::to_string(livingEntities)
-			+ " | Instanced Rendering: " + instanced;
+		std::string title = "NightSnack Engine";
 
 
 		SetWindowTitle(GetNativeHandle(), title.c_str());

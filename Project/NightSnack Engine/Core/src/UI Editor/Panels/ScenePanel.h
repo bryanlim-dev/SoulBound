@@ -28,7 +28,7 @@ namespace NightSnack
 		float zoom{ 1.0f };
 	};
 
-	enum class SceneTool { PanZoom, Select, MultiSelect, Paint };
+	enum class SceneTool { PanZoom, Select, Paint };
 
 	class ScenePanel {
 	public:
@@ -202,7 +202,7 @@ namespace NightSnack
 						ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
 					}
 
-					// Multi-Selection rectangle
+					// Multi-Selection rectangle (still in works)
 					/*if (currentTool == SceneTool::MultiSelect)
 					{
 						ImVec2 imageTopLeft = ImGui::GetItemRectMin();
@@ -1062,13 +1062,10 @@ namespace NightSnack
 			return;
 		}
 
-		//std::cout << "[Scene] Loaded image with key: " << imageKey << "\n";
-
 		// remove old background if exists
 		if (m_backgroundEntity != INVALID_ENTITY)
 		{
 			m_coord.DestroyEntity(m_backgroundEntity);
-			//std::cout << "[Scene] Removed old background entity\n";
 		}
 
 		// create new entity
@@ -1090,9 +1087,6 @@ namespace NightSnack
 		renderable.isWireframe = false;
 		renderable.wasModified = true;              // Flag for graphics system
 		m_coord.AddComponent(m_backgroundEntity, renderable);
-
-
-		//std::cout << "[Scene] Background created at (" << mouseX << ", " << mouseY << ")\n";
 	}
 
 	// Draw the tool bar for selecting mouse tools.
@@ -1103,14 +1097,14 @@ namespace NightSnack
 
 		// Tool bar overlay position
 		ImVec2 toolBarPos = ImVec2(imageTopLeft.x + 12, imageTopLeft.y + 12);
-		float buttonWidth[4] = { 60.0f, 60.0f, 90.0f, 60.0f };
+		float buttonWidth[3] = { 60.0f, 60.0f, 60.0f };
 		float totalWidth = buttonWidth[0] + buttonWidth[1] + buttonWidth[2] + buttonWidth[3] + 30.0f;
 		m_toolbarMin = toolBarPos;
 		m_toolbarMax = ImVec2(toolBarPos.x + totalWidth, toolBarPos.y + 32);
 
 		// Tool names and corresponding enums
-		const char* toolNames[4] = { "View", "Select", "MultiSelect", "Paint" };
-		SceneTool toolEnums[4] = { SceneTool::PanZoom, SceneTool::Select, SceneTool::MultiSelect, SceneTool::Paint };
+		const char* toolNames[3] = { "View", "Select", "Paint" };
+		SceneTool toolEnums[3] = { SceneTool::PanZoom, SceneTool::Select, SceneTool::Paint };
 
 		// Draw background
 		drawList->AddRectFilled(
@@ -1120,7 +1114,7 @@ namespace NightSnack
 
 		// Draw and handle buttons
 		float x = toolBarPos.x + 8;
-		for (int i = 0; i < 4; ++i)
+		for (int i = 0; i < 3; ++i)
 		{
 			ImVec2 btnPos = ImVec2(x, toolBarPos.y + 4);
 			ImGui::SetCursorScreenPos(btnPos);
@@ -1162,6 +1156,7 @@ namespace NightSnack
 	// Draw the tilemap overlay on the scene panel.
 	inline void ScenePanel::DrawTilemap(const ImVec2& imageTopLeft, const ImVec2& imageSize)
 	{
+		// Calculate world boundaries based on editor camera
 		auto& cam = m_coord.GetComponent<Camera>(m_editorCameraEntity);
 		auto& camTransform = m_coord.GetComponent<Transform>(m_editorCameraEntity);
 
@@ -1173,6 +1168,7 @@ namespace NightSnack
 		float worldBottom = camTransform.pos.y - halfHeight;
 		float worldTop = camTransform.pos.y + halfHeight;
 
+		// Draw tilemap overlay
 		m_tilemap.DrawTilemapOverlay(imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
 	}
 

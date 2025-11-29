@@ -128,6 +128,13 @@ namespace NightSnack
         std::shared_ptr<Entity> m_selectedEntity;
         std::shared_ptr<std::unordered_map<Entity, std::string>> m_uiNames;
 
+        /************************************************************************/
+        /*!
+        \brief
+			Deletes the selected entity from the scene and records the 
+            action for undo.
+        */
+        /************************************************************************/
         void DeleteEntity()
         {
             auto factory = m_coord.GetSystem<EntityFactory>();

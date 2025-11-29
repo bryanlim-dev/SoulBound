@@ -657,6 +657,7 @@ namespace NightSnack
                     const char* droppedPath = static_cast<const char*>(payload->Data);
                     if (graphics)
                     {
+						// Flip image vertically for Imgui and update texture
                         stbi_set_flip_vertically_on_load(true);
                         graphics->UpdateTextureOfMaterial(droppedPath, *m_selectedEntity);
                     }
