@@ -57,8 +57,6 @@ namespace NightSnack {
             // Debug tests
             //ToggleSystemTimers, // TAB
             ToggleDebugDraw,    // T
-            ToggleInstancedRendering, // I
-            CrashTest,          // C
             PhysicsDebugStep,   // P
 
             // Window events

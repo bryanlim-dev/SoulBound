@@ -84,12 +84,6 @@ namespace NightSnack {
 					case InputEvent::InputAction::ToggleDebugDraw:
 						m_enableDebugDraw = !m_enableDebugDraw;
 						break;
-					case InputEvent::InputAction::ToggleInstancedRendering:
-						m_enableInstancedRendering = !m_enableInstancedRendering;
-						break;
-					//case InputEvent::InputAction::CrashTest:
-					//	CrashLogger::ForceCrash("Forced crash from GraphicsSystem for testing");
-					//	break;
 					}
 				}
 			});
