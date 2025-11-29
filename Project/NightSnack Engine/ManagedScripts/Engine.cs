@@ -370,6 +370,8 @@ namespace ManagedScripts
         private static extern void HasScript_Internal(uint entityId, string scriptName, out bool exists);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void CreateScript_Internal(uint entityId, string scriptName);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void DeleteScript_Internal(uint entityId, string scriptName);
         #endregion
 
         // ----------------------------
@@ -995,6 +997,11 @@ namespace ManagedScripts
         public static void CreateScript(uint entityId, string str)
         {
             CreateScript_Internal(entityId, str);
+
+        }
+        public static void DeleteScript(uint entityId, string str)
+        {
+            DeleteScript_Internal(entityId, str);
 
         }
         #endregion

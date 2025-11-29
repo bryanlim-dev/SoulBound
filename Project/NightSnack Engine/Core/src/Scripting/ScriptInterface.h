@@ -230,6 +230,7 @@ namespace NightSnack::Scripting {
 
         bool HasScript(Entity e, std::string str);
         void CreateScript(Entity e, std::string str);
+        void DeleteScript(Entity e, std::string str);
 
 #pragma endregion
 

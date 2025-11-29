@@ -74,8 +74,10 @@ namespace NightSnack::Scripting {
 
 		//Creates a new script and modifies the Script component for the entity
 		bool CreateScript(Entity e, std::string scriptName);
-		// Remove script from entity;
-		void RemoveScripts(Entity e);
+		// Remove all scripts from entity;
+		void RemoveAllScripts(Entity e);
+		// Remove the first matching script from entity;
+		void RemoveScript(Entity e, std::string scriptName);
 
 		// Required by ISystem base class;
 		Signature GetSignature() const override { return m_systemSignature; }

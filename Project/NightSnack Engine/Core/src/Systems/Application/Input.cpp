@@ -112,8 +112,6 @@ namespace NightSnack {
 			// Debug tests
 		//case GLFW_KEY_TAB: return InputEvent::InputAction::ToggleSystemTimers;
 		case GLFW_KEY_T: return InputEvent::InputAction::ToggleDebugDraw;
-		case GLFW_KEY_I: return InputEvent::InputAction::ToggleInstancedRendering;
-		case GLFW_KEY_C: return InputEvent::InputAction::CrashTest;
 		case GLFW_KEY_BACKSLASH: return InputEvent::InputAction::ToggleUIEditor;
 		case GLFW_KEY_X: return InputEvent::InputAction::ChangeAnimation;
 			// Mouse events

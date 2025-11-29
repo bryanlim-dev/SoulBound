@@ -21,10 +21,13 @@ namespace ManagedScripts
             //Log("HoverScript started!");
             //Log($"Initial Position: {Position.X}, {Position.Y}");
             //Log($"Move speed: {moveSpeed}.f");
+
         }
 
         public override void OnUpdate()
         {
+            //Engine.DeleteScript(EntityId, "RotatorScript");
+            
             // Get current position
             Vector3 pos = transform.Position;
 

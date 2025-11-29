@@ -37,6 +37,7 @@ namespace ManagedScripts
             color.RGBA = new Colors(0.5f, 0, 0, 1);
             //renderer.IsWireframe = true;
 
+
             //System.Console.WriteLine("Rotator: OnStart"); 
 
             //Log("AHHH");
