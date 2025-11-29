@@ -81,12 +81,12 @@ namespace NightSnack {
     // updates the fmod system
     void AudioSystem::Update()
     {
-        static bool first = true;
-        if (first) {
-            // start playing main menu music
-            PlayBGM("mainMenu");
-            first = false;
-        }
+        //static bool first = true;
+        //if (first) {
+        //    // start playing main menu music
+        //    PlayBGM("mainMenu");
+        //    first = false;
+        //}
 
         if (m_coord.IsPaused()) {
             if (IsBGMPlaying()) {

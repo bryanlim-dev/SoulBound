@@ -16,6 +16,8 @@ namespace NightSnack::Scene {
 		auto audio = m_coord.GetSystem<AudioSystem>();
 		if (level.contains("BGM")) audio->PlayBGM(level["BGM"]);
 		else audio->StopBGM();
+
+		gameLoaded = true;
 	}
 
 	bool SceneManager::SaveLevel(std::string const& levelname, bool overwrite) {

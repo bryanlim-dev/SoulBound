@@ -42,9 +42,6 @@ namespace NightSnack
 		ScenePanel(Coordinator& coord, std::shared_ptr<Entity> selectedEntity, std::shared_ptr<std::unordered_map<Entity, std::string>> uiNames, Tilemap& tilemap)
 			: m_coord(coord), m_selectedEntity(selectedEntity), m_uiNames(uiNames), m_tilemap(tilemap)
 		{
-			// Create editor camera entity
-			CreateEditorCamera();
-
 			// Create framebuffer and color/depth attachments
 			CreateFramebuffer(1600, 900);
 		}
@@ -75,6 +72,11 @@ namespace NightSnack
 		{
 			// Scene Panel
 			ImGui::Begin("Scene");
+
+			if (m_editorCameraEntity == INVALID_ENTITY) {
+				// Create editor camera entity
+				CreateEditorCamera();
+			}
 
 			// Get mouse world position variables
 			auto inputSystem = m_coord.GetSystem<InputSystem>();
@@ -195,6 +197,7 @@ namespace NightSnack
 						constexpr float panSpeed = 1.65f;
 						camTransform.pos.x -= dragDelta.x * (panSpeed / camMod.zoom);
 						camTransform.pos.y += dragDelta.y * (panSpeed / camMod.zoom);
+						camTransform.pos.z = 2.f;
 						m_editorCameraData.pos = camTransform.pos;
 						ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
 					}

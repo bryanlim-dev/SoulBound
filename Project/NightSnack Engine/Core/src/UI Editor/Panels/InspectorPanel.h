@@ -353,25 +353,27 @@ namespace NightSnack
     {
         auto& t = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
 
-        if (ImGui::BeginTable("TransformTable", 3, ImGuiTableFlags_SizingFixedFit))
+        if (ImGui::BeginTable("TransformTable", 4, ImGuiTableFlags_SizingFixedFit))
         {
             ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 80.0f);
             ImGui::TableSetupColumn("X", ImGuiTableColumnFlags_WidthFixed, 60.0f);
             ImGui::TableSetupColumn("Y", ImGuiTableColumnFlags_WidthFixed, 60.0f);
+            ImGui::TableSetupColumn("Z", ImGuiTableColumnFlags_WidthFixed, 60.0f);
 
             // Header row
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(1); ImGui::Text("X");
             ImGui::TableSetColumnIndex(2); ImGui::Text("Y");
+            ImGui::TableSetColumnIndex(3); ImGui::Text("Z");
 
             // Display the respective position based on its entity layer
-            float pos[2];
+            float pos[3];
             float scale[2];
             if (t.layer == LayerType::GAMEUI) {
                 pos[0] = t.UIbasePos.x; pos[1] = t.UIbasePos.y;
                 scale[0] = t.UIbaseScale.x; scale[1] = t.UIbaseScale.y;
             } else {
-                pos[0] = t.pos.x; pos[1] = t.pos.y;
+                pos[0] = t.pos.x; pos[1] = t.pos.y; pos[2] = t.pos.z;
                 scale[0] = t.scale.x; scale[1] = t.scale.y;
             }
 
@@ -382,6 +384,8 @@ namespace NightSnack
             ImGui::InputFloat("##posx", &pos[0], 0.0f, 0.0f, "%.2f");
             ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN); 
             ImGui::InputFloat("##posy", &pos[1], 0.0f, 0.0f, "%.2f");
+            ImGui::TableSetColumnIndex(3); ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##posz", &pos[2], 0.0f, 0.0f, "%.2f");
 
             // Rotation row
             float rot = t.rot;

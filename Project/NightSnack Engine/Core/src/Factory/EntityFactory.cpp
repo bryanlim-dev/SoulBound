@@ -22,6 +22,10 @@ namespace NightSnack {
             PrintPrefabNames();
             printed = true;
         }
+        //for (Entity e : m_coord.GetLivingEntities()) {
+        //    auto t = m_coord.GetComponent<Transform>(e);
+        //    std::cout << "Entity " << e << " Position<" << t.pos.x << ", " << t.pos.y << ", " << t.pos.z << ">\n";
+        //}
     }
 
     void EntityFactory::PostUpdate() {
@@ -49,7 +53,7 @@ namespace NightSnack {
             return e; 
         }
 
-        Transform trans{ Vec3{0.f, 0.f, 1.f}, 0.f, Vec2{50.f, 50.f} };
+        Transform trans{ Vec3{0.f, 0.f, 0.f}, 0.f, Vec2{50.f, 50.f} };
         trans.layer = LayerType::GAMELAYER;
 
         m_coord.AddComponent<Transform>(e, trans);
@@ -74,7 +78,7 @@ namespace NightSnack {
 
         trans.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
         trans.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
-        trans.pos.z = 1.f;
+        trans.pos.z = 0.f;
         // default layer...
         trans.layer = LayerType::GAMELAYER;
 
@@ -242,9 +246,10 @@ namespace NightSnack {
         try {
             for (auto const& item : level["Entities"]) {
                 Create(std::string{ item["prefab"] }, item["Transform"]);
-            }
-            for (Entity e : m_coord.GetLivingEntities()) {
-                m_coord.BufferEntitySignature(e);
+                std::cout << "[EntityFactory] Creating prefab<" << item["prefab"] << "> at ("
+                    << item["Transform"]["Position"]["x"] << ", "
+                    << item["Transform"]["Position"]["y"] << ", "
+                    << item["Transform"]["Position"]["z"] << ")\n";
             }
         }
         catch (...) {
@@ -317,8 +322,8 @@ namespace NightSnack {
                     // prefab1, prefab2 etc...
                     newPrefabName = prefabName + std::to_string(cnt);
                     // check if new name already exists;
-                    std::filesystem::path outPath = std::filesystem::path(PRIME_PREFABS_PATH) / (newPrefabName + ".json");
-                    exists = std::filesystem::exists(outPath);
+                    std::filesystem::path tempout = std::filesystem::path(PRIME_PREFABS_PATH) / (newPrefabName + ".json");
+                    exists = std::filesystem::exists(tempout);
                     cnt++;
                 }
                 j["prefab"] = newPrefabName;
@@ -546,6 +551,8 @@ namespace NightSnack {
         }
         // JSON object that will become the prefab content
         json j = CacheEntityComponents(e);
+        if (j.contains("name")) j.erase("name");
+        if (j.contains("modified")) j.erase("modified");
 
         // Write to file
         std::ofstream ofs(outPath);
@@ -616,6 +623,7 @@ namespace NightSnack {
 
         entityToPrefab.clear();
         prefabToEntities.clear();
+        m_prefabKeys["++Default"] = 0;
     }
 
     // Helper function to split Monolithic Json file (containing all archetypes)

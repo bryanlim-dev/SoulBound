@@ -5,9 +5,9 @@
             "Transform": {
                 "Layer": "GameUI",
                 "Position": {
-                    "x": -500.0,
-                    "y": 250.0,
-                    "z": 5.0
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 2.0
                 },
                 "Rotation": 0.0,
                 "Scale": {

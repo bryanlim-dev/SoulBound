@@ -37,11 +37,9 @@ namespace NightSnack::Scene {
 
 			// Reads level files
 			ReloadLevels();
-			// Create default level
-			LoadLevel("DefaultLevel");
 		}
 
-		void Update() override {}
+		void Update() override { if (!gameLoaded) LoadLevel("DefaultLevel"); }
 
 		// Resets m_levelKeys and loads all json files in "GameData/Levels"
 		void ReloadLevels();
@@ -82,7 +80,7 @@ namespace NightSnack::Scene {
 		std::vector<Entity> m_overlayEntites;
 
 		// Overlay menu
-		bool inGame = false;
+		bool gameLoaded = false;
 		bool overlayOn = false;
 
 	};
