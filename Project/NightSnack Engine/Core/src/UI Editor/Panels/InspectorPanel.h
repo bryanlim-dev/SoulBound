@@ -1,7 +1,8 @@
 /******************************************************************************
  * File:        InspectorPanel.h
  * Project:     NightSnack
- * Author(s):	Wei Jie Lim (Primary, 100%) - Created and implemented inspector panel
+ * Author(s):	Wei Jie Lim (Primary, 90%) - Created and implemented inspector panel
+ *              Clement Ang Yang Ying (Secondary, 10%) - Added scripting component
  *
  * Description:
  * Inspector panel showing details of selected entity. Displays components and

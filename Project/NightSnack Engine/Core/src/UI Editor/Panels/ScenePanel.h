@@ -28,7 +28,7 @@ namespace NightSnack
 		float zoom{ 1.0f };
 	};
 
-	enum class SceneTool { PanZoom, Select, Paint };
+	enum class SceneTool { PanZoom, Select, MultiSelect, Paint };
 
 	class ScenePanel {
 	public:
@@ -202,7 +202,7 @@ namespace NightSnack
 						ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
 					}
 
-					// Multi-Selection rectangle (still in works)
+					// Multi-Selection rectangle
 					/*if (currentTool == SceneTool::MultiSelect)
 					{
 						ImVec2 imageTopLeft = ImGui::GetItemRectMin();
@@ -322,7 +322,7 @@ namespace NightSnack
 					}
 
 					// Tile Painting
-					if (currentTool == SceneTool::Paint && ImGui::IsMouseDown(ImGuiMouseButton_Left) 
+					if (currentTool == SceneTool::Paint && ImGui::IsMouseDown(ImGuiMouseButton_Left)
 						&& m_tilemap.tileOverlayEnabled && m_tilemap.showTileEditor)
 					{
 						// Calculate grid position
@@ -735,7 +735,7 @@ namespace NightSnack
 			- Top boundary of the world in world space.
 		*/
 		/************************************************************************/
-		void DrawGizmos(const ImVec2& imageTopLeft, const ImVec2& imageSize, 
+		void DrawGizmos(const ImVec2& imageTopLeft, const ImVec2& imageSize,
 			float worldLeft, float worldRight, float worldBottom, float worldTop);
 
 		bool IsMouseOverGizmo() const { return m_gizmoHovering || m_gizmoDragging; }
@@ -1062,10 +1062,13 @@ namespace NightSnack
 			return;
 		}
 
+		//std::cout << "[Scene] Loaded image with key: " << imageKey << "\n";
+
 		// remove old background if exists
 		if (m_backgroundEntity != INVALID_ENTITY)
 		{
 			m_coord.DestroyEntity(m_backgroundEntity);
+			//std::cout << "[Scene] Removed old background entity\n";
 		}
 
 		// create new entity
@@ -1087,6 +1090,9 @@ namespace NightSnack
 		renderable.isWireframe = false;
 		renderable.wasModified = true;              // Flag for graphics system
 		m_coord.AddComponent(m_backgroundEntity, renderable);
+
+
+		//std::cout << "[Scene] Background created at (" << mouseX << ", " << mouseY << ")\n";
 	}
 
 	// Draw the tool bar for selecting mouse tools.
@@ -1097,14 +1103,14 @@ namespace NightSnack
 
 		// Tool bar overlay position
 		ImVec2 toolBarPos = ImVec2(imageTopLeft.x + 12, imageTopLeft.y + 12);
-		float buttonWidth[3] = { 60.0f, 60.0f, 60.0f };
+		float buttonWidth[4] = { 60.0f, 60.0f, 90.0f, 60.0f };
 		float totalWidth = buttonWidth[0] + buttonWidth[1] + buttonWidth[2] + buttonWidth[3] + 30.0f;
 		m_toolbarMin = toolBarPos;
 		m_toolbarMax = ImVec2(toolBarPos.x + totalWidth, toolBarPos.y + 32);
 
 		// Tool names and corresponding enums
-		const char* toolNames[3] = { "View", "Select", "Paint" };
-		SceneTool toolEnums[3] = { SceneTool::PanZoom, SceneTool::Select, SceneTool::Paint };
+		const char* toolNames[4] = { "View", "Select", "MultiSelect", "Paint" };
+		SceneTool toolEnums[4] = { SceneTool::PanZoom, SceneTool::Select, SceneTool::MultiSelect, SceneTool::Paint };
 
 		// Draw background
 		drawList->AddRectFilled(
@@ -1114,7 +1120,7 @@ namespace NightSnack
 
 		// Draw and handle buttons
 		float x = toolBarPos.x + 8;
-		for (int i = 0; i < 3; ++i)
+		for (int i = 0; i < 4; ++i)
 		{
 			ImVec2 btnPos = ImVec2(x, toolBarPos.y + 4);
 			ImGui::SetCursorScreenPos(btnPos);
@@ -1338,14 +1344,14 @@ namespace NightSnack
 		auto& trans = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
 		if (!m_gizmoDragging && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 		{
-			if		(hoverX)	  { m_gizmoActivePart = GizmoPart::MoveX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.x; }
-			else if (hoverY)	  { m_gizmoActivePart = GizmoPart::MoveY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.y; }
-			else if (hoverRot)	  { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.rot; }
+			if (hoverX) { m_gizmoActivePart = GizmoPart::MoveX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.x; }
+			else if (hoverY) { m_gizmoActivePart = GizmoPart::MoveY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.y; }
+			else if (hoverRot) { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.rot; }
 			else if (hoverScaleX) { m_gizmoActivePart = GizmoPart::ScaleX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.x; }
 			else if (hoverScaleY) { m_gizmoActivePart = GizmoPart::ScaleY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.y; }
 
 			// Record transform snapshot for undo
-			if (ImGui::IsMouseDown(ImGuiMouseButton_Left)) 
+			if (ImGui::IsMouseDown(ImGuiMouseButton_Left))
 				NightSnack::UndoSystem::Instance().Push(NightSnack::TransformSnapshot{ *m_selectedEntity, trans });
 		}
 		if (m_gizmoDragging && ImGui::IsMouseDown(ImGuiMouseButton_Left))
