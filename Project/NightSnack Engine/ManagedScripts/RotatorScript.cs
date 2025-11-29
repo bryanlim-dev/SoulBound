@@ -1,4 +1,18 @@
-﻿// ============================================================
+﻿/******************************************************************************
+ * File:        HoverScript.cs
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan - (Primary, 95%) - Created base file and logic
+                Clement Ang Yang Ying - (Secondary, 5%) - Added debug and testing logic
+ *
+ * Description:
+ * This file declares class RotatorScript which rotates object continuously.
+ * Has some commented out debug fuctions for refernce and testing
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
+// ============================================================
 // RotatorScript.cs - Rotates object continuously
 // ============================================================
 namespace ManagedScripts

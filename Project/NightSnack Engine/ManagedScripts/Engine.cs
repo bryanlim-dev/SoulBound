@@ -1,4 +1,19 @@
-﻿using System;
+﻿/******************************************************************************
+ * File:        Engine.cs
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan - (Primary, 30%) - Created base file and Transform/Input/Sound functions & vec2/3 structs & inital internal calls
+                Clement Ang Yang Ying - (Secondary, 70%) - Added other component and entity functions
+ *
+ * Description:
+ * This file declares class Engine.cs with is the bridge between the C++ game engine and the C# scripting.
+ * Has inernal calls to C++ functions and public API functions for scripts to use
+ * 
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
+using System;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 

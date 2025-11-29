@@ -1,3 +1,16 @@
+/******************************************************************************
+ * File:        Scripts.cs
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan - (Primary, 30%) - Created base file and Transform/Input/Sound functions
+                Clement Ang Yang Ying - (Secondary, 70%) - Added other component and entity functions and all Convenience classes
+ *
+ * Description:
+ * This file declares class Scripts.cs with is the base class for all game scripts.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 namespace ManagedScripts
 {
     // Base class for all game scripts
