@@ -476,7 +476,7 @@ namespace NightSnack {
 
 			// If it is a new texture, it means that there is no existing material for it
 			// Create new material with this texture combination
-			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.filename().string()));
+			auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(relativePath.string()));
 			// Name of the material will be based on the texture file path, but the name only
 			AddMaterial(filePath.filename().stem().string(), std::move(newMat));
 			//std::cout << "Created Material: " << filePath.filename().stem().string() << std::endl;
