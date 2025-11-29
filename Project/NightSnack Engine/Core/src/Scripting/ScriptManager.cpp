@@ -8,7 +8,7 @@
  * Functions include:
  * - Update -> called by CoreEngine::Update()
  * - Initialize and Shutdown
- * - AttachScript and RemoveScripts
+ * - AttachScript and RemoveAllScripts
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
@@ -31,7 +31,7 @@ namespace NightSnack::Scripting {
         // Reattach entity scripts when Level is reloaded
         if (!m_attached || entityNum != m_entities.size()) {
             for (Entity e{}; e < MAX_ENTITIES; ++e) {
-                RemoveScripts(e);
+                RemoveAllScripts(e);
             }
 
             entityNum = m_entities.size();
@@ -154,7 +154,7 @@ namespace NightSnack::Scripting {
     }
 
     // Remove an entity's script
-    void ScriptManager::RemoveScripts(Entity e) {
+    void ScriptManager::RemoveAllScripts(Entity e) {
         auto it = m_entityScripts.find(e);
         if (it == m_entityScripts.end()) {
             return;
@@ -171,6 +171,35 @@ namespace NightSnack::Scripting {
         m_entityScripts[e].clear();
 
         //m_coord.ModifyComponent<Script>(e).names.clear();
+    }
+
+    void ScriptManager::RemoveScript(Entity e, std::string scriptName)
+    {
+        //Check if it exists
+        auto it = m_entityScripts.find(e);
+        if (it == m_entityScripts.end()) {
+            return;
+        }
+
+        //Loop thru scripts to find same name
+        auto& scripts = it->second; //Vector of scripts for this enttity
+        for (auto scriptIt = scripts.begin(); scriptIt != scripts.end(); ++scriptIt)
+        {
+            void* instance = *scriptIt;
+            std::string name = m_monoHost->GetScriptName(instance);
+            if (name == scriptName)
+            {
+                //Destroy script instance & remove from container
+                m_monoHost->DestroyScriptInstance(instance);
+                m_scriptNameMap.erase(instance);
+                scripts.erase(scriptIt);
+
+                //Remove from script component names list (This prevents reload from reloading the thing)
+                //auto& names = m_coord.ModifyComponent<Script>(e).names;
+                //names.remove(scriptName);
+                break;
+            }
+		}
     }
 
     // Attach a script to an entity (ScriptName is the name of the C# class, but just use Script.name component)

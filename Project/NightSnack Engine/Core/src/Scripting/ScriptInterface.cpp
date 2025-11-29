@@ -773,6 +773,10 @@ namespace NightSnack::Scripting {
     {
         m_coord.GetSystem<ScriptManager>()->CreateScript(e, str);    
     }
+    void ScriptInterface::DeleteScript(Entity e, std::string str)
+    {
+        m_coord.GetSystem<ScriptManager>()->RemoveScript(e, str);
+    }
 #pragma endregion
 
 
