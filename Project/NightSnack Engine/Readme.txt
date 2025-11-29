@@ -4,19 +4,21 @@
 # Module: GAM_200
 # ------------------------------------------------------------ #
 
-## Input Controls
+## Editor Controls
+## --------------------------
+\: Open UI Editor
+F11: Toggle Fullscreen
+Ctrl + S: Save scene
+Ctrl + Z: Undo action
+Left Click: Interact with Editor
+
+
+## Debug Controls
 ## --------------------------
 T: Activate debug-drawing
-\: Open UI Editor
-I: Toggle Instanced rendering mode
-
-## Stress testing
-## --------------------------
-Spacebar: FPS stress test
-
-While in FPS stress test,
-L: Layer test
-Backspace: Return to default level
+X: Change Animation for animation test
+F1: Display FPS
+Escape: Pauses Game Scene 
 
 
 ## Player Controls
@@ -26,14 +28,8 @@ Right-Arrow: Move Blue ball right
 Up-Arrow: "Jump" with Blue ball
 
 
-## Force Crash
-## --------------------------
-C: Force a crash by setting GraphicsSystem shader to a nullptr
-
-Crashlogs can be found in "./build/CrashLog/crash_log.txt"
-
 
 ## Step by Step Physics debug
 ## --------------------------
-Ctrl P: Enable/Disable Step by Step Module
+Ctrl + P: Toggle Step by Step Module
 P: When enabled, Step to next frame
