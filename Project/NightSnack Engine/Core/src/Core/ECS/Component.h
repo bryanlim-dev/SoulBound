@@ -67,8 +67,8 @@ namespace NightSnack {
         Vec2 vel;
         Vec2 accel;
 
-        float invMass;
-        float invInertia;
+        float invMass = 1.f;
+        float invInertia = 1.f;
 
         float restitution;
         float gravitymult;

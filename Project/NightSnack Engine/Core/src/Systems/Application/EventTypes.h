@@ -47,6 +47,7 @@ namespace NightSnack {
 			DisplayFPS,         // F1
             ToggleFullscreen,   // F11
             PauseGame,          // Escape
+            AltTab,
 
             // Mouse events
             ClickLMB,           // LMB

@@ -125,6 +125,9 @@ namespace NightSnack {
 		case GLFW_KEY_Z: // (CTRL+Z)
 			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::UndoStep : InputEvent::InputAction::NumTotalInputAction;
 
+		case GLFW_KEY_TAB:
+			return ((modifier & GLFW_MOD_ALT) > 0) ? InputEvent::InputAction::AltTab : InputEvent::InputAction::NumTotalInputAction;
+
 		default: return InputEvent::InputAction::NumTotalInputAction;
 		}
 	}

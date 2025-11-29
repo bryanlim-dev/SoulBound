@@ -368,7 +368,7 @@ namespace NightSnack {
 				auto factory = m_coord.GetSystem<EntityFactory>();
 
 				// Save current level
-				static char levelName[128] = "DefaultLevel";
+				static char levelName[128] = "MyLevel1";
 				ImGui::InputText("Level Name", levelName, IM_ARRAYSIZE(levelName));
 				ImGui::SameLine();
 				static bool overwrite = true;
@@ -388,7 +388,7 @@ namespace NightSnack {
 				}
 
 				// Load level by name
-				static char loadLevelName[128] = "DefaultLevel";
+				static char loadLevelName[128] = "empty";
 				ImGui::InputText("Load Level", loadLevelName, IM_ARRAYSIZE(loadLevelName));
 				ImGui::SameLine();
 				if (ImGui::Button("Load")) {

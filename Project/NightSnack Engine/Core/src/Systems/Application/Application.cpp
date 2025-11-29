@@ -124,8 +124,11 @@ namespace NightSnack {
 						// Toggled full screen using F11 key press
 						m_appIsFullscreen ? ExitFullscreen() : EnterFullscreen();
 					}
-
 					break;
+
+				//case InputEvent::InputAction::AltTab:
+				//	glfwIconifyWindow(m_windowHandle);
+				//	break;
 
 				case InputEvent::InputAction::DisplayFPS:
 					m_showFPS = !m_showFPS;
@@ -255,6 +258,7 @@ namespace NightSnack {
 	}
 
 	void ApplicationSystem::WindowFocusCallback(GLFWwindow* window, int focused) {
+		//(void)window;
 		// User press ALT-TAB or clicked away, causing the window to lose focus
 		if (!focused) {
 			// Minimize the window whenever the window is not in focus
