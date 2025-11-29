@@ -60,24 +60,152 @@ namespace NightSnack::Scripting {
 	class MonoExposeBridge {
 
 	public:
+		/************************************************************************/
+		/*!
+		\brief
+		Default Constructor for MonoExposeBridge
+		*/
+		/************************************************************************/
 		MonoExposeBridge() {};
 
+		/************************************************************************/
+		/*!
+		\brief
+		Loads all exposed fields from a script instance
+		
+		\param scriptInstance
+		void ptr to script instance
+		*/
+		/************************************************************************/
 		void LoadScriptExposedFields(void* scriptInstance);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Returns all exposed fields from a previously loaded script instance
+		
+		\param scriptInstance
+		void ptr to script instance
+
+		\return
+		vector of all exposed fields
+		*/
+		/************************************************************************/
 		const std::vector<ExposedField> GetExposedFields(void* scriptInstance);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Gets value of an exposed field from a script instance and field
+
+		\param scriptInstance
+		void ptr to script instance of the owner of the ExposedField struct
+
+		\param scriptInstance
+		ExposedField struct of info of the value to extract
+
+		\return
+		ExposedValue union/struct of info containting the value
+		*/
+		/************************************************************************/
 		ExposedValue ReadValue(void* scriptInstance, const ExposedField& field);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Writes value of an exposed field to a script instance and field
+
+		\param scriptInstance
+		void ptr to script instance of the owner of the ExposedField struct
+
+		\param scriptInstance
+		ExposedField struct of info of the value to write to
+
+		\param value
+		ExposedValue union/struct ref of info containting the value to change
+		*/
+		/************************************************************************/
 		void WriteValue(void* scriptInstance, const ExposedField& field, const ExposedValue& value);
-		
+
+		/************************************************************************/
+		/*!
+		\brief
+		Unloads all exposed fields stored
+		*/
+		/************************************************************************/
 		void UnloadAll();
 
+		/************************************************************************/
+		/*!
+		\brief
+		Prints all exposed fields
+		*/
+		/************************************************************************/
 		void PrintAllExposedFields();
 
+		/************************************************************************/
+		/*!
+		\brief
+		Converts info in ExposedValue to Vec2
+
+		\param value
+		ExposedValue ref of value to convert (Needs to be Vector2 from C#)
+
+		\return
+		Vec2 of value
+		*/
+		/************************************************************************/
 		static Vec2 ConvertVec2(const ExposedValue& value);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Converts info in ExposedValue to Vec3
+
+		\param value
+		ExposedValue ref of value to convert (Needs to be Vector3 from C#)
+
+		\return
+		Vec3 of value
+		*/
+		/************************************************************************/
 		static Vec3 ConvertVec3(const ExposedValue& value);
 
 	private:
+		/************************************************************************/
+		/*!
+		\brief
+		Checks if a script has [SerializeField] on any variables
+
+		\param monoClass
+		MonoClass ptr of the script class
+
+		\param field
+		MonoClassField of fields within the class to checl
+
+		\return
+		true - has [SerializeField] variables
+		false - no [SerializeField] variables
+		*/
+		/************************************************************************/
 		bool FieldHasExposeAttribute(MonoClass* monoClass, MonoClassField* field);
+
+
+		/************************************************************************/
+		/*!
+		\brief
+		Maps MonoClassField to MonoValueType enum
+
+		\param clas
+		MonoClass ptr of the script class variable
+
+		\param outSize
+		byte size of the value
+
+		\return
+		MonoValueType enum of the variable type
+		*/
+		/************************************************************************/
 		MonoValueType MapMonoType(MonoClass* clas, size_t& outSize);
 
 		//Map of vector of exposed fields for each script
