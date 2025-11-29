@@ -128,7 +128,7 @@ namespace NightSnack {
 
 	void PhysicsSystem::ResolveCollisions() {
 
-		Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+		//Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
 
 		for (size_t x{}; x < m_grid1.size(); ++x) {
 			if (!m_grid1[x].any()) { continue; }
@@ -187,7 +187,7 @@ namespace NightSnack {
 							ResolveOverlap(t1, t2, c1, c2, r1, r2);
 						}
 						// Apply force to collided target;
-						if (!c2.isStatic && e2 != player) {
+						if (!c2.isStatic/* && e2 != player*/) {
 							TransferForce(t1, t2, r1, r2);
 						}
 					}

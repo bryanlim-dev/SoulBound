@@ -352,11 +352,6 @@ namespace NightSnack {
 					//std::cout << "Playing hit sound\n";
 				}
 				break;
-			// play stress test
-			case ButtonAction::PLAYSTRESSTEST:
-				//m_coord.GetSystem<EntityFactory>()->m_stress = true;
-				break;
-
 			default:
 				break;
 			}
