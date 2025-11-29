@@ -1,4 +1,17 @@
-﻿#pragma once
+﻿/******************************************************************************
+ * File:        SceneManager.h
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan (Primary, 100%)
+ *
+ * Description:
+ * This file declares the SceneManager class that performs scene managment 
+ * such as level loading/saving, level caching when Play/Stop in Editor and 
+ * GameUI interactions like button clicks.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+#pragma once
 
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/IEvent.h"
@@ -15,6 +28,8 @@
 
 namespace NightSnack::Scene {
 
+	// Wrapper that contains a button's action as well as the callable to be invoked,
+	// When the button is activated.
 	class Button {
 	public:
 		// Construct button with action and callable
@@ -33,6 +48,8 @@ namespace NightSnack::Scene {
 		void(*m_callable)(Coordinator& c, std::string const&);
 	};
 
+	// SceneManager system that handles level saving/loading, caching/restoring and
+	// GameUI elements like button presses
 	class SceneManager : public ISystem {
 	public:
 		SceneManager(Coordinator& coord, EventDispatcher& disp)
@@ -46,6 +63,7 @@ namespace NightSnack::Scene {
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
+					// Currently not in use
 					case InputEvent::InputAction::PauseGame:
 						if (!overlayOn) {
 							CreateOverlayMenu();
@@ -56,30 +74,34 @@ namespace NightSnack::Scene {
 							m_coord.Unpause();
 						}
 						break;
+					// Used to signal a mouse press event
 					case InputEvent::InputAction::ClickLMB:
-						m_mouseClicked = true;
+						if (m_coord.IsPaused()) return;
+						CheckButtonCollisions();
 						break;
 					}
 				}
 			});
-
 			// Reads level files
 			ReloadLevels();
 			// Register buttons
 			RegisterButtons();
 		}
 
+		// Main function to be called in Core Update loop
 		void Update() override;
-
 		// Resets m_levelKeys and loads all json files in "GameData/Levels"
 		void ReloadLevels();
 
-		// Spawn Overlay menu (Pause menu)
+		// Spawn Overlay menu (Pause menu) (currently not in use)
 		void CreateOverlayMenu();
 		void RemoveOverlayMenu();
 		
-		void SetOverlayMenu(std::string const& filename);
+		//void SetOverlayMenu(std::string const& filename);
+		
+		// Register button callable functions and store them in m_buttons
 		void RegisterButtons();
+		// Check for collision btw mouse and all button entities
 		void CheckButtonCollisions();
 
 		// Load Level - Sets up everything needed to spawn level
@@ -88,7 +110,7 @@ namespace NightSnack::Scene {
 		void LoadLevel(std::string const& filename);
 		bool SaveLevel(std::string const& filename, bool overwrite = 0);
 
-		// Play/Pause functionality
+		// Play/Pause/Stop functionality
 		void CacheLevel();
 		void RestoreLevel();
 
@@ -116,14 +138,5 @@ namespace NightSnack::Scene {
 		bool overlayOn = false;
 		bool m_mouseClicked = false;
 	};
-
-	// LEVELS
-	// Ability to Load from json
-	// save to json
-
-	// Level management in game
-	// Swap scenes
-
-	
 
 }	// NightSnack::Scene

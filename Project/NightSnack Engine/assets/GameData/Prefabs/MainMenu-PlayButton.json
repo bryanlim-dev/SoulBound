@@ -24,6 +24,7 @@
     },
     "Audio": {
         "audioKey": "buttonClick",
+        "volume": 1.0,
         "loop": false,
         "playOnStart": false,
         "isPlaying": false

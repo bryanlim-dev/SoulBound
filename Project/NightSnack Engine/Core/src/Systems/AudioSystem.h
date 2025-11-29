@@ -25,27 +25,6 @@
 
 namespace NightSnack {
 
-    ///**
-    // * @struct AudioKeys
-    // * @brief stores keys for sound effects and background music using string identifiers
-    // */
-    //struct AudioKeys {
-    //    // SFX
-
-    //    // UI sounds
-    //    static constexpr const char* buttonClick = "buttonClick";
-
-    //    // In game sounds
-    //    static constexpr const char* playerJump = "playerJump";
-    //    static constexpr const char* playerHit = "playerHit";
-    //    static constexpr const char* playerCollect = "playerCollect";
-    //    static constexpr const char* playerHurt = "playerHurt";
-    //    static constexpr const char* playerSlap = "playerSlap";
-
-    //    // BGM
-    //    static constexpr const char* mainMenu = "mainMenu";
-    //};
-
     /**
      * @enum AUDIO_RESULT
      * @brief result of the audio operation
@@ -187,6 +166,11 @@ namespace NightSnack {
 		 * @param entity the entity to play audio for
          */
         void PlayAudio(Audio const& audio, Entity entity);
+
+        /**
+         * @brief wrapper for PlaySFX(), plays audio for a specific entity
+         * @param entity the entity to play audio for
+         */
         void PlayEntityAudio(Entity e);
 
         //void StopAudio(Entity entity);

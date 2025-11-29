@@ -1,6 +1,19 @@
+/******************************************************************************
+ * File:        SceneManager.cpp
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan (Primary, 100%)
+ *
+ * Description:
+ * This file defines functions that assist in scene managment such as level
+ * loading/saving, level caching when Play/Stop in Editor and GameUI interactions
+ * like button clicks.
+ * 
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 #include "SceneManager.h"
 
-
+// Private helper function that checks mouse and button collision
 static bool ButtonCollisionCheck(float mx, float my, NightSnack::Transform const& t, NightSnack::Collider const& c) {
 	if (c.shape == NightSnack::ShapeType::Circle) {
 		float distsq = mx * mx + my + my;
@@ -22,23 +35,32 @@ static bool ButtonCollisionCheck(float mx, float my, NightSnack::Transform const
 
 namespace NightSnack::Scene {
 
+	// Main update function to be called in core loop
 	void SceneManager::Update() {
 		// If somehow no level is loaded, return to default scene
 		if (!m_gameLoaded) LoadLevel("MainMenu");
 
 		// In the event of mouseclick check collision of all buttons
-		if (m_mouseClicked) {
-			CheckButtonCollisions();
-			m_mouseClicked = false;
-		}
+		//if (m_mouseClicked) {
+		//	m_mouseClicked = false;
+		//	if (m_coord.IsPaused()) return;
+		//	CheckButtonCollisions();
+		//}
 	}
 
+	// Register all button actions and stop buttons into m_buttons
 	void SceneManager::RegisterButtons() {
 		Button loadButton(ButtonAction::LOADLEVEL, [](Coordinator& c, std::string const& s) {
 			if (s.empty()) { return; }
 			c.GetSystem<Scene::SceneManager>()->LoadLevel(s);
 		});
 		m_buttons.emplace(ButtonAction::LOADLEVEL, loadButton);
+
+		Button NoAction(ButtonAction::NOACTION, [](Coordinator& c, std::string const& s) {
+			(void)c;
+			if (s.empty()) { return; }
+		});
+		m_buttons.emplace(ButtonAction::NOACTION, NoAction);
 
 		//Button menuButton(ButtonAction::OPENMENU, [](Coordinator& c, std::string const& s) {
 		//	if (s.empty()) { return; }
@@ -47,6 +69,8 @@ namespace NightSnack::Scene {
 		//m_buttons[ButtonAction::OPENMENU] = menuButton;
 	}
 
+	// Check collision of all entities with button component,
+	// Called when Mouse click event occurs.
 	void SceneManager::CheckButtonCollisions() {
 		float mx = m_coord.GetSystem<InputSystem>()->GetMouseWorldPosX();
 		float my = m_coord.GetSystem<InputSystem>()->GetMouseWorldPosY();
@@ -77,6 +101,8 @@ namespace NightSnack::Scene {
 		}
 	}
 	
+	// Creates all entities required for a level through the entity factory
+	// and sets up BGM for level, refreshes script manager.
 	void SceneManager::LoadLevel(std::string const& levelname) {
 
 		size_t key = m_levelKeys[levelname];
@@ -99,6 +125,7 @@ namespace NightSnack::Scene {
 		m_gameLoaded = true;
 	}
 
+	// Saves information required for levels, including entity information, BGM and name
 	bool SceneManager::SaveLevel(std::string const& levelname, bool overwrite) {
 		// Output file path
 		std::filesystem::path outPath = std::filesystem::path(LEVELS_PATH) / (levelname + ".json");
@@ -153,6 +180,8 @@ namespace NightSnack::Scene {
 		return true;
 	}
 
+	// Currently Overlay Menus are unused and planned to be implemented in future milestones.
+	// Spawn a menu that overlays current game
 	void SceneManager::CreateOverlayMenu() {
 
 		if (m_overlayMenu.empty()) { return; }
@@ -167,7 +196,7 @@ namespace NightSnack::Scene {
 		}
 		overlayOn = true;
 	}
-
+	// Destroy entities of overlay menu
 	void SceneManager::RemoveOverlayMenu() {
 
 		if (!overlayOn) { return; }
@@ -182,11 +211,11 @@ namespace NightSnack::Scene {
 		overlayOn = false;
 	}
 
-	void SceneManager::SetOverlayMenu(std::string const& filename) {
+	//void SceneManager::SetOverlayMenu(std::string const& filename) {
 
-	}
+	//}
 
-	// Take snapshot of current world
+	// Take snapshot of current world -> cache when Play simulation in Editor
 	void SceneManager::CacheLevel() {
 
 		std::set<Entity> entities = m_coord.GetLivingEntities();
@@ -202,7 +231,7 @@ namespace NightSnack::Scene {
 		}
 	}
 
-	// Restore scene to cached level
+	// Restore scene to cached level -> restore after Stopping simulation in Editor
 	void SceneManager::RestoreLevel() {
 
 		if (m_levelCache.empty()) { return; }
@@ -224,7 +253,7 @@ namespace NightSnack::Scene {
 		script->RefreshScripts();
 	}
 
-	// Reads all level files in assets folder
+	// Reads all level files in assets folder -> "./assets/GameData/Levels/"
 	void SceneManager::ReloadLevels() {
 
 		// Clear level keys.
