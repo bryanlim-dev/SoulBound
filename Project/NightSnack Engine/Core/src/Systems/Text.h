@@ -72,10 +72,37 @@ namespace NightSnack {
         /************************************************************************/
         void Init();
         
+        /************************************************************************/
+        /*!
+        \brief
+        Dynamically load all fonts at the start of the program
+        */
+        /************************************************************************/
         void LoadFonts();
 
+        /************************************************************************/
+        /*!
+        \brief
+        Generate glyphs for every loaded font
+
+        \param[in] fontFilePath
+        The file path of the loaded font
+        */
+        /************************************************************************/
         void CreateFont(const std::string& fontFilePath);
 
+        /************************************************************************/
+        /*!
+        \brief
+        Update the font type used by a specific entity
+
+        \param[in] newFontFilePath
+        The new font's file path, which is the key for the stored fonts
+
+        \param[in] e
+        The entity that is having its font type updated
+        */
+        /************************************************************************/
         void UpdateFont(const std::string& newFontFilePath, Entity e);
 
         /************************************************************************/
@@ -98,9 +125,6 @@ namespace NightSnack {
         /*!
         \brief
         Finds the main active camera entity and call Draw()
-
-        \param[in] steps
-        The number of steps in the simulation
         */
         /************************************************************************/
         void Update() override;

@@ -487,7 +487,7 @@ namespace NightSnack {
 
 		// Texture already exists
 		if (GetTexture(textureFilePath)) {
-			std::cout << "This texture already exists!\n";
+			//std::cout << "This texture already exists!\n";
 			return;
 		}
 
@@ -507,14 +507,14 @@ namespace NightSnack {
 			return;
 		}
 
+		// Parse the number of columns and rows accordingly
 		std::string numColStr = textureFilePath.substr(firstUnderscore + 1, secondUnderscore - firstUnderscore - 1);
 		std::string numRowStr = textureFilePath.substr(secondUnderscore + 1, lastDot - secondUnderscore - 1);
-
 		int numCol = std::stoi(numColStr);
 		int numRow = std::stoi(numRowStr);
 
 		auto tex = std::make_unique<Texture>(textureFilePath, rm, numCol, numRow);
-		std::cout << "[Graphics] Created Animated Texture: " << textureFilePath << '\n';
+		//std::cout << "[Graphics] Created Animated Texture: " << textureFilePath << '\n';
 		AddTexture(textureFilePath, std::move(tex));
 
 		// Dispatch a GraphicsEvent
@@ -746,8 +746,6 @@ namespace NightSnack {
 				if (e == INVALID_ENTITY) { break; }
 
 				// Obtain entity components
-				//auto& pos = m_coord.GetComponent<Transform>(e).pos;
-				//auto& scl = m_coord.GetComponent<Transform>(e).scale;
 				auto& UIpos = m_coord.GetComponent<Transform>(e).UIbasePos;
 				auto& UIscale = m_coord.GetComponent<Transform>(e).UIbaseScale;
 
@@ -767,6 +765,7 @@ namespace NightSnack {
 	}
 
 	const std::vector<std::string> GraphicsSystem::GetMaterialMapStrings() const {
+		// Get all the existing materials keys stored in this system
 		std::vector<std::string> materials{};
 		for (const auto& [matName, mat] : m_materials) {
 			materials.emplace_back(matName);

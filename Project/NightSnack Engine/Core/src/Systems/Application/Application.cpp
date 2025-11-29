@@ -1,8 +1,9 @@
 /******************************************************************************
  * File:        Application.cpp
  * Project:     NightSnack
- * Author(s):	Lim Wei Jie (Primary, 100%) - Created Application system to
+ * Author(s):	Lim Wei Jie (Primary, 60%) - Created Application system to
  *			    handle window creation, OpenGL context and Time Handling
+ *				Goh Bei Lai (Secondary, 40%) - Implemented Interruption Handling logic. 
  *
  * Description: This file contains the definitions of the Application System,
  *				which manages the application window, OpenGL context, and timing.

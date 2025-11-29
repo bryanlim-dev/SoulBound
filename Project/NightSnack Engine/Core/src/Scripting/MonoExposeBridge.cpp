@@ -82,32 +82,35 @@ namespace NightSnack::Scripting {
 
 	ExposedValue MonoExposeBridge::ReadValue(void* scriptInstance, const ExposedField& field)
 	{
-		if (scriptInstance == nullptr)
+		if (!scriptInstance)
 			return ExposedValue{};
 
 		ExposedValue result;
 		MonoObject* monoObj = reinterpret_cast<MonoObject*>(scriptInstance);
 
-		//Temporary storage buffer
-		std::vector<uint8_t> tempBuffer;
-		tempBuffer.resize(field.m_sizeBytes);
-
-		mono_field_get_value(monoObj, field.m_monoField, tempBuffer.data());
-
 		switch (field.m_valueType)
 		{
 		case MonoValueType::MONO_INT:
-			memcpy(&result.m_i, tempBuffer.data(), sizeof(int32_t));
+		{
+			int32_t tmp = 0;
+			mono_field_get_value(monoObj, field.m_monoField, &tmp);
+			result.m_i = tmp;
 			break;
-
+		}
 		case MonoValueType::MONO_FLOAT:
-			memcpy(&result.m_f, tempBuffer.data(), sizeof(float));
+		{
+			float tmp = 0.0f;
+			mono_field_get_value(monoObj, field.m_monoField, &tmp);
+			result.m_f = tmp;
 			break;
-
+		}
 		case MonoValueType::MONO_BOOL:
-			memcpy(&result.m_b, tempBuffer.data(), sizeof(bool));
+		{
+			bool tmp = false;
+			mono_field_get_value(monoObj, field.m_monoField, &tmp);
+			result.m_b = tmp;
 			break;
-
+		}
 		case MonoValueType::MONO_STRING:
 		{
 			MonoString* str = nullptr;
@@ -120,10 +123,31 @@ namespace NightSnack::Scripting {
 			}
 			break;
 		}
-
-		default:
-			result.m_structs = tempBuffer;
+		case MonoValueType::MONO_VECTOR2:
+		case MonoValueType::MONO_VECTOR3:
+		{
+			if (field.m_sizeBytes > 0)
+			{
+				std::vector<uint8_t> temp(field.m_sizeBytes);
+				mono_field_get_value(monoObj, field.m_monoField, temp.data());
+				result.m_structs = std::move(temp);
+			}
 			break;
+		}
+		case MonoValueType::MONO_UNSUPPORTED:
+		default:
+		{
+			// Handle reference / user-defined types explicitly:
+			// e.g. read a MonoObject* and store a placeholder or pointer string
+			MonoObject* obj = nullptr;
+			mono_field_get_value(monoObj, field.m_monoField, &obj);
+			if (obj)
+			{
+				// store some representation (e.g., class name or pointer) or skip
+				result.m_s = mono_class_get_name(mono_object_get_class(obj));
+			}
+			break;
+		}
 		}
 
 		return result;

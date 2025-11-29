@@ -109,9 +109,6 @@ namespace NightSnack {
 		/*!
 		\brief
 		Main update called by the core
-
-		\param[in] steps
-		The number of steps in the simulation
 		*/
 		/************************************************************************/
 		void Update() override;
@@ -138,8 +135,23 @@ namespace NightSnack {
 		/************************************************************************/
 		void RenderDebugDrawing(Entity camera);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Dynamically load all textures at the start of the program via the Resource Manager. 
+		*/
+		/************************************************************************/
 		void LoadTextures();
 
+		/************************************************************************/
+		/*!
+		\brief
+		Recursively iterate through folders, to load all textures within the given folder. 
+
+		\param[in] folderPath
+		The current file path of a folder
+		*/
+		/************************************************************************/
 		void IterateFolder(const std::filesystem::path& folderPath);
 
 		/************************************************************************/
@@ -384,6 +396,16 @@ namespace NightSnack {
 		/************************************************************************/
 		const std::unordered_map<std::string, std::unique_ptr<Shader>>& GetShadersMap() const { return m_shaders; }
 
+		/************************************************************************/
+		/*!
+		\brief
+		Get all the material keys that are currently stored in the Graphics System. 
+		To be used in the level editor, inspector panel, where the user can choose which material to use. 
+
+		\return
+		A vector of strings, representing all the material keys that are currently stored in the Graphics System
+		*/
+		/************************************************************************/
 		const std::vector<std::string> GetMaterialMapStrings() const;
 
 		/************************************************************************/
@@ -503,10 +525,34 @@ namespace NightSnack {
 		/************************************************************************/
 		Vec3 ScreenToWorld(Vec3 const& screenPos);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Get whether the screen size has changed. 
+
+		\return
+		Screen size has changed or not
+		*/
+		/************************************************************************/
 		bool ScreenSizeChanged() const noexcept;
 
+		/************************************************************************/
+		/*!
+		\brief
+		Translate and scale all UI entities accordingly to the new screen resolution. 
+
+		\param[in] mainCam
+		The current main camera in the scene
+		*/
+		/************************************************************************/
 		void TranslateUIEntities(Entity mainCam);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Print Debug information to the console.
+		*/
+		/************************************************************************/
 		void DebugRenderableInformation();
 
 		bool m_enableDebugDraw{ false };
