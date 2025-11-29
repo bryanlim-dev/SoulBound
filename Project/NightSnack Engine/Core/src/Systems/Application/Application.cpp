@@ -354,7 +354,7 @@ namespace NightSnack {
 				m_coord.AddComponent<Transform>(m_fpsEntity, t);
 
 				Font font;
-				font.fontSize = 0.7;
+				font.fontSize = 0.7f;
 				font.text = "FPS: 0";
 				font.fontType = "buggy-font";
 				font.textColor = Vec3{ 0.215f, 1.0f, 0.736f };

@@ -31,11 +31,11 @@ namespace ManagedScripts
             color = new Color(EntityId);
             renderer = new Renderer(EntityId);
 
-            rigidBody.UseGravity = true;
+            //rigidBody.UseGravity = true;
             collider.ColType = ColliderType.Solid;
             collider.ColStatic = false;
             color.RGBA = new Colors(0.5f, 0, 0, 1);
-            renderer.IsWireframe = true;
+            //renderer.IsWireframe = true;
 
             //System.Console.WriteLine("Rotator: OnStart"); 
 
