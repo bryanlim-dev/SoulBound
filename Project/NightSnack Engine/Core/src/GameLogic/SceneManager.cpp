@@ -40,6 +40,11 @@ namespace NightSnack::Scene {
 		// If somehow no level is loaded, return to default scene
 		if (!m_gameLoaded) LoadLevel("MainMenu");
 
+		if (m_restart) {
+			RestartLevel();
+			m_restart = false;
+		}
+
 		// In the event of mouseclick check collision of all buttons
 		//if (m_mouseClicked) {
 		//	m_mouseClicked = false;
@@ -121,6 +126,26 @@ namespace NightSnack::Scene {
 		// Refresh Scripts for loaded level
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();
 		script->RefreshScripts();
+
+		m_gameLoaded = true;
+		CacheLevel();
+	}
+
+	void SceneManager::RestartLevel() {
+
+		json const& level = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelKey);
+		// Create all Entities
+		m_coord.GetSystem<EntityFactory>()->CreateLevelEntities(level);
+		// Play Background Music
+		auto audio = m_coord.GetSystem<AudioSystem>();
+		if (level.contains("BGM")) audio->PlayBGM(level["BGM"]);
+		else audio->StopBGM();
+
+		// Refresh Scripts for loaded level
+		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();
+		script->RefreshScripts();
+
+		std::cerr << "[SceneManager] Level restarted\n";
 
 		m_gameLoaded = true;
 	}
@@ -251,6 +276,8 @@ namespace NightSnack::Scene {
 
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();
 		script->RefreshScripts();
+
+		std::cerr << "[SceneManager] Level restored\n";
 	}
 
 	// Reads all level files in assets folder -> "./assets/GameData/Levels/"

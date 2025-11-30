@@ -787,6 +787,7 @@ namespace NightSnack
         {
             for (auto& [key, val] : j.items())
             {
+                if (key.empty()) continue;
                 if (val.is_number_float())
                 {
                     float f = val;

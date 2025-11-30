@@ -74,6 +74,11 @@ namespace NightSnack::Scene {
 							m_coord.Unpause();
 						}
 						break;
+					// Restart current level
+					case InputEvent::InputAction::RestartGame:
+						m_restart = true;
+						std::cerr << "[SceneManager] Queuing restart\n";
+						break;
 					// Used to signal a mouse press event
 					case InputEvent::InputAction::ClickLMB:
 						if (m_coord.IsPaused()) return;
@@ -108,6 +113,7 @@ namespace NightSnack::Scene {
 		// Calls factory to create entities
 		// Sets up bgm and menus
 		void LoadLevel(std::string const& filename);
+		void RestartLevel();
 		bool SaveLevel(std::string const& filename, bool overwrite = 0);
 
 		// Play/Pause/Stop functionality
@@ -137,6 +143,7 @@ namespace NightSnack::Scene {
 		bool m_gameLoaded = false;
 		bool overlayOn = false;
 		bool m_mouseClicked = false;
+		bool m_restart = false;
 	};
 
 }	// NightSnack::Scene

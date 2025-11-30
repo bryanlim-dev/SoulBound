@@ -107,7 +107,7 @@ namespace NightSnack {
 		case GLFW_KEY_F1: return InputEvent::InputAction::DisplayFPS;
 		case GLFW_KEY_F11: return InputEvent::InputAction::ToggleFullscreen;
 		case GLFW_KEY_ESCAPE: return InputEvent::InputAction::PauseGame;
-
+		case GLFW_KEY_F5: return InputEvent::InputAction::RestartGame;
 
 			// Debug tests
 		//case GLFW_KEY_TAB: return InputEvent::InputAction::ToggleSystemTimers;

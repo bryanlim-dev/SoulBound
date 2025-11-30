@@ -325,6 +325,8 @@ namespace NightSnack {
 			ImGui::DockBuilderRemoveNode(dockspace_id); // reset dockspace layout
 			ImGui::DockBuilderAddNode(dockspace_id, ImGuiDockNodeFlags_DockSpace);
 			ImGui::DockBuilderSetNodeSize(dockspace_id, viewport->Size);
+
+			if (viewport->Size.x <= 0.f || viewport->Size.y <= 0.f) { return; }
 			
 			// Split the dockspace into regions
 			ImGuiID dock_id_left, dock_id_right, dock_id_top, dock_id_bottom, dock_id_center;

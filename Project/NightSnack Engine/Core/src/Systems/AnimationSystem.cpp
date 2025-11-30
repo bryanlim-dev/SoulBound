@@ -62,7 +62,7 @@ namespace NightSnack {
 			}
 			////std::cout << "Spritesheet name: " << animator.spriteSheetName << std::endl;
 			if (tex->GetColumns() == 1 && tex->GetRows() == 1) {
-				std::cerr << "[AnimationSystem] Current Entity texture is treated as static. Ensure Texture name has [_cols_rows] or remove Entity's Animator Component!\n";
+				//std::cerr << "[AnimationSystem] Current Entity texture is treated as static. Ensure Texture name has [_cols_rows] or remove Entity's Animator Component!\n";
 				continue;
 			}
 
