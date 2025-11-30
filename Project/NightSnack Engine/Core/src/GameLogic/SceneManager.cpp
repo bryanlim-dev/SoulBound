@@ -128,7 +128,6 @@ namespace NightSnack::Scene {
 		script->RefreshScripts();
 
 		m_gameLoaded = true;
-		CacheLevel();
 	}
 
 	void SceneManager::RestartLevel() {
