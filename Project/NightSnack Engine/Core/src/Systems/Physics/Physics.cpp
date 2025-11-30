@@ -242,8 +242,8 @@ namespace NightSnack {
 				t2.pos.y -= (overlap.y) * sign.y;
 				r2.vel.y = 0.f;
 
-				if (t1.pos.y > t2.pos.y) {
-					c1.isGrounded = true;
+				if (t2.pos.y > t1.pos.y) {
+					c2.isGrounded = true;
 				}
 			}
 		}
