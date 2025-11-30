@@ -23,7 +23,7 @@ namespace ManagedScripts
         [SerializeField]
         public float time = 0.0f;
 
-        RotatorScript rotate = null;
+        //RotatorScript rotate = null;
 
         public Transform transform;
 
@@ -36,7 +36,6 @@ namespace ManagedScripts
             //Log("HoverScript started!");
             //Log($"Initial Position: {Position.X}, {Position.Y}");
             //Log($"Move speed: {moveSpeed}.f");
-
         }
 
         public override void OnUpdate()
