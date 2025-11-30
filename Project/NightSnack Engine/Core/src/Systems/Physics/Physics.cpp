@@ -168,18 +168,34 @@ namespace NightSnack {
 						// If is Trigger, only check for collision and do not perform overlap correction/force transfer
 						if (c1.type == ColliderType::Trigger) { continue; }
 
-						// Not colliding yet;
-						next.pos = t1.pos;
-						for (int i{}; i < 4; ++i) {
-							next.pos.x += r1.vel.x * FixedDT * 0.25f;
-							next.pos.y += r1.vel.y * FixedDT * 0.25f;
-							if (CheckCollision(next, t2, c1, c2) || CheckTunneling(next, t2, r1)) {
-								next.pos.x -= r1.vel.x * FixedDT * 0.25f;
-								next.pos.y -= r1.vel.y * FixedDT * 0.25f;
-								break;
+						if (!c1.isStatic) {
+							// Not colliding yet;
+							next.pos = t1.pos;
+							for (int i{}; i < 4; ++i) {
+								next.pos.x += r1.vel.x * FixedDT * 0.25f;
+								next.pos.y += r1.vel.y * FixedDT * 0.25f;
+								if (CheckCollision(next, t2, c1, c2) || CheckTunneling(next, t2, r1)) {
+									next.pos.x -= r1.vel.x * FixedDT * 0.25f;
+									next.pos.y -= r1.vel.y * FixedDT * 0.25f;
+									break;
+								}
 							}
+							t1.pos = next.pos;
 						}
-						t1.pos = next.pos;
+						else if (!c2.isStatic) {
+							// Not colliding yet;
+							next.pos = t2.pos;
+							for (int i{}; i < 4; ++i) {
+								next.pos.x += r2.vel.x * FixedDT * 0.25f;
+								next.pos.y += r2.vel.y * FixedDT * 0.25f;
+								if (CheckCollision(t1, next, c1, c2) || CheckTunneling(next, t1, r2)) {
+									next.pos.x -= r2.vel.x * FixedDT * 0.25f;
+									next.pos.y -= r2.vel.y * FixedDT * 0.25f;
+									break;
+								}
+							}
+							t2.pos = next.pos;
+						}
 
 						// Entities are already overlapping;
 						if (CheckCollision(t1, t2, c1, c2)) {
