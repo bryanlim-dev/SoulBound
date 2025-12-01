@@ -1,0 +1,27 @@
+{
+    "Animator": {
+        "isLooping": true,
+        "isPlaying": true,
+        "playbackSpeed": 2.0,
+        "spriteSheetName": "slime_4_1.png"
+    },
+    "Collider": {
+        "height": 25.0,
+        "isStatic": false,
+        "radius": 0.5,
+        "shape": "AABB",
+        "type": "Solid",
+        "width": 25.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "frog",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": true
+    },
+    "modified": false,
+    "name": "Frog1"
+}

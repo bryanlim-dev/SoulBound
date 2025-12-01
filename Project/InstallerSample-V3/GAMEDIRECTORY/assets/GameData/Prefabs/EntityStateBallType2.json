@@ -1,7 +1,7 @@
 {
     "Animator": {
-        "isLooping": false,
-        "isPlaying": false,
+        "isLooping": true,
+        "isPlaying": true,
         "playbackSpeed": 1.305999994277954,
         "spriteSheetName": ""
     },

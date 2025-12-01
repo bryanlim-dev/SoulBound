@@ -390,7 +390,7 @@ namespace NightSnack {
 				}
 
 				// Load level by name
-				static char loadLevelName[128] = "empty";
+				static char loadLevelName[128] = "DefaultLevel";
 				ImGui::InputText("Load Level", loadLevelName, IM_ARRAYSIZE(loadLevelName));
 				ImGui::SameLine();
 				if (ImGui::Button("Load")) {

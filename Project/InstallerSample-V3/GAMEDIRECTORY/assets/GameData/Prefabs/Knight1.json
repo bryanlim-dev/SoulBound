@@ -1,0 +1,27 @@
+{
+    "Animator": {
+        "isLooping": true,
+        "isPlaying": true,
+        "playbackSpeed": 2.0,
+        "spriteSheetName": "slime_4_1.png"
+    },
+    "Collider": {
+        "height": 10.300000190734863,
+        "isStatic": false,
+        "radius": 0.5,
+        "shape": "AABB",
+        "type": "Solid",
+        "width": 10.800000190734863
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "Knight",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": true
+    },
+    "modified": true,
+    "name": "Knight"
+}

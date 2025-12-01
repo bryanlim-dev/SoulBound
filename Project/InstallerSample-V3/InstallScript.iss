@@ -8,7 +8,7 @@
 ; !!NOTE!!: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click "Tools" | "Create GUID" inside the Visual Studio IDE.)
-AppId={{B761AE16-EEAE-4CB5-BA61-289AC48E70AE}
+AppId={{046879BF-CBBD-4FBA-B2DD-B9354BF17455}
 
 ; Standard app data stuff
 ; !!NOTE!!: Replace all instances of "GameTest" with your game name.

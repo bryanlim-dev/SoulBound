@@ -84,7 +84,7 @@ namespace NightSnack {
 		glViewport(0, 0, m_appWidth, m_appHeight);
 		glfwSetFramebufferSizeCallback(m_windowHandle, FramebufferSizeCallback);
 		glfwSetWindowIconifyCallback(m_windowHandle, WindowIconifyCallback); // Application window is minimized
-		glfwSetWindowFocusCallback(m_windowHandle, WindowFocusCallback); // Application window loses focus
+		//glfwSetWindowFocusCallback(m_windowHandle, WindowFocusCallback); // Application window loses focus
 		glfwSetWindowMaximizeCallback(m_windowHandle, WindowMaximizeCallback); // Application window is maximized
 
 		// file drop callback

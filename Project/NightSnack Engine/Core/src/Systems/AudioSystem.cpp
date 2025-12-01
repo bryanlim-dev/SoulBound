@@ -31,9 +31,9 @@ namespace NightSnack {
         m_bgmChannel(nullptr),
         m_initialized(false),
         m_bgmPaused(false),
-        m_masterVolume(1.0f),
-        m_bgmVolume(0.7f),
-        m_sfxVolume(1.0f)
+        m_masterVolume(0.5f),
+        m_bgmVolume(0.2f),
+        m_sfxVolume(0.4f)
     {
         m_systemSignature.set(GetComponentTypeID<Audio>());
 

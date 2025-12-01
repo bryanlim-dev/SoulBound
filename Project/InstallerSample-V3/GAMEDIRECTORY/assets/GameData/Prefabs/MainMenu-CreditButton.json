@@ -1,0 +1,27 @@
+{
+    "ButtonInfo": {
+        "action": "LoadLevel",
+        "target": "",
+        "type": "Clicker"
+    },
+    "Collider": {
+        "height": 100.0,
+        "isStatic": true,
+        "radius": 0.0,
+        "shape": "AABB",
+        "type": "Trigger",
+        "width": 265.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "Credits",
+        "meshName": "square"
+    },
+    "Audio": {
+        "audioKey": "playerCollect",
+        "volume": 1.0,
+        "loop": false,
+        "playOnStart": false,
+        "isPlaying": false
+    }
+}
