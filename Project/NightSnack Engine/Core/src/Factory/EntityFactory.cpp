@@ -210,7 +210,7 @@ namespace NightSnack {
         key = m_prefabKeys[prefab];
 
         // Read new version
-        std::filesystem::path path = PRIME_PREFABS_PATH + prefab + ".json";
+        std::filesystem::path path = RESOURCE_PATH + ("GameData/Prefabs/" + prefab + ".json");
         std::ifstream ifs(path);
         if (!ifs) {
 			std::cerr << "Failed to read json file: " << path << '\n';
@@ -305,11 +305,16 @@ namespace NightSnack {
                 std::cerr << "Default entity not saved\n";
                 continue;
             }
-            else if (t.prefabModified) prefabName = "Entity";
+            // Output file path
+            std::filesystem::path outPath = RESOURCE_PATH + ("GameData/Prefabs/" + prefabName + ".json");
 
+            // Edge case: Prefab was deleted and entity using it still exists within a level
+            if (!std::filesystem::exists(outPath)) {
+                std::cout << "Saved as prefab: " << prefabName << '\n';
+                SaveAsPrefab(e, prefabName);
+            }
+            // Prefab was modified and not saved
             if (t.prefabModified) {
-                // Output file path
-                std::filesystem::path outPath = std::filesystem::path(PRIME_PREFABS_PATH) / (prefabName + ".json");
                 // Check if a prefab already exists with the same name
                 bool exists = std::filesystem::exists(outPath);
                 size_t cnt = 1;
@@ -319,7 +324,7 @@ namespace NightSnack {
                     // prefab1, prefab2 etc...
                     newPrefabName = prefabName + std::to_string(cnt);
                     // check if new name already exists;
-                    std::filesystem::path tempout = std::filesystem::path(PRIME_PREFABS_PATH) / (newPrefabName + ".json");
+                    std::filesystem::path tempout = RESOURCE_PATH + ("GameData/Prefabs/" + newPrefabName + ".json");
                     exists = std::filesystem::exists(tempout);
                     cnt++;
                 }
@@ -534,8 +539,7 @@ namespace NightSnack {
     bool EntityFactory::SaveAsPrefab(Entity e, std::string const& prefabName, bool overwrite) {
 
         // Output file path
-        std::filesystem::path outPath = std::filesystem::path(PRIME_PREFABS_PATH) / (prefabName + ".json");
-        std::filesystem::path currdir = std::filesystem::path(PREFABS_PATH) / (prefabName + ".json");
+        std::filesystem::path outPath = RESOURCE_PATH + ("GameData/Prefabs/" + prefabName + ".json");
 
         // Check if a prefab already exists with the same name
         if (std::filesystem::exists(outPath) && !overwrite) {
@@ -555,16 +559,7 @@ namespace NightSnack {
         }
         ofs << std::setw(4) << j;
         ofs.close();
-        std::cout << "[EntityFactory] Saved prefab to prime: " << outPath << "\n";
-
-        std::ofstream cfs(currdir);
-        if (!cfs.is_open()) {
-            std::cerr << "[EntityFactory] Failed to save and reload prefab file: " << currdir << "\n";
-            return false;
-        }
-        cfs << std::setw(4) << j;
-        cfs.close();
-        std::cout << "[EntityFactory] Saved prefab to: " << currdir << "\n";
+        std::cout << "[EntityFactory] Saved prefab to: " << outPath << "\n";
 
         // Use ResourceManager to load new prefab file
         std::string prefabpath = "GameData/Prefabs/" + prefabName + ".json";

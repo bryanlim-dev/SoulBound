@@ -152,11 +152,13 @@ namespace NightSnack::Scene {
 	// Saves information required for levels, including entity information, BGM and name
 	bool SceneManager::SaveLevel(std::string const& levelname, bool overwrite) {
 		// Output file path
-		std::filesystem::path outPath = std::filesystem::path(LEVELS_PATH) / (levelname + ".json");
-		std::filesystem::path primePath = std::filesystem::path(PRIME_LEVELS_PATH) / (levelname + ".json");
+		std::filesystem::path outPath = RESOURCE_PATH + ("GameData/Levels/" + (levelname + ".json"));
 
-		// Check if a prefab already exists with the same name
-		if (std::filesystem::exists(primePath) && !overwrite) {
+		//std::filesystem::path outPath = std::filesystem::path(LEVELS_PATH) / (levelname + ".json");
+		//std::filesystem::path primePath = std::filesystem::path(PRIME_LEVELS_PATH) / (levelname + ".json");
+
+		// Check if a level already exists with the same name
+		if (std::filesystem::exists(outPath) && !overwrite) {
 			std::cout << "There already exists a level named '" << levelname << "' at '" << "GameData/Levels" << '\n';
 			return false;
 		}
@@ -171,21 +173,13 @@ namespace NightSnack::Scene {
 		level["Name"] = levelname;
 
 		// Write file -------------------------------------------------------
-		std::ofstream pfs(primePath);
+		std::ofstream pfs(outPath);
 		if (!pfs.is_open()) {
-			std::cerr << "Failed to write level file: " << primePath << "\n";
+			std::cerr << "Failed to write level file: " << outPath << "\n";
 			return false;
 		}
 		pfs << std::setw(4) << level;
 		pfs.close();
-
-		std::ofstream ofs(outPath);
-		if (!ofs.is_open()) {
-			std::cerr << "Failed to write level file: " << outPath << '\n';
-			return false;
-		}
-		ofs << std::setw(4) << level;
-		ofs.close();
 
 		// Update ResourceManager -------------------------------------------
 		auto resource = m_coord.GetSystem<ResourceManager>();
@@ -196,7 +190,7 @@ namespace NightSnack::Scene {
 		}
 		else {
 			// New Level has been saved
-			std::string loadPath = "../../../../assets/GameData/Levels/" + levelname + ".json";
+			std::string loadPath = "GameData/Levels/" + levelname + ".json";
 			resource->LoadJson(loadPath, m_levelKeys[levelname]);
 			std::cerr << "[SceneManager] Saved new level\n";
 		}
@@ -288,7 +282,7 @@ namespace NightSnack::Scene {
 		}
 		m_levelKeys.clear();
 
-		std::string fullpath = LEVELS_PATH;
+		std::string fullpath = RESOURCE_PATH + std::string{ "GameData/Levels/" };
 
 		// Iterate through entries in directory.
 		for (auto const& entry : std::filesystem::directory_iterator(fullpath))

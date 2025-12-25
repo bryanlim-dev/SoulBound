@@ -53,16 +53,16 @@ namespace NightSnack
         */
         AssetsPanel(Coordinator& coord) :
             m_coord(coord),
-            m_assetsRoot(PRIME_RESOURCE_PATH),
-            m_scriptsRoot(PRIME_SCRIPTS_PATH),
+            m_assetsRoot(RESOURCE_PATH),
+            m_scriptsRoot(SCRIPTS_PATH),
             m_currentDirectory(m_assetsRoot),
             m_thumbnailSize(96.0f),
             m_selectedAssetPath(""),
             m_showAssetProperties(false),
             m_showImportDialog(false),
-            m_prefabsPanel(coord, PRIME_PREFABS_PATH),
-            m_filesPanel(coord, PRIME_RESOURCE_PATH),
-            m_scriptsPanel(coord, PRIME_SCRIPTS_PATH)
+            m_prefabsPanel(coord, RESOURCE_PATH + std::string{"GameData/Prefabs/"}),
+            m_filesPanel(coord, RESOURCE_PATH),
+            m_scriptsPanel(coord, SCRIPTS_PATH)
         {
             m_prefabNames.reserve(coord.GetSystem<EntityFactory>()->GetPrefabNames().size());
             for (std::string const& s : coord.GetSystem<EntityFactory>()->GetPrefabNames())
@@ -580,7 +580,7 @@ namespace NightSnack
                         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
                         if (ImGui::Button("Delete", ImVec2(120, 0)))
                         {
-                            DeleteAsset(selectedPath.filename().string());
+                            DeleteAsset(selectedPath.string());
                             ImGui::CloseCurrentPopup();
                         }
                         ImGui::PopStyleColor();
@@ -823,6 +823,8 @@ namespace NightSnack
                 {
                     m_showAssetProperties = false;
                     m_selectedAssetPath = "";
+                    std::cout << "Asset path does not exist, unable to delete [" << assetPath << "]\n";
+                    std::cout << "FilePath -> " << filePath.string() << '\n';
                     return;
                 }
 
@@ -849,7 +851,9 @@ namespace NightSnack
 
                 }
 
-                fs::remove(filePath);
+                if (!fs::remove(filePath)) {
+                    std::cout << "Failed to delete from folder: " << filePath.string() << '\n';
+                }
 
                 m_showAssetProperties = false;
                 m_selectedAssetPath = "";

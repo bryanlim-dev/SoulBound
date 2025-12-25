@@ -213,7 +213,7 @@ namespace NightSnack
                 std::cout << "Prefab HotReloaded: " << prefabName << std::endl;
 
                 // Update Prime file
-                std::filesystem::path primePath = PRIME_PREFABS_PATH + (prefabName + ".json");
+                std::filesystem::path primePath = RESOURCE_PATH + ("GameData/Prefabs/" + (prefabName + ".json"));
                 std::ofstream primefile(primePath);
                 if (!primefile.is_open())
                 {

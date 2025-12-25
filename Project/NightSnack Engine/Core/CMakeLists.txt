@@ -34,15 +34,24 @@ target_compile_definitions(Core
     PRIVATE
         CORE_EXPORTS
     PUBLIC
-        RESOURCE_PATH=\"./assets/\"
-        SCRIPTS_PATH=\"./assets/Scripts/\"
-        PREFABS_PATH=\"./assets/GameData/Prefabs/\"
-        LEVELS_PATH=\"./assets/GameData/Levels/\"
-        DATA_PATH=\"./assets/Data/\"
-        PRIME_RESOURCE_PATH=\"../../../assets/\"
-	    PRIME_SCRIPTS_PATH=\"../../../ManagedScripts/\"
-        PRIME_PREFABS_PATH=\"../../../assets/GameData/Prefabs/\"
-        PRIME_LEVELS_PATH=\"../../../assets/GameData/Levels/\"
+        #
+        EDITOR=0
+
+        # Comment out below 2 for installer
+        RESOURCE_PATH=\"../../../assets/\"
+	    SCRIPTS_PATH=\"../../../ManagedScripts/\"
+
+        # For Installer:
+        #RESOURCE_PATH=\"./assets/\"
+
+        # Legacy
+        #SCRIPTS_PATH=\"./assets/Scripts/\"
+        #PREFABS_PATH=\"./assets/GameData/Prefabs/\"
+        #LEVELS_PATH=\"./assets/GameData/Levels/\"
+        #DATA_PATH=\"./assets/Data/\"
+        #PRIME_RESOURCE_PATH=\"../../../assets/\"
+        #PRIME_PREFABS_PATH=\"../../../assets/GameData/Prefabs/\"
+        #PRIME_LEVELS_PATH=\"../../../assets/GameData/Levels/\"
 )
 
 # Include directories
