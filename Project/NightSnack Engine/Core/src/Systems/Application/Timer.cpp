@@ -18,7 +18,7 @@ namespace NightSnack {
 
     // Default constructor to setup initial Timer values;
     Timer::Timer()
-        : m_lastFrameTime(static_cast<float>(glfwGetTime())), m_currentFrameTime(0.f), m_endFrameTime(0.f), m_deltaTime(0.f),
+        : m_lastFrameTime(static_cast<float>(glfwGetTime())), m_currentFrameTime(m_lastFrameTime), m_endFrameTime(m_lastFrameTime), m_deltaTime(0.f),
         m_fps(0.f), m_frameCount(0), m_lastFpsUpdateTime(static_cast<float>(glfwGetTime())), m_totalSystemTime(0.f)
     {
         EnableVSync(1);

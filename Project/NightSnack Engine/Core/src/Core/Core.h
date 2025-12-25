@@ -134,6 +134,9 @@ namespace NightSnack {
 
 		// Event Dispatcher;
 		EventDispatcher core_dispatcher;
+
+		// For Crash Logging
+		std::string lastSystem;
 	};
 
 	template <typename T, typename... Args>

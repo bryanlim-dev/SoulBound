@@ -135,7 +135,7 @@ namespace NightSnack {
 
     private:
         // Frame timing
-        int     m_frameCount;
+        int    m_frameCount;
         float  m_currentFrameTime;
         float  m_lastFrameTime;
         float  m_endFrameTime;

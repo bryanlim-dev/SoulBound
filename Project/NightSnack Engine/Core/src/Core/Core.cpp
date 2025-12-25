@@ -32,19 +32,19 @@ namespace NightSnack {
 		}
 		catch (const NightSnack::IException ex)
 		{
-			NightSnack::CrashLogger::LogCrash(ex);
+			NightSnack::CrashLogger::LogCrash(ex, "Core StartUp Failed");
 			ex.print();
 			exit(EXIT_FAILURE);
 		}
 		catch (const std::exception& ex)
 		{
-			NightSnack::CrashLogger::LogCrash(NightSnack::IException(ex.what(), NightSnack::ExceptionType::General, __FILE__));
+			NightSnack::CrashLogger::LogCrash(NightSnack::IException(ex.what(), NightSnack::ExceptionType::General, __FILE__), "Core StartUp Failed");
 			std::cerr << "[Exception][std::exception] " << ex.what() << std::endl;
 			exit(EXIT_FAILURE);
 		}
 		catch (...)
 		{
-			NightSnack::CrashLogger::LogCrash(NightSnack::IException("Unknown exception", NightSnack::ExceptionType::General, __FILE__));
+			NightSnack::CrashLogger::LogCrash(NightSnack::IException("Unknown exception", NightSnack::ExceptionType::General, __FILE__), "Core StartUp Failed");
 			std::cerr << "[Exception][Unknown]" << std::endl;
 			exit(EXIT_FAILURE);
 		}
@@ -135,19 +135,19 @@ namespace NightSnack {
 		}
 		catch (const NightSnack::IException ex)
 		{
-			NightSnack::CrashLogger::LogCrash(ex);
+			NightSnack::CrashLogger::LogCrash(ex, lastSystem);
 			ex.print();
 			exit(EXIT_FAILURE);
 		}
 		catch (const std::exception& ex)
 		{
-			NightSnack::CrashLogger::LogCrash(NightSnack::IException(ex.what(), NightSnack::ExceptionType::General, __FILE__));
+			NightSnack::CrashLogger::LogCrash(NightSnack::IException(ex.what(), NightSnack::ExceptionType::General, __FILE__), lastSystem);
 			std::cerr << "[Exception][std::exception] " << ex.what() << std::endl;
 			exit(EXIT_FAILURE);
 		}
 		catch (...)
 		{
-			NightSnack::CrashLogger::LogCrash(NightSnack::IException("Unknown exception", NightSnack::ExceptionType::General, __FILE__));
+			NightSnack::CrashLogger::LogCrash(NightSnack::IException("Unknown exception", NightSnack::ExceptionType::General, __FILE__), lastSystem);
 			std::cerr << "[Exception][Unknown]" << std::endl;
 			exit(EXIT_FAILURE);
 		}
@@ -180,20 +180,24 @@ namespace NightSnack {
 
 			m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer(System->GetName());
 			System->Update();
+			lastSystem = System->GetName();
 			m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer(System->GetName());
 		}
 
 		// Destroy all entities scheduled to be removed;
 		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("EntityFactory");
 		m_coord.GetSystem<EntityFactory>()->PostUpdate();
+		lastSystem = "EntityFactory PostUpdate";
 		m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer("EntityFactory");
 
 		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("ApplicationSystem");
 		m_coord.GetSystem<ApplicationSystem>()->SwapBuffers();
 		m_coord.GetSystem<ApplicationSystem>()->FrameCapUpdate();
+		lastSystem = "Application Buffer-Swap";
 		m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer("ApplicationSystem");
 
 		// End frame timing;
+		lastSystem = "Frame Complete";
 		m_coord.GetSystem<ApplicationSystem>()->EndFrame();
 	}
 

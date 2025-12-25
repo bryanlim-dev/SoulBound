@@ -38,7 +38,7 @@ namespace NightSnack {
         The IException instance containing crash details.
         */
         /************************************************************************/
-        static void LogCrash(const IException& ex) noexcept
+        static void LogCrash(const IException& ex, std::string const& lastSystem) noexcept
         {
             // Exception safety: ensure no exceptions escape this function
             try
@@ -60,6 +60,7 @@ namespace NightSnack {
                     "[CRASH] " + std::string(timeStr) +
                     "[" + std::string(ExceptionTypeToString(ex.type())) + "]\n" +
                     "[" + (ex.source().empty() ? "Unknown" : ex.source()) + "]\n" +
+                    "Last Successfully run System: " + lastSystem + '\n' +
                     "Message: " + ex.message() + "\n" +
                     "------------------------------------";
 
