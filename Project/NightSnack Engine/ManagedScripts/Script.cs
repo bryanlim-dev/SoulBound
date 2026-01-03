@@ -24,6 +24,15 @@ namespace ManagedScripts
         public virtual void OnUpdate() { }
         public virtual void OnDestroy() { }
 
+        public class Component
+        {
+            public uint EntityId;
+            public Component(uint id)
+            { 
+                EntityId = id;
+            }
+        }
+
         // Convenience properties
         #region Transform
         public class Transform
@@ -359,6 +368,50 @@ namespace ManagedScripts
         }
 
 
+
+        #endregion
+
+        #region Audio
+        
+        public class Audio
+        {
+            private uint EntityId;
+
+            public Audio(uint id)
+            {
+                EntityId = id;
+            }
+
+            public string AudioKey
+            {
+                get => Engine.GetAudioKey(EntityId);
+                set => Engine.SetAudioKey(EntityId, value);
+            }
+
+            public float AudioVolume
+            {
+                get => Engine.GetAudioVolume(EntityId);
+                set => Engine.SetAudioVolume(EntityId, value);
+            }
+
+            public bool AudioLoop
+            {
+                get => Engine.GetAudioLoop(EntityId);
+                set => Engine.SetAudioLoop(EntityId, value);
+            }
+
+            public bool AudioPlayOnStart
+            {
+                get => Engine.GetAudioPlayOnStart(EntityId);
+                set => Engine.SetAudioPlayOnStart(EntityId, value);
+            }
+
+            public bool AudioIsPlaying
+            {
+                get => Engine.GetAudioIsPlaying(EntityId);
+                set => Engine.SetAudioIsPlaying(EntityId, value);
+            }
+        }
 
         #endregion
 

@@ -377,6 +377,43 @@ namespace ManagedScripts
         #endregion
 
         // ----------------------------
+        // Audio Internal for Scripts
+        // ----------------------------
+        #region Audio
+        //---- currentAnimatorClip
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetAudioKey_Internal(uint entityId);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAudioKey_Internal(uint entityId, string key);
+
+
+        //---- volume
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAudioVolume_Internal(uint entityId, out float volume);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAudioVolume_Internal(uint entityId, ref float volume);
+
+
+        //---- loop
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAudioLoop_Internal(uint entityId, out bool loop);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAudioLoop_Internal(uint entityId, ref bool loop);
+
+        //---- playonStart
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAudioPlayOnStart_Internal(uint entityId, out bool playOnStart);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAudioPlayOnStart_Internal(uint entityId, ref bool playOnStart);
+
+        //---- isPlayer
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAudioIsPlaying_Internal(uint entityId, out bool isPlayer);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAudioIsPlaying_Internal(uint entityId, ref bool isPlayer);
+        #endregion
+
+        // ----------------------------
         // Scripting Internal for Scripts
         // ----------------------------
         #region Scripting
@@ -999,6 +1036,66 @@ namespace ManagedScripts
         public static void SetCameraHeight(uint entityId, float height)
         {
             SetCameraHeight_Internal(entityId, ref height);
+        }
+        #endregion
+
+        // ----------------------------
+        // Audio API for Scripts
+        // ----------------------------
+        #region Audio
+        //key
+        public static string GetAudioKey(uint entityId)
+        {
+            return GetAudioKey_Internal(entityId);
+        }
+        public static void SetAudioKey(uint entityId, string key)
+        {
+            SetAudioKey_Internal(entityId, key);
+        }
+
+
+        //volume
+        public static float GetAudioVolume(uint entityId)
+        {
+            GetAudioVolume_Internal(entityId, out float vol);
+            return vol;
+        }
+        public static void SetAudioVolume(uint entityId, float vol)
+        {
+            SetAudioVolume_Internal(entityId, ref vol);
+        }
+
+        //loop
+        public static bool GetAudioLoop(uint entityId)
+        {
+            GetAudioLoop_Internal(entityId, out bool loop);
+            return loop;
+        }
+        public static void SetAudioLoop(uint entityId, bool loop)
+        {
+            SetAudioLoop_Internal(entityId, ref loop);
+        }
+
+        //playOnStart
+        public static bool GetAudioPlayOnStart(uint entityId)
+        {
+            GetAudioPlayOnStart_Internal(entityId, out bool playOnStart);
+            return playOnStart;
+        }
+        public static void SetAudioPlayOnStart(uint entityId, bool playOnStart)
+        {
+            SetAudioPlayOnStart_Internal(entityId, ref playOnStart);
+        }
+
+        //isPlaying
+        public static bool GetAudioIsPlaying(uint entityId)
+        {
+            GetAudioIsPlaying_Internal(entityId, out bool isPlaying);
+            return isPlaying;
+        }
+        public static void SetAudioIsPlaying(uint entityId, bool isPlaying)
+        {
+            SetAudioIsPlaying_Internal(entityId, ref isPlaying);
         }
         #endregion
 

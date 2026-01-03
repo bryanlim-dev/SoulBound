@@ -59,16 +59,23 @@ namespace ManagedScripts
             //Log($"Has Script: {Engine.HasScript(EntityId, "RotatorScript")}");
 
 
-            //Vector3 pos;
-            //pos.X = 100;
-            //pos.Y = 100;
-            //pos.Z = 0;
-            //uint id1 = Engine.CreateEntityArchetype("BlueBallScripting", pos);
+            Vector3 pos;
+            pos.X = 100;
+            pos.Y = 100;
+            pos.Z = 0;
+            uint id1 = Engine.CreateEntityArchetype("BlueBallScripting", pos);
             //pos.X = 200;
             //uint id2 = Engine.CreateEntityArchetype("BlueBallScripting2", pos);
             //pos.X = 300;
             //pos.Y = -100;
             //uint id3 = Engine.CreateEntityArchetype("BlueBallScripting3", pos);
+
+            //Audio Test
+            //Engine.SetAudioPlayOnStart(id1, true);
+            //Engine.SetAudioIsPlaying(id1, true);
+            //Engine.SetAudioLoop(id1, true);
+            //Engine.SetAudioKey(id1, "playerHit");
+
 
             ////Transform Test
 

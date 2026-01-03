@@ -749,7 +749,104 @@ namespace NightSnack::Scripting {
         m_coord.ModifyComponent<Camera>(e).height = height;
     }
 
+
 #pragma endregion
+
+#pragma region Audio
+    Audi ScriptInterface::GetAudio(Entity e)
+    {
+        Audio& audio = m_coord.ModifyComponent<Audio>(e);
+        Audi aud;
+        aud.audioKey = audio.audioKey;
+        aud.volume = audio.volume;
+        aud.loop = audio.loop;
+        aud.playOnStart = audio.playOnStart;
+        aud.isPlaying = audio.isPlaying;
+        return aud;
+    }
+    void ScriptInterface::SetAudio(Entity e, Audi aud)
+    {
+        Audio& audio = m_coord.ModifyComponent<Audio>(e);
+        audio.audioKey = aud.audioKey;
+        audio.volume = aud.volume;
+        audio.loop = aud.loop;
+        audio.playOnStart = aud.playOnStart;
+        audio.isPlaying = aud.isPlaying;
+    }
+
+    std::string ScriptInterface::GetAudioKey(Entity e)
+    {
+        if (m_coord.HasComponent<Audio>(e))
+            return m_coord.GetComponent<Audio>(e).audioKey;
+        else
+            return "ERROR!";
+    }
+    void ScriptInterface::SetAudioKey(Entity e, std::string key)
+    {
+        if (m_coord.HasComponent<Audio>(e))
+        {
+            m_coord.ModifyComponent<Audio>(e).audioKey = key;
+        }
+    }
+
+
+    float ScriptInterface::GetAudioVolume(Entity e)
+    {
+        if (m_coord.HasComponent<Audio>(e))
+            return m_coord.GetComponent<Audio>(e).volume;
+        else
+            return 0;
+    }
+    void ScriptInterface::SetAudioVolume(Entity e, float vol)
+    {
+        if (m_coord.HasComponent<Audio>(e))
+            m_coord.ModifyComponent<Audio>(e).volume = vol;
+    }
+
+
+    bool ScriptInterface::GetAudioLoop(Entity e)
+    {
+        if (m_coord.HasComponent<Audio>(e))
+            return m_coord.GetComponent<Audio>(e).loop;
+        else
+            return false;
+    }
+    void ScriptInterface::SetAudioLoop(Entity e, bool looping)
+    {
+        if (m_coord.HasComponent<Audio>(e))
+            m_coord.ModifyComponent<Audio>(e).loop = looping;
+    }
+
+
+    bool ScriptInterface::GetAudioPlayOnStart(Entity e)
+    {
+        if (m_coord.HasComponent<Audio>(e))
+            return m_coord.GetComponent<Audio>(e).playOnStart;
+        else
+            return false;
+    }
+    void ScriptInterface::SetAudioPlayOnStart(Entity e, bool playOnStart)
+    {
+        if (m_coord.HasComponent<Audio>(e))
+            m_coord.ModifyComponent<Audio>(e).playOnStart = playOnStart;
+    }
+
+
+    bool ScriptInterface::GetAudioIsPlaying(Entity e)
+    {
+        if (m_coord.HasComponent<Audio>(e))
+            return m_coord.GetComponent<Audio>(e).isPlaying;
+        else
+            return false;
+    }
+    void ScriptInterface::SetAudioIsPlaying(Entity e, bool isPlaying)
+    {
+        if (m_coord.HasComponent<Audio>(e))
+            m_coord.ModifyComponent<Audio>(e).isPlaying = isPlaying;
+    }
+
+#pragma endregion
+
 
     // --------------------------------------------------------------
     // Scripting Inputs

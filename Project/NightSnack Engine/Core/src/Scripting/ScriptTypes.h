@@ -164,6 +164,16 @@ namespace NightSnack::Scripting {
         float height{ 900.f };
     };
 
+    struct Audi {
+        std::string audioKey{};
+        float volume = 1.0f;
+        bool loop = false;
+        bool playOnStart = false;
+        //bool is3D = false;
+        bool isPlaying = false;
+        //bool stop = false;
+	};
+
     // Handle to a game object (Similar to Entity ID)
     struct GameObjectHandle {
         uint32_t id;
