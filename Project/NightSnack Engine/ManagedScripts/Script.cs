@@ -11,6 +11,8 @@
  * All rights reserved.
  ******************************************************************************/
 
+using System.Security.Cryptography.X509Certificates;
+
 namespace ManagedScripts
 {
     // Base class for all game scripts
@@ -35,13 +37,11 @@ namespace ManagedScripts
 
         // Convenience properties
         #region Transform
-        public class Transform
+        public class Transform : Component
         {
-            private uint EntityId;
 
-            public Transform(uint id)
+            public Transform(uint id) : base (id)
             {
-                EntityId = id;
             }
 
             public void SetID(uint id)
@@ -83,14 +83,12 @@ namespace ManagedScripts
         #endregion
 
         #region RigidBody
-        public class RigidBody
+        public class RigidBody : Component
         {
-            private uint EntityId;
-
-            public RigidBody(uint id)
+            public RigidBody(uint id) : base(id)
             {
-                EntityId = id;
             }
+
             #region Force
             public Vector2 ForceDirection
             {
@@ -153,14 +151,12 @@ namespace ManagedScripts
         #endregion //Rigidbody
 
         #region Collider
-        public class Collider
+        public class Collider : Component
         {
-            private uint EntityId;
-
-            public Collider(uint id)
+            public Collider(uint id) : base(id)
             {
-                EntityId = id;
             }
+
             public ColliderType ColType
             {
                 get => Engine.GetColliderType(EntityId);
@@ -212,13 +208,10 @@ namespace ManagedScripts
 
         #region Color
 
-        public class Color
+        public class Color : Component
         {
-            private uint EntityId;
-
-            public Color(uint id)
+            public Color(uint id) : base(id)
             {
-                EntityId = id;
             }
 
             public Colors RGBA
@@ -230,14 +223,12 @@ namespace ManagedScripts
         #endregion
 
         #region Renderable
-        public class Renderer
+        public class Renderer : Component
         {
-            private uint EntityId;
-
-            public Renderer(uint id)
+            public Renderer(uint id) : base(id)
             {
-                EntityId = id;
             }
+
             public string MeshName
             {
                 get => Engine.GetMeshName(EntityId);
@@ -257,13 +248,10 @@ namespace ManagedScripts
         #endregion
 
         #region Animator
-        public class Animnator
+        public class Animnator : Component
         {
-            private uint EntityId;
-
-            public Animnator(uint id)
+            public Animnator(uint id) : base(id)
             {
-                EntityId = id;
             }
             //public string AnimatorCurrentClip
             //{
@@ -330,13 +318,10 @@ namespace ManagedScripts
         #endregion
 
         #region Font
-        public class Font
+        public class Font : Component
         {
-            private uint EntityId;
-
-            public Font(uint id)
+            public Font(uint id) : base(id)
             {
-                EntityId = id;
             }
 
             public string FontType
@@ -373,13 +358,10 @@ namespace ManagedScripts
 
         #region Audio
         
-        public class Audio
+        public class Audio : Component
         {
-            private uint EntityId;
-
-            public Audio(uint id)
+            public Audio(uint id) : base(id)
             {
-                EntityId = id;
             }
 
             public string AudioKey
