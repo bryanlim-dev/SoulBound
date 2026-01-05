@@ -56,7 +56,7 @@ namespace NightSnack {
 		std::string GetName() const override;
 
 	private:
-		Coordinator* m_coord;
+		Coordinator& m_coord;
 		EventDispatcher* m_dispatcher;
 
 		Entity m_mainCamera;

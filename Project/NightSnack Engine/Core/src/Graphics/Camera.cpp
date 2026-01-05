@@ -11,42 +11,42 @@
  * All rights reserved.
  ******************************************************************************/
 #include "Camera.h"
+#include "Systems/Graphics.h"
 #include <iostream>
 
 namespace NightSnack {
 
     CameraSystem::CameraSystem(Coordinator& coordinator, EventDispatcher& dispatcher)
-        : m_coord(&coordinator),
+        : m_coord(coordinator),
         m_dispatcher(&dispatcher),
         m_mainCamera(INVALID_ENTITY),
         m_player(INVALID_ENTITY) {}
 
     void CameraSystem::Update()
     {
-        // use local reference to the coordinator
-        Coordinator& coord = *m_coord;
 
-        // find camera if we don't have one
-        if (m_mainCamera == INVALID_ENTITY)
-        {
-            m_mainCamera = CameraComponent(coord);
-        }
+        //// find camera if we don't have one
+        //if (m_mainCamera == INVALID_ENTITY)
+        //{
+        //    m_mainCamera = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
+        //}
+        m_mainCamera = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
 
         // find player if we don't have one
-        m_player = FindPlayer(coord);
+        m_player = FindPlayer(m_coord);
 
         // make camera follow player
         if (m_mainCamera != INVALID_ENTITY && m_player != INVALID_ENTITY)
         {
 			// check if both entities have Transform component
-            if (coord.HasComponent<Transform>(m_mainCamera) &&
-                coord.HasComponent<Transform>(m_player))
+            if (m_coord.HasComponent<Transform>(m_mainCamera) &&
+                m_coord.HasComponent<Transform>(m_player))
             {
                 // get player position
-                const auto& playerTransform = coord.GetComponent<Transform>(m_player);
+                const auto& playerTransform = m_coord.GetComponent<Transform>(m_player);
 
                 // set camera position to player position
-                auto& cameraTransform = coord.ModifyComponent<Transform>(m_mainCamera);
+                auto& cameraTransform = m_coord.ModifyComponent<Transform>(m_mainCamera);
                 cameraTransform.pos.x = playerTransform.pos.x;
                 cameraTransform.pos.y = playerTransform.pos.y;
             }
@@ -54,7 +54,7 @@ namespace NightSnack {
         else 
         {
             // Set camera position to player position
-            auto& cameraTransform = coord.ModifyComponent<Transform>(m_mainCamera);
+            auto& cameraTransform = m_coord.ModifyComponent<Transform>(m_mainCamera);
             cameraTransform.pos = Vec3{0.f, 0.f, 2.f};
         }
     }

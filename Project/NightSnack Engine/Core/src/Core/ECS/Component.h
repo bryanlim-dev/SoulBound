@@ -44,6 +44,9 @@ namespace NightSnack {
         float rot{};
         Vec2 scale;
 
+        Entity parent{ INVALID_ENTITY };
+        std::vector<Entity> children{};
+
         Vec3 UIbasePos{ 0.f, 0.f, 0.f };
         Vec2 UIbaseScale{ 0.f, 0.f };
 

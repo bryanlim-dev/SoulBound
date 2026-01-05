@@ -83,7 +83,7 @@ namespace NightSnack {
                 return;
             }
 
-            for (int s{}; s < m_coord.steps; ++s) {
+            //for (int s{}; s < m_coord.steps; ++s) {
                 // Iterate through all Entities this system can access;
                 for (Layer& l : m_layers) {
                     if (!l.IsActive()) { continue; }
@@ -113,7 +113,7 @@ namespace NightSnack {
                         if (debugMode) stepRequest = false; // reset step request
                     }
                 }
-            }
+            //}
         }
 
         // Required by ISystem base class;
