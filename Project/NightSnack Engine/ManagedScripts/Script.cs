@@ -11,6 +11,8 @@
  * All rights reserved.
  ******************************************************************************/
 
+using System.Security.Cryptography.X509Certificates;
+
 namespace ManagedScripts
 {
     // Base class for all game scripts
@@ -24,15 +26,22 @@ namespace ManagedScripts
         public virtual void OnUpdate() { }
         public virtual void OnDestroy() { }
 
+        public class Component
+        {
+            public uint EntityId;
+            public Component(uint id)
+            { 
+                EntityId = id;
+            }
+        }
+
         // Convenience properties
         #region Transform
-        public class Transform
+        public class Transform : Component
         {
-            private uint EntityId;
 
-            public Transform(uint id)
+            public Transform(uint id) : base (id)
             {
-                EntityId = id;
             }
 
             public void SetID(uint id)
@@ -74,14 +83,12 @@ namespace ManagedScripts
         #endregion
 
         #region RigidBody
-        public class RigidBody
+        public class RigidBody : Component
         {
-            private uint EntityId;
-
-            public RigidBody(uint id)
+            public RigidBody(uint id) : base(id)
             {
-                EntityId = id;
             }
+
             #region Force
             public Vector2 ForceDirection
             {
@@ -144,14 +151,12 @@ namespace ManagedScripts
         #endregion //Rigidbody
 
         #region Collider
-        public class Collider
+        public class Collider : Component
         {
-            private uint EntityId;
-
-            public Collider(uint id)
+            public Collider(uint id) : base(id)
             {
-                EntityId = id;
             }
+
             public ColliderType ColType
             {
                 get => Engine.GetColliderType(EntityId);
@@ -203,13 +208,10 @@ namespace ManagedScripts
 
         #region Color
 
-        public class Color
+        public class Color : Component
         {
-            private uint EntityId;
-
-            public Color(uint id)
+            public Color(uint id) : base(id)
             {
-                EntityId = id;
             }
 
             public Colors RGBA
@@ -221,14 +223,12 @@ namespace ManagedScripts
         #endregion
 
         #region Renderable
-        public class Renderer
+        public class Renderer : Component
         {
-            private uint EntityId;
-
-            public Renderer(uint id)
+            public Renderer(uint id) : base(id)
             {
-                EntityId = id;
             }
+
             public string MeshName
             {
                 get => Engine.GetMeshName(EntityId);
@@ -248,13 +248,10 @@ namespace ManagedScripts
         #endregion
 
         #region Animator
-        public class Animnator
+        public class Animnator : Component
         {
-            private uint EntityId;
-
-            public Animnator(uint id)
+            public Animnator(uint id) : base(id)
             {
-                EntityId = id;
             }
             //public string AnimatorCurrentClip
             //{
@@ -321,13 +318,10 @@ namespace ManagedScripts
         #endregion
 
         #region Font
-        public class Font
+        public class Font : Component
         {
-            private uint EntityId;
-
-            public Font(uint id)
+            public Font(uint id) : base(id)
             {
-                EntityId = id;
             }
 
             public string FontType
@@ -362,6 +356,47 @@ namespace ManagedScripts
 
         #endregion
 
+        #region Audio
+        
+        public class Audio : Component
+        {
+            public Audio(uint id) : base(id)
+            {
+            }
+
+            public string AudioKey
+            {
+                get => Engine.GetAudioKey(EntityId);
+                set => Engine.SetAudioKey(EntityId, value);
+            }
+
+            public float AudioVolume
+            {
+                get => Engine.GetAudioVolume(EntityId);
+                set => Engine.SetAudioVolume(EntityId, value);
+            }
+
+            public bool AudioLoop
+            {
+                get => Engine.GetAudioLoop(EntityId);
+                set => Engine.SetAudioLoop(EntityId, value);
+            }
+
+            public bool AudioPlayOnStart
+            {
+                get => Engine.GetAudioPlayOnStart(EntityId);
+                set => Engine.SetAudioPlayOnStart(EntityId, value);
+            }
+
+            public bool AudioIsPlaying
+            {
+                get => Engine.GetAudioIsPlaying(EntityId);
+                set => Engine.SetAudioIsPlaying(EntityId, value);
+            }
+        }
+
+        #endregion
+
         #region Scripting
         //public class Scripting
         //{
@@ -386,9 +421,9 @@ namespace ManagedScripts
 
         // Helper methods
         public void Log(string message) => Engine.Log(message);
-        public bool IsKeyPressed(int key) => Engine.IsKeyPressed(key);
-        public bool IsKeyDown(int key) => Engine.IsKeyDown(key);
-        public bool IsKeyReleased(int key) => Engine.IsKeyReleased(key);
+        public bool IsKeyPressed(KeyboardKeys key) => Engine.IsKeyPressed(key);
+        public bool IsKeyDown(KeyboardKeys key) => Engine.IsKeyDown(key);
+        public bool IsKeyReleased(KeyboardKeys key) => Engine.IsKeyReleased(key);
         public void PlaySound(string path) => Engine.PlaySound(path);
         public uint CreateEntityArchetype(string archetypeName, Vector3 pos) => Engine.CreateEntityArchetype(archetypeName, pos);
         public uint GetPlayerID() => Engine.GetPlayerID();

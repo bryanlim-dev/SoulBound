@@ -569,6 +569,63 @@ extern "C" {
     }
 
 #pragma endregion
+    // --------------------------------------------------------------
+
+#pragma region Audio
+    // audiokey --------------
+    static MonoString* NightSnack_GetAudioKey(uint32_t id) {
+        if (!g_scriptInterface) { return NULL; }
+        return NightSnack::Scripting::StringToMonoString(g_scriptInterface->GetAudioKey(id));
+    }
+    static void NightSnack_SetAudioKey(uint32_t id, MonoString* key) {
+        if (!g_scriptInterface || !key) { return; }
+        char* cStr = mono_string_to_utf8(key);
+        g_scriptInterface->SetAudioKey(id, std::string{ cStr });
+    }
+
+    // volume --------------
+    static void NightSnack_GetAudioVolume(uint32_t id, float* outVolume) {
+        if (!g_scriptInterface || !outVolume) { return; }
+        *outVolume = g_scriptInterface->GetAudioVolume(id);
+    }
+    static void NightSnack_SetAudioVolume(uint32_t id, float* volume) {
+        if (!g_scriptInterface || !volume) { return; }
+        g_scriptInterface->SetAudioVolume(id, *volume);
+    }
+
+    // loop --------------
+    static void NightSnack_GetAudioLoop(uint32_t id, bool* outLooping) {
+        if (!g_scriptInterface || !outLooping) { return; }
+        *outLooping = g_scriptInterface->GetAudioLoop(id);
+    }
+    static void NightSnack_SetAudioLoop(uint32_t id, bool* looping) {
+        if (!g_scriptInterface || !looping) { return; }
+        g_scriptInterface->SetAudioLoop(id, *looping);
+	}
+
+    // playOnStart --------------
+    static void NightSnack_GetAudioPlayOnStart(uint32_t id, bool* outPlayOnStart) {
+        if (!g_scriptInterface || !outPlayOnStart) { return; }
+        *outPlayOnStart = g_scriptInterface->GetAudioPlayOnStart(id);
+    }
+    static void NightSnack_SetAudioPlayOnStart(uint32_t id, bool* playOnStart) {
+        if (!g_scriptInterface || !playOnStart) { return; }
+        g_scriptInterface->SetAudioPlayOnStart(id, *playOnStart);
+	}
+
+
+
+    // isPlaying --------------
+    static void NightSnack_GetAudioIsPlaying(uint32_t id, bool* outIsPlayer) {
+        if (!g_scriptInterface || !outIsPlayer) { return; }
+        *outIsPlayer = g_scriptInterface->GetAudioIsPlaying(id);
+    }
+    static void NightSnack_SetAudioIsPlaying(uint32_t id, bool* isPlaying) {
+        if (!g_scriptInterface || !isPlaying) { return; }
+        g_scriptInterface->SetAudioIsPlaying(id, *isPlaying);
+	}
+
+#pragma endregion
 
     // --------------------------------------------------------------
     
@@ -601,6 +658,7 @@ extern "C" {
         return g_scriptInterface->GetScript(id, cStr);
     }
 #pragma endregion
+
 
 
     // --------------------------------------------------------------
@@ -663,6 +721,21 @@ extern "C" {
         if (!g_scriptInterface) { return 0; }
         return g_scriptInterface->GetPlayerID();
     }
+
+
+    static void NightSnack_LoadLevel(MonoString* lvl)
+    {
+        if (!g_scriptInterface) { return; }
+        char* cStr = mono_string_to_utf8(lvl);
+        g_scriptInterface->LoadLevel(std::string(cStr));
+    }
+
+    static void NightSnack_RestartLevel()
+    {
+        if (!g_scriptInterface) { return; }
+        g_scriptInterface->RestartLevel();
+    }
+
 
 
     // --------------------------------------------------------------
@@ -861,12 +934,32 @@ namespace NightSnack::Scripting {
 
 #pragma endregion
 
+#pragma region Audio
+        mono_add_internal_call("ManagedScripts.Engine::GetAudioKey_Internal", (void*)NightSnack_GetAudioKey);
+        mono_add_internal_call("ManagedScripts.Engine::SetAudioKey_Internal", (void*)NightSnack_SetAudioKey);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetAudioVolume_Internal", (void*)NightSnack_GetAudioVolume);
+        mono_add_internal_call("ManagedScripts.Engine::SetAudioVolume_Internal", (void*)NightSnack_SetAudioVolume);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetAudioLoop_Internal", (void*)NightSnack_GetAudioLoop);
+        mono_add_internal_call("ManagedScripts.Engine::SetAudioLoop_Internal", (void*)NightSnack_SetAudioLoop);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetAudioPlayOnStart_Internal", (void*)NightSnack_GetAudioPlayOnStart);
+        mono_add_internal_call("ManagedScripts.Engine::SetAudioPlayOnStart_Internal", (void*)NightSnack_SetAudioPlayOnStart);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetAudioIsPlaying_Internal", (void*)NightSnack_GetAudioIsPlaying);
+        mono_add_internal_call("ManagedScripts.Engine::SetAudioIsPlaying_Internal", (void*)NightSnack_SetAudioIsPlaying);
+#pragma endregion
+
+
 #pragma region Scripting
         mono_add_internal_call("ManagedScripts.Engine::HasScript_Internal", (void*)NightSnack_HasScript);
         mono_add_internal_call("ManagedScripts.Engine::CreateScript_Internal", (void*)NightSnack_CreateScript);
         mono_add_internal_call("ManagedScripts.Engine::DeleteScript_Internal", (void*)NightSnack_DeleteScript);
         mono_add_internal_call("ManagedScripts.Engine::GetScript_Internal", (void*)NightSnack_GetScript);
 #pragma endregion
+
+
 
 
 #pragma region Key/Inputs
@@ -882,6 +975,8 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::CreateEntityArchetype_Internal", (void*)NightSnack_CreateEntityArchetype);
         mono_add_internal_call("ManagedScripts.Engine::GetPlayerID_Internal", (void*)NightSnack_GetPlayerID);
 
+        mono_add_internal_call("ManagedScripts.Engine::LoadLevel_Internal", (void*)NightSnack_LoadLevel);
+        mono_add_internal_call("ManagedScripts.Engine::RestartLevel_Internal", (void*)NightSnack_RestartLevel);
 
         //std::cout << "[Mono] Internal calls registered successfully" << std::endl;
     }

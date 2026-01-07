@@ -377,6 +377,43 @@ namespace ManagedScripts
         #endregion
 
         // ----------------------------
+        // Audio Internal for Scripts
+        // ----------------------------
+        #region Audio
+        //---- currentAnimatorClip
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetAudioKey_Internal(uint entityId);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAudioKey_Internal(uint entityId, string key);
+
+
+        //---- volume
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAudioVolume_Internal(uint entityId, out float volume);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAudioVolume_Internal(uint entityId, ref float volume);
+
+
+        //---- loop
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAudioLoop_Internal(uint entityId, out bool loop);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAudioLoop_Internal(uint entityId, ref bool loop);
+
+        //---- playonStart
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAudioPlayOnStart_Internal(uint entityId, out bool playOnStart);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAudioPlayOnStart_Internal(uint entityId, ref bool playOnStart);
+
+        //---- isPlayer
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetAudioIsPlaying_Internal(uint entityId, out bool isPlayer);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetAudioIsPlaying_Internal(uint entityId, ref bool isPlayer);
+        #endregion
+
+        // ----------------------------
         // Scripting Internal for Scripts
         // ----------------------------
         #region Scripting
@@ -418,6 +455,11 @@ namespace ManagedScripts
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint GetPlayerID_Internal();
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void LoadLevel_Internal(string levelName);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void RestartLevel_Internal();
 
         //[MethodImpl(MethodImplOptions.InternalCall)]
         //private static extern float GetTime_Internal();
@@ -1003,6 +1045,66 @@ namespace ManagedScripts
         #endregion
 
         // ----------------------------
+        // Audio API for Scripts
+        // ----------------------------
+        #region Audio
+        //key
+        public static string GetAudioKey(uint entityId)
+        {
+            return GetAudioKey_Internal(entityId);
+        }
+        public static void SetAudioKey(uint entityId, string key)
+        {
+            SetAudioKey_Internal(entityId, key);
+        }
+
+
+        //volume
+        public static float GetAudioVolume(uint entityId)
+        {
+            GetAudioVolume_Internal(entityId, out float vol);
+            return vol;
+        }
+        public static void SetAudioVolume(uint entityId, float vol)
+        {
+            SetAudioVolume_Internal(entityId, ref vol);
+        }
+
+        //loop
+        public static bool GetAudioLoop(uint entityId)
+        {
+            GetAudioLoop_Internal(entityId, out bool loop);
+            return loop;
+        }
+        public static void SetAudioLoop(uint entityId, bool loop)
+        {
+            SetAudioLoop_Internal(entityId, ref loop);
+        }
+
+        //playOnStart
+        public static bool GetAudioPlayOnStart(uint entityId)
+        {
+            GetAudioPlayOnStart_Internal(entityId, out bool playOnStart);
+            return playOnStart;
+        }
+        public static void SetAudioPlayOnStart(uint entityId, bool playOnStart)
+        {
+            SetAudioPlayOnStart_Internal(entityId, ref playOnStart);
+        }
+
+        //isPlaying
+        public static bool GetAudioIsPlaying(uint entityId)
+        {
+            GetAudioIsPlaying_Internal(entityId, out bool isPlaying);
+            return isPlaying;
+        }
+        public static void SetAudioIsPlaying(uint entityId, bool isPlaying)
+        {
+            SetAudioIsPlaying_Internal(entityId, ref isPlaying);
+        }
+        #endregion
+
+        // ----------------------------
         // Scripting API for Scripts
         // ----------------------------
         #region Scripting
@@ -1032,9 +1134,9 @@ namespace ManagedScripts
         // Key/Buttons API for Scripts
         // ----------------------------
         #region Key/Buttons
-        public static bool IsKeyPressed(int keyCode) => IsKeyPressed_Internal(keyCode);
-        public static bool IsKeyDown(int keyCode) => IsKeyDown_Internal(keyCode);
-        public static bool IsKeyReleased(int keyCode) => IsKeyReleased_Internal(keyCode);
+        public static bool IsKeyPressed(KeyboardKeys keyCode) => IsKeyPressed_Internal((int)keyCode);
+        public static bool IsKeyDown(KeyboardKeys keyCode) => IsKeyDown_Internal((int)keyCode);
+        public static bool IsKeyReleased(KeyboardKeys keyCode) => IsKeyReleased_Internal((int)keyCode);
         #endregion
 
         public static void PlaySound(string path) => PlaySound_Internal(path);
@@ -1046,8 +1148,11 @@ namespace ManagedScripts
             return GetPlayerID_Internal();
         }
 
-
         public static float DeltaTime => GetDeltaTime_Internal();
+
+        public static void LoadLevel(string levelName) => LoadLevel_Internal(levelName);
+        public static void RestartLevel() => RestartLevel_Internal();
+
         //public static float Time => GetTime_Internal();
     }
 
@@ -1173,5 +1278,23 @@ namespace ManagedScripts
         Solid,   // Blocks movement
         Trigger,  // Detects overlaps only
         Ground
+    };
+
+    // Specific keyboard keys to check for input state
+    public enum KeyboardKeys : int
+    {
+        W = 0,
+        A,
+        S,
+        D,
+        H,
+        SPACE,
+        ESC,
+
+        RIGHT_ARROW,
+        LEFT_ARROW,
+        UP_ARROW,
+
+        NUM_TOTAL_KEYBOARD_KEY  // MUST BE THE LAST
     };
 }

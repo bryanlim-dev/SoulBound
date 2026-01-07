@@ -341,6 +341,41 @@ namespace NightSnack::Scripting {
         void SetCameraHeight(Entity e, float main);
 #pragma endregion
 
+#pragma region Audio
+		//Gets Audio of entity
+        Audi GetAudio(Entity e);
+		//Sets Audio of entity
+		void SetAudio(Entity e, Audi aud);
+
+        //Gets Audio audio key
+		std::string GetAudioKey(Entity e);
+        //Sets Audio audio key
+		void SetAudioKey(Entity e, std::string key);
+
+		//Gets Audio volume
+		float GetAudioVolume(Entity e);
+		//Sets Audio volume
+		void SetAudioVolume(Entity e, float vol);
+
+        //Gets Audio looping
+        bool GetAudioLoop(Entity e);
+        //Sets Audio looping
+        void SetAudioLoop(Entity e, bool looping);
+
+        //Gets Audio playOnStart
+        bool GetAudioPlayOnStart(Entity e);
+        //Sets Audio playOnStart
+        void SetAudioPlayOnStart(Entity e, bool playOnStart);
+
+        //Gets Audio isPlaying
+        bool GetAudioIsPlaying(Entity e);
+        //Sets Audio isPlaying
+        void SetAudioIsPlaying(Entity e, bool isPlaying);
+
+
+#pragma endregion
+
+
 #pragma region Scripting
 
         //Check does entity have a script
@@ -378,6 +413,12 @@ namespace NightSnack::Scripting {
 
         //Gets player ID
         Entity GetPlayerID();
+
+        //Loads level based on a name
+        void LoadLevel(std::string lvlName);
+
+        //Restarts current level
+        void RestartLevel();
 
     private:
         //coordiator refrence
