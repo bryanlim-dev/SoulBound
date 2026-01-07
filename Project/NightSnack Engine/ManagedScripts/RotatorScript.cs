@@ -163,6 +163,18 @@ namespace ManagedScripts
             //{
             //    Log($"Current rotation: {rotation:F1} degrees");
             //}
+
+            //if (Engine.IsKeyDown(KeyboardKeys.W))
+            //{
+            //    Engine.Log("Trying to restart level");
+            //    Engine.RestartLevel(); 
+            //}
+
+            //if(Engine.IsKeyDown(KeyboardKeys.D))
+            //{
+            //    Engine.Log("Trying to load main menu");
+            //    Engine.LoadLevel("MainMenu");
+            //}
         }
 
         public override void OnDestroy()

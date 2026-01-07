@@ -455,6 +455,11 @@ namespace ManagedScripts
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint GetPlayerID_Internal();
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void LoadLevel_Internal(string levelName);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void RestartLevel_Internal();
 
         //[MethodImpl(MethodImplOptions.InternalCall)]
         //private static extern float GetTime_Internal();
@@ -1129,9 +1134,9 @@ namespace ManagedScripts
         // Key/Buttons API for Scripts
         // ----------------------------
         #region Key/Buttons
-        public static bool IsKeyPressed(int keyCode) => IsKeyPressed_Internal(keyCode);
-        public static bool IsKeyDown(int keyCode) => IsKeyDown_Internal(keyCode);
-        public static bool IsKeyReleased(int keyCode) => IsKeyReleased_Internal(keyCode);
+        public static bool IsKeyPressed(KeyboardKeys keyCode) => IsKeyPressed_Internal((int)keyCode);
+        public static bool IsKeyDown(KeyboardKeys keyCode) => IsKeyDown_Internal((int)keyCode);
+        public static bool IsKeyReleased(KeyboardKeys keyCode) => IsKeyReleased_Internal((int)keyCode);
         #endregion
 
         public static void PlaySound(string path) => PlaySound_Internal(path);
@@ -1143,8 +1148,11 @@ namespace ManagedScripts
             return GetPlayerID_Internal();
         }
 
-
         public static float DeltaTime => GetDeltaTime_Internal();
+
+        public static void LoadLevel(string levelName) => LoadLevel_Internal(levelName);
+        public static void RestartLevel() => RestartLevel_Internal();
+
         //public static float Time => GetTime_Internal();
     }
 
@@ -1270,5 +1278,23 @@ namespace ManagedScripts
         Solid,   // Blocks movement
         Trigger,  // Detects overlaps only
         Ground
+    };
+
+    // Specific keyboard keys to check for input state
+    public enum KeyboardKeys : int
+    {
+        W = 0,
+        A,
+        S,
+        D,
+        H,
+        SPACE,
+        ESC,
+
+        RIGHT_ARROW,
+        LEFT_ARROW,
+        UP_ARROW,
+
+        NUM_TOTAL_KEYBOARD_KEY  // MUST BE THE LAST
     };
 }

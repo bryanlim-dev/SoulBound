@@ -421,9 +421,9 @@ namespace ManagedScripts
 
         // Helper methods
         public void Log(string message) => Engine.Log(message);
-        public bool IsKeyPressed(int key) => Engine.IsKeyPressed(key);
-        public bool IsKeyDown(int key) => Engine.IsKeyDown(key);
-        public bool IsKeyReleased(int key) => Engine.IsKeyReleased(key);
+        public bool IsKeyPressed(KeyboardKeys key) => Engine.IsKeyPressed(key);
+        public bool IsKeyDown(KeyboardKeys key) => Engine.IsKeyDown(key);
+        public bool IsKeyReleased(KeyboardKeys key) => Engine.IsKeyReleased(key);
         public void PlaySound(string path) => Engine.PlaySound(path);
         public uint CreateEntityArchetype(string archetypeName, Vector3 pos) => Engine.CreateEntityArchetype(archetypeName, pos);
         public uint GetPlayerID() => Engine.GetPlayerID();

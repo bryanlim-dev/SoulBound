@@ -723,6 +723,21 @@ extern "C" {
     }
 
 
+    static void NightSnack_LoadLevel(MonoString* lvl)
+    {
+        if (!g_scriptInterface) { return; }
+        char* cStr = mono_string_to_utf8(lvl);
+        g_scriptInterface->LoadLevel(std::string(cStr));
+    }
+
+    static void NightSnack_RestartLevel()
+    {
+        if (!g_scriptInterface) { return; }
+        g_scriptInterface->RestartLevel();
+    }
+
+
+
     // --------------------------------------------------------------
 
 
@@ -960,6 +975,8 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::CreateEntityArchetype_Internal", (void*)NightSnack_CreateEntityArchetype);
         mono_add_internal_call("ManagedScripts.Engine::GetPlayerID_Internal", (void*)NightSnack_GetPlayerID);
 
+        mono_add_internal_call("ManagedScripts.Engine::LoadLevel_Internal", (void*)NightSnack_LoadLevel);
+        mono_add_internal_call("ManagedScripts.Engine::RestartLevel_Internal", (void*)NightSnack_RestartLevel);
 
         //std::cout << "[Mono] Internal calls registered successfully" << std::endl;
     }

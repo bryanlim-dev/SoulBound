@@ -414,6 +414,12 @@ namespace NightSnack::Scripting {
         //Gets player ID
         Entity GetPlayerID();
 
+        //Loads level based on a name
+        void LoadLevel(std::string lvlName);
+
+        //Restarts current level
+        void RestartLevel();
+
     private:
         //coordiator refrence
         Coordinator& m_coord;

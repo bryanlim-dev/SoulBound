@@ -950,6 +950,15 @@ namespace NightSnack::Scripting {
     {
         return m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();;
     }
+
+    void ScriptInterface::LoadLevel(std::string lvlName)
+    {
+        m_coord.GetSystem<NightSnack::Scene::SceneManager>()->LoadLevel(lvlName);
+    }
+
+    void ScriptInterface::RestartLevel() {
+        m_coord.GetSystem<NightSnack::Scene::SceneManager>()->RestartLevel();
+    }
     // --------------------------------------------------------------
 
 }   // NightSnack::Scripting
