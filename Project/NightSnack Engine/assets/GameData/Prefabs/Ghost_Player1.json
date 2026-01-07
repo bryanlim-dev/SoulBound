@@ -1,0 +1,32 @@
+{
+    "Audio": {
+        "audioKey": "playerHit",
+        "isPlaying": false,
+        "loop": false,
+        "playOnStart": false,
+        "volume": 1.0
+    },
+    "Collider": {
+        "height": 25.0,
+        "isStatic": false,
+        "radius": 15.0,
+        "shape": "AABB",
+        "type": "Solid",
+        "width": 25.0
+    },
+    "PlayerController": {
+        "jumpSpeed": 300.0,
+        "moveSpeed": 180.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "Ghost_Spirit",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": true
+    },
+    "modified": false,
+    "name": "Ghost_Player11"
+}

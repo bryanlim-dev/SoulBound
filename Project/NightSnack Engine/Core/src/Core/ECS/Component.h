@@ -22,7 +22,7 @@
 #include "MathLibrary/Math.h"
 namespace NightSnack {
 
-    constexpr float FixedDT = 0.016f;
+    constexpr float FixedDT = 1.f / 60.f;
 
     using json = nlohmann::json;
     class StateBase; //Forward decleration
@@ -44,8 +44,8 @@ namespace NightSnack {
         float rot{};
         Vec2 scale;
 
-        Entity parent{ INVALID_ENTITY };
-        std::vector<Entity> children{};
+        //Entity parent{ INVALID_ENTITY };
+        //std::vector<Entity> children{};
 
         Vec3 UIbasePos{ 0.f, 0.f, 0.f };
         Vec2 UIbaseScale{ 0.f, 0.f };

@@ -137,6 +137,7 @@ namespace NightSnack {
 
 		// For Crash Logging
 		std::string lastSystem;
+
 	};
 
 	template <typename T, typename... Args>
