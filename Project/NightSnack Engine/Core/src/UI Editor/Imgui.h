@@ -365,6 +365,8 @@ namespace NightSnack {
 	inline void ImguiSystem::DrawMenuBar() {
 		if (ImGui::BeginMenuBar())
 		{
+			static bool showLevelLoadErrorPopup = false;
+
 			if (ImGui::BeginMenu("File"))
 			{
 				auto factory = m_coord.GetSystem<EntityFactory>();
@@ -397,16 +399,57 @@ namespace NightSnack {
 					auto scene = m_coord.GetSystem<Scene::SceneManager>();
 					if (scene)
 					{
-						DisableFPSDisplay();
+						const auto& availableLevels = scene->GetAvailableLevels();
+						std::string requestedLevel = std::string(loadLevelName);
+						if (availableLevels.find(requestedLevel) != availableLevels.end())
+						{
+							DisableFPSDisplay();
 
-						// Loads level and resets editor camera
-						m_scenePanel->DestroyEditorCamera();
-						scene->LoadLevel(loadLevelName);
-						m_scenePanel->CreateEditorCamera();
+							// Loads level and resets editor camera
+							m_scenePanel->DestroyEditorCamera();
+							scene->LoadLevel(loadLevelName);
+							m_scenePanel->CreateEditorCamera();
 
-						// Clears Undo stack
-						NightSnack::UndoSystem::Instance().Clear();
+							// Clears Undo stack
+							NightSnack::UndoSystem::Instance().Clear();
+						}
+						else
+						{
+							// Level does not exist, show popup
+							showLevelLoadErrorPopup = true;
+							ImGui::OpenPopup("Level Load Error");
+						}
 					}
+				}
+				if (showLevelLoadErrorPopup)
+				{
+					ImGui::SetNextWindowSize(ImVec2(300, 0), ImGuiCond_Always);
+				}
+				// ImGui popup for level load error
+				if (ImGui::BeginPopupModal("Level Load Error", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+				{
+					float popupWidth = ImGui::GetWindowSize().x;
+					const char* msg = "Level '%s' does not exist!";
+					char buffer[256];
+					snprintf(buffer, sizeof(buffer), msg, loadLevelName);
+
+					ImVec2 textSize = ImGui::CalcTextSize(buffer);
+					ImGui::SetCursorPosX((popupWidth - textSize.x) * 0.5f);
+					ImGui::Text("%s", buffer);
+
+					ImGui::Separator();
+
+					// PopUp OK button
+					float buttonWidth = 80.0f;
+					float buttonX = (popupWidth - buttonWidth) * 0.5f;
+					ImGui::SetCursorPosX(buttonX);
+
+					if (ImGui::Button("OK", ImVec2(buttonWidth, 0)))
+					{
+						showLevelLoadErrorPopup = false;
+						ImGui::CloseCurrentPopup();
+					}
+					ImGui::EndPopup();
 				}
 
 				ImGui::Separator();
