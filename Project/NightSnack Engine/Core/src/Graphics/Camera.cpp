@@ -100,7 +100,6 @@ namespace NightSnack {
         // If camera is following player, don't count idle time;
         if (camPrev.x != camCurr.x && camPrev.y != camCurr.y) {
             time = 0.f;
-            idle = false;
         }
 
         if (time >= 2.f) {
