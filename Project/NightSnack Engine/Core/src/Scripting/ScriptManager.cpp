@@ -29,6 +29,8 @@ namespace NightSnack::Scripting {
 
     // Main update to be called by Core engine (Updates all scripts)
     void ScriptManager::Update() {
+        if (m_coord.IsPaused()) { return; }
+
         // Reattach entity scripts when Level is reloaded
         if (!m_attached || entityNum != m_entities.size()) {
             for (Entity e{}; e < MAX_ENTITIES; ++e) {
