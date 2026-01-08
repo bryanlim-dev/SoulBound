@@ -16,6 +16,8 @@
 
 namespace NightSnack {
 
+    static float maxDistance = 40.f;
+
     CameraSystem::CameraSystem(Coordinator& coordinator, EventDispatcher& dispatcher)
         : m_coord(coordinator),
         m_dispatcher(&dispatcher),
@@ -24,38 +26,93 @@ namespace NightSnack {
 
     void CameraSystem::Update()
     {
+        if (m_coord.IsPaused()) { return; }
 
-        //// find camera if we don't have one
-        //if (m_mainCamera == INVALID_ENTITY)
-        //{
-        //    m_mainCamera = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
-        //}
-        m_mainCamera = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
-
+        // find camera if we don't have one
+        if (!m_coord.EntityIsAlive(m_mainCamera)) {
+            m_mainCamera = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
+        }
         // find player if we don't have one
-        m_player = FindPlayer(m_coord);
+        if (!m_coord.EntityIsAlive(m_player)) {
+            m_player = FindPlayer(m_coord);
+        }
+
+        // check if both entities have Transform component
+        if (m_coord.HasComponent<Transform>(m_mainCamera) &&
+            m_coord.HasComponent<Transform>(m_player))
+        {
+            FollowPlayer();
+            CenterCameraWhenIdle();
+        }
 
         // make camera follow player
-        if (m_mainCamera != INVALID_ENTITY && m_player != INVALID_ENTITY)
-        {
-			// check if both entities have Transform component
-            if (m_coord.HasComponent<Transform>(m_mainCamera) &&
-                m_coord.HasComponent<Transform>(m_player))
-            {
-                // get player position
-                const auto& playerTransform = m_coord.GetComponent<Transform>(m_player);
+   //     if (m_mainCamera != INVALID_ENTITY && m_player != INVALID_ENTITY)
+   //     {
+			//// check if both entities have Transform component
+   //         if (m_coord.HasComponent<Transform>(m_mainCamera) &&
+   //             m_coord.HasComponent<Transform>(m_player))
+   //         {
+   //             // get player position
+   //             const auto& playerTransform = m_coord.GetComponent<Transform>(m_player);
 
-                // set camera position to player position
-                auto& cameraTransform = m_coord.ModifyComponent<Transform>(m_mainCamera);
-                cameraTransform.pos.x = playerTransform.pos.x;
-                cameraTransform.pos.y = playerTransform.pos.y;
-            }
+   //             // set camera position to player position
+   //             auto& cameraTransform = m_coord.ModifyComponent<Transform>(m_mainCamera);
+   //             cameraTransform.pos.x = playerTransform.pos.x;
+   //             cameraTransform.pos.y = playerTransform.pos.y;
+   //         }
+   //     }
+   //     else 
+   //     {
+   //         // Set camera position to player position
+   //         auto& cameraTransform = m_coord.ModifyComponent<Transform>(m_mainCamera);
+   //         cameraTransform.pos = Vec3{0.f, 0.f, 2.f};
+   //     }
+    }
+
+    void CameraSystem::FollowPlayer() {
+        
+        // get player position
+        const auto& pt = m_coord.GetComponent<Transform>(m_player);
+        Vec2 pv = m_coord.GetComponent<RigidBody>(m_player).vel;
+
+        // get camera position
+        auto& ct = m_coord.ModifyComponent<Transform>(m_mainCamera);
+
+        if (abs(ct.pos.x - pt.pos.x) > 60.f) {
+            ct.pos.x += pv.x * FixedDT;
         }
-        else 
-        {
-            // Set camera position to player position
-            auto& cameraTransform = m_coord.ModifyComponent<Transform>(m_mainCamera);
-            cameraTransform.pos = Vec3{0.f, 0.f, 2.f};
+        if (abs(ct.pos.y - pt.pos.y) > 60.f) {
+            ct.pos.y += pv.y * FixedDT;
+        }
+    }
+
+    void CameraSystem::CenterCameraWhenIdle() {
+        static float time = 0.f;
+        static Vec3 camPrev = m_coord.ModifyComponent<Transform>(m_mainCamera).pos;
+        static bool idle = false;
+
+        const auto& pt = m_coord.GetComponent<Transform>(m_player);
+        Vec3& camCurr = m_coord.ModifyComponent<Transform>(m_mainCamera).pos;
+    
+        // Increment timer;
+        time += FixedDT;
+
+        // If camera is following player, don't count idle time;
+        if (camPrev.x != camCurr.x && camPrev.y != camCurr.y) {
+            time = 0.f;
+            idle = false;
+        }
+
+        if (time >= 2.f) {
+            idle = true;
+        }
+        
+        if (idle) {
+            camCurr += (pt.pos - camCurr) * FixedDT;
+        }
+
+        if (abs(pt.pos.x - camCurr.x) <= 10.f && abs(pt.pos.y - camCurr.y) <= 10.f) {
+            idle = false;
         }
     }
 

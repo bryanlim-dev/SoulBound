@@ -43,6 +43,9 @@ namespace NightSnack {
 		*/
 		void Update() override;
 
+		void FollowPlayer();
+		void CenterCameraWhenIdle();
+
 		/**
 		 * @brief retrieve the system signature
 		 * @return system signature

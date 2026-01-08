@@ -58,6 +58,8 @@ namespace NightSnack {
 		/************************************************************************/
 		void DestroyEntity(Entity e);
 
+		bool EntityIsAlive(Entity e) { return m_entityManager->EntityIsAlive(e); }
+
 		/************************************************************************/
 		/*!
 		\brief

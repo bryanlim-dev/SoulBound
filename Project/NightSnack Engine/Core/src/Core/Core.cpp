@@ -199,6 +199,7 @@ namespace NightSnack {
 			m_coord.steps += 1;
 			accumulatedTime -= FixedDT;
 		}
+		if (m_coord.IsPaused()) { m_coord.steps = 0; }
 
 		// Iterate through Systems and Update them through Coordinator;
 		for (auto& System : m_systems) {

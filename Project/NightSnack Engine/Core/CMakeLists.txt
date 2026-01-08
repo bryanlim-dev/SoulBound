@@ -35,7 +35,7 @@ target_compile_definitions(Core
         CORE_EXPORTS
     PUBLIC
         #
-        EDITOR=0
+        EDITOR=1
 
         # Comment out below 2 for installer
         RESOURCE_PATH=\"../../../assets/\"

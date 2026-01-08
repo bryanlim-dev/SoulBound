@@ -403,4 +403,6 @@ namespace NightSnack {
     /************************************************************************/
     std::ostream& operator<<(std::ostream& os, const Vec3& v);
 
+    float magnitude(Vec3 const& v1, Vec3 const& v2);
+
 }   // NightSnack

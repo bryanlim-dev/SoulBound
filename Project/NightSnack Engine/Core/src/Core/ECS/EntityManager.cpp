@@ -106,4 +106,11 @@ namespace NightSnack {
 		}
 	}
 
+	bool EntityManager::EntityIsAlive(Entity e) const {
+		if (m_livingEntities.find(e) != m_livingEntities.end()) {
+			return true;
+		}
+		return false;
+	}
+
 }	// NightSnack
