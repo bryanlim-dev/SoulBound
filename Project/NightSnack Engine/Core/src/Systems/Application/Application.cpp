@@ -28,7 +28,7 @@ namespace NightSnack {
 	int ApplicationSystem::m_appWindowedPosY = 130;
 	bool ApplicationSystem::m_appToPause = false;
 	bool ApplicationSystem::m_appChangedPauseState = false;
-	bool ApplicationSystem::m_appIsFullscreen = true; // By default, the application is in full screen
+	bool ApplicationSystem::m_appIsFullscreen = false; // By default, the application is in full screen
 	bool ApplicationSystem::m_appIsFullscreenViaButton = false;
 	bool ApplicationSystem::m_pressedMaximizeButton = false;
 	bool ApplicationSystem::m_showFPS = false;
@@ -62,7 +62,7 @@ namespace NightSnack {
 
 		// Create window;
 		m_windowHandle = glfwCreateWindow(m_appWidth, m_appHeight, m_appTitle.c_str(), nullptr, nullptr);
-		EnterFullscreen(); // By default, start with fullscreen
+		//EnterFullscreen(); // By default, start with fullscreen
 		if (!m_windowHandle)
 		{
 			std::cerr << "Failed to create GLFW window\n";
