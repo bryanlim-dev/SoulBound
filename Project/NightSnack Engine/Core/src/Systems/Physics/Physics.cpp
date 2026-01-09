@@ -236,11 +236,11 @@ namespace NightSnack {
 							ResolveCollision(t1, t2, c1, c2, r1, r2, normal, depth);
 
 							if (abs(normal.y) > abs(normal.x)) {
-								if (t1.pos.y > t2.pos.y && normal.y < 0.f) {
+								if (t1.pos.y > t2.pos.y && !c1.isStatic) {
 									r1.vel.y = 0.f;
 									c1.isGrounded = true;
 								}
-								else if (t2.pos.y < t1.pos.y && normal.y > 0.f) {
+								if (t2.pos.y > t1.pos.y && !c2.isStatic) {
 									r2.vel.y = 0.f;
 									c2.isGrounded = true;
 								}
@@ -477,10 +477,10 @@ namespace NightSnack {
 		//Vec2 impulse = normal * j;
 
 		//if (!c1.isStatic) {
-		//	r1.vel += impulse * r1.invMass;
+		//	r1.vel -= impulse * r1.invMass;
 		//}
 		//if (!c2.isStatic) {
-		//	r2.vel -= impulse * r2.invMass;
+		//	r2.vel += impulse * r2.invMass;
 		//}
 	}
 

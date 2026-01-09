@@ -1,12 +1,4 @@
 {
-    "Collider": {
-        "height": 16.0,
-        "isStatic": true,
-        "radius": 0.5,
-        "shape": "AABB",
-        "type": "Solid",
-        "width": 16.0
-    },
     "Renderable": {
         "isWireframe": false,
         "materialName": "ground4",
