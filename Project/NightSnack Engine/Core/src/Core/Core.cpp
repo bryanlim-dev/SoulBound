@@ -19,8 +19,15 @@
 #include "ResourceManager/ResourceHelper/ResourceSystemHelper.h"
 #include "../Systems/StateMachine/FiniteStateMachine.h"
 
+#include <chrono>
+
 namespace NightSnack {
 
+	constexpr float MAX_FRAME_TIME = 0.25f;
+	using Clock = std::chrono::steady_clock;
+	using Duration = std::chrono::duration<float>;
+
+	static Clock::time_point lastTime = Clock::now();
 	static float accumulatedTime = 0.0f;
 
 	// ------------------------------------------------------------------------------------------------
@@ -129,6 +136,7 @@ namespace NightSnack {
 #ifndef EDITOR
 			m_coord.Unpause();
 #endif
+			lastTime = Clock::now();
 			while (!m_coord.GetSystem<ApplicationSystem>()->ShouldClose()) {
 				Update();
 			}
@@ -157,23 +165,41 @@ namespace NightSnack {
 		// Start frame timing;
 		m_coord.GetSystem<ApplicationSystem>()->StartFrame();
 
-		// Fixed DT with Accumulated time implementation;
-		m_coord.steps = 0;	// reset step count per frame;
-		float dt = m_coord.GetSystem<ApplicationSystem>()->GetDT();	// compute actual game loop time;
+		//// Fixed DT with Accumulated time implementation;
+		//m_coord.steps = 0;	// reset step count per frame;
+		//float dt = m_coord.GetSystem<ApplicationSystem>()->GetDT();	// compute actual game loop time;
 
+		//// Obtain number of steps this loop;
+		//while (accumulatedTime >= FixedDT) { 
+		//	accumulatedTime -= FixedDT;
+		//	++m_coord.steps;
+		//}
+		//if (m_coord.IsPaused()) {
+		//	m_coord.steps = 0;
+		//}
+		//if (m_coord.steps > 15) {
+		//	m_coord.steps = 15;
+		//}
+
+		// Accumulated time implementation;
+		Clock::time_point currentTime = Clock::now();
+		Duration frameTime = currentTime - lastTime;
+		lastTime = currentTime;
+
+		float dt = frameTime.count();
+
+		// Clamp very large frame times (debugger pauses, alt-tab, etc.)
+		if (dt > MAX_FRAME_TIME) {
+			dt = MAX_FRAME_TIME;
+		}
 		accumulatedTime += dt;
-
-		// Obtain number of steps this loop;
-		while (accumulatedTime >= FixedDT) { 
+		// Compute number of steps
+		m_coord.steps = 0;
+		while (accumulatedTime >= FixedDT) {
+			m_coord.steps += 1;
 			accumulatedTime -= FixedDT;
-			++m_coord.steps;
 		}
-		if (m_coord.IsPaused()) {
-			m_coord.steps = 0;
-		}
-		if (m_coord.steps > 15) {
-			m_coord.steps = 15;
-		}
+		if (m_coord.IsPaused()) { m_coord.steps = 0; }
 
 		// Iterate through Systems and Update them through Coordinator;
 		for (auto& System : m_systems) {

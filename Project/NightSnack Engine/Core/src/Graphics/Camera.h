@@ -43,6 +43,9 @@ namespace NightSnack {
 		*/
 		void Update() override;
 
+		void FollowPlayer();
+		void CenterCameraWhenIdle();
+
 		/**
 		 * @brief retrieve the system signature
 		 * @return system signature
@@ -56,7 +59,7 @@ namespace NightSnack {
 		std::string GetName() const override;
 
 	private:
-		Coordinator* m_coord;
+		Coordinator& m_coord;
 		EventDispatcher* m_dispatcher;
 
 		Entity m_mainCamera;
@@ -75,5 +78,7 @@ namespace NightSnack {
 		 * @return the entity ID of the player
 		 */
 		Entity FindPlayer(Coordinator& coord);
+
+		void FollowEntity(Entity e);
 	};
 }

@@ -58,6 +58,8 @@ namespace NightSnack {
 		/************************************************************************/
 		void DestroyEntity(Entity e);
 
+		bool EntityIsAlive(Entity e) { return m_entityManager->EntityIsAlive(e); }
+
 		/************************************************************************/
 		/*!
 		\brief
@@ -135,6 +137,13 @@ namespace NightSnack {
 		/************************************************************************/
 		template <typename T>
 		T const& GetComponent(Entity e) const;
+
+		template <typename T>
+		T const& GetComponentInChild(Entity e) const;
+		template <typename T>
+		std::vector<T> const& GetComponentsInChild(Entity e) const;
+		template <typename T>
+		T const& GetComponentInParent(Entity e) const;
 
 		/************************************************************************/
 		/*!
@@ -359,6 +368,93 @@ namespace NightSnack {
 	T const& Coordinator::GetComponent(Entity e) const {
 		return m_componentManager->GetComponent<T>(e);
 	}
+
+	//template <typename T>
+	//T const& Coordinator::GetComponentInChild(Entity e) const {
+	//	static T empty{};
+	//	// Edge case, no transform component;
+	//	if (!HasComponent<Transform>(e)) {
+	//		std::cerr << "[Coordinator] Error: Entity " << e 
+	//			<< " does not have Transform Component, unable to get Child component.\n";
+	//		return empty;
+	//	}
+
+	//	if (HasComponent<T>(e)) return GetComponent<T>(e);
+
+	//	// Iterate through children stored in Transform component;
+	//	Transform const& trans = GetComponent<Transform>(e);
+	//	if (trans.children.empty()) {
+	//		std::cerr << "[Coordinator] Error: Entity " << e
+	//			<< " does not have any Children.\n";
+	//		return empty;
+	//	}
+	//	for (Entity c : trans.children) {
+	//		if (!HasComponent<T>(c)) continue;
+	//		return GetComponent<T>(c);
+	//	}
+	//	// No Children contains requested component;
+	//	std::cerr << "[Coordinator] Error: Entity " << e
+	//		<< " does not have Children with requested component.\n";
+	//	return empty;
+	//}
+
+	//template <typename T>
+	//std::vector<T> const& Coordinator::GetComponentsInChild(Entity e) const {
+	//	static std::vector<T> empty{};
+	//	if (!empty.empty()) empty.clear();
+
+	//	// Edge case, no transform component;
+	//	if (!HasComponent<Transform>(e)) {
+	//		std::cerr << "[Coordinator] Error: Entity " << e
+	//			<< " does not have Transform Component, unable to get Child components.\n";
+	//		return empty;
+	//	}
+
+	//	// Return vector;
+	//	std::vector<T> ret{};
+	//	if (HasComponent<T>(e)) ret.emplace_back(GetComponent<T>(e));
+
+	//	// Iterate through children stored in Transform component;
+	//	Transform const& trans = GetComponent<Transform>(e);
+	//	if (trans.children.empty()) {
+	//		std::cerr << "[Coordinator] Error: Entity " << e
+	//			<< " does not have any Children.\n";
+	//		return empty;
+	//	}
+	//	for (Entity c : trans.children) {
+	//		if (!HasComponent<T>(c)) continue;
+	//		ret.emplace_back(GetComponent<T>(c));
+	//	}
+	//	if (ret.empty()) {
+	//		// No Children contains requested component;
+	//		std::cerr << "[Coordinator] Error: Entity " << e
+	//			<< " does not have Children with requested component.\n";
+	//	}
+	//	return ret;
+	//}
+
+	//template <typename T>
+	//T const& Coordinator::GetComponentInParent(Entity e) const {
+	//	static T empty{};
+
+	//	if (HasComponent<T>(e)) return GetComponent<T>(e);
+
+	//	// Edge case, no transform component;
+	//	if (!HasComponent<Transform>(e)) {
+	//		std::cerr << "[Coordinator] Error: Entity " << e
+	//			<< " does not have Transform Component, unable to get Parent component.\n";
+	//		return empty;
+	//	}
+	//	Transform const& trans = GetComponent<Transform>(e);
+	//	if (trans.parent == INVALID_ENTITY) {
+	//		std::cerr << "[Coordinator] Error: Entity " << e
+	//			<< " does not have a Parent, returning empty component.\n";
+	//		return empty;
+	//	}
+	//	if (HasComponent<T>(trans.parent)) return GetComponent<T>(trans.parent);
+
+	//	return GetComponentInParent(trans.parent);
+	//}
 
 	template <typename T>
 	bool Coordinator::HasComponent(Entity e) const {

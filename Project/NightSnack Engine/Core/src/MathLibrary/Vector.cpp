@@ -211,4 +211,27 @@ namespace NightSnack {
         return os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
     }
 
+    float magnitude(Vec3 const& v1, Vec3 const& v2) {
+        Vec3 v3 = v1 - v2;
+
+        if (v3.x != 0.f || v3.y != 0.f) {
+            return v3.magnitude();
+        }
+        return 0.f;
+    }
+
+    Vec3 operator-(Vec3 const& v1, Vec2 const& v2) {
+        return { v1.x - v2.x, v1.y - v2.y, v1.z };
+    }
+    Vec3 operator-(Vec2 const& v1, Vec3 const& v2) {
+        return { v1.x - v2.x, v1.y - v2.y, v2.z };
+    }
+
+    Vec3 operator+(Vec3 const& v1, Vec2 const& v2) {
+        return { v1.x + v2.x, v1.y + v2.y, v1.z };
+    }
+    Vec3 operator+(Vec2 const& v1, Vec3 const& v2) {
+        return { v1.x + v2.x, v1.y + v2.y, v2.z };
+    }
+
 }   // NightSnack

@@ -554,26 +554,34 @@ namespace NightSnack {
         // Write to file
         std::ofstream ofs(outPath);
         if (!ofs.is_open()) {
-            std::cerr << "[EntityFactory] Failed to write to prime prefab file: " << outPath << "\n";
+            std::cerr << "[EntityFactory] Failed to write to prime prefab file: " << outPath << '\n';
             return false;
         }
         ofs << std::setw(4) << j;
         ofs.close();
-        std::cout << "[EntityFactory] Saved prefab to: " << outPath << "\n";
+        std::cout << "[EntityFactory] Saved prefab to: " << outPath << '\n';
 
         // Use ResourceManager to load new prefab file
-        std::string prefabpath = "GameData/Prefabs/" + prefabName + ".json";
-        LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(prefabpath, m_prefabKeys[prefabName]);
-        //std::cout << "[EntityFactory] entry.path: " << entry.path() << '\n';
-        if (result == LOAD_FAIL_BADPATH) {
-            std::cerr << "[EntityFactory] RM failed to read json file: " << prefabpath << '\n';
-            return false;
-        }
+        m_coord.GetSystem<ResourceManager>()->UpdateJson(m_prefabKeys[prefabName], j);
+        //std::string prefabpath = "GameData/Prefabs/" + prefabName + ".json";
+        std::cout << "[EntityFactory] Updated Json in RM for: " << prefabName << '\n';
 
         // Update mappings of current entity to new created prefab
         entityToPrefab[e] = prefabName;
         prefabToEntities.insert({ prefabName, e });
         m_prefabNames.push_back(prefabName);
+
+        // Update entities of this prefab;
+        auto range = prefabToEntities.equal_range(prefabName);
+        // Cache transforms
+        std::vector<Transform> transCache;
+        for (auto i = range.first; i != range.second; ++i) {
+            transCache.emplace_back(m_coord.GetComponent<Transform>(i->second));
+            RemoveEntity(i->second);
+        }
+        for (Transform& t : transCache) {
+            Create(prefabName, t);
+        }
 
         m_coord.ModifyComponent<Transform>(e).prefabModified = false;
 

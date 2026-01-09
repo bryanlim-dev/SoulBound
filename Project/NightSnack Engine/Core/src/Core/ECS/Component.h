@@ -22,7 +22,7 @@
 #include "MathLibrary/Math.h"
 namespace NightSnack {
 
-    constexpr float FixedDT = 0.016f;
+    constexpr float FixedDT = 1.f / 60.f;
 
     using json = nlohmann::json;
     class StateBase; //Forward decleration
@@ -43,6 +43,9 @@ namespace NightSnack {
         Vec3 pos;
         float rot{};
         Vec2 scale;
+
+        //Entity parent{ INVALID_ENTITY };
+        //std::vector<Entity> children{};
 
         Vec3 UIbasePos{ 0.f, 0.f, 0.f };
         Vec2 UIbaseScale{ 0.f, 0.f };
@@ -70,11 +73,12 @@ namespace NightSnack {
         float invMass = 1.f;
         float invInertia = 1.f;
 
-        float restitution;
+        float restitution{};
         float gravitymult;
 
         bool useGravity;
-        bool useRotate; 
+        bool useRotate;
+
     };
 
     struct Script {
@@ -172,6 +176,11 @@ namespace NightSnack {
         float zoom{ 1.f };
         float width{ 1600.f };
         float height{ 900.f };
+
+        float minX, maxX;
+        float minY, maxY;
+
+        Vec2 offset;
     };
 
 	// Audio component

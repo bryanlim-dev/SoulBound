@@ -358,12 +358,13 @@ namespace NightSnack {
 				auto& rot = m_coord.GetComponent<Transform>(e).rot;
 				auto& scl = m_coord.GetComponent<Transform>(e).scale;
 
+				// Entities on the GAMEUI layer will have different transformation matrices
+				glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
+				glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
+
 				// Drawing of colliders 
 				if (m_coord.HasComponent<Collider>(e)) {
 					Collider const& col = m_coord.GetComponent<Collider>(e);
-					// Entities on the GAMEUI layer will have different transformation matrices
-					glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
-					glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
 
 					glm::vec3 colliderColor{};
 					if (col.colliding) { colliderColor = glm::vec3(1.f, 0.f, 0.f); } // Red color
@@ -396,6 +397,18 @@ namespace NightSnack {
 
 					}
 				}
+				else {
+					// Draw outline of Live Entities
+					glm::vec3 outlineColor(0.5f);
+					// Model matrix according to its collider's scale
+						// Make the z value of the collider be slightly in front of its entity
+					glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, rot, Vec2{ scl.x, scl.y });
+					glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
+					shader->SetMat4("uDebugMVP", debugMVP);
+					shader->SetVec3("uEntityColor", outlineColor);
+					GetMesh("AABBColliderMesh")->Draw();
+				}
+			
 
 				// Drawing of velocity direction for moving objects
 				if (m_coord.HasComponent<RigidBody>(e)) {

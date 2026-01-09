@@ -1,0 +1,26 @@
+{
+  "Collider": {
+    "height": 100.0,
+    "isStatic": true,
+    "radius": 15.0,
+    "shape": "AABB",
+    "type": "Solid",
+    "width": 30.0
+  },
+  "Renderable": {
+    "isWireframe": false,
+    "materialName": "slime_4_1",
+    "meshName": "square"
+  },
+  "RigidBody": {
+    "mass": 1.0,
+    "useGravity": true
+  },
+  "Script": {
+    "name": [
+      "Portal"
+    ]
+  },
+  "modified": false,
+  "name": "Portal111"
+}

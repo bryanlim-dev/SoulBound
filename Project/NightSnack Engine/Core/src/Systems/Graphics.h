@@ -347,7 +347,7 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		Entity FindCamera();
-		Entity GetCamera() { return m_camera; }
+		Entity GetCamera() const { return m_camera; }
 
 		/************************************************************************/
 		/*!

@@ -513,10 +513,11 @@ namespace NightSnack
             return;
         auto& cam = m_coord.ModifyComponent<Camera>(*m_selectedEntity);
 
-        if (ImGui::BeginTable("CameraTable", 2, ImGuiTableFlags_SizingFixedFit))
+        if (ImGui::BeginTable("CameraTable", 3, ImGuiTableFlags_SizingFixedFit))
         {
             ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+            ImGui::TableSetupColumn("Value2", ImGuiTableColumnFlags_WidthFixed, 100.0f);
 
             // Is Main Camera
             ImGui::TableNextRow();
@@ -544,6 +545,32 @@ namespace NightSnack
             ImGui::TableSetColumnIndex(1);
             ImGui::SetNextItemWidth(-FLT_MIN);
             ImGui::InputFloat("##Height", &cam.height, 1.0f, 10.0f, "%.0f");
+
+            // Camera min and max positions
+            ImGui::TableNextRow();
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Camera Bounds");
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("X:");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##MinX", &cam.minX, 0.f, 0.f, "%.0f");
+            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##MaxX", &cam.maxX, 0.f, 0.f, "%.0f");
+
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Y:");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##MinY", &cam.minY, 0.f, 0.f, "%.0f");
+            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##MaxY", &cam.maxY, 0.f, 0.f, "%.0f");
+
+            // Camera position offset from Character
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Offset:");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##offx", &cam.offset.x, 0.f, 0.f, "%.0f");
+            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##offy", &cam.offset.y, 0.f, 0.f, "%.0f");
 
             ImGui::EndTable();
         }

@@ -1,0 +1,25 @@
+{
+    "Animator": {
+        "isLooping": true,
+        "isPlaying": true,
+        "playbackSpeed": 1.305999994277954,
+        "spriteSheetName": ""
+    },
+    "Collider": {
+        "height": 1.0,
+        "isStatic": false,
+        "radius": 20.0,
+        "shape": "Circle",
+        "type": "Solid",
+        "width": 1.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "ghost_4_1",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": true
+    }
+}

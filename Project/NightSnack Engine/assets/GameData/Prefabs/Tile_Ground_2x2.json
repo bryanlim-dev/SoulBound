@@ -1,0 +1,19 @@
+{
+    "Collider": {
+        "height": 32.0,
+        "isStatic": true,
+        "radius": 32.0,
+        "shape": "AABB",
+        "type": "Solid",
+        "width": 32.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "Ground_2x2",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": false
+    }
+}
