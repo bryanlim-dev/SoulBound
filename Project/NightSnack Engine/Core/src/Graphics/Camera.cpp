@@ -37,13 +37,9 @@ namespace NightSnack {
             m_player = FindPlayer(m_coord);
         }
 
-        // check if both entities have Transform component
-        if (m_coord.HasComponent<Transform>(m_mainCamera) &&
-            m_coord.HasComponent<Transform>(m_player))
-        {
-            FollowPlayer();
-            CenterCameraWhenIdle();
-        }
+        FollowEntity(m_player);
+        //CenterCameraWhenIdle();
+
 
         // make camera follow player
    //     if (m_mainCamera != INVALID_ENTITY && m_player != INVALID_ENTITY)
@@ -67,6 +63,16 @@ namespace NightSnack {
    //         auto& cameraTransform = m_coord.ModifyComponent<Transform>(m_mainCamera);
    //         cameraTransform.pos = Vec3{0.f, 0.f, 2.f};
    //     }
+    }
+
+    void CameraSystem::FollowEntity(Entity e) {
+        // get entity position
+        const auto& pt = m_coord.GetComponent<Transform>(e);
+        // get camera position
+        auto& ct = m_coord.ModifyComponent<Transform>(m_mainCamera);
+
+        ct.pos.x = pt.pos.x;
+        ct.pos.y = pt.pos.y;
     }
 
     void CameraSystem::FollowPlayer() {

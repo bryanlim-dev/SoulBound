@@ -552,6 +552,33 @@ namespace NightSnack
             }
         }
 
+        //void DrawCameraEditor(nlohmann::json& j) {
+            //float minX = j["minX"]; float maxX = j["maxX"];
+            //float minY = j["minY"]; float maxY = j["maxY"];
+
+            //if (ImGui::InputFloat("Min X", &minX, 0.0f, 0.0f, "%.0f"))
+            //{
+            //    j["minX"] = minX;
+            //    m_prefabModified = true;
+            //}
+            //if (ImGui::InputFloat("Max X", &maxX, 0.0f, 0.0f, "%.0f"))
+            //{
+            //    j["maxX"] = maxX;
+            //    m_prefabModified = true;
+            //}
+            //if (ImGui::InputFloat("Min Y", &minY, 0.0f, 0.0f, "%.0f"))
+            //{
+            //    j["minY"] = minY;
+            //    m_prefabModified = true;
+            //}
+            //if (ImGui::InputFloat("Max Y", &maxX, 0.0f, 0.0f, "%.0f"))
+            //{
+            //    j["maxY"] = maxY;
+            //    m_prefabModified = true;
+            //}
+
+        //}
+
         /**
         * @brief draws editor UI for PlayerController component properties
         * @param j JSON data for the PlayerController component

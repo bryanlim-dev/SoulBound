@@ -73,11 +73,12 @@ namespace NightSnack {
         float invMass = 1.f;
         float invInertia = 1.f;
 
-        float restitution;
+        float restitution{};
         float gravitymult;
 
         bool useGravity;
-        bool useRotate; 
+        bool useRotate;
+
     };
 
     struct Script {
@@ -175,6 +176,11 @@ namespace NightSnack {
         float zoom{ 1.f };
         float width{ 1600.f };
         float height{ 900.f };
+
+        float minX, maxX;
+        float minY, maxY;
+
+        Vec2 offset;
     };
 
 	// Audio component

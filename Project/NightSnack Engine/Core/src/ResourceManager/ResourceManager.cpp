@@ -475,6 +475,7 @@ namespace NightSnack {
 
 void ResourceManager::UpdateJson(size_t key, nlohmann::json const& newJson)
 {
+	if (m_resourceJsonMap.find(key) != m_resourceJsonMap.end())
 	m_resourceJsonMap[key]->GetJsonRaw() = newJson;
 }
 

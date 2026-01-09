@@ -78,5 +78,7 @@ namespace NightSnack {
 		 * @return the entity ID of the player
 		 */
 		Entity FindPlayer(Coordinator& coord);
+
+		void FollowEntity(Entity e);
 	};
 }

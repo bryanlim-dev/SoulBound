@@ -220,4 +220,18 @@ namespace NightSnack {
         return 0.f;
     }
 
+    Vec3 operator-(Vec3 const& v1, Vec2 const& v2) {
+        return { v1.x - v2.x, v1.y - v2.y, v1.z };
+    }
+    Vec3 operator-(Vec2 const& v1, Vec3 const& v2) {
+        return { v1.x - v2.x, v1.y - v2.y, v2.z };
+    }
+
+    Vec3 operator+(Vec3 const& v1, Vec2 const& v2) {
+        return { v1.x + v2.x, v1.y + v2.y, v1.z };
+    }
+    Vec3 operator+(Vec2 const& v1, Vec3 const& v2) {
+        return { v1.x + v2.x, v1.y + v2.y, v2.z };
+    }
+
 }   // NightSnack
