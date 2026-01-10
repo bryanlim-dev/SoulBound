@@ -47,6 +47,7 @@ namespace NightSnack
                 "Transform",
                 "Physics",
                 "Tilemap",
+                "PlayerController",
                 "Camera",
                 "Rigidbody",
                 "Collider",
@@ -85,9 +86,10 @@ namespace NightSnack
                     if (compName == "Transform") { hasComponent = m_coord.HasComponent<Transform>(*m_selectedEntity); }
                     if (compName == "Physics")   { hasComponent = true; }
 					if (compName == "Tilemap")   { hasComponent = true; }
+                    if (compName == "PlayerController") { hasComponent = m_coord.HasComponent<PlayerController>(*m_selectedEntity); }
 					if (compName == "Camera")    { hasComponent = m_coord.HasComponent<Camera>(*m_selectedEntity); }
                     if (compName == "Rigidbody") { hasComponent = m_coord.HasComponent<RigidBody>(*m_selectedEntity); }
-                    if (compName == "Collider") { hasComponent = m_coord.HasComponent<Collider>(*m_selectedEntity); }
+                    if (compName == "Collider")  { hasComponent = m_coord.HasComponent<Collider>(*m_selectedEntity); }
                     if (compName == "Renderer")  { hasComponent = m_coord.HasComponent<Renderable>(*m_selectedEntity); }
 					if (compName == "Scripting") { hasComponent = m_coord.HasComponent<Script>(*m_selectedEntity); }
                     if (compName == "Animator")  { hasComponent = m_coord.HasComponent<Animator>(*m_selectedEntity); }
@@ -132,6 +134,7 @@ namespace NightSnack
                             if (compName == "Transform") { TransformComponent(); }
                             if (compName == "Physics")   { PhysicsComponent(); }
 							if (compName == "Tilemap")   { TilemapComponent(); }
+							if (compName == "PlayerController") { PlayerControllerComponent(); }
 							if (compName == "Camera")    { CameraComponent(); }
                             if (compName == "Rigidbody") { RigidBodyComponent(); }
                             if (compName == "Collider")  { ColliderComponent(); }
@@ -202,6 +205,14 @@ namespace NightSnack
         */
         /************************************************************************/
         void TilemapComponent();
+
+        /************************************************************************/
+        /*!
+        \brief
+            Draws PlayerController component details which displays player variables.
+        */
+        /************************************************************************/
+        void PlayerControllerComponent();
 
         /************************************************************************/
         /*!
@@ -505,6 +516,32 @@ namespace NightSnack
             ImGui::EndTable();
         }
     }
+
+	// Draws PlayerController component details which displays player variables.
+    inline void InspectorPanel::PlayerControllerComponent()
+    {
+        if (!m_coord.HasComponent<PlayerController>(*m_selectedEntity))
+            return;
+        auto& pc = m_coord.ModifyComponent<PlayerController>(*m_selectedEntity);
+        if (ImGui::BeginTable("PlayerControllerTable", 2, ImGuiTableFlags_SizingFixedFit))
+        {
+            ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 150.0f);
+            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+            // Move Speed
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Move Speed");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##MoveSpeed", &pc.moveSpeed, 0.1f, 1.0f, "%.2f");
+            // Jump Speed
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Jump Speed");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##JumpSpeed", &pc.jumpSpeed, 0.1f, 1.0f, "%.2f");
+            ImGui::EndTable();
+        }
+	}
 
     // Draws Camera component details which includes camera type, zoom,
     inline void InspectorPanel::CameraComponent()
@@ -921,6 +958,7 @@ namespace NightSnack
         std::vector<CompInfo> missing;
         Entity e = *m_selectedEntity;
         if (!m_coord.HasComponent<Transform>(e))   missing.push_back({ "Transform", false, [this, e] { m_coord.AddComponent<Transform>(e, Transform{}); } });
+		if (!m_coord.HasComponent<PlayerController>(e)) missing.push_back({ "PlayerController", false, [this, e] { m_coord.AddComponent<PlayerController>(e, PlayerController{}); } });
         if (!m_coord.HasComponent<RigidBody>(e))   missing.push_back({ "Rigidbody", false, [this, e] { m_coord.AddComponent<RigidBody>(e, RigidBody{}); } });
         if (!m_coord.HasComponent<Collider>(e))    missing.push_back({ "Collider", false, [this, e] { m_coord.AddComponent(e, Collider{}); } });
         if (!m_coord.HasComponent<Renderable>(e))  missing.push_back({ "Renderer", false, [this, e] { m_coord.AddComponent<Renderable>(e, Renderable{}); } });
@@ -969,6 +1007,7 @@ namespace NightSnack
         if (ImGui::BeginPopup("AddComponentPopup"))
         {
             addMenuItem("Transform", [this, e] { m_coord.AddComponent<Transform>(e, Transform{}); }, m_coord.HasComponent<Transform>(e));
+			addMenuItem("PlayerController", [this, e] { m_coord.AddComponent<PlayerController>(e, PlayerController{}); }, m_coord.HasComponent<PlayerController>(e));
             addMenuItem("Rigidbody", [this, e] { m_coord.AddComponent<RigidBody>(e, RigidBody{}); }, m_coord.HasComponent<RigidBody>(e));
             addMenuItem("Collider", [this, e] { m_coord.AddComponent(e, Collider{}); }, m_coord.HasComponent<Collider>(e));
             addMenuItem("Renderer", [this, e] { m_coord.AddComponent<Renderable>(e, Renderable{}); }, m_coord.HasComponent<Renderable>(e));
@@ -991,12 +1030,13 @@ namespace NightSnack
         struct CompInfo { const char* name; bool has; std::function<void()> remove; };
         std::vector<CompInfo> removable;
         Entity e = *m_selectedEntity;
-        if (m_coord.HasComponent<RigidBody>(e))   removable.push_back({ "Rigidbody", true, [this, e] { m_coord.RemoveComponent<RigidBody>(e); } });
-        if (m_coord.HasComponent<Collider>(e))    removable.push_back({ "Collider", true, [this, e] { m_coord.RemoveComponent<Collider>(e); } });
-        if (m_coord.HasComponent<Renderable>(e))  removable.push_back({ "Renderer", true, [this, e] { m_coord.RemoveComponent<Renderable>(e); } });
-        if (m_coord.HasComponent<Script>(e))      removable.push_back({ "Scripting", true, [this, e] { m_coord.RemoveComponent<Script>(e); } });
-        if (m_coord.HasComponent<Animator>(e))    removable.push_back({ "Animator", true, [this, e] { m_coord.RemoveComponent<Animator>(e); } });
-        if (m_coord.HasComponent<Font>(e))        removable.push_back({ "Font", true, [this, e] { m_coord.RemoveComponent<Font>(e); } });
+		if (m_coord.HasComponent<PlayerController>(e)) removable.push_back({ "PlayerController", true, [this, e] { m_coord.RemoveComponent<PlayerController>(e); } });
+        if (m_coord.HasComponent<RigidBody>(e))        removable.push_back({ "Rigidbody", true, [this, e] { m_coord.RemoveComponent<RigidBody>(e); } });
+        if (m_coord.HasComponent<Collider>(e))         removable.push_back({ "Collider", true, [this, e] { m_coord.RemoveComponent<Collider>(e); } });
+        if (m_coord.HasComponent<Renderable>(e))       removable.push_back({ "Renderer", true, [this, e] { m_coord.RemoveComponent<Renderable>(e); } });
+        if (m_coord.HasComponent<Script>(e))           removable.push_back({ "Scripting", true, [this, e] { m_coord.RemoveComponent<Script>(e); } });
+        if (m_coord.HasComponent<Animator>(e))         removable.push_back({ "Animator", true, [this, e] { m_coord.RemoveComponent<Animator>(e); } });
+        if (m_coord.HasComponent<Font>(e))             removable.push_back({ "Font", true, [this, e] { m_coord.RemoveComponent<Font>(e); } });
 
         // Disable button if no components left to remove
         if (removable.empty())
