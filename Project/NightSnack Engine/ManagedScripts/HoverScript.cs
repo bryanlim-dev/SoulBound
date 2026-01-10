@@ -23,7 +23,8 @@ namespace ManagedScripts
         [SerializeField]
         public float time = 0.0f;
 
-        //RotatorScript rotate = null;
+        [SerializeField]
+        RotatorScript rotate = null;
 
         public Transform transform;
 
@@ -32,6 +33,15 @@ namespace ManagedScripts
             transform = new Transform(EntityId);
             //Log($"Player Script ID: {GetPlayerID()}");
             //Engine.CreateScript(EntityId, "RotatorScript");
+            rotate = Engine.GetScript<RotatorScript>(EntityId, "RotatorScript");
+
+            //if (rotate != null){
+            //    Log($"Script found!");
+            //}
+            //else
+            //{
+            //    Log($"Script not found!");
+            //}
 
             //Log("HoverScript started!");
             //Log($"Initial Position: {Position.X}, {Position.Y}");
@@ -47,6 +57,15 @@ namespace ManagedScripts
             //    Log($"Got RotatorScript: {rotate != null}, for ID: {EntityId}");
             //    if (rotate != null)
             //        rotate.rotationSpeed = 200.0f;
+            //}
+
+            //if (rotate != null)
+            //{
+            //    Engine.Log($"RotatorScript exists");
+            //}
+            //else
+            //{
+            //    Engine.Log($"RotatorScript not exists");
             //}
 
             // Get current position

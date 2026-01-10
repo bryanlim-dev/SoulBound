@@ -29,6 +29,8 @@ namespace NightSnack::Scripting {
 
     // Main update to be called by Core engine (Updates all scripts)
     void ScriptManager::Update() {
+        if (m_coord.IsPaused()) { return; }
+
         // Reattach entity scripts when Level is reloaded
         if (!m_attached || entityNum != m_entities.size()) {
             for (Entity e{}; e < MAX_ENTITIES; ++e) {
@@ -77,6 +79,14 @@ namespace NightSnack::Scripting {
          return "";
 
          return m_scriptNameMap[script];
+    }
+
+    Entity ScriptManager::GetScriptOwner(void* script)
+    {
+        if (m_scriptOwner.find(script) != m_scriptOwner.end())
+            return m_scriptOwner[script];
+
+        return 0;
     }
 
     MonoExposeBridge& ScriptManager::GetMonoExposeBridge()
@@ -170,6 +180,7 @@ namespace NightSnack::Scripting {
         }
         // Remove from map
         m_entityScripts[e].clear();
+        m_scriptOwner.clear();
 
         //m_coord.ModifyComponent<Script>(e).names.clear();
     }
@@ -194,6 +205,7 @@ namespace NightSnack::Scripting {
                 m_monoHost->DestroyScriptInstance(instance);
                 m_scriptNameMap.erase(instance);
                 scripts.erase(scriptIt);
+                m_scriptOwner.erase(instance);
 
                 //Remove from script component names list (This prevents reload from reloading the thing)
                 //auto& names = m_coord.ModifyComponent<Script>(e).names;
@@ -227,7 +239,7 @@ namespace NightSnack::Scripting {
         // Store mapping
         m_entityScripts[e].push_back(instance);
         m_scriptNameMap.insert({ instance,  m_monoHost->GetScriptName(instance) }); //Insert name into a map
-
+        m_scriptOwner.insert({ instance, e });
         //m_coord.ModifyComponent<Script>(e).names.push_back(scriptName);
 
         //std::cout << "ScriptManager Create:" << m_scriptNameMap[instance] << std::endl;

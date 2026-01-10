@@ -86,6 +86,7 @@ namespace NightSnack::Scripting {
 
 		std::vector<void*> GetEntityScripts(Entity e);
 		std::string GetScriptName(void* script);
+		Entity GetScriptOwner(void* script);
 
 		MonoExposeBridge& GetMonoExposeBridge();
 		void LoadEntityExposedFields(Entity e);
@@ -110,6 +111,8 @@ namespace NightSnack::Scripting {
 
 		// Map entity ID to script instance
 		std::map<Entity, std::vector<void*>> m_entityScripts;
+		//Tracks which script belongs to which entity
+		std::map<void*, Entity> m_scriptOwner;
 		std::map<void*, std::string> m_scriptNameMap;
 
 		bool debugMode = false;
