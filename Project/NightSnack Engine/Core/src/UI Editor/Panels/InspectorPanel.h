@@ -489,24 +489,56 @@ namespace NightSnack
             float mass = 1.f / rb.invMass;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Mass");
-            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::InputFloat("##mass", &mass, 0.0f, 0.0f, "%.2f");
-            rb.invMass = 1.f / mass;
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::InputFloat("##mass", &mass, 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::RigidBodySnapshot{ *m_selectedEntity, rb }
+                );
+                rb.invMass = 1.f / mass;
+            }
 
             // Velocity
             float vel[2] = { rb.vel.x, rb.vel.y };
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Velocity");
-            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Text("X"); ImGui::SameLine(); ImGui::InputFloat("##velx", &vel[0], 0.0f, 0.0f, "%.2f");
-            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Text("Y"); ImGui::SameLine(); ImGui::InputFloat("##vely", &vel[1], 0.0f, 0.0f, "%.2f");
-            rb.vel.x = vel[0]; rb.vel.y = vel[1];
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Text("X"); ImGui::SameLine();
+            if (ImGui::InputFloat("##velx", &vel[0], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::RigidBodySnapshot{ *m_selectedEntity, rb }
+                );
+                rb.vel.x = vel[0];
+            }
+            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Text("Y"); ImGui::SameLine();
+            if (ImGui::InputFloat("##vely", &vel[1], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::RigidBodySnapshot{ *m_selectedEntity, rb }
+                );
+                rb.vel.y = vel[1];
+            }
 
             // Acceleration
             float accel[2] = { rb.accel.x, rb.accel.y };
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Acceleration");
-            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Text("X"); ImGui::SameLine(); ImGui::InputFloat("##accelx", &accel[0], 0.0f, 0.0f, "%.2f");
-            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Text("Y"); ImGui::SameLine(); ImGui::InputFloat("##accely", &accel[1], 0.0f, 0.0f, "%.2f");
-            rb.accel.x = accel[0]; rb.accel.y = accel[1];
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Text("X"); ImGui::SameLine(); 
+            if (ImGui::InputFloat("##accelx", &accel[0], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::RigidBodySnapshot{ *m_selectedEntity, rb }
+                );
+                rb.accel.x = accel[0];
+            }
+            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Text("Y"); ImGui::SameLine(); 
+            if (ImGui::InputFloat("##accely", &accel[1], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::RigidBodySnapshot{ *m_selectedEntity, rb }
+                );
+                rb.accel.y = accel[1];
+            }
 
             // UseGravity
             ImGui::TableNextRow();
@@ -527,18 +559,32 @@ namespace NightSnack
         {
             ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 150.0f);
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+            
             // Move Speed
+			float moveSpeed = pc.moveSpeed;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Move Speed");
-            ImGui::TableSetColumnIndex(1);
-            ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::InputFloat("##MoveSpeed", &pc.moveSpeed, 0.1f, 1.0f, "%.2f");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::InputFloat("##MoveSpeed", &moveSpeed, 0.1f, 1.0f, "%.2f"))
+                {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::PlayerControllerSnapshot{ *m_selectedEntity, pc }
+                );
+				pc.moveSpeed = moveSpeed;
+			}
+            
             // Jump Speed
+			float jumpSpeed = pc.jumpSpeed;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Jump Speed");
-            ImGui::TableSetColumnIndex(1);
-            ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::InputFloat("##JumpSpeed", &pc.jumpSpeed, 0.1f, 1.0f, "%.2f");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::InputFloat("##JumpSpeed", &jumpSpeed, 0.1f, 1.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::PlayerControllerSnapshot{ *m_selectedEntity, pc }
+                );
+				pc.jumpSpeed = jumpSpeed;
+            }
             ImGui::EndTable();
         }
 	}
@@ -606,7 +652,12 @@ namespace NightSnack
             ImGui::TableSetColumnIndex(0); ImGui::Text("Shape");
             ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
             if (ImGui::Combo("##Shape", &shapeIdx, shapeTypes, IM_ARRAYSIZE(shapeTypes)))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::ColliderSnapshot{ *m_selectedEntity, c }
+				);
                 c.shape = (shapeIdx == 0) ? ShapeType::AABB : ShapeType::Circle;
+            }
 
             // Collider type
             const char* colliderTypes[] = { "Solid", "Trigger", "Ground" };
@@ -615,7 +666,12 @@ namespace NightSnack
             ImGui::TableSetColumnIndex(0); ImGui::Text("Type");
             ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
             if (ImGui::Combo("##Type", &typeIdx, colliderTypes, IM_ARRAYSIZE(colliderTypes)))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::ColliderSnapshot{ *m_selectedEntity, c }
+                );
                 c.type = (typeIdx == 0) ? ColliderType::Solid : (typeIdx == 1) ? ColliderType::Trigger : ColliderType::Ground;
+            }
 
             // Is Static
             ImGui::TableNextRow();
@@ -625,19 +681,42 @@ namespace NightSnack
             // Shape data
             if (c.shape == ShapeType::AABB)
             {
+                float size[2] = { c.width, c.height };
                 ImGui::TableNextRow();
                 ImGui::TableSetColumnIndex(0); ImGui::Text("Width");
-                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::InputFloat("##Width", &c.width, 0.0f, 0.0f, "%.2f");
+                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+				if (ImGui::InputFloat("##Width", &size[0], 0.0f, 0.0f, "%.2f"))
+                {
+                    NightSnack::UndoSystem::Instance().Push(
+                        NightSnack::ColliderSnapshot{ *m_selectedEntity, c }
+                    );
+					c.width = size[0];
+                }
 
                 ImGui::TableNextRow();
                 ImGui::TableSetColumnIndex(0); ImGui::Text("Height");
-                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::InputFloat("##Height", &c.height, 0.0f, 0.0f, "%.2f");
+                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                if (ImGui::InputFloat("##Height", &size[1], 0.0f, 0.0f, "%.2f"))
+                {
+                    NightSnack::UndoSystem::Instance().Push(
+                        NightSnack::ColliderSnapshot{ *m_selectedEntity, c }
+                    );
+					c.height = size[1];
+                }
             }
             else if (c.shape == ShapeType::Circle)
             {
+				float radius = c.radius;
                 ImGui::TableNextRow();
                 ImGui::TableSetColumnIndex(0); ImGui::Text("Radius");
-                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::InputFloat("##Radius", &c.radius, 0.0f, 0.0f, "%.2f");
+                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                if (ImGui::InputFloat("##Radius", &radius, 0.0f, 0.0f, "%.2f"))
+                {
+                    NightSnack::UndoSystem::Instance().Push(
+                        NightSnack::ColliderSnapshot{ *m_selectedEntity, c }
+                    );
+					c.radius = radius;
+                }
             }
 
             // Collision state (read-only)
