@@ -319,17 +319,14 @@ namespace NightSnack
 		{
 			ImGui::Begin("Animation");
 
-			if (ImGui::BeginTabBar("AssetsTab")) {
+			if (ImGui::BeginTabBar("AnimationTab")) {
 
 				if (ImGui::BeginTabItem("Timeline")) {
 					DrawAnimationPanel();
 					ImGui::EndTabItem();
 				}
-
 				ImGui::EndTabBar();
 			}
-
-
 			ImGui::End();
 		}
 
