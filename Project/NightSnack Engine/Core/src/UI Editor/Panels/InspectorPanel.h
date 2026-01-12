@@ -392,28 +392,58 @@ namespace NightSnack
             // Position row
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Position");
-            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); 
-            ImGui::InputFloat("##posx", &pos[0], 0.0f, 0.0f, "%.2f");
-            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN); 
-            ImGui::InputFloat("##posy", &pos[1], 0.0f, 0.0f, "%.2f");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::InputFloat("##posx", &pos[0], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::TransformSnapshot{ *m_selectedEntity, t }
+                );
+            }
+            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::InputFloat("##posy", &pos[1], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::TransformSnapshot{ *m_selectedEntity, t }
+                );
+			}
             ImGui::TableSetColumnIndex(3); ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::InputFloat("##posz", &pos[2], 0.0f, 0.0f, "%.2f");
+            if (ImGui::InputFloat("##posz", &pos[2], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::TransformSnapshot{ *m_selectedEntity, t }
+                );
+            }
 
             // Rotation row
             float rot = t.rot;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Rotation");
-            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); 
-            ImGui::InputFloat("##rot", &rot, 0.0f, 0.0f, "%.2f");
-            t.rot = rot;
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::InputFloat("##rot", &rot, 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::TransformSnapshot{ *m_selectedEntity, t }
+                );
+                t.rot = rot;
+			}
 
             // Scale row
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Scale");
-            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); 
-            ImGui::InputFloat("##scalex", &scale[0], 0.0f, 0.0f, "%.2f");
-            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN); 
-            ImGui::InputFloat("##scaley", &scale[1], 0.0f, 0.0f, "%.2f");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::InputFloat("##scalex", &scale[0], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::TransformSnapshot{ *m_selectedEntity, t }
+                );
+            }
+            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::InputFloat("##scaley", &scale[1], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::TransformSnapshot{ *m_selectedEntity, t }
+                );
+            }
 
             // Update the respective position based on its entity layer
             if (t.layer == LayerType::GAMEUI) {
@@ -444,21 +474,39 @@ namespace NightSnack
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Gravity");
             ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-            if (ImGui::InputFloat("##gravity", &gravity, 0.0f, 0.0f, "%.2f")) { ps->SetGravity(gravity); }
+            if (ImGui::InputFloat("##gravity", &gravity, 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::PhysicsSettingsSnapshot{ ps->GetGravity(), ps->GetDrag(), ps->GetFriction() }
+                );
+                ps->SetGravity(gravity);
+            }
 
 			// Drag
             float drag = ps->GetDrag();
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Drag");
             ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-            if (ImGui::InputFloat("##drag", &drag, 0.0f, 0.0f, "%.2f")) { ps->SetDrag(drag); }
+            if (ImGui::InputFloat("##drag", &drag, 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::PhysicsSettingsSnapshot{ ps->GetGravity(), ps->GetDrag(), ps->GetFriction() }
+                );
+                ps->SetDrag(drag);
+            }
 
 			// Friction
             float friction = ps->GetFriction();
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Friction");
             ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-            if (ImGui::InputFloat("##friction", &friction, 0.0f, 0.0f, "%.2f")) { ps->SetFriction(friction); }
+            if (ImGui::InputFloat("##friction", &friction, 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::PhysicsSettingsSnapshot{ ps->GetGravity(), ps->GetDrag(), ps->GetFriction() }
+                );
+                ps->SetFriction(friction);
+            }
 
             ImGui::EndTable();
         }

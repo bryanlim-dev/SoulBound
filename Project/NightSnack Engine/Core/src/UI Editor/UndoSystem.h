@@ -30,6 +30,13 @@ namespace NightSnack {
         Transform transform;
     };
 
+    struct PhysicsSettingsSnapshot
+    {
+        float gravity;
+        float drag;
+        float friction;
+	};
+
     struct PlayerControllerSnapshot
     {
         Entity entity;
@@ -86,6 +93,7 @@ namespace NightSnack {
         TransformSnapshot,
         EntityCreateSnapshot,
         EntityDeleteSnapshot,
+        PhysicsSettingsSnapshot,
 		PlayerControllerSnapshot,
         RigidBodySnapshot,
         ColliderSnapshot,
@@ -171,6 +179,15 @@ namespace NightSnack {
                         coord.AddComponent<Collider>(act.entity, *act.collider);
                     else if (act.componentName == "Renderable" && act.renderable)
                         coord.AddComponent<Renderable>(act.entity, *act.renderable);
+                }
+                else if constexpr (std::is_same_v<T, PhysicsSettingsSnapshot>)
+                {
+                    auto ps = coord.GetSystem<PhysicsSystem>();
+                    if (ps) {
+                        ps->SetGravity(act.gravity);
+                        ps->SetDrag(act.drag);
+                        ps->SetFriction(act.friction);
+                    }
                 }
                 else if constexpr (std::is_same_v<T, EntityCreateSnapshot>)
                 {
