@@ -437,6 +437,35 @@ namespace NightSnack {
         }
     }
 
+    // for converting string to enum
+    inline ButtonAction StringToEnumButtonAction(const std::string& str) {
+        if (str == "PLAYAUDIO") return ButtonAction::PLAYAUDIO;
+        if (str == "PLAYAUDIO2") return ButtonAction::PLAYAUDIO2;
+        if (str == "PLAYAUDIO3") return ButtonAction::PLAYAUDIO3;
+        if (str == "LOADLEVEL") return ButtonAction::LOADLEVEL;
+        if (str == "OPENMENU") return ButtonAction::OPENMENU;
+        if (str == "NOACTION") return ButtonAction::NOACTION;
+        if (str == "EXIT") return ButtonAction::EXIT;
+
+        // Default if string doesn't match
+        return ButtonAction::NOACTION;
+    }
+
+    // for converting enum to string
+	// can be used for debugging purposes
+    inline std::string EnumButtonActionToString(ButtonAction action) {
+        switch (action) {
+        case ButtonAction::PLAYAUDIO: return "PLAYAUDIO";
+        case ButtonAction::PLAYAUDIO2: return "PLAYAUDIO2";
+        case ButtonAction::PLAYAUDIO3: return "PLAYAUDIO3";
+        case ButtonAction::LOADLEVEL: return "LOADLEVEL";
+        case ButtonAction::OPENMENU: return "OPENMENU";
+        case ButtonAction::NOACTION: return "NOACTION";
+        case ButtonAction::EXIT: return "EXIT";
+        default: return "UNKNOWN";
+        }
+    }
+
 }   // NightSnack
 
 #endif // COMPONENT_HPP
