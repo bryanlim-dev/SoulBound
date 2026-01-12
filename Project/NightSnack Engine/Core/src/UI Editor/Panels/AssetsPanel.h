@@ -7,7 +7,7 @@
  * Unified assets panel displaying all assets in a hierarchical folder structure.
  * Integrates Images, Files, Scripts, and Prefabs in one view.
  *
- * Copyright � 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 

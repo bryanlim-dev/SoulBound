@@ -106,6 +106,7 @@ namespace NightSnack {
 		std::unique_ptr<ScenePanel> m_scenePanel;
 		std::unique_ptr<OptionsPanel> m_optionsPanel;
 		std::unique_ptr<AssetsPanel> m_assetsPanel;
+		std::unique_ptr<AnimationPanel> m_animationPanel;
 
 		// Panel visibility toggles
 		bool m_showHierarchy = true;
@@ -113,6 +114,7 @@ namespace NightSnack {
 		bool m_showScene = true;
 		bool m_showOptions = true;
 		bool m_showAssets = true;
+		bool m_showAnimation = true;
 
 		/************************************************************************/
 		/*!
@@ -229,7 +231,8 @@ namespace NightSnack {
 		m_scenePanel	 = std::make_unique<ScenePanel>(m_coord, m_selectedEntity, m_uiNames, m_tilemap);
 		m_optionsPanel	 = std::make_unique<OptionsPanel>(m_coord);
 		m_assetsPanel	 = std::make_unique<AssetsPanel>(m_coord, m_selectedEntity);
-	}
+		m_animationPanel = std::make_unique<AnimationPanel>(m_coord, m_selectedEntity);
+	}	
 
 	// Sets up and draws UI panels
 	inline void ImguiSystem::Update() {
@@ -251,6 +254,7 @@ namespace NightSnack {
 		if (m_showScene && m_scenePanel)		 m_scenePanel->Draw();
 		if (m_showOptions && m_optionsPanel)	 m_optionsPanel->Draw();
 		if (m_showAssets && m_assetsPanel)		 m_assetsPanel->Draw();
+		if (m_showAnimation && m_animationPanel) m_animationPanel->Draw();
 
 		// render
 		ImGui::Render();
@@ -279,6 +283,7 @@ namespace NightSnack {
 		m_scenePanel.reset();
 		m_optionsPanel.reset();
 		m_assetsPanel.reset();
+		m_animationPanel.reset();
 		m_selectedEntity.reset();
 		m_uiNames.reset();
 
@@ -347,6 +352,7 @@ namespace NightSnack {
 			ImGui::DockBuilderDockWindow("Inspector", dock_id_right);
 			ImGui::DockBuilderDockWindow("Scene", dock_id_center);
 			ImGui::DockBuilderDockWindow("Assets Config", dock_id_bottom);
+			ImGui::DockBuilderDockWindow("Animation", dock_id_bottom);
 			ImGui::DockBuilderDockWindow("Asset Properties", dock_id_right_top);
 			ImGui::DockBuilderDockWindow("Tile Editor", dock_id_right_bottom);
 			ImGui::DockBuilderDockWindow("Properties:", dock_id_bottom_right);
@@ -476,13 +482,14 @@ namespace NightSnack {
 				ImGui::MenuItem("Inspector", nullptr, &m_showInspector);
 				ImGui::MenuItem("Scene", nullptr, &m_showScene);
 				ImGui::MenuItem("Assets Config", nullptr, &m_showAssets);
+				ImGui::MenuItem("Animation", nullptr, &m_showAnimation);
 
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("Game"))
 			{
 				// Play
-				if (!m_isPlaying) 
+				if (!m_isPlaying)
 				{
 					if (ImGui::MenuItem("Play"))
 					{
