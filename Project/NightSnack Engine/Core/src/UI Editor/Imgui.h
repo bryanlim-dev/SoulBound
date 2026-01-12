@@ -228,7 +228,7 @@ namespace NightSnack {
 		m_inspectorPanel = std::make_unique<InspectorPanel>(m_coord, m_selectedEntity, m_uiNames, m_tilemap);
 		m_scenePanel	 = std::make_unique<ScenePanel>(m_coord, m_selectedEntity, m_uiNames, m_tilemap);
 		m_optionsPanel	 = std::make_unique<OptionsPanel>(m_coord);
-		m_assetsPanel	 = std::make_unique<AssetsPanel>(m_coord);
+		m_assetsPanel	 = std::make_unique<AssetsPanel>(m_coord, m_selectedEntity);
 	}
 
 	// Sets up and draws UI panels
@@ -251,7 +251,6 @@ namespace NightSnack {
 		if (m_showScene && m_scenePanel)		 m_scenePanel->Draw();
 		if (m_showOptions && m_optionsPanel)	 m_optionsPanel->Draw();
 		if (m_showAssets && m_assetsPanel)		 m_assetsPanel->Draw();
-
 
 		// render
 		ImGui::Render();
@@ -347,7 +346,7 @@ namespace NightSnack {
 			ImGui::DockBuilderDockWindow("Options", dock_id_left_bottom);
 			ImGui::DockBuilderDockWindow("Inspector", dock_id_right);
 			ImGui::DockBuilderDockWindow("Scene", dock_id_center);
-			ImGui::DockBuilderDockWindow("Assets", dock_id_bottom);
+			ImGui::DockBuilderDockWindow("Assets Config", dock_id_bottom);
 			ImGui::DockBuilderDockWindow("Asset Properties", dock_id_right_top);
 			ImGui::DockBuilderDockWindow("Tile Editor", dock_id_right_bottom);
 			ImGui::DockBuilderDockWindow("Properties:", dock_id_bottom_right);
@@ -476,7 +475,7 @@ namespace NightSnack {
 				ImGui::MenuItem("Options", nullptr, &m_showOptions);
 				ImGui::MenuItem("Inspector", nullptr, &m_showInspector);
 				ImGui::MenuItem("Scene", nullptr, &m_showScene);
-				ImGui::MenuItem("Assets", nullptr, &m_showAssets);
+				ImGui::MenuItem("Assets Config", nullptr, &m_showAssets);
 
 				ImGui::EndMenu();
 			}
