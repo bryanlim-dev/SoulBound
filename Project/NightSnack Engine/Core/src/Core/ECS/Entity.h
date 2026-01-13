@@ -15,7 +15,7 @@
 
 #include <cstdint>
 #include <bitset>
-#include <vector>
+#include <unordered_set>
 
 namespace NightSnack {
 
@@ -40,7 +40,7 @@ namespace NightSnack {
 	// Entity Parenting component
 	struct Hierarchy {
 		Entity parent{ INVALID_ENTITY };
-		std::vector<Entity> children;
+		std::unordered_set<Entity> children;
 	};
 
 }	// NightSnack

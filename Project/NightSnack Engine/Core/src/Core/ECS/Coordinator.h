@@ -145,6 +145,51 @@ namespace NightSnack {
 		template <typename T>
 		std::optional<T> const& GetComponentInParent(Entity e) const;
 
+		bool ParentEntity(Entity e, Entity parent) {
+			if (!HasComponent<Hierarchy>(e) || !HasComponent<Hierarchy>(parent)) {
+				std::cerr << "Entity " << e << " or " << parent 
+					<< " does not have Hierarchy component, failed to add parent.\n";
+				return false;
+			}
+			if (!AddChildToEntity(parent, e)) {
+				std::cerr << "Failed to add child " << e << " to parent " << parent << '\n';
+				return false;
+			}
+			ModifyComponent<Hierarchy>(e).parent = parent;
+			return true;
+		}
+
+		bool RemoveEntityParent(Entity e, Entity parent) {
+			if (!HasComponent<Hierarchy>(e)) {
+				std::cerr << "Entity " << e << " does not have Hierarchy component, failed to remove parent.\n";
+				return false;
+			}
+			if (!RemoveEntityChild(parent, e)) {
+				std::cerr << "Failed to remove child " << e << " from parent " << parent << '\n';
+				return false;
+			}
+			ModifyComponent<Hierarchy>(e).parent = INVALID_ENTITY;
+			return true;
+		}
+
+		bool AddChildToEntity(Entity e, Entity child) {
+			if (!HasComponent<Hierarchy>(e)) {
+				std::cerr << "Entity " << e << " does not have Hierarchy component, failed to add child.\n";
+				return false;
+			}
+			ModifyComponent<Hierarchy>(e).children.insert(child);
+			return true;
+		}
+
+		bool RemoveEntityChild(Entity e, Entity child) {
+			if (!HasComponent<Hierarchy>(e)) {
+				std::cerr << "Entity " << e << " does not have Hierarchy component, failed to add child.\n";
+				return false;
+			}
+			ModifyComponent<Hierarchy>(e).children.erase(child);
+			return true;
+		}
+
 		/************************************************************************/
 		/*!
 		\brief

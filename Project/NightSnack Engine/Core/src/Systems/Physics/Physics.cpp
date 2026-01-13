@@ -420,10 +420,10 @@ namespace NightSnack {
 		else {
 			// AABB vs Circle
 			if (c1.shape == ShapeType::Circle) {
-				CircleVsAABB(t1, t2, c1, c2, normal, depth);
+				return CircleVsAABB(t1, t2, c1, c2, normal, depth);
 			}
 			else {
-				CircleVsAABB(t2, t1, c2, c1, normal, depth);
+				return CircleVsAABB(t2, t1, c2, c1, normal, depth);
 			}
 		}
 	}
