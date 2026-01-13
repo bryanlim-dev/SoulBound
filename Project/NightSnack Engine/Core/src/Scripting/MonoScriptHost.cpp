@@ -152,8 +152,8 @@ namespace NightSnack::Scripting {
 
         SetScriptEntityId(instance, owner);
 //m_    
-        // Call OnStart
-        CallMethod(instance, "OnStart");
+        // Call OnLoad
+        CallMethod(instance, "OnLoad");
 
         return instance;
     }

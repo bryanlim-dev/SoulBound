@@ -36,7 +36,7 @@ namespace ManagedScripts
         public Color color;
         public Renderer renderer;
 
-        public override void OnStart()
+        public override void OnLoad()
         {
             //Class tests
             transform = new Transform(EntityId);
@@ -44,6 +44,11 @@ namespace ManagedScripts
             collider = new Collider(EntityId);
             color = new Color(EntityId);
             renderer = new Renderer(EntityId);
+        }
+
+        public override void OnStart()
+        {
+
 
             //rigidBody.UseGravity = true;
             collider.ColType = ColliderType.Solid;

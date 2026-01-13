@@ -29,7 +29,6 @@ namespace NightSnack::Scripting {
 
     // Main update to be called by Core engine (Updates all scripts)
     void ScriptManager::Update() {
-        if (m_coord.IsPaused()) { return; }
 
         // Reattach entity scripts when Level is reloaded
         if (!m_attached || entityNum != m_entities.size()) {
@@ -50,8 +49,23 @@ namespace NightSnack::Scripting {
             m_attached = true;
         }
 
+        //If paused do not run logic
+        if (m_coord.IsPaused()) { return; }
+
+
         // Skip updating of scripts if in debug mode;
         if (debugMode && !stepRequest) { return; }
+
+        if (!scriptsToStart.empty())
+        {
+            //Now start all scripts that have not called OnStart()
+            for (void* script : scriptsToStart)
+            {
+                m_monoHost->CallMethod(script, "OnStart");
+            }
+            scriptsToStart.clear();
+        }
+
 
         for (int s{}; s < m_coord.steps; ++s) {
             // Update all active scripts
@@ -240,6 +254,13 @@ namespace NightSnack::Scripting {
         m_entityScripts[e].push_back(instance);
         m_scriptNameMap.insert({ instance,  m_monoHost->GetScriptName(instance) }); //Insert name into a map
         m_scriptOwner.insert({ instance, e });
+
+        //Check if game is running, if not running store it and run later
+        if (m_coord.IsPaused())
+            scriptsToStart.push_back(instance);
+        else
+            m_monoHost->CallMethod(instance, "OnStart");
+
         //m_coord.ModifyComponent<Script>(e).names.push_back(scriptName);
 
         //std::cout << "ScriptManager Create:" << m_scriptNameMap[instance] << std::endl;

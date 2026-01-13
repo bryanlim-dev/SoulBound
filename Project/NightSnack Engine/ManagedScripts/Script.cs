@@ -22,6 +22,12 @@ namespace ManagedScripts
         public uint EntityId;
 
         // Override these in your script classes
+
+        //This runs when the script is made
+        //Use it to link components (i.e Transfrom, rotate, audio, etc)
+        public virtual void OnLoad() { }
+        
+        //This runs right before first GAME update
         public virtual void OnStart() { }
         public virtual void OnUpdate() { }
         public virtual void OnDestroy() { }

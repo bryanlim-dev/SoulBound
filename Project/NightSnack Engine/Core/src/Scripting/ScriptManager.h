@@ -115,6 +115,9 @@ namespace NightSnack::Scripting {
 		std::map<void*, Entity> m_scriptOwner;
 		std::map<void*, std::string> m_scriptNameMap;
 
+		//Scripts that have not run onStart()
+		std::list<void*> scriptsToStart;
+
 		bool debugMode = false;
 		bool stepRequest = false;
 		bool m_attached = false;
