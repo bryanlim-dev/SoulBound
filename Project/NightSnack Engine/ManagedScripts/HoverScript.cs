@@ -46,6 +46,7 @@ namespace ManagedScripts
             //Log("HoverScript started!");
             //Log($"Initial Position: {Position.X}, {Position.Y}");
             //Log($"Move speed: {moveSpeed}.f");
+            moveSpeed = 1000;
         }
 
         public override void OnUpdate()

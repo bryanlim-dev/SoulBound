@@ -116,7 +116,14 @@ namespace NightSnack::Scripting {
 		std::map<void*, std::string> m_scriptNameMap;
 
 		//Scripts that have not run onStart()
-		std::list<void*> scriptsToStart;
+		std::list<void*> m_scriptsToStart;
+
+		//Scripts that have not run onLoad()
+		std::list<void*> m_scriptsToLoad;
+
+		//This is used when scripts are being reloaded/loaded for the first time
+		//Seperate from m_attached as something might be created mid update loop
+		bool m_batchLoadScripts = false;
 
 		bool debugMode = false;
 		bool stepRequest = false;

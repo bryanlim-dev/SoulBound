@@ -268,7 +268,7 @@ namespace NightSnack::Scene {
 		audio->PlayBGM(bgmkey);
 
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();
-		script->RefreshScripts(); //
+		script->RefreshScripts(); //	
 
 		std::cerr << "[SceneManager] Level restored\n";
 	}
