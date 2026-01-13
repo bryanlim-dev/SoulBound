@@ -488,14 +488,14 @@ namespace NightSnack {
 					if (ImGui::MenuItem("Play"))
 					{
 						DisableFPSDisplay();
-
-						// Only Cache if not already playing
-						m_isPlaying = true;
 						//SetSimulationPaused(false);
 						*m_selectedEntity = INVALID_ENTITY;
 						m_scenePanel->DestroyEditorCamera();
 						m_coord.GetSystem<Scene::SceneManager>()->CacheLevel();
 						m_scenePanel->CreateEditorCamera();
+
+						// Only Cache if not already playing
+						m_isPlaying = true;
 
 						m_coord.Unpause();
 					}
@@ -609,12 +609,12 @@ namespace NightSnack {
 		// Restore level to cached state
 		m_coord.Pause();
 		//SetSimulationPaused(true);
+		m_isPlaying = false;
 
 		m_scenePanel->DestroyEditorCamera();
 		m_coord.GetSystem<Scene::SceneManager>()->RestoreLevel();
 		m_scenePanel->CreateEditorCamera();
 
-		m_isPlaying = false;
 	}
 
 	inline void ImguiSystem::DisableFPSDisplay() {

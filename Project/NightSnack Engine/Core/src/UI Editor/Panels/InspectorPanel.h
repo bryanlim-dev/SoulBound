@@ -916,6 +916,22 @@ namespace NightSnack
                                 ImGui::TableSetColumnIndex(1); ImGui::Text("z: %.5f", vec.z);
                                 break;
                             }
+                            case Scripting::MonoValueType::MONO_SCRIPT:
+                            {
+                                if (val.m_object == nullptr) //No refrence
+                                {
+                                    ImGui::TableSetColumnIndex(1); ImGui::Text("NONE");
+                                }
+                                else //Has refrence
+                                {
+                                    std::string scriptDisplay = "ID ";
+                                    scriptDisplay += std::to_string(m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetScriptOwner(fields.m_scriptInstance));
+                                    scriptDisplay += " : " + val.m_s;
+                                    ImGui::TableSetColumnIndex(1); ImGui::Text(scriptDisplay.c_str());
+                                }
+
+                                break;
+                            }
                             case Scripting::MonoValueType::MONO_UNSUPPORTED:
                                 ImGui::TableSetColumnIndex(1); ImGui::Text("Unsupported type!");
                                 break;
