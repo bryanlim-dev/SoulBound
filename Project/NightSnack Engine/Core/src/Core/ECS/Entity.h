@@ -15,6 +15,7 @@
 
 #include <cstdint>
 #include <bitset>
+#include <vector>
 
 namespace NightSnack {
 
@@ -35,6 +36,12 @@ namespace NightSnack {
 	using Signature = std::bitset<MAX_COMPONENTS>;
 
 	constexpr Entity INVALID_ENTITY = UINT32_MAX;
+
+	// Entity Parenting component
+	struct Hierarchy {
+		Entity parent{ INVALID_ENTITY };
+		std::vector<Entity> children;
+	};
 
 }	// NightSnack
 

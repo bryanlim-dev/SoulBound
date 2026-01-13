@@ -141,8 +141,8 @@ namespace NightSnack {
 
 		Vec2 dir = t.pos - m_gridCenter;
 
-		int xStep = std::floor(dir.x / m_cellSize.x);
-		int yStep = std::floor(dir.y / m_cellSize.y);
+		float xStep = std::floor(dir.x / m_cellSize.x);
+		float yStep = std::floor(dir.y / m_cellSize.y);
 
 		m_gridCenter.x += xStep * m_cellSize.x;
 		m_gridCenter.y += yStep * m_cellSize.y;
