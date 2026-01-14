@@ -64,6 +64,26 @@ namespace NightSnack
 
                     auto factory = m_coord.GetSystem<EntityFactory>();
 
+                    // Add Prefab button at the bottom of list
+                    if (ImGui::Button("Create"))
+                    {
+                        factory->Create();
+                    }
+
+                    // Delete button to remove selected entity
+                    if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY)
+                    {
+                        ImGui::SameLine();
+                        if (ImGui::Button("Delete"))
+                        {
+                            DeleteEntity();
+                        }
+                    }
+                    if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY && ImGui::IsKeyPressed(ImGuiKey_Delete))
+                    {
+                        DeleteEntity();
+                    }
+
                     // Scene Dropdown list
                     if (ImGui::TreeNodeEx("Scene", ImGuiTreeNodeFlags_DefaultOpen))
                     {
@@ -92,26 +112,6 @@ namespace NightSnack
                         }
 						ImGui::Unindent(30.f);
                         ImGui::TreePop();
-                    }
-
-                    // Add Prefab button at the bottom of list
-                    if (ImGui::Button("Create"))
-                    {
-                        factory->Create();
-                    }
-
-                    // Delete button to remove selected entity
-                    if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY)
-                    {
-                        ImGui::SameLine();
-                        if (ImGui::Button("Delete"))
-                        {
-                            DeleteEntity();
-                        }
-                    }
-                    if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY && ImGui::IsKeyPressed(ImGuiKey_Delete))
-                    {
-                        DeleteEntity();
                     }
 
                     ImGui::EndTabItem();

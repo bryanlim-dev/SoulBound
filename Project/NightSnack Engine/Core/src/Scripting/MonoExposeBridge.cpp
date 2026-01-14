@@ -147,6 +147,17 @@ namespace NightSnack::Scripting {
 			}
 			break;
 		}
+
+		case MonoValueType::MONO_SCRIPT:
+		{
+			MonoObject* obj = nullptr;
+			mono_field_get_value(monoObj, field.m_monoField, &obj);
+
+			result.m_object = obj;
+			result.m_s = GetScriptName(obj); // For inspector display
+
+			break;
+		}
 		case MonoValueType::MONO_UNSUPPORTED:
 		default:
 		{
@@ -248,6 +259,37 @@ namespace NightSnack::Scripting {
 		return result;
 	}
 
+	bool MonoExposeBridge::IsScriptClass(MonoClass* monoClass)
+	{
+
+		while (monoClass)
+		{
+			//Checks if the class type is script
+			if (strcmp(mono_class_get_name(monoClass), "Script") == 0)
+				return true;
+
+			//Sets the parent as the mono object, so we can check name of parent in next loop
+			//Returns null if no parent class
+			monoClass = mono_class_get_parent(monoClass);
+		}
+
+		//Parent class isnt script, it is not script class
+		return false;
+	}
+
+	std::string MonoExposeBridge::GetScriptName(MonoObject* obj)
+	{
+		if (obj != nullptr)
+		{
+			MonoClass* monoClass = mono_object_get_class(obj);
+
+			if(monoClass)
+				return mono_class_get_name(monoClass);
+		}
+		else
+			return "ErrorNotScript";
+
+	}
 
 	void MonoExposeBridge::UnloadAll()
 	{
@@ -325,6 +367,19 @@ namespace NightSnack::Scripting {
 				outSize = sizeof(float) * 3;
 				return MonoValueType::MONO_VECTOR3;
 			}
+			if (IsScriptClass(typeClass))
+			{
+				outSize = sizeof(void*);
+				return MonoValueType::MONO_SCRIPT;
+			}
+		}
+
+
+		//Checks for if its a script outside of the managedscripts namespace
+		if (IsScriptClass(typeClass))
+		{
+			outSize = sizeof(void*);
+			return MonoValueType::MONO_SCRIPT;
 		}
 
 		//None of the above, unsupported

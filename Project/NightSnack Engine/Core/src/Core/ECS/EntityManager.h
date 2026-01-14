@@ -92,6 +92,8 @@ namespace NightSnack {
 
 		size_t GetLivingEntityCount() const { return m_livingEntityCount; }
 
+		bool EntityIsAlive(Entity e) const;
+
 		void Reset();
 
 	private:

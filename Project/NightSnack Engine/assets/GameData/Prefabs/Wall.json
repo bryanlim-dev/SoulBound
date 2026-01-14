@@ -2,20 +2,14 @@
     "Collider": {
         "height": 800.0,
         "isStatic": true,
-        "radius": 0.5,
+        "radius": 32.0,
         "shape": "AABB",
         "type": "Solid",
         "width": 100.0
     },
-    "Color": {
-        "a": 1.0,
-        "b": 0.0,
-        "g": 1.0,
-        "r": 1.0
-    },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "ColorMat",
+        "materialName": "Ground_2x2",
         "meshName": "square"
     },
     "RigidBody": {

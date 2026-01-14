@@ -43,6 +43,9 @@ namespace NightSnack {
 		*/
 		void Update() override;
 
+		Transform FollowPlayer();
+		void CenterCameraWhenIdle();
+
 		/**
 		 * @brief retrieve the system signature
 		 * @return system signature
@@ -75,5 +78,8 @@ namespace NightSnack {
 		 * @return the entity ID of the player
 		 */
 		Entity FindPlayer(Coordinator& coord);
+
+		void FollowEntity(Entity e, Transform& t);
+		void LimitWithinBounds(Transform& t);
 	};
 }

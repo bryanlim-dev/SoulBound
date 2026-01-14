@@ -5,14 +5,6 @@
         "playbackSpeed": 2.0,
         "spriteSheetName": "slime_4_1.png"
     },
-    "Collider": {
-        "height": 16.0,
-        "isStatic": false,
-        "radius": 0.5,
-        "shape": "AABB",
-        "type": "Solid",
-        "width": 16.0
-    },
     "Renderable": {
         "isWireframe": false,
         "materialName": "ground3",

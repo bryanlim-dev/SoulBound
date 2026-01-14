@@ -73,11 +73,12 @@ namespace NightSnack {
         float invMass = 1.f;
         float invInertia = 1.f;
 
-        float restitution;
+        float restitution{};
         float gravitymult;
 
         bool useGravity;
-        bool useRotate; 
+        bool useRotate;
+
     };
 
     struct Script {
@@ -175,6 +176,11 @@ namespace NightSnack {
         float zoom{ 1.f };
         float width{ 1600.f };
         float height{ 900.f };
+
+        float minX, maxX;
+        float minY, maxY;
+
+        Vec2 offset;
     };
 
 	// Audio component
@@ -428,6 +434,35 @@ namespace NightSnack {
         for (const auto& names : j["name"])
         {
             s.names.push_back(names.get<std::string>());
+        }
+    }
+
+    // for converting string to enum
+    inline ButtonAction StringToEnumButtonAction(const std::string& str) {
+        if (str == "PLAYAUDIO") return ButtonAction::PLAYAUDIO;
+        if (str == "PLAYAUDIO2") return ButtonAction::PLAYAUDIO2;
+        if (str == "PLAYAUDIO3") return ButtonAction::PLAYAUDIO3;
+        if (str == "LOADLEVEL") return ButtonAction::LOADLEVEL;
+        if (str == "OPENMENU") return ButtonAction::OPENMENU;
+        if (str == "NOACTION") return ButtonAction::NOACTION;
+        if (str == "EXIT") return ButtonAction::EXIT;
+
+        // Default if string doesn't match
+        return ButtonAction::NOACTION;
+    }
+
+    // for converting enum to string
+	// can be used for debugging purposes
+    inline std::string EnumButtonActionToString(ButtonAction action) {
+        switch (action) {
+        case ButtonAction::PLAYAUDIO: return "PLAYAUDIO";
+        case ButtonAction::PLAYAUDIO2: return "PLAYAUDIO2";
+        case ButtonAction::PLAYAUDIO3: return "PLAYAUDIO3";
+        case ButtonAction::LOADLEVEL: return "LOADLEVEL";
+        case ButtonAction::OPENMENU: return "OPENMENU";
+        case ButtonAction::NOACTION: return "NOACTION";
+        case ButtonAction::EXIT: return "EXIT";
+        default: return "UNKNOWN";
         }
     }
 

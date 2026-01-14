@@ -36,8 +36,8 @@
         }
     },
     "PlayerController": {
-        "jumpSpeed": 600.0,
-        "moveSpeed": 300.0
+        "jumpSpeed": 500.0,
+        "moveSpeed": 250.0
     },
     "Renderable": {
         "isWireframe": false,

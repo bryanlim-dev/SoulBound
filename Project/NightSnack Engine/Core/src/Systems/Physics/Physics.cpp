@@ -18,6 +18,53 @@
 #include "Systems/Graphics.h"
 #include "Collision.h"
 
+namespace {
+	using namespace NightSnack;
+
+	bool CircleVsAABB(Transform const& tCircle, Transform const& tAABB,
+		Collider const& cCircle, Collider const& cAABB,
+		Vec2& normal, float& depth) {
+		Vec2 halfSize = { cAABB.width * 0.5f, cAABB.height * 0.5f };
+
+		// Find closest point on AABB to circle center
+		Vec2 closest;
+		closest.x = std::clamp(tCircle.pos.x, tAABB.pos.x - halfSize.x,
+			tAABB.pos.x + halfSize.x);
+		closest.y = std::clamp(tCircle.pos.y, tAABB.pos.y - halfSize.y,
+			tAABB.pos.y + halfSize.y);
+
+		Vec2 delta = tCircle.pos - closest;
+		float distSq = delta.x * delta.x + delta.y * delta.y;
+
+		if (distSq >= cCircle.radius * cCircle.radius) {
+			return false; // No collision
+		}
+
+		float dist = sqrt(distSq);
+
+		if (dist > 0.0001f) {
+			depth = cCircle.radius - dist;
+			normal = delta / dist;
+		}
+		else {
+			// Circle center inside AABB - find closest edge
+			Vec2 toEdge = tCircle.pos - tAABB.pos;
+			float dx = halfSize.x - abs(toEdge.x);
+			float dy = halfSize.y - abs(toEdge.y);
+
+			if (dx < dy) {
+				normal = Vec2{ toEdge.x > 0 ? 1.0f : -1.0f, 0.0f };
+				depth = cCircle.radius + dx;
+			}
+			else {
+				normal = Vec2{ 0.0f, toEdge.y > 0 ? 1.0f : -1.0f };
+				depth = cCircle.radius + dy;
+			}
+		}
+		return true;
+	}
+}
+
 namespace NightSnack {
 
 	// Main update function;
@@ -29,11 +76,9 @@ namespace NightSnack {
 			return;
 		}
 
-		Entity cam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
-		Transform const& t = m_coord.GetComponent<Transform>(cam);
-		m_gridCenter = Vec2{ t.pos.x, t.pos.y };
-
 		for (int s{}; s < m_coord.steps; ++s) {
+
+			UpdateGridPosition();
 
 			for (Layer& l : m_layers) {
 				// Skip inactive and empty layers;
@@ -42,11 +87,19 @@ namespace NightSnack {
 				m_testedEntityPairs.clear();
 
 				// Resize collision grid for layer in current frame;
-				m_grid1.resize(m_gridCols);
-				m_grid2.resize(m_gridRows);
-				m_cellSize = Vec2{ m_gridWidth / (float)m_gridCols, m_gridHeight / (float)m_gridRows };
-				for (auto& b : m_grid1) b.reset();
-				for (auto& b : m_grid2) b.reset();
+				m_grid.resize(m_gridRows);
+				for (std::vector<std::bitset<MAX_ENTITIES>>& row : m_grid) {
+					row.resize(m_gridCols);
+					for (std::bitset<MAX_ENTITIES>& bs : row) {
+						bs.reset();
+					}
+				}
+				
+				//m_grid1.resize(m_gridCols);
+				//m_grid2.resize(m_gridRows);
+				//m_cellSize = Vec2{ m_gridWidth / (float)m_gridCols, m_gridHeight / (float)m_gridRows };
+				//for (auto& b : m_grid1) b.reset();
+				//for (auto& b : m_grid2) b.reset();
 
 				for (Entity e : l.Entities()) {
 					// Reached the end of Valid Entities in Array;
@@ -56,15 +109,16 @@ namespace NightSnack {
 					RigidBody& rig = m_coord.ModifyComponent<RigidBody>(e);
 					Collider& col = m_coord.ModifyComponent<Collider>(e);
 
-					col.isGrounded = false;
-					col.colliding = false;
-
 					// Update force's lifetime;
 					ManageForces(rig);
 					// Update velocities in RigidBody;
 					ComputeVelocity(rig, col);
 					// BroadPhase collision partitioning;
 					CollisionGridInsert(e, col, trans);
+
+					// Reset colliders for this frame;
+					col.isGrounded = false;
+					col.colliding = false;
 				}
 				ResolveCollisions();
 			}
@@ -80,6 +134,19 @@ namespace NightSnack {
 		int cellY = static_cast<int>(std::floor(gridPos.y / m_cellSize.y) + m_gridRows / 2.f);
 
 		return { cellX, cellY };
+	}
+	void PhysicsSystem::UpdateGridPosition() {
+		Entity cam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
+		Transform const& t = m_coord.GetComponent<Transform>(cam);
+
+		Vec2 dir = t.pos - m_gridCenter;
+
+		float xStep = std::floor(dir.x / m_cellSize.x);
+		float yStep = std::floor(dir.y / m_cellSize.y);
+
+		m_gridCenter.x += xStep * m_cellSize.x;
+		m_gridCenter.y += yStep * m_cellSize.y;
+
 	}
 	void PhysicsSystem::CollisionGridInsert(Entity e, Collider const& col, Transform const& t) {
 
@@ -97,18 +164,26 @@ namespace NightSnack {
 		std::pair<int, int> minCell = GetCell(min);
 		std::pair<int, int> maxCell = GetCell(max);
 
-		for (int x = minCell.first; x <= maxCell.first; ++x) {
-			if (x >= 0 && x < m_gridCols) {
-				if (e >= MAX_ENTITIES) { continue; }
-				m_grid1[x].set(static_cast<size_t>(e));
-			}
-		}
 		for (int y = minCell.second; y <= maxCell.second; ++y) {
-			if (y >= 0 && y < m_gridRows) {
-				if (e >= MAX_ENTITIES) { continue; }
-				m_grid2[y].set(static_cast<size_t>(e));
+			for (int x = minCell.first; x <= maxCell.first; ++x) {
+				if (y >= 0 && y < m_gridRows && x >= 0 && x < m_gridCols) {
+					m_grid[y][x].set(static_cast<size_t>(e));
+				}
 			}
 		}
+
+		//for (int x = minCell.first; x <= maxCell.first; ++x) {
+		//	if (x >= 0 && x < m_gridCols) {
+		//		if (e >= MAX_ENTITIES) { continue; }
+		//		m_grid1[x].set(static_cast<size_t>(e));
+		//	}
+		//}
+		//for (int y = minCell.second; y <= maxCell.second; ++y) {
+		//	if (y >= 0 && y < m_gridRows) {
+		//		if (e >= MAX_ENTITIES) { continue; }
+		//		m_grid2[y].set(static_cast<size_t>(e));
+		//	}
+		//}
 	}
 	// Helper functions to iterate through Collision Bitsets;
 	static Entity FindFirst(const std::bitset<MAX_ENTITIES>& bits) {
@@ -128,16 +203,11 @@ namespace NightSnack {
 
 	void PhysicsSystem::ResolveCollisions() {
 
-		//Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+		for (size_t x{}; x < m_gridCols; ++x) {
+			for (size_t y{}; y < m_gridRows; ++y) {
 
-		for (size_t x{}; x < m_grid1.size(); ++x) {
-			if (!m_grid1[x].any()) { continue; }
-
-			for (size_t y{}; y < m_grid2.size(); ++y) {
-				if (!m_grid2[y].any()) { continue; }
-
-				std::bitset<MAX_ENTITIES> res = m_grid1[x] & m_grid2[y];
-				if (!res.any()) { continue; }
+				if (!m_grid[y][x].any()) { continue; }
+				std::bitset<MAX_ENTITIES>& res = m_grid[y][x];
 
 				for (Entity e1 = FindFirst(res); e1 < MAX_ENTITIES; e1 = FindNext(res, e1)) {
 					for (Entity e2 = FindNext(res, e1); e2 < MAX_ENTITIES; e2 = FindNext(res, e2)) {
@@ -149,62 +219,70 @@ namespace NightSnack {
 						Collider& c1 = m_coord.ModifyComponent<Collider>(e1);
 						Collider& c2 = m_coord.ModifyComponent<Collider>(e2);
 
-						//if (c1.isStatic) { continue; }
-
 						RigidBody& r1 = m_coord.ModifyComponent<RigidBody>(e1);
 						RigidBody& r2 = m_coord.ModifyComponent<RigidBody>(e2);
 
 						Transform& t1 = m_coord.ModifyComponent<Transform>(e1);
 						Transform& t2 = m_coord.ModifyComponent<Transform>(e2);
 
-						// Check for collision in e1's next position;
-						Transform next = t1;
-						next.pos.x += r1.vel.x * FixedDT;
-						next.pos.y += r1.vel.y * FixedDT;
+						// Calculate collision normal and penetration depth first
+						Vec2 normal; float depth;
+						if (!CheckCollision(t1, t2, c1, c2, normal, depth)) { continue; }
+						c1.colliding = c2.colliding = true;
 
-						if (!CheckCollision(next, t2, c1, c2) && !CheckTunneling(t1, t2, r1)) { continue; }
-						c1.colliding = true;
-						c2.colliding = true;
-						// If is Trigger, only check for collision and do not perform overlap correction/force transfer
-						if (c1.type == ColliderType::Trigger) { continue; }
+						//if (!CheckCollision(t1, t2, c1, c2) && !CheckTunneling(t1, t2, r1) && !CheckTunneling(t2, t1, r2)) { continue; }
 
-						if (!c1.isStatic) {
-							// Not colliding yet;
-							next.pos = t1.pos;
-							for (int i{}; i < 4; ++i) {
-								next.pos.x += r1.vel.x * FixedDT * 0.25f;
-								next.pos.y += r1.vel.y * FixedDT * 0.25f;
-								if (CheckCollision(next, t2, c1, c2) || CheckTunneling(next, t2, r1)) {
-									next.pos.x -= r1.vel.x * FixedDT * 0.25f;
-									next.pos.y -= r1.vel.y * FixedDT * 0.25f;
-									break;
+						if (c1.type != ColliderType::Trigger && c2.type != ColliderType::Trigger) {
+							ResolveCollision(t1, t2, c1, c2, r1, r2, normal, depth);
+
+							if (abs(normal.y) > abs(normal.x)) {
+								if (t1.pos.y > t2.pos.y && !c1.isStatic) {
+									r1.vel.y = 0.f;
+									c1.isGrounded = true;
+								}
+								if (t2.pos.y > t1.pos.y && !c2.isStatic) {
+									r2.vel.y = 0.f;
+									c2.isGrounded = true;
 								}
 							}
-							t1.pos = next.pos;
-						}
-						else if (!c2.isStatic) {
-							// Not colliding yet;
-							next.pos = t2.pos;
-							for (int i{}; i < 4; ++i) {
-								next.pos.x += r2.vel.x * FixedDT * 0.25f;
-								next.pos.y += r2.vel.y * FixedDT * 0.25f;
-								if (CheckCollision(t1, next, c1, c2) || CheckTunneling(next, t1, r2)) {
-									next.pos.x -= r2.vel.x * FixedDT * 0.25f;
-									next.pos.y -= r2.vel.y * FixedDT * 0.25f;
-									break;
-								}
-							}
-							t2.pos = next.pos;
-						}
 
-						// Entities are already overlapping;
-						if (CheckCollision(t1, t2, c1, c2)) {
-							// Resolve overlaps;
-							ResolveOverlap(t1, t2, c1, c2, r1, r2);
-						}
-						// Apply force to collided target;
-						if (!c2.isStatic/* && e2 != player*/) {
-							TransferForce(t1, t2, r1, r2);
+						//	// Resolve overlaps;
+						//	ResolveOverlap(t1, t2, c1, c2, r1, r2);
+
+						//	// Not yet colliding, Check tunneling from e1;
+						//	if (CheckTunneling(t1, t2, r1) && !c1.isStatic) {
+						//		c1.colliding = c2.colliding = true;
+						//		Transform next{};
+						//		next.pos = t1.pos;
+
+						//		for (int i{}; i < 4; ++i) {
+						//			next.pos.x += r1.vel.x * FixedDT * 0.25f;
+						//			next.pos.y += r1.vel.y * FixedDT * 0.25f;
+						//			if (CheckCollision(next, t2, c1, c2)) {
+						//				next.pos.x -= r1.vel.x * FixedDT * 0.25f;
+						//				next.pos.y -= r1.vel.y * FixedDT * 0.25f;
+						//				break;
+						//			}
+						//		}
+						//		t1.pos = next.pos;
+						//	}
+						//	// Check tunneling from e2;
+						//	else if (CheckTunneling(t2, t1, r2) && !c2.isStatic) {
+						//		c1.colliding = c2.colliding = true;
+						//		Transform next{};
+						//		next.pos = t2.pos;
+
+						//		for (int i{}; i < 4; ++i) {
+						//			next.pos.x += r2.vel.x * FixedDT * 0.25f;
+						//			next.pos.y += r2.vel.y * FixedDT * 0.25f;
+						//			if (CheckCollision(t1, next, c1, c2)) {
+						//				next.pos.x -= r2.vel.x * FixedDT * 0.25f;
+						//				next.pos.y -= r2.vel.y * FixedDT * 0.25f;
+						//				break;
+						//			}
+						//		}
+						//		t2.pos = next.pos;
+						//	}
 						}
 					}
 				}
@@ -263,6 +341,147 @@ namespace NightSnack {
 				}
 			}
 		}
+		else {
+			Vec2 overlap = { half1.x + half2.x - std::fabs(move.x), half1.y + half2.y - std::fabs(move.y) };
+
+			// Shift outside of each other; 
+			Vec2 sign;
+			sign.x = move.x < 0.f ? 1.f : -1.f;
+			sign.y = move.y < 0.f ? 1.f : -1.f;
+
+			if (overlap.x < overlap.y) {
+				t1.pos.x += (overlap.x) * sign.x * 0.5f;
+				t2.pos.x -= (overlap.x) * sign.x * 0.5f;
+				r1.vel.x = 0.f;
+				r2.vel.x = 0.f;
+			}
+			else {
+				t1.pos.y += (overlap.y) * sign.y * 0.5f;
+				t2.pos.y -= (overlap.y) * sign.y * 0.5f;
+				r1.vel.y = 0.f;
+				r2.vel.y = 0.f;
+
+				if (t1.pos.y > t2.pos.y) {
+					c1.isGrounded = true;
+				}
+				if (t2.pos.y > t1.pos.y) {
+					c2.isGrounded = true;
+				}
+			}
+		}
+	}
+
+	bool PhysicsSystem::CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2,
+		Vec2& normal, float& depth) {
+
+		if (c1.shape == ShapeType::Circle && c2.shape == ShapeType::Circle) {
+			Vec2 delta = t2.pos - t1.pos;
+			float distSq = delta.x * delta.x + delta.y * delta.y;
+			float radiusSum = c1.radius + c2.radius;
+
+			if (distSq >= radiusSum * radiusSum) {
+				return false; // No collision
+			}
+			float dist = sqrt(distSq);
+			depth = radiusSum - dist;
+
+			if (dist > 0.0001f) {
+				normal = delta / dist; // Normalize
+			}
+			else {
+				normal = Vec2{ 1.0f, 0.0f }; // Arbitrary direction if overlapping exactly
+			}
+			return true;
+		}
+		else if (c1.shape == ShapeType::AABB && c2.shape == ShapeType::AABB) {
+			Vec2 delta = t2.pos - t1.pos;
+
+			// Half-extents
+			Vec2 h1 = { c1.width * 0.5f, c1.height * 0.5f };
+			Vec2 h2 = { c2.width * 0.5f, c2.height * 0.5f };
+			// Overlap on each axis
+			float overlapX = (h1.x + h2.x) - abs(delta.x);
+			float overlapY = (h1.y + h2.y) - abs(delta.y);
+
+			if (overlapX <= 0 || overlapY <= 0) {
+				return false; // No collision
+			}
+			// Find axis of least penetration (collision normal)
+			if (overlapX < overlapY) {
+				depth = overlapX;
+				normal = Vec2{ delta.x > 0 ? 1.0f : -1.0f, 0.0f };
+			}
+			else {
+				depth = overlapY;
+				normal = Vec2{ 0.0f, delta.y > 0 ? 1.0f : -1.0f };
+			}
+			return true;
+		}
+		else {
+			// AABB vs Circle
+			if (c1.shape == ShapeType::Circle) {
+				return CircleVsAABB(t1, t2, c1, c2, normal, depth);
+			}
+			else {
+				return CircleVsAABB(t2, t1, c2, c1, normal, depth);
+			}
+		}
+	}
+
+	void PhysicsSystem::ResolveCollision(Transform& t1, Transform& t2, Collider& c1, Collider& c2, RigidBody& r1, RigidBody& r2, Vec2 const& normal, float depth) {
+		// --- Position Correction (separate objects) ---
+		const float percent = 0.8f; // Penetration percentage to correct (0.2 - 0.8)
+		const float slop = 0.01f; // Penetration allowance
+		Vec2 correction = normal * std::max(depth - slop, 0.0f) * percent;
+
+		if (c2.isStatic) {
+			t1.pos = t1.pos - correction;
+		}
+		else if (c1.isStatic) {
+			t2.pos = t2.pos + correction;
+		}
+		else {
+			float mass1 = 1.f / r1.invMass;
+			float mass2 = 1.f / r2.invMass;
+			float totalMass = mass1 + mass2;
+			t1.pos = t1.pos - correction * (mass2 / totalMass);
+			t2.pos = t2.pos + correction * (mass1 / totalMass);
+		}
+
+		//// --- Velocity Resolution (impulse) ---
+		//Vec2 relativeVel = r1.vel - r2.vel;
+		//float velAlongNormal = relativeVel.dot(normal);
+
+		//// Don't resolve if velocities are separating
+		//if (velAlongNormal > 0) {
+		//	return;
+		//}
+
+		//// Calculate restitution (bounciness)
+		//float e = std::min(r1.restitution, r2.restitution);
+
+		//// Calculate impulse scalar
+		//float j = -(1.0f + e) * velAlongNormal;
+
+		//if (!c1.isStatic && !c2.isStatic) {
+		//	j /= (1.0f * r1.invMass + 1.0f * r2.invMass);
+		//}
+		//else if (c2.isStatic) {
+		//	j /= (1.0f * r1.invMass);
+		//}
+		//else { // c1.isStatic
+		//	j /= (1.0f * r2.invMass);
+		//}
+
+		//// Apply impulse
+		//Vec2 impulse = normal * j;
+
+		//if (!c1.isStatic) {
+		//	r1.vel -= impulse * r1.invMass;
+		//}
+		//if (!c2.isStatic) {
+		//	r2.vel += impulse * r2.invMass;
+		//}
 	}
 
 	bool PhysicsSystem::CheckTunneling(Transform const& t1, Transform const& t2, RigidBody const& r1) {
@@ -289,23 +508,23 @@ namespace NightSnack {
 		return false;
 	}
 
-	bool PhysicsSystem::CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2) {
-		
-		if (c1.shape == ShapeType::AABB && c2.shape == ShapeType::AABB) {
-			return CheckAABBvsAABB(t1.pos, c1, t2.pos, c2);
-		}
-		else if (c1.shape == ShapeType::Circle && c2.shape == ShapeType::AABB) {
-			return CheckCirclevsAABB(t1.pos, c1, t2.pos, c2);
-		}
-		else if (c1.shape == ShapeType::AABB && c2.shape == ShapeType::Circle) {
-			return CheckCirclevsAABB(t2.pos, c2, t1.pos, c1);
-		}
-		else if (c1.shape == ShapeType::Circle && c2.shape == ShapeType::Circle) {
-			return CheckCirclevsCircle(t1.pos, c1, t2.pos, c2);
-		}
-		// Currently testing only Circles and AABBs;
-		return false;
-	}
+	//bool PhysicsSystem::CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2) {
+	//	
+	//	if (c1.shape == ShapeType::AABB && c2.shape == ShapeType::AABB) {
+	//		return CheckAABBvsAABB(t1.pos, c1, t2.pos, c2);
+	//	}
+	//	else if (c1.shape == ShapeType::Circle && c2.shape == ShapeType::AABB) {
+	//		return CheckCirclevsAABB(t1.pos, c1, t2.pos, c2);
+	//	}
+	//	else if (c1.shape == ShapeType::AABB && c2.shape == ShapeType::Circle) {
+	//		return CheckCirclevsAABB(t2.pos, c2, t1.pos, c1);
+	//	}
+	//	else if (c1.shape == ShapeType::Circle && c2.shape == ShapeType::Circle) {
+	//		return CheckCirclevsCircle(t1.pos, c1, t2.pos, c2);
+	//	}
+	//	// Currently testing only Circles and AABBs;
+	//	return false;
+	//}
 
 	void PhysicsSystem::ManageForces(RigidBody& rig) {
 
@@ -317,7 +536,7 @@ namespace NightSnack {
 			ResetForce(rig.force);
 		}
 	}
-	void PhysicsSystem::TransferForce(Transform const& t1, Transform const& t2, RigidBody& r1, RigidBody& r2) {
+	void PhysicsSystem::TransferForce(Transform const& t1, Transform const& t2, RigidBody& r1, RigidBody& r2, Collider& c1, Collider& c2) {
 		
 		if (!r1.force.isActive) { return; }
 
@@ -336,11 +555,15 @@ namespace NightSnack {
 		r1.force.magnitude = (r1.force.magnitude * (1.f - r2.restitution) + r2.force.magnitude * r1.restitution);
 
 		// Update Velocities ----------------------------------------
-		float mag = r1.vel.magnitude();
-		r1.vel = r1.force.direction * mag * 0.8f;
-		
-		mag = r2.vel.magnitude();
-		r2.vel = r2.force.direction * mag * 0.8f;
+		float mag = 0.f;
+		if (!c1.isStatic) {
+			mag = r1.vel.magnitude();
+			r1.vel = r1.force.direction * mag * 0.8f;
+		}
+		if (!c2.isStatic) {
+			mag = r2.vel.magnitude();
+			r2.vel = r2.force.direction * mag * 0.8f;
+		}
 	}
 
 	void PhysicsSystem::ApplyForce(RigidBody& r, Force const& f) {
@@ -382,7 +605,6 @@ namespace NightSnack {
 		}
 
 		// Compute Accel;
-
 		if (rig.force.isActive) {
 			rig.accel += (rig.force.direction * rig.force.magnitude) * rig.invMass;
 		}

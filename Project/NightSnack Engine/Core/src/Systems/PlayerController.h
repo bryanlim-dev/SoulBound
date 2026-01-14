@@ -69,9 +69,11 @@ namespace NightSnack {
                         }
                         break;
                     case InputEvent::InputAction::PlayerJump:
-                        if (event.pressed == InputEvent::InputActionState::Pressed ||
-                            event.pressed == InputEvent::InputActionState::Repeat) {
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
                             m_flags.jumpRequested = true;
+                        }
+                        else {
+                            m_flags.jumpRequested = false;
                         }
                         break;
                     }
@@ -101,6 +103,7 @@ namespace NightSnack {
 
             PlayerController const& pcont = m_coord.GetComponent<PlayerController>(m_player);
             Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
+            Transform& t = m_coord.ModifyComponent<Transform>(m_player);
 
             if (m_flags.movingRight && !m_flags.movingLeft) {
                 vel.x = pcont.moveSpeed;
@@ -111,8 +114,12 @@ namespace NightSnack {
             else if (!m_flags.movingLeft && !m_flags.movingRight) {
                 vel.x = 0.f; // Stop moving when no keys pressed
             }
+            else if (m_flags.movingLeft && m_flags.movingRight) {
+                vel.x = 0.f; // Stop moving when both keys pressed
+            }
             if (m_flags.jumpRequested && m_coord.GetComponent<Collider>(m_player).isGrounded) {
                 vel.y = pcont.jumpSpeed;
+                t.pos.y += 2.5f;
                 m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
                 m_coord.GetSystem<AudioSystem>()->PlaySFX("playerJump");
                 landed = false;

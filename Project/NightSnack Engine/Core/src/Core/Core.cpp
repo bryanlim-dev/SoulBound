@@ -74,6 +74,7 @@ namespace NightSnack {
 
 		m_coord.RegisterComponent<PlayerController>();
 		m_coord.RegisterComponent<States>();
+		m_coord.RegisterComponent<Hierarchy>();
 
 		m_coord.RegisterComponent<Animator>();
 		m_coord.RegisterComponent<Font>();
@@ -165,22 +166,6 @@ namespace NightSnack {
 		// Start frame timing;
 		m_coord.GetSystem<ApplicationSystem>()->StartFrame();
 
-		//// Fixed DT with Accumulated time implementation;
-		//m_coord.steps = 0;	// reset step count per frame;
-		//float dt = m_coord.GetSystem<ApplicationSystem>()->GetDT();	// compute actual game loop time;
-
-		//// Obtain number of steps this loop;
-		//while (accumulatedTime >= FixedDT) { 
-		//	accumulatedTime -= FixedDT;
-		//	++m_coord.steps;
-		//}
-		//if (m_coord.IsPaused()) {
-		//	m_coord.steps = 0;
-		//}
-		//if (m_coord.steps > 15) {
-		//	m_coord.steps = 15;
-		//}
-
 		// Accumulated time implementation;
 		Clock::time_point currentTime = Clock::now();
 		Duration frameTime = currentTime - lastTime;
@@ -199,6 +184,7 @@ namespace NightSnack {
 			m_coord.steps += 1;
 			accumulatedTime -= FixedDT;
 		}
+		if (m_coord.IsPaused()) { m_coord.steps = 0; }
 
 		// Iterate through Systems and Update them through Coordinator;
 		for (auto& System : m_systems) {

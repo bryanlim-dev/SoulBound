@@ -6,7 +6,7 @@
                 "Layer": "GameUI",
                 "Position": {
                     "x": -740.3450317382813,
-                    "y": -402.4489440917969,
+                    "y": -200.53424072265625,
                     "z": 5.0
                 },
                 "Rotation": 0.0,
@@ -31,7 +31,7 @@
                 "Layer": "GameLayer",
                 "Position": {
                     "x": -740.3450317382813,
-                    "y": -402.4489440917969,
+                    "y": -201.9267578125,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
@@ -50,31 +50,6 @@
                 }
             },
             "prefab": "Ghost_Player1"
-        },
-        {
-            "Transform": {
-                "Layer": "GameLayer",
-                "Position": {
-                    "x": -1075.831787109375,
-                    "y": -626449.3125,
-                    "z": 0.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 20.0,
-                    "y": 20.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 20.0,
-                    "y": 20.0
-                }
-            },
-            "prefab": "EntityStateBallType2"
         },
         {
             "Transform": {
@@ -1109,7 +1084,7 @@
                     "y": -328.0,
                     "z": 0.0
                 },
-                "Rotation": -1.7178813219070435,
+                "Rotation": 0.0,
                 "Scale": {
                     "x": 16.0,
                     "y": 16.0
@@ -6953,31 +6928,6 @@
         },
         {
             "Transform": {
-                "Layer": "GameUI",
-                "Position": {
-                    "x": -631.4020385742188,
-                    "y": -339.4369201660156,
-                    "z": 2.0
-                },
-                "Rotation": 1.0,
-                "Scale": {
-                    "x": 1.0,
-                    "y": 1.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "prefab": "Cam"
-        },
-        {
-            "Transform": {
                 "Layer": "GameLayer",
                 "Position": {
                     "x": -689.8712768554688,
@@ -7128,31 +7078,6 @@
         },
         {
             "Transform": {
-                "Layer": "GameUI",
-                "Position": {
-                    "x": -148.0477752685547,
-                    "y": -226.37261962890625,
-                    "z": 2.0
-                },
-                "Rotation": 1.0,
-                "Scale": {
-                    "x": 1.0,
-                    "y": 1.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "prefab": "Cam"
-        },
-        {
-            "Transform": {
                 "Layer": "GameLayer",
                 "Position": {
                     "x": -182.20602416992188,
@@ -7175,31 +7100,6 @@
                 }
             },
             "prefab": "Mouse"
-        },
-        {
-            "Transform": {
-                "Layer": "GameUI",
-                "Position": {
-                    "x": -173.2370147705078,
-                    "y": -334.3661804199219,
-                    "z": 2.0
-                },
-                "Rotation": 1.0,
-                "Scale": {
-                    "x": 1.0,
-                    "y": 1.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "prefab": "Cam"
         },
         {
             "Transform": {

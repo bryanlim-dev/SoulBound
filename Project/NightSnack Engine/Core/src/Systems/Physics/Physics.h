@@ -64,6 +64,14 @@ namespace NightSnack {
                         break;
                     case InputEvent::InputAction::PhysicsDebugStep:
                         stepRequest = true;
+                        std::cout << "Physics Entities: " << ' ';
+                        for (Layer& l : m_layers) {
+                            for (Entity e : l.Entities()) {
+                                if (e == INVALID_ENTITY) { break; }
+                                std::cout << e << " ";
+                            }
+                            std::cout << "\n";
+                        }
                         break;
                     }
                 }
@@ -73,14 +81,11 @@ namespace NightSnack {
             AddLayer(LayerType::GAMELAYER);
 
             // Initialize collision grid;
-            m_gridCols = 30; m_gridRows = 15;
-            m_gridWidth = 2500.f; m_gridHeight = 1250.f;
+            m_gridCols = 42; m_gridRows = 30;
+            m_gridWidth = 3000.f; m_gridHeight = 2100.f;
             m_cellSize.x = m_gridWidth / (float) m_gridCols;
             m_cellSize.y = m_gridHeight / (float) m_gridRows;
             m_gridCenter = {};
-
-            m_grid1.resize(m_gridCols);
-            m_grid2.resize(m_gridRows);
         }
 
         /************************************************************************/
@@ -105,18 +110,21 @@ namespace NightSnack {
         bool IsStepRequested() const { return stepRequest; }
 
         void ManageForces(RigidBody& f);
-        void TransferForce(Transform const& t1, Transform const& t2, RigidBody& from, RigidBody& to);
+        void TransferForce(Transform const& t1, Transform const& t2, RigidBody& from, RigidBody& to, Collider& c1, Collider& c2);
         void ApplyForce(RigidBody& r, Force const&);
         void ResetForce(Force& f);
 
         void ComputeVelocity(RigidBody& rig, Collider const& col) const;
+        bool CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2, Vec2& normal, float& depth);
+        void ResolveCollision(Transform& t1, Transform& t2, Collider& c1, Collider& c2, RigidBody& r1, RigidBody& r2, Vec2 const& normal, float depth);
 
         std::pair<int, int> GetCell(Vec2 const& pos) const;
         void CollisionGridInsert(Entity, Collider const&, Transform const&);
+        void UpdateGridPosition();
         void ResolveCollisions();
         void ResolveOverlap(Transform& t1, Transform& t2, Collider& c1, Collider& c2, RigidBody& r1, RigidBody& r2);
-        bool CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2);
-        bool CheckTunneling(Transform const& t1, Transform const& t2, RigidBody const& c1);
+        //bool CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2);
+        bool CheckTunneling(Transform const& t1, Transform const& t2, RigidBody const& r1);
 
         float GetGravity() const { return gravity; }
         float GetDrag() const { return drag; }
@@ -134,6 +142,7 @@ namespace NightSnack {
         // Collision stuff;
         std::vector<std::bitset<MAX_ENTITIES>> m_grid1;
         std::vector<std::bitset<MAX_ENTITIES>> m_grid2;
+        std::vector<std::vector<std::bitset<MAX_ENTITIES>>> m_grid;
         std::unordered_set<std::uint64_t> m_testedEntityPairs;
 
         Vec2 m_gridCenter;

@@ -1,7 +1,7 @@
 {
     "ButtonInfo": {
         "action": "LoadLevel",
-        "target": "DefaultLevel",
+        "target": "MyLevel1",
         "type": "Clicker"
     },
     "Collider": {

@@ -22,8 +22,18 @@ namespace ManagedScripts
         public uint EntityId;
 
         // Override these in your script classes
+
+        //This runs when the script is made 
+        //Use it to link components (i.e Transfrom, rotate, audio, etc)
+        public virtual void OnLoad() { }
+        
+        //This runs right before the script's first update
         public virtual void OnStart() { }
+
+        //Rhis runs every update, when not paused
         public virtual void OnUpdate() { }
+
+        //Runs when script is destroyed
         public virtual void OnDestroy() { }
 
         public class Component

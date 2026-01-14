@@ -645,10 +645,11 @@ namespace NightSnack
             return;
         auto& cam = m_coord.ModifyComponent<Camera>(*m_selectedEntity);
 
-        if (ImGui::BeginTable("CameraTable", 2, ImGuiTableFlags_SizingFixedFit))
+        if (ImGui::BeginTable("CameraTable", 3, ImGuiTableFlags_SizingFixedFit))
         {
             ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+            ImGui::TableSetupColumn("Value2", ImGuiTableColumnFlags_WidthFixed, 100.0f);
 
             // Is Main Camera
             ImGui::TableNextRow();
@@ -697,6 +698,32 @@ namespace NightSnack
 				);
 				cam.height = height;
             }
+
+            // Camera min and max positions
+            ImGui::TableNextRow();
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Camera Bounds");
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("X:");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##MinX", &cam.minX, 0.f, 0.f, "%.0f");
+            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##MaxX", &cam.maxX, 0.f, 0.f, "%.0f");
+
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Y:");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##MinY", &cam.minY, 0.f, 0.f, "%.0f");
+            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##MaxY", &cam.maxY, 0.f, 0.f, "%.0f");
+
+            // Camera position offset from Character
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Offset:");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##offx", &cam.offset.x, 0.f, 0.f, "%.0f");
+            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN);
+            ImGui::InputFloat("##offy", &cam.offset.y, 0.f, 0.f, "%.0f");
 
             ImGui::EndTable();
         }
@@ -1107,6 +1134,22 @@ namespace NightSnack
                                 ImGui::TableSetColumnIndex(1); ImGui::Text("y: %.5f", vec.y);
                                 ImGui::TableNextRow();
                                 ImGui::TableSetColumnIndex(1); ImGui::Text("z: %.5f", vec.z);
+                                break;
+                            }
+                            case Scripting::MonoValueType::MONO_SCRIPT:
+                            {
+                                if (val.m_object == nullptr) //No refrence
+                                {
+                                    ImGui::TableSetColumnIndex(1); ImGui::Text("NONE");
+                                }
+                                else //Has refrence
+                                {
+                                    std::string scriptDisplay = "ID ";
+                                    scriptDisplay += std::to_string(m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetScriptOwner(fields.m_scriptInstance));
+                                    scriptDisplay += " : " + val.m_s;
+                                    ImGui::TableSetColumnIndex(1); ImGui::Text(scriptDisplay.c_str());
+                                }
+
                                 break;
                             }
                             case Scripting::MonoValueType::MONO_UNSUPPORTED:
