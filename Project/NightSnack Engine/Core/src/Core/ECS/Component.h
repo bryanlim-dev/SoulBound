@@ -30,7 +30,7 @@ namespace NightSnack {
     // ================================================================================================
     // COMPONENTS
     // ================================================================================================
-    //When updating this update the one in Engine.cs
+    // When updating this update the one in Engine.cs
     enum class LayerType : std::uint8_t {
         _ENGINE,
         BACKGROUND,
@@ -43,9 +43,6 @@ namespace NightSnack {
         Vec3 pos;
         float rot{};
         Vec2 scale;
-
-        //Entity parent{ INVALID_ENTITY };
-        //std::vector<Entity> children{};
 
         Vec3 UIbasePos{ 0.f, 0.f, 0.f };
         Vec2 UIbaseScale{ 0.f, 0.f };
@@ -424,46 +421,6 @@ namespace NightSnack {
         // j.at("is3D").get_to(a.is3D);
         j.at("isPlaying").get_to(a.isPlaying);
 
-    }
-    // STATES ==================================================
-    //States from_json function is within StateBase.h
-    
-    // SCRIPTING ==================================================
-    inline void from_json(const json& j, Script& s) {
-        //j.at("name").get_to(s.name);
-        for (const auto& names : j["name"])
-        {
-            s.names.push_back(names.get<std::string>());
-        }
-    }
-
-    // for converting string to enum
-    inline ButtonAction StringToEnumButtonAction(const std::string& str) {
-        if (str == "PLAYAUDIO") return ButtonAction::PLAYAUDIO;
-        if (str == "PLAYAUDIO2") return ButtonAction::PLAYAUDIO2;
-        if (str == "PLAYAUDIO3") return ButtonAction::PLAYAUDIO3;
-        if (str == "LOADLEVEL") return ButtonAction::LOADLEVEL;
-        if (str == "OPENMENU") return ButtonAction::OPENMENU;
-        if (str == "NOACTION") return ButtonAction::NOACTION;
-        if (str == "EXIT") return ButtonAction::EXIT;
-
-        // Default if string doesn't match
-        return ButtonAction::NOACTION;
-    }
-
-    // for converting enum to string
-	// can be used for debugging purposes
-    inline std::string EnumButtonActionToString(ButtonAction action) {
-        switch (action) {
-        case ButtonAction::PLAYAUDIO: return "PLAYAUDIO";
-        case ButtonAction::PLAYAUDIO2: return "PLAYAUDIO2";
-        case ButtonAction::PLAYAUDIO3: return "PLAYAUDIO3";
-        case ButtonAction::LOADLEVEL: return "LOADLEVEL";
-        case ButtonAction::OPENMENU: return "OPENMENU";
-        case ButtonAction::NOACTION: return "NOACTION";
-        case ButtonAction::EXIT: return "EXIT";
-        default: return "UNKNOWN";
-        }
     }
 
 }   // NightSnack
