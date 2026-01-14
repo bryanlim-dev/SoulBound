@@ -262,7 +262,7 @@ namespace NightSnack {
         }
 
     private:
-        static constexpr size_t maxSteps = 20;
+        static constexpr size_t maxSteps = 30;
         std::deque<UndoAction> undoStack;
 
         UndoSystem() = default;
