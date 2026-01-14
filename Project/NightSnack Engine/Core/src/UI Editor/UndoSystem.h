@@ -43,6 +43,12 @@ namespace NightSnack {
         PlayerController playercontroller;
 	};
 
+    struct CameraSnapshot
+    {
+        Entity entity;
+        Camera camera;
+	};
+
     struct RigidBodySnapshot
     {
         Entity entity;
@@ -61,6 +67,12 @@ namespace NightSnack {
         Renderable renderable;
     };
 
+    struct FontSnapshot
+    {
+        Entity entity;
+        Font font;
+	};
+
     struct ComponentAddSnapshot
     {
         Entity entity;
@@ -75,6 +87,9 @@ namespace NightSnack {
         std::optional<RigidBody> rigidbody;
         std::optional<Collider> collider;
         std::optional<Renderable> renderable;
+		std::optional<Script> script;
+		std::optional<Animator> animator;
+		std::optional<Font> font;
     };
 
     struct EntityCreateSnapshot
@@ -95,9 +110,11 @@ namespace NightSnack {
         EntityDeleteSnapshot,
         PhysicsSettingsSnapshot,
 		PlayerControllerSnapshot,
+        CameraSnapshot,
         RigidBodySnapshot,
         ColliderSnapshot,
         RenderableSnapshot,
+		FontSnapshot,
         ComponentAddSnapshot,
         ComponentRemoveSnapshot
     >;
@@ -143,13 +160,18 @@ namespace NightSnack {
                 {
                     if (coord.HasComponent<Transform>(act.entity))
                         coord.ModifyComponent<Transform>(act.entity) = act.transform;
-                    std::cout << "[WIP] Undo Transform for Entity " << act.entity << "\n";
+                    std::cout << "[Undo|WIP] Undo Transform for Entity " << act.entity << "\n";
                 }
                 else if constexpr (std::is_same_v<T, PlayerControllerSnapshot>)
                 {
                     if (coord.HasComponent<PlayerController>(act.entity))
                         coord.ModifyComponent<PlayerController>(act.entity) = act.playercontroller;
 				}
+                else if constexpr (std::is_same_v<T, CameraSnapshot>)
+                {
+                    if (coord.HasComponent<Camera>(act.entity))
+                        coord.ModifyComponent<Camera>(act.entity) = act.camera;
+                }
                 else if constexpr (std::is_same_v<T, RigidBodySnapshot>)
                 {
                     if (coord.HasComponent<RigidBody>(act.entity))
@@ -165,20 +187,37 @@ namespace NightSnack {
                     if (coord.HasComponent<Renderable>(act.entity))
                         coord.ModifyComponent<Renderable>(act.entity) = act.renderable;
                 }
+                else if constexpr (std::is_same_v<T, FontSnapshot>)
+                {
+                    if (coord.HasComponent<Font>(act.entity))
+                        coord.ModifyComponent<Font>(act.entity) = act.font;
+				}
                 else if constexpr (std::is_same_v<T, ComponentAddSnapshot>)
                 {
-                    if (act.componentName == "RigidBody") coord.RemoveComponent<RigidBody>(act.entity);
-                    else if (act.componentName == "Collider") coord.RemoveComponent<Collider>(act.entity);
-                    else if (act.componentName == "Renderable") coord.RemoveComponent<Renderable>(act.entity);
+					if (act.componentName == "PlayerController") coord.RemoveComponent<PlayerController>(act.entity);
+                    else if (act.componentName == "RigidBody")   coord.RemoveComponent<RigidBody>(act.entity);
+                    else if (act.componentName == "Collider")    coord.RemoveComponent<Collider>(act.entity);
+                    else if (act.componentName == "Renderable")  coord.RemoveComponent<Renderable>(act.entity);
+					else if (act.componentName == "Scripting")   coord.RemoveComponent<Script>(act.entity);
+					else if (act.componentName == "Animator")    coord.RemoveComponent<Animator>(act.entity);
+					else if (act.componentName == "Font")        coord.RemoveComponent<Font>(act.entity);
                 }
                 else if constexpr (std::is_same_v<T, ComponentRemoveSnapshot>)
                 {
-                    if (act.componentName == "RigidBody" && act.rigidbody)
+                    if (act.componentName == "PlayerController" && act.playercontroller)
+						coord.AddComponent<PlayerController>(act.entity, *act.playercontroller);
+                    else if (act.componentName == "RigidBody" && act.rigidbody)
                         coord.AddComponent<RigidBody>(act.entity, *act.rigidbody);
                     else if (act.componentName == "Collider" && act.collider)
                         coord.AddComponent<Collider>(act.entity, *act.collider);
                     else if (act.componentName == "Renderable" && act.renderable)
                         coord.AddComponent<Renderable>(act.entity, *act.renderable);
+					else if (act.componentName == "Scripting" && act.script)
+						coord.AddComponent<Script>(act.entity, *act.script);
+					else if (act.componentName == "Animator" && act.animator)
+						coord.AddComponent<Animator>(act.entity, *act.animator);
+					else if (act.componentName == "Font" && act.font)
+						coord.AddComponent<Font>(act.entity, *act.font);
                 }
                 else if constexpr (std::is_same_v<T, PhysicsSettingsSnapshot>)
                 {

@@ -51,6 +51,13 @@ namespace NightSnack {
             return Vec2{ -x, -y };
         }
 
+        bool operator==(const Vec2& other) const {
+            return x == other.x && y == other.y;
+        }
+        bool operator!=(const Vec2& other) const {
+            return !(*this == other);
+        }
+
         /************************************************************************/
         /*!
         \brief
@@ -242,6 +249,12 @@ namespace NightSnack {
             return Vec3{ -x, -y };
         }
 
+        bool operator==(const Vec3& other) const {
+            return x == other.x && y == other.y && z == other.z;
+        }
+        bool operator!=(const Vec3& other) const {
+            return !(*this == other);
+        }
 
         /************************************************************************/
         /*!

@@ -166,6 +166,7 @@ namespace NightSnack
         std::shared_ptr<std::unordered_map<Entity, std::string>> m_uiNames;
 
         std::vector<std::string> m_components;
+		bool isEditingColor = false;
 
 		Tilemap& m_tilemap;
 
@@ -656,25 +657,46 @@ namespace NightSnack
             ImGui::Checkbox("##IsMainCam", &cam.isMainCam);
 
             // Zoom
+			float zoom = cam.zoom;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Zoom");
             ImGui::TableSetColumnIndex(1);
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::InputFloat("##Zoom", &cam.zoom, 0.1f, 1.0f, "%.2f");
+            if (ImGui::InputFloat("##Zoom", &zoom, 0.1f, 1.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
+				);
+				cam.zoom = zoom;
+            }
 
             // Width
+			float width = cam.width;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Width");
             ImGui::TableSetColumnIndex(1);
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::InputFloat("##Width", &cam.width, 1.0f, 10.0f, "%.0f");
+            if (ImGui::InputFloat("##Width", &width, 1.0f, 10.0f, "%.0f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
+				);
+				cam.width = width;
+            }
 
             // Height
+			float height = cam.height;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Height");
             ImGui::TableSetColumnIndex(1);
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::InputFloat("##Height", &cam.height, 1.0f, 10.0f, "%.0f");
+            if (ImGui::InputFloat("##Height", &height, 1.0f, 10.0f, "%.0f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
+				);
+				cam.height = height;
+            }
 
             ImGui::EndTable();
         }
@@ -817,6 +839,10 @@ namespace NightSnack
             ImVec2 rect_max = ImGui::GetItemRectMax();
             if (ImGui::BeginDragDropTarget())
             {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::RenderableSnapshot{ *m_selectedEntity, renderable }
+				);
+
                 ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 80));
                 if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE")) {
                     const char* droppedPath = static_cast<const char*>(payload->Data);
@@ -836,6 +862,9 @@ namespace NightSnack
             bool wireframe = renderable.isWireframe;
             ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##Wireframe", &wireframe);
             if (wireframe != renderable.isWireframe) {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::RenderableSnapshot{ *m_selectedEntity, renderable }
+                );
                 m_coord.ModifyComponent<Renderable>(*m_selectedEntity).isWireframe = wireframe;
             }
 			// wasModified checkbox
@@ -932,19 +961,46 @@ namespace NightSnack
             ImGui::SetNextItemWidth(-FLT_MIN);
             if (ImGui::InputText("##FontText", textBuffer, sizeof(textBuffer)))
             {
+                NightSnack::UndoSystem::Instance().Push(
+					NightSnack::FontSnapshot{ *m_selectedEntity, fontComp }
+                );
                 fontComp.text = std::string(textBuffer);
             }
 
 			// Font Size
+			float fontSize = fontComp.fontSize;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Font Size");
             ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::InputFloat("##FontSize", &fontComp.fontSize, 0.0f, 0.0f, "%.2f");
-			// Text Color box
+            if (ImGui::InputFloat("##FontSize", &fontSize, 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::FontSnapshot{ *m_selectedEntity, fontComp }
+				);
+                fontComp.fontSize = fontSize;
+			}
+
+            // Text Color box
+            float color[3] = { fontComp.textColor.x, fontComp.textColor.y, fontComp.textColor.z };
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Text Color");
             ImGui::TableSetColumnIndex(1);
-            ImGui::ColorEdit3("##FontColor", reinterpret_cast<float*>(&fontComp.textColor), ImGuiColorEditFlags_NoInputs);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::ColorEdit3("##FontColor", color, ImGuiColorEditFlags_NoInputs))
+            {
+                if (isEditingColor == false)
+                {
+                    NightSnack::UndoSystem::Instance().Push(
+                        NightSnack::FontSnapshot{ *m_selectedEntity, fontComp }
+                    );
+					isEditingColor = true;
+                }
+                fontComp.textColor = { color[0], color[1], color[2] };
+            }
+            if (isEditingColor && ImGui::IsItemDeactivatedAfterEdit())
+            {
+                isEditingColor = false;
+            }
 
             ImGui::EndTable();
         }
@@ -1126,6 +1182,9 @@ namespace NightSnack
             if (!hasComponent) {
                 if (ImGui::MenuItem(name)) {
                     addFunc();
+                    NightSnack::UndoSystem::Instance().Push(
+                        NightSnack::ComponentAddSnapshot{ *m_selectedEntity, name }
+                    );
                     ImGui::CloseCurrentPopup();
                 }
             }
@@ -1196,7 +1255,27 @@ namespace NightSnack
         // Lambda to handle menu item creation and component removal
         auto removeMenuItem = [this](const char* name, auto removeFunc, bool hasComponent) {
             if (hasComponent) {
-                if (ImGui::MenuItem(name)) {
+                if (ImGui::MenuItem(name))
+                {
+                    // Prepare snapshot with component data
+                    NightSnack::ComponentRemoveSnapshot snapshot{ *m_selectedEntity, name };
+                    if (strcmp(name, "PlayerController") == 0)
+                        snapshot.playercontroller = m_coord.GetComponent<PlayerController>(*m_selectedEntity);
+                    else if (strcmp(name, "Rigidbody") == 0)
+                        snapshot.rigidbody = m_coord.GetComponent<RigidBody>(*m_selectedEntity);
+                    else if (strcmp(name, "Collider") == 0)
+                        snapshot.collider = m_coord.GetComponent<Collider>(*m_selectedEntity);
+                    else if (strcmp(name, "Renderer") == 0)
+                        snapshot.renderable = m_coord.GetComponent<Renderable>(*m_selectedEntity);
+                    else if (strcmp(name, "Font") == 0)
+                        snapshot.font = m_coord.GetComponent<Font>(*m_selectedEntity);
+                    else if (strcmp(name, "Animator") == 0)
+                        snapshot.animator = m_coord.GetComponent<Animator>(*m_selectedEntity);
+                    else if (strcmp(name, "Scripting") == 0)
+						snapshot.script = m_coord.GetComponent<Script>(*m_selectedEntity);
+
+                    NightSnack::UndoSystem::Instance().Push(snapshot);
+
                     removeFunc();
                     ImGui::CloseCurrentPopup();
                 }
