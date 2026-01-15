@@ -141,7 +141,6 @@ namespace NightSnack {
         std::string materialName{ "ColorMat" };
         bool isWireframe{ false };
         bool wasModified{ true };
-
     };
 
     // An entity will have 1 Animator, comprising of many animations
@@ -315,6 +314,47 @@ namespace NightSnack {
 
         r.wasModified = true;
 
+    }
+
+    // STATES ==================================================
+    //States from_json function is within StateBase.h
+
+    // SCRIPTING ==================================================
+    inline void from_json(const json& j, Script& s) {
+        //j.at("name").get_to(s.name);
+        for (const auto& names : j["name"])
+        {
+            s.names.push_back(names.get<std::string>());
+        }
+    }
+
+    // for converting string to enum
+    inline ButtonAction StringToEnumButtonAction(const std::string& str) {
+        if (str == "PLAYAUDIO") return ButtonAction::PLAYAUDIO;
+        if (str == "PLAYAUDIO2") return ButtonAction::PLAYAUDIO2;
+        if (str == "PLAYAUDIO3") return ButtonAction::PLAYAUDIO3;
+        if (str == "LOADLEVEL") return ButtonAction::LOADLEVEL;
+        if (str == "OPENMENU") return ButtonAction::OPENMENU;
+        if (str == "NOACTION") return ButtonAction::NOACTION;
+        if (str == "EXIT") return ButtonAction::EXIT;
+
+        // Default if string doesn't match
+        return ButtonAction::NOACTION;
+    }
+
+    // for converting enum to string
+    // can be used for debugging purposes
+    inline std::string EnumButtonActionToString(ButtonAction action) {
+        switch (action) {
+        case ButtonAction::PLAYAUDIO: return "PLAYAUDIO";
+        case ButtonAction::PLAYAUDIO2: return "PLAYAUDIO2";
+        case ButtonAction::PLAYAUDIO3: return "PLAYAUDIO3";
+        case ButtonAction::LOADLEVEL: return "LOADLEVEL";
+        case ButtonAction::OPENMENU: return "OPENMENU";
+        case ButtonAction::NOACTION: return "NOACTION";
+        case ButtonAction::EXIT: return "EXIT";
+        default: return "UNKNOWN";
+        }
     }
 
     // Font =======================================================

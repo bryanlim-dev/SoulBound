@@ -1,6 +1,8 @@
 
 #include "Serializer.h"
 
+#if 1
+
 namespace NightSnack {
 
 	// --------------------------------------------------------------
@@ -83,12 +85,12 @@ namespace NightSnack {
 				r.invMass = 1.f / mass;
 			}
 			float inertia{ mass };
-			if (j.contains("inertia")) {
-				j.at("inertia").get_to(inertia);
-			}
+			if (j.contains("inertia")) j.at("inertia").get_to(inertia);
 			r.invInertia = 1.f / inertia;
 
 			r.restitution = 0.5f;
+			if (j.contains("restitution")) j.at("restitution").get_to(r.restitution);
+
 			r.force = Force{};
 			r.accel = Vec2{};
 			r.vel = Vec2{};
@@ -104,7 +106,7 @@ namespace NightSnack {
 	// SCRIPT
 	// --------------------------------------------------------------
 	void to_json(json& j, Script const& s) {
-		j["Script"] = {
+		j = {
 			{"name", s.names}
 		};
 	}
@@ -124,8 +126,184 @@ namespace NightSnack {
 	// COLLIDER
 	// --------------------------------------------------------------
 	void to_json(json& j, Collider const& c) {
-
+		j = {
+			{"height", c.height},
+			{"width", c.width},
+			{"radius", c.radius},
+			{"isStatic", c.isStatic}
+		};
+		// Shape
+		if (ShapeType::AABB == c.shape) j["shape"] = "AABB";
+		else if (ShapeType::Circle == c.shape) j["shape"] = "circle";
+		// Collider type
+		if (ColliderType::Solid == c.type) j["type"] = "solid";
+		if (ColliderType::Trigger == c.type) j["type"] = "trigger";
 	}
-	void from_json(json const&, Collider&);
+	void from_json(json const& j, Collider& c) {
+		try {
+			std::string shapeStr, typeStr;
+			j.at("shape").get_to(shapeStr);
+			j.at("type").get_to(typeStr);
+
+			if (shapeStr == "AABB") c.shape = ShapeType::AABB;
+			else if (shapeStr == "Circle") c.shape = ShapeType::Circle;
+
+			if (typeStr == "Solid") c.type = ColliderType::Solid;
+			else if (typeStr == "Trigger") c.type = ColliderType::Trigger;
+
+			j.at("isStatic").get_to(c.isStatic);
+
+			c.width = c.height = c.radius = 0.f;
+			if (j.contains("width")) { j.at("width").get_to(c.width); }
+			if (j.contains("height")) { j.at("height").get_to(c.height); }
+			if (j.contains("radius")) { j.at("radius").get_to(c.radius); }
+
+			// Optional flags to place player and enemies;
+			c.isGrounded = j.value("isGrounded", false);
+		}
+		catch (std::exception const& e) {
+			std::cerr << "Invalid JSON format " << e.what() << '\n';
+		}
+	}
+
+	// --------------------------------------------------------------
+	// RENDERABLE
+	// --------------------------------------------------------------
+	void to_json(json& j, Renderable const& r) {
+		j = {
+			{"isWireframe", r.isWireframe},
+			{"materialName", r.materialName},
+			{"meshName", r.meshName}
+		};
+	}
+	void from_json(json const& j, Renderable& r) {
+		try {
+			j.at("meshName").get_to(r.meshName);
+			j.at("materialName").get_to(r.materialName);
+
+			if (j.contains("isWireframe"))
+				j.at("isWireframe").get_to(r.isWireframe);
+			else
+				r.isWireframe = false;
+
+			r.wasModified = true;
+		}
+		catch (std::exception const& e) {
+			std::cerr << "Invalid JSON format " << e.what() << '\n';
+		}
+	}
+
+	// --------------------------------------------------------------
+	// COLOR
+	// --------------------------------------------------------------
+	void to_json(json& j, Color const& c) {
+		j = {
+			{"r", c.r}, {"g", c.g}, {"b", c.b}, {"a", c.a}
+		};
+	}
+	void from_json(json const& j, Color& c) {
+		try {
+			j.at("r").get_to(c.r);
+			j.at("g").get_to(c.g);
+			j.at("b").get_to(c.b);
+			j.at("a").get_to(c.a);
+		}
+		catch (std::exception const& e) {
+			std::cerr << "Invalid JSON format " << e.what() << '\n';
+		}
+	}
+
+	// --------------------------------------------------------------
+	// AUDIO
+	// --------------------------------------------------------------
+	void to_json(json& j, Audio const& a) {
+		j = {
+			{"audioKey", a.audioKey},
+			{"isPlaying", a.isPlaying},
+			{"loop", a.loop},
+			{"playOnStart", a.playOnStart},
+			{"volume", a.volume}
+		};
+	}
+	void from_json(json const& j, Audio& a) {
+		try {
+			j.at("audioKey").get_to(a.audioKey);
+			if (j.contains("volume"))
+				j.at("volume").get_to(a.volume);
+			j.at("loop").get_to(a.loop);
+			j.at("playOnStart").get_to(a.playOnStart);
+			j.at("isPlaying").get_to(a.isPlaying);
+		}
+		catch (std::exception const& e) {
+			std::cerr << "Invalid JSON format " << e.what() << '\n';
+		}
+	}
+
+	// --------------------------------------------------------------
+	// CAMERA
+	// --------------------------------------------------------------
+	void to_json(json& j, Camera const& c) {
+		j = {
+			{"isMainCam", c.isMainCam},
+			{"height", c.height},
+			{"width", c.width},
+			{"zoom", c.zoom},
+
+			{"minX", c.minX}, {"minY", c.minY},
+			{"maxX", c.maxX}, {"maxY", c.maxY},
+			{"offsetX", c.offset.x}, {"offsetY", c.offset.y}
+		};
+	}
+	void from_json(json const& j, Camera& c) {
+		try {
+			j.at("isMainCam").get_to(c.isMainCam);
+			j.at("zoom").get_to(c.zoom);
+			j.at("width").get_to(c.width);
+			j.at("height").get_to(c.height);
+
+			if (j.contains("minX")) j.at("minX").get_to(c.minX);
+			if (j.contains("maxX")) j.at("maxX").get_to(c.maxX);
+			if (j.contains("minY")) j.at("minY").get_to(c.minY);
+			if (j.contains("maxY")) j.at("maxY").get_to(c.maxY);
+
+			if (j.contains("offsetX")) j.at("offsetX").get_to(c.offset.x);
+			if (j.contains("offsetY")) j.at("offsetY").get_to(c.offset.y);
+		}
+		catch (std::exception const& e) {
+			std::cerr << "Invalid JSON format " << e.what() << '\n';
+		}
+	}
+
+	// --------------------------------------------------------------
+	// PLAYER CONTROLLER
+	// --------------------------------------------------------------
+	void to_json(json& j, PlayerController const& pc) {
+		j = {
+			{"jumpSpeed", pc.jumpSpeed},
+			{"moveSpeed", pc.moveSpeed}
+		};
+	}
+	void from_json(json const& j, PlayerController& pc) {
+		try {
+			j.at("jumpSpeed").get_to(pc.jumpSpeed);
+			j.at("moveSpeed").get_to(pc.moveSpeed);
+		}
+		catch (std::exception const& e) {
+			std::cerr << "Invalid JSON format " << e.what() << '\n';
+		}
+	}
+
+	// --------------------------------------------------------------
+	// HIERARCHY
+	// --------------------------------------------------------------
+	void to_json(json& j, Hierarchy const& h) {
+		j = {
+			{ },
+			{ "children", h.children }
+		};
+	}
+	void from_json(json const&, Hierarchy&);
 
 }	// Namespace NightSnack::Serializer
+
+#endif
