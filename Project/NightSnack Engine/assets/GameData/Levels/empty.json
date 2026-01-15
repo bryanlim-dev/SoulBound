@@ -24,8 +24,8 @@
                     "y": 0.0
                 }
             },
-            "prefab": "Cam"
+            "Prefab": "Cam"
         }        
     ],
-    "Name": "DefaultLevel"
+    "Name": "EmptyLevel"
 }

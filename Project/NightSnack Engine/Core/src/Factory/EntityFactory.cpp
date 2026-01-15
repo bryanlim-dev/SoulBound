@@ -241,15 +241,15 @@ namespace NightSnack {
         DestroyLevelEntities();
         try {
             for (auto const& item : level["Entities"]) {
-                Entity e = Create(std::string{ item["prefab"] }, item["Transform"]);
+                Entity e = Create(std::string{ item["Prefab"] }, item["Transform"]);
                 //std::cout << "[EntityFactory] Creating prefab<" << item["prefab"] << "> at ("
                 //    << item["Transform"]["Position"]["x"] << ", "
                 //    << item["Transform"]["Position"]["y"] << ", "
                 //    << item["Transform"]["Position"]["z"] << ")\n";
 
                 // Create child entities
-                if (item.contains("children")) {
-                    CreateEntityChildren(item.at("children"), e);
+                if (item.contains("Children")) {
+                    CreateEntityChildren(item.at("Children"), e);
                 }
             }
         }
@@ -264,14 +264,14 @@ namespace NightSnack {
         Hierarchy& h = m_coord.ModifyComponent<Hierarchy>(parent);
 
         for (auto const& e : j) {
-            Entity child = Create(std::string{ e["prefab"] }, e["Transform"]);
+            Entity child = Create(std::string{ e["Prefab"] }, e["Transform"]);
 
             m_coord.ModifyComponent<Hierarchy>(child).parent = parent;
             h.children.insert(child);
 
             // Create child entities
-            if (e.contains("children"))
-                CreateEntityChildren(e["children"], child);
+            if (e.contains("Children"))
+                CreateEntityChildren(e["Children"], child);
         }
     }
 
@@ -317,17 +317,53 @@ namespace NightSnack {
         //if (h.children.empty()) return j;
 
         for (Entity c : h.children) {
-            json child;
-            child["transform"] = m_coord.GetComponent<Transform>(c);
-            child["prefab"] = GetEntityPrefabName(c);
+            try {
+                json child;
 
-            Hierarchy const& hc = m_coord.GetComponent<Hierarchy>(c);
-            if (!hc.children.empty()) {
-                child["children"] = CacheEntityChildren(hc);
+                child["Transform"] = m_coord.GetComponent<Transform>(c);
+                child["Prefab"] = GetEntityPrefabName(c);
+
+                Hierarchy const& hc = m_coord.GetComponent<Hierarchy>(c);
+                if (!hc.children.empty()) {
+                    child["Children"] = CacheEntityChildren(hc);
+                }
+                j.push_back(child);
             }
-            j.push_back(child);
+            catch (std::exception const& e) {
+                std::cerr << "[EntityFactory] Failed to create child entity\n";
+                std::cerr << "Invalid JSON format " << e.what() << '\n';
+            }
         }
         return j;
+    }
+
+    json EntityFactory::CacheLevelEntities() {
+        json entities = json::array();
+
+        for (Entity e : m_coord.GetLivingEntities()) {
+            Hierarchy const& h = m_coord.GetComponent<Hierarchy>(e);
+            Transform const& t = m_coord.GetComponent<Transform>(e);
+
+            // Only process root entities for level saving
+            if (h.parent != INVALID_ENTITY) continue;
+
+            std::string prefabName = entityToPrefab[e];
+
+            // Skip unmodified default entities
+            if (prefabName == "++Default" && !t.prefabModified) {
+                continue;
+            }
+            // Build entity JSON
+            json j;
+            j["Prefab"] = prefabName;
+            j["Transform"] = t;
+
+            if (!h.children.empty()) {
+                j["Children"] = CacheEntityChildren(h);
+            }
+            entities.push_back(j);
+        }
+        return entities;
     }
 
     json EntityFactory::SaveLevelEntities() {
@@ -352,11 +388,11 @@ namespace NightSnack {
 
             // Build entity JSON
             json j;
-            j["prefab"] = finalPrefabName;
+            j["Prefab"] = finalPrefabName;
             j["Transform"] = t;
 
             if (!h.children.empty()) {
-                j["children"] = CacheEntityChildren(h);
+                j["Children"] = CacheEntityChildren(h);
             }
 
             entities.push_back(j);
