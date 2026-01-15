@@ -20,6 +20,8 @@ namespace ManagedScripts
     public class RotatorScript : Script
     {
         [SerializeField]
+        public int testInt = 0;
+        [SerializeField]
         public  float rotationSpeed = 50.0f; // degrees per second
         [SerializeField]
         public bool testBool = false;

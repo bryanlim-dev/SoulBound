@@ -18,6 +18,9 @@ namespace ManagedScripts
 {
     public class HoverScript : Script
     {
+
+        [SerializeField]
+        public float testFloat = 0;
         [SerializeField]
         public float moveSpeed = 150.0f;
         [SerializeField]
@@ -46,7 +49,9 @@ namespace ManagedScripts
             //Log("HoverScript started!");
             //Log($"Initial Position: {Position.X}, {Position.Y}");
             //Log($"Move speed: {moveSpeed}.f");
-            moveSpeed = 1000;
+            //moveSpeed = 1000;
+            //Engine.Log("Inital Move Speed: " + moveSpeed);
+
         }
 
         public override void OnUpdate()
@@ -85,6 +90,12 @@ namespace ManagedScripts
 
             // Set back to ECS
             transform.Position = pos;
+
+
+            //if (Engine.IsKeyDown(KeyboardKeys.W))
+            //{
+            //    Engine.Log("Move Speed: " + moveSpeed);
+            //}
         }
 
         public override void OnDestroy()
