@@ -124,86 +124,86 @@
                     "y": 100.0
                 }
             },
-            "prefab": "RedBall",
             "children": [
-              {
-                "Transform": {
-                  "Layer": "GameLayer",
-                  "Position": {
-                    "x": 500.0,
-                    "y": 450.0,
-                    "z": 0.0
-                  },
-                  "Rotation": 45.0,
-                  "Scale": {
-                    "x": 50.0,
-                    "y": 50.0
-                  },
-                  "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                  },
-                  "UIBaseScale": {
-                    "x": 100.0,
-                    "y": 100.0
-                  }
-              },
-              "prefab": "ParentTest",
-              "children": [
                 {
-                "Transform": {
-                  "Layer": "GameLayer",
-                  "Position": {
-                    "x": 500.0,
-                    "y": 0.0,
-                    "z": 0.0
-                  },
-                  "Rotation": 45.0,
-                  "Scale": {
-                    "x": 50.0,
-                    "y": 50.0
-                  },
-                  "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                  },
-                  "UIBaseScale": {
-                    "x": 100.0,
-                    "y": 100.0
-                  }
+                    "children": [
+                        {
+                            "prefab": "ParentTest2",
+                            "transform": {
+                                "Layer": "GameLayer",
+                                "Position": {
+                                    "x": 500.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 45.0,
+                                "Scale": {
+                                    "x": 50.0,
+                                    "y": 50.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                }
+                            }
+                        }
+                    ],
+                    "prefab": "ParentTest",
+                    "transform": {
+                        "Layer": "GameLayer",
+                        "Position": {
+                            "x": 500.0,
+                            "y": 450.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 45.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 50.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        }
+                    }
                 },
-                "prefab": "ParentTest2"
-              }
-              ]
-              },
-              {
-                "Transform": {
-                  "Layer": "GameLayer",
-                  "Position": {
-                    "x": -500.0,
-                    "y": 0.0,
-                    "z": 0.0
-                  },
-                  "Rotation": 45.0,
-                  "Scale": {
-                    "x": 50.0,
-                    "y": 50.0
-                  },
-                  "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                  },
-                  "UIBaseScale": {
-                    "x": 100.0,
-                    "y": 100.0
-                  }
-                },
-                "prefab": "ParentTest2"
-              }
-            ]
+                {
+                    "prefab": "ParentTest2",
+                    "transform": {
+                        "Layer": "GameLayer",
+                        "Position": {
+                            "x": -500.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 45.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 50.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        }
+                    }
+                }
+            ],
+            "prefab": "RedBall"
         },
         {
             "Transform": {

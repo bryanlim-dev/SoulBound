@@ -83,6 +83,7 @@ namespace NightSnack {
 		json SaveLevelEntities();
 		json CacheEntityChildren(Hierarchy const&);
 		void CreateEntityChildren(json const&, Entity);
+		std::string EnsurePrefabExists(Entity e, std::string const& prefabName, bool isModified);
 
 		/************************************************************************/
 		/*!
