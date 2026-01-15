@@ -139,11 +139,56 @@ namespace NightSnack {
 		T const& GetComponent(Entity e) const;
 
 		template <typename T>
-		T const& GetComponentInChild(Entity e) const;
+		std::optional<T> const& GetComponentInChild(Entity e) const;
 		template <typename T>
-		std::vector<T> const& GetComponentsInChild(Entity e) const;
+		std::optional<std::vector<T>> const& GetComponentsInChild(Entity e) const;
 		template <typename T>
-		T const& GetComponentInParent(Entity e) const;
+		std::optional<T> const& GetComponentInParent(Entity e) const;
+
+		bool ParentEntity(Entity e, Entity parent) {
+			if (!HasComponent<Hierarchy>(e) || !HasComponent<Hierarchy>(parent)) {
+				std::cerr << "Entity " << e << " or " << parent 
+					<< " does not have Hierarchy component, failed to add parent.\n";
+				return false;
+			}
+			if (!AddChildToEntity(parent, e)) {
+				std::cerr << "Failed to add child " << e << " to parent " << parent << '\n';
+				return false;
+			}
+			ModifyComponent<Hierarchy>(e).parent = parent;
+			return true;
+		}
+
+		bool RemoveEntityParent(Entity e, Entity parent) {
+			if (!HasComponent<Hierarchy>(e)) {
+				std::cerr << "Entity " << e << " does not have Hierarchy component, failed to remove parent.\n";
+				return false;
+			}
+			if (!RemoveEntityChild(parent, e)) {
+				std::cerr << "Failed to remove child " << e << " from parent " << parent << '\n';
+				return false;
+			}
+			ModifyComponent<Hierarchy>(e).parent = INVALID_ENTITY;
+			return true;
+		}
+
+		bool AddChildToEntity(Entity e, Entity child) {
+			if (!HasComponent<Hierarchy>(e)) {
+				std::cerr << "Entity " << e << " does not have Hierarchy component, failed to add child.\n";
+				return false;
+			}
+			ModifyComponent<Hierarchy>(e).children.insert(child);
+			return true;
+		}
+
+		bool RemoveEntityChild(Entity e, Entity child) {
+			if (!HasComponent<Hierarchy>(e)) {
+				std::cerr << "Entity " << e << " does not have Hierarchy component, failed to add child.\n";
+				return false;
+			}
+			ModifyComponent<Hierarchy>(e).children.erase(child);
+			return true;
+		}
 
 		/************************************************************************/
 		/*!
@@ -369,92 +414,90 @@ namespace NightSnack {
 		return m_componentManager->GetComponent<T>(e);
 	}
 
-	//template <typename T>
-	//T const& Coordinator::GetComponentInChild(Entity e) const {
-	//	static T empty{};
-	//	// Edge case, no transform component;
-	//	if (!HasComponent<Transform>(e)) {
-	//		std::cerr << "[Coordinator] Error: Entity " << e 
-	//			<< " does not have Transform Component, unable to get Child component.\n";
-	//		return empty;
-	//	}
+	template <typename T>
+	std::optional<T> const& Coordinator::GetComponentInChild(Entity e) const {
+		
+		// Edge case, no hierarchy component;
+		if (!HasComponent<Hierarchy>(e)) {
+			std::cerr << "[Coordinator] Error: Entity " << e 
+				<< " does not have Hierarchy Component, unable to get Child component.\n";
+			return std::nullopt;
+		}
 
-	//	if (HasComponent<T>(e)) return GetComponent<T>(e);
+		// Return immediately if current has component;
+		if (HasComponent<T>(e)) return GetComponent<T>(e);
 
-	//	// Iterate through children stored in Transform component;
-	//	Transform const& trans = GetComponent<Transform>(e);
-	//	if (trans.children.empty()) {
-	//		std::cerr << "[Coordinator] Error: Entity " << e
-	//			<< " does not have any Children.\n";
-	//		return empty;
-	//	}
-	//	for (Entity c : trans.children) {
-	//		if (!HasComponent<T>(c)) continue;
-	//		return GetComponent<T>(c);
-	//	}
-	//	// No Children contains requested component;
-	//	std::cerr << "[Coordinator] Error: Entity " << e
-	//		<< " does not have Children with requested component.\n";
-	//	return empty;
-	//}
+		// Iterate through children stored in Transform component;
+		Hierarchy const& h = GetComponent<Hierarchy>(e);
+		if (h.children.empty()) {
+			std::cerr << "[Coordinator] Error: Entity " << e
+				<< " does not have any Children.\n";
+			return std::nullopt;
+		}
+		for (Entity c : h.children) {
+			if (!HasComponent<T>(c)) continue;
+			return GetComponent<T>(c);
+		}
+		// No Children contains requested component;
+		std::cerr << "[Coordinator] Error: Entity " << e
+			<< " does not have Children with requested component.\n";
+		return std::nullopt;
+	}
 
-	//template <typename T>
-	//std::vector<T> const& Coordinator::GetComponentsInChild(Entity e) const {
-	//	static std::vector<T> empty{};
-	//	if (!empty.empty()) empty.clear();
+	template <typename T>
+	std::optional<std::vector<T>> const& Coordinator::GetComponentsInChild(Entity e) const {
 
-	//	// Edge case, no transform component;
-	//	if (!HasComponent<Transform>(e)) {
-	//		std::cerr << "[Coordinator] Error: Entity " << e
-	//			<< " does not have Transform Component, unable to get Child components.\n";
-	//		return empty;
-	//	}
+		// Edge case, no hierarchy component;
+		if (!HasComponent<Hierarchy>(e)) {
+			std::cerr << "[Coordinator] Error: Entity " << e
+				<< " does not have Transform Component, unable to get Child components.\n";
+			return std::nullopt;
+		}
 
-	//	// Return vector;
-	//	std::vector<T> ret{};
-	//	if (HasComponent<T>(e)) ret.emplace_back(GetComponent<T>(e));
+		// Return vector;
+		std::vector<std::pair<Entity, T>> ret{};
+		if (HasComponent<T>(e)) ret.emplace_back({ e, GetComponent<T>(e) });
 
-	//	// Iterate through children stored in Transform component;
-	//	Transform const& trans = GetComponent<Transform>(e);
-	//	if (trans.children.empty()) {
-	//		std::cerr << "[Coordinator] Error: Entity " << e
-	//			<< " does not have any Children.\n";
-	//		return empty;
-	//	}
-	//	for (Entity c : trans.children) {
-	//		if (!HasComponent<T>(c)) continue;
-	//		ret.emplace_back(GetComponent<T>(c));
-	//	}
-	//	if (ret.empty()) {
-	//		// No Children contains requested component;
-	//		std::cerr << "[Coordinator] Error: Entity " << e
-	//			<< " does not have Children with requested component.\n";
-	//	}
-	//	return ret;
-	//}
+		// Iterate through children stored in Transform component;
+		Hierarchy const& h = GetComponent<Hierarchy>(e);
+		if (h.children.empty()) {
+			std::cerr << "[Coordinator] Error: Entity " << e
+				<< " does not have any Children.\n";
+			return std::nullopt;
+		}
+		for (Entity c : h.children) {
+			if (!HasComponent<T>(c)) continue;
+			ret.emplace_back({ c,GetComponent<T>(c) });
+		}
+		if (ret.empty()) {
+			// No Children contains requested component;
+			std::cerr << "[Coordinator] Error: Entity " << e
+				<< " does not have Children with requested component.\n";
+		}
+		return std::nullopt;
+	}
 
-	//template <typename T>
-	//T const& Coordinator::GetComponentInParent(Entity e) const {
-	//	static T empty{};
+	template <typename T>
+	std::optional<T> const& Coordinator::GetComponentInParent(Entity e) const {
 
-	//	if (HasComponent<T>(e)) return GetComponent<T>(e);
+		if (HasComponent<T>(e)) return GetComponent<T>(e);
 
-	//	// Edge case, no transform component;
-	//	if (!HasComponent<Transform>(e)) {
-	//		std::cerr << "[Coordinator] Error: Entity " << e
-	//			<< " does not have Transform Component, unable to get Parent component.\n";
-	//		return empty;
-	//	}
-	//	Transform const& trans = GetComponent<Transform>(e);
-	//	if (trans.parent == INVALID_ENTITY) {
-	//		std::cerr << "[Coordinator] Error: Entity " << e
-	//			<< " does not have a Parent, returning empty component.\n";
-	//		return empty;
-	//	}
-	//	if (HasComponent<T>(trans.parent)) return GetComponent<T>(trans.parent);
+		// Edge case, no hierarchy component;
+		if (!HasComponent<Hierarchy>(e)) {
+			std::cerr << "[Coordinator] Error: Entity " << e
+				<< " does not have Hierarchy Component, unable to get Parent component.\n";
+			return std::nullopt;
+		}
+		Hierarchy const& h = GetComponent<Hierarchy>(e);
+		if (h.parent == INVALID_ENTITY) {
+			std::cerr << "[Coordinator] Error: Entity " << e
+				<< " does not have a Parent, returning empty component.\n";
+			return std::nullopt;
+		}
+		if (HasComponent<T>(h.parent)) return GetComponent<T>(h.parent);
 
-	//	return GetComponentInParent(trans.parent);
-	//}
+		return GetComponentInParent(h.parent);
+	}
 
 	template <typename T>
 	bool Coordinator::HasComponent(Entity e) const {

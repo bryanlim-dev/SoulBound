@@ -37,9 +37,12 @@ namespace NightSnack {
             m_player = FindPlayer(m_coord);
         }
 
-        FollowEntity(m_player);
-        //CenterCameraWhenIdle();
-
+        Transform t = m_coord.GetComponent<Transform>(m_mainCamera);
+        FollowEntity(m_player, t);
+        LimitWithinBounds(t);
+        
+        // Update actual camera pos
+        m_coord.ModifyComponent<Transform>(m_mainCamera) = t;
 
         // make camera follow player
    //     if (m_mainCamera != INVALID_ENTITY && m_player != INVALID_ENTITY)
@@ -65,24 +68,23 @@ namespace NightSnack {
    //     }
     }
 
-    void CameraSystem::FollowEntity(Entity e) {
+    void CameraSystem::FollowEntity(Entity e, Transform& ct) {
         // get entity position
         const auto& pt = m_coord.GetComponent<Transform>(e);
-        // get camera position
-        auto& ct = m_coord.ModifyComponent<Transform>(m_mainCamera);
-
-        ct.pos.x = pt.pos.x;
-        ct.pos.y = pt.pos.y;
+        auto& cam = m_coord.GetComponent<Camera>(m_mainCamera);
+        // increment camera position
+        ct.pos.x = pt.pos.x + cam.offset.x;
+        ct.pos.y = pt.pos.y + cam.offset.y;
     }
 
-    void CameraSystem::FollowPlayer() {
+    Transform CameraSystem::FollowPlayer() {
         
         // get player position
         const auto& pt = m_coord.GetComponent<Transform>(m_player);
         Vec2 pv = m_coord.GetComponent<RigidBody>(m_player).vel;
 
         // get camera position
-        auto& ct = m_coord.ModifyComponent<Transform>(m_mainCamera);
+        Transform ct = m_coord.GetComponent<Transform>(m_mainCamera);
 
         if (abs(ct.pos.x - pt.pos.x) > 60.f) {
             ct.pos.x += pv.x * FixedDT;
@@ -90,6 +92,18 @@ namespace NightSnack {
         if (abs(ct.pos.y - pt.pos.y) > 60.f) {
             ct.pos.y += pv.y * FixedDT;
         }
+        return ct;
+    }
+
+    void CameraSystem::LimitWithinBounds(Transform& ct) {
+        
+        auto& cam = m_coord.GetComponent<Camera>(m_mainCamera);
+
+        if (ct.pos.x < cam.minX) ct.pos.x = cam.minX;
+        if (ct.pos.x > cam.maxX) ct.pos.x = cam.maxX;
+
+        if (ct.pos.y < cam.minY) ct.pos.y = cam.minY;
+        if (ct.pos.y > cam.maxY) ct.pos.y = cam.maxY;
     }
 
     void CameraSystem::CenterCameraWhenIdle() {

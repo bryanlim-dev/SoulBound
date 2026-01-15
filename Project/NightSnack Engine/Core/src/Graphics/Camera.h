@@ -43,7 +43,7 @@ namespace NightSnack {
 		*/
 		void Update() override;
 
-		void FollowPlayer();
+		Transform FollowPlayer();
 		void CenterCameraWhenIdle();
 
 		/**
@@ -79,6 +79,7 @@ namespace NightSnack {
 		 */
 		Entity FindPlayer(Coordinator& coord);
 
-		void FollowEntity(Entity e);
+		void FollowEntity(Entity e, Transform& t);
+		void LimitWithinBounds(Transform& t);
 	};
 }

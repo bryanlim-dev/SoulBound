@@ -31,6 +31,7 @@ namespace NightSnack::Scripting {
 		MONO_STRING,
 		MONO_VECTOR2,
 		MONO_VECTOR3,
+		MONO_SCRIPT,
 		MONO_UNSUPPORTED
 	};
 
@@ -54,6 +55,8 @@ namespace NightSnack::Scripting {
 		};
 		std::string m_s{};  //used when type is a string
 		std::vector<uint8_t> m_structs; //used for when the type is a struct
+
+		MonoObject* m_object; //Used for scripts
 	};
 
 	//This class reasds 
@@ -170,6 +173,51 @@ namespace NightSnack::Scripting {
 		*/
 		/************************************************************************/
 		static Vec3 ConvertVec3(const ExposedValue& value);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Checks if a given MonoClass is a script
+		
+		\param monoClass
+		MonoClass to check from
+		
+		\return
+		true if it is a class
+		false if it is not a class
+		*/
+		/************************************************************************/
+		bool IsScriptClass(MonoClass* monoClass);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Gets the name of a script
+
+		\param obj
+		MonoObject to check from
+
+		\return
+		string of the name of the script
+		"ErrorNotScript" if it is not a script
+		*/
+		/************************************************************************/
+		std::string GetScriptName(MonoObject* obj);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Gets the id of the owner of the scsript
+		
+		\param obj
+		MonoObject to check from
+		
+		\return
+		id of the object
+		-1 if invaid id
+		*/
+		/************************************************************************/
+		int GetScriptOwnerID(MonoObject* obj);
 
 	private:
 		/************************************************************************/

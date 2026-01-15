@@ -42,8 +42,8 @@ namespace NightSnack {
 	}
 
 	void AnimationSystem::Update() {
-		if (m_coord.IsPaused()) return;
-
+		//if (m_coord.IsPaused()) return;
+		
 		// Iterate through all entities that have Animator component
 		for (Entity e : m_entities) {
 			auto& animator = m_coord.ModifyComponent<Animator>(e);
@@ -199,7 +199,7 @@ namespace NightSnack {
 				// We want the coords from our sprite sheet to start from top left
 				frame.V0 = 1.f - (r + 1) * frameHeight;
 				frame.V1 = 1.f - r * frameHeight;
-				frame.timeDelay = 20.f;
+				frame.timeDelay = 20.f; // by default
 
 				clip.frames.emplace_back(frame);
 			}
@@ -208,10 +208,14 @@ namespace NightSnack {
 			m_animationClips[textureName][clipName] = clip;
 		}
 
-		////std::cout << "Created AnimationClip for: " << textureName << std::endl;
+		//std::cout << "Created AnimationClip for: " << textureName << std::endl;
 	}
 
 	std::vector<std::string> AnimationSystem::GetSpritesheetAnimationClipsNames(Entity e) {
+		if (!m_coord.HasComponent<Animator>(e)) {
+			return {};
+		}
+
 		auto& animator = m_coord.GetComponent<Animator>(e);
 		std::vector<std::string> ret;
 
