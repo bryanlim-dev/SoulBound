@@ -39,7 +39,7 @@ namespace NightSnack {
 
         Transform t = m_coord.GetComponent<Transform>(m_mainCamera);
         FollowEntity(m_player, t);
-        LimitWithinBounds(t);
+        //LimitWithinBounds(t);
         
         // Update actual camera pos
         m_coord.ModifyComponent<Transform>(m_mainCamera) = t;

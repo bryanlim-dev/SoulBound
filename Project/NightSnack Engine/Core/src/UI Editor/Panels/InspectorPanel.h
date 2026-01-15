@@ -54,7 +54,8 @@ namespace NightSnack
                 "Renderer",
                 "Scripting",
                 "Animator",
-                "Font"
+                "Font",
+                "Hierarchy"
 			};
         }
 
@@ -94,6 +95,7 @@ namespace NightSnack
 					if (compName == "Scripting") { hasComponent = m_coord.HasComponent<Script>(*m_selectedEntity); }
                     if (compName == "Animator")  { hasComponent = m_coord.HasComponent<Animator>(*m_selectedEntity); }
                     if (compName == "Font")      { hasComponent = m_coord.HasComponent<Font>(*m_selectedEntity); }
+                    if (compName == "Hierarchy")      { hasComponent = m_coord.HasComponent<Hierarchy>(*m_selectedEntity); }
 
                     if (hasComponent)
                     {
@@ -142,6 +144,7 @@ namespace NightSnack
 							if (compName == "Scripting") { ScriptingComponent(); }
                             if (compName == "Animator")  { AnimatorComponent(); }
                             if (compName == "Font")      { FontComponent(); }
+                            if (compName == "Hierarchy") { HierarchyComponent(); }
                         }
                         ImGui::Separator();
                     }
@@ -267,6 +270,15 @@ namespace NightSnack
         */
         /************************************************************************/
         void FontComponent();
+
+        /************************************************************************/
+        /*!
+        \brief
+            Draws Hierarchy component details which includes parent ID and prefab
+            and children IDs and prefabs.
+        */
+        /************************************************************************/
+        void HierarchyComponent();
 
         /************************************************************************/
         /*!
@@ -1031,6 +1043,54 @@ namespace NightSnack
                 isEditingColor = false;
             }
 
+            ImGui::EndTable();
+        }
+    }
+
+    inline void InspectorPanel::HierarchyComponent()
+    {
+        if (!m_coord.HasComponent<Hierarchy>(*m_selectedEntity))
+            return;
+
+        Hierarchy const& h = m_coord.GetComponent<Hierarchy>(*m_selectedEntity);
+
+        if (ImGui::BeginTable("HierarchyTable", 3, ImGuiTableFlags_SizingFixedFit)) {
+
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+            ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed, 30.0f);
+            ImGui::TableSetupColumn("Prefab", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Parent:");
+
+            // Parent
+            if (h.parent != INVALID_ENTITY) {
+                ImGui::TableSetColumnIndex(1); ImGui::TextDisabled("%d", h.parent);
+                ImGui::TableSetColumnIndex(2); 
+                ImGui::TextDisabled("%s", m_coord.GetSystem<EntityFactory>()->GetEntityPrefabName(h.parent).c_str());
+
+            }
+            else {
+                ImGui::TableSetColumnIndex(1); ImGui::TextDisabled("%s", "No");
+                ImGui::TableSetColumnIndex(2); ImGui::TextDisabled("%s", "Parents :(");
+            }
+
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Children:");
+
+            // Children
+            if (h.children.empty()) {
+                ImGui::TableSetColumnIndex(1); ImGui::TextDisabled("%s", "No");
+                ImGui::TableSetColumnIndex(2); ImGui::TextDisabled("%s", "Children :(");
+            }
+            else {
+                for (Entity c : h.children) {
+                    ImGui::TableSetColumnIndex(1); ImGui::TextDisabled("%d", c);
+                    ImGui::TableSetColumnIndex(2); 
+                    ImGui::TextDisabled("%s", m_coord.GetSystem<EntityFactory>()->GetEntityPrefabName(c).c_str());
+                    ImGui::TableNextRow();
+                }
+            }
             ImGui::EndTable();
         }
     }
