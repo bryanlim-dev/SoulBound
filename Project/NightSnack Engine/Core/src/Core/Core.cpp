@@ -73,8 +73,8 @@ namespace NightSnack {
 		m_coord.RegisterComponent<Camera>();
 
 		m_coord.RegisterComponent<PlayerController>();
-		m_coord.RegisterComponent<States>();
-		//m_coord.RegisterComponent<Hierarchy>();
+		//m_coord.RegisterComponent<States>();
+		m_coord.RegisterComponent<Hierarchy>();
 
 		m_coord.RegisterComponent<Animator>();
 		m_coord.RegisterComponent<Font>();

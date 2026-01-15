@@ -81,6 +81,8 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		json SaveLevelEntities();
+		json CacheEntityChildren(Hierarchy const&);
+		void CreateEntityChildren(json const&, Entity);
 
 		/************************************************************************/
 		/*!

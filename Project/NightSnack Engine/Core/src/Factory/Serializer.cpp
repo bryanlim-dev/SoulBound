@@ -1,9 +1,29 @@
 
 #include "Serializer.h"
+#include "Factory/EntityFactory.h"
+
+#include <vector>
 
 #if 1
 
 namespace NightSnack {
+
+	void to_json(json& j, Vec3 const& v) {
+		j = { {"x", v.x}, {"y", v.y}, {"z", v.z} };
+	}
+	void from_json(json const& j, Vec3& v) {
+		j.at("x").get_to(v.x);
+		j.at("y").get_to(v.y);
+		j.at("z").get_to(v.z);
+	}
+
+	void to_json(json& j, Vec2 const& v) {
+		j = { {"x", v.x}, {"y", v.y} };
+	}
+	void from_json(json const& j, Vec2& v) {
+		j.at("x").get_to(v.x);
+		j.at("y").get_to(v.y);
+	}
 
 	// --------------------------------------------------------------
 	// TRANSFORM
@@ -296,13 +316,124 @@ namespace NightSnack {
 	// --------------------------------------------------------------
 	// HIERARCHY
 	// --------------------------------------------------------------
-	void to_json(json& j, Hierarchy const& h) {
+	//void to_json(json& j, Hierarchy const& h) {
+	//	bool parented = false;
+	//	if (h.parent != INVALID_ENTITY) parented = true;
+
+	//	std::vector<Entity> childPrefabs;
+	//	for (std::pair<Entity, std::string> pair : h.children) {
+	//		m_coord.GetSystem<EntityFactory>()->GetEntityPrefab();
+	//	}
+	//	j = {
+	//		{ "isParented", parented},
+	//		{ "children", h.children }
+	//	};
+	//}
+	//void from_json(json const& j, Hierarchy& h);
+
+	// --------------------------------------------------------------
+	// ANIMATOR
+	// --------------------------------------------------------------
+	void to_json(json& j, Animator const& a) {
 		j = {
-			{ },
-			{ "children", h.children }
+			{"isLooping", a.isLooping},
+			{"isPlaying", a.isPlaying},
+			{"playbackSpeed", a.playbackSpeed},
+			{"spriteSheetName", a.spriteSheetName}
 		};
 	}
-	void from_json(json const&, Hierarchy&);
+	void from_json(json const& j, Animator& a) {
+		try {
+			j.at("spriteSheetName").get_to(a.spriteSheetName);
+			j.at("playbackSpeed").get_to(a.playbackSpeed);
+			j.at("isPlaying").get_to(a.isPlaying);
+			j.at("isLooping").get_to(a.isLooping);
+		}
+		catch (std::exception const& e) {
+			std::cerr << "Invalid JSON format " << e.what() << '\n';
+		}
+	}
+
+	// --------------------------------------------------------------
+	// FONT
+	// --------------------------------------------------------------
+	void to_json(json& j, Font const& f) {
+		j = {
+			{"fontSize", f.fontSize},
+			{"fontType", f.fontType},
+			{"text", f.text}
+		};
+		j["offsetPosition"] = {
+			{"x", f.offsetPosition.x},
+			{"y", f.offsetPosition.y},
+			{"z", f.offsetPosition.z}
+		};
+		j["textColor"] = {
+			{"r", f.textColor.x},
+			{"g", f.textColor.y},
+			{"b", f.textColor.z}
+		};
+	}
+	void from_json(json const& j, Font& f) {
+		try {
+			j.at("fontType").get_to(f.fontType);
+			j.at("text").get_to(f.text);
+			j.at("fontSize").get_to(f.fontSize);
+			auto& clr = j.at("textColor");
+			f.textColor = { clr.value("r", 0.0f), clr.value("g", 0.0f), clr.value("b", 0.0f) };
+			auto& offsetPos = j.at("offsetPosition");
+			f.offsetPosition = { offsetPos.value("x", 0.0f), offsetPos.value("y", 0.0f), offsetPos.value("z", 0.0f) };
+		}
+		catch (std::exception const& e) {
+			std::cerr << "Invalid JSON format " << e.what() << '\n';
+		}
+	}
+
+	// --------------------------------------------------------------
+	// BUTTON INFO
+	// --------------------------------------------------------------
+	void to_json(json& j, ButtonInfo const& b) {
+		j = { {"action", b.action} };
+		if (ButtonAction::PLAYAUDIO == b.action) j["action"] = std::string{ "PlayAudio"};
+		if (ButtonAction::LOADLEVEL == b.action) j["action"] = std::string{ "LoadLevel"};
+		if (ButtonAction::OPENMENU == b.action) j["action"] = std::string{ "OpenMenu"};
+		if (ButtonAction::NOACTION == b.action) j["action"] = std::string{ "NoAction"};
+
+		if (ButtonType::SLIDER == b.type) j["type"] = std::string{ "Slider" };
+		if (ButtonType::CLICKER == b.type) j["type"] = std::string{ "Clicker" };
+	}
+	void from_json(json const& j, ButtonInfo& b) {
+		try {
+			if (j["action"] == "PlayAudio") b.action = ButtonAction::PLAYAUDIO;
+			// Menu actions
+			if (j["action"] == "LoadLevel") { b.action = ButtonAction::LOADLEVEL; }
+			if (j["action"] == "OpenMenu") { b.action = ButtonAction::OPENMENU; }
+			if (j["action"] == "NoAction") { b.action = ButtonAction::NOACTION; }
+			// Button type
+			if (j["type"] == "Slider") { b.type = ButtonType::SLIDER; }
+			if (j["type"] == "Clicker") { b.type = ButtonType::CLICKER; }
+
+			b.target = j["target"];
+		}
+		catch(std::exception const& e) {
+			std::cerr << "Invalid JSON format " << e.what() << '\n';
+		}
+	}
+
+	// --------------------------------------------------------------
+	// SPRITE
+	// --------------------------------------------------------------
+	void to_json(json& j, Sprite const& s) {
+		j = { {"textureName", s.textureName} };
+	}
+	void from_json(json const& j, Sprite& s) {
+		try {
+			j["textureName"].get_to(s.textureName);
+		}
+		catch (std::exception const& e) {
+			std::cerr << "Invalid JSON format " << e.what() << '\n';
+		}
+	}
 
 }	// Namespace NightSnack::Serializer
 

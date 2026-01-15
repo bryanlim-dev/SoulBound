@@ -21,6 +21,7 @@
 #include "ComponentManager.h"
 #include "ISystem.h"
 #include "Systems/Application/Application.h"
+#include "Factory/Serializer.h"
 
 
 namespace NightSnack {

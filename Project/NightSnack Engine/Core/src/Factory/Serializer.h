@@ -10,6 +10,12 @@
 
 namespace NightSnack {
 
+	void to_json(json& j, Vec3 const& v);
+	void from_json(json const& j, Vec3& v);
+
+	void to_json(json& j, Vec2 const& v);
+	void from_json(json const& j, Vec2& v);
+
 	// COMPONENT SERIALIZATION
 	// --------------------------------------------------------------
 
@@ -68,6 +74,10 @@ namespace NightSnack {
 	// ButtonInfo
 	void to_json(json&, ButtonInfo const&);
 	void from_json(json const&, ButtonInfo&);
+
+	// Sprite
+	void to_json(json&, Sprite const&);
+	void from_json(json const&, Sprite&);
 
 }	// Namespace NightSnack::Serializer
 
