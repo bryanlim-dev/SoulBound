@@ -241,15 +241,15 @@ namespace NightSnack {
         DestroyLevelEntities();
         try {
             for (auto const& item : level["Entities"]) {
-                Entity e = Create(std::string{ item["prefab"] }, item["Transform"]);
+                Entity e = Create(std::string{ item["Prefab"] }, item["Transform"]);
                 //std::cout << "[EntityFactory] Creating prefab<" << item["prefab"] << "> at ("
                 //    << item["Transform"]["Position"]["x"] << ", "
                 //    << item["Transform"]["Position"]["y"] << ", "
                 //    << item["Transform"]["Position"]["z"] << ")\n";
 
                 // Create child entities
-                if (item.contains("children")) {
-                    CreateEntityChildren(item.at("children"), e);
+                if (item.contains("Children")) {
+                    CreateEntityChildren(item.at("Children"), e);
                 }
             }
         }
@@ -264,14 +264,14 @@ namespace NightSnack {
         Hierarchy& h = m_coord.ModifyComponent<Hierarchy>(parent);
 
         for (auto const& e : j) {
-            Entity child = Create(std::string{ e["prefab"] }, e["Transform"]);
+            Entity child = Create(std::string{ e["Prefab"] }, e["Transform"]);
 
             m_coord.ModifyComponent<Hierarchy>(child).parent = parent;
             h.children.insert(child);
 
             // Create child entities
-            if (e.contains("children"))
-                CreateEntityChildren(e["children"], child);
+            if (e.contains("Children"))
+                CreateEntityChildren(e["Children"], child);
         }
     }
 
@@ -313,89 +313,124 @@ namespace NightSnack {
     }
 
     json EntityFactory::CacheEntityChildren(Hierarchy const& h) {
-        json j = json::array();;
-        if (h.children.empty()) { return j; }
+        json j = json::array();
+        //if (h.children.empty()) return j;
 
         for (Entity c : h.children) {
-            json child;
-            child["transform"] = m_coord.GetComponent<Transform>(c);
-            child["prefab"] = GetEntityPrefabName(c);
+            try {
+                json child;
 
-            Hierarchy const& hc = m_coord.GetComponent<Hierarchy>(c);
-            if (!hc.children.empty())
-                child["children"] = CacheEntityChildren(hc);
-            j.push_back(child);
+                child["Transform"] = m_coord.GetComponent<Transform>(c);
+                child["Prefab"] = GetEntityPrefabName(c);
+
+                Hierarchy const& hc = m_coord.GetComponent<Hierarchy>(c);
+                if (!hc.children.empty()) {
+                    child["Children"] = CacheEntityChildren(hc);
+                }
+                j.push_back(child);
+            }
+            catch (std::exception const& e) {
+                std::cerr << "[EntityFactory] Failed to create child entity\n";
+                std::cerr << "Invalid JSON format " << e.what() << '\n';
+            }
         }
         return j;
     }
 
-    // Save all Living entities into a Level json file (Prefab Name and Transform)
-    json EntityFactory::SaveLevelEntities() {
-
+    json EntityFactory::CacheLevelEntities() {
         json entities = json::array();
-        // Iterate through living entities;
+
         for (Entity e : m_coord.GetLivingEntities()) {
-            json j;
-
-            // --------------------------------------------------------------------------
-            // ENTITY HIERARCHY
-            // --------------------------------------------------------------------------
             Hierarchy const& h = m_coord.GetComponent<Hierarchy>(e);
-            if (!h.children.empty()) CacheEntityChildren(h);
-
-            // --------------------------------------------------------------------------
-            // SAVING PREFAB
-            // --------------------------------------------------------------------------
             Transform const& t = m_coord.GetComponent<Transform>(e);
+
+            // Only process root entities for level saving
+            if (h.parent != INVALID_ENTITY) continue;
+
             std::string prefabName = entityToPrefab[e];
+
+            // Skip unmodified default entities
             if (prefabName == "++Default" && !t.prefabModified) {
-                std::cerr << "Default entity not saved\n";
                 continue;
             }
-            // Output file path
-            std::filesystem::path outPath = RESOURCE_PATH + ("GameData/Prefabs/" + prefabName + ".json");
+            // Build entity JSON
+            json j;
+            j["Prefab"] = prefabName;
+            j["Transform"] = t;
 
-            // Edge case: Prefab was deleted and entity using it still exists within a level
-            if (!std::filesystem::exists(outPath)) {
-                std::cout << "Saved as prefab: " << prefabName << '\n';
-                SaveAsPrefab(e, prefabName);
+            if (!h.children.empty()) {
+                j["Children"] = CacheEntityChildren(h);
             }
-            // Prefab was modified and not saved
-            if (t.prefabModified) {
-                // Check if a prefab already exists with the same name
-                bool exists = std::filesystem::exists(outPath);
-                size_t cnt = 1;
-
-                std::string newPrefabName;
-                while (exists) {
-                    // prefab1, prefab2 etc...
-                    newPrefabName = prefabName + std::to_string(cnt);
-                    // check if new name already exists;
-                    std::filesystem::path tempout = RESOURCE_PATH + ("GameData/Prefabs/" + newPrefabName + ".json");
-                    exists = std::filesystem::exists(tempout);
-                    cnt++;
-                }
-                SaveAsPrefab(e, newPrefabName);
-
-                // Only save ROOT level Entities
-                if (h.parent == INVALID_ENTITY) {
-                    j["prefab"] = newPrefabName;
-                    j["Transform"] = t;
-                    // Insert into Level json
-                    entities.push_back(j);
-                }
-            }
-            else {
-                // Only save ROOT level Entities
-                if (h.parent == INVALID_ENTITY) {
-                    j["prefab"] = prefabName;
-                    j["Transform"] = t;
-                    // Insert into Level json
-                    entities.push_back(j);
-                }
-            }
+            entities.push_back(j);
         }
         return entities;
+    }
+
+    json EntityFactory::SaveLevelEntities() {
+        json entities = json::array();
+
+        for (Entity e : m_coord.GetLivingEntities()) {
+            Hierarchy const& h = m_coord.GetComponent<Hierarchy>(e);
+            Transform const& t = m_coord.GetComponent<Transform>(e);
+
+            // Only process root entities for level saving
+            if (h.parent != INVALID_ENTITY) continue;
+
+            std::string prefabName = entityToPrefab[e];
+
+            // Skip unmodified default entities
+            if (prefabName == "++Default" && !t.prefabModified) {
+                continue;
+            }
+
+            // Handle prefab saving/updating
+            std::string finalPrefabName = EnsurePrefabExists(e, prefabName, t.prefabModified);
+
+            // Build entity JSON
+            json j;
+            j["Prefab"] = finalPrefabName;
+            j["Transform"] = t;
+
+            if (!h.children.empty()) {
+                j["Children"] = CacheEntityChildren(h);
+            }
+
+            entities.push_back(j);
+        }
+
+        return entities;
+    }
+
+    std::string EntityFactory::EnsurePrefabExists(Entity e,
+        std::string const& prefabName,
+        bool isModified) {
+        std::filesystem::path basePath = RESOURCE_PATH + std::string{ "GameData/Prefabs/" };
+        std::filesystem::path prefabPath = basePath / (prefabName + ".json");
+
+        // Prefab doesn't exist - create it
+        if (!std::filesystem::exists(prefabPath)) {
+            SaveAsPrefab(e, prefabName);
+            return prefabName;
+        }
+
+        // Prefab exists but wasn't modified - use original
+        if (!isModified) {
+            return prefabName;
+        }
+
+        // Prefab was modified - create variant with unique name
+        std::string variantName;
+        size_t counter = 1;
+
+        do {
+            variantName = prefabName + std::to_string(counter++);
+            prefabPath = basePath / (variantName + ".json");
+        } while (std::filesystem::exists(prefabPath));
+
+        SaveAsPrefab(e, variantName);
+        entityToPrefab[e] = variantName;  // Update mapping
+
+        return variantName;
     }
 
     // Store all entity component information into a json and returns it.

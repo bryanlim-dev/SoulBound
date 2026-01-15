@@ -24,7 +24,7 @@
                     "y": 0.0
                 }
             },
-            "prefab": "Cam"
+            "Prefab": "Cam"
         },
         {
             "Transform": {
@@ -49,7 +49,7 @@
                     "y": 0.0
                 }
             },
-            "prefab": "MainMenu-Background"
+            "Prefab": "MainMenu-Background"
         },
         {
             "Transform": {
@@ -74,7 +74,7 @@
                     "y": 0.0
                 }
             },
-            "prefab": "MainMenu-CreditButton"
+            "Prefab": "MainMenu-CreditButton"
         },
         {
             "Transform": {
@@ -99,7 +99,7 @@
                     "y": 0.0
                 }
             },
-            "prefab": "MainMenu-PlayButton"
+            "Prefab": "MainMenu-PlayButton"
         },
         {
             "Transform": {
@@ -124,7 +124,7 @@
                     "y": 0.0
                 }
             },
-            "prefab": "MainMenu-SettingButton"
+            "Prefab": "MainMenu-SettingButton"
         },
         {
             "Transform": {
@@ -149,7 +149,7 @@
                     "y": 0.0
                 }
             },
-            "prefab": "MainMenu-Exitbutton"
+            "Prefab": "MainMenu-Exitbutton"
         },
         {
             "Transform": {
@@ -174,7 +174,7 @@
                     "y": 0.0
                 }
             },
-            "prefab": "MainMenu-Title"
+            "Prefab": "MainMenu-Title"
         }
     ],
     "Name": "MainMenu"
