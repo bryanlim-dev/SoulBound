@@ -119,7 +119,7 @@ namespace NightSnack {
 		}
 
 		// Set to 0 to disable frame cap
-		m_coord.GetSystem<ApplicationSystem>()->SetFrameCap(0.f);
+		m_coord.GetSystem<ApplicationSystem>()->SetFrameCap(60.f);
 	}
 
 	// Function should be called upon termination of program;
