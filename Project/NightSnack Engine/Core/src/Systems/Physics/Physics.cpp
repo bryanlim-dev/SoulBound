@@ -141,8 +141,8 @@ namespace NightSnack {
 
 		Vec2 dir = t.pos - m_gridCenter;
 
-		int xStep = std::floor(dir.x / m_cellSize.x);
-		int yStep = std::floor(dir.y / m_cellSize.y);
+		float xStep = std::floor(dir.x / m_cellSize.x);
+		float yStep = std::floor(dir.y / m_cellSize.y);
 
 		m_gridCenter.x += xStep * m_cellSize.x;
 		m_gridCenter.y += yStep * m_cellSize.y;
@@ -420,10 +420,10 @@ namespace NightSnack {
 		else {
 			// AABB vs Circle
 			if (c1.shape == ShapeType::Circle) {
-				CircleVsAABB(t1, t2, c1, c2, normal, depth);
+				return CircleVsAABB(t1, t2, c1, c2, normal, depth);
 			}
 			else {
-				CircleVsAABB(t2, t1, c2, c1, normal, depth);
+				return CircleVsAABB(t2, t1, c2, c1, normal, depth);
 			}
 		}
 	}

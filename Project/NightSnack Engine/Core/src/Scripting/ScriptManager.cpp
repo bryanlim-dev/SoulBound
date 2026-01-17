@@ -29,13 +29,15 @@ namespace NightSnack::Scripting {
 
     // Main update to be called by Core engine (Updates all scripts)
     void ScriptManager::Update() {
-        if (m_coord.IsPaused()) { return; }
 
         // Reattach entity scripts when Level is reloaded
         if (!m_attached || entityNum != m_entities.size()) {
             for (Entity e{}; e < MAX_ENTITIES; ++e) {
                 RemoveAllScripts(e);
             }
+            
+            //This needs to be before all AttachScripts so OnLoad dosnt run yet
+            m_batchLoadScripts = true;
 
             entityNum = m_entities.size();
             // Attach scripts;
@@ -48,10 +50,44 @@ namespace NightSnack::Scripting {
                 }
             }
             m_attached = true;
+
+            //Scripts have been created, load all of them
+            if (!m_scriptsToLoad.empty())
+            {
+                //Now start all scripts that have not called OnStart()
+                for (void* script : m_scriptsToLoad)
+                {
+                    m_monoHost->CallMethod(script, "OnLoad");
+                }
+                m_scriptsToLoad.clear();
+            }
+
+            m_batchLoadScripts = false;
         }
+
+
+        //If paused do not run logic
+        if (m_coord.IsPaused())
+            return;
+        else
+        {
+            //std::cout << "Unpuased in scripts!" << std::endl;
+        }
+
 
         // Skip updating of scripts if in debug mode;
         if (debugMode && !stepRequest) { return; }
+
+        if (!m_scriptsToStart.empty())
+        {
+            //Now start all scripts that have not called OnStart()
+            for (void* script : m_scriptsToStart)
+            {
+                m_monoHost->CallMethod(script, "OnStart");
+            }
+            m_scriptsToStart.clear();
+        }
+
 
         for (int s{}; s < m_coord.steps; ++s) {
             // Update all active scripts
@@ -79,6 +115,14 @@ namespace NightSnack::Scripting {
          return "";
 
          return m_scriptNameMap[script];
+    }
+
+    Entity ScriptManager::GetScriptOwner(void* script)
+    {
+        if (m_scriptOwner.find(script) != m_scriptOwner.end())
+            return m_scriptOwner[script];
+
+        return 0;
     }
 
     MonoExposeBridge& ScriptManager::GetMonoExposeBridge()
@@ -172,6 +216,7 @@ namespace NightSnack::Scripting {
         }
         // Remove from map
         m_entityScripts[e].clear();
+        m_scriptOwner.clear();
 
         //m_coord.ModifyComponent<Script>(e).names.clear();
     }
@@ -196,6 +241,7 @@ namespace NightSnack::Scripting {
                 m_monoHost->DestroyScriptInstance(instance);
                 m_scriptNameMap.erase(instance);
                 scripts.erase(scriptIt);
+                m_scriptOwner.erase(instance);
 
                 //Remove from script component names list (This prevents reload from reloading the thing)
                 //auto& names = m_coord.ModifyComponent<Script>(e).names;
@@ -229,6 +275,35 @@ namespace NightSnack::Scripting {
         // Store mapping
         m_entityScripts[e].push_back(instance);
         m_scriptNameMap.insert({ instance,  m_monoHost->GetScriptName(instance) }); //Insert name into a map
+        m_scriptOwner.insert({ instance, e });
+
+
+        //This is the first frame of a scene, all scripts are being reloaded
+        //Do not run onLoad yet, all scripts will run it after all scripts are created
+        if (m_batchLoadScripts)
+        {
+            m_scriptsToLoad.push_back(instance);
+        }
+        //Script is created mid game, safe to load it now
+        else
+        {
+            m_monoHost->CallMethod(instance, "OnLoad");
+        }
+
+
+        //Check if game is not running, if not running store it and run later (during first update)
+        //OR
+        //Game is running but it is batch loading scripts (first frame of a scene), do not run start yet
+        if (m_coord.IsPaused() || m_batchLoadScripts)
+        {
+            //Its paused, OnStart only runs on first update for the entity
+            m_scriptsToStart.push_back(instance);
+        }
+        //Game is running and not first update frame (mid game), should be fine to call onStart
+        else
+        {
+            m_monoHost->CallMethod(instance, "OnStart");
+        }
 
         //m_coord.ModifyComponent<Script>(e).names.push_back(scriptName);
 

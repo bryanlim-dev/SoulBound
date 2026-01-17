@@ -181,13 +181,11 @@ namespace NightSnack {
 		/************************************************************************/
 		std::string GetName() const { return "AnimationSystem"; }
 
-	private:
-
 		// A single frame of an animation
 		struct AnimationFrame {
 			float U0{}, V0{}; // top left
 			float U1{}, V1{}; // bottom right
-			float timeDelay{}; // how long each frame will last
+			float timeDelay{}; // how long each frame will last in steps
 		};
 
 		// A single animation, comprising of many single frames
@@ -200,6 +198,8 @@ namespace NightSnack {
 		// "banana" - name of the sprite sheet
 		// "banana_0" - name of one of the AnimationClip in "banana" sprite sheet
 		std::unordered_map<std::string, std::unordered_map<std::string, AnimationClip>> m_animationClips;
+
+	private:
 
 		Signature m_systemSignature{};
 		// Reference to Coordinator;

@@ -152,7 +152,7 @@ namespace NightSnack {
 			} else if (!m_previousPauseState) {
 				// Only unpause the application if the application is being restored 
 				// and the application was not currently paused (level editor mode)
-				m_coord.Unpause();
+				//m_coord.Unpause();
 			}
 			m_appChangedPauseState = true;
 		}

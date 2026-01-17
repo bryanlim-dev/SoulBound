@@ -86,6 +86,7 @@ namespace NightSnack::Scripting {
 
 		std::vector<void*> GetEntityScripts(Entity e);
 		std::string GetScriptName(void* script);
+		Entity GetScriptOwner(void* script);
 
 		MonoExposeBridge& GetMonoExposeBridge();
 		void LoadEntityExposedFields(Entity e);
@@ -110,7 +111,19 @@ namespace NightSnack::Scripting {
 
 		// Map entity ID to script instance
 		std::map<Entity, std::vector<void*>> m_entityScripts;
+		//Tracks which script belongs to which entity
+		std::map<void*, Entity> m_scriptOwner;
 		std::map<void*, std::string> m_scriptNameMap;
+
+		//Scripts that have not run onStart()
+		std::list<void*> m_scriptsToStart;
+
+		//Scripts that have not run onLoad()
+		std::list<void*> m_scriptsToLoad;
+
+		//This is used when scripts are being reloaded/loaded for the first time
+		//Seperate from m_attached as something might be created mid update loop
+		bool m_batchLoadScripts = false;
 
 		bool debugMode = false;
 		bool stepRequest = false;
