@@ -171,6 +171,11 @@ namespace ManagedScripts
             //    Log($"Current rotation: {rotation:F1} degrees");
             //}
 
+            if (Engine.IsKeyDown(KeyboardKeys.W))
+            {
+                Engine.Log("Test Vec3: " + testVec3.X + " , " + testVec3.Y + " , " + testVec3.Z);
+            }
+
             //if (Engine.IsKeyDown(KeyboardKeys.W))
             //{
             //    Engine.Log("Trying to restart level");

@@ -80,7 +80,7 @@ namespace NightSnack::Scripting {
 		//Shove the data into a map
 		m_sciptsToFieldsMap.insert({ scriptInstance, fieldVec });
 	}
-	const std::vector<ExposedField> MonoExposeBridge::GetExposedFields(void* scriptInstance)
+	std::vector<ExposedField> MonoExposeBridge::GetExposedFields(void* scriptInstance)
 	{
 		//LoadScriptExposedFields(scriptInstance);
 		static std::vector<ExposedField> empty;
@@ -257,6 +257,24 @@ namespace NightSnack::Scripting {
 		memcpy(&result, value.m_structs.data(), sizeof(Vec3));
 
 		return result;
+	}
+
+	void MonoExposeBridge::ConvertValueFromVec2(ExposedValue& value, Vec2 vec2)
+	{
+		//Make sure struct size is correct
+		if (value.m_structs.size() != sizeof(Vec2))
+			return;
+
+		memcpy(value.m_structs.data(), &vec2, sizeof(Vec2));
+	}
+
+	void MonoExposeBridge::ConvertValueFromVec3(ExposedValue& value, Vec3 vec3)
+	{
+		//Make sure struct size is correct
+		if (value.m_structs.size() != sizeof(Vec3))
+			return;
+
+		memcpy(value.m_structs.data(), &vec3, sizeof(Vec3));
 	}
 
 	bool MonoExposeBridge::IsScriptClass(MonoClass* monoClass)
