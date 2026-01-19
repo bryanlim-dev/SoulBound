@@ -173,6 +173,9 @@ namespace NightSnack
 
 		Tilemap& m_tilemap;
 
+        static inline bool s_layerVisibility[6] = { true, true, true, true, true, true };
+        static constexpr const char* s_layerNames[6] = { "_ENGINE", "BACKGROUND", "GAMELAYER", "FOREGROUND", "GAMEUI", "_ENGINE2" };
+
         /************************************************************************/
         /*!
         \brief
@@ -183,6 +186,14 @@ namespace NightSnack
         */
         /************************************************************************/
         void DrawEntityInfo(Entity entity);
+
+        /************************************************************************/
+        /*!
+        \brief
+		    Draws layer visibility toggles for different layers.
+        */
+        /************************************************************************/
+        void LayerManager(Entity entity, int currentLayer);
 
         /************************************************************************/
         /*!
@@ -340,11 +351,10 @@ namespace NightSnack
             ImGui::SameLine();
             ImGui::SetNextItemWidth(120.0f);
             if (ImGui::Combo("##LayerCombo", &currentLayer, layerNames, IM_ARRAYSIZE(layerNames))) {
-                //std::cout << "original: " << static_cast<int>(t.layer) << ", new: " << currentLayer << std::endl;
                 t.layer = static_cast<LayerType>(currentLayer);
                 m_coord.BufferEntitySignature(entity);
-				//std::cout << "Now: " << static_cast<int>(t.layer) << std::endl;
             }
+            LayerManager(entity, currentLayer);
         }
 
 		// Current Prefab display
@@ -371,6 +381,89 @@ namespace NightSnack
             factory->SaveAsPrefab(entity, entityName, exists);
         }
         ImGui::Columns(1);
+    }
+
+	// Draws layer visibility toggles for different layers.
+    inline void InspectorPanel::LayerManager(Entity entity, int currentLayer)
+    {
+        auto& t = m_coord.ModifyComponent<Transform>(entity);
+        auto graphics = m_coord.GetSystem<GraphicsSystem>();
+        auto physics = m_coord.GetSystem<PhysicsSystem>();
+        ImGui::SameLine();
+        bool layerActive = true;
+
+        // Check the active state for this layer in System
+        if (graphics)
+        {
+            for (auto& layer : graphics->m_layers)
+            {
+                if (layer.Type() == t.layer)
+                {
+                    layerActive = layer.IsActive();
+                    break;
+                }
+            }
+        }
+        if (physics)
+        {
+            for (auto& layer : physics->m_layers)
+            {
+                if (layer.Type() == t.layer)
+                {
+                    layerActive = layer.IsActive();
+                    break;
+                }
+            }
+		}
+
+        std::string label = std::string("Active##LayerActive") + std::to_string(currentLayer);
+        if (ImGui::Checkbox(label.c_str(), &layerActive))
+        {
+			// Toggle this layer in GraphicsSystem
+            if (graphics)
+            {
+                for (auto& layer : graphics->m_layers)
+                {
+                    if (layer.Type() == static_cast<LayerType>(currentLayer))
+                    {
+                        if (layer.IsActive() != layerActive)
+                            layer.ToggleActive();
+
+                        for (Entity e : layer.Entities())
+                        {
+                            if (e == INVALID_ENTITY) 
+                                continue;
+                            if (m_coord.HasComponent<Transform>(e))
+                            {
+                                m_coord.ModifyComponent<Transform>(e).isActive = layerActive;
+                            }
+                        }
+                    }
+                }
+            }
+            // Toggle this layer in PhysicsSystem
+            if (physics)
+            {
+                for (auto& layer : physics->m_layers)
+                {
+                    if (layer.Type() == static_cast<LayerType>(currentLayer))
+                    {
+                        if (layer.IsActive() != layerActive)
+                            layer.ToggleActive();
+
+                        for (Entity e : layer.Entities())
+                        {
+                            if (e == INVALID_ENTITY) 
+                                continue;
+                            if (m_coord.HasComponent<Transform>(e))
+                            {
+                                m_coord.ModifyComponent<Transform>(e).isActive = layerActive;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 	// Draws Transform component details which includes position, rotation, and scale.
