@@ -170,6 +170,7 @@ namespace NightSnack {
 						// Change the instance color to be based on its Color component values
 						auto& col = m_coord.GetComponent<Color>(e);
 						instance.color = glm::vec4{ col.r, col.g, col.b, col.a };
+						data.material->SetBaseColor(col.r, col.g, col.b, col.a);
 						key += "_color";
 					} else {
 						// Entities that have textured materials
@@ -227,7 +228,8 @@ namespace NightSnack {
 					if (m_coord.HasComponent<Color>(e)) {
 						// Entities with solid color
 						auto& clr = m_coord.GetComponent<Color>(e);
-						shader->SetVec3("uColor", glm::vec3{ clr.r, clr.g, clr.b });
+						shader->SetVec4("uColor", glm::vec4{ clr.r, clr.g, clr.b, clr.a });
+						data.material->SetBaseColor(clr.r, clr.g, clr.b, clr.a);
 					} else {
 						// Entities with textures
 						if (m_coord.HasComponent<Animator>(e)) {
@@ -238,7 +240,7 @@ namespace NightSnack {
 							shader->SetVec4("uUVRect", { 0.f, 0.f, 1.f, 1.f });
 						}
 						// Default color is white, if the texture is not initialized
-						shader->SetVec3("uColor", glm::vec3{ 1.f, 1.f, 1.f });
+						shader->SetVec4("uColor", glm::vec4{ 1.f, 1.f, 1.f, 1.f });
 					}
 
 					data.material->ApplyUniforms(ren.isWireframe);
@@ -526,6 +528,8 @@ namespace NightSnack {
 		int numCol = std::stoi(numColStr);
 		int numRow = std::stoi(numRowStr);
 
+		//std::cout << "texture name is : " << textureFilePath << std::endl;
+
 		auto tex = std::make_unique<Texture>(textureFilePath, rm, numCol, numRow);
 		//std::cout << "[Graphics] Created Animated Texture: " << textureFilePath << '\n';
 		AddTexture(textureFilePath, std::move(tex));
@@ -542,7 +546,7 @@ namespace NightSnack {
 	void GraphicsSystem::UpdateTextureOfMaterial(const std::string& textureFilePath, Entity e) {
 		auto& ren = m_coord.ModifyComponent<Renderable>(e);
 
-		std::filesystem::path filePath = textureFilePath;
+		std::filesystem::path filePath = textureFilePath; 
 		
 		// Check whether the current texture exists
 		Texture* tex = GetTexture(filePath.string());
@@ -557,16 +561,17 @@ namespace NightSnack {
 			// Name of the material will be the texture file path, but the name only
 			AddMaterial(matName, std::move(newMat));
 
+
 			// Change the name of this Renderable's material name to the new material name
 			ren.materialName = matName;
-			////std::cout << "New texture detected!\n";
-			////std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
-			////std::cout << "and this texture name is: " << m_materials[ren.materialName]->GetTexture()->GetTextureName() << std::endl;
+			//std::cout << "New texture detected!\n";
+			//std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
+			//std::cout << "and this texture name is: " << m_materials[ren.materialName]->GetTexture()->GetTextureName() << std::endl;
 
 		} else {
 			// Texture already exists, but Material might not
 			// Check whether combination of this Material exists with this Texture
-			////std::cout << "Texture exists already!\n";
+			//std::cout << "Texture exists already!\n";
 			bool found = false;
 			for (const auto& [matName, material] : m_materials) {
 				// Check whether the texture exists first! 
@@ -575,17 +580,17 @@ namespace NightSnack {
 				if (!matTex) continue;
 
 				// If it exists already, change the name of this Renderable's material to the existing material name
-				////std::cout << "Checking for texture name: " << textureFileName << std::endl;
+				//std::cout << "Checking for texture name: " << textureFileName << std::endl;
 				if (filePath.string() == matTex->GetTextureName()) {
 					ren.materialName = filePath.filename().stem().string();
 					found = true;
-					////std::cout << "Material for this texture exists too!\n";
+					//std::cout << "Material for this texture exists too!\n";
 					break;
 				}
 
 			}
 			if (!found) {
-				////std::cout << "Material for this texture doesnt exist yet, creating one ...\n";
+				//std::cout << "Material for this texture doesnt exist yet, creating one ...\n";
 				// if it does not exist, create new material with this texture combination
 				auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.string()));
 				std::string matName = filePath.filename().stem().string();
@@ -594,10 +599,10 @@ namespace NightSnack {
 				// change the name of this Renderable's material name to the new material name
 				ren.materialName = matName;
 			}
-			////std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
+			//std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
 		}
 
-		////std::cout << "UpdateTextureOfMaterial(), mat name: " << ren.materialName << std::endl;
+		//std::cout << "UpdateTextureOfMaterial(), mat name: " << ren.materialName << std::endl;
 	}
 
 	// Helper functions to add resources --------------------------------------------------------------------

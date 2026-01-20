@@ -15,9 +15,8 @@
 
 layout (location=0) out vec4 fFragColor;
 
-in vec3 vColor;
+in vec4 vColor;
 
 void main() {
-
-    fFragColor = vec4(vColor, 1.0);
+    fFragColor = vColor;
 }

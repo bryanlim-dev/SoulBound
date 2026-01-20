@@ -37,13 +37,17 @@ namespace NightSnack {
 				continue;
 			}
 
-			CreateAnimationClips(textureName, tex, cols, rows);
+			CreateAnimationClips(textureName, cols, rows);
 		}
 	}
 
 	void AnimationSystem::Update() {
 		//if (m_coord.IsPaused()) return;
 		
+		if (m_animationClips.empty()) {
+			return;
+		}
+
 		// Iterate through all entities that have Animator component
 		for (Entity e : m_entities) {
 			auto& animator = m_coord.ModifyComponent<Animator>(e);
@@ -63,6 +67,16 @@ namespace NightSnack {
 			////std::cout << "Spritesheet name: " << animator.spriteSheetName << std::endl;
 			if (tex->GetColumns() == 1 && tex->GetRows() == 1) {
 				//std::cerr << "[AnimationSystem] Current Entity texture is treated as static. Ensure Texture name has [_cols_rows] or remove Entity's Animator Component!\n";
+
+				// If this entity previously had an animated spritesheet, but user changed it to have a static texture, 
+				// clear the previous spritesheet name and current animation clip
+				if (!animator.spriteSheetName.empty()) {
+					animator.spriteSheetName.clear();
+					animator.currentAnimationClip.clear();
+					// Reset the uv values as well so that the texture is rendered properly
+					animator.uvTopLeft = { 0.f, 0.f };
+					animator.uvBottomRight = { 1.f, 1.f };
+				}
 				continue;
 			}
 
@@ -169,14 +183,16 @@ namespace NightSnack {
 
 			// Only create AnimationClips for newly loaded textures
 			if (m_animationClips.find(textureName) == m_animationClips.end()) {
-				CreateAnimationClips(textureName, tex, cols, rows);
+				CreateAnimationClips(textureName, cols, rows);
 			}
 		}
 	}
 
-	void AnimationSystem::CreateAnimationClips(std::string textureName, Texture* tex, int cols, int rows) {
+	void AnimationSystem::CreateAnimationClips(std::string textureName, int cols, int rows) {
 		////std::cout << "[INIT] Processing texture: " << textureName << " has " << cols
 		//	<< " columns, " << rows << " rows\n";
+
+		//std::string textureStemName = std::filesystem::path(textureName).stem().string();
 
 		// Separate the texture into its different animation clips
 		// Etc 1 texture image has 2 animation clips from left to right
@@ -186,7 +202,6 @@ namespace NightSnack {
 		// Each row corresponds to one animation clip
 		for (int r{}; r < rows; ++r) {
 			AnimationClip clip;
-			clip.texture = tex;
 
 			std::string clipName = textureName + "_" + std::to_string(r);
 			////std::cout << "Creating AnimationClip: " << clipName << std::endl;
@@ -199,7 +214,7 @@ namespace NightSnack {
 				// We want the coords from our sprite sheet to start from top left
 				frame.V0 = 1.f - (r + 1) * frameHeight;
 				frame.V1 = 1.f - r * frameHeight;
-				frame.timeDelay = 20.f; // by default
+				frame.timeDelay = 20; // by default
 
 				clip.frames.emplace_back(frame);
 			}
@@ -208,6 +223,7 @@ namespace NightSnack {
 			m_animationClips[textureName][clipName] = clip;
 		}
 
+		LoadAnimationAsset(textureName);
 		//std::cout << "Created AnimationClip for: " << textureName << std::endl;
 	}
 
@@ -282,6 +298,64 @@ namespace NightSnack {
 				}
 			}
 		}
+	}
+
+	void AnimationSystem::SaveAnimationAsset(const std::string& spritesheet) {
+		auto it = m_animationClips.find(spritesheet);
+		if (it == m_animationClips.end()) {
+			// This spritesheet does not even exist somehow, return it!
+			return;
+		}
+
+		json j;
+		j["spritesheet"] = spritesheet; 
+
+		json clips;
+		for (const auto& [clipName, clip] : it->second) {
+			clips[clipName] = clip;
+		}
+
+		j["clips"] = clips;
+
+		std::filesystem::path path = std::filesystem::path(RESOURCE_PATH) / "GameData/Animations/" / (spritesheet + ".json");
+
+		std::filesystem::create_directories(path.parent_path());
+
+		std::ofstream ofs(path);
+		ofs << std::setw(4) << j;
+
+		//std::cout << "[AnimationSystem] Saved Animation Asset: " << path << std::endl;
+	}
+
+	void AnimationSystem::LoadAnimationAsset(const std::string& spritesheet) {
+
+		std::filesystem::path path = std::filesystem::path(RESOURCE_PATH) / "GameData/Animations/" / (spritesheet + ".json");
+
+		if (!std::filesystem::exists(path)) {
+			return;
+		}
+
+		std::ifstream ifs(path);
+		json j;
+		ifs >> j;
+
+		auto& runtimeClips = m_animationClips[spritesheet];
+
+		for (auto& [clipName, clipJson] : j["clips"].items()) {
+			if (runtimeClips.find(clipName) == runtimeClips.end()) {
+				continue;
+			}
+
+			auto& runtimeClip = runtimeClips[clipName];
+			const auto& frames = clipJson["frames"];
+
+			size_t count = std::min(frames.size(), runtimeClip.frames.size());
+			for (size_t i{ 0 }; i < count; ++i) {
+				runtimeClip.frames[i].timeDelay = frames[i]["timeDelay"].get<int>();
+			}
+		}
+
+		//std::cout << "[AnimationSystem] Loaded Animation Asset: " << path << std::endl;
 	}
 
 } // NightSnack
