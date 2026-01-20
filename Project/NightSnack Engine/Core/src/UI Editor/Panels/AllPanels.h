@@ -25,6 +25,7 @@
 #include "ScenePanel.h"
 #include "OptionsPanel.h"
 #include "AssetsPanel.h"
+#include "AnimationPanel.h"
 #include "PrefabsPanel.h"
 #include "FilesPanel.h"
 #include "ScriptsPanel.h"

@@ -73,7 +73,7 @@ namespace NightSnack {
 		m_coord.RegisterComponent<Camera>();
 
 		m_coord.RegisterComponent<PlayerController>();
-		m_coord.RegisterComponent<States>();
+		//m_coord.RegisterComponent<States>();
 		m_coord.RegisterComponent<Hierarchy>();
 
 		m_coord.RegisterComponent<Animator>();
@@ -118,8 +118,8 @@ namespace NightSnack {
 			m_coord.BufferEntitySignature(e);
 		}
 
-		// Set to 0 to disable frame cap
-		m_coord.GetSystem<ApplicationSystem>()->SetFrameCap(0.f);
+		// Set to 60 to disable frame cap
+		m_coord.GetSystem<ApplicationSystem>()->SetFrameCap(60.f);
 	}
 
 	// Function should be called upon termination of program;

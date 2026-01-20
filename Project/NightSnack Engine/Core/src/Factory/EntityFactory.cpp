@@ -241,15 +241,37 @@ namespace NightSnack {
         DestroyLevelEntities();
         try {
             for (auto const& item : level["Entities"]) {
-                Create(std::string{ item["prefab"] }, item["Transform"]);
+                Entity e = Create(std::string{ item["Prefab"] }, item["Transform"]);
                 //std::cout << "[EntityFactory] Creating prefab<" << item["prefab"] << "> at ("
                 //    << item["Transform"]["Position"]["x"] << ", "
                 //    << item["Transform"]["Position"]["y"] << ", "
                 //    << item["Transform"]["Position"]["z"] << ")\n";
+
+                // Create child entities
+                if (item.contains("Children")) {
+                    CreateEntityChildren(item.at("Children"), e);
+                }
             }
         }
-        catch (...) {
+        catch (std::exception const& e) {
+            std::cerr << "Invalid JSON format " << e.what() << '\n';
             std::cerr << "[EntityFactory]: Failed to create entities for Level\n";
+        }
+    }
+    void EntityFactory::CreateEntityChildren(json const& j, Entity parent) {
+        //if (!j.contains("children")) return;
+
+        Hierarchy& h = m_coord.ModifyComponent<Hierarchy>(parent);
+
+        for (auto const& e : j) {
+            Entity child = Create(std::string{ e["Prefab"] }, e["Transform"]);
+
+            m_coord.ModifyComponent<Hierarchy>(child).parent = parent;
+            h.children.insert(child);
+
+            // Create child entities
+            if (e.contains("Children"))
+                CreateEntityChildren(e["Children"], child);
         }
     }
 
@@ -290,86 +312,125 @@ namespace NightSnack {
         }
     }
 
-    // Save all Living entities into a Level json file (Prefab Name and Transform)
-    json EntityFactory::SaveLevelEntities() {
+    json EntityFactory::CacheEntityChildren(Hierarchy const& h) {
+        json j = json::array();
+        //if (h.children.empty()) return j;
 
+        for (Entity c : h.children) {
+            try {
+                json child;
+
+                child["Transform"] = m_coord.GetComponent<Transform>(c);
+                child["Prefab"] = GetEntityPrefabName(c);
+
+                Hierarchy const& hc = m_coord.GetComponent<Hierarchy>(c);
+                if (!hc.children.empty()) {
+                    child["Children"] = CacheEntityChildren(hc);
+                }
+                j.push_back(child);
+            }
+            catch (std::exception const& e) {
+                std::cerr << "[EntityFactory] Failed to create child entity\n";
+                std::cerr << "Invalid JSON format " << e.what() << '\n';
+            }
+        }
+        return j;
+    }
+
+    json EntityFactory::CacheLevelEntities() {
         json entities = json::array();
 
-        // Iterate through living entities;
         for (Entity e : m_coord.GetLivingEntities()) {
-            json j;
-
+            Hierarchy const& h = m_coord.GetComponent<Hierarchy>(e);
             Transform const& t = m_coord.GetComponent<Transform>(e);
+
+            // Only process root entities for level saving
+            if (h.parent != INVALID_ENTITY) continue;
+
             std::string prefabName = entityToPrefab[e];
+
+            // Skip unmodified default entities
             if (prefabName == "++Default" && !t.prefabModified) {
-                std::cerr << "Default entity not saved\n";
                 continue;
             }
-            // Output file path
-            std::filesystem::path outPath = RESOURCE_PATH + ("GameData/Prefabs/" + prefabName + ".json");
+            // Build entity JSON
+            json j;
+            j["Prefab"] = prefabName;
+            j["Transform"] = t;
 
-            // Edge case: Prefab was deleted and entity using it still exists within a level
-            if (!std::filesystem::exists(outPath)) {
-                std::cout << "Saved as prefab: " << prefabName << '\n';
-                SaveAsPrefab(e, prefabName);
+            if (!h.children.empty()) {
+                j["Children"] = CacheEntityChildren(h);
             }
-            // Prefab was modified and not saved
-            if (t.prefabModified) {
-                // Check if a prefab already exists with the same name
-                bool exists = std::filesystem::exists(outPath);
-                size_t cnt = 1;
-
-                std::string newPrefabName;
-                while (exists) {
-                    // prefab1, prefab2 etc...
-                    newPrefabName = prefabName + std::to_string(cnt);
-                    // check if new name already exists;
-                    std::filesystem::path tempout = RESOURCE_PATH + ("GameData/Prefabs/" + newPrefabName + ".json");
-                    exists = std::filesystem::exists(tempout);
-                    cnt++;
-                }
-                j["prefab"] = newPrefabName;
-                SaveAsPrefab(e, newPrefabName);
-            }
-            else {
-                j["prefab"] = prefabName;
-            }
-
-            std::string layer;
-            switch (t.layer) {
-            case LayerType::_ENGINE:
-                layer = "_Engine";
-                break;
-            case LayerType::BACKGROUND:
-                layer = "Background";
-                break;
-            case LayerType::FOREGROUND:
-                layer = "Foreground";
-                break;
-            case LayerType::GAMEUI:
-                layer = "GameUI";
-                break;
-            case LayerType::_ENGINE2:
-                layer = "_Engine2";
-                break;
-            default:
-                layer = "GameLayer";
-                break;
-            }
-
-            j["Transform"] = {
-                { "Position", { {"x", t.pos.x}, {"y", t.pos.y}, {"z", t.pos.z} } },
-                { "Rotation", t.rot },
-                { "Scale",    { {"x", t.scale.x}, {"y", t.scale.y} } },
-                { "UIBasePosition", { {"x", t.UIbasePos.x}, {"y", t.UIbasePos.y}, {"z", t.UIbasePos.z} } },
-				{ "UIBaseScale",    { {"x", t.UIbaseScale.x}, {"y", t.UIbaseScale.y} } },
-                { "Layer", layer }
-            };
-
-            // Insert into Level json
             entities.push_back(j);
         }
         return entities;
+    }
+
+    json EntityFactory::SaveLevelEntities() {
+        json entities = json::array();
+
+        for (Entity e : m_coord.GetLivingEntities()) {
+            Hierarchy const& h = m_coord.GetComponent<Hierarchy>(e);
+            Transform const& t = m_coord.GetComponent<Transform>(e);
+
+            // Only process root entities for level saving
+            if (h.parent != INVALID_ENTITY) continue;
+
+            std::string prefabName = entityToPrefab[e];
+
+            // Skip unmodified default entities
+            if (prefabName == "++Default" && !t.prefabModified) {
+                continue;
+            }
+
+            // Handle prefab saving/updating
+            std::string finalPrefabName = EnsurePrefabExists(e, prefabName, t.prefabModified);
+
+            // Build entity JSON
+            json j;
+            j["Prefab"] = finalPrefabName;
+            j["Transform"] = t;
+
+            if (!h.children.empty()) {
+                j["Children"] = CacheEntityChildren(h);
+            }
+
+            entities.push_back(j);
+        }
+
+        return entities;
+    }
+
+    std::string EntityFactory::EnsurePrefabExists(Entity e,
+        std::string const& prefabName,
+        bool isModified) {
+        std::filesystem::path basePath = RESOURCE_PATH + std::string{ "GameData/Prefabs/" };
+        std::filesystem::path prefabPath = basePath / (prefabName + ".json");
+
+        // Prefab doesn't exist - create it
+        if (!std::filesystem::exists(prefabPath)) {
+            SaveAsPrefab(e, prefabName);
+            return prefabName;
+        }
+
+        // Prefab exists but wasn't modified - use original
+        if (!isModified) {
+            return prefabName;
+        }
+
+        // Prefab was modified - create variant with unique name
+        std::string variantName;
+        size_t counter = 1;
+
+        do {
+            variantName = prefabName + std::to_string(counter++);
+            prefabPath = basePath / (variantName + ".json");
+        } while (std::filesystem::exists(prefabPath));
+
+        SaveAsPrefab(e, variantName);
+        entityToPrefab[e] = variantName;  // Update mapping
+
+        return variantName;
     }
 
     // Store all entity component information into a json and returns it.
@@ -384,154 +445,28 @@ namespace NightSnack {
         else j["modified"] = false;
 
         // RIGIDBODY ------------------------------------------------------
-        if (m_coord.HasComponent<RigidBody>(e)) {
-            RigidBody const& rb = m_coord.GetComponent<RigidBody>(e);
-            float mass = 1.f;
-            if (rb.invMass != 0.f) {
-                mass = 1.f / rb.invMass;
-            }
-            j["RigidBody"] = {
-                {"mass", mass},
-                {"useGravity", rb.useGravity}
-            };
-        }
+        if (m_coord.HasComponent<RigidBody>(e)) j["RigidBody"] = m_coord.GetComponent<RigidBody>(e);
         // COLLIDER -------------------------------------------------------
-        if (m_coord.HasComponent<Collider>(e)) {
-            Collider const& c = m_coord.GetComponent<Collider>(e);
-            json col;
-            col["isStatic"] = c.isStatic;
-
-            // Type
-            if (c.type == ColliderType::Solid) {
-                col["type"] = "Solid";
-            }
-            else if (c.type == ColliderType::Trigger) {
-                col["type"] = "Trigger";
-            }
-            else if (c.type == ColliderType::Ground) {
-                col["type"] = "Ground";
-            }
-
-            // Shape & dimensions
-            if (c.shape == ShapeType::AABB) {
-                col["shape"] = "AABB";
-            }
-            else if (c.shape == ShapeType::Circle) {
-                col["shape"] = "Circle";
-            }
-            col["width"] = c.width;
-            col["height"] = c.height;
-            col["radius"] = c.radius;
-
-            j["Collider"] = col;
-        }
+        if (m_coord.HasComponent<Collider>(e)) j["Collider"] = m_coord.GetComponent<Collider>(e);
         // RENDERABLE -----------------------------------------------------
-        if (m_coord.HasComponent<Renderable>(e)) {
-            Renderable const& r = m_coord.GetComponent<Renderable>(e);
-            j["Renderable"] = {
-                {"meshName", r.meshName},
-                {"materialName", r.materialName},
-                {"isWireframe", r.isWireframe}
-            };
-        }
+        if (m_coord.HasComponent<Renderable>(e)) j["Renderable"] = m_coord.GetComponent<Renderable>(e);
         // COLOR ----------------------------------------------------------
-        if (m_coord.HasComponent<Color>(e)) {
-            Color const& c = m_coord.GetComponent<Color>(e);
-            j["Color"] = {
-                {"r", c.r},
-                {"g", c.g},
-                {"b", c.b},
-                {"a", c.a}
-            };
-        }
+        if (m_coord.HasComponent<Color>(e)) j["Color"] = m_coord.GetComponent<Color>(e);
         // CAMERA ---------------------------------------------------------
-        if (m_coord.HasComponent<Camera>(e)) {
-            Camera const& c = m_coord.GetComponent<Camera>(e);
-            j["Camera"] = {
-                {"isMainCam", c.isMainCam},
-                {"zoom",      c.zoom},
-                {"width",     c.width},
-                {"height",    c.height}
-            };
-        }
+        if (m_coord.HasComponent<Camera>(e)) j["Camera"] = m_coord.GetComponent<Camera>(e);
         // ANIMATOR -------------------------------------------------------
-        if (m_coord.HasComponent<Animator>(e)) {
-            Animator const& a = m_coord.GetComponent<Animator>(e);
-            j["Animator"] = {
-                {"spriteSheetName", a.spriteSheetName},
-                {"playbackSpeed", a.playbackSpeed},
-                {"isPlaying", a.isPlaying},
-                {"isLooping", a.isLooping}
-            };
-        }
+        if (m_coord.HasComponent<Animator>(e)) j["Animator"] = m_coord.GetComponent<Animator>(e);
         // FONT -----------------------------------------------------------
-        if (m_coord.HasComponent<Font>(e)) {
-            Font const& f = m_coord.GetComponent<Font>(e);
-
-            j["Font"] = {
-                {"fontType", f.fontType},
-                {"text", f.text},
-                {"fontSize", f.fontSize},
-                { "textColor", {{"r", f.textColor.x}, {"g", f.textColor.y}, {"b", f.textColor.z}} },
-                {"offsetPosition", {{"x", f.offsetPosition.x}, {"y", f.offsetPosition.y}, {"z", f.offsetPosition.z}} }
-            };
-        }
+        if (m_coord.HasComponent<Font>(e)) j["Font"] = m_coord.GetComponent<Font>(e);
         // BUTTON ---------------------------------------------------------
-        if (m_coord.HasComponent<ButtonInfo>(e)) {
-            ButtonInfo const& b = m_coord.GetComponent<ButtonInfo>(e);
-            std::string action, type, target;
-
-            switch (b.action) {
-            case ButtonAction::PLAYAUDIO:
-                action = "PlayAudio";
-                break;
-            case ButtonAction::PLAYAUDIO2:
-                action = "PlayAudio2";
-                break;
-            case ButtonAction::PLAYAUDIO3:
-                action = "PlayAudio3";
-                break;
-
-            case ButtonAction::LOADLEVEL: action = "LoadLevel"; break;
-            case ButtonAction::OPENMENU: action = "OpenMenu"; break;
-            default: type = "Unknown"; break;
-            }
-
-            switch (b.type) {
-            case ButtonType::CLICKER: type = "Clicker"; break;
-            case ButtonType::SLIDER: type = "Slider"; break;
-            default: type = "Unknown";  break;
-            }
-            target = b.target;
-
-            j["ButtonInfo"] = { {"action", action}, {"type", type}, {"target", target} };
-        }
+        if (m_coord.HasComponent<ButtonInfo>(e)) j["ButtonInfo"] = m_coord.GetComponent<ButtonInfo>(e);
         // SCRIPT ---------------------------------------------------------
-        if (m_coord.HasComponent<Script>(e)) {
-            Script const& s = m_coord.GetComponent<Script>(e);
-            j["Script"] = {
-                {"name", s.names}
-            };
-        }
+        if (m_coord.HasComponent<Script>(e)) j["Script"] = m_coord.GetComponent<Script>(e);
         //  ---------------------------------------------------------------
-        if (m_coord.HasComponent<PlayerController>(e)) {    // temp
-            PlayerController const& p = m_coord.GetComponent<PlayerController>(e);
-            j["PlayerController"] = {
-                {"moveSpeed", p.moveSpeed},
-                {"jumpSpeed", p.jumpSpeed}
-            };
-        }
+        if (m_coord.HasComponent<PlayerController>(e)) j["PlayerController"] = m_coord.GetComponent<PlayerController>(e);
         // AUDIO ----------------------------------------------------------
-        if (m_coord.HasComponent<Audio>(e)) {
-            Audio const& a = m_coord.GetComponent<Audio>(e);
-            j["Audio"] = {
-                {"audioKey", a.audioKey},
-                {"isPlaying", a.isPlaying},
-                {"loop", a.loop},
-                {"playOnStart", a.playOnStart},
-                { "volume", a.volume }
-            };
-        }
+        if (m_coord.HasComponent<Audio>(e)) j["Audio"] = m_coord.GetComponent<Audio>(e);
+
         return j;
     }
 

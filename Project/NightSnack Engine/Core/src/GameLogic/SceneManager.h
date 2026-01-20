@@ -131,8 +131,9 @@ namespace NightSnack::Scene {
 		Signature m_systemSignature{};
 		EventDispatcher* m_dispatcher = nullptr;
 		Coordinator& m_coord;
-
-		std::vector<std::pair<json, Transform>> m_levelCache;
+		
+		json m_levelCache;
+		//std::vector<std::pair<json, std::pair<json, Transform>>> m_levelCache;
 		std::vector<std::pair<std::string, Transform>> m_overlayMenu;
 		std::unordered_map<ButtonAction, Button> m_buttons;
 

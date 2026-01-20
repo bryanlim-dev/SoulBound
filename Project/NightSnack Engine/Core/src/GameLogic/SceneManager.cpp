@@ -44,13 +44,6 @@ namespace NightSnack::Scene {
 			RestartLevel();
 			m_restart = false;
 		}
-
-		// In the event of mouseclick check collision of all buttons
-		//if (m_mouseClicked) {
-		//	m_mouseClicked = false;
-		//	if (m_coord.IsPaused()) return;
-		//	CheckButtonCollisions();
-		//}
 	}
 
 	// Register all button actions and stop buttons into m_buttons
@@ -239,14 +232,7 @@ namespace NightSnack::Scene {
 		std::set<Entity> entities = m_coord.GetLivingEntities();
 		if (entities.empty()) { return; }
 
-		m_levelCache.clear();
-		m_levelCache.reserve(entities.size());
-
-		for (Entity e : entities) {
-			m_levelCache.emplace_back(std::make_pair(
-				m_coord.GetSystem<EntityFactory>()->CacheEntityComponents(e),
-				m_coord.GetComponent<Transform>(e)));
-		}
+		m_levelCache["Entities"] = m_coord.GetSystem<EntityFactory>()->CacheLevelEntities();
 	}
 
 	// Restore scene to cached level -> restore after Stopping simulation in Editor
@@ -257,9 +243,7 @@ namespace NightSnack::Scene {
 		// Restore all entities to original
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
-		for (auto const& unit : m_levelCache) {
-			factory->Create(unit.first, unit.second);
-		}
+		factory->CreateLevelEntities(m_levelCache);
 		
 		// Restart audio
 		auto const& audio = m_coord.GetSystem<AudioSystem>();
