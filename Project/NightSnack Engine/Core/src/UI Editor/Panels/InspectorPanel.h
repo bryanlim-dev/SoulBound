@@ -1170,7 +1170,7 @@ namespace NightSnack
                             switch (fields.m_valueType)
                             {
                                 //int
-                            case Scripting::MonoValueType::MONO_INT:
+                            case MonoValueType::MONO_INT:
                             {
 
                                 //ImGui::TableSetColumnIndex(1); ImGui::Text("%i", val.m_i);
@@ -1183,7 +1183,7 @@ namespace NightSnack
                                 }
                                 break;
                             }
-                            case Scripting::MonoValueType::MONO_BOOL:
+                            case MonoValueType::MONO_BOOL:
                             {
                                  //ImGui::TableSetColumnIndex(1); ImGui::Checkbox(" ", &val.m_b);
                                 ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
@@ -1195,7 +1195,7 @@ namespace NightSnack
 
                                 break;
                             }
-                            case Scripting::MonoValueType::MONO_FLOAT:
+                            case MonoValueType::MONO_FLOAT:
                             {
                                 //ImGui::TableSetColumnIndex(1); ImGui::Text("%.5f", val.m_f);
 
@@ -1207,7 +1207,7 @@ namespace NightSnack
                                 }
                                 break;
                             }
-                            case Scripting::MonoValueType::MONO_STRING:
+                            case MonoValueType::MONO_STRING:
                             {
                                 //ImGui::TableSetColumnIndex(1); ImGui::Text(val.m_s.c_str());
                                 ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
@@ -1225,7 +1225,7 @@ namespace NightSnack
 
                                 break;
                             }
-                            case Scripting::MonoValueType::MONO_VECTOR2:
+                            case MonoValueType::MONO_VECTOR2:
                             {
 
                                 Vec2 vec = bridge.ConvertVec2(val);
@@ -1256,7 +1256,7 @@ namespace NightSnack
 
                                 break;
                             }
-                            case Scripting::MonoValueType::MONO_VECTOR3:
+                            case MonoValueType::MONO_VECTOR3:
                             {
                                 Vec3 vec = bridge.ConvertVec3(val);
                                 //ImGui::TableSetColumnIndex(1); ImGui::Text("x: %.5f", vec.x);
@@ -1297,7 +1297,7 @@ namespace NightSnack
                                 }
                                 break;
                             }
-                            case Scripting::MonoValueType::MONO_SCRIPT:
+                            case MonoValueType::MONO_SCRIPT:
                             {
                                 if (val.m_object == nullptr) //No refrence
                                 {
@@ -1313,7 +1313,7 @@ namespace NightSnack
 
                                 break;
                             }
-                            case Scripting::MonoValueType::MONO_UNSUPPORTED:
+                            case MonoValueType::MONO_UNSUPPORTED:
                                 ImGui::TableSetColumnIndex(1); ImGui::Text("Unsupported type!");
                                 break;
                             }

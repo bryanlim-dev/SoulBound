@@ -22,18 +22,6 @@
 #include "../Core/ECS/Component.h"
 
 namespace NightSnack::Scripting {
-	//Types of enums supported
-	enum class MonoValueType
-	{
-		MONO_INT,
-		MONO_BOOL,
-		MONO_FLOAT,
-		MONO_STRING,
-		MONO_VECTOR2,
-		MONO_VECTOR3,
-		MONO_SCRIPT,
-		MONO_UNSUPPORTED
-	};
 
 	//Struct on [SerializeField] variable info
 	struct ExposedField
@@ -231,6 +219,21 @@ namespace NightSnack::Scripting {
 		*/
 		/************************************************************************/
 		std::string GetScriptName(MonoObject* obj);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Checks if a give script has the exposed variable
+
+		\param obj
+		MonoObject to check from
+
+		\return
+		string of the name of the script
+		"ErrorNotScript" if it is not a script
+		*/
+		/************************************************************************/
+		bool GetVariableMatchingType(void* scriptInstance, std::string varName, MonoValueType vauleType);
 
 		/************************************************************************/
 		/*!

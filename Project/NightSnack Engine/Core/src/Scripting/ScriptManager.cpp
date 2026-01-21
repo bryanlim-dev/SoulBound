@@ -58,6 +58,7 @@ namespace NightSnack::Scripting {
                 for (void* script : m_scriptsToLoad)
                 {
                     m_monoHost->CallMethod(script, "OnLoad");
+                    ModifyScriptValuesToPresetValues(script); //Modify values
                 }
                 m_scriptsToLoad.clear();
             }
@@ -152,6 +153,26 @@ namespace NightSnack::Scripting {
     void ScriptManager::UnloadEntityExposedFields()
     {
         m_monoExposeBridge.UnloadAll();
+    }
+
+    void ScriptManager::ModifyScriptValuesToPresetValues(void* script)
+    {
+        Entity id{};
+
+        if (m_scriptOwner.find(script) == m_scriptOwner.end())
+            return;
+
+        id = m_scriptOwner[script];
+        std::string scriptName = m_monoHost->GetScriptName(script);
+
+        if (!m_coord.HasComponent<Script>(id) || !m_coord.GetComponent<Script>(id).modifiedValuesMap.contains(scriptName))
+            return;
+
+        //Loop through multimap with key to get each modified value
+        for (auto [it, endIt] = m_coord.GetComponent<Script>(id).modifiedValuesMap.equal_range(scriptName); it != endIt; ++it)
+        {
+            m_monoHost->SetScriptValue(script, it->second);
+        }
     }
 
     void ScriptManager::Initialize() {

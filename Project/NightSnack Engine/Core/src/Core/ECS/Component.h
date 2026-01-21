@@ -20,6 +20,7 @@
 
 #include <json.hpp>
 #include "MathLibrary/Math.h"
+#include <variant>
 namespace NightSnack {
 
     constexpr float FixedDT = 1.f / 60.f;
@@ -76,8 +77,44 @@ namespace NightSnack {
         bool useRotate;
     };
 
+    //Types of enums supported for scripting
+    enum struct MonoValueType
+    {
+        MONO_INT,
+        MONO_BOOL,
+        MONO_FLOAT,
+        MONO_STRING,
+        MONO_VECTOR2,
+        MONO_VECTOR3,
+        MONO_SCRIPT,
+        MONO_UNSUPPORTED
+    };
+
+
+    using ScriptValue = std::variant<
+        int,
+        float,
+        bool,
+        std::string,
+        Vec2,
+        Vec3
+    >;
+
+
+    //Used to track what value has changed
+    struct ScriptModifiedValue
+    {
+        std::string scriptName;
+        std::string variableName;
+        MonoValueType valueType;
+        ScriptValue value;
+    };
+
     struct Script {
         std::list<std::string> names;
+
+        //Modidied data within script 
+        std::multimap<std::string, ScriptModifiedValue> modifiedValuesMap;
     };
 
     //When updating this update the one in Engine.cs

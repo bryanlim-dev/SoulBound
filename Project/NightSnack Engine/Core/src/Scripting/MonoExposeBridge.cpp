@@ -309,6 +309,26 @@ namespace NightSnack::Scripting {
 
 	}
 
+	bool MonoExposeBridge::GetVariableMatchingType(void* scriptInstance, std::string varName, MonoValueType vauleType)
+	{
+		if (!m_sciptsToFieldsMap.contains(scriptInstance))
+			return false;
+
+		for (ExposedField field : m_sciptsToFieldsMap[scriptInstance])
+		{
+			size_t tempSize{};
+			if (field.m_name == varName)
+			{
+				if (field.m_valueType == vauleType)
+					return true;
+				else //var name matches, but is thew wrong type
+					return false;
+			}
+		}
+
+		return false;
+	}
+
 	void MonoExposeBridge::UnloadAll()
 	{
 		m_sciptsToFieldsMap.clear();

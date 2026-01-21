@@ -21,6 +21,9 @@
 #include <iostream>
 #include <algorithm>
 #include <Core/ECS/Entity.h>
+#include <Core/ECS/Component.h>
+#include "ScriptTypes.h"
+#include "MonoExposeBridge.h"
 
 namespace NightSnack::Scripting {
 
@@ -245,6 +248,72 @@ namespace NightSnack::Scripting {
         }
         else
             return "";
+    }
+
+    void MonoScriptHost::SetScriptValue(void* instance, ScriptModifiedValue val)
+    {
+        MonoObject* obj = static_cast<MonoObject*>(instance);
+        MonoClass* monoClass = mono_object_get_class(obj);
+        MonoClassField* field = mono_class_get_field_from_name(monoClass, val.variableName.c_str());
+        MonoDomain* domain = mono_domain_get();
+
+        //Check if the variable exists
+        MonoExposeBridge monoBridge;
+        monoBridge.LoadScriptExposedFields(instance);
+
+        if (!monoBridge.GetVariableMatchingType(instance, val.variableName, val.valueType)) //Check if the the variable exists and the type matches
+            return;
+
+        monoBridge.UnloadAll();
+
+        switch (val.valueType)
+        {
+        case MonoValueType::MONO_INT:
+        {
+            int vInt = std::get<int>(val.value);
+            mono_field_set_value(obj, field, &vInt);
+            break;
+        }
+        case MonoValueType::MONO_FLOAT:
+        {
+            float vFloat = std::get<float>(val.value);
+            mono_field_set_value(obj, field, &vFloat);
+            break;
+        }
+        case MonoValueType::MONO_BOOL:
+        {
+            bool vBool = std::get<bool>(val.value);
+            mono_field_set_value(obj, field, &vBool);
+            break;
+        }
+        case MonoValueType::MONO_STRING:
+        {
+            MonoString* str =
+                mono_string_new(domain, std::get<std::string>(val.value).c_str());
+            mono_field_set_value(obj, field, str);
+            break;
+        }
+        case MonoValueType::MONO_VECTOR2:
+        {
+            Vec2 v = std::get<Vec2>(val.value);
+            NightSnack::Scripting::vec2 vec{ v.x, v.y };
+
+            mono_field_set_value(obj, field, &v);
+            break;
+        }
+        case MonoValueType::MONO_VECTOR3:
+        {
+            Vec3 v = std::get<Vec3>(val.value);
+            NightSnack::Scripting::vec3 vec{ v.x, v.y, v.z };
+
+            mono_field_set_value(obj, field, &v);
+            break;
+        }
+        case MonoValueType::MONO_SCRIPT:
+        {
+            break;
+        }
+        }
     }
 
     // Helper functions ----------------------------------
