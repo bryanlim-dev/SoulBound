@@ -72,21 +72,40 @@ namespace NightSnack
 				return;
 			}
 
-
-
-
 			static std::string lastAnimatorClip;
 			static Entity lastEntity = INVALID_ENTITY;
 
-			auto& animator = m_coord.GetComponent<Animator>(*m_selectedEntity);
+			auto& animator = m_coord.ModifyComponent<Animator>(*m_selectedEntity);
 
 			bool animatorClipChanged = (lastEntity != *m_selectedEntity) || (lastAnimatorClip != animator.currentAnimationClip);
 
+			// Get all Animation Clip names that belong to this entity
+			// Note that the Animation Clip names from here, are the names that can be renamed by the user, it is not the Clip name ID
 			std::vector<std::string> clipNames = m_coord.GetSystem<AnimationSystem>()->GetSpritesheetAnimationClipsNames(*m_selectedEntity);
 
+			// Map containing all Spritesheets 
+			auto& allClips = m_coord.GetSystem<AnimationSystem>()->m_animationClips;
+			std::string spritesheetName = m_coord.GetComponent<Animator>(*m_selectedEntity).spriteSheetName;
+
+			auto spritesheetIt = allClips.find(spritesheetName);
+			if (spritesheetIt == allClips.end()) {
+				ImGui::TextDisabled("No animation data available");
+				return;
+			}
+
+			auto& clipMap = spritesheetIt->second;
+
+			// Build a vector of clip IDs to match with animator.currentAnimationClip
+			std::vector<std::string> clipIDs;
+			for (const auto& [clipID, clip] : clipMap) {
+				clipIDs.push_back(clipID);
+			}
+
+			// Only sync selectedClip when the animator clip actually changes
 			if (animatorClipChanged) {
-				for (int i{ 0 }; i < static_cast<int>(clipNames.size()); ++i) {
-					if (clipNames[i] == animator.currentAnimationClip) {
+				// Find the selected clip by matching the clip ID
+				for (int i = 0; i < static_cast<int>(clipIDs.size()); ++i) {
+					if (clipIDs[i] == animator.currentAnimationClip) {
 						selectedClip = i;
 						break;
 					}
@@ -105,10 +124,17 @@ namespace NightSnack
 				selectedClip = 0;
 			}
 
+			static char clipNameBuffer[128] = {};
+
+			// The entity has a list of Animation Clips
 			if (!clipNames.empty())
 			{
+				// Dropdown list of all Animation Clips under this particular spritesheet
 				ImGui::Text("Animation Clips");
 				ImGui::SameLine();
+
+				int previousSelectedClip = selectedClip;
+
 				ImGui::Combo(
 					"##AnimationClipsCombo", // ## makes it not visible, this is an ID only
 					&selectedClip,
@@ -122,6 +148,13 @@ namespace NightSnack
 					static_cast<int>(clipNames.size())
 				);
 
+				// If user manually changed the clip in the dropdown, reset preview state
+				if (selectedClip != previousSelectedClip) {
+					selectedFrame = -1;
+					previewFrame = 0;
+					isPlaying = false;
+				}
+
 				ImGui::SameLine();
 				if (ImGui::Button("Play")) {
 					isPlaying = true;
@@ -133,6 +166,54 @@ namespace NightSnack
 					isPlaying = false;
 				}
 
+				ImGui::Separator();
+
+				ImGui::Text("Clip Name");
+				ImGui::SameLine();
+
+				const std::string& currentClipName = clipNames[selectedClip];
+
+				// Initialize buffer when selection changes
+				static int lastRenameClipIndex = -1;
+				static Entity lastRenameEntity = INVALID_ENTITY;
+
+				// Update the clip name on the 'rename' row, according to the selected animation clip name
+				if (lastRenameClipIndex != selectedClip || lastRenameEntity != *m_selectedEntity) {
+					std::snprintf(clipNameBuffer, 
+						sizeof(clipNameBuffer), 
+						"%s", 
+						currentClipName.c_str()
+					);
+					clipNameBuffer[sizeof(clipNameBuffer) - 1] = '\0';
+					lastRenameClipIndex = selectedClip;
+					lastRenameEntity = *m_selectedEntity;
+				}
+
+				ImGui::SetNextItemWidth(300.0f);
+				ImGui::InputText("##ClipName", clipNameBuffer, sizeof(clipNameBuffer));
+
+				ImGui::SameLine();
+				if (ImGui::Button("Rename"))
+				{
+					std::string newName = clipNameBuffer;
+
+					if (!newName.empty() && newName != currentClipName)
+					{
+						// Find the clip ID by the old name
+						std::string clipID = m_coord.GetSystem<AnimationSystem>()->FindAnimationClipIDByName(animator.spriteSheetName, currentClipName);
+
+						if (!clipID.empty()) {
+							// Rename the clip in the animation system
+							auto& clip = clipMap[clipID];
+							clip.name = newName;
+
+							// No need to update animator.currentAnimationClip since it stores the ID, not the name
+
+							// Save the Animation asset
+							m_coord.GetSystem<AnimationSystem>()->SaveAnimationAsset(animator.spriteSheetName);
+						}
+					}
+				}
 				ImGui::Separator();
 
 				// Timeline
@@ -148,17 +229,8 @@ namespace NightSnack
 
 				ImGui::BeginChild("Timeline", childSize, true);
 
-				auto& allClips = m_coord.GetSystem<AnimationSystem>()->m_animationClips;
-				std::string spritesheetName = m_coord.GetComponent<Animator>(*m_selectedEntity).spriteSheetName;
-
-				auto spritesheetIt = allClips.find(spritesheetName);
-				if (spritesheetIt == allClips.end()) {
-					return;
-				}
-				auto clipIt = spritesheetIt->second.find(clipNames[selectedClip]);
-				if (clipIt == spritesheetIt->second.end()) {
-					return;
-				}
+				auto clipIt = clipMap.begin();
+				std::advance(clipIt, selectedClip);
 
 				const int frameCount = static_cast<int>(clipIt->second.frames.size());
 

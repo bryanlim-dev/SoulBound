@@ -926,16 +926,24 @@ namespace NightSnack
 
         auto& animator = m_coord.GetComponent<Animator>(*m_selectedEntity);
         auto animSystem = m_coord.GetSystem<AnimationSystem>();
-        auto clipNames = animSystem->GetSpritesheetAnimationClipsNames(*m_selectedEntity);
-
-        // This entity does not contain any AnimationClips from its texture
-        if (clipNames.empty()) {
+        
+        auto spritesheetIt = animSystem->m_animationClips.find(animator.spriteSheetName);
+        if (spritesheetIt == animSystem->m_animationClips.end()) {
             return;
         }
 
-        int currClipIndex{ 0 };
-        for (int i{ 0 }; i < static_cast<int>(clipNames.size()); ++i) {
-            if (clipNames[i] == animator.currentAnimationClip) {
+        // Vector of clip names (user-editable names, not IDs)
+        std::vector<std::string> clipNames;
+        std::vector<std::string> clipIDs;
+
+        for (const auto& [clipID, clip] : spritesheetIt->second) {
+            clipIDs.push_back(clipID);
+            clipNames.push_back(clip.name);
+        }
+        // Find the current clip index
+        int currClipIndex = 0;
+        for (int i = 0; i < static_cast<int>(clipIDs.size()); ++i) {
+            if (clipIDs[i] == animator.currentAnimationClip) {
                 currClipIndex = i;
                 break;
             }
@@ -967,8 +975,8 @@ namespace NightSnack
             {
                 // undo snapshot here???
                 // UndoSystem::Instance().Push(AnimatorSnapshot{ *m_selectedEntity, animator });
-
-                animSystem->SetCurrentAnimationClip(clipNames[currClipIndex], *m_selectedEntity);
+                
+                animSystem->SetCurrentAnimationClipByID(clipIDs[currClipIndex], *m_selectedEntity);
             }
 
             ImGui::TableNextRow();

@@ -530,7 +530,7 @@ namespace NightSnack::Scripting {
         return m_coord.GetComponent<Animator>(e).currentAnimationClip;
     }
     void ScriptInterface::SetAnimatorCurrentAnimationClip(Entity e, std::string name) {
-        m_coord.GetSystem<AnimationSystem>()->SetCurrentAnimationClip(name, e);
+        m_coord.GetSystem<AnimationSystem>()->SetCurrentAnimationClipByID(name, e);
     }
 
     //---spriteSheetName---
