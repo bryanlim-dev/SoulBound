@@ -160,7 +160,6 @@ namespace NightSnack {
                 {
                     if (coord.HasComponent<Transform>(act.entity))
                         coord.ModifyComponent<Transform>(act.entity) = act.transform;
-                    std::cout << "[Undo|WIP] Undo Transform for Entity " << act.entity << "\n";
                 }
                 else if constexpr (std::is_same_v<T, PlayerControllerSnapshot>)
                 {
