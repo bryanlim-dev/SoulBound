@@ -95,7 +95,7 @@ namespace NightSnack
 					if (compName == "Scripting") { hasComponent = m_coord.HasComponent<Script>(*m_selectedEntity); }
                     if (compName == "Animator")  { hasComponent = m_coord.HasComponent<Animator>(*m_selectedEntity); }
                     if (compName == "Font")      { hasComponent = m_coord.HasComponent<Font>(*m_selectedEntity); }
-                    if (compName == "Hierarchy")      { hasComponent = m_coord.HasComponent<Hierarchy>(*m_selectedEntity); }
+                    if (compName == "Hierarchy") { hasComponent = m_coord.HasComponent<Hierarchy>(*m_selectedEntity); }
 
                     if (hasComponent)
                     {
@@ -389,6 +389,8 @@ namespace NightSnack
         auto& t = m_coord.ModifyComponent<Transform>(entity);
         auto graphics = m_coord.GetSystem<GraphicsSystem>();
         auto physics = m_coord.GetSystem<PhysicsSystem>();
+		auto text = m_coord.GetSystem<TextSystem>();
+		auto scripting = m_coord.GetSystem<Scripting::ScriptManager>();
         ImGui::SameLine();
         bool layerActive = true;
 
@@ -415,11 +417,22 @@ namespace NightSnack
                 }
             }
 		}
+        if (text)
+        {
+            for (auto& layer : text->m_layers)
+            {
+                if (layer.Type() == t.layer)
+                {
+                    layerActive = layer.IsActive();
+                    break;
+                }
+            }
+		}
 
         std::string label = std::string("Active##LayerActive") + std::to_string(currentLayer);
         if (ImGui::Checkbox(label.c_str(), &layerActive))
         {
-			// Toggle this layer in GraphicsSystem
+			// Toggle layer in GraphicsSystem
             if (graphics)
             {
                 for (auto& layer : graphics->m_layers)
@@ -441,7 +454,7 @@ namespace NightSnack
                     }
                 }
             }
-            // Toggle this layer in PhysicsSystem
+            // Toggle layer in PhysicsSystem
             if (physics)
             {
                 for (auto& layer : physics->m_layers)
@@ -454,6 +467,28 @@ namespace NightSnack
                         for (Entity e : layer.Entities())
                         {
                             if (e == INVALID_ENTITY) 
+                                continue;
+                            if (m_coord.HasComponent<Transform>(e))
+                            {
+                                m_coord.ModifyComponent<Transform>(e).isActive = layerActive;
+                            }
+                        }
+                    }
+                }
+            }
+			// Toggle layer in TextSystem
+            if (text)
+            {
+                for (auto& layer : text->m_layers)
+                {
+                    if (layer.Type() == static_cast<LayerType>(currentLayer))
+                    {
+                        if (layer.IsActive() != layerActive)
+                            layer.ToggleActive();
+
+                        for (Entity e : layer.Entities())
+                        {
+                            if (e == INVALID_ENTITY)
                                 continue;
                             if (m_coord.HasComponent<Transform>(e))
                             {

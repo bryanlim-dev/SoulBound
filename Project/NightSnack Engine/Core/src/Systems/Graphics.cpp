@@ -348,7 +348,7 @@ namespace NightSnack {
 		m_meshBatches.clear();
 
 		for (Layer& l : m_layers) {
-			if (l.Empty() || !l.IsVisible()) { continue; }
+			if (l.Empty() || !l.IsVisible() || !l.IsActive()) { continue; }
 			for (Entity e : l.Entities()) {
 				// Reached the end of Valid Entities
 				if (e == INVALID_ENTITY) { break; }
