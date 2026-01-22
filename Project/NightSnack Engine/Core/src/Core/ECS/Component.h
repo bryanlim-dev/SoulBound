@@ -50,6 +50,7 @@ namespace NightSnack {
 
         LayerType layer;
         bool prefabModified{ false };
+        bool isActive{ true };
     };
 
     struct Force {

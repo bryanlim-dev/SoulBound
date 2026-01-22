@@ -124,34 +124,6 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Get the names of all Animation Clip names, owned by a specific entity.
-
-		\param[in] e
-		The specified entity
-
-		\return 
-		A vector strings of all Animation Clip names that the entity owns. 
-		*/
-		/************************************************************************/
-		std::vector<std::string> GetSpritesheetAnimationClipsNames(Entity e);
-
-		/************************************************************************/
-		/*!
-		\brief
-		Set the current animation clip for an entity
-
-		\param[in] animationClipName
-		The animation clip name to be the current one
-
-		\param[in] e
-		The specified entity
-		*/
-		/************************************************************************/
-		void SetCurrentAnimationClip(const std::string& animationClipName, Entity e);
-
-		/************************************************************************/
-		/*!
-		\brief
 		Change the current animation clip of a single specified entity, to a random one, 
 		but within the same spritesheet. 
 		*/
@@ -161,6 +133,47 @@ namespace NightSnack {
 		void SaveAnimationAsset(const std::string& spritesheet);
 
 		void LoadAnimationAsset(const std::string& spritesheet);
+
+		std::string FindAnimationClipIDByName(const std::string& spritesheet, const std::string& name);
+
+		bool RenameAnimationClip(const std::string& spritesheet, const std::string& oldName, const std::string& newName);
+
+		// Helper functions for the scripting side
+		void PlayAnimation(Entity e, bool restart);
+		void StopAnimation(Entity e);
+		bool IsPlayingAnimation(Entity e) const;
+		bool IsLoopingAnimation(Entity e) const;
+		void SetLoopingAnimation(Entity e, bool loop);
+		/************************************************************************/
+		/*!
+		\brief
+		Set the current animation clip for an entity using the clip ID
+
+		\param[in] animationClipName
+		The animation clip name to be the current one
+
+		\param[in] e
+		The specified entity
+		*/
+		/************************************************************************/
+		void SetCurrentAnimationClipByID(const std::string& animationClipName, Entity e);
+		bool SetCurrentAnimationClipByName(Entity e, const std::string& clipName);
+		std::string GetCurrentAnimationClipName(Entity e) const;
+		/************************************************************************/
+		/*!
+		\brief
+		Get the names of all Animation Clip names, owned by a specific entity.
+
+		\param[in] e
+		The specified entity
+
+		\return
+		A vector strings of all Animation Clip names that the entity owns.
+		*/
+		/************************************************************************/
+		std::vector<std::string> GetSpritesheetAnimationClipsNames(Entity e);
+		void SetAnimationPlaybackSpeed(Entity e, float speed);
+		float GetAnimationPlaybackSpeed(Entity e) const;
 
 		/************************************************************************/
 		/*!
@@ -195,6 +208,7 @@ namespace NightSnack {
 
 		// A single animation, comprising of many single frames
 		struct AnimationClip {
+			std::string name; // User can rename this
 			std::vector<AnimationFrame> frames;
 		};
 

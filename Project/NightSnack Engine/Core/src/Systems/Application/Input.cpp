@@ -17,6 +17,7 @@
 
 #include "Input.h"
 #include "Systems/Graphics.h"
+#include <imgui.h>
 
 namespace NightSnack {
 
@@ -153,9 +154,17 @@ namespace NightSnack {
 
 		InputEvent::InputActionState mappedActionState = TranslateGLFWKeyStateToAction(action);
 
-		// Dispatch InputEvent when key is pressed
+		// Dispatch InputEvent when key is pressed, and if user is not typing in an ImGui text field
 		if (m_dispatcher)
 		{
+			// Check whether the ImGui context exists first
+			if (ImGui::GetCurrentContext()) {
+				ImGuiIO& io = ImGui::GetIO();
+				// Do not queue any events if the user is in a ImGui text field
+				if (io.WantCaptureKeyboard) {
+					return;
+				}
+			}
 			m_dispatcher->QueueEvent(std::make_unique<InputEvent>(mappedAction, mappedActionState));
 		}
 

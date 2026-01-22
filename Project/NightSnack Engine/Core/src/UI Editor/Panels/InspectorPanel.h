@@ -96,7 +96,7 @@ namespace NightSnack
 					if (compName == "Scripting") { hasComponent = m_coord.HasComponent<Script>(*m_selectedEntity); }
                     if (compName == "Animator")  { hasComponent = m_coord.HasComponent<Animator>(*m_selectedEntity); }
                     if (compName == "Font")      { hasComponent = m_coord.HasComponent<Font>(*m_selectedEntity); }
-                    if (compName == "Hierarchy")      { hasComponent = m_coord.HasComponent<Hierarchy>(*m_selectedEntity); }
+                    if (compName == "Hierarchy") { hasComponent = m_coord.HasComponent<Hierarchy>(*m_selectedEntity); }
 
                     if (hasComponent)
                     {
@@ -174,6 +174,9 @@ namespace NightSnack
 
 		Tilemap& m_tilemap;
 
+        static inline bool s_layerVisibility[6] = { true, true, true, true, true, true };
+        static constexpr const char* s_layerNames[6] = { "_ENGINE", "BACKGROUND", "GAMELAYER", "FOREGROUND", "GAMEUI", "_ENGINE2" };
+
         /************************************************************************/
         /*!
         \brief
@@ -184,6 +187,14 @@ namespace NightSnack
         */
         /************************************************************************/
         void DrawEntityInfo(Entity entity);
+
+        /************************************************************************/
+        /*!
+        \brief
+		    Draws layer visibility toggles for different layers.
+        */
+        /************************************************************************/
+        void LayerManager(Entity entity, int currentLayer);
 
         /************************************************************************/
         /*!
@@ -341,11 +352,10 @@ namespace NightSnack
             ImGui::SameLine();
             ImGui::SetNextItemWidth(120.0f);
             if (ImGui::Combo("##LayerCombo", &currentLayer, layerNames, IM_ARRAYSIZE(layerNames))) {
-                //std::cout << "original: " << static_cast<int>(t.layer) << ", new: " << currentLayer << std::endl;
                 t.layer = static_cast<LayerType>(currentLayer);
                 m_coord.BufferEntitySignature(entity);
-				//std::cout << "Now: " << static_cast<int>(t.layer) << std::endl;
             }
+            LayerManager(entity, currentLayer);
         }
 
 		// Current Prefab display
@@ -372,6 +382,124 @@ namespace NightSnack
             factory->SaveAsPrefab(entity, entityName, exists);
         }
         ImGui::Columns(1);
+    }
+
+	// Draws layer visibility toggles for different layers.
+    inline void InspectorPanel::LayerManager(Entity entity, int currentLayer)
+    {
+        auto& t = m_coord.ModifyComponent<Transform>(entity);
+        auto graphics = m_coord.GetSystem<GraphicsSystem>();
+        auto physics = m_coord.GetSystem<PhysicsSystem>();
+		auto text = m_coord.GetSystem<TextSystem>();
+		auto scripting = m_coord.GetSystem<Scripting::ScriptManager>();
+        ImGui::SameLine();
+        bool layerActive = true;
+
+        // Check the active state for this layer in System
+        if (graphics)
+        {
+            for (auto& layer : graphics->m_layers)
+            {
+                if (layer.Type() == t.layer)
+                {
+                    layerActive = layer.IsActive();
+                    break;
+                }
+            }
+        }
+        if (physics)
+        {
+            for (auto& layer : physics->m_layers)
+            {
+                if (layer.Type() == t.layer)
+                {
+                    layerActive = layer.IsActive();
+                    break;
+                }
+            }
+		}
+        if (text)
+        {
+            for (auto& layer : text->m_layers)
+            {
+                if (layer.Type() == t.layer)
+                {
+                    layerActive = layer.IsActive();
+                    break;
+                }
+            }
+		}
+
+        std::string label = std::string("Active##LayerActive") + std::to_string(currentLayer);
+        if (ImGui::Checkbox(label.c_str(), &layerActive))
+        {
+			// Toggle layer in GraphicsSystem
+            if (graphics)
+            {
+                for (auto& layer : graphics->m_layers)
+                {
+                    if (layer.Type() == static_cast<LayerType>(currentLayer))
+                    {
+                        if (layer.IsActive() != layerActive)
+                            layer.ToggleActive();
+
+                        for (Entity e : layer.Entities())
+                        {
+                            if (e == INVALID_ENTITY) 
+                                continue;
+                            if (m_coord.HasComponent<Transform>(e))
+                            {
+                                m_coord.ModifyComponent<Transform>(e).isActive = layerActive;
+                            }
+                        }
+                    }
+                }
+            }
+            // Toggle layer in PhysicsSystem
+            if (physics)
+            {
+                for (auto& layer : physics->m_layers)
+                {
+                    if (layer.Type() == static_cast<LayerType>(currentLayer))
+                    {
+                        if (layer.IsActive() != layerActive)
+                            layer.ToggleActive();
+
+                        for (Entity e : layer.Entities())
+                        {
+                            if (e == INVALID_ENTITY) 
+                                continue;
+                            if (m_coord.HasComponent<Transform>(e))
+                            {
+                                m_coord.ModifyComponent<Transform>(e).isActive = layerActive;
+                            }
+                        }
+                    }
+                }
+            }
+			// Toggle layer in TextSystem
+            if (text)
+            {
+                for (auto& layer : text->m_layers)
+                {
+                    if (layer.Type() == static_cast<LayerType>(currentLayer))
+                    {
+                        if (layer.IsActive() != layerActive)
+                            layer.ToggleActive();
+
+                        for (Entity e : layer.Entities())
+                        {
+                            if (e == INVALID_ENTITY)
+                                continue;
+                            if (m_coord.HasComponent<Transform>(e))
+                            {
+                                m_coord.ModifyComponent<Transform>(e).isActive = layerActive;
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 	// Draws Transform component details which includes position, rotation, and scale.
@@ -926,16 +1054,24 @@ namespace NightSnack
 
         auto& animator = m_coord.GetComponent<Animator>(*m_selectedEntity);
         auto animSystem = m_coord.GetSystem<AnimationSystem>();
-        auto clipNames = animSystem->GetSpritesheetAnimationClipsNames(*m_selectedEntity);
-
-        // This entity does not contain any AnimationClips from its texture
-        if (clipNames.empty()) {
+        
+        auto spritesheetIt = animSystem->m_animationClips.find(animator.spriteSheetName);
+        if (spritesheetIt == animSystem->m_animationClips.end()) {
             return;
         }
 
-        int currClipIndex{ 0 };
-        for (int i{ 0 }; i < static_cast<int>(clipNames.size()); ++i) {
-            if (clipNames[i] == animator.currentAnimationClip) {
+        // Vector of clip names (user-editable names, not IDs)
+        std::vector<std::string> clipNames;
+        std::vector<std::string> clipIDs;
+
+        for (const auto& [clipID, clip] : spritesheetIt->second) {
+            clipIDs.push_back(clipID);
+            clipNames.push_back(clip.name);
+        }
+        // Find the current clip index
+        int currClipIndex = 0;
+        for (int i = 0; i < static_cast<int>(clipIDs.size()); ++i) {
+            if (clipIDs[i] == animator.currentAnimationClip) {
                 currClipIndex = i;
                 break;
             }
@@ -967,8 +1103,8 @@ namespace NightSnack
             {
                 // undo snapshot here???
                 // UndoSystem::Instance().Push(AnimatorSnapshot{ *m_selectedEntity, animator });
-
-                animSystem->SetCurrentAnimationClip(clipNames[currClipIndex], *m_selectedEntity);
+                
+                animSystem->SetCurrentAnimationClipByID(clipIDs[currClipIndex], *m_selectedEntity);
             }
 
             ImGui::TableNextRow();

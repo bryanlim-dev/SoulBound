@@ -202,8 +202,9 @@ namespace NightSnack {
 		// Each row corresponds to one animation clip
 		for (int r{}; r < rows; ++r) {
 			AnimationClip clip;
+			clip.name = "Clip_" + std::to_string(r); // default clip name that can be renamed by the user
 
-			std::string clipName = textureName + "_" + std::to_string(r);
+			std::string clipID = textureName + "_" + std::to_string(r);
 			////std::cout << "Creating AnimationClip: " << clipName << std::endl;
 
 			for (int c{}; c < cols; ++c) {
@@ -220,84 +221,34 @@ namespace NightSnack {
 			}
 
 			// Store this clip under this texture's animation set
-			m_animationClips[textureName][clipName] = clip;
+			m_animationClips[textureName][clipID] = clip;
 		}
 
 		LoadAnimationAsset(textureName);
 		//std::cout << "Created AnimationClip for: " << textureName << std::endl;
 	}
 
-	std::vector<std::string> AnimationSystem::GetSpritesheetAnimationClipsNames(Entity e) {
-		if (!m_coord.HasComponent<Animator>(e)) {
-			return {};
-		}
-
-		auto& animator = m_coord.GetComponent<Animator>(e);
-		std::vector<std::string> ret;
-
-		// This entity does not have a spritesheet/texture attached to it
-		if (animator.spriteSheetName.empty()) {
-			return {};
-		}
-
-		// Iterate through all AnimationClips in this spritesheet
-		for (const auto& [animClipName, animClip] : m_animationClips[animator.spriteSheetName]) {
-			// Collect the AnimationClip names
-			ret.emplace_back(animClipName);
-		}
-
-		return ret;
-	}
-
-	void AnimationSystem::SetCurrentAnimationClip(const std::string& animationClipName, Entity e) {
-
-		auto& animator = m_coord.ModifyComponent<Animator>(e);
-
-		// Check whether the Entity has a spritesheet attached to it
-		if (animator.spriteSheetName.empty()) {
-			std::cerr << "[AnimationSystem] Error: This Entity does not have a Spritesheet!\n";
-			return;
-		}
-
-		if (m_animationClips[animator.spriteSheetName].find(animationClipName) == m_animationClips[animator.spriteSheetName].end()) {
-			std::cerr << "[AnimationSystem] Error: This AnimationClip name does not exist!\n";
-			return;
-		}
-
-		animator.currentAnimationClip = animationClipName;
-		// Restart by default whenever change Animation Clips
-		animator.currentTime = 0.f;
-		animator.currentFrameIndex = 0;
-	}
-
 	void AnimationSystem::ChangeAnimation() {
 		// Currently only change animation clip for the "AnimatedRubric" prefab
+		static int temp = 0;
 		for (Entity e : m_entities) {
 
 			std::string prefabName = m_coord.GetSystem<EntityFactory>()->GetEntityPrefabName(e);
 			if (prefabName != "AnimatedRubric") { continue; }
 
-			auto& animator = m_coord.ModifyComponent<Animator>(e);
-
-			std::string currAnimClipName = animator.currentAnimationClip;
-			std::vector<std::string> animClipNames = GetSpritesheetAnimationClipsNames(e);
-
-			if (animClipNames.empty()) { return; }
-
-			// If there is no current Animation Clip
-			if (currAnimClipName.empty()) {
-				currAnimClipName = animClipNames[0]; // Assign the first clip by default
-				break;
-			}
-
-			for (const auto& name : animClipNames) {
-				// Assign a random clip to change
-				if (name != currAnimClipName) {
-					SetCurrentAnimationClip(name, e);
-					break;
-				}
+			if (temp == 0) {
+				StopAnimation(e); // Stops bluespell animation
+			} else if (temp == 1) {
+				PlayAnimation(e, true); // Play bluespell animation from the start
+			} else if (temp == 2) {
+				SetCurrentAnimationClipByName(e, "dead_wrongname"); // nothing happens, wrong clip name
+			} else if (temp == 3) {
+				SetCurrentAnimationClipByName(e, "dead"); // Change clip to dead animation, continues playing
+			} else if (temp == 4) {
+				SetCurrentAnimationClipByName(e, "bluespell"); // Change clip to bluespell animation, continues playing
 			}
 		}
+		++temp;
 	}
 
 	void AnimationSystem::SaveAnimationAsset(const std::string& spritesheet) {
@@ -311,8 +262,17 @@ namespace NightSnack {
 		j["spritesheet"] = spritesheet; 
 
 		json clips;
-		for (const auto& [clipName, clip] : it->second) {
-			clips[clipName] = clip;
+		for (const auto& [clipID, clip] : it->second) {
+			json clipJson;
+			clipJson["name"] = clip.name;
+
+			json frames = json::array();
+			for (const auto& f : clip.frames) {
+				frames.push_back({ {"timeDelay", f.timeDelay} });
+			}
+			clipJson["frames"] = frames;
+
+			clips[clipID] = clipJson;
 		}
 
 		j["clips"] = clips;
@@ -341,21 +301,215 @@ namespace NightSnack {
 
 		auto& runtimeClips = m_animationClips[spritesheet];
 
-		for (auto& [clipName, clipJson] : j["clips"].items()) {
-			if (runtimeClips.find(clipName) == runtimeClips.end()) {
+		for (auto& [clipID, clipJson] : j["clips"].items()) {
+			if (runtimeClips.find(clipID) == runtimeClips.end())
 				continue;
-			}
 
-			auto& runtimeClip = runtimeClips[clipName];
-			const auto& frames = clipJson["frames"];
+			auto& clip = runtimeClips[clipID];
 
-			size_t count = std::min(frames.size(), runtimeClip.frames.size());
-			for (size_t i{ 0 }; i < count; ++i) {
-				runtimeClip.frames[i].timeDelay = frames[i]["timeDelay"].get<int>();
+			if (clipJson.contains("name"))
+				clip.name = clipJson["name"].get<std::string>();
+
+			auto& frames = clipJson["frames"];
+			size_t count = std::min(frames.size(), clip.frames.size());
+			for (size_t i = 0; i < count; ++i) {
+				clip.frames[i].timeDelay = frames[i]["timeDelay"].get<int>();
 			}
 		}
 
 		//std::cout << "[AnimationSystem] Loaded Animation Asset: " << path << std::endl;
+	}
+
+	std::string AnimationSystem::FindAnimationClipIDByName(const std::string& spritesheet, const std::string& name) {
+		auto it = m_animationClips.find(spritesheet);
+		if (it == m_animationClips.end()) {
+			return "";
+		}
+
+		for (const auto& [clipID, clip] : it->second) {
+			if (clip.name == name) {
+				return clipID;
+			}
+		}
+
+		return "";
+	}
+
+	bool AnimationSystem::RenameAnimationClip(const std::string& spritesheet, const std::string& oldName, const std::string& newName)
+	{
+		auto sheetIt = m_animationClips.find(spritesheet);
+		if (sheetIt == m_animationClips.end())
+			return false;
+
+		auto& clips = sheetIt->second;
+
+		if (clips.find(oldName) == clips.end())
+			return false;
+
+		if (clips.find(newName) != clips.end())
+			return false; // Prevent overwrite
+
+		// Move clip data
+		clips[newName] = std::move(clips[oldName]);
+		clips.erase(oldName);
+
+		return true;
+	}
+
+	void AnimationSystem::PlayAnimation(Entity e, bool restart) {
+		if (!m_coord.HasComponent<Animator>(e)) {
+			return;
+		}
+		auto& animator = m_coord.ModifyComponent<Animator>(e);
+		animator.isPlaying = true;
+
+		if (restart) {
+			animator.currentTime = 0.f;
+			animator.currentFrameIndex = 0;
+		}
+	}
+
+	void AnimationSystem::StopAnimation(Entity e) {
+		if (!m_coord.HasComponent<Animator>(e)) {
+			return;
+		}
+		auto& animator = m_coord.ModifyComponent<Animator>(e);
+		animator.isPlaying = false;
+	}
+	
+	bool AnimationSystem::IsPlayingAnimation(Entity e) const {
+		if (!m_coord.HasComponent<Animator>(e)) {
+			return false;
+		}
+		return m_coord.GetComponent<Animator>(e).isPlaying;
+	}
+
+	bool AnimationSystem::IsLoopingAnimation(Entity e) const {
+		if (!m_coord.HasComponent<Animator>(e)) {
+			return false;
+		}
+		return m_coord.GetComponent<Animator>(e).isLooping;
+	}
+
+	void AnimationSystem::SetLoopingAnimation(Entity e, bool loop) {
+		if (!m_coord.HasComponent<Animator>(e)) {
+			return;
+		}
+		m_coord.ModifyComponent<Animator>(e).isLooping = loop;
+	}
+
+	void AnimationSystem::SetCurrentAnimationClipByID(const std::string& animationClipName, Entity e) {
+
+		auto& animator = m_coord.ModifyComponent<Animator>(e);
+
+		// Check whether the Entity has a spritesheet attached to it
+		if (animator.spriteSheetName.empty()) {
+			std::cerr << "[AnimationSystem] Error: This Entity does not have a Spritesheet!\n";
+			return;
+		}
+
+		if (m_animationClips[animator.spriteSheetName].find(animationClipName) == m_animationClips[animator.spriteSheetName].end()) {
+			std::cerr << "[AnimationSystem] Error: This AnimationClip name does not exist!\n";
+			return;
+		}
+
+		animator.currentAnimationClip = animationClipName;
+		// Restart by default whenever change Animation Clips
+		animator.currentTime = 0.f;
+		animator.currentFrameIndex = 0;
+	}
+
+	bool AnimationSystem::SetCurrentAnimationClipByName(Entity e, const std::string& clipName) {
+		// This entity has no Animator component
+		if (!m_coord.HasComponent<Animator>(e)) {
+			return false;
+		}
+
+		auto& animator = m_coord.ModifyComponent<Animator>(e);
+
+		// This entity has no texture
+		if (animator.spriteSheetName.empty()) {
+			return false;
+		}
+
+		auto spritesheetIt = m_animationClips.find(animator.spriteSheetName);
+
+		// This spritesheet is invalid
+		if (spritesheetIt == m_animationClips.end()) {
+			return false;
+		}
+
+		// Find the Animation Clip ID by the display name (editable)
+		std::string clipID = FindAnimationClipIDByName(spritesheetIt->first, clipName);
+		if (clipID.empty()) {
+			return false;
+		}
+
+		SetCurrentAnimationClipByID(clipID, e);
+
+		return true;
+	}
+
+	std::string AnimationSystem::GetCurrentAnimationClipName(Entity e) const {
+		if (!m_coord.HasComponent<Animator>(e)) {
+			return "";
+		}
+
+		const auto& animator = m_coord.GetComponent<Animator>(e);
+		if (animator.spriteSheetName.empty()) { // No spritesheet
+			return "";
+		}
+
+		auto spritesheetIt = m_animationClips.find(animator.spriteSheetName);
+		if (spritesheetIt == m_animationClips.end()) { // Invalid spritesheet
+			return "";
+		}
+
+		auto clipIt = spritesheetIt->second.find(animator.currentAnimationClip);
+		if (clipIt == spritesheetIt->second.end()) { // Invalid animation clip
+			return "";
+		}
+
+		// Display name
+		return clipIt->second.name; 
+	}
+
+	std::vector<std::string> AnimationSystem::GetSpritesheetAnimationClipsNames(Entity e) {
+		if (!m_coord.HasComponent<Animator>(e)) {
+			return {};
+		}
+
+		auto& animator = m_coord.GetComponent<Animator>(e);
+		std::vector<std::string> ret;
+
+		// This entity does not have a spritesheet/texture attached to it
+		if (animator.spriteSheetName.empty()) {
+			return {};
+		}
+
+		// Iterate through all AnimationClips in this spritesheet
+		for (const auto& [animClipName, animClip] : m_animationClips[animator.spriteSheetName]) {
+			// Collect the AnimationClip names
+			// Not the clip ID, but the user editable name
+			ret.emplace_back(animClip.name);
+		}
+
+		return ret;
+	}
+
+	void AnimationSystem::SetAnimationPlaybackSpeed(Entity e, float speed) {
+		if (!m_coord.HasComponent<Animator>(e)) {
+			return;
+		}
+		// Playback speed should not be negative
+		m_coord.ModifyComponent<Animator>(e).playbackSpeed = std::max(0.f, speed);
+	}
+
+	float AnimationSystem::GetAnimationPlaybackSpeed(Entity e) const {
+		if (!m_coord.HasComponent<Animator>(e)) {
+			return 1.f;
+		}
+		return m_coord.GetComponent<Animator>(e).playbackSpeed;
 	}
 
 } // NightSnack
