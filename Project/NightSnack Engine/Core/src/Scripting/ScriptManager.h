@@ -93,6 +93,7 @@ namespace NightSnack::Scripting {
 		void UnloadEntityExposedFields();
 
 		void RefreshScripts() { m_attached = false; }
+		void ModifyScriptValuesToPresetValues(void* script);
 
 	private:
 		// Helper functions
@@ -109,7 +110,7 @@ namespace NightSnack::Scripting {
 		std::unique_ptr<MonoScriptHost> m_monoHost;
 		std::unique_ptr<ScriptInterface> m_scriptInterface;
 
-		// Map entity ID to script instance
+		// Map entity ID to script instances
 		std::map<Entity, std::vector<void*>> m_entityScripts;
 		//Tracks which script belongs to which entity
 		std::map<void*, Entity> m_scriptOwner;

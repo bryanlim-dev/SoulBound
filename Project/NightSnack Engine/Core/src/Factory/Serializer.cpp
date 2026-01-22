@@ -132,9 +132,76 @@ namespace NightSnack {
 	}
 	void from_json(json const& j, Script& s) {
 		try {
+			//Push in all names of scripts
 			for (const auto& names : j["name"])
 			{
 				s.names.push_back(names.get<std::string>());
+			}
+
+			//Check if contains modifiers
+			if (j.contains("modifier") && j["modifier"].is_object())
+			{
+				//Push in all values modidfied
+				for (const auto& [scriptname, modifierArr] : j["modifier"].items())
+				{
+					//Loop thorugh each modified value within this script (scriptname)
+					for (const auto& mod : modifierArr)
+					{
+						ScriptModifiedValue value{};
+						value.scriptName = scriptname;
+
+						value.variableName = mod["varName"].get<std::string>();
+						std::string strType = mod["type"].get<std::string>();
+
+						if (strType == "int")
+						{
+							value.valueType = MonoValueType::MONO_INT;
+							value.value = mod["value"].get<int>();
+						}
+						else if (strType == "bool")
+						{
+							value.valueType = MonoValueType::MONO_BOOL;
+							value.value = mod["value"].get<bool>();
+						}
+						else if (strType == "float")
+						{
+							value.valueType = MonoValueType::MONO_FLOAT;
+							value.value = mod["value"].get<float>();
+						}
+						else if (strType == "vector2")
+						{
+							value.valueType = MonoValueType::MONO_VECTOR2;
+							Vec2 vec;
+							vec.x = mod["value"]["x"].get<float>();
+							vec.y = mod["value"]["y"].get<float>();
+							value.value = vec;
+						}
+						else if (strType == "string")
+						{
+							value.valueType = MonoValueType::MONO_STRING;
+							value.value = mod["value"].get<std::string>();
+						}
+						else if (strType == "vector3")
+						{
+							value.valueType = MonoValueType::MONO_VECTOR3;
+							Vec3 vec;
+							vec.x = mod["value"]["x"].get<float>();
+							vec.y = mod["value"]["y"].get<float>();
+							vec.z = mod["value"]["z"].get<float>();
+							value.value = vec;
+						}
+						else if (strType == "script")
+						{
+							value.valueType = MonoValueType::MONO_SCRIPT;
+
+						}
+						else
+							continue;
+
+						s.modifiedValuesMap.insert(std::pair(scriptname, value));
+					}
+
+				}
 			}
 		}
 		catch (std::exception const& e) {

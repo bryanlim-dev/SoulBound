@@ -20,6 +20,7 @@
 #include <unordered_map>
 
 #include "../Core/ECS/Entity.h"
+#include "../Core/ECS/Component.h"
 
 // Forward declaration of types to avoid including Mono headers in public API
 typedef struct _MonoDomain MonoDomain;
@@ -65,6 +66,8 @@ namespace NightSnack::Scripting {
 
         std::string GetScriptName(void* instance);
 
+        void SetScriptValue(void* instance, ScriptModifiedValue val);
+
     private:
         MonoDomain* m_rootDomain;
         MonoDomain* m_appDomain;
@@ -82,6 +85,8 @@ namespace NightSnack::Scripting {
         // Helper functions
         MonoClass* GetClass(std::string const& namespaceName, std::string const& className);
         MonoMethod* GetMethod(MonoClass* c, std::string const& methodName, int paramCount = 0);
+
+
     };
 
 

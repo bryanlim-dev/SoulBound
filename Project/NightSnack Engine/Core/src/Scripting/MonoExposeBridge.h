@@ -22,18 +22,6 @@
 #include "../Core/ECS/Component.h"
 
 namespace NightSnack::Scripting {
-	//Types of enums supported
-	enum class MonoValueType
-	{
-		MONO_INT,
-		MONO_BOOL,
-		MONO_FLOAT,
-		MONO_STRING,
-		MONO_VECTOR2,
-		MONO_VECTOR3,
-		MONO_SCRIPT,
-		MONO_UNSUPPORTED
-	};
 
 	//Struct on [SerializeField] variable info
 	struct ExposedField
@@ -94,7 +82,7 @@ namespace NightSnack::Scripting {
 		vector of all exposed fields
 		*/
 		/************************************************************************/
-		const std::vector<ExposedField> GetExposedFields(void* scriptInstance);
+		std::vector<ExposedField> GetExposedFields(void* scriptInstance);
 
 		/************************************************************************/
 		/*!
@@ -177,6 +165,34 @@ namespace NightSnack::Scripting {
 		/************************************************************************/
 		/*!
 		\brief
+		Converts info in Vec2 to ExposedValue
+
+		\param value
+		ExposedValue ref of value to convert (Needs to be Vector2 from C#)
+
+		\param vec2
+		Vec2 of the value to get data from
+		*/
+		/************************************************************************/
+		static void ConvertValueFromVec2(ExposedValue& value, Vec2 vec2);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Converts info in Vec3 to ExposedValue
+
+		\param value
+		ExposedValue ref of value to convert (Needs to be Vector3 from C#)
+
+		\param vec3
+		Vec3 of the value to get data from
+		*/
+		/************************************************************************/
+		static void ConvertValueFromVec3(ExposedValue& value, Vec3 vec3);
+
+		/************************************************************************/
+		/*!
+		\brief
 		Checks if a given MonoClass is a script
 		
 		\param monoClass
@@ -203,6 +219,21 @@ namespace NightSnack::Scripting {
 		*/
 		/************************************************************************/
 		std::string GetScriptName(MonoObject* obj);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Checks if a give script has the exposed variable
+
+		\param obj
+		MonoObject to check from
+
+		\return
+		string of the name of the script
+		"ErrorNotScript" if it is not a script
+		*/
+		/************************************************************************/
+		bool GetVariableMatchingType(void* scriptInstance, std::string varName, MonoValueType vauleType);
 
 		/************************************************************************/
 		/*!

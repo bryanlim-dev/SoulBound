@@ -20,6 +20,8 @@ namespace ManagedScripts
     public class RotatorScript : Script
     {
         [SerializeField]
+        public int testInt = 0;
+        [SerializeField]
         public  float rotationSpeed = 50.0f; // degrees per second
         [SerializeField]
         public bool testBool = false;
@@ -168,6 +170,11 @@ namespace ManagedScripts
             //{
             //    Log($"Current rotation: {rotation:F1} degrees");
             //}
+
+            if (Engine.IsKeyDown(KeyboardKeys.W))
+            {
+                Engine.Log("Test Vec3: " + testVec3.X + " , " + testVec3.Y + " , " + testVec3.Z);
+            }
 
             //if (Engine.IsKeyDown(KeyboardKeys.W))
             //{

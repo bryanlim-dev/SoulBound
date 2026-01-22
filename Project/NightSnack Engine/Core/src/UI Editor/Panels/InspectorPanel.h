@@ -1310,6 +1310,7 @@ namespace NightSnack
             }
 
             ImGui::Indent(10.0f);
+            int variableDisplayCnt = 0;
             //Loop through each script instance
             for (void* instance : m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetEntityScripts(*m_selectedEntity))
             {
@@ -1334,6 +1335,7 @@ namespace NightSnack
 
                         for (auto& fields : bridge.GetExposedFields(instance))
                         {
+                            variableDisplayCnt++;
                             Scripting::ExposedValue val = bridge.ReadValue(instance, fields);
                             ImGui::TableSetColumnIndex(0); ImGui::TextDisabled("%s: ", fields.m_name.c_str());
 
@@ -1341,37 +1343,134 @@ namespace NightSnack
                             switch (fields.m_valueType)
                             {
                                 //int
-                            case Scripting::MonoValueType::MONO_INT:
-                                ImGui::TableSetColumnIndex(1); ImGui::Text("%i", val.m_i);
-                                break;
-                            case Scripting::MonoValueType::MONO_BOOL:
-                                ImGui::TableSetColumnIndex(1); ImGui::Checkbox(" ", &val.m_b);
-                                break;
-                            case Scripting::MonoValueType::MONO_FLOAT:
-                                ImGui::TableSetColumnIndex(1); ImGui::Text("%.5f", val.m_f);
-                                break;
-                            case Scripting::MonoValueType::MONO_STRING:
-                                ImGui::TableSetColumnIndex(1); ImGui::Text(val.m_s.c_str());
-                                break;
-                            case Scripting::MonoValueType::MONO_VECTOR2:
+                            case MonoValueType::MONO_INT:
                             {
-                                Vec2 vec = bridge.ConvertVec2(val);
-                                ImGui::TableSetColumnIndex(1); ImGui::Text("x: %.5f", vec.x);
-                                ImGui::TableNextRow();
-                                ImGui::TableSetColumnIndex(1); ImGui::Text("y: %.5f", vec.y);
+
+                                //ImGui::TableSetColumnIndex(1); ImGui::Text("%i", val.m_i);
+
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                std::string inputLabel = "##i" + std::to_string(variableDisplayCnt);
+                                if (ImGui::InputInt(inputLabel.c_str(), &val.m_i, 0, 0))
+                                {
+                                    bridge.WriteValue(instance, fields, val);
+                                }
                                 break;
                             }
-                            case Scripting::MonoValueType::MONO_VECTOR3:
+                            case MonoValueType::MONO_BOOL:
+                            {
+                                 //ImGui::TableSetColumnIndex(1); ImGui::Checkbox(" ", &val.m_b);
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                std::string inputLabel = "##b" + std::to_string(variableDisplayCnt);
+                                if (ImGui::Checkbox(inputLabel.c_str(), &val.m_b))
+                                {
+                                    bridge.WriteValue(instance, fields, val);
+                                }
+
+                                break;
+                            }
+                            case MonoValueType::MONO_FLOAT:
+                            {
+                                //ImGui::TableSetColumnIndex(1); ImGui::Text("%.5f", val.m_f);
+
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                std::string inputLabel = "##f" + std::to_string(variableDisplayCnt);
+                                if (ImGui::InputFloat(inputLabel.c_str(), &val.m_f, 0.0f, 0.0f, "%.5f"))
+                                {
+                                    bridge.WriteValue(instance, fields, val);
+                                }
+                                break;
+                            }
+                            case MonoValueType::MONO_STRING:
+                            {
+                                //ImGui::TableSetColumnIndex(1); ImGui::Text(val.m_s.c_str());
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                std::string inputLabel = "##str" + std::to_string(variableDisplayCnt);  
+
+                                char strBuffer[128];
+                                strncpy_s(strBuffer, val.m_s.c_str(), sizeof(strBuffer));
+                                strBuffer[sizeof(strBuffer) - 1] = 0;
+
+                                if (ImGui::InputText(inputLabel.c_str(), strBuffer, sizeof(strBuffer)))
+                                {
+                                    val.m_s = strBuffer;
+                                    bridge.WriteValue(instance, fields, val);
+                                }
+
+                                break;
+                            }
+                            case MonoValueType::MONO_VECTOR2:
+                            {
+
+                                Vec2 vec = bridge.ConvertVec2(val);
+
+
+                                ImGui::TableNextRow();
+
+                                ImGui::TableSetColumnIndex(0); ImGui::Text("x: ");
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                std::string inputLabel = "##f" + std::to_string(variableDisplayCnt);
+                                if (ImGui::InputFloat(inputLabel.c_str(), &vec.x, 0.0f, 0.0f, "%.5f"))
+                                {
+                                    bridge.ConvertValueFromVec2(val, vec);
+                                    bridge.WriteValue(instance, fields, val);
+                                }
+                                ImGui::TableNextRow();
+
+                                ImGui::TableSetColumnIndex(0); ImGui::Text("y: ");
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                inputLabel = "##f" + std::to_string(++variableDisplayCnt);
+                                if (ImGui::InputFloat(inputLabel.c_str(), &vec.y, 0.0f, 0.0f, "%.5f"))
+                                {
+                                    bridge.ConvertValueFromVec2(val, vec);
+                                    bridge.WriteValue(instance, fields, val);
+                                }
+                                ImGui::TableNextRow();
+
+
+                                break;
+                            }
+                            case MonoValueType::MONO_VECTOR3:
                             {
                                 Vec3 vec = bridge.ConvertVec3(val);
-                                ImGui::TableSetColumnIndex(1); ImGui::Text("x: %.5f", vec.x);
+                                //ImGui::TableSetColumnIndex(1); ImGui::Text("x: %.5f", vec.x);
+                                //ImGui::TableNextRow();
+                                //ImGui::TableSetColumnIndex(1); ImGui::Text("y: %.5f", vec.y);
+                                //ImGui::TableNextRow();
+                                //ImGui::TableSetColumnIndex(1); ImGui::Text("z: %.5f", vec.z);
+
                                 ImGui::TableNextRow();
-                                ImGui::TableSetColumnIndex(1); ImGui::Text("y: %.5f", vec.y);
+
+                                ImGui::TableSetColumnIndex(0); ImGui::Text("x: ");
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                std::string inputLabel = "##f" + std::to_string(variableDisplayCnt);
+                                if (ImGui::InputFloat(inputLabel.c_str(), &vec.x, 0.0f, 0.0f, "%.5f"))
+                                {
+                                    bridge.ConvertValueFromVec3(val, vec);
+                                    bridge.WriteValue(instance, fields, val);
+                                }
                                 ImGui::TableNextRow();
-                                ImGui::TableSetColumnIndex(1); ImGui::Text("z: %.5f", vec.z);
+
+                                ImGui::TableSetColumnIndex(0); ImGui::Text("y: ");
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                inputLabel = "##f" + std::to_string(++variableDisplayCnt);
+                                if (ImGui::InputFloat(inputLabel.c_str(), &vec.y, 0.0f, 0.0f, "%.5f"))
+                                {
+                                    bridge.ConvertValueFromVec3(val, vec);
+                                    bridge.WriteValue(instance, fields, val);
+                                }
+                                ImGui::TableNextRow();
+
+                                ImGui::TableSetColumnIndex(0); ImGui::Text("z: ");
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                inputLabel = "##f" + std::to_string(++variableDisplayCnt);
+                                if (ImGui::InputFloat(inputLabel.c_str(), &vec.z, 0.0f, 0.0f, "%.5f"))
+                                {
+                                    bridge.ConvertValueFromVec3(val, vec);
+                                    bridge.WriteValue(instance, fields, val);
+                                }
                                 break;
                             }
-                            case Scripting::MonoValueType::MONO_SCRIPT:
+                            case MonoValueType::MONO_SCRIPT:
                             {
                                 if (val.m_object == nullptr) //No refrence
                                 {
@@ -1387,7 +1486,7 @@ namespace NightSnack
 
                                 break;
                             }
-                            case Scripting::MonoValueType::MONO_UNSUPPORTED:
+                            case MonoValueType::MONO_UNSUPPORTED:
                                 ImGui::TableSetColumnIndex(1); ImGui::Text("Unsupported type!");
                                 break;
                             }
