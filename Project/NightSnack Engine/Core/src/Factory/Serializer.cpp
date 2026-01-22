@@ -129,6 +129,81 @@ namespace NightSnack {
 		j = {
 			{"name", s.names}
 		};
+
+		//insert the changes to the scripts
+		for (const auto& [scriptName, value] : s.modifiedValuesMap)
+		{
+
+			json entry;
+			entry["varName"] = value.variableName;
+
+			std::string varType{};
+			switch (value.valueType)
+			{
+			case MonoValueType::MONO_INT:
+			{
+				varType = "int";
+				entry["value"] = std::get<int>(value.value);
+				break;
+			}
+			case MonoValueType::MONO_BOOL:
+			{
+				varType = "bool";
+				entry["value"] = std::get<bool>(value.value);
+				break;
+			}
+			case MonoValueType::MONO_FLOAT:
+			{
+				varType = "float";
+				entry["value"] = std::get<float>(value.value);
+				break;
+			}
+			case MonoValueType::MONO_STRING:
+			{
+				varType = "string";
+				entry["value"] = std::get<std::string>(value.value);
+				break;
+			}
+			case MonoValueType::MONO_VECTOR2:
+			{
+				varType = "vector2";
+				Vec2 vec = std::get<Vec2>(value.value);
+				entry["value"] = {
+					{"x", vec.x},
+					{"y", vec.y}
+				};
+				break;
+			}
+			case MonoValueType::MONO_VECTOR3:
+			{
+				varType = "vector3";
+				Vec3 vec = std::get<Vec3>(value.value);
+				entry["value"] = {
+					{"x", vec.x},
+					{"y", vec.y},
+					{"z", vec.z}
+				};
+				break;
+			}
+			case MonoValueType::MONO_SCRIPT:
+			{
+				varType = "script";
+				entry["value"] = "UNFINISHED SAVING LOGIC";
+				break;
+			}
+			case MonoValueType::MONO_UNSUPPORTED:
+			{
+				varType = "unsupported";
+				entry["value"] = "UNFINISHED SAVING LOGIC";
+				break;
+			}
+			}
+
+			entry["type"] = varType;
+
+			j["modifier"][scriptName] += entry;
+			
+		}
 	}
 	void from_json(json const& j, Script& s) {
 		try {
