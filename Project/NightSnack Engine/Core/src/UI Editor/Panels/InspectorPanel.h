@@ -17,6 +17,7 @@
 #include <stb_image.h>
 #include <filesystem>
 #include <Scripting/ScriptManager.h>
+#include <Systems/AnimationSystem.h>
 
 namespace NightSnack
 {
@@ -924,6 +925,21 @@ namespace NightSnack
             return;
 
         auto& animator = m_coord.GetComponent<Animator>(*m_selectedEntity);
+        auto animSystem = m_coord.GetSystem<AnimationSystem>();
+        auto clipNames = animSystem->GetSpritesheetAnimationClipsNames(*m_selectedEntity);
+
+        // This entity does not contain any AnimationClips from its texture
+        if (clipNames.empty()) {
+            return;
+        }
+
+        int currClipIndex{ 0 };
+        for (int i{ 0 }; i < static_cast<int>(clipNames.size()); ++i) {
+            if (clipNames[i] == animator.currentAnimationClip) {
+                currClipIndex = i;
+                break;
+            }
+        }
 
         if (ImGui::BeginTable("AnimatorTable", 2, ImGuiTableFlags_SizingFixedFit))
         {
@@ -931,8 +947,29 @@ namespace NightSnack
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 130.0f);
 
             ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0); ImGui::Text("Current Animation Clip");
-            ImGui::TableSetColumnIndex(1); ImGui::Text("%s", animator.currentAnimationClip.c_str());
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Current Animation Clip");
+
+            ImGui::TableSetColumnIndex(1);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+
+            if (ImGui::Combo(
+                "##CurrentAnimClip",
+                &currClipIndex,
+                [](void* data, int idx, const char** out_text)
+                {
+                    auto& clips = *static_cast<std::vector<std::string>*>(data);
+                    *out_text = clips[idx].c_str();
+                    return true;
+                },
+                &clipNames,
+                static_cast<int>(clipNames.size())))
+            {
+                // undo snapshot here???
+                // UndoSystem::Instance().Push(AnimatorSnapshot{ *m_selectedEntity, animator });
+
+                animSystem->SetCurrentAnimationClip(clipNames[currClipIndex], *m_selectedEntity);
+            }
 
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Sprite Sheet");

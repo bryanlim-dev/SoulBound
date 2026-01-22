@@ -1,0 +1,21 @@
+{
+    "clips": {
+        "Sprites\\ghost_4_1.png_0": {
+            "frames": [
+                {
+                    "timeDelay": 7
+                },
+                {
+                    "timeDelay": 55
+                },
+                {
+                    "timeDelay": 29
+                },
+                {
+                    "timeDelay": 84
+                }
+            ]
+        }
+    },
+    "spritesheet": "Sprites\\ghost_4_1.png"
+}

@@ -1,0 +1,37 @@
+{
+    "clips": {
+        "Sprites\\ghost-updated_4_2.png_0": {
+            "frames": [
+                {
+                    "timeDelay": 34
+                },
+                {
+                    "timeDelay": 8
+                },
+                {
+                    "timeDelay": 46
+                },
+                {
+                    "timeDelay": 6
+                }
+            ]
+        },
+        "Sprites\\ghost-updated_4_2.png_1": {
+            "frames": [
+                {
+                    "timeDelay": 20
+                },
+                {
+                    "timeDelay": 20
+                },
+                {
+                    "timeDelay": 20
+                },
+                {
+                    "timeDelay": 20
+                }
+            ]
+        }
+    },
+    "spritesheet": "Sprites\\ghost-updated_4_2.png"
+}

@@ -20,7 +20,7 @@ layout (location=0) in vec3 aVertexPosition;
 uniform mat4 uProj;
 uniform mat4 uView;
 uniform bool uUseInstancing;
-uniform vec3 uColor; // non instanced solid color
+uniform vec4 uColor; // non instanced solid color
 uniform int uInstanceOffset; 
 
 // Non-instanced rendering
@@ -37,7 +37,7 @@ layout(std430, binding = 0) buffer InstanceBuffer {
     InstanceData instances[];
 };
 
-out vec3 vColor; 
+out vec4 vColor; 
 
 mat4 computeModelMatrix(InstanceData data) {
     // scale
@@ -68,7 +68,7 @@ void main(void) {
         int index = gl_InstanceID + uInstanceOffset;
         InstanceData data = instances[index];
         model = computeModelMatrix(data);
-        vColor = data.color.xyz;
+        vColor = data.color;
     } else {
         model = uModelToWorld;
         vColor = uColor;

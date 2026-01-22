@@ -17,6 +17,7 @@
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/IEvent.h"
 #include <Graphics/Texture.h>
+#include <json.hpp>
 
 namespace NightSnack {
 
@@ -118,7 +119,7 @@ namespace NightSnack {
 		The number of AnimationClips to slice.
 		*/
 		/************************************************************************/
-		void CreateAnimationClips(std::string textureName, Texture* tex, int cols, int rows);
+		void CreateAnimationClips(std::string textureName, int cols, int rows);
 
 		/************************************************************************/
 		/*!
@@ -157,6 +158,10 @@ namespace NightSnack {
 		/************************************************************************/
 		void ChangeAnimation();
 
+		void SaveAnimationAsset(const std::string& spritesheet);
+
+		void LoadAnimationAsset(const std::string& spritesheet);
+
 		/************************************************************************/
 		/*!
 		\brief
@@ -185,12 +190,11 @@ namespace NightSnack {
 		struct AnimationFrame {
 			float U0{}, V0{}; // top left
 			float U1{}, V1{}; // bottom right
-			float timeDelay{}; // how long each frame will last in steps
+			int timeDelay{}; // how long each frame will last in steps
 		};
 
 		// A single animation, comprising of many single frames
 		struct AnimationClip {
-			Texture* texture = nullptr;
 			std::vector<AnimationFrame> frames;
 		};
 
@@ -207,5 +211,21 @@ namespace NightSnack {
 		// System event dispatcher
 		EventDispatcher* m_dispatcher = nullptr;
 	};
+
+	// AnimationFrame JSON helpers
+	inline void to_json(json& j, const AnimationSystem::AnimationFrame& f) {
+		j = { { "timeDelay", f.timeDelay } };
+	}
+	inline void from_json(const json& j, AnimationSystem::AnimationFrame& f) {
+		j.at("timeDelay").get_to(f.timeDelay);
+	}
+
+	// AnimationClip JSON helpers
+	inline void to_json(json& j, const AnimationSystem::AnimationClip& c) {
+		j = { { "frames", c.frames } };
+	}
+	inline void from_json(const json& j, AnimationSystem::AnimationClip& c) {
+		j.at("frames").get_to(c.frames);
+	}
 
 } // NightSnack
