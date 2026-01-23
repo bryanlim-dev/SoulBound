@@ -97,7 +97,7 @@ namespace NightSnack {
             if (m_coord.IsPaused()) return;
 
             m_player = FindPlayer(m_coord);
-            static bool landed = true;
+            //static bool landed = true;
 
             if (m_player == INVALID_ENTITY) { return; }
 
@@ -107,7 +107,12 @@ namespace NightSnack {
 
             if (m_coord.GetComponent<Collider>(m_player).isGrounded)
             {
-                m_midAir = false;
+                if (m_midAir) //was mid air but is grounded now
+                {
+                    m_midAir = false;
+                    m_coord.GetSystem<AudioSystem>()->PlaySFX("playerHurt");
+                }
+
                 m_timeSinceGrounded = 0;
             }
             else
@@ -118,7 +123,8 @@ namespace NightSnack {
             bool isGrounded = (m_timeSinceGrounded <= m_groundedThreshhold);
 
             if (!isGrounded)
-                m_midAir = false;
+                m_midAir = true;
+            
 
             /*if (!m_coord.GetComponent<Collider>(m_player).isGrounded && isGrounded)
                 std::cout << "Coyte TIME!" << std::endl;*/
@@ -155,24 +161,16 @@ namespace NightSnack {
                 }
             }
 
-            if (m_storedJump && isGrounded && !m_midAir) {
+            if (m_storedJump && isGrounded) {
                 vel.y = pcont.jumpSpeed;
                 t.pos.y += 2.5f;
                 m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
                 m_coord.GetSystem<AudioSystem>()->PlaySFX("playerJump");
-                landed = false;
                 m_midAir = true;
                 m_storedJump = false;
             }
 
             m_flags.jumpRequested = false;
-
-            if (isGrounded) landed = false;
-
-            if (!landed && isGrounded) {
-                m_coord.GetSystem<AudioSystem>()->PlaySFX("playerHurt");
-                landed = true;
-            }
         }
 
         /************************************************************************/
