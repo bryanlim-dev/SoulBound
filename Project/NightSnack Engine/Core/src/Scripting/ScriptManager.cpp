@@ -175,6 +175,38 @@ namespace NightSnack::Scripting {
         }
     }
 
+    void ScriptManager::UpdateScriptValue(void* scriptInstance, const ExposedField& field, const ExposedValue& value)
+    {
+        //Update the value in c# script
+        m_monoExposeBridge.WriteValue(scriptInstance, field, value);
+
+        if (!m_scriptOwner.contains(scriptInstance) || !m_scriptNameMap.contains(scriptInstance))
+            return;
+
+        Entity id = m_scriptOwner[scriptInstance];
+
+        //Update the component
+
+        //Loop through each variable saved in the modifiedValuesMap
+        for (auto [itValue, endItValue] = m_coord.ModifyComponent<Script>(id).modifiedValuesMap.equal_range(m_scriptNameMap[scriptInstance]); itValue != endItValue; ++itValue)
+        {
+            if (itValue->second.variableName == field.m_name)
+            {
+                itValue->second.value = value.value;
+                return;
+            }
+        }
+
+        //If it reaches here nothing was found
+        ScriptModifiedValue modifiedValue{};
+        modifiedValue.scriptName = m_scriptNameMap[scriptInstance];
+        modifiedValue.value = value.value;
+        modifiedValue.variableName = field.m_name;
+        modifiedValue.valueType = field.m_valueType;
+        //Add into component
+        m_coord.ModifyComponent<Script>(id).modifiedValuesMap.insert({m_scriptNameMap[scriptInstance], modifiedValue});
+    }
+
     void ScriptManager::Initialize() {
 
         // Create script interface (bridge to engine)

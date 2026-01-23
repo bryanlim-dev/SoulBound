@@ -92,7 +92,7 @@ namespace ManagedScripts
             transform.Position = pos;
 
 
-            //if (Engine.IsKeyDown(KeyboardKeys.W))
+            //if (Engine.IsKeyReleased(KeyboardKeys.W))
             //{
             //    Engine.Log("Move Speed: " + moveSpeed);
             //}

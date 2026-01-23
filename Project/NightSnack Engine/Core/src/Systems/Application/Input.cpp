@@ -48,6 +48,8 @@ namespace NightSnack {
 	}
 
 	void InputSystem::Update() {
+		ResetInputStates();
+
 		// Find current mouse position (World)
 		float Hvp = static_cast<float>(m_coord.GetWindowHeight());
 		float Wvp = static_cast<float>(m_coord.GetWindowWidth());

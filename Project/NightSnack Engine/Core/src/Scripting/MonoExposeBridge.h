@@ -26,7 +26,7 @@ namespace NightSnack::Scripting {
 	//Struct on [SerializeField] variable info
 	struct ExposedField
 	{
-		std::string m_name{}; //C# field name
+		std::string m_name{}; //C# field/variable name
 		std::string m_typeName{}; //type name (e.g ManagedScripts::Vector2)
 		MonoClassField* m_monoField = nullptr; //handle for get/set
 		MonoValueType m_valueType{}; //Type of value
@@ -35,15 +35,8 @@ namespace NightSnack::Scripting {
 	};
 
 	struct ExposedValue {
-		//Union of simple data types
-		union {
-			int32_t m_i = 0;
-			float m_f;
-			bool m_b;
-		};
-		std::string m_s{};  //used when type is a string
-		std::vector<uint8_t> m_structs; //used for when the type is a struct
 
+		ScriptValue value;
 		MonoObject* m_object; //Used for scripts
 	};
 

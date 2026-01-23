@@ -37,52 +37,59 @@
         "mass": 1.0,
         "useGravity": false
     },
-        "Script": {
-            "name": [
-                "RotatorScript",
-                "HoverScript"
-            ],
-            "modifier" : {
-                "RotatorScript" : 
-                [
-                    {
-                    "varName" : "testInt",
-                    "type" : "int",
-                    "value" : 67
+    "Script": {
+        "modifier": {
+            "RotatorScript": [
+                {
+                    "type": "int",
+                    "value": 67,
+                    "varName": "testInt"
+                },
+                {
+                    "type": "vector2",
+                    "value": {
+                        "x": 6.0,
+                        "y": 7.0
                     },
-                    {
-                    "varName" : "testVec2",
-                    "type" : "vector2",
-                    "value" : { "x" : 6, "y" : 7}
+                    "varName": "testVec2"
+                },
+                {
+                    "type": "vector3",
+                    "value": {
+                        "x": 6.0,
+                        "y": 7.0,
+                        "z": 8.0
                     },
-                    {
-                    "varName" : "testVec3",
-                    "type" : "vector3",
-                    "value" : { "x" : 6, "y" : 7, "z" : 8}
+                    "varName": "testVec3"
+                },
+                {
+                    "type": "bool",
+                    "value": true,
+                    "varName": "testBool"
+                },
+                {
+                    "type": "string",
+                    "value": "67",
+                    "varName": "testStr"
+                },
+                {
+                    "type": "float",
+                    "value": 67.0,
+                    "varName": "rotationSpeed"
+                },
+                {
+                    "type": "vector2",
+                    "value": {
+                        "x": 6.0,
+                        "y": 7.0
                     },
-                    {
-                    "varName" : "testBool",
-                    "type" : "bool",
-                    "value" : true
-                    },
-                    {
-                    "varName" : "testStr",
-                    "type" : "string",
-                    "value" : "67"
-                    },
-                    {
-                    "varName" : "rotationSpeed",
-                    "type" : "float",
-                    "value" : 67
-                    },
-                    {
-                    "varName" : "thisVarDoesNotExist",
-                    "type" : "vector2",
-                    "value" : { "x" : 6, "y" : 7}
-                    }
-                    
-                    
-                ]
-            }
-        }
+                    "varName": "thisVarDoesNotExist"
+                }
+            ]
+        },
+        "name": [
+            "RotatorScript",
+            "HoverScript"
+        ]
+    }
 }

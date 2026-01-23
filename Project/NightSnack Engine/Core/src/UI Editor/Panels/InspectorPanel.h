@@ -1332,6 +1332,7 @@ namespace NightSnack
                         ImGui::TableNextRow();
 
                         auto& bridge = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetMonoExposeBridge();
+                        NightSnack::Scripting::ScriptManager* scriptManager = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>().get();
 
                         for (auto& fields : bridge.GetExposedFields(instance))
                         {
@@ -1350,9 +1351,10 @@ namespace NightSnack
 
                                 ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
                                 std::string inputLabel = "##i" + std::to_string(variableDisplayCnt);
-                                if (ImGui::InputInt(inputLabel.c_str(), &val.m_i, 0, 0))
+                                if (ImGui::InputInt(inputLabel.c_str(), &std::get<int>(val.value), 0, 0))
                                 {
-                                    bridge.WriteValue(instance, fields, val);
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
                                 }
                                 break;
                             }
@@ -1361,9 +1363,10 @@ namespace NightSnack
                                  //ImGui::TableSetColumnIndex(1); ImGui::Checkbox(" ", &val.m_b);
                                 ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
                                 std::string inputLabel = "##b" + std::to_string(variableDisplayCnt);
-                                if (ImGui::Checkbox(inputLabel.c_str(), &val.m_b))
+                                if (ImGui::Checkbox(inputLabel.c_str(), &std::get<bool>(val.value)))
                                 {
-                                    bridge.WriteValue(instance, fields, val);
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
                                 }
 
                                 break;
@@ -1374,9 +1377,10 @@ namespace NightSnack
 
                                 ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
                                 std::string inputLabel = "##f" + std::to_string(variableDisplayCnt);
-                                if (ImGui::InputFloat(inputLabel.c_str(), &val.m_f, 0.0f, 0.0f, "%.5f"))
+                                if (ImGui::InputFloat(inputLabel.c_str(), &std::get<float>(val.value), 0.0f, 0.0f, "%.5f"))
                                 {
-                                    bridge.WriteValue(instance, fields, val);
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
                                 }
                                 break;
                             }
@@ -1387,13 +1391,14 @@ namespace NightSnack
                                 std::string inputLabel = "##str" + std::to_string(variableDisplayCnt);  
 
                                 char strBuffer[128];
-                                strncpy_s(strBuffer, val.m_s.c_str(), sizeof(strBuffer));
+                                strncpy_s(strBuffer, std::get<std::string>(val.value).c_str(), sizeof(strBuffer));
                                 strBuffer[sizeof(strBuffer) - 1] = 0;
 
                                 if (ImGui::InputText(inputLabel.c_str(), strBuffer, sizeof(strBuffer)))
                                 {
-                                    val.m_s = strBuffer;
-                                    bridge.WriteValue(instance, fields, val);
+                                    std::get<std::string>(val.value) = strBuffer;
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
                                 }
 
                                 break;
@@ -1401,7 +1406,7 @@ namespace NightSnack
                             case MonoValueType::MONO_VECTOR2:
                             {
 
-                                Vec2 vec = bridge.ConvertVec2(val);
+                                Vec2 vec = std::get<Vec2>(val.value);
 
 
                                 ImGui::TableNextRow();
@@ -1411,8 +1416,10 @@ namespace NightSnack
                                 std::string inputLabel = "##f" + std::to_string(variableDisplayCnt);
                                 if (ImGui::InputFloat(inputLabel.c_str(), &vec.x, 0.0f, 0.0f, "%.5f"))
                                 {
-                                    bridge.ConvertValueFromVec2(val, vec);
-                                    bridge.WriteValue(instance, fields, val);
+                                    val.value = vec;
+                                    //bridge.ConvertValueFromVec2(val, vec);
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
                                 }
                                 ImGui::TableNextRow();
 
@@ -1421,8 +1428,10 @@ namespace NightSnack
                                 inputLabel = "##f" + std::to_string(++variableDisplayCnt);
                                 if (ImGui::InputFloat(inputLabel.c_str(), &vec.y, 0.0f, 0.0f, "%.5f"))
                                 {
-                                    bridge.ConvertValueFromVec2(val, vec);
-                                    bridge.WriteValue(instance, fields, val);
+                                    //bridge.ConvertValueFromVec2(val, vec);
+                                    val.value = vec;
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
                                 }
                                 ImGui::TableNextRow();
 
@@ -1431,7 +1440,7 @@ namespace NightSnack
                             }
                             case MonoValueType::MONO_VECTOR3:
                             {
-                                Vec3 vec = bridge.ConvertVec3(val);
+                                Vec3 vec = std::get<Vec3>(val.value);
                                 //ImGui::TableSetColumnIndex(1); ImGui::Text("x: %.5f", vec.x);
                                 //ImGui::TableNextRow();
                                 //ImGui::TableSetColumnIndex(1); ImGui::Text("y: %.5f", vec.y);
@@ -1445,8 +1454,10 @@ namespace NightSnack
                                 std::string inputLabel = "##f" + std::to_string(variableDisplayCnt);
                                 if (ImGui::InputFloat(inputLabel.c_str(), &vec.x, 0.0f, 0.0f, "%.5f"))
                                 {
-                                    bridge.ConvertValueFromVec3(val, vec);
-                                    bridge.WriteValue(instance, fields, val);
+                                    //bridge.ConvertValueFromVec3(val, vec);
+                                    val.value = vec;
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
                                 }
                                 ImGui::TableNextRow();
 
@@ -1455,8 +1466,10 @@ namespace NightSnack
                                 inputLabel = "##f" + std::to_string(++variableDisplayCnt);
                                 if (ImGui::InputFloat(inputLabel.c_str(), &vec.y, 0.0f, 0.0f, "%.5f"))
                                 {
-                                    bridge.ConvertValueFromVec3(val, vec);
-                                    bridge.WriteValue(instance, fields, val);
+                                    //bridge.ConvertValueFromVec3(val, vec);
+                                    val.value = vec;
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
                                 }
                                 ImGui::TableNextRow();
 
@@ -1465,8 +1478,10 @@ namespace NightSnack
                                 inputLabel = "##f" + std::to_string(++variableDisplayCnt);
                                 if (ImGui::InputFloat(inputLabel.c_str(), &vec.z, 0.0f, 0.0f, "%.5f"))
                                 {
-                                    bridge.ConvertValueFromVec3(val, vec);
-                                    bridge.WriteValue(instance, fields, val);
+                                    //bridge.ConvertValueFromVec3(val, vec);
+                                    val.value = vec;
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
                                 }
                                 break;
                             }
@@ -1480,7 +1495,7 @@ namespace NightSnack
                                 {
                                     std::string scriptDisplay = "ID ";
                                     scriptDisplay += std::to_string(m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetScriptOwner(fields.m_scriptInstance));
-                                    scriptDisplay += " : " + val.m_s;
+                                    scriptDisplay += " : " + std::get<std::string>(val.value);
                                     ImGui::TableSetColumnIndex(1); ImGui::Text(scriptDisplay.c_str());
                                 }
 

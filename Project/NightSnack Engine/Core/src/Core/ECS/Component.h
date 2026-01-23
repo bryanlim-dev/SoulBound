@@ -98,7 +98,8 @@ namespace NightSnack {
         bool,
         std::string,
         Vec2,
-        Vec3
+        Vec3,
+        std::vector<uint8_t>
     >;
 
 

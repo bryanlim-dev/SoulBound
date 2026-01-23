@@ -66,6 +66,10 @@ namespace NightSnack::Scripting {
 
 			Initialize();
 			entityNum = m_entities.size();
+
+			AddLayer(LayerType::BACKGROUND);
+			AddLayer(LayerType::GAMELAYER);
+			AddLayer(LayerType::FOREGROUND);
 		}
 		// Destructor that calls shutdown member function;
 		~ScriptManager() { Shutdown(); }
@@ -94,6 +98,10 @@ namespace NightSnack::Scripting {
 
 		void RefreshScripts() { m_attached = false; }
 		void ModifyScriptValuesToPresetValues(void* script);
+
+		//Updates a value for a variable in a script via monoExposeBridge
+		//Also updates the script component
+		void UpdateScriptValue(void* scriptInstance, const ExposedField& field, const ExposedValue& value);
 
 	private:
 		// Helper functions

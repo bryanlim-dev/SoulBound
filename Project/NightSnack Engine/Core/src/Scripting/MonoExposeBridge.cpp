@@ -107,21 +107,21 @@ namespace NightSnack::Scripting {
 		{
 			int32_t tmp = 0;
 			mono_field_get_value(monoObj, field.m_monoField, &tmp);
-			result.m_i = tmp;
+			result.value = tmp;
 			break;
 		}
 		case MonoValueType::MONO_FLOAT:
 		{
 			float tmp = 0.0f;
 			mono_field_get_value(monoObj, field.m_monoField, &tmp);
-			result.m_f = tmp;
+			result.value = tmp;
 			break;
 		}
 		case MonoValueType::MONO_BOOL:
 		{
 			bool tmp = false;
 			mono_field_get_value(monoObj, field.m_monoField, &tmp);
-			result.m_b = tmp;
+			result.value = tmp;
 			break;
 		}
 		case MonoValueType::MONO_STRING:
@@ -131,11 +131,12 @@ namespace NightSnack::Scripting {
 			if (str)
 			{
 				char* raw = mono_string_to_utf8(str);
-				result.m_s = raw;
+				result.value = std::string(raw);
 				mono_free(raw);
 			}
 			break;
 		}
+
 		case MonoValueType::MONO_VECTOR2:
 		case MonoValueType::MONO_VECTOR3:
 		{
@@ -143,7 +144,18 @@ namespace NightSnack::Scripting {
 			{
 				std::vector<uint8_t> temp(field.m_sizeBytes);
 				mono_field_get_value(monoObj, field.m_monoField, temp.data());
-				result.m_structs = std::move(temp);
+				result.value = (temp);
+
+				if (field.m_valueType == MonoValueType::MONO_VECTOR2)
+				{
+					result.value = ConvertVec2(result);
+				}
+				else if (field.m_valueType == MonoValueType::MONO_VECTOR3)
+				{
+					result.value = ConvertVec3(result);
+				}
+
+
 			}
 			break;
 		}
@@ -154,7 +166,7 @@ namespace NightSnack::Scripting {
 			mono_field_get_value(monoObj, field.m_monoField, &obj);
 
 			result.m_object = obj;
-			result.m_s = GetScriptName(obj); // For inspector display
+			result.value = GetScriptName(obj); // For inspector display
 
 			break;
 		}
@@ -168,7 +180,7 @@ namespace NightSnack::Scripting {
 			if (obj)
 			{
 				// store some representation (e.g., class name or pointer) or skip
-				result.m_s = mono_class_get_name(mono_object_get_class(obj));
+				result.value = mono_class_get_name(mono_object_get_class(obj));
 			}
 			break;
 		}
@@ -185,26 +197,35 @@ namespace NightSnack::Scripting {
 		switch (field.m_valueType)
 		{
 		case MonoValueType::MONO_INT:
-			mono_field_set_value(monoObj, field.m_monoField, (void*)&value.m_i);
+			mono_field_set_value(monoObj, field.m_monoField, (void*)&std::get<int>(value.value));
 			return;
 
 		case MonoValueType::MONO_FLOAT:
-			mono_field_set_value(monoObj, field.m_monoField, (void*)&value.m_f);
+			mono_field_set_value(monoObj, field.m_monoField, (void*)&std::get<float>(value.value));
 			return;
 
 		case MonoValueType::MONO_BOOL:
-			mono_field_set_value(monoObj, field.m_monoField, (void*)&value.m_b);
+			mono_field_set_value(monoObj, field.m_monoField, (void*)&std::get<bool>(value.value));
 			return;
 
 		case MonoValueType::MONO_STRING:
 		{
-			MonoString* str = mono_string_new(mono_domain_get(), value.m_s.c_str());
+			MonoString* str = mono_string_new(mono_domain_get(), std::get<std::string>(value.value).c_str());
 			mono_field_set_value(monoObj, field.m_monoField, (void*)str);
+			return;
 		}
-		return;
-
+		case MonoValueType::MONO_VECTOR2:
+		{
+			mono_field_set_value(monoObj, field.m_monoField, (void*)&std::get<Vec2>(value.value));
+			return;
+		}
+		case MonoValueType::MONO_VECTOR3:
+		{
+			mono_field_set_value(monoObj, field.m_monoField, (void*)&std::get<Vec3>(value.value));
+			return;
+		}
 		default:
-			mono_field_set_value(monoObj, field.m_monoField, (void*)value.m_structs.data());
+			mono_field_set_value(monoObj, field.m_monoField, (void*)std::get<std::vector<uint8_t>>(value.value).data());
 			return;
 		}
 	}
@@ -238,10 +259,10 @@ namespace NightSnack::Scripting {
 		Vec2 result{};
 
 		//Make sure struct size is correct
-		if (value.m_structs.size() != sizeof(Vec2))
+		if (std::get<std::vector<uint8_t>>(value.value).size() != sizeof(Vec2))
 			return result;
 
-		memcpy(&result, value.m_structs.data(), sizeof(Vec2));
+		memcpy(&result, std::get<std::vector<uint8_t>>(value.value).data(), sizeof(Vec2));
 
 		return result;
 	}
@@ -251,10 +272,10 @@ namespace NightSnack::Scripting {
 		Vec3 result{};
 
 		//Make sure struct size is correct
-		if (value.m_structs.size() != sizeof(Vec3))
+		if (std::get<std::vector<uint8_t>>(value.value).size() != sizeof(Vec3))
 			return result;
 
-		memcpy(&result, value.m_structs.data(), sizeof(Vec3));
+		memcpy(&result, std::get<std::vector<uint8_t>>(value.value).data(), sizeof(Vec3));
 
 		return result;
 	}
@@ -262,19 +283,19 @@ namespace NightSnack::Scripting {
 	void MonoExposeBridge::ConvertValueFromVec2(ExposedValue& value, Vec2 vec2)
 	{
 		//Make sure struct size is correct
-		if (value.m_structs.size() != sizeof(Vec2))
+		if (std::get<std::vector<uint8_t>>(value.value).size() != sizeof(Vec2))
 			return;
 
-		memcpy(value.m_structs.data(), &vec2, sizeof(Vec2));
+		memcpy(std::get<std::vector<uint8_t>>(value.value).data(), &vec2, sizeof(Vec2));
 	}
 
 	void MonoExposeBridge::ConvertValueFromVec3(ExposedValue& value, Vec3 vec3)
 	{
 		//Make sure struct size is correct
-		if (value.m_structs.size() != sizeof(Vec3))
+		if (std::get<std::vector<uint8_t>>(value.value).size() != sizeof(Vec3))
 			return;
 
-		memcpy(value.m_structs.data(), &vec3, sizeof(Vec3));
+		memcpy(std::get<std::vector<uint8_t>>(value.value).data(), &vec3, sizeof(Vec3));
 	}
 
 	bool MonoExposeBridge::IsScriptClass(MonoClass* monoClass)
