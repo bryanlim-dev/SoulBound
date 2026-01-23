@@ -58,8 +58,14 @@ namespace NightSnack::Scripting {
         // Set script fields
         void SetScriptEntityId(void* instance, uint32_t objID);
 
+        //Calls OnLoad for script instance;
+        void LoadScript(void* instance);
+
+        //Call OnStart for the script instance
+        void StartScript(void* instance);
+        
         // Update all active scripts
-        void UpdateAllScripts();
+        void UpdateScript(void* instance);
 
         // Check if initialized
         bool IsInitialized() const { return m_initialized; }
@@ -77,8 +83,6 @@ namespace NightSnack::Scripting {
         // Cache of script classes
         std::unordered_map<std::string, MonoClass*> m_classCache;
 
-        // Active script instances
-        std::vector<MonoObject*> m_scriptInstances;
 
         bool m_initialized;
 

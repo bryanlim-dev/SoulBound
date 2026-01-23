@@ -46,7 +46,7 @@ namespace NightSnack::Scripting {
                 //AttachScript(e, m_coord.GetComponent<Script>(e).name);
                 for (const std::string& scriptName : m_coord.GetComponent<Script>(e).names)
                 {
-                    AttachScript(e, scriptName);
+                    m_scriptInstances.push_back(AttachScript(e, scriptName));
                 }
             }
             m_attached = true;
@@ -57,7 +57,8 @@ namespace NightSnack::Scripting {
                 //Now start all scripts that have not called OnStart()
                 for (void* script : m_scriptsToLoad)
                 {
-                    m_monoHost->CallMethod(script, "OnLoad");
+                    m_monoHost->LoadScript(script);
+                    //m_monoHost->CallMethod(script, "OnLoad");
                     ModifyScriptValuesToPresetValues(script); //Modify values
                 }
                 m_scriptsToLoad.clear();
@@ -84,15 +85,19 @@ namespace NightSnack::Scripting {
             //Now start all scripts that have not called OnStart()
             for (void* script : m_scriptsToStart)
             {
-                m_monoHost->CallMethod(script, "OnStart");
+                m_monoHost->StartScript(script);
+                //m_monoHost->CallMethod(script, "OnStart");
             }
             m_scriptsToStart.clear();
         }
 
 
         for (int s{}; s < m_coord.steps; ++s) {
-            // Update all active scripts
-            m_monoHost->UpdateAllScripts();
+            for (void* instance : m_scriptInstances)
+            {
+                // Update all active scripts
+                m_monoHost->UpdateScript(instance);
+            }
         }
 
         if (debugMode) stepRequest = false; // reset step request
@@ -340,7 +345,8 @@ namespace NightSnack::Scripting {
         //Script is created mid game, safe to load it now
         else
         {
-            m_monoHost->CallMethod(instance, "OnLoad");
+            m_monoHost->LoadScript(instance);
+            //m_monoHost->CallMethod(instance, "OnLoad");
         }
 
 
@@ -355,7 +361,8 @@ namespace NightSnack::Scripting {
         //Game is running and not first update frame (mid game), should be fine to call onStart
         else
         {
-            m_monoHost->CallMethod(instance, "OnStart");
+            m_monoHost->StartScript(instance);
+            //m_monoHost->CallMethod(instance, "OnStart");
         }
 
         //m_coord.ModifyComponent<Script>(e).names.push_back(scriptName);

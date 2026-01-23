@@ -72,7 +72,15 @@ namespace NightSnack::Scripting {
 			AddLayer(LayerType::FOREGROUND);
 		}
 		// Destructor that calls shutdown member function;
-		~ScriptManager() { Shutdown(); }
+		~ScriptManager() { 
+			Shutdown();
+			m_scriptInstances.clear();
+			m_entityScripts.clear();
+			m_scriptOwner.clear();
+			m_scriptNameMap.clear();
+			m_scriptsToStart.clear();
+			m_scriptsToLoad.clear();
+		}
 		
 		// Main Update function;
 		void Update() override;
@@ -118,7 +126,9 @@ namespace NightSnack::Scripting {
 		std::unique_ptr<MonoScriptHost> m_monoHost;
 		std::unique_ptr<ScriptInterface> m_scriptInterface;
 
-		// Map entity ID to script instances
+		// Active script instances
+		std::vector<void*> m_scriptInstances;// Map entity ID to script instances
+
 		std::map<Entity, std::vector<void*>> m_entityScripts;
 		//Tracks which script belongs to which entity
 		std::map<void*, Entity> m_scriptOwner;

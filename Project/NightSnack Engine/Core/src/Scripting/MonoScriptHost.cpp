@@ -80,7 +80,7 @@ namespace NightSnack::Scripting {
         if (!m_initialized) return;
 
         // Clear script instances
-        m_scriptInstances.clear();
+        //m_scriptInstances.clear();
         m_classCache.clear();
 
         // Unload app domain
@@ -149,7 +149,7 @@ namespace NightSnack::Scripting {
         mono_runtime_object_init(instance);
 
         // Store instance
-        m_scriptInstances.push_back(instance);
+        //m_scriptInstances.push_back(instance);
 
         //Set the entity ID on the script
 
@@ -170,10 +170,10 @@ namespace NightSnack::Scripting {
         CallMethod(instance, "OnDestroy");
 
         // Remove from active instances
-        auto it = std::find(m_scriptInstances.begin(), m_scriptInstances.end(), obj);
-        if (it != m_scriptInstances.end()) {
-            m_scriptInstances.erase(it);
-        }
+        //auto it = std::find(m_scriptInstances.begin(), m_scriptInstances.end(), obj);
+        //if (it != m_scriptInstances.end()) {
+        //    m_scriptInstances.erase(it);
+        //}
     }
 
     // Calls member functions of C# script classes. Name must match.
@@ -231,11 +231,25 @@ namespace NightSnack::Scripting {
         mono_field_set_value(obj, field, &objID);
     }
 
-    void MonoScriptHost::UpdateAllScripts() {
-        // Call OnUpdate on all active scripts
-        for (MonoObject* instance : m_scriptInstances) {
+    void MonoScriptHost::LoadScript(void* instance)
+    {
+        MonoObject* obj = static_cast<MonoObject*>(instance);
+        if (obj)
+            CallMethod(instance, "OnLoad");
+    }
+
+    void MonoScriptHost::StartScript(void* instance)
+    {
+        MonoObject* obj = static_cast<MonoObject*>(instance);
+        if (obj)
+            CallMethod(instance, "OnStart");
+    }
+
+    void MonoScriptHost::UpdateScript(void* instance) {
+        // Call OnUpdate on scripts
+        MonoObject* obj = static_cast<MonoObject*>(instance);
+        if (obj)
             CallMethod(instance, "OnUpdate");
-        }
     }
 
     std::string MonoScriptHost::GetScriptName(void* instance)
