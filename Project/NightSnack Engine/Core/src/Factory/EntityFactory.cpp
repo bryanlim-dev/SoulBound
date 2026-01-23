@@ -22,6 +22,11 @@ namespace NightSnack {
             PrintPrefabNames();
             printed = true;
         }
+
+        for (std::pair<std::string, Transform>& p : m_prefabCache) {
+            Create(p.first, p.second);
+        }
+        m_prefabCache.clear();
     }
 
     // Called at the end of Core loop to unload prefabs and destroy entities.
@@ -29,6 +34,16 @@ namespace NightSnack {
 
         // Destroy all removed entities
         for (Entity e : m_toBeDestroyed) {
+            auto range = prefabToEntities.equal_range(entityToPrefab[e]);
+            std::unordered_multimap<std::string, Entity>::iterator it;
+            for (auto i = range.first; i != range.second; ++i) {
+                if (i->second == e) {
+                    it = i;
+                    break;
+                }
+            }
+            prefabToEntities.erase(it);
+            entityToPrefab.erase(e);
             m_coord.DestroyEntity(e);
         }
         m_toBeDestroyed.clear();
@@ -501,21 +516,20 @@ namespace NightSnack {
         //std::string prefabpath = "GameData/Prefabs/" + prefabName + ".json";
         std::cout << "[EntityFactory] Updated Json in RM for: " << prefabName << '\n';
 
-        // Update mappings of current entity to new created prefab
-        entityToPrefab[e] = prefabName;
-        prefabToEntities.insert({ prefabName, e });
-        m_prefabNames.push_back(prefabName);
-
         // Update entities of this prefab;
-        auto range = prefabToEntities.equal_range(prefabName);
+        m_prefabCache.clear();
         // Cache transforms
-        std::vector<Transform> transCache;
+        auto range = prefabToEntities.equal_range(prefabName);
         for (auto i = range.first; i != range.second; ++i) {
-            transCache.emplace_back(m_coord.GetComponent<Transform>(i->second));
+            std::pair<std::string, Transform> p (prefabName, m_coord.GetComponent<Transform>(i->second));
+            m_prefabCache.push_back(p);
             RemoveEntity(i->second);
         }
-        for (Transform& t : transCache) {
-            Create(prefabName, t);
+        // Update mappings of current entity to new created prefab
+        if (!std::filesystem::exists(outPath) && !overwrite) {
+            entityToPrefab[e] = prefabName;
+            prefabToEntities.insert({ prefabName, e });
+            m_prefabNames.push_back(prefabName);
         }
 
         m_coord.ModifyComponent<Transform>(e).prefabModified = false;

@@ -281,6 +281,7 @@ namespace NightSnack {
 		//std::unordered_map<std::string, size_t> m_levelKeys;
 
 		std::vector<size_t> m_toBeUnloaded;
+		std::vector<std::pair<std::string, Transform>> m_prefabCache;
 
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;
