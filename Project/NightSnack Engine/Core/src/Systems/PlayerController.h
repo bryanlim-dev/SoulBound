@@ -135,14 +135,36 @@ namespace NightSnack {
             else if (m_flags.movingLeft && m_flags.movingRight) {
                 vel.x = 0.f; // Stop moving when both keys pressed
             }
-            if (m_flags.jumpRequested && isGrounded && !m_midAir) {
+
+            if (m_flags.jumpRequested)
+            {
+                m_storedJump = true;
+                m_storedJumpTimer = 0;
+                //std::cout << "Stored Jump!" << std::endl;
+            }
+
+            if (m_storedJump)
+            {
+                m_storedJumpTimer += m_coord.GetSystem<ApplicationSystem>()->GetDT();
+
+                //Too long since pressing jump
+                if (m_storedJumpTimer >= m_storedJumpThreshold)
+                {
+                    m_storedJump = false;
+                    //std::cout << "Unstored Jump." << std::endl;
+                }
+            }
+
+            if (m_storedJump && isGrounded && !m_midAir) {
                 vel.y = pcont.jumpSpeed;
                 t.pos.y += 2.5f;
                 m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
                 m_coord.GetSystem<AudioSystem>()->PlaySFX("playerJump");
                 landed = false;
                 m_midAir = true;
+                m_storedJump = false;
             }
+
             m_flags.jumpRequested = false;
 
             if (isGrounded) landed = false;
@@ -217,12 +239,18 @@ namespace NightSnack {
         // Accumulates states
         PlayerFlags m_flags{};
 
-        float m_timeSinceGrounded{};
+        float m_timeSinceGrounded{}; //Time since last grounded
         bool m_midAir{}; //Is the player midair (used to help track if player jumped)
+
+        //If spacebar is pressed right before landing allow 
+        bool m_storedJump = false;
+        float m_storedJumpTimer{};
+
         //Time to consider the player "grounded" for jumping
         //Cyote time
-        float m_groundedThreshhold = 0.2f;
-
+        const float m_groundedThreshhold = 0.2f;
+        //Lenght of time to store a jump
+        const float m_storedJumpThreshold = 0.2f;
     };
 
 }   // namespace NightSnack
