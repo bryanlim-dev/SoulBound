@@ -105,6 +105,24 @@ namespace NightSnack {
             Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
             Transform& t = m_coord.ModifyComponent<Transform>(m_player);
 
+            if (m_coord.GetComponent<Collider>(m_player).isGrounded)
+            {
+                m_midAir = false;
+                m_timeSinceGrounded = 0;
+            }
+            else
+            {
+                m_timeSinceGrounded += m_coord.GetSystem<ApplicationSystem>()->GetDT();
+            }
+
+            bool isGrounded = (m_timeSinceGrounded <= m_groundedThreshhold);
+
+            if (!isGrounded)
+                m_midAir = false;
+
+            /*if (!m_coord.GetComponent<Collider>(m_player).isGrounded && isGrounded)
+                std::cout << "Coyte TIME!" << std::endl;*/
+
             if (m_flags.movingRight && !m_flags.movingLeft) {
                 vel.x = pcont.moveSpeed;
             }
@@ -117,18 +135,19 @@ namespace NightSnack {
             else if (m_flags.movingLeft && m_flags.movingRight) {
                 vel.x = 0.f; // Stop moving when both keys pressed
             }
-            if (m_flags.jumpRequested && m_coord.GetComponent<Collider>(m_player).isGrounded) {
+            if (m_flags.jumpRequested && isGrounded && !m_midAir) {
                 vel.y = pcont.jumpSpeed;
                 t.pos.y += 2.5f;
                 m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
                 m_coord.GetSystem<AudioSystem>()->PlaySFX("playerJump");
                 landed = false;
+                m_midAir = true;
             }
             m_flags.jumpRequested = false;
 
-            if (!m_coord.GetComponent<Collider>(m_player).isGrounded) landed = false;
+            if (isGrounded) landed = false;
 
-            if (!landed && m_coord.GetComponent<Collider>(m_player).isGrounded) {
+            if (!landed && isGrounded) {
                 m_coord.GetSystem<AudioSystem>()->PlaySFX("playerHurt");
                 landed = true;
             }
@@ -197,6 +216,13 @@ namespace NightSnack {
 
         // Accumulates states
         PlayerFlags m_flags{};
+
+        float m_timeSinceGrounded{};
+        bool m_midAir{}; //Is the player midair (used to help track if player jumped)
+        //Time to consider the player "grounded" for jumping
+        //Cyote time
+        float m_groundedThreshhold = 0.2f;
+
     };
 
 }   // namespace NightSnack
