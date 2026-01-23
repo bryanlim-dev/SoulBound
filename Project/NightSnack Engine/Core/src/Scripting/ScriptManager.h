@@ -70,6 +70,7 @@ namespace NightSnack::Scripting {
 			AddLayer(LayerType::BACKGROUND);
 			AddLayer(LayerType::GAMELAYER);
 			AddLayer(LayerType::FOREGROUND);
+			AddLayer(LayerType::GAMEUI);
 		}
 		// Destructor that calls shutdown member function;
 		~ScriptManager() { 

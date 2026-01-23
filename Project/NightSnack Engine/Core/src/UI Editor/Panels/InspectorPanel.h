@@ -429,6 +429,17 @@ namespace NightSnack
                 }
             }
 		}
+        if (scripting)
+        {
+            for (auto& layer : scripting->m_layers)
+            {
+                if (layer.Type() == t.layer)
+                {
+                    layerActive = layer.IsActive();
+                    break;
+                }
+            }
+		}
 
         std::string label = std::string("Active##LayerActive") + std::to_string(currentLayer);
         if (ImGui::Checkbox(label.c_str(), &layerActive))
@@ -499,6 +510,30 @@ namespace NightSnack
                     }
                 }
             }
+			// Toggle layer in ScriptingSystem
+            if (scripting)
+            {
+                for (auto& layer : scripting->m_layers)
+                {
+                    if (layer.Type() == static_cast<LayerType>(currentLayer))
+                    {
+                        if (layer.IsActive() != layerActive)
+                            layer.ToggleActive();
+
+                        for (Entity e : layer.Entities())
+                        {
+                            if (e == INVALID_ENTITY)
+                                continue;
+                            if (m_coord.HasComponent<Transform>(e))
+                            {
+                                m_coord.ModifyComponent<Transform>(e).isActive = layerActive;
+                            }
+                        }
+                    }
+                }
+            }
+
+
         }
     }
 

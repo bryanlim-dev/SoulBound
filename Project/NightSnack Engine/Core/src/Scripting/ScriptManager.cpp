@@ -92,11 +92,29 @@ namespace NightSnack::Scripting {
         }
 
 
+        //Map layer type to layer class
+        std::map<LayerType, Layer*> layerMap;
+        for (Layer& layer : m_layers)
+        {
+            layerMap.insert({ layer.Type(), &layer });
+        }
+
         for (int s{}; s < m_coord.steps; ++s) {
             for (void* instance : m_scriptInstances)
             {
+                bool validUpdate = true;
+                LayerType layerType = m_coord.GetComponent<Transform>(m_scriptOwner[instance]).layer;
+                if (!layerMap.contains(layerType))
+                    validUpdate = true; //Layer not in list, just let script do its thing
+                else
+                    validUpdate = layerMap[layerType]->IsActive();
+
+                //if entity layer is active -> Update
+                
                 // Update all active scripts
-                m_monoHost->UpdateScript(instance);
+                if (validUpdate)
+                    m_monoHost->UpdateScript(instance);
+                
             }
         }
 
@@ -271,10 +289,13 @@ namespace NightSnack::Scripting {
             //std::cout << "ScriptManager Desotry:" << m_scriptNameMap[instance] << std::endl;
             m_monoHost->DestroyScriptInstance(instance);
             m_scriptNameMap.erase(instance);
+            std::erase(m_scriptInstances, instance);
+            std::erase(m_scriptsToStart, instance);
+            std::erase(m_scriptsToLoad, instance);
+            m_scriptOwner.erase(instance);
         }
         // Remove from map
         m_entityScripts[e].clear();
-        m_scriptOwner.clear();
 
         //m_coord.ModifyComponent<Script>(e).names.clear();
     }
