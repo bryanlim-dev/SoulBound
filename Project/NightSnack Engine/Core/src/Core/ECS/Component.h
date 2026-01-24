@@ -239,6 +239,7 @@ namespace NightSnack {
 
         LOADLEVEL,
         OPENMENU,
+        CLOSEMENU,
         NOACTION,
         EXIT,
     };

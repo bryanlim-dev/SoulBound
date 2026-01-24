@@ -2,6 +2,31 @@
     "BGM": "mainMenu",
     "Entities": [
         {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -250.0,
+                    "y": -350.0,
+                    "z": 1.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                    },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "Prefab": "PauseButton"
+        },
+        {
             "Prefab": "Cam",
             "Transform": {
                 "Layer": "GameUI",

@@ -1,0 +1,47 @@
+{
+    "offsetX": 0.0,
+    "offsetY": 0.0,
+    "Entities": [
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": { 
+                    "x": 0.0, 
+                    "y": 0.0, 
+                    "z": 1.0 
+                },
+                "Rotation": 0.0,
+                "Scale": { 
+                    "x": 1000.0, 
+                    "y": 800.0
+                }
+            },
+            "prefab": "MainMenu-Background"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": { 
+                    "x": 0.0, 
+                    "y": 250.0, 
+                    "z": 1.0 
+                },
+                "Rotation": 0.0,
+                "Scale": { 
+                    "x": 100.0, 
+                    "y": 100.0 
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                    },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "prefab": "CloseButton"
+        }
+    ]
+}

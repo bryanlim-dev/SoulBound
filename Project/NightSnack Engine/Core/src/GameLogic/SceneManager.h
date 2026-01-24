@@ -1,7 +1,8 @@
 ﻿/******************************************************************************
  * File:        SceneManager.h
  * Project:     NightSnack
- * Author(s):	Chewn Thing Kwan (Primary, 100%)
+ * Author(s):	Chewn Thing Kwan (Primary, 60%)
+ *				Bryan Lim Jun Jie (Secondary, 40%)
  *
  * Description:
  * This file declares the SceneManager class that performs scene managment 
@@ -20,6 +21,7 @@
 #include "Factory/EntityFactory.h"
 #include "Systems/AudioSystem.h"
 #include "Scripting/ScriptManager.h"
+#include "Systems/Graphics.h"
 
 #include <fstream>
 #include <string>
@@ -46,6 +48,7 @@ namespace NightSnack::Scene {
 	private:
 		ButtonAction m_action;
 		void(*m_callable)(Coordinator& c, std::string const&);
+
 	};
 
 	// SceneManager system that handles level saving/loading, caching/restoring and
@@ -66,11 +69,11 @@ namespace NightSnack::Scene {
 					// Currently not in use
 					case InputEvent::InputAction::PauseGame:
 						if (!overlayOn) {
-							CreateOverlayMenu();
+							//CreateOverlayMenu();
 							m_coord.Pause();
 						}
 						else { 
-							RemoveOverlayMenu();
+							//RemoveOverlayMenu();
 							m_coord.Unpause();
 						}
 						break;
@@ -81,7 +84,7 @@ namespace NightSnack::Scene {
 						break;
 					// Used to signal a mouse press event
 					case InputEvent::InputAction::ClickLMB:
-						if (m_coord.IsPaused()) return;
+						//if (m_coord.IsPaused()) return;
 						CheckButtonCollisions();
 						break;
 					}
@@ -99,8 +102,8 @@ namespace NightSnack::Scene {
 		void ReloadLevels();
 
 		// Spawn Overlay menu (Pause menu) (currently not in use)
-		void CreateOverlayMenu();
-		void RemoveOverlayMenu();
+		//void CreateOverlayMenu();
+		//void RemoveOverlayMenu();
 		
 		//void SetOverlayMenu(std::string const& filename);
 		
@@ -119,6 +122,10 @@ namespace NightSnack::Scene {
 		// Play/Pause/Stop functionality
 		void CacheLevel();
 		void RestoreLevel();
+
+		void OpenMenu(std::string const& menuname);
+		void CloseMenu();
+		bool IsMenuOpen() const { return m_menuOpen; }
 
 		// Getters
 		const std::unordered_map<std::string, size_t>& GetAvailableLevels() const { return m_levelKeys; }
@@ -148,6 +155,11 @@ namespace NightSnack::Scene {
 		bool overlayOn = false;
 		bool m_mouseClicked = false;
 		bool m_restart = false;
+
+		bool m_menuOpen = false;
+		std::vector<Entity> m_menuEntities;
+		std::string m_currentMenu;
+		std::unordered_map<std::string, size_t> m_menuKeys; // Cache menu JSON keys
 	};
 
 }	// NightSnack::Scene

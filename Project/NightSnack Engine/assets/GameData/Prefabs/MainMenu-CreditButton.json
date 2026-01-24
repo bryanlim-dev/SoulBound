@@ -1,7 +1,7 @@
 {
     "ButtonInfo": {
-        "action": "LoadLevel",
-        "target": "",
+        "action": "OpenMenu",
+        "target": "CreditsMenu",
         "type": "Clicker"
     },
     "Collider": {

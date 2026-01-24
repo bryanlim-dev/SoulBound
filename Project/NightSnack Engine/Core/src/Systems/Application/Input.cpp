@@ -54,8 +54,21 @@ namespace NightSnack {
 		float Hvp = static_cast<float>(m_coord.GetWindowHeight());
 		float Wvp = static_cast<float>(m_coord.GetWindowWidth());
 		Entity cam = m_coord.GetSystem<GraphicsSystem>()->FindCamera();
-		m_mouseWorldPosX = (-Wvp / 2.f) + m_mousePosX + m_coord.GetComponent<Transform>(cam).pos.x;
-		m_mouseWorldPosY = (Hvp / 2.f) - m_mousePosY + m_coord.GetComponent<Transform>(cam).pos.y;
+
+		auto& camTransform = m_coord.GetComponent<Transform>(cam);
+		auto& camera = m_coord.GetComponent<Camera>(cam);
+		float zoom = camera.zoom;
+		float halfCamWidth = (camera.width * 0.5f) / zoom;
+		float halfCamHeight = (camera.height * 0.5f) / zoom;
+
+		// Convert screen-space mouse [0, Wvp] x [0, Hvp] to normalized [-1, 1] x [-1, 1]
+		float normalizedX = (m_mousePosX / Wvp) * 2.0f - 1.0f;
+		float normalizedY = 1.0f - (m_mousePosY / Hvp) * 2.0f;  // Flip Y axis
+
+		// Scale to camera world space and add camera position
+		m_mouseWorldPosX = (normalizedX * halfCamWidth) + camTransform.pos.x;
+		m_mouseWorldPosY = (normalizedY * halfCamHeight) + camTransform.pos.y;
+
 		// Compute mouse delta - the relative movement since the last frame
 		m_deltaWorldPosX = m_mouseWorldPosX - m_prevMouseWorldPosX;
 		m_deltaWorldPosY = m_mouseWorldPosY - m_prevMouseWorldPosY;

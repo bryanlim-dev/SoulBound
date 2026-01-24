@@ -1,6 +1,6 @@
 {
     "ButtonInfo": {
-        "action": "LoadLevel",
+        "action": "ExitGame",
         "target": "",
         "type": "Clicker"
     },

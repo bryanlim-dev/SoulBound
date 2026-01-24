@@ -551,7 +551,9 @@ namespace NightSnack {
 		if (ButtonAction::PLAYAUDIO == b.action) j["action"] = std::string{ "PlayAudio"};
 		if (ButtonAction::LOADLEVEL == b.action) j["action"] = std::string{ "LoadLevel"};
 		if (ButtonAction::OPENMENU == b.action) j["action"] = std::string{ "OpenMenu"};
+		if (ButtonAction::CLOSEMENU == b.action) j["action"] = std::string{ "CloseMenu" };
 		if (ButtonAction::NOACTION == b.action) j["action"] = std::string{ "NoAction"};
+		if (ButtonAction::EXIT == b.action) j["action"] = std::string{ "ExitGame" };
 
 		if (ButtonType::SLIDER == b.type) j["type"] = std::string{ "Slider" };
 		if (ButtonType::CLICKER == b.type) j["type"] = std::string{ "Clicker" };
@@ -562,7 +564,9 @@ namespace NightSnack {
 			// Menu actions
 			if (j["action"] == "LoadLevel") { b.action = ButtonAction::LOADLEVEL; }
 			if (j["action"] == "OpenMenu") { b.action = ButtonAction::OPENMENU; }
+			if (j["action"] == "CloseMenu") { b.action = ButtonAction::CLOSEMENU; }
 			if (j["action"] == "NoAction") { b.action = ButtonAction::NOACTION; }
+			if (j["action"] == "ExitGame") { b.action = ButtonAction::EXIT; }
 			// Button type
 			if (j["type"] == "Slider") { b.type = ButtonType::SLIDER; }
 			if (j["type"] == "Clicker") { b.type = ButtonType::CLICKER; }
