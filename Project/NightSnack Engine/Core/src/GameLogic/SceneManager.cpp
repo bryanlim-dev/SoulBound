@@ -339,7 +339,7 @@ namespace NightSnack::Scene {
 
 		json const& menuData = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(menuKey);
 
-		// GET CAMERA POSITION AND ZOOM TO CENTER AND SCALE MENU
+		// get camera position and scale to center
 		Entity mainCam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
 		auto& camTransform = m_coord.GetComponent<Transform>(mainCam);
 		auto& camera = m_coord.GetComponent<Camera>(mainCam);
@@ -367,13 +367,11 @@ namespace NightSnack::Scene {
 					if (entityData.contains("Transform")) {
 						transform = entityData["Transform"];
 
-						// APPLY CAMERA ZOOM TO MENU SCALE
 						// Divide by zoom to make menu appear same size on screen
 						transform.scale.x /= zoom;
 						transform.scale.y /= zoom;
 
-						// OFFSET MENU POSITIONS BY CAMERA POSITION
-						// Positions in JSON are relative offsets from camera center
+						// offset menu position by camera position
 						transform.pos.x += camX;
 						transform.pos.y += camY;
 
@@ -404,7 +402,7 @@ namespace NightSnack::Scene {
 		m_menuOpen = true;
 		m_currentMenu = menuname;
 
-		// ONLY PAUSE FOR IN-GAME MENUS
+		// only pause for in game menus
 		if (menuname == "PauseMenu") {
 			m_coord.Pause();
 			std::cerr << "[SceneManager] Game paused\n";
