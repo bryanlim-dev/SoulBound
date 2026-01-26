@@ -38,7 +38,7 @@ namespace NightSnack::Scene {
 	// Main update function to be called in core loop
 	void SceneManager::Update() {
 		// If somehow no level is loaded, return to default scene
-		if (!m_gameLoaded) LoadLevel("DefaultLevel");
+		if (!m_gameLoaded) LoadLevel("LevelTemplate");
 
 		if (m_restart) {
 			RestartLevel();
@@ -110,7 +110,11 @@ namespace NightSnack::Scene {
 		m_currentLevelKey = key;
 
 		// Create all Entities
-		m_coord.GetSystem<EntityFactory>()->CreateLevelEntities(level);
+		auto const& factory = m_coord.GetSystem<EntityFactory>();
+		factory->DestroyLevelEntities();
+		CreateSceneCamera(level);
+		factory->CreateLevelEntities(level);
+
 		// Play Background Music
 		auto audio = m_coord.GetSystem<AudioSystem>();
 		if (level.contains("BGM")) audio->PlayBGM(level["BGM"]);
@@ -123,15 +127,40 @@ namespace NightSnack::Scene {
 		m_gameLoaded = true;
 	}
 
+	void SceneManager::CreateSceneCamera(json const& j) {
+		if (!j.contains("MainCamera")) return;
+
+		Entity e = m_coord.CreateEntity();
+		json c = j["MainCamera"];
+
+		Transform t;
+		t.pos.x = c["posX"]; t.pos.y = c["posY"]; t.pos.z = m_camDepth;
+		t.layer = LayerType::GAMEUI;
+		m_coord.AddComponent<Transform>(e, t);
+		m_coord.AddComponent<Hierarchy>(e, Hierarchy{});
+
+		Camera cam = j["MainCamera"];
+		m_coord.AddComponent<Camera>(e, cam);
+
+		m_sceneCam = e;
+	}
+
 	void SceneManager::RestartLevel() {
 
 		json const& level = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelKey);
+		auto const& factory = m_coord.GetSystem<EntityFactory>();
+		factory->DestroyLevelEntities();
+
+		// Reset Camera
+		CreateSceneCamera(level);
+
 		// Create all Entities
-		m_coord.GetSystem<EntityFactory>()->CreateLevelEntities(level);
+		factory->CreateLevelEntities(level);
+
 		// Play Background Music
-		auto audio = m_coord.GetSystem<AudioSystem>();
-		if (level.contains("BGM")) audio->PlayBGM(level["BGM"]);
-		else audio->StopBGM();
+		//auto audio = m_coord.GetSystem<AudioSystem>();
+		//if (level.contains("BGM")) audio->PlayBGM(level["BGM"]);
+		//else audio->StopBGM();
 
 		// Refresh Scripts for loaded level
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();
@@ -159,6 +188,13 @@ namespace NightSnack::Scene {
 		// Output json object
 		json level;
 		level["Entities"] = json::array();
+
+		// Save Camera data;
+		level["MainCamera"] = m_coord.GetComponent<Camera>(m_sceneCam);
+		Transform const& t = m_coord.GetComponent<Transform>(m_sceneCam);
+		level["MainCamera"]["posX"] = t.pos.x;
+		level["MainCamera"]["posY"] = t.pos.y;
+		level["MainCamera"]["posZ"] = t.pos.z;
 
 		// Save Level data;
 		level["Entities"] = m_coord.GetSystem<EntityFactory>()->SaveLevelEntities();
@@ -233,6 +269,12 @@ namespace NightSnack::Scene {
 		if (entities.empty()) { return; }
 
 		m_levelCache["Entities"] = m_coord.GetSystem<EntityFactory>()->CacheLevelEntities();
+		m_levelCache["MainCamera"] = m_coord.GetComponent<Camera>(m_sceneCam);
+
+		Transform const& t = m_coord.GetComponent<Transform>(m_sceneCam);
+		m_levelCache["MainCamera"]["posX"] = t.pos.x;
+		m_levelCache["MainCamera"]["posY"] = t.pos.y;
+		m_levelCache["MainCamera"]["posZ"] = t.pos.z;
 	}
 
 	// Restore scene to cached level -> restore after Stopping simulation in Editor
@@ -243,6 +285,7 @@ namespace NightSnack::Scene {
 		// Restore all entities to original
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
+		CreateSceneCamera(m_levelCache);
 		factory->CreateLevelEntities(m_levelCache);
 		
 		// Restart audio

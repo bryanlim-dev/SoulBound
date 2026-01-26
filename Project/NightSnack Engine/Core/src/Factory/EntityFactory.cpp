@@ -253,7 +253,7 @@ namespace NightSnack {
     // Create all entities in a level given a level json
     void EntityFactory::CreateLevelEntities(json const& level) {
         // Resets ECS and destroys all current entities;
-        DestroyLevelEntities();
+        //DestroyLevelEntities();
         try {
             for (auto const& item : level["Entities"]) {
                 Entity e = Create(std::string{ item["Prefab"] }, item["Transform"]);
@@ -261,6 +261,13 @@ namespace NightSnack {
                 //    << item["Transform"]["Position"]["x"] << ", "
                 //    << item["Transform"]["Position"]["y"] << ", "
                 //    << item["Transform"]["Position"]["z"] << ")\n";
+
+                if (item.contains("Collider")) {
+                    if (m_coord.HasComponent<Collider>(e))
+                        m_coord.ModifyComponent<Collider>(e) = item["Collider"];
+                    else
+                        m_coord.AddComponent<Collider>(e, item["Collider"]);
+                }
 
                 // Create child entities
                 if (item.contains("Children")) {
@@ -280,6 +287,13 @@ namespace NightSnack {
 
         for (auto const& e : j) {
             Entity child = Create(std::string{ e["Prefab"] }, e["Transform"]);
+
+            if (e.contains("Collider")) {
+                if (m_coord.HasComponent<Collider>(child))
+                    m_coord.ModifyComponent<Collider>(child) = e["Collider"];
+                else
+                    m_coord.AddComponent<Collider>(child, e["Collider"]);
+            }
 
             m_coord.ModifyComponent<Hierarchy>(child).parent = parent;
             h.children.insert(child);
@@ -338,6 +352,10 @@ namespace NightSnack {
                 child["Transform"] = m_coord.GetComponent<Transform>(c);
                 child["Prefab"] = GetEntityPrefabName(c);
 
+                if (m_coord.HasComponent<Collider>(c)) {
+                    child["Collider"] = m_coord.GetComponent<Collider>(c);
+                }
+
                 Hierarchy const& hc = m_coord.GetComponent<Hierarchy>(c);
                 if (!hc.children.empty()) {
                     child["Children"] = CacheEntityChildren(hc);
@@ -356,6 +374,10 @@ namespace NightSnack {
         json entities = json::array();
 
         for (Entity e : m_coord.GetLivingEntities()) {
+
+            // Skip camera entities (they should be handled by SceneManager and Level.jsons)
+            if (m_coord.HasComponent<Camera>(e)) continue;
+
             Hierarchy const& h = m_coord.GetComponent<Hierarchy>(e);
             Transform const& t = m_coord.GetComponent<Transform>(e);
 
@@ -364,20 +386,21 @@ namespace NightSnack {
 
             std::string prefabName = entityToPrefab[e];
 
-            // Skip unmodified default entities
-            if (prefabName == "++Default" && !t.prefabModified) {
-                continue;
-            }
             // Build entity JSON
             json j;
             j["Prefab"] = prefabName;
             j["Transform"] = t;
+            if (m_coord.HasComponent<Collider>(e)) {
+                j["Collider"] = m_coord.GetComponent<Collider>(e);
+            }
 
             if (!h.children.empty()) {
                 j["Children"] = CacheEntityChildren(h);
             }
+
             entities.push_back(j);
         }
+
         return entities;
     }
 
@@ -385,6 +408,10 @@ namespace NightSnack {
         json entities = json::array();
 
         for (Entity e : m_coord.GetLivingEntities()) {
+
+            // Skip camera entities (they should be handled by SceneManager and Level.jsons)
+            if (m_coord.HasComponent<Camera>(e)) continue;
+
             Hierarchy const& h = m_coord.GetComponent<Hierarchy>(e);
             Transform const& t = m_coord.GetComponent<Transform>(e);
 
@@ -405,6 +432,9 @@ namespace NightSnack {
             json j;
             j["Prefab"] = finalPrefabName;
             j["Transform"] = t;
+            if (m_coord.HasComponent<Collider>(e)) {
+                j["Collider"] = m_coord.GetComponent<Collider>(e);
+            }
 
             if (!h.children.empty()) {
                 j["Children"] = CacheEntityChildren(h);
@@ -462,13 +492,13 @@ namespace NightSnack {
         // RIGIDBODY ------------------------------------------------------
         if (m_coord.HasComponent<RigidBody>(e)) j["RigidBody"] = m_coord.GetComponent<RigidBody>(e);
         // COLLIDER -------------------------------------------------------
-        if (m_coord.HasComponent<Collider>(e)) j["Collider"] = m_coord.GetComponent<Collider>(e);
+        //if (m_coord.HasComponent<Collider>(e)) j["Collider"] = m_coord.GetComponent<Collider>(e);
         // RENDERABLE -----------------------------------------------------
         if (m_coord.HasComponent<Renderable>(e)) j["Renderable"] = m_coord.GetComponent<Renderable>(e);
         // COLOR ----------------------------------------------------------
         if (m_coord.HasComponent<Color>(e)) j["Color"] = m_coord.GetComponent<Color>(e);
         // CAMERA ---------------------------------------------------------
-        if (m_coord.HasComponent<Camera>(e)) j["Camera"] = m_coord.GetComponent<Camera>(e);
+        //if (m_coord.HasComponent<Camera>(e)) j["Camera"] = m_coord.GetComponent<Camera>(e);
         // ANIMATOR -------------------------------------------------------
         if (m_coord.HasComponent<Animator>(e)) j["Animator"] = m_coord.GetComponent<Animator>(e);
         // FONT -----------------------------------------------------------

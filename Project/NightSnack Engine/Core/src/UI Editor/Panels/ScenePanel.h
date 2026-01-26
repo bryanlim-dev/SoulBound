@@ -377,7 +377,7 @@ namespace NightSnack
 					}
 				}
 
-				// drag and drop image
+				// drag and drop prefab
 				if (ImGui::BeginDragDropTarget())
 				{
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_PREFAB")) {
@@ -410,6 +410,40 @@ namespace NightSnack
 					}
 					ImGui::EndDragDropTarget();
 				}
+				//// drag and drop textures into scene
+				//if (ImGui::BeginDragDropTarget())
+				//{
+				//	if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE")) {
+				//		const char* droppedPath = static_cast<const char*>(payload->Data);
+
+				//		// Dropped path: ../assets\GameData\Prefabs\Ghost.json
+				//		std::cout << "Dropped path: " << droppedPath << "\n";
+
+				//		// Get the Prefab name from the path, which is 'Ghost' in this case
+				//		std::filesystem::path filePath(droppedPath);
+
+				//		std::cout << "Creating entity from Texture: " << filePath.filename().stem().string() << "\n";
+
+				//		Transform trans{};
+
+				//		trans.pos.x = mouseWorldX + m_dragOffset.x;
+				//		trans.pos.y = mouseWorldY + m_dragOffset.y;
+				//		trans.pos.z = 0.f;
+				//		// default layer...
+				//		trans.layer = LayerType::GAMELAYER;
+
+				//		trans.scale = Vec2{ 100.f, 100.f };	// default scale...
+
+				//		// Record undo for entity creation by drag drop of prefab
+				//		NightSnack::UndoSystem::Instance().Push(NightSnack::EntityCreateSnapshot{
+				//			//m_coord.GetSystem<EntityFactory>()->Create(filePath.filename().stem().string(), trans) 
+				//			});
+
+				//		std::cout << "Transform: " << trans.pos.x << ", " << trans.pos.y << std::endl;
+
+				//	}
+				//	ImGui::EndDragDropTarget();
+				//}
 			}
 			// Draw tool bar for mouse tool selection
 			DrawToolBar();
@@ -1276,10 +1310,10 @@ namespace NightSnack
 			graphics->UpdateTextureOfMaterial(m_tilemap.tileTexturePath, tileEntity);
 		}
 
-		// Save tile as prefab if not already existing
-		auto& tileR = m_coord.GetComponent<Renderable>(tileEntity);
-		std::string prefabName = "Tile_" + tileR.materialName;
-		factory->SaveAsPrefab(tileEntity, prefabName, true);
+		//// Save tile as prefab if not already existing
+		//auto& tileR = m_coord.GetComponent<Renderable>(tileEntity);
+		//std::string prefabName = "Tile_" + tileR.materialName;
+		//factory->SaveAsPrefab(tileEntity, prefabName, true);
 
 		// Record painted tile
 		m_paintedTiles[tilePos] = std::make_pair(currentTile, tileEntity);

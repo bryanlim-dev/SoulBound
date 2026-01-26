@@ -97,6 +97,7 @@ namespace NightSnack::Scene {
 		void Update() override;
 		// Resets m_levelKeys and loads all json files in "GameData/Levels"
 		void ReloadLevels();
+		void CreateSceneCamera(json const&);
 
 		// Spawn Overlay menu (Pause menu) (currently not in use)
 		void CreateOverlayMenu();
@@ -140,6 +141,9 @@ namespace NightSnack::Scene {
 		std::unordered_map<std::string, size_t> m_levelKeys;
 		size_t m_currentLevelKey{};
 		size_t m_previousLevelKey{};
+
+		Entity m_sceneCam{ INVALID_ENTITY };
+		float m_camDepth = 10.f;
 
 		std::vector<Entity> m_overlayEntites;
 

@@ -8,10 +8,10 @@
     },
     "Collider": {
         "height": 100.0,
-        "isStatic": false,
+        "isStatic": true,
         "radius": 0.5,
         "shape": "AABB",
-        "type": "Solid",
+        "type": "solid",
         "width": 100.0
     },
     "Color": {
@@ -24,5 +24,12 @@
         "isWireframe": false,
         "materialName": "ColorMat",
         "meshName": "square"
+    },
+    "RigidBody": {
+        "gravityMult": 0.0,
+        "mass": 1.0,
+        "restitution": 0.0,
+        "useGravity": false,
+        "useRotate": false
     }
 }

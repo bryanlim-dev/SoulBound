@@ -101,6 +101,7 @@ namespace NightSnack
                     if (hasComponent)
                     {
                         std::string headerLabel = compName + "##" + std::to_string(i);
+
                         bool open = ImGui::CollapsingHeader(headerLabel.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
 
                         // When header is clicked/held
@@ -332,14 +333,16 @@ namespace NightSnack
         strncpy_s(nameBuffer, (*m_uiNames)[entity].c_str(), sizeof(nameBuffer));
         nameBuffer[sizeof(nameBuffer) - 1] = 0;
 
-        ImGui::PushID("EntityNameField");
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 80.0f);
-        if (ImGui::InputText("##EntityName", nameBuffer, sizeof(nameBuffer))) {
-            (*m_uiNames)[entity] = std::string(nameBuffer);
+        if (!m_coord.HasComponent<Camera>(entity)) {
+            ImGui::PushID("EntityNameField");
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 80.0f);
+            if (ImGui::InputText("##EntityName", nameBuffer, sizeof(nameBuffer))) {
+                (*m_uiNames)[entity] = std::string(nameBuffer);
+            }
+            ImGui::PopID();
         }
         ImGui::SameLine();
         ImGui::TextDisabled("ID: %u", entity);
-        ImGui::PopID();
 
 		// Layer selection dropdown
         if (m_coord.HasComponent<Transform>(entity))
@@ -361,25 +364,30 @@ namespace NightSnack
 		// Current Prefab display
         std::string entityName = (*m_uiNames)[entity];
 		std::string prefabName = factory ? factory->GetEntityPrefabName(entity) : "UnknownPrefab";
+        bool isCam = m_coord.HasComponent<Camera>(entity);
+        if (isCam) prefabName = "CAMERA";
+
         ImGui::Dummy(ImVec2(0.0f, 5.0f));
         ImGui::Columns(2, nullptr, false);
         ImGui::Text("Prefab: %s", prefabName.c_str());
         ImGui::NextColumn();
 
-        // Save / Overwrite entity's prefab
-        if (ImGui::Button("Save Prefab"))
-        {
-            // Overwrite if prefab with same name exists
-            bool exists = false;
-            for (const auto& name : factory->GetPrefabNames())
+        if (!isCam) {
+            // Save / Overwrite entity's prefab
+            if (ImGui::Button("Save Prefab"))
             {
-                if (name == entityName)
+                // Overwrite if prefab with same name exists
+                bool exists = false;
+                for (const auto& name : factory->GetPrefabNames())
                 {
-                    exists = true;
-                    break;
+                    if (name == entityName)
+                    {
+                        exists = true;
+                        break;
+                    }
                 }
+                factory->SaveAsPrefab(entity, entityName, exists);
             }
-            factory->SaveAsPrefab(entity, entityName, exists);
         }
         ImGui::Columns(1);
     }
@@ -558,7 +566,7 @@ namespace NightSnack
             // Display the respective position based on its entity layer
             float pos[3];
             float scale[2];
-            if (t.layer == LayerType::GAMEUI) {
+            if (t.layer == LayerType::GAMEUI && !m_coord.HasComponent<Camera>(*m_selectedEntity)) {
                 pos[0] = t.UIbasePos.x; pos[1] = t.UIbasePos.y;
                 scale[0] = t.UIbaseScale.x; scale[1] = t.UIbaseScale.y;
             } else {

@@ -104,6 +104,8 @@ namespace NightSnack
 							// Create unique label for ImGui Selectable
                             std::string label = (*m_uiNames)[e] + "##" + std::to_string(e);
 
+                            if (m_coord.HasComponent<Camera>(e)) label = "CAMERA";
+
 							// Check if this entity is selected
                             bool selected = (m_selectedEntity && e == *m_selectedEntity);
                             if (ImGui::Selectable(label.c_str(), selected)) {

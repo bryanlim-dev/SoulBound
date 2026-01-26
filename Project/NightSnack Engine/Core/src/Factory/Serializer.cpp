@@ -315,11 +315,11 @@ namespace NightSnack {
 
 			if (shapeStr == "AABB") {
 				c.shape = ShapeType::AABB;
-				std::cerr << "Collider become AABB\n";
+				//std::cerr << "Collider become AABB\n";
 			}
 			else if (shapeStr == "Circle") {
 				c.shape = ShapeType::Circle;
-				std::cerr << "Collider become Circle\n";
+				//std::cerr << "Collider become Circle\n";
 			}
 
 			if (typeStr == "Solid") c.type = ColliderType::Solid;
