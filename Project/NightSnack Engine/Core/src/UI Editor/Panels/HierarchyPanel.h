@@ -100,16 +100,7 @@ namespace NightSnack
                                 (*m_uiNames)[e] = factory ? factory->GetEntityPrefabName(e) : "Entity " + std::to_string(e);
                             }
 
-							// Create unique label for ImGui Selectable
-                            std::string label = (*m_uiNames)[e] + "##" + std::to_string(e);
-
-                            if (m_coord.HasComponent<Camera>(e)) label = "CAMERA";
-
-							// Check if this entity is selected
-                            bool selected = (m_selectedEntity && e == *m_selectedEntity);
-                            if (ImGui::Selectable(label.c_str(), selected)) {
-                                *m_selectedEntity = e;
-							// Draw Hierarchy Tree
+                            // Draw Hierarchy Tree
                             if (!m_coord.HasComponent<Hierarchy>(e)) continue;
                             auto& h = m_coord.GetComponent<Hierarchy>(e);
                             if (h.parent == INVALID_ENTITY)
@@ -187,6 +178,7 @@ namespace NightSnack
             if (selected) flags |= ImGuiTreeNodeFlags_Selected;
 
             std::string label = uiNames[e] + "##" + std::to_string(e);
+            if (m_coord.HasComponent<Camera>(e)) label = "CAMERA";
             bool open = ImGui::TreeNodeEx(label.c_str(), flags);
 
             // Handle selection

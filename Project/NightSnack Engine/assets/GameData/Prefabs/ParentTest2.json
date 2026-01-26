@@ -1,0 +1,32 @@
+{
+    "Audio": {
+        "audioKey": "playerCollect",
+        "isPlaying": false,
+        "loop": false,
+        "playOnStart": false,
+        "volume": 1.0
+    },
+    "Collider": {
+        "height": 50.0,
+        "isStatic": false,
+        "radius": 0.5,
+        "shape": "AABB",
+        "type": "Solid",
+        "width": 50.0
+    },
+    "Color": {
+        "a": 0.1,
+        "b": 0.1,
+        "g": 1.0,
+        "r": 0.5
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "ColorMat",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "mass": 1.0,
+        "useGravity": false
+    }
+}
