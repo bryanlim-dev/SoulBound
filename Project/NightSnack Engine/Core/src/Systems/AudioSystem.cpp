@@ -33,7 +33,11 @@ namespace NightSnack {
         m_bgmPaused(false),
         m_masterVolume(0.5f),
         m_bgmVolume(0.2f),
-        m_sfxVolume(0.4f)
+        m_sfxVolume(0.4f),
+        m_isFading(false),     
+        m_fadeTimer(0.0f),      
+        m_fadeDuration(0.0f),   
+        m_fadeTargetVolume(0.0f)
     {
         m_systemSignature.set(GetComponentTypeID<Audio>());
 
@@ -555,6 +559,30 @@ namespace NightSnack {
             keys.push_back(key);
         }
         return keys;
+    }
+
+    void AudioSystem::FadeToVolume(float targetVolume, float duration)
+    {
+        m_isFading = true;
+        m_fadeTimer = 0.0f;
+        m_fadeDuration = duration;
+        m_fadeTargetVolume = targetVolume;
+    }
+
+    void AudioSystem::ControlFade(float deltaTime)
+    {
+        if (!m_isFading || !m_bgmChannel) return;
+
+        m_fadeTimer += deltaTime;
+        float t = std::min(m_fadeTimer / m_fadeDuration, 1.0f);
+
+        float currentVolume = m_bgmVolume + (m_fadeTargetVolume - m_bgmVolume) * t;
+        m_bgmChannel->setVolume(currentVolume * m_masterVolume);
+
+        if (t >= 1.0f) {
+            m_isFading = false;
+            m_bgmVolume = m_fadeTargetVolume;
+        }
     }
 
     Signature AudioSystem::GetSignature() const

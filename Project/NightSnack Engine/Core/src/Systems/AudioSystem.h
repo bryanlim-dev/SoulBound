@@ -201,6 +201,9 @@ namespace NightSnack {
          */
         std::string GetName() const override;
 
+        void FadeToVolume(float targetVolume, float duration);
+        void ControlFade(float deltaTime);
+
     private:
         // Resource management
         // use weak pointer to avoid circular dependency
@@ -241,6 +244,12 @@ namespace NightSnack {
         float m_bgmVolume;
         float m_sfxVolume;
 
+        // for transition audio
+        bool m_isFading;
+        float m_fadeTimer;
+        float m_fadeDuration;
+        float m_fadeTargetVolume;
+
         /**
          * @brief loads a single sound file and assigns it a string key based on filename
          * @param filepath path to the audio file
@@ -269,6 +278,7 @@ namespace NightSnack {
          * @return true if file is a valid audio format
          */
         bool IsValidAudioFile(const std::string& filepath) const;
+
     };
 
 } // namespace NightSnack

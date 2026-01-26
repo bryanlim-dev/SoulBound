@@ -45,13 +45,30 @@ namespace NightSnack::Scene {
 			RestartLevel();
 			m_restart = false;
 		}
+
+		if (m_scheduledLevelLoad) {
+			m_levelLoadTimer -= (1.0f / 60.0f); // to use actual deltaTime if available
+
+			if (m_levelLoadTimer <= 0.0f) {
+				// Load the new level
+				LoadLevel(m_scheduledLevelName);
+
+				// Fade in the new BGM
+				m_coord.GetSystem<AudioSystem>()->FadeToVolume(0.2f, 1.0f); // 0.2f is bgm volume
+
+				// Reset scheduled load
+				m_scheduledLevelLoad = false;
+				m_scheduledLevelName = "";
+			}
+		}
 	}
 
 	// Register all button actions and stop buttons into m_buttons
 	void SceneManager::RegisterButtons() {
 		Button loadButton(ButtonAction::LOADLEVEL, [](Coordinator& c, std::string const& s) {
 			if (s.empty()) { return; }
-			c.GetSystem<Scene::SceneManager>()->LoadLevel(s);
+			//c.GetSystem<Scene::SceneManager>()->LoadLevel(s);
+			c.GetSystem<Scene::SceneManager>()->LoadLevelWithFade(s, 1.5f, 1.0f);
 		});
 		m_buttons.emplace(ButtonAction::LOADLEVEL, loadButton);
 
@@ -144,6 +161,16 @@ namespace NightSnack::Scene {
 		script->RefreshScripts();
 
 		m_gameLoaded = true;
+	}
+
+	void SceneManager::LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration) {
+		// Start fade out
+		m_coord.GetSystem<AudioSystem>()->FadeToVolume(0.0f, fadeOutDuration);
+
+		// Schedule level load
+		m_scheduledLevelLoad = true;
+		m_scheduledLevelName = levelname;
+		m_levelLoadTimer = fadeOutDuration; // Wait for fade out to complete
 	}
 
 	void SceneManager::RestartLevel() {

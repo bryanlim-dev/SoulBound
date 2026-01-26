@@ -56,7 +56,10 @@ namespace NightSnack::Scene {
 	class SceneManager : public ISystem {
 	public:
 		SceneManager(Coordinator& coord, EventDispatcher& disp)
-			: m_coord{ coord }, m_dispatcher{ &disp } {
+			: m_coord{ coord }, m_dispatcher{ &disp } , 
+			m_scheduledLevelLoad(false),
+			m_scheduledLevelName(""),
+			m_levelLoadTimer(0.0f) {
 
 			// set system signature
 			m_systemSignature.set(GetComponentTypeID<ButtonInfo>());
@@ -116,6 +119,7 @@ namespace NightSnack::Scene {
 		// Calls factory to create entities
 		// Sets up bgm and menus
 		void LoadLevel(std::string const& filename);
+		void LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration);
 		void RestartLevel();
 		bool SaveLevel(std::string const& filename, bool overwrite = 0);
 
@@ -160,6 +164,10 @@ namespace NightSnack::Scene {
 		std::vector<Entity> m_menuEntities;
 		std::string m_currentMenu;
 		std::unordered_map<std::string, size_t> m_menuKeys; // Cache menu JSON keys
+		
+		bool m_scheduledLevelLoad;
+		std::string m_scheduledLevelName;
+		float m_levelLoadTimer;
 	};
 
 }	// NightSnack::Scene
