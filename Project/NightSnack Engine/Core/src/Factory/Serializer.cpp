@@ -297,11 +297,11 @@ namespace NightSnack {
 		// Shape
 		if (ShapeType::AABB == c.shape) {
 			j["shape"] = "AABB";
-			std::cerr << "Collider shape is AABB\n";
+			//std::cerr << "Collider shape is AABB\n";
 		}
 		else if (ShapeType::Circle == c.shape) {
-			j["shape"] = "circle";
-			std::cerr << "Collider shape is Circle\n";
+			j["shape"] = "Circle";
+			//std::cerr << "Collider shape is Circle\n";
 		}
 		// Collider type
 		if (ColliderType::Solid == c.type) j["type"] = "solid";
@@ -315,11 +315,11 @@ namespace NightSnack {
 
 			if (shapeStr == "AABB") {
 				c.shape = ShapeType::AABB;
-				//std::cerr << "Collider become AABB\n";
+				std::cerr << "Collider become AABB\n";
 			}
 			else if (shapeStr == "Circle") {
 				c.shape = ShapeType::Circle;
-				//std::cerr << "Collider become Circle\n";
+				std::cerr << "Collider become Circle\n";
 			}
 
 			if (typeStr == "Solid") c.type = ColliderType::Solid;

@@ -24,5 +24,12 @@
         "isWireframe": false,
         "materialName": "ColorMat",
         "meshName": "circle"
+    },
+    "RigidBody": {
+        "gravityMult": 0.0,
+        "mass": 1.0,
+        "restitution": 0.0,
+        "useGravity": false,
+        "useRotate": false
     }
 }

@@ -34,16 +34,21 @@ namespace NightSnack {
 
         // Destroy all removed entities
         for (Entity e : m_toBeDestroyed) {
-            auto range = prefabToEntities.equal_range(entityToPrefab[e]);
-            std::unordered_multimap<std::string, Entity>::iterator it;
-            for (auto i = range.first; i != range.second; ++i) {
-                if (i->second == e) {
-                    it = i;
-                    break;
+
+            if (entityToPrefab.find(e) != entityToPrefab.end()) {
+
+                auto range = prefabToEntities.equal_range(entityToPrefab[e]);
+                std::unordered_multimap<std::string, Entity>::iterator it;
+
+                for (auto i = range.first; i != range.second; ++i) {
+                    if (i->second == e) {
+                        it = i;
+                        break;
+                    }
                 }
+                entityToPrefab.erase(e);
+                prefabToEntities.erase(it);
             }
-            prefabToEntities.erase(it);
-            entityToPrefab.erase(e);
             m_coord.DestroyEntity(e);
         }
         m_toBeDestroyed.clear();
@@ -69,8 +74,10 @@ namespace NightSnack {
         trans.layer = LayerType::GAMELAYER;
 
         m_coord.AddComponent<Transform>(e, trans);
-        entityToPrefab[e] = "++Default";
-        prefabToEntities.insert({ "++Default", e });
+        m_coord.AddComponent<Hierarchy>(e, Hierarchy{});
+
+        //entityToPrefab[e] = "++Default";
+        //prefabToEntities.insert({ "++Default", e });
 
         m_coord.BufferEntitySignature(e);
 
@@ -137,6 +144,23 @@ namespace NightSnack {
 
 		return e;
 	}
+
+    void EntityFactory::MapEntityPrefab(Entity e, std::string const& name) {
+        
+        std::string old = entityToPrefab[e];
+        entityToPrefab.erase(e);
+        entityToPrefab[e] = name;
+
+        auto const& it = prefabToEntities.equal_range(old);
+        for (auto i = it.first; i != it.second; ++i) {
+            if (i->second == e) {
+                prefabToEntities.erase(i);
+                break;
+            }
+        }
+        prefabToEntities.insert({ name, e });
+        m_prefabNames.push_back(name);
+    }
 
     // Clone an entity prefab at specific locations, scaling etc...
     Entity EntityFactory::Clone(Entity e) {
@@ -250,23 +274,51 @@ namespace NightSnack {
         return m_coord.GetSystem<ResourceManager>()->GetJsonRaw(key);
     }
 
+    void EntityFactory::UnpackEntityComponents(Entity e, json const& j) {
+        if (j.contains("RigidBody")) m_coord.AddComponent<RigidBody>(e, j["RigidBody"]);
+        if (j.contains("Renderable")) m_coord.AddComponent<Renderable>(e, j["Renderable"]);
+        if (j.contains("Color")) m_coord.AddComponent<Color>(e, j["Color"]);
+        if (j.contains("Animator")) m_coord.AddComponent<Animator>(e, j["Animator"]);
+        if (j.contains("Font")) m_coord.AddComponent<Font>(e, j["Font"]);
+        if (j.contains("ButtonInfo")) m_coord.AddComponent<ButtonInfo>(e, j["ButtonInfo"]);
+        if (j.contains("Script")) m_coord.AddComponent<Script>(e, j["Script"]);
+        if (j.contains("PlayerController")) m_coord.AddComponent<PlayerController>(e, j["PlayerController"]);
+        if (j.contains("Audio")) m_coord.AddComponent<Audio>(e, j["Audio"]);
+    }
+
     // Create all entities in a level given a level json
     void EntityFactory::CreateLevelEntities(json const& level) {
         // Resets ECS and destroys all current entities;
         //DestroyLevelEntities();
         try {
             for (auto const& item : level["Entities"]) {
-                Entity e = Create(std::string{ item["Prefab"] }, item["Transform"]);
-                //std::cout << "[EntityFactory] Creating prefab<" << item["prefab"] << "> at ("
-                //    << item["Transform"]["Position"]["x"] << ", "
-                //    << item["Transform"]["Position"]["y"] << ", "
-                //    << item["Transform"]["Position"]["z"] << ")\n";
+                Entity e;
+                if (item.contains("Prefab")) {
+                    e = Create(std::string{ item["Prefab"] }, item["Transform"]);
+                    std::cout << "[EntityFactory] Creating prefab<" << item["Prefab"] << "> at ("
+                        << item["Transform"]["Position"]["x"] << ", "
+                        << item["Transform"]["Position"]["y"] << ", "
+                        << item["Transform"]["Position"]["z"] << ")\n";
+                }
+                else if (item.contains("Components")) {
+                    json j = item["Components"];
+                    e = Create();
+                    UnpackEntityComponents(e, j);
+                }
+                else {
+                    std::cerr << "[EntityFactory] Failed to create a Level Entity, no <Components> or <Prefab> in json\n";
+                    continue;
+                }
 
                 if (item.contains("Collider")) {
                     if (m_coord.HasComponent<Collider>(e))
                         m_coord.ModifyComponent<Collider>(e) = item["Collider"];
                     else
                         m_coord.AddComponent<Collider>(e, item["Collider"]);
+                    //if (m_coord.ModifyComponent<Collider>(e).shape == ShapeType::AABB)
+                    //    std::cout << "Entity collider: AABB\n";
+                    //else
+                    //    std::cout << "Entity collider: Circle\n";
                 }
 
                 // Create child entities
@@ -286,7 +338,19 @@ namespace NightSnack {
         Hierarchy& h = m_coord.ModifyComponent<Hierarchy>(parent);
 
         for (auto const& e : j) {
-            Entity child = Create(std::string{ e["Prefab"] }, e["Transform"]);
+            Entity child;
+            
+            if (e.contains("Prefab")) {
+                child = Create(std::string{ e["Prefab"] }, e["Transform"]);
+            }
+            else if (e.contains("Components")) {
+                child = Create();
+                UnpackEntityComponents(child, e["Components"]);
+            }
+            else {
+                std::cerr << "[EntityFactory] Failed to create a Child Entity, no <Components> or <Prefab> in json\n";
+                continue;
+            }
 
             if (e.contains("Collider")) {
                 if (m_coord.HasComponent<Collider>(child))
@@ -384,14 +448,21 @@ namespace NightSnack {
             // Only process root entities for level saving
             if (h.parent != INVALID_ENTITY) continue;
 
-            std::string prefabName = entityToPrefab[e];
-
             // Build entity JSON
             json j;
-            j["Prefab"] = prefabName;
             j["Transform"] = t;
             if (m_coord.HasComponent<Collider>(e)) {
                 j["Collider"] = m_coord.GetComponent<Collider>(e);
+                //if (m_coord.ModifyComponent<Collider>(e).shape == ShapeType::AABB)
+                //    std::cout << "Entity collider: AABB\n";
+                //else
+                //    std::cout << "Entity collider: Circle\n";
+            }
+            if (entityToPrefab.find(e) != entityToPrefab.end()) {
+                j["Prefab"] = entityToPrefab[e];
+            }
+            else {
+                j["Components"] = CacheEntityComponents(e);
             }
 
             if (!h.children.empty()) {
@@ -417,6 +488,8 @@ namespace NightSnack {
 
             // Only process root entities for level saving
             if (h.parent != INVALID_ENTITY) continue;
+
+
 
             std::string prefabName = entityToPrefab[e];
 
@@ -556,11 +629,11 @@ namespace NightSnack {
             RemoveEntity(i->second);
         }
         // Update mappings of current entity to new created prefab
-        if (!std::filesystem::exists(outPath) && !overwrite) {
+        //if (!std::filesystem::exists(outPath) && !overwrite) {
             entityToPrefab[e] = prefabName;
             prefabToEntities.insert({ prefabName, e });
             m_prefabNames.push_back(prefabName);
-        }
+        //}
 
         m_coord.ModifyComponent<Transform>(e).prefabModified = false;
 

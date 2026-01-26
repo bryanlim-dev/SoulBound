@@ -17,6 +17,7 @@
 
 #pragma once
 #include "AllPanels.h"
+#include "Factory/EntityFactory.h"
 
 namespace NightSnack
 {
@@ -339,7 +340,7 @@ namespace NightSnack
 
 					// Tile Painting
 					if (currentTool == SceneTool::Paint && ImGui::IsMouseDown(ImGuiMouseButton_Left)
-						&& m_tilemap.tileOverlayEnabled && m_tilemap.showTileEditor)
+						&& m_tilemap.tileOverlayEnabled/* && m_tilemap.showTileEditor*/)
 					{
 						// Calculate grid position
 						float grid = m_tilemap.gridSize;
@@ -1235,7 +1236,7 @@ namespace NightSnack
 	{
 		auto tilePos = std::make_pair(gridX, gridY);
 		int currentTile = m_tilemap.selectedTile;
-		auto factory = m_coord.GetSystem<EntityFactory>();
+		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		if (!factory) { return; }
 
 		auto it = m_paintedTiles.find(tilePos);
@@ -1275,7 +1276,7 @@ namespace NightSnack
 		Vec2 scale{ grid, grid };
 
 		// Create tile entity
-		Entity tileEntity = m_coord.CreateEntity();
+		Entity tileEntity = factory->Create();
 
 		// Add components to tile entity
 		Transform t;
@@ -1283,7 +1284,10 @@ namespace NightSnack
 		t.scale = scale;
 		t.rot = 0.0f;
 		t.layer = LayerType::GAMELAYER;
-		m_coord.AddComponent(tileEntity, t);
+		t.prefabModified = true;
+		m_coord.ModifyComponent<Transform>(tileEntity) = t;
+		/*m_coord.AddComponent(tileEntity, t);
+		m_coord.AddComponent<Hierarchy>(tileEntity, Hierarchy{});*/
 
 		Renderable r;
 		r.meshName = "square";
@@ -1291,17 +1295,9 @@ namespace NightSnack
 		r.wasModified = true;
 		m_coord.AddComponent(tileEntity, r);
 
-		RigidBody rb;
-		rb.invMass = 1.f;
-		rb.useGravity = false;
-		m_coord.AddComponent(tileEntity, rb);
-
-		Collider c;
-		c.shape = ShapeType::AABB;
-		c.type = ColliderType::Ground;
-		c.width = grid;
-		c.height = grid;
-		m_coord.AddComponent(tileEntity, c);
+		std::filesystem::path p = m_tilemap.tileTexturePath;
+		std::string pname = "TILE" + p.filename().stem().string();
+		factory->MapEntityPrefab(tileEntity, pname);
 
 		// Update material texture of tile
 		auto graphics = m_coord.GetSystem<GraphicsSystem>();

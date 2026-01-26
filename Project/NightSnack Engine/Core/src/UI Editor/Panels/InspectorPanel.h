@@ -46,8 +46,8 @@ namespace NightSnack
             m_components =
             {
                 "Transform",
-                "Physics",
-                "Tilemap",
+                //"Physics",
+                //"Tilemap",
                 "PlayerController",
                 "Camera",
                 "Rigidbody",
@@ -136,8 +136,8 @@ namespace NightSnack
                         if (open)
                         {
                             if (compName == "Transform") { TransformComponent(); }
-                            if (compName == "Physics")   { PhysicsComponent(); }
-							if (compName == "Tilemap")   { TilemapComponent(); }
+                            //if (compName == "Physics")   { PhysicsComponent(); }
+							//if (compName == "Tilemap")   { TilemapComponent(); }
 							if (compName == "PlayerController") { PlayerControllerComponent(); }
 							if (compName == "Camera")    { CameraComponent(); }
                             if (compName == "Rigidbody") { RigidBodyComponent(); }
@@ -161,6 +161,8 @@ namespace NightSnack
             {
                 ImGui::Text("No entity selected.");
             }
+            TilemapComponent();
+            PhysicsComponent();
 
             ImGui::End();
         }

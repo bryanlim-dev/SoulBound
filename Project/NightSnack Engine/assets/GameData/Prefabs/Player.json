@@ -1,0 +1,18 @@
+{
+    "PlayerController": {
+        "jumpSpeed": 600.0,
+        "moveSpeed": 400.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "ColorMat",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "gravityMult": 0.0,
+        "mass": 1.0,
+        "restitution": 0.0,
+        "useGravity": true,
+        "useRotate": false
+    }
+}

@@ -81,7 +81,11 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		json SaveLevelEntities();
+		void UnpackEntityComponents(Entity e, json const&);
+
 		json CacheLevelEntities();
+		void CreateCacheEntities(json const&);
+
 		json CacheEntityChildren(Hierarchy const&);
 		void CreateEntityChildren(json const&, Entity);
 		std::string EnsurePrefabExists(Entity e, std::string const& prefabName, bool isModified);
@@ -268,6 +272,8 @@ namespace NightSnack {
 		// Required functions from base class ISystem.
 		Signature GetSignature() const override { return Signature{}; }
 		std::string GetName() const override { return "EntityFactory"; }
+
+		void MapEntityPrefab(Entity e, std::string const&);
 
 	private:
 		Coordinator& m_coord;
