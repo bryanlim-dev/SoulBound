@@ -140,8 +140,6 @@ namespace NightSnack {
         Coordinator& m_coord;
 
         // Collision stuff;
-        std::vector<std::bitset<MAX_ENTITIES>> m_grid1;
-        std::vector<std::bitset<MAX_ENTITIES>> m_grid2;
         std::vector<std::vector<std::bitset<MAX_ENTITIES>>> m_grid;
         std::unordered_set<std::uint64_t> m_testedEntityPairs;
 
