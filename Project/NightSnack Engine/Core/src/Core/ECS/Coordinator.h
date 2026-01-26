@@ -152,11 +152,18 @@ namespace NightSnack {
 					<< " does not have Hierarchy component, failed to add parent.\n";
 				return false;
 			}
+
+			// Remove from previous parent if exists
+			Hierarchy& h = ModifyComponent<Hierarchy>(e);
+			if (h.parent != INVALID_ENTITY) {
+				RemoveEntityChild(h.parent, e);
+			}
+
 			if (!AddChildToEntity(parent, e)) {
 				std::cerr << "Failed to add child " << e << " to parent " << parent << '\n';
 				return false;
 			}
-			ModifyComponent<Hierarchy>(e).parent = parent;
+			h.parent = parent;
 			return true;
 		}
 
