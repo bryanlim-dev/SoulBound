@@ -87,7 +87,6 @@ namespace NightSnack
                     // Scene Dropdown list
                     if (ImGui::TreeNodeEx("Scene", ImGuiTreeNodeFlags_DefaultOpen))
                     {
-						ImGui::Indent(30.f);
                         const auto& entities = m_coord.GetLivingEntities();
 
 						// List all entities
@@ -110,6 +109,12 @@ namespace NightSnack
                             bool selected = (m_selectedEntity && e == *m_selectedEntity);
                             if (ImGui::Selectable(label.c_str(), selected)) {
                                 *m_selectedEntity = e;
+							// Draw Hierarchy Tree
+                            if (!m_coord.HasComponent<Hierarchy>(e)) continue;
+                            auto& h = m_coord.GetComponent<Hierarchy>(e);
+                            if (h.parent == INVALID_ENTITY)
+                            {
+                                DrawEntityTree(e);
                             }
                         }
 						ImGui::Unindent(30.f);
@@ -152,6 +157,74 @@ namespace NightSnack
             factory->RemoveEntity(*m_selectedEntity);
             m_uiNames->erase(*m_selectedEntity);
             *m_selectedEntity = INVALID_ENTITY;
+        }
+
+        /************************************************************************/
+        /*!
+        \brief
+		    Draws the entity tree recursively for parent-child relationships.
+
+        \param[in] entity
+		    - The entity to draw the tree for.
+        */
+        /************************************************************************/
+        void DrawEntityTree(Entity e)
+        {
+            auto& uiNames = *m_uiNames;
+            auto factory = m_coord.GetSystem<EntityFactory>();
+
+            if (uiNames.find(e) == uiNames.end()) {
+                uiNames[e] = factory ? factory->GetEntityPrefabName(e) : "Entity " + std::to_string(e);
+            }
+
+            auto& h = m_coord.GetComponent<Hierarchy>(e);
+            bool hasChildren = !h.children.empty();
+            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanFullWidth;
+            if (!hasChildren) flags |= ImGuiTreeNodeFlags_Leaf;
+
+            // Selection logic
+            bool selected = (m_selectedEntity && e == *m_selectedEntity);
+            if (selected) flags |= ImGuiTreeNodeFlags_Selected;
+
+            std::string label = uiNames[e] + "##" + std::to_string(e);
+            bool open = ImGui::TreeNodeEx(label.c_str(), flags);
+
+            // Handle selection
+            if (ImGui::IsItemClicked())
+            {
+                *m_selectedEntity = e;
+            }
+
+            // Drag source
+            if (ImGui::BeginDragDropSource())
+            {
+                ImGui::SetDragDropPayload("ENTITY_DRAG", &e, sizeof(Entity));
+                ImGui::Text("Move %s", uiNames[e].c_str());
+                ImGui::EndDragDropSource();
+            }
+
+            // Drop target
+            if (ImGui::BeginDragDropTarget())
+            {
+                if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ENTITY_DRAG"))
+                {
+                    Entity dragged = *(const Entity*)payload->Data;
+                    if (dragged != e && m_coord.HasComponent<Hierarchy>(dragged) && m_coord.HasComponent<Hierarchy>(e))
+                    {
+                        m_coord.ParentEntity(dragged, e);
+                    }
+                }
+                ImGui::EndDragDropTarget();
+            }
+
+            if (open)
+            {
+                for (Entity child : h.children)
+                {
+                    DrawEntityTree(child);
+                }
+                ImGui::TreePop();
+            }
         }
     };
 }
