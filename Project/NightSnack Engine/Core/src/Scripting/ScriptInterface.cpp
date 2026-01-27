@@ -930,6 +930,15 @@ namespace NightSnack::Scripting {
         return Entity{};
     }
 
+    Entity ScriptInterface::GetComponentInParent(Entity entity, std::string componentName)
+    {
+        auto it = componentRegistry.find(componentName);
+        if (it != componentRegistry.end())
+            return it->second.getInParent(m_coord, entity);
+
+        return Entity{};
+    }
+
     // --------------------------------------------------------------
     // Audio
     // --------------------------------------------------------------

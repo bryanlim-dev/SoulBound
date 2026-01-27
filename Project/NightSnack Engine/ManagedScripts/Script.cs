@@ -510,7 +510,56 @@ namespace ManagedScripts
                 return (T)(object)component;
             }
 
-            Engine.Log($"GetComponentInChildren<{typeof(T).Name}> not supported, add it in Script.cs & ScriptInterface.cpp!");
+            Engine.Log($"GetComponentInChildren<{typeof(T).Name}> not supported, add it in Script.cs & ScriptInterface.h!");
+            return null;
+        }
+
+        public T GetComponentInParent<T>(uint entityParentID) where T : Component
+        {
+            //Add more compoents as needed (Case Senstitive)
+            if (typeof(T) == typeof(Transform))
+            {
+                Transform component = new Transform(Engine.GetComponentInParent(EntityId, Transform.GetName()));
+                return (T)(object)component;
+                //return GetTransformInChildren(parentID) as T;
+            }
+            else if (typeof(T) == typeof(RigidBody))
+            {
+                RigidBody component = new RigidBody(Engine.GetComponentInParent(EntityId, RigidBody.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Collider))
+            {
+                Collider component = new Collider(Engine.GetComponentInParent(EntityId, Collider.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Color))
+            {
+                Color component = new Color(Engine.GetComponentInParent(EntityId, Color.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Renderer))
+            {
+                Renderer component = new Renderer(Engine.GetComponentInParent(EntityId, Renderer.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Animator))
+            {
+                Animator component = new Animator(Engine.GetComponentInParent(EntityId, Animator.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Font))
+            {
+                Font component = new Font(Engine.GetComponentInParent(EntityId, Font.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Audio))
+            {
+                Audio component = new Audio(Engine.GetComponentInParent(EntityId, Audio.GetName()));
+                return (T)(object)component;
+            }
+
+            Engine.Log($"GetComponentInParent<{typeof(T).Name}> not supported, add it in Script.cs & ScriptInterface.h!");
             return null;
         }
 

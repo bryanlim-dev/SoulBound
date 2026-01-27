@@ -31,7 +31,7 @@ namespace ManagedScripts
         [SerializeField]
         RotatorScript rotate = null;
 
-        //public Transform childTransform;
+        public Transform childTransform;
 
 
         public Transform transform;
@@ -43,11 +43,12 @@ namespace ManagedScripts
             //Log($"Player Script ID: {GetPlayerID()}");
             //Engine.CreateScript(EntityId, "RotatorScript");
             rotate = Engine.GetScript<RotatorScript>(EntityId, "RotatorScript");
-            //childTransform = GetComponentInChildren<Transform>(EntityId);
-            //if (childTransform != null)
-            //{
-            //    Engine.Log("Parent ID: " + EntityId + ", Child ID: " + childTransform.EntityId);
-            //}
+            childTransform = GetComponentInParent<Transform>(EntityId);
+            if (childTransform != null)
+            {
+                Engine.Log("Curr ID: " + EntityId + ", Parent ID: " + childTransform.EntityId);
+                //Engine.Log("Parent ID: " + EntityId + ", Child ID: " + childTransform.EntityId);
+            }
 
             //if (rotate != null){
             //    Log($"Script found!");

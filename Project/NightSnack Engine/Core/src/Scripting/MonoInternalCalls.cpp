@@ -691,6 +691,11 @@ extern "C" {
         char* cStr = mono_string_to_utf8(componentType);
         return g_scriptInterface->GetComponentInChildren(id, std::string(cStr));
     }
+    static uint32_t NightSnack_GetComponentInParent(uint32_t id, MonoString* componentType) {
+        if (!g_scriptInterface) { return 0; }
+        char* cStr = mono_string_to_utf8(componentType);
+        return g_scriptInterface->GetComponentInParent(id, std::string(cStr));
+    }
 
     // Printing
     static void NightSnack_Log(MonoString* msg) {
@@ -975,6 +980,7 @@ namespace NightSnack::Scripting {
 #pragma endregion
 
         mono_add_internal_call("ManagedScripts.Engine::GetComponentInChildren_Internal", (void*)NightSnack_GetComponentInChildren);
+        mono_add_internal_call("ManagedScripts.Engine::GetComponentInParent_Internal", (void*)NightSnack_GetComponentInParent);
 
         mono_add_internal_call("ManagedScripts.Engine::Log_Internal", (void*)NightSnack_Log);
         mono_add_internal_call("ManagedScripts.Engine::PlaySound_Internal", (void*)NightSnack_PlaySound);

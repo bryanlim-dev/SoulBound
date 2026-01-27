@@ -431,6 +431,7 @@ namespace NightSnack::Scripting {
 #pragma endregion
 
         Entity GetComponentInChildren(Entity entity, std::string componentName);
+        Entity GetComponentInParent(Entity entity, std::string componentName);
 
         // Audio play sound
         void PlaySound(const std::string& path);
