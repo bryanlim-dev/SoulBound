@@ -448,8 +448,13 @@ namespace ManagedScripts
         private static extern uint GetComponentInChildren_Internal(uint parentId, string componentName);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Script GetScriptComponentInChildren_Internal(uint parentId, string scriptName);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint GetComponentInParent_Internal(uint currID, string componentName);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern Script GetScriptComponentInParent_Internal(uint parentId, string scriptName);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void PlaySound_Internal(string soundPath);
@@ -1149,7 +1154,16 @@ namespace ManagedScripts
         #endregion
 
         public static uint GetComponentInChildren(uint parentID, string componentName) => GetComponentInChildren_Internal(parentID, componentName);
+        public static T GetScriptComponentInChildren<T>(uint parentID, string componentName) where T : Script
+        {
+            return GetScriptComponentInChildren_Internal(parentID, componentName) as T;
+        }
+
         public static uint GetComponentInParent(uint currID, string componentName) => GetComponentInChildren_Internal(currID, componentName);
+        public static T GetScriptComponentInParent<T>(uint parentID, string componentName) where T : Script
+        {
+            return GetScriptComponentInParent_Internal(parentID, componentName) as T;
+        }
 
         public static void PlaySound(string path) => PlaySound_Internal(path);
 

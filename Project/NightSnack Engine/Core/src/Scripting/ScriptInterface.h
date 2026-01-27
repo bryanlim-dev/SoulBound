@@ -431,7 +431,10 @@ namespace NightSnack::Scripting {
 #pragma endregion
 
         Entity GetComponentInChildren(Entity entity, std::string componentName);
+        MonoObject* GetScriptComponentInChildren(Entity entity, std::string scriptName);
+
         Entity GetComponentInParent(Entity entity, std::string componentName);
+        MonoObject* GetScriptComponentInParent(Entity entity, std::string scriptName);
 
         // Audio play sound
         void PlaySound(const std::string& path);

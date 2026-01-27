@@ -514,6 +514,12 @@ namespace ManagedScripts
             return null;
         }
 
+        public T GetScriptComponentInChildren<T>(uint entityParentID, string scriptName) where T : Script
+        {
+            return Engine.GetScriptComponentInChildren<T>(entityParentID, scriptName) as T;
+        }
+
+
         public T GetComponentInParent<T>(uint entityParentID) where T : Component
         {
             //Add more compoents as needed (Case Senstitive)
@@ -561,6 +567,11 @@ namespace ManagedScripts
 
             Engine.Log($"GetComponentInParent<{typeof(T).Name}> not supported, add it in Script.cs & ScriptInterface.h!");
             return null;
+        }
+
+        public T GetScriptComponentInParent<T>(uint entityParentID, string scriptName) where T : Script
+        {
+            return Engine.GetScriptComponentInParent<T>(entityParentID, scriptName) as T;
         }
 
         public float DeltaTime => Engine.DeltaTime;

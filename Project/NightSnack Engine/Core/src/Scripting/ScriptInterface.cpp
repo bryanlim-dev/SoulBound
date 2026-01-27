@@ -930,6 +930,15 @@ namespace NightSnack::Scripting {
         return Entity{};
     }
 
+    MonoObject* ScriptInterface::GetScriptComponentInChildren(Entity entity, std::string scriptName)
+    {
+        //If curr obj has the script return it
+        if (MonoObject* obj = reinterpret_cast<MonoObject*>(m_coord.GetSystem<ScriptManager>()->GetScriptInChild(entity, scriptName)))
+            return obj;
+        else
+            return nullptr;
+    }
+
     Entity ScriptInterface::GetComponentInParent(Entity entity, std::string componentName)
     {
         auto it = componentRegistry.find(componentName);
@@ -937,6 +946,15 @@ namespace NightSnack::Scripting {
             return it->second.getInParent(m_coord, entity);
 
         return Entity{};
+    }
+
+    MonoObject* ScriptInterface::GetScriptComponentInParent(Entity entity, std::string scriptName)
+    {
+        //If curr obj has the script return it
+        if (MonoObject* obj = reinterpret_cast<MonoObject*>(m_coord.GetSystem<ScriptManager>()->GetScriptInParent(entity, scriptName)))
+            return obj;
+        else
+            return nullptr;
     }
 
     // --------------------------------------------------------------
