@@ -22,10 +22,41 @@
 #include <mono/metadata/object.h>
 #include <string>
 
+
+//Macro to help register component for GetComponentIn<X>
+#define REGISTER_COMPONENT(T)                                    \
+{                                                                \
+    #T,                                                          \
+    {                                                            \
+        /* GetComponentInChildren */                             \
+        [](Coordinator& c, Entity e) -> Entity                   \
+        {                                                        \
+            if (auto& comp = c.GetComponentInChild<T>(e))        \
+                return comp->second;                             \
+            return Entity{};                                     \
+        },                                                       \
+        /* GetComponentInParent */                               \
+        [](Coordinator& c, Entity e) -> Entity                   \
+        {                                                        \
+            if (auto& comp = c.GetComponentInParent<T>(e))       \
+                return comp->second;                             \
+            return Entity{};                                     \
+        }                                                        \
+    }                                                            \
+}
+
 namespace NightSnack::Scripting {
 
     // Interface that ScriptAPI will use to interact with engine
     class CORE_API ScriptInterface {
+
+        //Used for GetComponentIn<X>
+        using ComponentQueryFn = std::function<Entity(Coordinator&, Entity)>;
+        struct ComponentEntry
+        {
+            ComponentQueryFn getInChildren;
+            ComponentQueryFn getInParent;
+        };
 
     public:
         ScriptInterface(Coordinator& coord) : m_coord{ coord } {}
@@ -399,6 +430,8 @@ namespace NightSnack::Scripting {
         bool IsKeyReleased(int key);
 #pragma endregion
 
+        Entity GetComponentInChildren(Entity entity, std::string componentName);
+
         // Audio play sound
         void PlaySound(const std::string& path);
 
@@ -423,6 +456,20 @@ namespace NightSnack::Scripting {
     private:
         //coordiator refrence
         Coordinator& m_coord;
+
+        static inline const std::unordered_map<std::string, ComponentEntry>
+            componentRegistry =
+        {
+            REGISTER_COMPONENT(Transform),
+            REGISTER_COMPONENT(RigidBody),
+            REGISTER_COMPONENT(Collider),
+            REGISTER_COMPONENT(Color),
+            REGISTER_COMPONENT(Renderable),
+            REGISTER_COMPONENT(Animator),
+            REGISTER_COMPONENT(Font),
+            REGISTER_COMPONENT(Audio)
+        };
+
     };
 
 } // namespace NightSnack::Scripting

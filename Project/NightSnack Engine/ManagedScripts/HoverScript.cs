@@ -14,6 +14,8 @@
 // ============================================================
 // RotatorScript.cs - Moves object left/right continuously
 // ============================================================
+using System.Diagnostics;
+
 namespace ManagedScripts
 {
     public class HoverScript : Script
@@ -29,7 +31,11 @@ namespace ManagedScripts
         [SerializeField]
         RotatorScript rotate = null;
 
+        //public Transform childTransform;
+
+
         public Transform transform;
+
 
         public override void OnStart()
         {
@@ -37,6 +43,11 @@ namespace ManagedScripts
             //Log($"Player Script ID: {GetPlayerID()}");
             //Engine.CreateScript(EntityId, "RotatorScript");
             rotate = Engine.GetScript<RotatorScript>(EntityId, "RotatorScript");
+            //childTransform = GetComponentInChildren<Transform>(EntityId);
+            //if (childTransform != null)
+            //{
+            //    Engine.Log("Parent ID: " + EntityId + ", Child ID: " + childTransform.EntityId);
+            //}
 
             //if (rotate != null){
             //    Log($"Script found!");

@@ -140,11 +140,11 @@ namespace NightSnack {
 		T const& GetComponent(Entity e) const;
 
 		template <typename T>
-		std::optional<T> const& GetComponentInChild(Entity e) const;
+		std::optional<std::pair<T, Entity>> const& GetComponentInChild(Entity e) const;
 		template <typename T>
-		std::optional<std::vector<T>> const& GetComponentsInChild(Entity e) const;
+		std::optional<std::vector<std::pair<T, Entity>>> const& GetComponentsInChild(Entity e) const;
 		template <typename T>
-		std::optional<T> const& GetComponentInParent(Entity e) const;
+		std::optional<std::pair<T, Entity>> const& GetComponentInParent(Entity e) const;
 
 		bool ParentEntity(Entity e, Entity parent) {
 			if (!HasComponent<Hierarchy>(e) || !HasComponent<Hierarchy>(parent)) {
@@ -423,7 +423,7 @@ namespace NightSnack {
 	}
 
 	template <typename T>
-	std::optional<T> const& Coordinator::GetComponentInChild(Entity e) const {
+	std::optional<std::pair<T, Entity>> const& Coordinator::GetComponentInChild(Entity e) const {
 		
 		// Edge case, no hierarchy component;
 		if (!HasComponent<Hierarchy>(e)) {
@@ -433,7 +433,7 @@ namespace NightSnack {
 		}
 
 		// Return immediately if current has component;
-		if (HasComponent<T>(e)) return GetComponent<T>(e);
+		if (HasComponent<T>(e)) return std::optional(std::make_pair(GetComponent<T>(e), e));
 
 		// Iterate through children stored in Transform component;
 		Hierarchy const& h = GetComponent<Hierarchy>(e);
@@ -444,7 +444,7 @@ namespace NightSnack {
 		}
 		for (Entity c : h.children) {
 			if (!HasComponent<T>(c)) continue;
-			return GetComponent<T>(c);
+			return std::optional(std::make_pair(GetComponent<T>(c), c));
 		}
 		// No Children contains requested component;
 		std::cerr << "[Coordinator] Error: Entity " << e
@@ -453,7 +453,7 @@ namespace NightSnack {
 	}
 
 	template <typename T>
-	std::optional<std::vector<T>> const& Coordinator::GetComponentsInChild(Entity e) const {
+	std::optional<std::vector<std::pair<T, Entity>>> const& Coordinator::GetComponentsInChild(Entity e) const {
 
 		// Edge case, no hierarchy component;
 		if (!HasComponent<Hierarchy>(e)) {
@@ -463,8 +463,8 @@ namespace NightSnack {
 		}
 
 		// Return vector;
-		std::vector<std::pair<Entity, T>> ret{};
-		if (HasComponent<T>(e)) ret.emplace_back({ e, GetComponent<T>(e) });
+		std::vector<std::pair<T, Entity>> ret{};
+		if (HasComponent<T>(e)) ret.emplace_back(std::make_pair(GetComponent<T>(e), e));
 
 		// Iterate through children stored in Transform component;
 		Hierarchy const& h = GetComponent<Hierarchy>(e);
@@ -475,20 +475,21 @@ namespace NightSnack {
 		}
 		for (Entity c : h.children) {
 			if (!HasComponent<T>(c)) continue;
-			ret.emplace_back({ c,GetComponent<T>(c) });
+			ret.emplace_back(std::make_pair(GetComponent<T>(c), c));
 		}
 		if (ret.empty()) {
 			// No Children contains requested component;
 			std::cerr << "[Coordinator] Error: Entity " << e
 				<< " does not have Children with requested component.\n";
+			return std::nullopt;
 		}
-		return std::nullopt;
+		return std::optional(ret);
 	}
 
 	template <typename T>
-	std::optional<T> const& Coordinator::GetComponentInParent(Entity e) const {
+	std::optional<std::pair<T, Entity>> const& Coordinator::GetComponentInParent(Entity e) const {
 
-		if (HasComponent<T>(e)) return GetComponent<T>(e);
+		if (HasComponent<T>(e)) return std::optional(std::make_pair(GetComponent<T>(e), e));
 
 		// Edge case, no hierarchy component;
 		if (!HasComponent<Hierarchy>(e)) {
@@ -502,9 +503,9 @@ namespace NightSnack {
 				<< " does not have a Parent, returning empty component.\n";
 			return std::nullopt;
 		}
-		if (HasComponent<T>(h.parent)) return GetComponent<T>(h.parent);
+		if (HasComponent<T>(h.parent)) return std::optional(std::make_pair(GetComponent<T>(h.parent), h.parent));
 
-		return GetComponentInParent(h.parent);
+		return std::optional(std::make_pair(GetComponent<T>(h.parent), h.parent));
 	}
 
 	template <typename T>

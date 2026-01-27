@@ -918,7 +918,17 @@ namespace NightSnack::Scripting {
     bool ScriptInterface::IsKeyReleased(int key) {
         return m_coord.GetSystem<InputSystem>()->IsKeyReleased(key);
     }
+
 #pragma endregion
+
+    Entity ScriptInterface::GetComponentInChildren(Entity entity, std::string componentName)
+    {
+        auto it = componentRegistry.find(componentName);
+        if (it != componentRegistry.end())
+            return it->second.getInChildren(m_coord, entity);
+
+        return Entity{};
+    }
 
     // --------------------------------------------------------------
     // Audio

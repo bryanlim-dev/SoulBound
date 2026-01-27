@@ -11,7 +11,10 @@
  * All rights reserved.
  ******************************************************************************/
 
+using System;
+using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
+using static ManagedScripts.Script;
 
 namespace ManagedScripts
 {
@@ -36,14 +39,23 @@ namespace ManagedScripts
         //Runs when script is destroyed
         public virtual void OnDestroy() { }
 
+        //public static T GetComponentInChildren<T>(uint entityParentID) where T : class
+        //{
+        //    Engine.Log("No overloaded component found, create the overloaded function for it! (GetComponentInChildren<T>())!");
+        //    return null;
+        //}
+
+
         public class Component
         {
             public uint EntityId;
             public Component(uint id)
-            { 
+            {
                 EntityId = id;
             }
         }
+
+
 
         // Convenience properties
         #region Transform
@@ -90,6 +102,7 @@ namespace ManagedScripts
                 set => Engine.SetLayer(EntityId, value);
             }
         }
+
         #endregion
 
         #region RigidBody
@@ -258,9 +271,9 @@ namespace ManagedScripts
         #endregion
 
         #region Animator
-        public class Animnator : Component
+        public class Animator : Component
         {
-            public Animnator(uint id) : base(id)
+            public Animator(uint id) : base(id)
             {
             }
             //public string AnimatorCurrentClip
@@ -425,6 +438,55 @@ namespace ManagedScripts
         //}
 
         #endregion
+
+        public T GetComponentInChildren<T>(uint entityParentID) where T : Component
+        {
+            //Add more compoents as needed (Case Senstitive)
+            if (typeof(T) == typeof(Transform))
+            {
+                Transform component = new Transform(Engine.GetComponentInChildren(EntityId, "Transform"));
+                return (T)(object)component;
+                //return GetTransformInChildren(parentID) as T;
+            }
+            else if (typeof(T) == typeof(RigidBody))
+            {
+                RigidBody component = new RigidBody(Engine.GetComponentInChildren(EntityId, "RigidBody"));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Collider))
+            {
+                Collider component = new Collider(Engine.GetComponentInChildren(EntityId, "Collider"));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Color))
+            {
+                Color component = new Color(Engine.GetComponentInChildren(EntityId, "Color"));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Renderer))
+            {
+                Renderer component = new Renderer(Engine.GetComponentInChildren(EntityId, "Renderable"));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Animator))
+            {
+                Animator component = new Animator(Engine.GetComponentInChildren(EntityId, "Animator"));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Font))
+            {
+                Font component = new Font(Engine.GetComponentInChildren(EntityId, "Font"));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Audio))
+            {
+                Audio component = new Audio(Engine.GetComponentInChildren(EntityId, "Audio"));
+                return (T)(object)component;
+            }
+
+            Engine.Log($"GetComponentInChildren<{typeof(T).Name}> not supported, add it in Script.cs & ScriptInterface.cpp!");
+            return null;
+        }
 
         public float DeltaTime => Engine.DeltaTime;
         //public float Time => Engine.Time;

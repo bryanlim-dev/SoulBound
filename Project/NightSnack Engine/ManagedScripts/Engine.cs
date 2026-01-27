@@ -70,6 +70,7 @@ namespace ManagedScripts
         private static extern void GetLayer_Internal(uint entityId, out LayerType layer);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetLayer_Internal(uint entityId, ref LayerType layer);
+
         #endregion
 
         // ----------------------------
@@ -442,6 +443,11 @@ namespace ManagedScripts
         #endregion
 
         // ----------------------
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint GetComponentInChildren_Internal(uint parentId, string componentName);
+
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void PlaySound_Internal(string soundPath);
 
@@ -1138,6 +1144,8 @@ namespace ManagedScripts
         public static bool IsKeyDown(KeyboardKeys keyCode) => IsKeyDown_Internal((int)keyCode);
         public static bool IsKeyReleased(KeyboardKeys keyCode) => IsKeyReleased_Internal((int)keyCode);
         #endregion
+
+        public static uint GetComponentInChildren(uint parentID, string componentName) => GetComponentInChildren_Internal(parentID, componentName);
 
         public static void PlaySound(string path) => PlaySound_Internal(path);
 
