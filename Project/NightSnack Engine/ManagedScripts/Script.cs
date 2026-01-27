@@ -53,6 +53,11 @@ namespace ManagedScripts
             {
                 EntityId = id;
             }
+
+            //Gets name of component
+            //To overload in child classes add new, e.g.
+            //public new static string GetName() { return "Transform"; }
+            public static string GetName() { return "ComponentBase"; }
         }
 
 
@@ -101,6 +106,8 @@ namespace ManagedScripts
                 get => Engine.GetLayer(EntityId);
                 set => Engine.SetLayer(EntityId, value);
             }
+            public new static string GetName() { return "Transform"; }
+
         }
 
         #endregion
@@ -170,6 +177,9 @@ namespace ManagedScripts
                 get => Engine.GetUseRotate(EntityId);
                 set => Engine.SetUseRotate(EntityId, value);
             }
+
+            public new static string GetName() { return "RigidBody"; }
+
         }
         #endregion //Rigidbody
 
@@ -225,6 +235,8 @@ namespace ManagedScripts
                 get => Engine.GetColliderColliding(EntityId);
                 set => Engine.SetColliderColliding(EntityId, value);
             }
+            public new static string GetName() { return "Collider"; }
+
         }
 
         #endregion
@@ -242,6 +254,9 @@ namespace ManagedScripts
                 get => Engine.GetRGBA(EntityId);
                 set => Engine.SetRGBA(EntityId, value);
             }
+
+            public new static string GetName() { return "Color"; }
+
         }
         #endregion
 
@@ -267,6 +282,9 @@ namespace ManagedScripts
                 get => Engine.GetIsWireframe(EntityId);
                 set => Engine.SetIsWireframe(EntityId, value);
             }
+
+            public new static string GetName() { return "Renderable"; }
+
         }
         #endregion
 
@@ -335,6 +353,9 @@ namespace ManagedScripts
             //    get => Engine.GetAnimatorUVBottomRight(EntityId);
             //    set => Engine.SetAnimatorUVTBottomRight(EntityId, value);
             //}
+
+            public new static string GetName() { return "Animator"; }
+
         }
 
 
@@ -373,6 +394,9 @@ namespace ManagedScripts
                 get => Engine.GetFontOffsetPosition(EntityId);
                 set => Engine.SetFontOffsetPosition(EntityId, value);
             }
+
+            public new static string GetName() { return "Font"; }
+
         }
 
 
@@ -380,7 +404,7 @@ namespace ManagedScripts
         #endregion
 
         #region Audio
-        
+
         public class Audio : Component
         {
             public Audio(uint id) : base(id)
@@ -416,6 +440,8 @@ namespace ManagedScripts
                 get => Engine.GetAudioIsPlaying(EntityId);
                 set => Engine.SetAudioIsPlaying(EntityId, value);
             }
+            public new static string GetName() { return "Audio"; }
+
         }
 
         #endregion
@@ -444,43 +470,43 @@ namespace ManagedScripts
             //Add more compoents as needed (Case Senstitive)
             if (typeof(T) == typeof(Transform))
             {
-                Transform component = new Transform(Engine.GetComponentInChildren(EntityId, "Transform"));
+                Transform component = new Transform(Engine.GetComponentInChildren(EntityId, Transform.GetName()));
                 return (T)(object)component;
                 //return GetTransformInChildren(parentID) as T;
             }
             else if (typeof(T) == typeof(RigidBody))
             {
-                RigidBody component = new RigidBody(Engine.GetComponentInChildren(EntityId, "RigidBody"));
+                RigidBody component = new RigidBody(Engine.GetComponentInChildren(EntityId, RigidBody.GetName()));
                 return (T)(object)component;
             }
             else if (typeof(T) == typeof(Collider))
             {
-                Collider component = new Collider(Engine.GetComponentInChildren(EntityId, "Collider"));
+                Collider component = new Collider(Engine.GetComponentInChildren(EntityId, Collider.GetName()));
                 return (T)(object)component;
             }
             else if (typeof(T) == typeof(Color))
             {
-                Color component = new Color(Engine.GetComponentInChildren(EntityId, "Color"));
+                Color component = new Color(Engine.GetComponentInChildren(EntityId, Color.GetName()));
                 return (T)(object)component;
             }
             else if (typeof(T) == typeof(Renderer))
             {
-                Renderer component = new Renderer(Engine.GetComponentInChildren(EntityId, "Renderable"));
+                Renderer component = new Renderer(Engine.GetComponentInChildren(EntityId, Renderer.GetName()));
                 return (T)(object)component;
             }
             else if (typeof(T) == typeof(Animator))
             {
-                Animator component = new Animator(Engine.GetComponentInChildren(EntityId, "Animator"));
+                Animator component = new Animator(Engine.GetComponentInChildren(EntityId, Animator.GetName()));
                 return (T)(object)component;
             }
             else if (typeof(T) == typeof(Font))
             {
-                Font component = new Font(Engine.GetComponentInChildren(EntityId, "Font"));
+                Font component = new Font(Engine.GetComponentInChildren(EntityId, Font.GetName()));
                 return (T)(object)component;
             }
             else if (typeof(T) == typeof(Audio))
             {
-                Audio component = new Audio(Engine.GetComponentInChildren(EntityId, "Audio"));
+                Audio component = new Audio(Engine.GetComponentInChildren(EntityId, Audio.GetName()));
                 return (T)(object)component;
             }
 
