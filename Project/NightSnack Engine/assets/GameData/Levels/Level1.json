@@ -1,0 +1,205 @@
+{
+    "BGM": "mainMenu",
+    "Entities": [
+        {
+            "Children": [
+                {
+                    "Children": [
+                        {
+                            "Collider": {
+                                "height": 50.0,
+                                "isStatic": false,
+                                "radius": 0.5,
+                                "shape": "AABB",
+                                "type": "solid",
+                                "width": 50.0
+                            },
+                            "Prefab": "ParentTest2",
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Position": {
+                                    "x": 392.9988708496094,
+                                    "y": 187.2517852783203,
+                                    "z": 0.0
+                                },
+                                "Rotation": 45.0,
+                                "Scale": {
+                                    "x": 50.0,
+                                    "y": 50.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                }
+                            },
+                            "isPrefab": true
+                        }
+                    ],
+                    "Collider": {
+                        "height": 200.0,
+                        "isStatic": false,
+                        "radius": 150.0,
+                        "shape": "AABB",
+                        "type": "solid",
+                        "width": 200.0
+                    },
+                    "Prefab": "RedBall",
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Position": {
+                            "x": 403.0303039550781,
+                            "y": 368.07733154296875,
+                            "z": 0.0
+                        },
+                        "Rotation": 45.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 50.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 50.0,
+                            "y": 50.0
+                        }
+                    },
+                    "isPrefab": true
+                },
+                {
+                    "Collider": {
+                        "height": 1200.0,
+                        "isStatic": false,
+                        "radius": 150.0,
+                        "shape": "AABB",
+                        "type": "solid",
+                        "width": 100.0
+                    },
+                    "Prefab": "RedBall",
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Position": {
+                            "x": -376.27996826171875,
+                            "y": -65.20374298095703,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 50.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 50.0,
+                            "y": 50.0
+                        }
+                    },
+                    "isPrefab": true
+                }
+            ],
+            "Prefab": "RedBall",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -504.54541015625,
+                    "y": -109.56109619140625,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 100.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Square_Collider",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": 150.0,
+                    "y": -350.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 900.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Player11",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -50.0,
+                    "y": -50.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 50.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        }
+    ],
+    "MainCamera": {
+        "height": 900.0,
+        "isMainCam": true,
+        "maxX": 0.0,
+        "maxY": 0.0,
+        "minX": 0.0,
+        "minY": 0.0,
+        "offsetX": 0.0,
+        "offsetY": 0.0,
+        "posX": -50.0,
+        "posY": -50.0,
+        "posZ": 10.0,
+        "width": 1600.0,
+        "zoom": 1.0
+    },
+    "Name": "Level1"
+}

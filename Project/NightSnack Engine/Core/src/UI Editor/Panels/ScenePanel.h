@@ -1249,7 +1249,7 @@ namespace NightSnack
 				Entity toDelete = it->second.second;
 				if (toDelete != INVALID_ENTITY)
 				{
-					m_coord.DestroyEntity(toDelete);
+					factory->RemoveEntity(toDelete);
 				}
 				m_paintedTiles.erase(it);
 			}
@@ -1265,7 +1265,7 @@ namespace NightSnack
 			Entity toDelete = it->second.second;
 			if (toDelete != INVALID_ENTITY)
 			{
-				m_coord.DestroyEntity(toDelete);
+				factory->RemoveEntity(toDelete);
 			}
 			m_paintedTiles.erase(it);
 		}
@@ -1275,29 +1275,21 @@ namespace NightSnack
 		Vec3 pos{ gridX * grid + grid * 0.5f, gridY * grid + grid * 0.5f, 0.0f };
 		Vec2 scale{ grid, grid };
 
-		// Create tile entity
-		Entity tileEntity = factory->Create();
-
 		// Add components to tile entity
+		std::filesystem::path p = m_tilemap.tileTexturePath;
+		Renderable r{ "square", p.filename().stem().string(), false, true };
 		Transform t;
 		t.pos = pos;
 		t.scale = scale;
 		t.rot = 0.0f;
 		t.layer = LayerType::GAMELAYER;
 		t.prefabModified = true;
-		m_coord.ModifyComponent<Transform>(tileEntity) = t;
+
+		// Create tile entity
+		Entity tileEntity = factory->CreateSprite(r, t);
+
 		/*m_coord.AddComponent(tileEntity, t);
 		m_coord.AddComponent<Hierarchy>(tileEntity, Hierarchy{});*/
-
-		Renderable r;
-		r.meshName = "square";
-		r.isWireframe = false;
-		r.wasModified = true;
-		m_coord.AddComponent(tileEntity, r);
-
-		std::filesystem::path p = m_tilemap.tileTexturePath;
-		std::string pname = "TILE" + p.filename().stem().string();
-		factory->MapEntityPrefab(tileEntity, pname);
 
 		// Update material texture of tile
 		auto graphics = m_coord.GetSystem<GraphicsSystem>();

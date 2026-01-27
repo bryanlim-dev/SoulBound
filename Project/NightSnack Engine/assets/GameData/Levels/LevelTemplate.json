@@ -14,6 +14,7 @@
                                 "type": "solid",
                                 "width": 50.0
                             },
+                            "isPrefab": true,
                             "Prefab": "ParentTest2",
                             "Transform": {
                                 "Layer": "GameLayer",
@@ -48,6 +49,7 @@
                         "width": 200.0
                     },
                     "Prefab": "RedBall",
+                    "isPrefab": true,
                     "Transform": {
                         "Layer": "GameLayer",
                         "Position": {
@@ -81,6 +83,7 @@
                         "width": 100.0
                     },
                     "Prefab": "RedBall",
+                    "isPrefab": true,
                     "Transform": {
                         "Layer": "GameLayer",
                         "Position": {
@@ -114,6 +117,7 @@
                 "width": 100.0
             },
             "Prefab": "RedBall",
+            "isPrefab": true,
             "Transform": {
                 "Layer": "GameLayer",
                 "Position": {
@@ -147,6 +151,7 @@
                 "width": 100.0
             },
             "Prefab": "Ghost",
+            "isPrefab": true,
             "Transform": {
                 "Layer": "GameLayer",
                 "Position": {

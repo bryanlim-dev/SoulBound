@@ -84,8 +84,6 @@ namespace NightSnack {
 		void UnpackEntityComponents(Entity e, json const&);
 
 		json CacheLevelEntities();
-		void CreateCacheEntities(json const&);
-
 		json CacheEntityChildren(Hierarchy const&);
 		void CreateEntityChildren(json const&, Entity);
 		std::string EnsurePrefabExists(Entity e, std::string const& prefabName, bool isModified);
@@ -194,6 +192,9 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		Entity Clone(Entity e);
+
+		Entity CreateCollider(Collider const&, Transform const&);
+		Entity CreateSprite(Renderable const& r, Transform const& t);
 
 		/************************************************************************/
 		/*!

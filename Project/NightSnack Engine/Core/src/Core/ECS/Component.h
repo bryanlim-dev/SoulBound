@@ -48,7 +48,7 @@ namespace NightSnack {
         Vec3 UIbasePos{ 0.f, 0.f, 0.f };
         Vec2 UIbaseScale{ 0.f, 0.f };
 
-        LayerType layer;
+        LayerType layer{ LayerType::GAMELAYER };
         bool prefabModified{ false };
         bool isActive{ true };
     };

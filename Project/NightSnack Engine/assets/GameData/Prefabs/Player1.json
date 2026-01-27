@@ -5,7 +5,7 @@
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "ColorMat",
+        "materialName": "Ghost Spirit",
         "meshName": "square"
     },
     "RigidBody": {
