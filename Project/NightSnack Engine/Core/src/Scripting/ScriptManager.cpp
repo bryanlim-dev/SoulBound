@@ -230,7 +230,7 @@ namespace NightSnack::Scripting {
         m_coord.ModifyComponent<Script>(id).modifiedValuesMap.insert({m_scriptNameMap[scriptInstance], modifiedValue});
     }
 
-    bool ScriptManager::FindScriptInEntity(Entity id, std::string scriptName, void* outScript)
+    bool ScriptManager::FindScriptInEntity(Entity id, std::string scriptName, void** outScript)
     {
         std::vector<void*> scripts = GetEntityScripts(id);
         if (!scripts.empty())
@@ -239,7 +239,7 @@ namespace NightSnack::Scripting {
             {
                 if (m_scriptNameMap[script] == scriptName)
                 {
-                    outScript = script;
+                    *outScript = script;
                     return true;
                 }
             }
@@ -253,7 +253,7 @@ namespace NightSnack::Scripting {
     void* ScriptManager::GetScriptInChild(Entity parentID, std::string scriptName)
     {
         void* retScript = nullptr;
-        if (FindScriptInEntity(parentID, scriptName, retScript)) //Found script in parent
+        if (FindScriptInEntity(parentID, scriptName, &retScript)) //Found script in self
             return retScript;
 
         Hierarchy const& h = m_coord.GetComponent<Hierarchy>(parentID);
@@ -273,7 +273,7 @@ namespace NightSnack::Scripting {
     void* ScriptManager::GetScriptInParent(Entity id, std::string scriptName)
     {
         void* retScript = nullptr;
-        if (FindScriptInEntity(id, scriptName, retScript)) //Found script in parent
+        if (FindScriptInEntity(id, scriptName, &retScript)) //Found script in self
             return retScript;
 
         Hierarchy const& h = m_coord.GetComponent<Hierarchy>(id);
@@ -281,7 +281,7 @@ namespace NightSnack::Scripting {
             return nullptr;
         }
 
-        retScript = GetScriptInParent(id, scriptName);
+        retScript = GetScriptInParent(h.parent, scriptName);
         if (retScript != nullptr)
             return retScript;
 

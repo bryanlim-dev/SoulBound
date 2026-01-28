@@ -42,13 +42,7 @@ namespace ManagedScripts
             transform = new Transform(EntityId);
             //Log($"Player Script ID: {GetPlayerID()}");
             //Engine.CreateScript(EntityId, "RotatorScript");
-            rotate = Engine.GetScript<RotatorScript>(EntityId, "RotatorScript");
-            childTransform = GetComponentInParent<Transform>(EntityId);
-            if (childTransform != null)
-            {
-                Engine.Log("Curr ID: " + EntityId + ", Parent ID: " + childTransform.EntityId);
-                //Engine.Log("Parent ID: " + EntityId + ", Child ID: " + childTransform.EntityId);
-            }
+            //rotate = Engine.GetScript<RotatorScript>(EntityId, "RotatorScript");
 
             //if (rotate != null){
             //    Log($"Script found!");
