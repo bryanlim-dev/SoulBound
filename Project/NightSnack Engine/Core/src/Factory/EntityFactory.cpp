@@ -460,6 +460,7 @@ namespace NightSnack {
         trans = t;
         trans.name = "Collider";
         m_coord.AddComponent<Collider>(e, c);
+        m_coord.AddComponent<Renderable>(e, Renderable{})
         m_coord.AddComponent<RigidBody>(e, RigidBody{});
 
         return e;
