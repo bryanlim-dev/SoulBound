@@ -452,6 +452,11 @@ namespace ManagedScripts
             {
             }
 
+            public static uint GetMainCamera
+            {
+                get => Engine.GetMainCamera();
+            }
+
             public bool CameraIsMain
             {
                 get => Engine.GetCameraIsMain(EntityId);

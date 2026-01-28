@@ -203,4 +203,8 @@ namespace NightSnack {
     {
         return "CameraSystem";
     }
+    Entity CameraSystem::GetMainCamera() const
+    {
+        return m_mainCamera;
+    }
 }

@@ -351,6 +351,8 @@ namespace NightSnack::Scripting {
         //Sets Camera of entity
         void SetCamera(Entity e, Cam cam);
 
+        Entity GetMainCamera();
+
         //Gets Camera isMain of entity
         bool GetCameraIsMain(Entity e);
         //Sets Camera isMain of entity

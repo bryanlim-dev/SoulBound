@@ -350,6 +350,10 @@ namespace ManagedScripts
         // Camera Internal for Scripts
         // ----------------------------
         #region Camera
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint GetMainCamera_Internal();
+
         //isMainCam
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void GetCameraIsMain_Internal(uint entityId, out bool main);
@@ -1018,6 +1022,11 @@ namespace ManagedScripts
         // Camera API for Scripts
         // ----------------------------
         #region Camera
+        public static uint GetMainCamera()
+        {
+            return GetMainCamera_Internal();
+        }
+
         //isMainCam
         public static bool GetCameraIsMain(uint entityId)
         {

@@ -717,6 +717,12 @@ namespace NightSnack::Scripting {
         t.width = cam.width;
     }
 
+    //Get Main Camera
+    Entity ScriptInterface::GetMainCamera()
+    {
+        return m_coord.GetSystem<CameraSystem>()->GetMainCamera();
+    }
+
     //---isMainCam---
     bool ScriptInterface::GetCameraIsMain(Entity e) {
         return m_coord.GetComponent<Camera>(e).isMainCam;

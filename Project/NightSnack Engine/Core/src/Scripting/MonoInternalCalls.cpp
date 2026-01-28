@@ -528,6 +528,13 @@ extern "C" {
     // --------------------------------------------------------------
     
 #pragma region Camera
+    //Get Main Camera
+    static uint32_t NightSnack_GetMainCamera() {
+        if (!g_scriptInterface) { return 0; }
+        return g_scriptInterface->GetMainCamera();
+    }
+
+    
     // isMainCam --------------
     static void NightSnack_GetCameraIsMain(uint32_t id, bool* outMain) {
         if (!g_scriptInterface || !outMain) { return; }
@@ -954,6 +961,8 @@ namespace NightSnack::Scripting {
 
 #pragma region Camera
 
+        mono_add_internal_call("ManagedScripts.Engine::GetMainCamera_Internal", (void*)NightSnack_GetMainCamera);
+        
         mono_add_internal_call("ManagedScripts.Engine::GetCameraIsMain_Internal", (void*)NightSnack_GetCameraIsMain);
         mono_add_internal_call("ManagedScripts.Engine::SetCameraIsMain_Internal", (void*)NightSnack_SetCameraIsMain);
 
