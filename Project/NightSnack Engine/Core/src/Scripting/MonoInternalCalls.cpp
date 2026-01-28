@@ -568,6 +568,16 @@ extern "C" {
         g_scriptInterface->SetCameraHeight(id, *height);
     }
 
+    // Scale -----------------
+    static void NightSnack_GetCameraOffset(uint32_t id, NightSnack::Scripting::vec2* offset) {
+        if (!g_scriptInterface || !offset) { return; }
+        *offset = g_scriptInterface->GetCameraOffset(id);
+    }
+    static void NightSnack_SetCameraOffset(uint32_t id, NightSnack::Scripting::vec2* offset) {
+        if (!g_scriptInterface || !offset) { return; }
+        g_scriptInterface->SetCameraOffset(id, *offset);
+    }
+
 #pragma endregion
     // --------------------------------------------------------------
 
@@ -955,6 +965,9 @@ namespace NightSnack::Scripting {
 
         mono_add_internal_call("ManagedScripts.Engine::GetCameraHeight_Internal", (void*)NightSnack_GetCameraHeight);
         mono_add_internal_call("ManagedScripts.Engine::SetCameraHeight_Internal", (void*)NightSnack_SetCameraHeight);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetCameraOffset_Internal", (void*)NightSnack_GetCameraOffset);
+        mono_add_internal_call("ManagedScripts.Engine::SetCameraOffset_Internal", (void*)NightSnack_SetCameraOffset);
 
 #pragma endregion
 

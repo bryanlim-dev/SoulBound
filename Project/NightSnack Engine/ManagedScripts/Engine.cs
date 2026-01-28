@@ -375,6 +375,11 @@ namespace ManagedScripts
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetCameraHeight_Internal(uint entityId, ref float height);
 
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetCameraOffset_Internal(uint entityId, out Vector2 scale);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCameraOffset_Internal(uint entityId, ref Vector2 scale);
+
         #endregion
 
         // ----------------------------
@@ -1055,6 +1060,17 @@ namespace ManagedScripts
         public static void SetCameraHeight(uint entityId, float height)
         {
             SetCameraHeight_Internal(entityId, ref height);
+        }
+
+        //offset
+        public static Vector2 GetCameraOffset(uint entityId)
+        {
+            GetCameraOffset_Internal(entityId, out Vector2 scale);
+            return scale;
+        }
+        public static void SetCameraOffset(uint entityId, Vector2 offset)
+        {
+            SetCameraOffset_Internal(entityId, ref offset);
         }
         #endregion
 

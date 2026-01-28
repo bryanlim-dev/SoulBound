@@ -749,6 +749,18 @@ namespace NightSnack::Scripting {
         m_coord.ModifyComponent<Camera>(e).height = height;
     }
 
+    vec2 ScriptInterface::GetCameraOffset(Entity e)
+    {
+        Vec2 offset = m_coord.GetComponent<Camera>(e).offset;
+        return vec2(offset.x, offset.y);
+    }
+
+    void ScriptInterface::SetCameraOffset(Entity e, vec2 offse)
+    {
+        Vec2& offset = m_coord.ModifyComponent<Camera>(e).offset;
+        offset = Vec2(offse.x, offse.y);
+    }
+
 
 #pragma endregion
 

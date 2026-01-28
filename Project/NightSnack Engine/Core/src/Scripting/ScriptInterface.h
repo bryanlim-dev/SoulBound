@@ -370,6 +370,11 @@ namespace NightSnack::Scripting {
         float GetCameraHeight(Entity e);
         //Sets Camera height of entity
         void SetCameraHeight(Entity e, float main);
+
+        //Gets Animator current animation UVTopLeft of entity
+        vec2 GetCameraOffset(Entity e);
+        //Sets Animator current animation UVTopLeft of entity
+        void SetCameraOffset(Entity e, vec2 offse);
 #pragma endregion
 
 #pragma region Audio
@@ -471,7 +476,8 @@ namespace NightSnack::Scripting {
             REGISTER_COMPONENT(Renderable),
             REGISTER_COMPONENT(Animator),
             REGISTER_COMPONENT(Font),
-            REGISTER_COMPONENT(Audio)
+            REGISTER_COMPONENT(Audio),
+            REGISTER_COMPONENT(Camera)
         };
 
     };
