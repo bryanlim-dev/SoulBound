@@ -88,6 +88,7 @@ namespace NightSnack {
 				}
 			});
 			AddLayer(LayerType::BACKGROUND);
+			//AddLayer(LayerType::SPRITE);
 			AddLayer(LayerType::GAMELAYER);
 			AddLayer(LayerType::FOREGROUND);
 			AddLayer(LayerType::GAMEUI);

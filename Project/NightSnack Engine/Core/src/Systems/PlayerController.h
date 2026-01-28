@@ -21,6 +21,9 @@ struct PlayerFlags {
     bool movingLeft = false;
     bool movingRight = false;
     bool jumpRequested = false;
+    bool jumpHold = false;
+
+    bool canHang = true;
 
     bool playerChange = false;
     // add more flags if needed
@@ -69,11 +72,14 @@ namespace NightSnack {
                         }
                         break;
                     case InputEvent::InputAction::PlayerJump:
-                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                        if (event.pressed == InputEvent::InputActionState::Pressed || 
+                            event.pressed == InputEvent::InputActionState::Repeat) {
                             m_flags.jumpRequested = true;
+                            m_flags.jumpHold = true;
                         }
                         else {
                             m_flags.jumpRequested = false;
+                            m_flags.jumpHold = false;
                         }
                         break;
                     }
@@ -105,72 +111,12 @@ namespace NightSnack {
             Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
             Transform& t = m_coord.ModifyComponent<Transform>(m_player);
 
-            if (m_coord.GetComponent<Collider>(m_player).isGrounded)
-            {
-                if (m_midAir) //was mid air but is grounded now
-                {
-                    m_midAir = false;
-                    m_coord.GetSystem<AudioSystem>()->PlaySFX("playerHurt");
-                }
+            bool isGrounded = m_coord.GetComponent<Collider>(m_player).isGrounded;
 
-                m_timeSinceGrounded = 0;
-            }
-            else
-            {
-                m_timeSinceGrounded += m_coord.GetSystem<ApplicationSystem>()->GetDT();
-            }
+            LeftAndRightMovement(vel, pcont);
+            Jump(t, vel, pcont, isGrounded);
+            //HoldJump(vel, isGrounded);
 
-            bool isGrounded = (m_timeSinceGrounded <= m_groundedThreshhold);
-
-            if (!isGrounded)
-                m_midAir = true;
-            
-
-            /*if (!m_coord.GetComponent<Collider>(m_player).isGrounded && isGrounded)
-                std::cout << "Coyte TIME!" << std::endl;*/
-
-            if (m_flags.movingRight && !m_flags.movingLeft) {
-                vel.x = pcont.moveSpeed;
-            }
-            else if (m_flags.movingLeft && !m_flags.movingRight) {
-                vel.x = -pcont.moveSpeed;
-            }
-            else if (!m_flags.movingLeft && !m_flags.movingRight) {
-                vel.x = 0.f; // Stop moving when no keys pressed
-            }
-            else if (m_flags.movingLeft && m_flags.movingRight) {
-                vel.x = 0.f; // Stop moving when both keys pressed
-            }
-
-            if (m_flags.jumpRequested)
-            {
-                m_storedJump = true;
-                m_storedJumpTimer = 0;
-                //std::cout << "Stored Jump!" << std::endl;
-            }
-
-            if (m_storedJump)
-            {
-                m_storedJumpTimer += m_coord.GetSystem<ApplicationSystem>()->GetDT();
-
-                //Too long since pressing jump
-                if (m_storedJumpTimer >= m_storedJumpThreshold)
-                {
-                    m_storedJump = false;
-                    //std::cout << "Unstored Jump." << std::endl;
-                }
-            }
-
-            if (m_storedJump && isGrounded) {
-                vel.y = pcont.jumpSpeed;
-                t.pos.y += 2.5f;
-                m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
-                m_coord.GetSystem<AudioSystem>()->PlaySFX("playerJump");
-                m_midAir = true;
-                m_storedJump = false;
-            }
-
-            m_flags.jumpRequested = false;
         }
 
         /************************************************************************/
@@ -185,31 +131,15 @@ namespace NightSnack {
         The ID of the current Player Entity.
         */
         /************************************************************************/
-        Entity FindPlayer(Coordinator& coord) {
-            // Camera Signature (only have components Camera and Tranform)
-            Signature playerSig;
-
-            playerSig.set(GetComponentTypeID<PlayerController>());
-            playerSig.set(GetComponentTypeID<Transform>());
-            playerSig.set(GetComponentTypeID<RigidBody>());
-            playerSig.set(GetComponentTypeID<Collider>());
-
-            // Iterate through all living Entities in the COORDINATOR instead
-            // Since the GraphicsSystem will not have a Camera Entity
-            for (Entity e : coord.GetLivingEntities()) {
-                if ((coord.GetEntitySignature(e) & playerSig) == playerSig) { // This camera Entity is the main camera
-                    return e;
-                }
-            }
-            //std::cerr << "Error: No Player Entity found in scene!\n";
-            return INVALID_ENTITY;
-        }
+        Entity FindPlayer(Coordinator& coord);
 
         Entity GetPlayer() const noexcept { return m_player; }
 
-        void ResetFlags() {
-            m_flags = PlayerFlags{};
-        }
+        void LeftAndRightMovement(Vec2& vel, PlayerController const&);
+        void HoldJump(Vec2& vel, bool& isGrounded);
+        void Jump(Transform& t, Vec2& vel, PlayerController pcont, bool& isGrounded);
+
+        void ResetFlags() { m_flags = PlayerFlags{}; }
 
         // Required by ISystem base class.
         std::string GetName() const override { return "PlayerController"; }
@@ -239,6 +169,7 @@ namespace NightSnack {
 
         float m_timeSinceGrounded{}; //Time since last grounded
         bool m_midAir{}; //Is the player midair (used to help track if player jumped)
+        bool m_justJumped{};
 
         //If spacebar is pressed right before landing allow 
         bool m_storedJump = false;

@@ -289,6 +289,7 @@ namespace NightSnack {
 
     void EntityFactory::UnpackEntityComponents(Entity e, json const& j) {
         if (j.contains("RigidBody")) m_coord.AddComponent<RigidBody>(e, j["RigidBody"]);
+        if (j.contains("Collider")) m_coord.AddComponent<Collider>(e, j["Collider"]);
         if (j.contains("Renderable")) m_coord.AddComponent<Renderable>(e, j["Renderable"]);
         if (j.contains("Color")) m_coord.AddComponent<Color>(e, j["Color"]);
         if (j.contains("Animator")) m_coord.AddComponent<Animator>(e, j["Animator"]);
@@ -455,12 +456,17 @@ namespace NightSnack {
     }
 
     Entity EntityFactory::CreateCollider(Collider const& c, Transform const& t) {
+
         Entity e = Create();
         Transform& trans = m_coord.ModifyComponent<Transform>(e);
         trans = t;
         trans.name = "Collider";
         m_coord.AddComponent<Collider>(e, c);
-        m_coord.AddComponent<Renderable>(e, Renderable{})
+
+        // Invisible renderer component
+        m_coord.AddComponent<Renderable>(e, Renderable{});
+        m_coord.AddComponent<Color>(e, Color{});    // zero alpha
+
         m_coord.AddComponent<RigidBody>(e, RigidBody{});
 
         return e;
@@ -469,7 +475,7 @@ namespace NightSnack {
         Entity e = Create();
         Transform& trans = m_coord.ModifyComponent<Transform>(e);
         trans = t;
-        trans.name = "Sprite";
+        trans.name = "Sprite-" + t.name;
         m_coord.AddComponent<Renderable>(e, r);
 
         return e;

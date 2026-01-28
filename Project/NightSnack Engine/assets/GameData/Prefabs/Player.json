@@ -8,7 +8,7 @@
         "width": 100.0
     },
     "PlayerController": {
-        "jumpSpeed": 600.0,
+        "jumpSpeed": 750.0,
         "moveSpeed": 400.0
     },
     "Renderable": {
@@ -17,7 +17,7 @@
         "meshName": "square"
     },
     "RigidBody": {
-        "gravityMult": 0.0,
+        "gravityMult": 2.0,
         "mass": 1.0,
         "restitution": 0.0,
         "useGravity": true,

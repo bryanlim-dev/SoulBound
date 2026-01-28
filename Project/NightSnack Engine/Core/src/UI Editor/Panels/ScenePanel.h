@@ -1279,13 +1279,15 @@ namespace NightSnack
 
 		// Add components to tile entity
 		std::filesystem::path p = m_tilemap.tileTexturePath;
-		Renderable r{ "square", p.filename().stem().string(), false, true };
+		std::string texName = p.filename().stem().string();
+		Renderable r{ "square", texName, false, true };
 		Transform t;
 		t.pos = pos;
 		t.scale = scale;
 		t.rot = 0.0f;
 		t.layer = LayerType::GAMELAYER;
 		t.prefabModified = true;
+		t.name = texName;
 
 		// Create tile entity
 		Entity tileEntity = factory->CreateSprite(r, t);

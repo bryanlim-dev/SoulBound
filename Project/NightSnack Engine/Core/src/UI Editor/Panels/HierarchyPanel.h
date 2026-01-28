@@ -79,7 +79,11 @@ namespace NightSnack
                         Transform t;
                         //t.pos = Vec3{ campos.x, campos.y, 0.f };
                         t.scale = Vec2{ 100.f, 100.f };
-                        factory->CreateCollider(Collider{}, t);
+                        t.pos.z = 1.f;
+                        Collider c;
+                        c.width = c.height = 100.f;
+                        c.radius = 50.f;
+                        factory->CreateCollider(c, t);
                     }
 
                     // Delete button to remove selected entity

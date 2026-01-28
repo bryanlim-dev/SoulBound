@@ -120,6 +120,8 @@ namespace NightSnack {
 			r.vel = Vec2{};
 			r.useGravity = false;
 			j.at("useGravity").get_to(r.useGravity);
+
+			if (j.contains("gravityMult")) j.at("gravityMult").get_to(r.gravitymult);
 		}
 		catch (std::exception const& e) {
 			std::cerr << "Invalid JSON format " << e.what() << '\n';
@@ -319,11 +321,11 @@ namespace NightSnack {
 
 			if (shapeStr == "AABB") {
 				c.shape = ShapeType::AABB;
-				std::cerr << "Collider become AABB\n";
+				//std::cerr << "Collider become AABB\n";
 			}
 			else if (shapeStr == "Circle") {
 				c.shape = ShapeType::Circle;
-				std::cerr << "Collider become Circle\n";
+				//std::cerr << "Collider become Circle\n";
 			}
 
 			if (typeStr == "Solid") c.type = ColliderType::Solid;

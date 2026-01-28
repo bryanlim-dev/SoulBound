@@ -610,7 +610,7 @@ namespace NightSnack {
 		}
 
 		if (rig.useGravity && !col.isGrounded) {
-			rig.accel.y += gravity;
+			rig.accel.y += gravity * rig.gravitymult;
 		}
 		// Compute Velocity;
 		rig.vel += rig.accel * FixedDT;

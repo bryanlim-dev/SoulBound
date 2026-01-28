@@ -366,6 +366,7 @@ namespace NightSnack
 		// Current Prefab display
         std::string entityName = (*m_uiNames)[entity];
 		std::string prefabName = factory ? factory->GetEntityPrefabName(entity) : "UnknownPrefab";
+        std::string pname = prefabName;
         bool isCam = m_coord.HasComponent<Camera>(entity);
         if (isCam) prefabName = "CAMERA";
 
@@ -373,6 +374,8 @@ namespace NightSnack
         ImGui::Columns(2, nullptr, false);
         ImGui::Text("Prefab: %s", prefabName.c_str());
         ImGui::NextColumn();
+        
+        if (prefabName != pname) m_coord.ModifyComponent<Transform>(entity).name = prefabName;
 
         if (!isCam) {
             // Save / Overwrite entity's prefab
@@ -733,6 +736,17 @@ namespace NightSnack
                     NightSnack::RigidBodySnapshot{ *m_selectedEntity, rb }
                 );
                 rb.invMass = 1.f / mass;
+            }
+            float gm = rb.gravitymult;
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Gravity Multiply");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::InputFloat("##gravmult", &gm, 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::RigidBodySnapshot{ *m_selectedEntity, rb }
+                );
+                rb.gravitymult = gm;
             }
 
             // Velocity
