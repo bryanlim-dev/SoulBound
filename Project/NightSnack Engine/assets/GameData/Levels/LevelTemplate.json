@@ -14,7 +14,6 @@
                                 "type": "solid",
                                 "width": 50.0
                             },
-                            "isPrefab": true,
                             "Prefab": "ParentTest2",
                             "Transform": {
                                 "Layer": "GameLayer",
@@ -37,7 +36,8 @@
                                     "x": 100.0,
                                     "y": 100.0
                                 }
-                            }
+                            },
+                            "isPrefab": true
                         }
                     ],
                     "Collider": {
@@ -49,7 +49,6 @@
                         "width": 200.0
                     },
                     "Prefab": "RedBall",
-                    "isPrefab": true,
                     "Transform": {
                         "Layer": "GameLayer",
                         "Position": {
@@ -71,7 +70,8 @@
                             "x": 50.0,
                             "y": 50.0
                         }
-                    }
+                    },
+                    "isPrefab": true
                 },
                 {
                     "Collider": {
@@ -83,7 +83,6 @@
                         "width": 100.0
                     },
                     "Prefab": "RedBall",
-                    "isPrefab": true,
                     "Transform": {
                         "Layer": "GameLayer",
                         "Position": {
@@ -105,24 +104,16 @@
                             "x": 50.0,
                             "y": 50.0
                         }
-                    }
+                    },
+                    "isPrefab": true
                 }
             ],
-            "Collider": {
-                "height": 250.0,
-                "isStatic": false,
-                "radius": 150.0,
-                "shape": "AABB",
-                "type": "solid",
-                "width": 100.0
-            },
             "Prefab": "RedBall",
-            "isPrefab": true,
             "Transform": {
                 "Layer": "GameLayer",
                 "Position": {
-                    "x": 0.0,
-                    "y": 0.0,
+                    "x": -239.08047485351563,
+                    "y": 113.68861389160156,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
@@ -139,41 +130,8 @@
                     "x": 100.0,
                     "y": 100.0
                 }
-            }
-        },
-        {
-            "Collider": {
-                "height": 100.0,
-                "isStatic": false,
-                "radius": 70.9000015258789,
-                "shape": "AABB",
-                "type": "solid",
-                "width": 100.0
             },
-            "Prefab": "Ghost",
-            "isPrefab": true,
-            "Transform": {
-                "Layer": "GameLayer",
-                "Position": {
-                    "x": 314.42010498046875,
-                    "y": -268.54754638671875,
-                    "z": 0.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 100.0,
-                    "y": 100.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 100.0,
-                    "y": 100.0
-                }
-            }
+            "isPrefab": true
         }
     ],
     "MainCamera": {
@@ -187,6 +145,7 @@
         "offsetY": 0.0,
         "posX": 0.0,
         "posY": 0.0,
+        "posZ": 10.0,
         "width": 1600.0,
         "zoom": 1.0
     },

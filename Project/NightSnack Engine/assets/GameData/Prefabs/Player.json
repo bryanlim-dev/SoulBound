@@ -1,11 +1,19 @@
 {
+    "Collider": {
+        "height": 100.0,
+        "isStatic": false,
+        "radius": 50.0,
+        "shape": "AABB",
+        "type": "solid",
+        "width": 100.0
+    },
     "PlayerController": {
         "jumpSpeed": 600.0,
         "moveSpeed": 400.0
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "ColorMat",
+        "materialName": "Ghost Spirit",
         "meshName": "square"
     },
     "RigidBody": {

@@ -250,7 +250,7 @@ namespace NightSnack {
         if (it != entityToPrefab.end()) {
             return it->second;
         }
-        return "UnknownPrefab";
+        return m_coord.GetComponent<Transform>(e).name;
     }
 
     // Reloads a specific prefab -> Updates json stored by the RM
@@ -456,7 +456,9 @@ namespace NightSnack {
 
     Entity EntityFactory::CreateCollider(Collider const& c, Transform const& t) {
         Entity e = Create();
-        m_coord.ModifyComponent<Transform>(e) = t;
+        Transform& trans = m_coord.ModifyComponent<Transform>(e);
+        trans = t;
+        trans.name = "Collider";
         m_coord.AddComponent<Collider>(e, c);
         m_coord.AddComponent<RigidBody>(e, RigidBody{});
 
@@ -464,7 +466,9 @@ namespace NightSnack {
     }
     Entity EntityFactory::CreateSprite(Renderable const& r, Transform const& t) {
         Entity e = Create();
-        m_coord.ModifyComponent<Transform>(e) = t;
+        Transform& trans = m_coord.ModifyComponent<Transform>(e);
+        trans = t;
+        trans.name = "Sprite";
         m_coord.AddComponent<Renderable>(e, r);
 
         return e;

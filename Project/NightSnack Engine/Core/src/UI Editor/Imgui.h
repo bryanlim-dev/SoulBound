@@ -82,6 +82,8 @@ namespace NightSnack {
 		/************************************************************************/
 		void ResetGame();
 
+		ScenePanel& GetScenePanel() { return *m_scenePanel; }
+
 		// Required by ISystem base class.
 		Signature GetSignature() const override { return m_systemSignature; }
 		std::string GetName() const override { return "ImguiSystem"; }

@@ -12,10 +12,13 @@
  ******************************************************************************/
 
 #pragma once
+
 #include "AllPanels.h"
 
 namespace NightSnack
 {
+    class ImguiSystem;
+
     class HierarchyPanel {
     public:
 
@@ -68,6 +71,15 @@ namespace NightSnack
                     if (ImGui::Button("Create"))
                     {
                         factory->Create();
+                    }
+                    ImGui::SameLine();
+                    if (ImGui::Button("Create Collider")) {
+
+                        //Vec3 campos = m_coord.GetComponent<Transform>(m_imgui.GetScenePanel().GetEditorCamera()).pos;
+                        Transform t;
+                        //t.pos = Vec3{ campos.x, campos.y, 0.f };
+                        t.scale = Vec2{ 100.f, 100.f };
+                        factory->CreateCollider(Collider{}, t);
                     }
 
                     // Delete button to remove selected entity

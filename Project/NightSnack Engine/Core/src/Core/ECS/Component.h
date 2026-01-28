@@ -51,6 +51,8 @@ namespace NightSnack {
         LayerType layer{ LayerType::GAMELAYER };
         bool prefabModified{ false };
         bool isActive{ true };
+
+        std::string name{ "NoName" };
     };
 
     struct Force {
@@ -64,18 +66,18 @@ namespace NightSnack {
     };
 
     struct RigidBody {
-        Force force;
-        Vec2 vel;
-        Vec2 accel;
+        Force force{};
+        Vec2 vel{};
+        Vec2 accel{};
 
         float invMass = 1.f;
         float invInertia = 1.f;
 
         float restitution{};
-        float gravitymult;
+        float gravitymult = 1.f;
 
-        bool useGravity;
-        bool useRotate;
+        bool useGravity = true;
+        bool useRotate = false;
     };
 
     //Types of enums supported for scripting
@@ -243,9 +245,9 @@ namespace NightSnack {
         EXIT,
     };
     struct ButtonInfo {
-        ButtonAction action;
-        ButtonType type;
-        std::string target;
+        ButtonAction action{ ButtonAction::NOACTION };
+        ButtonType type{ ButtonType::INVALID_BUTTON };
+        std::string target{};
     };
 
     // Add more Components here if necessary...

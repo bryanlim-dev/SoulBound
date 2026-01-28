@@ -478,6 +478,8 @@ namespace NightSnack
 
 		void DisableEditorCameraIsMain();
 
+		Entity GetEditorCamera() const noexcept { return m_editorCameraEntity; }
+
 	private:
 		GLuint m_sceneTexture = 0;
 		Coordinator& m_coord;

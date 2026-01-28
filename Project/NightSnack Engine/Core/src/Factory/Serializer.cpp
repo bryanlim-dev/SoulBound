@@ -45,7 +45,8 @@ namespace NightSnack {
 				{ "Scale",    { {"x", t.scale.x}, {"y", t.scale.y} } },
 				{ "UIBasePosition", { {"x", t.UIbasePos.x}, {"y", t.UIbasePos.y}, {"z", t.UIbasePos.z} } },
 				{ "UIBaseScale",    { {"x", t.UIbaseScale.x}, {"y", t.UIbaseScale.y} } },
-				{ "Layer", layer }
+				{ "Layer", layer },
+				{ "Name", t.name }
 		};
 	}
 	void from_json(json const& j, Transform& t) {
@@ -75,6 +76,9 @@ namespace NightSnack {
 			else if (l == "GameUI") { t.layer = LayerType::GAMEUI; }
 			else if (l == "_Engine2") { t.layer = LayerType::_ENGINE2; }
 			else { t.layer = LayerType::GAMELAYER; }
+
+			if (j.contains("Name"))
+				t.name = j["Name"];
 		}
 		catch (std::exception const& e) {
 			std::cerr << "Invalid JSON format " << e.what() << '\n';
