@@ -918,7 +918,44 @@ namespace NightSnack::Scripting {
     bool ScriptInterface::IsKeyReleased(int key) {
         return m_coord.GetSystem<InputSystem>()->IsKeyReleased(key);
     }
+
 #pragma endregion
+
+    Entity ScriptInterface::GetComponentInChildren(Entity entity, std::string componentName)
+    {
+        auto it = componentRegistry.find(componentName);
+        if (it != componentRegistry.end())
+            return it->second.getInChildren(m_coord, entity);
+
+        return Entity{};
+    }
+
+    MonoObject* ScriptInterface::GetScriptComponentInChildren(Entity entity, std::string scriptName)
+    {
+        //If curr obj has the script return it
+        if (MonoObject* obj = reinterpret_cast<MonoObject*>(m_coord.GetSystem<ScriptManager>()->GetScriptInChild(entity, scriptName)))
+            return obj;
+        else
+            return nullptr;
+    }
+
+    Entity ScriptInterface::GetComponentInParent(Entity entity, std::string componentName)
+    {
+        auto it = componentRegistry.find(componentName);
+        if (it != componentRegistry.end())
+            return it->second.getInParent(m_coord, entity);
+
+        return Entity{};
+    }
+
+    MonoObject* ScriptInterface::GetScriptComponentInParent(Entity entity, std::string scriptName)
+    {
+        //If curr obj has the script return it
+        if (MonoObject* obj = reinterpret_cast<MonoObject*>(m_coord.GetSystem<ScriptManager>()->GetScriptInParent(entity, scriptName)))
+            return obj;
+        else
+            return nullptr;
+    }
 
     // --------------------------------------------------------------
     // Audio

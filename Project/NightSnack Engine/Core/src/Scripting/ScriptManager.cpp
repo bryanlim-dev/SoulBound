@@ -230,6 +230,64 @@ namespace NightSnack::Scripting {
         m_coord.ModifyComponent<Script>(id).modifiedValuesMap.insert({m_scriptNameMap[scriptInstance], modifiedValue});
     }
 
+    bool ScriptManager::FindScriptInEntity(Entity id, std::string scriptName, void** outScript)
+    {
+        std::vector<void*> scripts = GetEntityScripts(id);
+        if (!scripts.empty())
+        {
+            for (void* script : scripts)
+            {
+                if (m_scriptNameMap[script] == scriptName)
+                {
+                    *outScript = script;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    void* ScriptManager::GetScriptInChild(Entity parentID, std::string scriptName)
+    {
+        void* retScript = nullptr;
+        if (FindScriptInEntity(parentID, scriptName, &retScript)) //Found script in self
+            return retScript;
+
+        Hierarchy const& h = m_coord.GetComponent<Hierarchy>(parentID);
+        if (h.children.empty()) {
+            return nullptr;
+        }
+        //Loop thru children
+        for (Entity c : h.children) {
+            retScript = GetScriptInChild(c, scriptName); //Recursive func to search child's child
+            if (retScript != nullptr) //Found script in child (or child's children), return it
+                return retScript;
+        }
+
+        return nullptr;
+    }
+
+    void* ScriptManager::GetScriptInParent(Entity id, std::string scriptName)
+    {
+        void* retScript = nullptr;
+        if (FindScriptInEntity(id, scriptName, &retScript)) //Found script in self
+            return retScript;
+
+        Hierarchy const& h = m_coord.GetComponent<Hierarchy>(id);
+        if (h.parent == INVALID_ENTITY) {
+            return nullptr;
+        }
+
+        retScript = GetScriptInParent(h.parent, scriptName);
+        if (retScript != nullptr)
+            return retScript;
+
+        return nullptr;
+    }
+
     void ScriptManager::Initialize() {
 
         // Create script interface (bridge to engine)
