@@ -1184,7 +1184,7 @@ namespace ManagedScripts
             return GetScriptComponentInChildren_Internal(parentID, componentName) as T;
         }
 
-        public static uint GetComponentInParent(uint currID, string componentName) => GetComponentInChildren_Internal(currID, componentName);
+        public static uint GetComponentInParent(uint currID, string componentName) => GetComponentInParent_Internal(currID, componentName);
         public static T GetScriptComponentInParent<T>(uint parentID, string componentName) where T : Script
         {
             return GetScriptComponentInParent_Internal(parentID, componentName) as T;
