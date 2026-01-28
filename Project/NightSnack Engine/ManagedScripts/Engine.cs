@@ -1205,6 +1205,18 @@ namespace ManagedScripts
         public static void RestartLevel() => RestartLevel_Internal();
 
         //public static float Time => GetTime_Internal();
+
+        //Helper funcs
+        #region Helper Functions
+        public static float Clamp(float v, float min, float max)
+        {
+            if (v < min) return min;
+            if (v > max) return max;
+            return v;
+        }
+
+
+        #endregion
     }
 
     public struct Vector2
@@ -1218,6 +1230,46 @@ namespace ManagedScripts
         public static Vector2 operator +(Vector2 a, Vector2 b) => new Vector2(a.X + b.X, a.Y + b.Y);
         public static Vector2 operator -(Vector2 a, Vector2 b) => new Vector2(a.X - b.X, a.Y - b.Y);
         public static Vector2 operator *(Vector2 a, float scalar) => new Vector2(a.X * scalar, a.Y * scalar);
+
+        public static Vector2 Rotate(Vector2 v, float angle)
+        {
+            float c = (float)Math.Cos(angle);
+            float s = (float)Math.Sin(angle);
+
+            return new Vector2(
+                c * v.X - s * v.Y,
+                s * v.X + c * v.Y
+            );
+        }
+
+        public static float Dot(Vector2 a, Vector2 b)
+        {
+            return (a.X * b.X) + (a.Y * b.Y);
+        }
+
+        public static float Cross(Vector2 a, Vector2 b)
+        {
+            return a.X * b.Y - a.Y * b.X;
+        }
+
+        public static Vector2 Cross(float s, Vector2 v)
+        {
+            return new Vector2(-s * v.Y, s * v.X);
+        }
+
+        public float Length()
+        {
+            return (float)Math.Sqrt(X * X + Y * Y);
+        }
+
+        public Vector2 Normalize()
+        {
+            float len = Length();
+            if (len < 0.00001f)
+                return new Vector2(0, 0);
+
+            return this * (1.0f / len);
+        }
 
         public override string ToString() => $"({X}, {Y})";
     }
@@ -1348,4 +1400,7 @@ namespace ManagedScripts
 
         NUM_TOTAL_KEYBOARD_KEY  // MUST BE THE LAST
     };
+
+
+
 }

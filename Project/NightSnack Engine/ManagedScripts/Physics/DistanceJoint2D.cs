@@ -40,9 +40,11 @@ namespace ManagedScripts
         #region Spring
         [SerializeField]
         public bool enableSpring = false;
-        public float frequency = 5f;
+        public float frequencyHz = 5.0f;
         public float dampingRatio = 0.7f;
         #endregion 
+
+        public float MaxForce = float.PositiveInfinity;
 
         public override void OnLoad()
         {
