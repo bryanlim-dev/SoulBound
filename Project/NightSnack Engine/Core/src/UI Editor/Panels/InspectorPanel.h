@@ -708,7 +708,36 @@ namespace NightSnack
     inline void InspectorPanel::TilemapComponent()
     {
         m_tilemap.DrawTilemapSettings();
-        m_tilemap.DrawTileEditor(m_coord, *m_selectedEntity);
+
+        ImGui::Text("Tilemap Texture:");
+        ImGui::SameLine();
+
+        // Show texture name
+        std::string texName = "None";
+        if (!m_tilemap.tileTexturePath.empty())
+        {
+            std::filesystem::path p = m_tilemap.tileTexturePath;
+            texName = p.filename().string();
+        }
+        ImGui::TextColored(ImVec4(0.2f, 0.6f, 1.0f, 1.0f), "%s", texName.c_str());
+
+        // Drag-and-drop target for textures
+        ImVec2 rect_min = ImGui::GetItemRectMin();
+        ImVec2 rect_max = ImGui::GetItemRectMax();
+        if (ImGui::BeginDragDropTarget())
+        {
+            ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 80));
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE"))
+            {
+                // Set tilemap's texture path
+                const char* droppedPath = static_cast<const char*>(payload->Data);
+                m_tilemap.tileTexturePath = droppedPath;
+            }
+            ImGui::EndDragDropTarget();
+        }
+
+        // Tilemap editor window
+        //m_tilemap.DrawTileEditor(m_coord, *m_selectedEntity);
     }
 
 	// Draws RigidBody component details which includes velocity, angular
