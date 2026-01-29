@@ -95,21 +95,21 @@ namespace NightSnack {
                             m_flags.movingRight = false;
                         }
                         break;
-                    case InputEvent::InputAction::PlayerJump:
-                        if (event.pressed == InputEvent::InputActionState::Pressed || 
-                            event.pressed == InputEvent::InputActionState::Repeat) {
-                            m_flags.jumpRequested = true;
-                        }
-                        else {
-                            m_flags.jumpRequested = false;
-                        }
-                        break;
                     case InputEvent::InputAction::PlayerSpecialAbility:
-                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                        if (event.pressed == InputEvent::InputActionState::Pressed ||
+                            event.pressed == InputEvent::InputActionState::Repeat) {
                             m_flags.useAbility = true;
                         }
                         else {
                             m_flags.useAbility = false;
+                        }
+                        break;
+                    case InputEvent::InputAction::PlayerJump:
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                            m_flags.jumpRequested = true;
+                        }
+                        else {
+                            m_flags.jumpRequested = false;
                         }
                         break;
                     }

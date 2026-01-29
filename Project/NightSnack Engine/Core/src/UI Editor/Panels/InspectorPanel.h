@@ -716,7 +716,7 @@ namespace NightSnack
         ImGui::Text("Tilemap Texture:");
         ImGui::SameLine();
 
-        // Show texture name
+        // Show current texture name
         std::string texName = "None";
         if (!m_tilemap.tileTexturePath.empty())
         {
@@ -733,7 +733,7 @@ namespace NightSnack
             ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 80));
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE"))
             {
-                // Set tilemap's texture path
+                // Set the tilemap's texture path
                 const char* droppedPath = static_cast<const char*>(payload->Data);
                 m_tilemap.tileTexturePath = droppedPath;
             }

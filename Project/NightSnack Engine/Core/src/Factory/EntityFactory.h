@@ -191,7 +191,7 @@ namespace NightSnack {
 		Returns ID of entity cloned.
 		*/
 		/************************************************************************/
-		Entity Clone(Entity e);
+		Entity Clone(Entity e, Vec2 const& pos);
 
 		Entity CreateCollider(Collider const&, Transform const&);
 		Entity CreateSprite(Renderable const& r, Transform const& t);
