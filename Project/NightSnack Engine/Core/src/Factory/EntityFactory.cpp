@@ -201,7 +201,34 @@ namespace NightSnack {
 	}
 
     // Queue entity to be destroyed at end of Core loop
-    void EntityFactory::RemoveEntity(Entity e) { m_toBeDestroyed.insert(e); }
+    void EntityFactory::RemoveEntity(Entity e) { 
+
+        // Update Hierarchy chain
+        Hierarchy const& h = m_coord.GetComponent<Hierarchy>(e);
+
+        // if has parent
+        if (h.parent != INVALID_ENTITY) {
+
+            // erase himself from parent's children
+            Hierarchy& ph = m_coord.ModifyComponent<Hierarchy>(h.parent);
+            ph.children.erase(e);
+
+            // add children to parent's children
+            for (Entity c : h.children) {
+                m_coord.ModifyComponent<Hierarchy>(c).parent = h.parent;
+                ph.children.insert(c);
+            }
+        }
+        else {
+            // else unparent all children
+            for (Entity c : h.children) {
+                m_coord.ModifyComponent<Hierarchy>(c).parent = INVALID_ENTITY;
+            }
+        }
+
+        // Mark Entity for deletion
+        m_toBeDestroyed.insert(e); 
+    }
 
     // Print names of loaded prefabs
     void EntityFactory::PrintPrefabNames() const {

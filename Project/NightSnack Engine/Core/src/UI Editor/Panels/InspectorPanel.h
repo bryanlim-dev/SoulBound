@@ -330,6 +330,7 @@ namespace NightSnack
         if (m_uiNames->find(entity) == m_uiNames->end()) {
             (*m_uiNames)[entity] = factory ? factory->GetEntityPrefabName(entity) : "Entity " + std::to_string(entity);
         }
+        std::string curr_name = (*m_uiNames)[entity];
 		// Input field for entity name
         char nameBuffer[128];
         strncpy_s(nameBuffer, (*m_uiNames)[entity].c_str(), sizeof(nameBuffer));
@@ -343,6 +344,12 @@ namespace NightSnack
             }
             ImGui::PopID();
         }
+        // Change name
+        if (nameBuffer != curr_name) {
+            m_coord.ModifyComponent<Transform>(entity).name = nameBuffer;
+            std::cout << "Changed Name to: " << nameBuffer << std::endl;
+        }
+
         ImGui::SameLine();
         ImGui::TextDisabled("ID: %u", entity);
 
@@ -366,7 +373,6 @@ namespace NightSnack
 		// Current Prefab display
         std::string entityName = (*m_uiNames)[entity];
 		std::string prefabName = factory ? factory->GetEntityPrefabName(entity) : "UnknownPrefab";
-        std::string pname = prefabName;
         bool isCam = m_coord.HasComponent<Camera>(entity);
         if (isCam) prefabName = "CAMERA";
 
@@ -374,8 +380,6 @@ namespace NightSnack
         ImGui::Columns(2, nullptr, false);
         ImGui::Text("Prefab: %s", prefabName.c_str());
         ImGui::NextColumn();
-        
-        if (prefabName != pname) m_coord.ModifyComponent<Transform>(entity).name = prefabName;
 
         if (!isCam) {
             // Save / Overwrite entity's prefab
