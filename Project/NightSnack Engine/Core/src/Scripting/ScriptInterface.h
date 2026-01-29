@@ -23,27 +23,6 @@
 #include <string>
 
 
-//Macro to help register component for GetComponentIn<X>
-#define REGISTER_COMPONENT(T)                                    \
-{                                                                \
-    #T,                                                          \
-    {                                                            \
-        /* GetComponentInChildren */                             \
-        [](Coordinator& c, Entity e) -> Entity                   \
-        {                                                        \
-            if (auto& comp = c.GetComponentInChild<T>(e))        \
-                return comp->second;                             \
-            return Entity{};                                     \
-        },                                                       \
-        /* GetComponentInParent */                               \
-        [](Coordinator& c, Entity e) -> Entity                   \
-        {                                                        \
-            if (auto& comp = c.GetComponentInParent<T>(e))       \
-                return comp->second;                             \
-            return Entity{};                                     \
-        }                                                        \
-    }                                                            \
-}
 
 namespace NightSnack::Scripting {
 
@@ -468,20 +447,7 @@ namespace NightSnack::Scripting {
         //coordiator refrence
         Coordinator& m_coord;
 
-        static inline const std::unordered_map<std::string, ComponentEntry>
-            componentRegistry =
-        {
-            REGISTER_COMPONENT(Transform),
-            REGISTER_COMPONENT(RigidBody),
-            REGISTER_COMPONENT(Collider),
-            REGISTER_COMPONENT(Color),
-            REGISTER_COMPONENT(Renderable),
-            REGISTER_COMPONENT(Animator),
-            REGISTER_COMPONENT(Font),
-            REGISTER_COMPONENT(Audio),
-            REGISTER_COMPONENT(Camera)
-        };
-
+        static const std::unordered_map<std::string, ComponentEntry> componentRegistry;
     };
 
 } // namespace NightSnack::Scripting

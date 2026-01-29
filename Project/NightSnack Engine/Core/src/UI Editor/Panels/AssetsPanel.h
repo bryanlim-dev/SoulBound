@@ -338,21 +338,35 @@ namespace NightSnack
 				{
 					m_selectedAsset = item;
 					m_selectedAssetPath = item.fullPath.string();
-					m_showAssetProperties = true;
+					m_showAssetProperties = false;
+				}
+				if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+				{
+					if (item.isDirectory)
+					{
+						m_currentDirectory = item.fullPath;
+					}
+					else
+					{
+						m_selectedAsset = item;
+						m_selectedAssetPath = item.fullPath.string();
+						m_showAssetProperties = true;
 
-					// Load appropriate preview based on type
-					if (item.type == AssetType::Script)
-					{
-						m_scriptsPanel.SelectScript(item.fullPath.string());
-					} else if (item.type == AssetType::Prefab)
-					{
-						std::string prefabName = item.name;
-						if (prefabName.ends_with(".json"))
+						// Load appropriate preview based on type
+						if (item.type == AssetType::Script)
 						{
-							prefabName = prefabName.substr(0, prefabName.size() - 5);
+							m_scriptsPanel.SelectScript(item.fullPath.string());
 						}
+						else if (item.type == AssetType::Prefab)
+						{
+							std::string prefabName = item.name;
+							if (prefabName.ends_with(".json"))
+							{
+								prefabName = prefabName.substr(0, prefabName.size() - 5);
+							}
 
-						m_prefabsPanel.SelectPrefab(prefabName);
+							m_prefabsPanel.SelectPrefab(prefabName);
+						}
 					}
 				}
 
