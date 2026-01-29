@@ -10,7 +10,7 @@ namespace NightSnack {
             if (!c.HasComponent<RigidBody>(target)) return;
 
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
-            if (vel.y <= -00.f) vel.y = -100.f;
+            if (vel.y <= -50.f) vel.y = -50.f;
             });
         m_abilities.insert({ abilityName, GlideAbility });
 

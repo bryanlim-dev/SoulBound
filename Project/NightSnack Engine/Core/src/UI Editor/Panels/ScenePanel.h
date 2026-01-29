@@ -1075,8 +1075,8 @@ namespace NightSnack
 				// Snap to grid cell center if tilemap overlay is enabled
 				if (m_tilemap.tileOverlayEnabled)
 				{
-					newX = std::floor(newX / grid) * grid + grid * 0.5f;
-					newY = std::floor(newY / grid) * grid + grid * 0.5f;
+					newX = std::floor(newX / (grid / 8)) * (grid / 8);
+					newY = std::floor(newY / (grid / 8)) * (grid / 8);
 				}
 
 				t.pos.x = newX;
