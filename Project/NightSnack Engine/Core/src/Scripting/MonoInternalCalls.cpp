@@ -528,6 +528,13 @@ extern "C" {
     // --------------------------------------------------------------
     
 #pragma region Camera
+    //Get Main Camera
+    static uint32_t NightSnack_GetMainCamera() {
+        if (!g_scriptInterface) { return 0; }
+        return g_scriptInterface->GetMainCamera();
+    }
+
+    
     // isMainCam --------------
     static void NightSnack_GetCameraIsMain(uint32_t id, bool* outMain) {
         if (!g_scriptInterface || !outMain) { return; }
@@ -566,6 +573,16 @@ extern "C" {
     static void NightSnack_SetCameraHeight(uint32_t id, float* height) {
         if (!g_scriptInterface || !height) { return; }
         g_scriptInterface->SetCameraHeight(id, *height);
+    }
+
+    // Scale -----------------
+    static void NightSnack_GetCameraOffset(uint32_t id, NightSnack::Scripting::vec2* offset) {
+        if (!g_scriptInterface || !offset) { return; }
+        *offset = g_scriptInterface->GetCameraOffset(id);
+    }
+    static void NightSnack_SetCameraOffset(uint32_t id, NightSnack::Scripting::vec2* offset) {
+        if (!g_scriptInterface || !offset) { return; }
+        g_scriptInterface->SetCameraOffset(id, *offset);
     }
 
 #pragma endregion
@@ -944,6 +961,8 @@ namespace NightSnack::Scripting {
 
 #pragma region Camera
 
+        mono_add_internal_call("ManagedScripts.Engine::GetMainCamera_Internal", (void*)NightSnack_GetMainCamera);
+        
         mono_add_internal_call("ManagedScripts.Engine::GetCameraIsMain_Internal", (void*)NightSnack_GetCameraIsMain);
         mono_add_internal_call("ManagedScripts.Engine::SetCameraIsMain_Internal", (void*)NightSnack_SetCameraIsMain);
 
@@ -955,6 +974,9 @@ namespace NightSnack::Scripting {
 
         mono_add_internal_call("ManagedScripts.Engine::GetCameraHeight_Internal", (void*)NightSnack_GetCameraHeight);
         mono_add_internal_call("ManagedScripts.Engine::SetCameraHeight_Internal", (void*)NightSnack_SetCameraHeight);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetCameraOffset_Internal", (void*)NightSnack_GetCameraOffset);
+        mono_add_internal_call("ManagedScripts.Engine::SetCameraOffset_Internal", (void*)NightSnack_SetCameraOffset);
 
 #pragma endregion
 

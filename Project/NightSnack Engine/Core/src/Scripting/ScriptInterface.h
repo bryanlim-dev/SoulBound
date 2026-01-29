@@ -23,27 +23,6 @@
 #include <string>
 
 
-//Macro to help register component for GetComponentIn<X>
-#define REGISTER_COMPONENT(T)                                    \
-{                                                                \
-    #T,                                                          \
-    {                                                            \
-        /* GetComponentInChildren */                             \
-        [](Coordinator& c, Entity e) -> Entity                   \
-        {                                                        \
-            if (auto& comp = c.GetComponentInChild<T>(e))        \
-                return comp->second;                             \
-            return Entity{};                                     \
-        },                                                       \
-        /* GetComponentInParent */                               \
-        [](Coordinator& c, Entity e) -> Entity                   \
-        {                                                        \
-            if (auto& comp = c.GetComponentInParent<T>(e))       \
-                return comp->second;                             \
-            return Entity{};                                     \
-        }                                                        \
-    }                                                            \
-}
 
 namespace NightSnack::Scripting {
 
@@ -351,6 +330,8 @@ namespace NightSnack::Scripting {
         //Sets Camera of entity
         void SetCamera(Entity e, Cam cam);
 
+        Entity GetMainCamera();
+
         //Gets Camera isMain of entity
         bool GetCameraIsMain(Entity e);
         //Sets Camera isMain of entity
@@ -370,6 +351,11 @@ namespace NightSnack::Scripting {
         float GetCameraHeight(Entity e);
         //Sets Camera height of entity
         void SetCameraHeight(Entity e, float main);
+
+        //Gets Animator current animation UVTopLeft of entity
+        vec2 GetCameraOffset(Entity e);
+        //Sets Animator current animation UVTopLeft of entity
+        void SetCameraOffset(Entity e, vec2 offse);
 #pragma endregion
 
 #pragma region Audio
@@ -461,19 +447,7 @@ namespace NightSnack::Scripting {
         //coordiator refrence
         Coordinator& m_coord;
 
-        static inline const std::unordered_map<std::string, ComponentEntry>
-            componentRegistry =
-        {
-            REGISTER_COMPONENT(Transform),
-            REGISTER_COMPONENT(RigidBody),
-            REGISTER_COMPONENT(Collider),
-            REGISTER_COMPONENT(Color),
-            REGISTER_COMPONENT(Renderable),
-            REGISTER_COMPONENT(Animator),
-            REGISTER_COMPONENT(Font),
-            REGISTER_COMPONENT(Audio)
-        };
-
+        static const std::unordered_map<std::string, ComponentEntry> componentRegistry;
     };
 
 } // namespace NightSnack::Scripting

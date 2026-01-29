@@ -145,6 +145,14 @@ namespace NightSnack {
         std::string GetName() const override { return "PlayerController"; }
         Signature GetSignature() const override { return m_systemSignature; }
 
+        float DistanceToPlayer(Entity point)
+        {
+            if (!m_coord.HasComponent<Transform>(point) || !m_coord.HasComponent<Transform>(m_player))
+                return 0;
+
+            return magnitude(m_coord.GetComponent<Transform>(m_player).pos, m_coord.GetComponent<Transform>(point).pos);
+        }
+
 
         /************************************************************************/
         /*!
