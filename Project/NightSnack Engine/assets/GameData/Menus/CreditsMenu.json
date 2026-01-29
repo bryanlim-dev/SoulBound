@@ -4,7 +4,7 @@
     "Entities": [
         {
             "Transform": {
-                "Layer": "GameLayer",
+                "Layer": "Foreground",
                 "Position": { 
                     "x": 0.0, 
                     "y": 0.0, 
@@ -20,10 +20,10 @@
         },
         {
             "Transform": {
-                "Layer": "GameLayer",
+                "Layer": "Foreground",
                 "Position": { 
                     "x": 0.0, 
-                    "y": 250.0, 
+                    "y": -300.0, 
                     "z": 1.0 
                 },
                 "Rotation": 0.0,

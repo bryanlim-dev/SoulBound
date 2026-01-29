@@ -16,7 +16,7 @@
         "isWireframe": false,
         "materialName": "Credits",
         "meshName": "square"
-    },
+    },  
     "Audio": {
         "audioKey": "playerCollect",
         "volume": 1.0,

@@ -17,11 +17,6 @@
         "materialName": "Play",
         "meshName": "square"
     },
-    "Script": {
-        "name": [
-            "WiggleScript"
-        ]
-    },
     "Audio": {
         "audioKey": "buttonClick",
         "volume": 1.0,

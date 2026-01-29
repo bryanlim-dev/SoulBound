@@ -43,6 +43,7 @@ namespace NightSnack::Scene {
 
 		if (m_restart) {
 			RestartLevel();
+			CloseMenu();
 			m_restart = false;
 		}
 	}
@@ -90,37 +91,43 @@ namespace NightSnack::Scene {
 		float mx = m_coord.GetSystem<InputSystem>()->GetMouseWorldPosX();
 		float my = m_coord.GetSystem<InputSystem>()->GetMouseWorldPosY();
 
-		Entity mainCam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
-		float zoom = m_coord.GetComponent<Camera>(mainCam).zoom;
-
-		float screenWidth = m_coord.GetSystem<ApplicationSystem>()->GetWidth();
-		float screenHeight = m_coord.GetSystem<ApplicationSystem>()->GetHeight();
-
 		for (Entity e : m_entities) {
 			// Get button info
 			ButtonInfo const& b = m_coord.GetComponent<ButtonInfo>(e);
 			if (b.type == INVALID_BUTTON) { continue; }
 
+			// only check menu buttons
+			if (m_menuOpen) {
+				// Check if this entity is in the menu entities list
+				auto it = std::find(m_menuEntities.begin(), m_menuEntities.end(), e);
+
+				// skip if not a menu button
+				if (it == m_menuEntities.end()) { continue; }
+			}
+
 			Transform const& t = m_coord.GetComponent<Transform>(e);
 			Collider const& c = m_coord.GetComponent<Collider>(e);
 
 			// Check collision with mouse
-			if (!ButtonCollisionCheck(mx, my, t, c)) { continue; }
-			
+			if (!ButtonCollisionCheck(mx, my, t, c)) {
+				continue;
+			}
+
 			std::unordered_map<ButtonAction, Button>::iterator it = m_buttons.find(b.action);
 			if (it != m_buttons.end()) {
 				// Play audio if available
 				m_coord.GetSystem<AudioSystem>()->PlayEntityAudio(e);
-				// Invoke button Callable;
+				// Invoke button Callable
 				it->second(m_coord, b.target);
 				// Only interact with 1 button
-				return;	
+				return;
 			}
 			else {
-				std::cerr << "[SceneManager] Button action of Entity: " << e << "not registered\n";
+				std::cerr << "[SceneManager] Button action of Entity: " << e << " not registered\n";
 			}
 		}
 	}
+	
 	
 	// Creates all entities required for a level through the entity factory
 	// and sets up BGM for level, refreshes script manager.
@@ -147,6 +154,12 @@ namespace NightSnack::Scene {
 	}
 
 	void SceneManager::RestartLevel() {
+
+		//// close all menus
+		//if (m_menuOpen) {
+		//	std::cerr << "[SceneManager] Closing menu before restart\n";
+		//	CloseMenu();
+		//}
 
 		json const& level = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelKey);
 		// Create all Entities
@@ -262,6 +275,10 @@ namespace NightSnack::Scene {
 	void SceneManager::RestoreLevel() {
 
 		if (m_levelCache.empty()) { return; }
+		// Reset menus
+		m_menuEntities.clear();
+		m_menuOpen = false;
+		m_currentMenu.clear();
 
 		// Restore all entities to original
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
@@ -374,9 +391,10 @@ namespace NightSnack::Scene {
 						// offset menu position by camera position
 						transform.pos.x += camX;
 						transform.pos.y += camY;
+						transform.pos.z = 1.5f;
 
 						std::cerr << "  Prefab: " << prefabName
-							<< " positioned at (" << transform.pos.x << ", " << transform.pos.y << ")"
+							<< " positioned at (" << transform.pos.x << ", " << transform.pos.y << ", " << transform.pos.z << ")"
 							<< " scaled to (" << transform.scale.x << ", " << transform.scale.y << ")\n";
 					}
 
@@ -385,14 +403,14 @@ namespace NightSnack::Scene {
 					e = factory->Create(prefabName, transform);
 				}
 
-				if (e != 0) {
+				if (e != INVALID_ENTITY) {
 					m_menuEntities.push_back(e);
 
 					// Check if entity is a button and add to system
 					if (m_coord.HasComponent<ButtonInfo>(e) &&
 						m_coord.HasComponent<Transform>(e) &&
 						m_coord.HasComponent<Collider>(e)) {
-						m_entities.insert(e);
+						//m_entities.insert(e);
 						std::cerr << "[SceneManager] Added button entity " << e << " to system\n";
 					}
 				}
@@ -423,14 +441,9 @@ namespace NightSnack::Scene {
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 
 		for (Entity e : m_menuEntities) {
-			// remove from system
-			m_entities.erase(e);
-			//std::cerr << "[SceneManager] Removed entity " << e << " from system\n";
 
 			factory->RemoveEntity(e);
 		}
-
-		m_menuEntities.clear();
 
 		// unpause only if it was paused
 		if (m_coord.IsPaused()) {
@@ -438,6 +451,7 @@ namespace NightSnack::Scene {
 			//std::cerr << "[SceneManager] Game unpaused\n";
 		}
 
+		m_menuEntities.clear();
 		m_menuOpen = false;
 		m_currentMenu.clear();
 
