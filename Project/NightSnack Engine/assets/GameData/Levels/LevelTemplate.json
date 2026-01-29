@@ -17,6 +17,7 @@
                             "Prefab": "ParentTest2",
                             "Transform": {
                                 "Layer": "GameLayer",
+                                "Name": "NoName",
                                 "Position": {
                                     "x": 392.9988708496094,
                                     "y": 187.2517852783203,
@@ -51,6 +52,7 @@
                     "Prefab": "RedBall",
                     "Transform": {
                         "Layer": "GameLayer",
+                        "Name": "NoName",
                         "Position": {
                             "x": 498.328125,
                             "y": 450.0,
@@ -85,6 +87,7 @@
                     "Prefab": "RedBall",
                     "Transform": {
                         "Layer": "GameLayer",
+                        "Name": "NoName",
                         "Position": {
                             "x": -647.1264038085938,
                             "y": 160.50157165527344,
@@ -111,6 +114,7 @@
             "Prefab": "RedBall",
             "Transform": {
                 "Layer": "GameLayer",
+                "Name": "NoName",
                 "Position": {
                     "x": -239.08047485351563,
                     "y": 113.68861389160156,
@@ -132,6 +136,35 @@
                 }
             },
             "isPrefab": true
+        },
+        {
+            "Components": {
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 50.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
         }
     ],
     "MainCamera": {
