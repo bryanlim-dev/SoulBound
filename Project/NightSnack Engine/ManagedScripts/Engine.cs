@@ -1178,6 +1178,14 @@ namespace ManagedScripts
         public static bool IsKeyReleased(KeyboardKeys keyCode) => IsKeyReleased_Internal((int)keyCode);
         #endregion
 
+        // ----------------------------
+        // Player Controller API for Scripts
+        // ----------------------------
+        #region Player Controller
+
+        
+        #endregion
+
         public static uint GetComponentInChildren(uint parentID, string componentName) => GetComponentInChildren_Internal(parentID, componentName);
         public static T GetScriptComponentInChildren<T>(uint parentID, string componentName) where T : Script
         {
@@ -1259,6 +1267,11 @@ namespace ManagedScripts
             return new Vector2(-s * v.Y, s * v.X);
         }
 
+        public static Vector2 zero()
+        {
+            return new Vector2(0, 0);
+        }
+
         public float Length()
         {
             return (float)Math.Sqrt(X * X + Y * Y);
@@ -1272,6 +1285,21 @@ namespace ManagedScripts
 
             return this * (1.0f / len);
         }
+
+        public static Vector2 Lerp(Vector2 a, Vector2 b, float t)
+        {
+            // Clamp t to [0, 1] like Unity
+            if (t < 0f) t = 0f;
+            if (t > 1f) t = 1f;
+
+            return new Vector2(
+                a.X + (b.X - a.X) * t,
+                a.Y + (b.Y - a.Y) * t
+            );
+        }
+
+        public static explicit operator Vector3(Vector2 a) => new Vector3(a.X, a.Y, 0);
+
 
         public override string ToString() => $"({X}, {Y})";
     }
@@ -1289,7 +1317,22 @@ namespace ManagedScripts
         public static Vector3 operator -(Vector3 a, Vector3 b) => new Vector3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
         public static Vector3 operator *(Vector3 a, float scalar) => new Vector3(a.X * scalar, a.Y * scalar, a.Z * scalar);
 
+        public static Vector3 Lerp(Vector3 a, Vector3 b, float t)
+        {
+            // Clamp t
+            if (t < 0f) t = 0f;
+            if (t > 1f) t = 1f;
+
+            return new Vector3(
+                a.X + (b.X - a.X) * t,
+                a.Y + (b.Y - a.Y) * t,
+                a.Z + (b.Z - a.Z) * t
+            );
+        }
+
         public override string ToString() => $"({X}, {Y}, {Z})";
+
+        public static explicit operator Vector2(Vector3 a) => new Vector2(a.X, a.Y);
     }
 
     public struct Vector4
