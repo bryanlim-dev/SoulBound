@@ -32,7 +32,7 @@ namespace NightSnack {
     }
 
     bool PlayerControllerSystem::AttachAbility() {
-        curr_ability = "DoubleJump";
+        curr_ability = "Glide";
         return true;
     }
 

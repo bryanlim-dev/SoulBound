@@ -174,6 +174,8 @@ namespace NightSnack {
 		// Check for UI toggle input event
 		m_dispatcher->Subscribe<InputEvent>([this](const InputEvent& event)
 			{
+				auto factory = m_coord.GetSystem<EntityFactory>();
+
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
 					case InputEvent::InputAction::ToggleUIEditor:
@@ -187,10 +189,16 @@ namespace NightSnack {
 						break;
 
 					case InputEvent::InputAction::UndoStep:
-						auto factory = m_coord.GetSystem<EntityFactory>();
+						
 						if (factory)
 						{
 							NightSnack::UndoSystem::Instance().PerformUndo(m_coord, *factory);
+						}
+						break;
+					case InputEvent::InputAction::Copy:
+						if (event.pressed == InputEvent::InputActionState::Pressed) {
+							Vec2 p = m_coord.GetComponent<Transform>(m_scenePanel->GetEditorCamera()).pos;
+							factory->Clone(*m_selectedEntity, p);
 						}
 						break;
 					}

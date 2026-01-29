@@ -169,7 +169,7 @@ namespace NightSnack {
     }
 
     // Clone an entity prefab at specific locations, scaling etc...
-    Entity EntityFactory::Clone(Entity e) {
+    Entity EntityFactory::Clone(Entity e, Vec2 const& pos) {
 
         Entity clone = INVALID_ENTITY;
         if (entityToPrefab.find(e) != entityToPrefab.end()) {
@@ -192,8 +192,8 @@ namespace NightSnack {
 
         Transform& t = m_coord.ModifyComponent<Transform>(clone);
         t = m_coord.GetComponent<Transform>(e);
-        t.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
-        t.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
+        t.pos.x = m_coord.GetSystem<InputSystem>()->GetMouseWorldPosX() + pos.x;
+        t.pos.y = m_coord.GetSystem<InputSystem>()->GetMouseWorldPosY() + pos.y;
 
         m_coord.BufferEntitySignature(clone);
 

@@ -45,6 +45,7 @@ namespace NightSnack
 		{
 			// Create framebuffer and color/depth attachments
 			CreateFramebuffer(1600, 900);
+
 		}
 
 		/************************************************************************/
@@ -476,6 +477,27 @@ namespace NightSnack
 		/************************************************************************/
 		void DestroyEditorCamera();
 
+		/************************************************************************/
+		/*!
+		\brief
+			Calculates the world position of the mouse based on the image's
+			position and size.
+
+		\param[in] imageTopLeft
+			- Top-left corner of the image in world space.
+
+		\param[in] imageSize
+			- Size of the image in world space.
+
+		\param[out] mouseWorldX
+			- Output mouse X coordinate in world space.
+
+		\param[out] mouseWorldY
+			- Output mouse Y coordinate in world space.
+		*/
+		/************************************************************************/
+		void CalculateMouseWorldPosition(const ImVec2& imageTopLeft, const ImVec2& imageSize, float& mouseWorldX, float& mouseWorldY);
+
 		void DisableEditorCameraIsMain();
 
 		Entity GetEditorCamera() const noexcept { return m_editorCameraEntity; }
@@ -603,27 +625,6 @@ namespace NightSnack
 		*/
 		/************************************************************************/
 		void RenderSceneToFramebuffer();
-
-		/************************************************************************/
-		/*!
-		\brief
-			Calculates the world position of the mouse based on the image's
-			position and size.
-
-		\param[in] imageTopLeft
-			- Top-left corner of the image in world space.
-
-		\param[in] imageSize
-			- Size of the image in world space.
-
-		\param[out] mouseWorldX
-			- Output mouse X coordinate in world space.
-
-		\param[out] mouseWorldY
-			- Output mouse Y coordinate in world space.
-		*/
-		/************************************************************************/
-		void CalculateMouseWorldPosition(const ImVec2& imageTopLeft, const ImVec2& imageSize, float& mouseWorldX, float& mouseWorldY);
 
 		/************************************************************************/
 		/*!
@@ -1358,13 +1359,13 @@ namespace NightSnack
 		drawList->AddLine(center, ImVec2(yEnd.x, yEnd.y + 12), IM_COL32(0, 255, 0, 255), arrowThickness);
 		drawList->AddTriangleFilled(arrowTipY, arrowBaseL_Y, arrowBaseR_Y, IM_COL32(0, 255, 0, 255));
 
-		// Rotation Circle (blue)
-		ImVec2 deltaRot = ImVec2(mouse.x - center.x, mouse.y - center.y);
-		float dist = sqrtf(deltaRot.x * deltaRot.x + deltaRot.y * deltaRot.y);
-		float distToCircle = std::abs(dist - circleRadius);
-		bool hoverRot = distToCircle < 8.0f;
-		ImU32 rotColor = hoverRot ? IM_COL32(100, 100, 255, 255) : IM_COL32(0, 128, 255, 180);
-		drawList->AddCircle(center, circleRadius, rotColor, 64, 3.0f);
+		//// Rotation Circle (blue)
+		//ImVec2 deltaRot = ImVec2(mouse.x - center.x, mouse.y - center.y);
+		//float dist = sqrtf(deltaRot.x * deltaRot.x + deltaRot.y * deltaRot.y);
+		//float distToCircle = std::abs(dist - circleRadius);
+		//bool hoverRot = distToCircle < 8.0f;
+		//ImU32 rotColor = hoverRot ? IM_COL32(100, 100, 255, 255) : IM_COL32(0, 128, 255, 180);
+		//drawList->AddCircle(center, circleRadius, rotColor, 64, 3.0f);
 
 		// X-axis Scale
 		ImVec2 xScaleMin = ImVec2(xEnd.x + 8, xEnd.y - scaleHandleSize * 0.5f);
@@ -1382,7 +1383,7 @@ namespace NightSnack
 
 		bool hoverX = ImLengthSqr(ImVec2(mouse.x - xEnd.x, mouse.y - xEnd.y)) < handleRadius * handleRadius * 2;
 		bool hoverY = ImLengthSqr(ImVec2(mouse.x - yEnd.x, mouse.y - yEnd.y)) < handleRadius * handleRadius * 2;
-		if (hoverX || hoverY || hoverRot || hoverScaleX || hoverScaleY) m_gizmoHovering = true;
+		if (hoverX || hoverY /*|| hoverRot*/ || hoverScaleX || hoverScaleY) m_gizmoHovering = true;
 
 		// Handle interaction
 		auto& trans = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
@@ -1390,7 +1391,7 @@ namespace NightSnack
 		{
 			if (hoverX) { m_gizmoActivePart = GizmoPart::MoveX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.x; }
 			else if (hoverY) { m_gizmoActivePart = GizmoPart::MoveY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.y; }
-			else if (hoverRot) { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.rot; }
+			//else if (hoverRot) { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.rot; }
 			else if (hoverScaleX) { m_gizmoActivePart = GizmoPart::ScaleX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.x; }
 			else if (hoverScaleY) { m_gizmoActivePart = GizmoPart::ScaleY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.y; }
 
@@ -1412,14 +1413,14 @@ namespace NightSnack
 			{
 				trans.pos.y = m_gizmoStartValue - delta.y * (worldTop - worldBottom) / imageSize.y;
 			}
-			else if (m_gizmoActivePart == GizmoPart::Rotate)
-			{
-				ImVec2 centerTrans = WorldToScreen(trans.pos.x, trans.pos.y, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
-				float startAngle = atan2f(m_gizmoDragStartMouse.y - centerTrans.y, m_gizmoDragStartMouse.x - centerTrans.x);
-				float currAngle = atan2f(mouse.y - centerTrans.y, mouse.x - centerTrans.x);
-				constexpr float RAD2DEG = 180.0f / 3.14159265f;
-				trans.rot = m_gizmoStartValue - (currAngle - startAngle) * RAD2DEG;
-			}
+			//else if (m_gizmoActivePart == GizmoPart::Rotate)
+			//{
+			//	ImVec2 centerTrans = WorldToScreen(trans.pos.x, trans.pos.y, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+			//	float startAngle = atan2f(m_gizmoDragStartMouse.y - centerTrans.y, m_gizmoDragStartMouse.x - centerTrans.x);
+			//	float currAngle = atan2f(mouse.y - centerTrans.y, mouse.x - centerTrans.x);
+			//	constexpr float RAD2DEG = 180.0f / 3.14159265f;
+			//	trans.rot = m_gizmoStartValue - (currAngle - startAngle) * RAD2DEG;
+			//}
 			else if (m_gizmoActivePart == GizmoPart::ScaleX)
 			{
 				float scaleDelta = delta.x * (worldRight - worldLeft) / imageSize.x;
