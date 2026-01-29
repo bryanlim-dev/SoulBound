@@ -716,7 +716,7 @@ namespace NightSnack
         ImGui::Text("Tilemap Texture:");
         ImGui::SameLine();
 
-        // Show texture name
+        // Show current texture name
         std::string texName = "None";
         if (!m_tilemap.tileTexturePath.empty())
         {
@@ -733,13 +733,12 @@ namespace NightSnack
             ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 80));
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE"))
             {
-                // Set tilemap's texture path
+                // Set the tilemap's texture path
                 const char* droppedPath = static_cast<const char*>(payload->Data);
                 m_tilemap.tileTexturePath = droppedPath;
             }
             ImGui::EndDragDropTarget();
         }
-
         // Tilemap editor window
         //m_tilemap.DrawTileEditor(m_coord, *m_selectedEntity);
     }
@@ -1247,10 +1246,11 @@ namespace NightSnack
 
         auto& fontComp = m_coord.ModifyComponent<Font>(*m_selectedEntity);
 
-        if (ImGui::BeginTable("FontTable", 2, ImGuiTableFlags_SizingFixedFit))
+        if (ImGui::BeginTable("FontTable", 3, ImGuiTableFlags_SizingFixedFit))
         {
             ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+            ImGui::TableSetupColumn("Value2", ImGuiTableColumnFlags_WidthFixed, 80.0f);
 
 			// Font Type (read-only)
             ImGui::TableNextRow();
@@ -1285,6 +1285,27 @@ namespace NightSnack
 				);
                 fontComp.fontSize = fontSize;
 			}
+
+			// Text Offset Position
+			float fontoffset[2] = { fontComp.offsetPosition.x, fontComp.offsetPosition.y };
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::Text("Offset Position");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Text("X"); ImGui::SameLine();
+            if (ImGui::InputFloat("##offsetx", &fontoffset[0], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::FontSnapshot{ *m_selectedEntity, fontComp }
+                );
+				fontComp.offsetPosition.x = fontoffset[0];
+            }
+            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Text("Y"); ImGui::SameLine();
+            if (ImGui::InputFloat("##offsety", &fontoffset[1], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::FontSnapshot{ *m_selectedEntity, fontComp }
+                );
+                fontComp.offsetPosition.y = fontoffset[1];
+            }
 
             // Text Color box
             float color[3] = { fontComp.textColor.x, fontComp.textColor.y, fontComp.textColor.z };

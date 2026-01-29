@@ -140,11 +140,11 @@ namespace NightSnack {
 		T const& GetComponent(Entity e) const;
 
 		template <typename T>
-		std::optional<std::pair<T, Entity>> const& GetComponentInChild(Entity e) const;
+		std::optional<std::pair<T const&, Entity>> GetComponentInChild(Entity e) const;
 		template <typename T>
-		std::optional<std::vector<std::pair<T, Entity>>> const& GetComponentsInChild(Entity e) const;
+		std::optional<std::vector<std::pair<T const&, Entity>>> GetComponentsInChild(Entity e) const;
 		template <typename T>
-		std::optional<std::pair<T, Entity>> const& GetComponentInParent(Entity e) const;
+		std::optional<std::pair<T const&, Entity>> GetComponentInParent(Entity e) const;
 
 		bool ParentEntity(Entity e, Entity parent) {
 			if (!HasComponent<Hierarchy>(e) || !HasComponent<Hierarchy>(parent)) {
@@ -423,7 +423,7 @@ namespace NightSnack {
 	}
 
 	template <typename T>
-	std::optional<std::pair<T, Entity>> const& Coordinator::GetComponentInChild(Entity e) const {
+	std::optional<std::pair<T const&, Entity>> Coordinator::GetComponentInChild(Entity e) const {
 		
 		// Edge case, no hierarchy component;
 		if (!HasComponent<Hierarchy>(e)) {
@@ -453,7 +453,7 @@ namespace NightSnack {
 	}
 
 	template <typename T>
-	std::optional<std::vector<std::pair<T, Entity>>> const& Coordinator::GetComponentsInChild(Entity e) const {
+	std::optional<std::vector<std::pair<T const&, Entity>>> Coordinator::GetComponentsInChild(Entity e) const {
 
 		// Edge case, no hierarchy component;
 		if (!HasComponent<Hierarchy>(e)) {
@@ -487,7 +487,7 @@ namespace NightSnack {
 	}
 
 	template <typename T>
-	std::optional<std::pair<T, Entity>> const& Coordinator::GetComponentInParent(Entity e) const {
+	std::optional<std::pair<T const&, Entity>> Coordinator::GetComponentInParent(Entity e) const {
 
 		if (HasComponent<T>(e)) return std::optional(std::make_pair(GetComponent<T>(e), e));
 

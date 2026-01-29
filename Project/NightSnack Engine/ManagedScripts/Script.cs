@@ -180,6 +180,15 @@ namespace ManagedScripts
 
             public new static string GetName() { return "RigidBody"; }
 
+            public void ApplyForce(Vector2 force)
+            {
+                if (this.InvMass == 0f)
+                    return;
+                ForceDirection = force.Normalize();
+                ForceMagnitude = force.Length();
+                ForceActive = true;
+            }
+
         }
         #endregion //Rigidbody
 
@@ -446,6 +455,47 @@ namespace ManagedScripts
 
         #endregion
 
+        public class Camera : Component
+        {
+            public Camera(uint id) : base(id)
+            {
+            }
+
+            public static uint GetMainCamera()
+            {
+                return Engine.GetMainCamera();
+            }
+
+            public bool CameraIsMain
+            {
+                get => Engine.GetCameraIsMain(EntityId);
+                set => Engine.SetCameraIsMain(EntityId, value);
+            }
+            public float CameraZoom
+            {
+                get => Engine.GetCameraZoom(EntityId);
+                set => Engine.SetCameraZoom(EntityId, value);
+            }
+            public float CameraWidth
+            {
+                get => Engine.GetCameraWidth(EntityId);
+                set => Engine.SetCameraWidth(EntityId, value);
+            }
+            public float CameraHeight
+            {
+                get => Engine.GetCameraHeight(EntityId);
+                set => Engine.SetCameraHeight(EntityId, value);
+            }
+            public Vector2 CameraOffset
+            {
+                get => Engine.GetCameraOffset(EntityId);
+                set => Engine.SetCameraOffset(EntityId, value);
+            }
+
+            public new static string GetName() { return "Camera"; }
+
+        }
+
         #region Scripting
         //public class Scripting
         //{
@@ -465,6 +515,7 @@ namespace ManagedScripts
 
         #endregion
 
+        #region GetComponentIn
         public T GetComponentInChildren<T>(uint entityParentID) where T : Component
         {
             //Add more compoents as needed (Case Senstitive)
@@ -507,6 +558,11 @@ namespace ManagedScripts
             else if (typeof(T) == typeof(Audio))
             {
                 Audio component = new Audio(Engine.GetComponentInChildren(EntityId, Audio.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Camera))
+            {
+                Camera component = new Camera(Engine.GetComponentInChildren(EntityId, Camera.GetName()));
                 return (T)(object)component;
             }
 
@@ -564,6 +620,11 @@ namespace ManagedScripts
                 Audio component = new Audio(Engine.GetComponentInParent(EntityId, Audio.GetName()));
                 return (T)(object)component;
             }
+            else if (typeof(T) == typeof(Camera))
+            {
+                Camera component = new Camera(Engine.GetComponentInParent(EntityId, Camera.GetName()));
+                return (T)(object)component;
+            }
 
             Engine.Log($"GetComponentInParent<{typeof(T).Name}> not supported, add it in Script.cs & ScriptInterface.h!");
             return null;
@@ -573,6 +634,7 @@ namespace ManagedScripts
         {
             return Engine.GetScriptComponentInParent<T>(entityParentID, scriptName) as T;
         }
+        #endregion
 
         public float DeltaTime => Engine.DeltaTime;
         //public float Time => Engine.Time;
