@@ -16,6 +16,7 @@
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/Input.h"
 #include "Systems/AudioSystem.h"
+#include <Factory/EntityFactory.h>
 
 struct PlayerFlags {
     bool movingLeft = false;
@@ -117,6 +118,14 @@ namespace NightSnack {
             RegisterAbilities();
             AttachAbility();
             prev_ability = curr_ability;
+
+            if (m_tongue == INVALID_ENTITY)
+            {
+                //Create frog tongue entity
+                m_tongue = m_coord.GetSystem<EntityFactory>()->Create("FrogTongue");
+                m_coord.AddComponent<Hierarchy>(m_tongue, Hierarchy{});
+                m_coord.ParentEntity(m_player, m_tongue);
+            }
         }
 
         /************************************************************************/
@@ -231,6 +240,7 @@ namespace NightSnack {
         Coordinator& m_coord;
 
         Entity m_player;
+        Entity m_tongue = INVALID_ENTITY;
 
         // Accumulates states
         PlayerFlags m_flags{};

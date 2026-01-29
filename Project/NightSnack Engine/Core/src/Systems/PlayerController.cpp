@@ -29,10 +29,25 @@ namespace NightSnack {
         });
         m_abilities.insert({ abilityName, DoubleJumpAbility });
 
+        abilityName = "GrapplingTongue";
+        Gameplay::Ability GrapplingTongue(abilityName, [](Coordinator& c, Entity target, PlayerFlags& m_flags) {
+            //if (target == INVALID_ENTITY) return;
+            if (!c.HasComponent<RigidBody>(target)) return;
+            if (!c.HasComponent<PlayerController>(target)) return;
+            if (!m_flags.canDoubleJump) return;
+
+            Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
+            vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
+
+            m_flags.canDoubleJump = false;
+
+        });
+        m_abilities.insert({ abilityName, DoubleJumpAbility });
+
     }
 
     bool PlayerControllerSystem::AttachAbility() {
-        curr_ability = "Glide";
+        curr_ability = "GrapplingTongue";
         return true;
     }
 
