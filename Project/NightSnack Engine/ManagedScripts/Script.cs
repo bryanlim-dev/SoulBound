@@ -180,7 +180,7 @@ namespace ManagedScripts
 
             public new static string GetName() { return "RigidBody"; }
 
-            public void ApplyForce(Vector2 force, Vector2 r)
+            public void ApplyForce(Vector2 force)
             {
                 if (this.InvMass == 0f)
                     return;

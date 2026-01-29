@@ -54,6 +54,10 @@ namespace ManagedScripts
             mainCamera = new Camera(Camera.GetMainCamera());
             sfxAudio = new Audio(EntityId);
             playerRb = GetComponentInParent<RigidBody>(EntityId);
+            if (playerRb != null)
+                joint = GetScriptComponentInParent<DistanceJoint2D>(playerRb.EntityId, "DistanceJoint2D");
+            else
+                Engine.Log("No rigidbody founnd");
 
             lineRenderer = GetComponent<LineRenderer>();
             //playerRb = GetComponentInParent<Rigidbody2D>();

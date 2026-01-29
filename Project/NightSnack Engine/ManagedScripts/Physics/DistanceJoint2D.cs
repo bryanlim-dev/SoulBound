@@ -10,6 +10,7 @@
  * All rights reserved.
  ******************************************************************************/
 
+using System;
 using System.Diagnostics;
 using static ManagedScripts.Script;
 
@@ -21,14 +22,8 @@ namespace ManagedScripts
         bool isEnabled = false;
 
 
-        //The Rigidbody2D object to which the other end of the joint is attached (ie, the object without the joint component).
-        RigidBody connectedBody = null;
-        RigidBody rb;
-
-        [SerializeField]
-        Vector2 anchorPoint;
-        [SerializeField]
-        public Vector2 connectedAnchor;
+        public RigidBody bodyA;
+        public RigidBody bodyB;
 
         [SerializeField]
         public bool autoConfigureDistance = true;
@@ -48,7 +43,7 @@ namespace ManagedScripts
 
         public override void OnLoad()
         {
-            rb = GetComponentInParent<RigidBody>(EntityId);
+            bodyA = GetComponentInParent<RigidBody>(EntityId);
         }
 
         public override void OnStart()
@@ -58,12 +53,66 @@ namespace ManagedScripts
 
         public override void OnUpdate()
         {
+            if (isEnabled == true && bodyA != null && bodyB != null)
+            {
+                Vector3 posAVec3 = new Transform(bodyA.EntityId).Position;
+                Vector2 posAVec2 = new Vector2(posAVec3.X, posAVec3.Y);
 
+                Vector3 posBVec3 = new Transform(bodyB.EntityId).Position;
+                Vector2 posBVec2 = new Vector2(posBVec3.X, posBVec3.Y);
+                Solve(posAVec2, posBVec2, DeltaTime);
+            }
         }
 
-        public void SetAnchor(Vector2 newAnchor)
+        public void Solve(Vector2 positionA, Vector2 positionB, float deltaTime)
         {
-            anchorPoint = newAnchor;
+            // Vector from A to B
+            Vector2 delta = positionB - positionA;
+
+            float distance = delta.Length();
+            if (distance < 0.00001f)
+                return;
+
+            Vector2 normal = delta * (1.0f / distance);
+
+            // Clamp target distance
+            float targetDistance = Engine.Clamp(distance, minDistance, maxDistance);
+            float error = distance - targetDistance;
+
+            // Relative velocity along constraint axis
+            Vector2 relVel = bodyB.Velocity - bodyA.Velocity;
+            float relVelAlongNormal = Vector2.Dot(relVel, normal);
+
+            float forceMagnitude;
+
+            if (enableSpring)
+            {
+                // Unity-style spring model
+                float omega = 2.0f * (float)Math.PI * frequencyHz;
+
+                float springForce = -omega * omega * error;
+                float dampingForce = -2.0f * dampingRatio * omega * relVelAlongNormal;
+
+                forceMagnitude = springForce + dampingForce;
+            }
+            else
+            {
+                // Hard constraint (Baumgarte-style correction)
+                forceMagnitude = -(error / deltaTime);
+            }
+
+            // Clamp force
+            forceMagnitude = Engine.Clamp(forceMagnitude, -MaxForce, MaxForce);
+
+            Vector2 force = normal * forceMagnitude;
+
+            bodyA.ApplyForce(-force);
+            bodyB.ApplyForce(force);
+        }
+
+        public void SetAnchor(uint newAnchorEntity)
+        {
+            bodyB = GetComponentInParent<RigidBody>(newAnchorEntity);
         }
 
         public void DisableScript()
