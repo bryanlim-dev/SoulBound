@@ -350,6 +350,10 @@ namespace ManagedScripts
         // Camera Internal for Scripts
         // ----------------------------
         #region Camera
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern uint GetMainCamera_Internal();
+
         //isMainCam
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void GetCameraIsMain_Internal(uint entityId, out bool main);
@@ -374,6 +378,11 @@ namespace ManagedScripts
         private static extern void GetCameraHeight_Internal(uint entityId, out float height);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetCameraHeight_Internal(uint entityId, ref float height);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetCameraOffset_Internal(uint entityId, out Vector2 scale);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetCameraOffset_Internal(uint entityId, ref Vector2 scale);
 
         #endregion
 
@@ -1013,6 +1022,11 @@ namespace ManagedScripts
         // Camera API for Scripts
         // ----------------------------
         #region Camera
+        public static uint GetMainCamera()
+        {
+            return GetMainCamera_Internal();
+        }
+
         //isMainCam
         public static bool GetCameraIsMain(uint entityId)
         {
@@ -1055,6 +1069,17 @@ namespace ManagedScripts
         public static void SetCameraHeight(uint entityId, float height)
         {
             SetCameraHeight_Internal(entityId, ref height);
+        }
+
+        //offset
+        public static Vector2 GetCameraOffset(uint entityId)
+        {
+            GetCameraOffset_Internal(entityId, out Vector2 scale);
+            return scale;
+        }
+        public static void SetCameraOffset(uint entityId, Vector2 offset)
+        {
+            SetCameraOffset_Internal(entityId, ref offset);
         }
         #endregion
 
@@ -1159,7 +1184,7 @@ namespace ManagedScripts
             return GetScriptComponentInChildren_Internal(parentID, componentName) as T;
         }
 
-        public static uint GetComponentInParent(uint currID, string componentName) => GetComponentInChildren_Internal(currID, componentName);
+        public static uint GetComponentInParent(uint currID, string componentName) => GetComponentInParent_Internal(currID, componentName);
         public static T GetScriptComponentInParent<T>(uint parentID, string componentName) where T : Script
         {
             return GetScriptComponentInParent_Internal(parentID, componentName) as T;

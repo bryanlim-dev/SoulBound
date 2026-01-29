@@ -58,6 +58,12 @@ namespace NightSnack {
 		 */
 		std::string GetName() const override;
 
+		/**
+		 * @brief retrieve the main camera entity
+		 * @return Main Camera Entity ID
+		 */
+		Entity GetMainCamera() const;
+
 	private:
 		Coordinator& m_coord;
 		EventDispatcher* m_dispatcher;

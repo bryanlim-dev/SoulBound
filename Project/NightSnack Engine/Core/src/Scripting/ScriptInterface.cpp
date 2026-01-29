@@ -26,6 +26,44 @@
 
 namespace NightSnack::Scripting {
 
+
+    //Macro to help register component for GetComponentIn<X>
+#define REGISTER_COMPONENT(T)                                    \
+{                                                                \
+    #T,                                                          \
+    {                                                            \
+        /* GetComponentInChildren */                             \
+        [](Coordinator& c, Entity e) -> Entity                   \
+        {                                                        \
+            if (auto comp = c.GetComponentInChild<T>(e))        \
+                return comp->second;                             \
+            return Entity{};                                     \
+        },                                                       \
+        /* GetComponentInParent */                               \
+        [](Coordinator& c, Entity e) -> Entity                   \
+        {                                                        \
+            if (auto comp = c.GetComponentInParent<T>(e))       \
+                return comp->second;                             \
+            return Entity{};                                     \
+        }                                                        \
+    }                                                            \
+}
+
+
+    const std::unordered_map<std::string, NightSnack::Scripting::ScriptInterface::ComponentEntry>
+        ScriptInterface::componentRegistry =
+    {
+        REGISTER_COMPONENT(Transform),
+        REGISTER_COMPONENT(RigidBody),
+        REGISTER_COMPONENT(Collider),
+        REGISTER_COMPONENT(Color),
+        REGISTER_COMPONENT(Renderable),
+        REGISTER_COMPONENT(Animator),
+        REGISTER_COMPONENT(Font),
+        REGISTER_COMPONENT(Audio),
+        REGISTER_COMPONENT(Camera)
+    };
+
     // --------------------------------------------------------------
     // Transform operations
     // --------------------------------------------------------------
@@ -717,6 +755,12 @@ namespace NightSnack::Scripting {
         t.width = cam.width;
     }
 
+    //Get Main Camera
+    Entity ScriptInterface::GetMainCamera()
+    {
+        return m_coord.GetSystem<CameraSystem>()->GetMainCamera();
+    }
+
     //---isMainCam---
     bool ScriptInterface::GetCameraIsMain(Entity e) {
         return m_coord.GetComponent<Camera>(e).isMainCam;
@@ -747,6 +791,18 @@ namespace NightSnack::Scripting {
     }
     void ScriptInterface::SetCameraHeight(Entity e, float height) {
         m_coord.ModifyComponent<Camera>(e).height = height;
+    }
+
+    vec2 ScriptInterface::GetCameraOffset(Entity e)
+    {
+        Vec2 offset = m_coord.GetComponent<Camera>(e).offset;
+        return vec2(offset.x, offset.y);
+    }
+
+    void ScriptInterface::SetCameraOffset(Entity e, vec2 offse)
+    {
+        Vec2& offset = m_coord.ModifyComponent<Camera>(e).offset;
+        offset = Vec2(offse.x, offse.y);
     }
 
 
