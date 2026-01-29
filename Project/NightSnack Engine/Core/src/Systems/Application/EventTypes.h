@@ -35,7 +35,8 @@ namespace NightSnack {
             PlayerMoveLeft,     // A
             PlayerMoveRight,    // D
             PlayerJump,         // W
-            ChangePlayer,      // Down arrow;
+            ChangePlayer,           // Down arrow;
+            PlayerSpecialAbility,   // Left Shift
 
             ChangeAnimation,    // X
 
