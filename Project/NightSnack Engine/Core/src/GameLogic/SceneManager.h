@@ -34,8 +34,7 @@ namespace NightSnack::Scene {
 	public:
 		// Construct button with action and callable
 		Button(ButtonAction a, void(*func)(Coordinator& c, std::string const&))
-			: m_action{ a }, m_callable{ func } {
-		}
+			: m_action{ a }, m_callable{ func } {}
 		Button(Button const& b) noexcept {
 			m_action = b.m_action;
 			m_callable = b.m_callable;

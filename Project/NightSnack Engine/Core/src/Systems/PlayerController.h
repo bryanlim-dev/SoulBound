@@ -20,14 +20,38 @@
 struct PlayerFlags {
     bool movingLeft = false;
     bool movingRight = false;
-    bool jumpRequested = false;
-    bool jumpHold = false;
 
-    bool canHang = true;
+    bool jumpRequested = false;
+    bool justJumped{};
 
     bool playerChange = false;
+    bool isGrounded = false;
+
+    bool isPossessing = false;
+    bool useAbility = false;
+
+    bool canDoubleJump = true;
     // add more flags if needed
 };
+
+namespace NightSnack::Gameplay {
+    class Ability {
+    public:
+        // Constructors
+        Ability(std::string n, void(*func)(Coordinator& c, Entity e, PlayerFlags& m_flags))
+            : m_name{ n }, m_callable{ func } {}
+        Ability(Ability const& a) {
+            m_name = a.m_name;
+            m_callable = a.m_callable;
+        }
+        // Invoke callable to activate ability
+        void operator()(Coordinator& c, Entity tgt, PlayerFlags& flags) { m_callable(c, tgt, flags); }
+    private:
+        std::string m_name;
+        void(*m_callable)(Coordinator& c, Entity tgt, PlayerFlags& m_flags);
+
+    };
+}
 
 namespace NightSnack {
 
@@ -75,15 +99,24 @@ namespace NightSnack {
                         if (event.pressed == InputEvent::InputActionState::Pressed || 
                             event.pressed == InputEvent::InputActionState::Repeat) {
                             m_flags.jumpRequested = true;
-                            m_flags.jumpHold = true;
                         }
                         else {
                             m_flags.jumpRequested = false;
-                            m_flags.jumpHold = false;
+                        }
+                        break;
+                    case InputEvent::InputAction::PlayerSpecialAbility:
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                            m_flags.useAbility = true;
+                        }
+                        else {
+                            m_flags.useAbility = false;
                         }
                         break;
                     }
                 });
+            RegisterAbilities();
+            AttachAbility();
+            prev_ability = curr_ability;
         }
 
         /************************************************************************/
@@ -113,8 +146,22 @@ namespace NightSnack {
 
             bool isGrounded = m_coord.GetComponent<Collider>(m_player).isGrounded;
 
+            // Basic movement -----------------------------
             LeftAndRightMovement(vel, pcont);
             Jump(t, vel, pcont, isGrounded);
+
+            if (isGrounded) m_flags.canDoubleJump = true;
+            // Special Abilities --------------------------
+            if (curr_ability != prev_ability)
+                if (!AttachAbility()) std::cerr << "Failed to attach ability!\n";
+            if (m_flags.useAbility)
+                UseSpecialAbility();
+                //if (!UseSpecialAbility()) std::cerr << "Failed to use ability!\n";
+
+            prev_ability = curr_ability;
+            m_timeSinceAbility += FixedDT;
+            if (m_timeSinceAbility >= 1.0f) m_timeSinceAbility = 0.f;
+
             //HoldJump(vel, isGrounded);
 
         }
@@ -135,11 +182,24 @@ namespace NightSnack {
 
         Entity GetPlayer() const noexcept { return m_player; }
 
-        void LeftAndRightMovement(Vec2& vel, PlayerController const&);
-        void HoldJump(Vec2& vel, bool isGrounded);
+        void LeftAndRightMovement(Vec2& vel, PlayerController const&) const;
         void Jump(Transform& t, Vec2& vel, PlayerController pcont, bool isGrounded);
 
         void ResetFlags() { m_flags = PlayerFlags{}; }
+
+        // Store movement abilities as void pointers
+        // std::function jump;
+        // std::function special -> e.g double_jump, glide, grapple
+        // 
+    
+        // Ability stuff
+        void RegisterAbilities();
+        bool UseSpecialAbility();
+        bool AttachAbility();
+        std::string curr_ability;
+        std::string prev_ability;
+
+        std::unordered_map<std::string, Gameplay::Ability> m_abilities;
 
         // Required by ISystem base class.
         std::string GetName() const override { return "PlayerController"; }
@@ -167,19 +227,20 @@ namespace NightSnack {
         // Accumulates states
         PlayerFlags m_flags{};
 
+        //Cyote time
         float m_timeSinceGrounded{}; //Time since last grounded
-        bool m_midAir{}; //Is the player midair (used to help track if player jumped)
-        bool m_justJumped{};
+        const float m_groundedThreshhold = 0.2f;
 
+        float m_timeSinceAbility{};
+
+        //bool m_midAir{}; //Is the player midair (used to help track if player jumped)
         //If spacebar is pressed right before landing allow 
-        bool m_storedJump = false;
-        float m_storedJumpTimer{};
+        //bool m_storedJump = false;
+        //float m_storedJumpTimer{};
 
         //Time to consider the player "grounded" for jumping
-        //Cyote time
-        const float m_groundedThreshhold = 0.2f;
         //Lenght of time to store a jump
-        const float m_storedJumpThreshold = 0.2f;
+        //const float m_storedJumpThreshold = 0.2f;
     };
 
 }   // namespace NightSnack

@@ -2,6 +2,51 @@
 
 namespace NightSnack {
 
+    void PlayerControllerSystem::RegisterAbilities() {
+
+        std::string abilityName = "Glide";
+        Gameplay::Ability GlideAbility(abilityName, [](Coordinator& c, Entity target, PlayerFlags& m_flags) {
+            //if (target == INVALID_ENTITY) return;
+            if (!c.HasComponent<RigidBody>(target)) return;
+
+            Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
+            if (vel.y <= -00.f) vel.y = -100.f;
+            });
+        m_abilities.insert({ abilityName, GlideAbility });
+
+        abilityName = "DoubleJump";
+        Gameplay::Ability DoubleJumpAbility(abilityName, [](Coordinator& c, Entity target, PlayerFlags& m_flags) {
+            //if (target == INVALID_ENTITY) return;
+            if (!c.HasComponent<RigidBody>(target)) return;
+            if (!c.HasComponent<PlayerController>(target)) return;
+            if (!m_flags.canDoubleJump) return;
+
+            Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
+            vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
+
+            m_flags.canDoubleJump = false;
+
+        });
+        m_abilities.insert({ abilityName, DoubleJumpAbility });
+
+    }
+
+    bool PlayerControllerSystem::AttachAbility() {
+        curr_ability = "DoubleJump";
+        return true;
+    }
+
+    bool PlayerControllerSystem::UseSpecialAbility() {
+
+        std::unordered_map<std::string, Gameplay::Ability>::iterator it = m_abilities.find(curr_ability);
+        if (it == m_abilities.end()) {
+            std::cerr << "[PlayerControl] Tried to use non-registered ability!\n";
+            return false;
+        }
+        it->second(m_coord, m_player, m_flags);
+        return true;
+    }
+
     Entity PlayerControllerSystem::FindPlayer(Coordinator& coord) {
         // Camera Signature (only have components Camera and Tranform)
         Signature playerSig;
@@ -22,7 +67,7 @@ namespace NightSnack {
         return INVALID_ENTITY;
     }
 
-    void PlayerControllerSystem::LeftAndRightMovement(Vec2& vel, PlayerController const& pcont) {
+    void PlayerControllerSystem::LeftAndRightMovement(Vec2& vel, PlayerController const& pcont) const {
         if (m_flags.movingRight && !m_flags.movingLeft) {
             vel.x = pcont.moveSpeed;
         }
@@ -37,36 +82,12 @@ namespace NightSnack {
         }
     }
 
-    void PlayerControllerSystem::HoldJump(Vec2& vel, bool isGrounded) {
-        static float time = 0.5f;
-        static float hang = 50.f;
-        // Hold jump to go higher
-        if (m_flags.jumpHold && !isGrounded && m_flags.canHang)
-        {
-            if (time > 0.f && hang > 0.f) {
-                vel.y += hang * time;
-                time -= FixedDT;
-
-                m_flags.jumpHold = false;
-            }
-        }
-        else {
-            time = 0.5f;
-            hang = 100.f;
-        }
-        std::cout << "hang: " << hang << ", time: " << time << std::endl;
-
-        if (isGrounded) {
-            m_flags.canHang = true;
-        }
-    }
-
     void PlayerControllerSystem::Jump(Transform& t, Vec2& vel, PlayerController pcont, bool isGrounded) {
 
         bool jump = false;
         m_timeSinceGrounded += FixedDT;
         if (m_timeSinceGrounded > m_groundedThreshhold)
-            m_justJumped = false;
+            m_flags.justJumped = false;
         if (isGrounded)
             m_timeSinceGrounded = 0;
 
@@ -76,22 +97,22 @@ namespace NightSnack {
                 jump = true;
             }
             // allow jump if pressed right after being off ground
-            if (!isGrounded && m_timeSinceGrounded < m_groundedThreshhold && !m_justJumped)
+            if (!isGrounded && m_timeSinceGrounded < m_groundedThreshhold && !m_flags.justJumped)
                 jump = true;
         }
 
-        // allow jump if pressed right before being grounded
-        if (m_flags.jumpRequested && !jump)
-            m_storedJump = true;
-        if (m_storedJump) {
-            m_storedJumpTimer += FixedDT;
-            if (m_storedJumpTimer > m_storedJumpThreshold) {
-                m_storedJump = false;
-                m_storedJumpTimer = 0.f;
-            }
-        }
-        if (m_storedJump && isGrounded)
-            jump = true;
+        //// allow jump if pressed right before being grounded
+        //if (m_flags.jumpRequested && !jump)
+        //    m_storedJump = true;
+        //if (m_storedJump) {
+        //    m_storedJumpTimer += FixedDT;
+        //    if (m_storedJumpTimer > m_storedJumpThreshold) {
+        //        m_storedJump = false;
+        //        m_storedJumpTimer = 0.f;
+        //    }
+        //}
+        //if (m_storedJump && isGrounded)
+        //    jump = true;
 
 
         if (jump) {
@@ -100,8 +121,8 @@ namespace NightSnack {
             m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
             m_coord.GetSystem<AudioSystem>()->PlaySFX("playerJump");
 
-            m_storedJump = false;
-            m_justJumped = true;
+            //m_storedJump = false;
+            m_flags.justJumped = true;
         }
     }
 }
