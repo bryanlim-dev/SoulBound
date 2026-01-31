@@ -12,7 +12,7 @@ namespace NightSnack {
 	void CharacterSystem::UpdateEntityPropertyMap()
 	{
 
-		for (int prop = static_cast<int>(START_PROPERTITIES); prop < static_cast<int>(MAX_PROPERTITIES); prop++)
+		for (int prop = static_cast<int>(MAX_PROPERTIES); prop < static_cast<int>(MAX_PROPERTIES); prop++)
 		{	
 			m_entityPropertyArr[prop].clear();
 		}
@@ -24,8 +24,8 @@ namespace NightSnack {
 				if (e == INVALID_ENTITY) { break; }
 				if (m_coord.HasComponent<Character>(e))
 				{
-					std::list<CharacterPropertities>const & props = m_coord.ModifyComponent<Character>(e).m_propertities;
-					for (CharacterPropertities const& property : props)
+					std::vector<CharacterProperties>const & props = m_coord.ModifyComponent<Character>(e).m_properties;
+					for (CharacterProperties const& property : props)
 					{
 						m_entityPropertyArr[property].push_back(e);
 					}
@@ -35,9 +35,9 @@ namespace NightSnack {
 		}
 	}
 
-	std::list<Entity> CharacterSystem::FindEntityWithPropertities(CharacterPropertities propertities)
+	std::list<Entity> CharacterSystem::FindEntityWithPropertities(CharacterProperties propertities)
 	{
-		if (propertities < MAX_PROPERTITIES && propertities > START_PROPERTITIES)
+		if (propertities < MAX_PROPERTIES && propertities > START_PROPERTIES)
 			return m_entityPropertyArr[propertities];
 
 		return std::list<Entity>();

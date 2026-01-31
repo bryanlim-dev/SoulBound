@@ -90,6 +90,7 @@ namespace NightSnack {
 		std::optional<Script> script;
 		std::optional<Animator> animator;
 		std::optional<Font> font;
+		std::optional<Character> character;
     };
 
     struct EntityCreateSnapshot

@@ -1,7 +1,7 @@
 
 #include "Serializer.h"
 #include "Factory/EntityFactory.h"
-
+#include <Systems/CharacterSystem.h>
 #include <vector>
 
 #if 1
@@ -602,18 +602,20 @@ namespace NightSnack {
 
 		std::list<std::string> propertities{};
 
-		for (CharacterPropertities prop : c.m_propertities)
+		for (CharacterProperties prop : c.m_properties)
 		{
-			if (CharacterPropertities::GRAPPLEABLE == prop) propertities.push_back("GRAPPLEABLE");
+			propertities.push_back(NightSnack::CharacterSystem::CharacterPropertiesToString(prop));
 		}
 
 		j = { {"Propertities", propertities} };
 	}
 	void from_json(json const& j, Character& c) {
 		try {
-			for (const auto& prop : j["Propertities"])
+			for (const auto& propStr : j["Propertities"])
 			{
-				if ("GRAPPLEABLE" == prop) c.m_propertities.push_back(GRAPPLEABLE);
+				CharacterProperties charProp = MAX_PROPERTIES;
+				if (NightSnack::CharacterSystem::StringToCharacterProperties(propStr, charProp))
+					c.m_properties.push_back(GRAPPLEABLE);
 			}
 		}
 		catch (std::exception const& e) {
