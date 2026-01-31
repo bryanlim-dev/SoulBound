@@ -1,5 +1,6 @@
 #include "FrogTongue.h"
 #include <Factory/EntityFactory.h>
+#include <Systems/CharacterSystem.h>
 
 namespace NightSnack
 {
@@ -9,7 +10,43 @@ namespace NightSnack
 
 		return false;
 
+		if (!coord.HasComponent<Transform>(m_owner))
+			return false;
+
 		//If found
+		std::list<Entity> grappable = coord.GetSystem<CharacterSystem>()->FindEntityWithPropertities(GRAPPLEABLE);
+
+		if (grappable.empty())
+			return false;
+
+		Vec3 ownerPos = coord.GetComponent<Transform>(m_owner).pos;
+
+		Entity cloestGrappable = INVALID_ENTITY;
+		float closestDist = FLT_MAX;
+
+		for (Entity enCheck : grappable)
+		{
+			if (!coord.HasComponent<Transform>(enCheck))
+				continue;
+
+			float distance = (coord.GetComponent<Transform>(enCheck).pos - ownerPos).magnitude();
+			if (distance < 0)
+				distance = -distance;
+
+			if (distance <= m_tongueLengthMax && closestDist < FLT_MAX)
+			{
+				cloestGrappable = enCheck;
+				closestDist = distance;
+			}
+		}
+
+		if (cloestGrappable == INVALID_ENTITY)
+		{
+			return false;
+		}
+		m_anchor = cloestGrappable;
+		m_distanceJoint.Initialize(coord, ownerPos, coord.GetComponent<Transform>(m_anchor).pos);
+		m_distanceJoint.SetBodies(m_owner, m_anchor);
 
 		//Created tongue if not created yet
 

@@ -250,6 +250,19 @@ namespace NightSnack {
         std::string target{};
     };
 
+    enum CharacterPropertities
+    {
+        START_PROPERTITIES,
+        GRAPPLEABLE,
+
+        MAX_PROPERTITIES //Max number of propertities, put any new ones before this
+    };
+
+    struct Character
+    {
+        std::list<CharacterPropertities> m_propertities{};
+    };
+
     // Add more Components here if necessary...
     
 }   // NightSnack

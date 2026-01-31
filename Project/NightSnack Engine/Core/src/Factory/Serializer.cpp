@@ -595,6 +595,32 @@ namespace NightSnack {
 		}
 	}
 
+	// --------------------------------------------------------------
+	// Character
+	// --------------------------------------------------------------
+	void to_json(json& j, Character const& c) {
+
+		std::list<std::string> propertities{};
+
+		for (CharacterPropertities prop : c.m_propertities)
+		{
+			if (CharacterPropertities::GRAPPLEABLE == prop) propertities.push_back("GRAPPLEABLE");
+		}
+
+		j = { {"Propertities", propertities} };
+	}
+	void from_json(json const& j, Character& c) {
+		try {
+			for (const auto& prop : j["Propertities"])
+			{
+				if ("GRAPPLEABLE" == prop) c.m_propertities.push_back(GRAPPLEABLE);
+			}
+		}
+		catch (std::exception const& e) {
+			std::cerr << "Invalid JSON format " << e.what() << '\n';
+		}
+	}
+
 }	// Namespace NightSnack::Serializer
 
 #endif

@@ -29,7 +29,7 @@
 #include "StateMachine/FiniteStateMachine.h"
 #include "GameLogic/SceneManager.h"
 #include "./Scripting/ScriptManager.h"
-
+#include "CharacterSystem.h"
 // Add System header files here...
 
 #endif // SYSTEM_HPP

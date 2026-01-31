@@ -55,6 +55,7 @@ namespace NightSnack {
 
 			//RegisterComponentLoader<States>("States");
 			RegisterComponentLoader<Script>("Script");
+			RegisterComponentLoader<Character>("Character");
 			RegisterComponentLoader<PlayerController>("PlayerController");
 		}
 

@@ -13,6 +13,7 @@ namespace NightSnack {
 
 		float m_tongueLengthMax = 50.0f;
 
+
 	public:
 		FrogTongue(){}
 

@@ -52,7 +52,7 @@ namespace NightSnack {
             }
 
         });
-        m_abilities.insert({ abilityName, DoubleJumpAbility });
+        m_abilities.insert({ abilityName, GrapplingTongue });
 
     }
 
