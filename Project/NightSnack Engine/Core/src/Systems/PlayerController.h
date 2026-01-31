@@ -17,6 +17,7 @@
 #include "Systems/Application/Input.h"
 #include "Systems/AudioSystem.h"
 #include <Factory/EntityFactory.h>
+#include <GameLogic/FrogTongue.h>
 
 struct PlayerFlags {
     bool movingLeft = false;
@@ -32,6 +33,7 @@ struct PlayerFlags {
     bool useAbility = false;
 
     bool canDoubleJump = true;
+    bool grappling = false;
     // add more flags if needed
 };
 
@@ -119,13 +121,8 @@ namespace NightSnack {
             AttachAbility();
             prev_ability = curr_ability;
 
-            if (m_tongue == INVALID_ENTITY)
-            {
-                //Create frog tongue entity
-                m_tongue = m_coord.GetSystem<EntityFactory>()->Create("FrogTongue");
-                m_coord.AddComponent<Hierarchy>(m_tongue, Hierarchy{});
-                m_coord.ParentEntity(m_player, m_tongue);
-            }
+            m_frogTongue.Initalize(m_player);
+
         }
 
         /************************************************************************/
@@ -165,6 +162,10 @@ namespace NightSnack {
                 if (!AttachAbility()) std::cerr << "Failed to attach ability!\n";
             if (m_flags.useAbility)
                 UseSpecialAbility();
+            else
+            {
+                m_flags.grappling = false;
+            }
                 //if (!UseSpecialAbility()) std::cerr << "Failed to use ability!\n";
 
             prev_ability = curr_ability;
@@ -200,6 +201,10 @@ namespace NightSnack {
         // std::function jump;
         // std::function special -> e.g double_jump, glide, grapple
         // 
+
+        FrogTongue& GetFrogTongue() {
+            return m_frogTongue;
+        };
     
         // Ability stuff
         void RegisterAbilities();
@@ -240,7 +245,6 @@ namespace NightSnack {
         Coordinator& m_coord;
 
         Entity m_player;
-        Entity m_tongue = INVALID_ENTITY;
 
         // Accumulates states
         PlayerFlags m_flags{};
@@ -250,6 +254,8 @@ namespace NightSnack {
         const float m_groundedThreshhold = 0.2f;
 
         float m_timeSinceAbility{};
+
+        FrogTongue m_frogTongue;
 
         //bool m_midAir{}; //Is the player midair (used to help track if player jumped)
         //If spacebar is pressed right before landing allow 

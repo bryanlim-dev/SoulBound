@@ -34,12 +34,22 @@ namespace NightSnack {
             //if (target == INVALID_ENTITY) return;
             if (!c.HasComponent<RigidBody>(target)) return;
             if (!c.HasComponent<PlayerController>(target)) return;
-            if (!m_flags.canDoubleJump) return;
 
-            Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
-            vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
+            FrogTongue& tongue = c.GetSystem<PlayerControllerSystem>()->GetFrogTongue();
+            if (m_flags.grappling == false)
+            {
+                //Do distance check to nearest grabbling spot/enemy
+                if (tongue.Start(c))
+                {
+                    //Valid target
+                    m_flags.grappling = true;
+                }
+            }
 
-            m_flags.canDoubleJump = false;
+            if (m_flags.grappling)
+            {
+                tongue.Update(c);
+            }
 
         });
         m_abilities.insert({ abilityName, DoubleJumpAbility });
