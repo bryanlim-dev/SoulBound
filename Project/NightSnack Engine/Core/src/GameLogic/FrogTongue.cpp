@@ -7,9 +7,6 @@ namespace NightSnack
 	bool FrogTongue::Start(Coordinator& coord)
 	{
 		//Find cloest attachable surface/entity
-
-		return false;
-
 		if (!coord.HasComponent<Transform>(m_owner))
 			return false;
 
@@ -24,6 +21,8 @@ namespace NightSnack
 		Entity cloestGrappable = INVALID_ENTITY;
 		float closestDist = FLT_MAX;
 
+		
+		//Check each entity for closeest grappable
 		for (Entity enCheck : grappable)
 		{
 			if (!coord.HasComponent<Transform>(enCheck))
@@ -33,7 +32,7 @@ namespace NightSnack
 			if (distance < 0)
 				distance = -distance;
 
-			if (distance <= m_tongueLengthMax && closestDist < FLT_MAX)
+			if (distance <= m_tongueLengthMax && distance < closestDist)
 			{
 				cloestGrappable = enCheck;
 				closestDist = distance;
@@ -44,19 +43,26 @@ namespace NightSnack
 		{
 			return false;
 		}
+
 		m_anchor = cloestGrappable;
 		m_distanceJoint.Initialize(coord, ownerPos, coord.GetComponent<Transform>(m_anchor).pos);
 		m_distanceJoint.SetBodies(m_owner, m_anchor);
 
+		//std::cout << "[Frog Grappble] Closest Grappable: " + std::to_string(m_anchor) + ", distance: " + std::to_string(closestDist) + "!" << std::endl;
+
 		//Created tongue if not created yet
 
-		if (m_tongue == INVALID_ENTITY)
+		if (m_tongue == INVALID_ENTITY || !coord.EntityIsAlive(m_tongue))
 		{
 			//Create frog tongue entity
 			m_tongue = coord.GetSystem<EntityFactory>()->Create("FrogTongue");
-			coord.AddComponent<Hierarchy>(m_tongue, Hierarchy{});
-			coord.ParentEntity(m_owner, m_tongue);
+			if (!coord.HasComponent<Hierarchy>(m_tongue))
+				coord.AddComponent<Hierarchy>(m_tongue, Hierarchy{});
+
+			coord.ParentEntity(m_tongue, m_owner);
 		}
+
+		UpdateTonguePos(coord);
 
 		return true;
 	}
@@ -68,6 +74,7 @@ namespace NightSnack
 		Vec3 anchorPt = coord.GetComponent<Transform>(m_anchor).pos;
 
 		m_distanceJoint.Solve(coord, ownerPt, anchorPt, dt);
+		UpdateTonguePos(coord);
 	}
 	void FrogTongue::End(Coordinator& coord)
 	{
@@ -75,5 +82,33 @@ namespace NightSnack
 		m_distanceJoint.SetActive(false);
 		coord.DestroyEntity(m_tongue);
 		m_tongue = INVALID_ENTITY;
+	}
+	void FrogTongue::UpdateTonguePos(Coordinator& coord)
+	{
+		if (m_tongue == INVALID_ENTITY || !coord.HasComponent<Transform>(m_tongue) || !coord.HasComponent<Transform>(m_owner) || !coord.HasComponent<Transform>(m_anchor))
+			return;
+
+		Transform& trans = coord.ModifyComponent<Transform>(m_tongue);
+
+		//==Set Scale==
+		trans.scale.x = m_tongueWidth;
+
+		Vec3 ownerPt = coord.GetComponent<Transform>(m_owner).pos;
+		Vec3 anchorPt = coord.GetComponent<Transform>(m_anchor).pos;
+
+		Vec3 dirVec = (anchorPt - ownerPt);
+		float dir = dirVec.magnitude();
+
+		if (trans.scale.y < 0)
+			trans.scale.y = -trans.scale.y;
+
+		trans.scale.y = dir;
+
+		//==Set Rotation==
+		trans.rot = atan2(dirVec.y, dirVec.x) * (180.0 / PI) + 90;
+		//std::cout << "[Frog Grappble] Tongue Rot: " + std::to_string(trans.rot) + "!" << std::endl;
+
+		//==Set Transform==
+		trans.pos = (ownerPt + anchorPt) / 2;
 	}
 }

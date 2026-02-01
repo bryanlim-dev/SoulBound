@@ -11,8 +11,8 @@ namespace NightSnack {
 
 		DistanceJoint2D m_distanceJoint;
 
-		float m_tongueLengthMax = 50.0f;
-
+		float m_tongueLengthMax = 500.0f;
+		float m_tongueWidth = 50.0f;
 
 	public:
 		FrogTongue(){}
@@ -25,6 +25,7 @@ namespace NightSnack {
 		void Update(Coordinator& coord);
 		void End(Coordinator& coord);
 
+		void UpdateTonguePos(Coordinator& coord);
 	private:
 
 	};

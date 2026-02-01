@@ -12,25 +12,20 @@ namespace NightSnack {
 	void CharacterSystem::UpdateEntityPropertyMap()
 	{
 
-		for (int prop = static_cast<int>(MAX_PROPERTIES); prop < static_cast<int>(MAX_PROPERTIES); prop++)
+		for (int prop = static_cast<int>(START_PROPERTIES); prop < static_cast<int>(MAX_PROPERTIES); prop++)
 		{	
 			m_entityPropertyArr[prop].clear();
 		}
 
-		for (Layer& l : m_layers) {
-			if (l.Empty() || !l.IsVisible() || !l.IsActive()) { continue; }
-			for (Entity e : l.Entities()) {
-
-				if (e == INVALID_ENTITY) { break; }
-				if (m_coord.HasComponent<Character>(e))
+		for (Entity const& e : m_coord.GetLivingEntities())
+		{
+			if (m_coord.HasComponent<Character>(e))
+			{
+				std::vector<CharacterProperties>const& props = m_coord.ModifyComponent<Character>(e).m_properties;
+				for (CharacterProperties const& property : props)
 				{
-					std::vector<CharacterProperties>const & props = m_coord.ModifyComponent<Character>(e).m_properties;
-					for (CharacterProperties const& property : props)
-					{
-						m_entityPropertyArr[property].push_back(e);
-					}
+					m_entityPropertyArr[property].push_back(e);
 				}
-
 			}
 		}
 	}

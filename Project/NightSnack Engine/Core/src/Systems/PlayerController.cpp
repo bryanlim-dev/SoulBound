@@ -38,12 +38,16 @@ namespace NightSnack {
             FrogTongue& tongue = c.GetSystem<PlayerControllerSystem>()->GetFrogTongue();
             if (m_flags.grappling == false)
             {
+                //std::cout << "[Frog Grappble] Grappble Looking!" << std::endl;
                 //Do distance check to nearest grabbling spot/enemy
                 if (tongue.Start(c))
                 {
                     //Valid target
                     m_flags.grappling = true;
                 }
+                //else
+                //    std::cout << "[Frog Grappble] Grappble NONE!" << std::endl;
+
             }
 
             if (m_flags.grappling)
