@@ -1,11 +1,17 @@
 {
+    "Animator": {
+        "isLooping": true,
+        "isPlaying": true,
+        "playbackSpeed": 1.0,
+        "spriteSheetName": "Sprites\\SpiritMove_4_1.png"
+    },
     "Collider": {
-        "height": 100.0,
+        "height": 80.0,
         "isStatic": false,
         "radius": 50.0,
         "shape": "AABB",
         "type": "solid",
-        "width": 100.0
+        "width": 80.0
     },
     "PlayerController": {
         "jumpSpeed": 900.0,
@@ -13,7 +19,7 @@
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "Ghost Spirit",
+        "materialName": "SpiritMove_4_1",
         "meshName": "square"
     },
     "RigidBody": {

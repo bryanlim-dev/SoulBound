@@ -33,12 +33,12 @@ namespace NightSnack {
     // ================================================================================================
     // When updating this update the one in Engine.cs
     enum class LayerType : std::uint8_t {
-        _ENGINE,
-        BACKGROUND,
-        GAMELAYER,
-        FOREGROUND,
-        GAMEUI,
-        _ENGINE2
+        _ENGINE,        // 0.f
+        BACKGROUND,     // 1.f
+        GAMELAYER,      // 2.f
+        FOREGROUND,     // 3.f
+        GAMEUI,         // 4.f
+        _ENGINE2        // 5.f
     };
 
     enum class CameraMode

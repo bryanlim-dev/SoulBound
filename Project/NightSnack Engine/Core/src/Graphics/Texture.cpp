@@ -47,8 +47,8 @@ namespace NightSnack {
 		// Sets wrap mode so the texture will tile instead of clamping
 		glTextureParameteri(m_texID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTextureParameteri(m_texID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTextureParameteri(m_texID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTextureParameteri(m_texID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTextureParameteri(m_texID, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTextureParameteri(m_texID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	}
 

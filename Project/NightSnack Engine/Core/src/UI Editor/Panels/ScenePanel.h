@@ -1330,7 +1330,7 @@ namespace NightSnack
 		// Gizmo sizes
 		float arrowLength = 60.0f;
 		float arrowThickness = 4.0f;
-		float circleRadius = 30.0f;
+		//float circleRadius = 30.0f;
 		float handleRadius = 10.0f;
 		float scaleHandleSize = 14.0f;
 

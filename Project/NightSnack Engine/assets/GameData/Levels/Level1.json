@@ -524,7 +524,7 @@
                         "Layer": "GameLayer",
                         "Name": "Collider",
                         "Position": {
-                            "x": -175.0,
+                            "x": -187.5,
                             "y": -250.0,
                             "z": 1.0
                         },
@@ -901,6 +901,40 @@
                 "Scale": {
                     "x": 200.0,
                     "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "ColorMat",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "NoName",
+                "Position": {
+                    "x": 451.4438171386719,
+                    "y": -329.10601806640625,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 206.79922485351563,
+                    "y": 261.9374084472656
                 },
                 "UIBasePosition": {
                     "x": 0.0,

@@ -9,6 +9,8 @@ namespace NightSnack {
             //if (target == INVALID_ENTITY) return;
             if (!c.HasComponent<RigidBody>(target)) return;
 
+            m_flags.useAbility = true;
+
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
             if (vel.y <= -50.f) vel.y = -50.f;
             });
@@ -24,6 +26,7 @@ namespace NightSnack {
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
             vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
 
+            m_flags.useAbility = true;
             m_flags.canDoubleJump = false;
 
         });

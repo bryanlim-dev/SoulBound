@@ -164,7 +164,7 @@ namespace NightSnack::Scripting {
     void MonoScriptHost::DestroyScriptInstance(void* instance) {
         if (!instance) return;
 
-        MonoObject* obj = static_cast<MonoObject*>(instance);
+        //MonoObject* obj = static_cast<MonoObject*>(instance);
 
         // Call OnDestroy
         CallMethod(instance, "OnDestroy");
