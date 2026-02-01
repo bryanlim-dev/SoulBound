@@ -18,6 +18,7 @@
 #include <filesystem>
 #include <Scripting/ScriptManager.h>
 #include <Systems/AnimationSystem.h>
+#include <Graphics/Camera.h>
 
 namespace NightSnack
 {
@@ -884,6 +885,21 @@ namespace NightSnack
             ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 100.0f);
             ImGui::TableSetupColumn("Value2", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+
+            // Camera mode dropdown
+            const char* modeNames[] = { "RoomLerp", "OriginalWithOffset" };
+            int modeIdx = static_cast<int>(cam.mode);
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Camera Mode");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::Combo("##CameraMode", &modeIdx, modeNames, IM_ARRAYSIZE(modeNames)))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
+                );
+                cam.mode = static_cast<CameraMode>(modeIdx);
+            }
 
             // Is Main Camera
             ImGui::TableNextRow();

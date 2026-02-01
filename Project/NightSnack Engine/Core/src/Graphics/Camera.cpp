@@ -26,7 +26,18 @@ namespace NightSnack {
 
     void CameraSystem::Update()
     {
-        if (m_coord.IsPaused()) { return; }
+        if (m_coord.IsPaused()) 
+        {
+            // Update target camera position
+            auto& camT = m_coord.ModifyComponent<Transform>(m_mainCamera);
+            m_targetCamPos = camT.pos;
+
+            // Set the room origin offset to the current camera position
+            m_roomOriginOffset.x = camT.pos.x;
+            m_roomOriginOffset.y = camT.pos.y;
+
+            return;
+        }
 
         // find camera if we don't have one
         if (!m_coord.EntityIsAlive(m_mainCamera)) {
@@ -37,12 +48,22 @@ namespace NightSnack {
             m_player = FindPlayer(m_coord);
         }
 
-        Transform t = m_coord.GetComponent<Transform>(m_mainCamera);
-        FollowEntity(m_player, t);
-        LimitWithinBounds(t);
+        // Mode check
+        if (m_coord.GetComponent<Camera>(m_mainCamera).mode == CameraMode::RoomLerp)
+        {
+            // Room Camera with lerping
+            UpdateRoomCamera();
+        }
+		else if (m_coord.GetComponent<Camera>(m_mainCamera).mode == CameraMode::OriginalWithOffset)
+        {
+			// Original Camera with offset
+            auto& t = m_coord.ModifyComponent<Transform>(m_mainCamera);
+            FollowEntity(m_player, t);
+            LimitWithinBounds(t);
+        }
         
         // Update actual camera pos
-        m_coord.ModifyComponent<Transform>(m_mainCamera) = t;
+        //m_coord.ModifyComponent<Transform>(m_mainCamera) = t;
 
         // make camera follow player
    //     if (m_mainCamera != INVALID_ENTITY && m_player != INVALID_ENTITY)
@@ -104,6 +125,51 @@ namespace NightSnack {
 
         if (ct.pos.y < cam.minY) ct.pos.y = cam.minY;
         if (ct.pos.y > cam.maxY) ct.pos.y = cam.maxY;
+    }
+
+    void CameraSystem::UpdateRoomCamera() {
+
+        if (!m_coord.EntityIsAlive(m_mainCamera) || !m_coord.EntityIsAlive(m_player))
+            return;
+
+        const auto& playerT = m_coord.GetComponent<Transform>(m_player);
+        auto& cam = m_coord.GetComponent<Camera>(m_mainCamera);
+        auto& camT = m_coord.ModifyComponent<Transform>(m_mainCamera);
+        
+        int playerRoomX = static_cast<int>(std::round((playerT.pos.x - m_roomOriginOffset.x) / cam.width));
+        int playerRoomY = static_cast<int>(std::round((playerT.pos.y - m_roomOriginOffset.y) / cam.height));
+        int currentRoomX = static_cast<int>(m_currentRoom.x);
+        int currentRoomY = static_cast<int>(m_currentRoom.y);
+
+        // Start lerping if player entered new room
+        if (!m_isLerping && (playerRoomX != currentRoomX || playerRoomY != currentRoomY))
+        {
+            m_currentRoom.x = playerRoomX;
+            m_currentRoom.y = playerRoomY;
+            m_targetCamPos =
+            {
+                m_currentRoom.x * cam.width + m_roomOriginOffset.x,
+                m_currentRoom.y * cam.height + m_roomOriginOffset.y,
+                camT.pos.z
+            };
+            m_isLerping = true;
+        }
+
+        // Lerp camera to target position
+        if (m_isLerping)
+        {
+            camT.pos.x += (m_targetCamPos.x - camT.pos.x) * std::min(m_lerpSpeed * FixedDT, 1.0f);
+            camT.pos.y += (m_targetCamPos.y - camT.pos.y) * std::min(m_lerpSpeed * FixedDT, 1.0f);
+
+            // Snap if close enough
+            if (std::abs(camT.pos.x - m_targetCamPos.x) < 1.0f &&
+                std::abs(camT.pos.y - m_targetCamPos.y) < 1.0f)
+            {
+                camT.pos.x = m_targetCamPos.x;
+                camT.pos.y = m_targetCamPos.y;
+                m_isLerping = false;
+            }
+        }
     }
 
     void CameraSystem::CenterCameraWhenIdle() {
