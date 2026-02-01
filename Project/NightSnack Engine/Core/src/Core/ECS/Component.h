@@ -223,7 +223,7 @@ namespace NightSnack {
 
         Vec2 offset;
 
-        CameraMode mode{ CameraMode::RoomLerp };
+        CameraMode mode{ CameraMode::OriginalWithOffset };
     };
 
 	// Audio component
