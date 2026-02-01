@@ -1178,6 +1178,14 @@ namespace ManagedScripts
         public static bool IsKeyReleased(KeyboardKeys keyCode) => IsKeyReleased_Internal((int)keyCode);
         #endregion
 
+        // ----------------------------
+        // Player Controller API for Scripts
+        // ----------------------------
+        #region Player Controller
+
+        
+        #endregion
+
         public static uint GetComponentInChildren(uint parentID, string componentName) => GetComponentInChildren_Internal(parentID, componentName);
         public static T GetScriptComponentInChildren<T>(uint parentID, string componentName) where T : Script
         {
@@ -1205,6 +1213,18 @@ namespace ManagedScripts
         public static void RestartLevel() => RestartLevel_Internal();
 
         //public static float Time => GetTime_Internal();
+
+        //Helper funcs
+        #region Helper Functions
+        public static float Clamp(float v, float min, float max)
+        {
+            if (v < min) return min;
+            if (v > max) return max;
+            return v;
+        }
+
+
+        #endregion
     }
 
     public struct Vector2
@@ -1217,7 +1237,69 @@ namespace ManagedScripts
         }
         public static Vector2 operator +(Vector2 a, Vector2 b) => new Vector2(a.X + b.X, a.Y + b.Y);
         public static Vector2 operator -(Vector2 a, Vector2 b) => new Vector2(a.X - b.X, a.Y - b.Y);
+        public static Vector2 operator -(Vector2 a) => new Vector2(-a.X, -a.Y); //Negation
         public static Vector2 operator *(Vector2 a, float scalar) => new Vector2(a.X * scalar, a.Y * scalar);
+
+
+        public static Vector2 Rotate(Vector2 v, float angle)
+        {
+            float c = (float)Math.Cos(angle);
+            float s = (float)Math.Sin(angle);
+
+            return new Vector2(
+                c * v.X - s * v.Y,
+                s * v.X + c * v.Y
+            );
+        }
+
+        public static float Dot(Vector2 a, Vector2 b)
+        {
+            return (a.X * b.X) + (a.Y * b.Y);
+        }
+
+        public static float Cross(Vector2 a, Vector2 b)
+        {
+            return a.X * b.Y - a.Y * b.X;
+        }
+
+        public static Vector2 Cross(float s, Vector2 v)
+        {
+            return new Vector2(-s * v.Y, s * v.X);
+        }
+
+        public static Vector2 zero()
+        {
+            return new Vector2(0, 0);
+        }
+
+        public float Length()
+        {
+            return (float)Math.Sqrt(X * X + Y * Y);
+        }
+
+        public Vector2 Normalize()
+        {
+            float len = Length();
+            if (len < 0.00001f)
+                return new Vector2(0, 0);
+
+            return this * (1.0f / len);
+        }
+
+        public static Vector2 Lerp(Vector2 a, Vector2 b, float t)
+        {
+            // Clamp t to [0, 1] like Unity
+            if (t < 0f) t = 0f;
+            if (t > 1f) t = 1f;
+
+            return new Vector2(
+                a.X + (b.X - a.X) * t,
+                a.Y + (b.Y - a.Y) * t
+            );
+        }
+
+        public static explicit operator Vector3(Vector2 a) => new Vector3(a.X, a.Y, 0);
+
 
         public override string ToString() => $"({X}, {Y})";
     }
@@ -1235,7 +1317,22 @@ namespace ManagedScripts
         public static Vector3 operator -(Vector3 a, Vector3 b) => new Vector3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
         public static Vector3 operator *(Vector3 a, float scalar) => new Vector3(a.X * scalar, a.Y * scalar, a.Z * scalar);
 
+        public static Vector3 Lerp(Vector3 a, Vector3 b, float t)
+        {
+            // Clamp t
+            if (t < 0f) t = 0f;
+            if (t > 1f) t = 1f;
+
+            return new Vector3(
+                a.X + (b.X - a.X) * t,
+                a.Y + (b.Y - a.Y) * t,
+                a.Z + (b.Z - a.Z) * t
+            );
+        }
+
         public override string ToString() => $"({X}, {Y}, {Z})";
+
+        public static explicit operator Vector2(Vector3 a) => new Vector2(a.X, a.Y);
     }
 
     public struct Vector4
@@ -1348,4 +1445,7 @@ namespace ManagedScripts
 
         NUM_TOTAL_KEYBOARD_KEY  // MUST BE THE LAST
     };
+
+
+
 }
