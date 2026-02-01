@@ -40,6 +40,13 @@ namespace NightSnack {
         GAMEUI,
         _ENGINE2
     };
+
+    enum class CameraMode
+    {
+        RoomLerp,
+        OriginalWithOffset
+    };
+
     struct Transform {
         Vec3 pos;
         float rot{};
@@ -244,6 +251,8 @@ namespace NightSnack {
         float minY, maxY;
 
         Vec2 offset;
+
+		CameraMode mode{ CameraMode::OriginalWithOffset };
     };
 
 	// Audio component
