@@ -1655,7 +1655,7 @@ namespace NightSnack
             ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 160.0f);
             ImGui::TableSetupColumn("Value2", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-            ImGui::TableHeadersRow();
+            //ImGui::TableHeadersRow();
 
             auto& t = m_coord.ModifyComponent<Character>(*m_selectedEntity);
 
@@ -1663,10 +1663,8 @@ namespace NightSnack
 
             std::array<std::string, PropertyCount> propertyNameStorage;
             std::array<const char*, PropertyCount> propertyNames;
-
             // Index 0 = REMOVE
-            propertyNameStorage[0] = "REMOVE PROPERTY";
-            propertyNames[0] = propertyNameStorage[0].c_str();
+            propertyNames[0] = "REMOVE PROPERTY";
 
             int idx = 1;
             for (int i = START_PROPERTIES + 1; i < MAX_PROPERTIES; ++i)
@@ -1679,6 +1677,8 @@ namespace NightSnack
                 propertyNames[idx] = propertyNameStorage[idx].c_str();
                 ++idx;
             }
+
+            propertyNames[MAX_PROPERTIES] = "NEW PROPERTY";
 
             for (size_t i = 0; i < t.m_properties.size();)
             {
@@ -1701,7 +1701,7 @@ namespace NightSnack
                     "##Property",
                     &comboIndex,
                     propertyNames.data(),
-                    PropertyCount))
+                    propertyNames.size()))
                 {
                     if (comboIndex == 0)
                     {
@@ -1729,23 +1729,24 @@ namespace NightSnack
             ImGui::TableNextRow();
 
             ImGui::TableNextColumn();
-            ImGui::TextDisabled("+ Add Property");
+            ImGui::TextDisabled("+ Property");
 
             ImGui::TableNextColumn();
 
-            static int newPropertyIndex = 0;
+            int newPropertyIndex = MAX_PROPERTIES;
             ImGui::SetNextItemWidth(-FLT_MIN);
 
             if (ImGui::Combo(
                 "##AddProperty",
                 &newPropertyIndex,
                 propertyNames.data(),
-                PropertyCount))
+                propertyNames.size()))
             {
-                if (newPropertyIndex > 0)
+                if (newPropertyIndex > 0 && newPropertyIndex < MAX_PROPERTIES)
                 {
                     CharacterProperties newProp = static_cast<CharacterProperties>(newPropertyIndex);
 
+                    //No dupe properties
                     if (std::find(
                         t.m_properties.begin(),
                         t.m_properties.end(),
@@ -1753,9 +1754,8 @@ namespace NightSnack
                     {
                         t.m_properties.push_back(newProp);
                     }
-
-                    newPropertyIndex = 0;
                 }
+                newPropertyIndex = 0;
             }
 
             ImGui::TableNextColumn();
