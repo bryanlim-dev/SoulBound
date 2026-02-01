@@ -3,7 +3,7 @@
 namespace NightSnack
 {
 
-    void DistanceJoint2D::SetBodies(uint32_t idA, uint32_t idB)
+    void DistanceJoint2D::SetBodies(Entity idA, Entity idB)
     {
         m_bodyA = idA;
         m_bodyB = idB;
@@ -78,58 +78,71 @@ namespace NightSnack
         Coordinator& coord,
         const Vec2& posA,
         const Vec2& posB,
-        float deltaTime)
+        float /*deltaTime*/)
     {
         if (!m_active)
             return;
 
+        if (!coord.HasComponent<RigidBody>(m_bodyA))
+            return;
+
         RigidBody& bodyA = coord.ModifyComponent<RigidBody>(m_bodyA);
-        RigidBody& bodyB = coord.ModifyComponent<RigidBody>(m_bodyB);
+
+        RigidBody* bodyB = nullptr;
+        if (coord.HasComponent<RigidBody>(m_bodyB))
+            bodyB = &coord.ModifyComponent<RigidBody>(m_bodyB);
 
         Vec2 worldA = posA + m_anchorA;
         Vec2 worldB = posB + m_anchorB;
 
         Vec2 delta = worldB - worldA;
-        float currentDistance = delta.magnitude();
+        float dist = delta.magnitude();
 
-        if (currentDistance < 0.00001f)
+        if (dist < 0.00001f)
             return;
 
-        Vec2 normal = delta * (1.f / currentDistance);
+        Vec2 n = delta / dist;
 
-        float targetDistance = Clamp(
-            currentDistance,
-            m_minDistance,
-            m_maxDistance
-        );
+        // =========================
+        // Distance error
+        // =========================
+        float targetDist = Clamp(dist, m_minDistance, m_maxDistance);
+        float error = dist - targetDist;
 
-        float error = currentDistance - targetDistance;
+        // =========================
+        // Relative velocity
+        // =========================
+        float relVel = -bodyA.vel.dot(n);
 
-        Vec2 relVel = bodyB.vel - bodyA.vel;
-        float relVelN = relVel.dot(normal);
+        if (bodyB)
+            relVel += bodyB->vel.dot(n);
 
-        float forceMag;
+        // =========================
+        // Baumgarte stabilization
+        // =========================
+        constexpr float beta = 0.2f; // positional correction strength
+        float bias = beta * error;
 
-        if (m_enableSpring)
-        {
-            float omega = 2.f * 3.14159265359f * m_frequencyHz;
+        // =========================
+        // Effective mass
+        // =========================
+        float invMassSum = bodyA.invMass + (bodyB ? bodyB->invMass : 0.f);
+        if (invMassSum == 0.f)
+            return;
 
-            float spring = -omega * omega * error;
-            float damping = -2.f * m_dampingRatio * omega * relVelN;
+        float lambda = -(relVel + bias) / invMassSum;
 
-            forceMag = spring + damping;
-        }
-        else
-        {
-            forceMag = -(error / deltaTime);
-        }
+        lambda = Clamp(lambda, -m_maxForce, m_maxForce);
 
-        forceMag = Clamp(forceMag, -m_maxForce, m_maxForce);
+        Vec2 impulse = n * lambda;
 
-        Vec2 force = normal * forceMag;
+        // =========================
+        // Apply impulse
+        // =========================
+        bodyA.vel -= impulse * bodyA.invMass;
 
-        ApplyForce(bodyA, force * -1.f);
-        ApplyForce(bodyB, force);
+        if (bodyB && bodyB->invMass > 0.f)
+            bodyB->vel += impulse * bodyB->invMass;
     }
 
     // --------------------------------------------------

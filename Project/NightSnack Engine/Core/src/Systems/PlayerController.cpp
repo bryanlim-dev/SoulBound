@@ -158,4 +158,8 @@ namespace NightSnack {
             m_flags.justJumped = true;
         }
     }
+    PlayerFlags& PlayerControllerSystem::GetPlayerFlags()
+    {
+        return m_flags;
+    }
 }

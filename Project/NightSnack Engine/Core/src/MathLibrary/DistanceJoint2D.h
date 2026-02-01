@@ -70,8 +70,8 @@ namespace NightSnack
 
     private:
         // Entity IDs
-        uint32_t m_bodyA;
-        uint32_t m_bodyB;
+        Entity m_bodyA;
+        Entity m_bodyB;
 
         bool m_active;
 

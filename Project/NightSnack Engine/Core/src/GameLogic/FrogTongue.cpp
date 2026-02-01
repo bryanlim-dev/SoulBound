@@ -1,6 +1,7 @@
 #include "FrogTongue.h"
 #include <Factory/EntityFactory.h>
 #include <Systems/CharacterSystem.h>
+#include <Systems/PlayerController.h>
 
 namespace NightSnack
 {
@@ -62,7 +63,15 @@ namespace NightSnack
 			coord.ParentEntity(m_tongue, m_owner);
 		}
 
+		m_distanceJoint.SetActive(true);
+		m_distanceJoint.EnableSpring(true);
 		UpdateTonguePos(coord);
+		
+		//If tongue ownwer is player
+		if (m_owner == coord.GetSystem<PlayerControllerSystem>()->GetPlayer())
+		{
+			coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().disableMovement = true;
+		}
 
 		return true;
 	}
@@ -85,9 +94,16 @@ namespace NightSnack
 	void FrogTongue::End(Coordinator& coord)
 	{
 
+		if (m_owner == coord.GetSystem<PlayerControllerSystem>()->GetPlayer())
+		{
+			coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().disableMovement = false;
+		}
+
 		m_distanceJoint.SetActive(false);
 		coord.DestroyEntity(m_tongue);
 		m_tongue = INVALID_ENTITY;
+
+
 	}
 	void FrogTongue::UpdateTonguePos(Coordinator& coord)
 	{

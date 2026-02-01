@@ -6,11 +6,16 @@
         "playOnStart": false,
         "volume": 1.0
     },
+    "Character": {
+        "Propertities": [
+            "GRAPPLEABLE"
+        ]
+    },
     "Collider": {
         "height": 200.0,
         "isStatic": false,
         "radius": 150.0,
-        "shape": "circle",
+        "shape": "AABB",
         "type": "solid",
         "width": 200.0
     },

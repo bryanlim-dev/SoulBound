@@ -26,6 +26,8 @@ struct PlayerFlags {
     bool jumpRequested = false;
     bool justJumped{};
 
+    bool disableMovement = false;
+
     bool playerChange = false;
     bool isGrounded = false;
 
@@ -153,8 +155,11 @@ namespace NightSnack {
             bool isGrounded = m_coord.GetComponent<Collider>(m_player).isGrounded;
 
             // Basic movement -----------------------------
-            LeftAndRightMovement(vel, pcont);
-            Jump(t, vel, pcont, isGrounded);
+            if (!m_flags.disableMovement)
+            {
+                LeftAndRightMovement(vel, pcont);
+                Jump(t, vel, pcont, isGrounded);
+            }
 
             if (isGrounded) m_flags.canDoubleJump = true;
             // Special Abilities --------------------------
@@ -199,6 +204,7 @@ namespace NightSnack {
         void LeftAndRightMovement(Vec2& vel, PlayerController const&) const;
         void Jump(Transform& t, Vec2& vel, PlayerController pcont, bool isGrounded);
 
+        PlayerFlags& GetPlayerFlags();
         void ResetFlags() { m_flags = PlayerFlags{}; }
 
         // Store movement abilities as void pointers
