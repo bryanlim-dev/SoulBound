@@ -23,7 +23,7 @@ namespace NightSnack
 {
 	struct DefaultEditorCamera
 	{
-		Vec3 pos{ 0.f, 0.f, 2.f };
+		Vec3 pos{ 0.f, 0.f, 10.f };
 		float rot{ 1.0f };
 		Vec2 scale{ 1.0f, 1.0f };
 		float zoom{ 1.0f };
@@ -199,7 +199,7 @@ namespace NightSnack
 						constexpr float panSpeed = 1.65f;
 						camTransform.pos.x -= dragDelta.x * (panSpeed / camMod.zoom);
 						camTransform.pos.y += dragDelta.y * (panSpeed / camMod.zoom);
-						camTransform.pos.z = 2.f;
+						camTransform.pos.z = m_editorCameraData.pos.z;
 						m_editorCameraData.pos = camTransform.pos;
 						ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
 					}
