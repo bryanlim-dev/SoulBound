@@ -22,10 +22,13 @@ namespace NightSnack {
 		//Finds thed cloest attachtable surface/entity
 		//Returns false if too far to attach or cant find
 		bool Start(Coordinator& coord);
-		void Update(Coordinator& coord);
+		//Update function for tongue
+		//Returns false if ability stopped
+		bool Update(Coordinator& coord);
 		void End(Coordinator& coord);
 
 		void UpdateTonguePos(Coordinator& coord);
+		float DistanceToAnchor(Vec3 ownerPos, Vec3 anchorPos);
 	private:
 
 	};

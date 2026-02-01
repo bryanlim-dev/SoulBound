@@ -164,7 +164,11 @@ namespace NightSnack {
                 UseSpecialAbility();
             else
             {
-                m_flags.grappling = false;
+                if (m_flags.grappling)
+                {
+                    m_frogTongue.End(m_coord);
+                    m_flags.grappling = false;
+                }
             }
                 //if (!UseSpecialAbility()) std::cerr << "Failed to use ability!\n";
 

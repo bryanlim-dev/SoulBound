@@ -52,7 +52,11 @@ namespace NightSnack {
 
             if (m_flags.grappling)
             {
-                tongue.Update(c);
+                if (!tongue.Update(c))
+                {
+                    m_flags.grappling = false;
+                    tongue.End(c);
+                }
             }
 
         });

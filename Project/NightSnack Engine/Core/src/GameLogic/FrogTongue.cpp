@@ -67,15 +67,21 @@ namespace NightSnack
 		return true;
 	}
 
-	void FrogTongue::Update(Coordinator& coord)
+	bool FrogTongue::Update(Coordinator& coord)
 	{
 		float dt = coord.GetSystem<ApplicationSystem>()->GetDT();
 		Vec3 ownerPt = coord.GetComponent<Transform>(m_owner).pos;
 		Vec3 anchorPt = coord.GetComponent<Transform>(m_anchor).pos;
 
+		if (DistanceToAnchor(ownerPt, anchorPt) >= m_tongueLengthMax)
+			return false;
+
 		m_distanceJoint.Solve(coord, ownerPt, anchorPt, dt);
 		UpdateTonguePos(coord);
+
+		return true;
 	}
+
 	void FrogTongue::End(Coordinator& coord)
 	{
 
@@ -97,12 +103,8 @@ namespace NightSnack
 		Vec3 anchorPt = coord.GetComponent<Transform>(m_anchor).pos;
 
 		Vec3 dirVec = (anchorPt - ownerPt);
-		float dir = dirVec.magnitude();
 
-		if (trans.scale.y < 0)
-			trans.scale.y = -trans.scale.y;
-
-		trans.scale.y = dir;
+		trans.scale.y = DistanceToAnchor(ownerPt, anchorPt);
 
 		//==Set Rotation==
 		trans.rot = atan2(dirVec.y, dirVec.x) * (180.0 / PI) + 90;
@@ -110,5 +112,13 @@ namespace NightSnack
 
 		//==Set Transform==
 		trans.pos = (ownerPt + anchorPt) / 2;
+	}
+
+	float FrogTongue::DistanceToAnchor(Vec3 ownerPos, Vec3 anchorPos)
+	{
+		Vec3 dirVec = (anchorPos - ownerPos);
+		float distance = dirVec.magnitude();
+
+		return distance >= 0 ? distance : -distance;
 	}
 }
