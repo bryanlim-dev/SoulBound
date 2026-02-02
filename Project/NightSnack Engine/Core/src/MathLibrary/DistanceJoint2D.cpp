@@ -9,6 +9,11 @@ namespace NightSnack
         m_bodyB = idB;
     }
 
+    void DistanceJoint2D::LockBodyB(bool isLocked)
+    {
+        m_lockAnchorB = isLocked;
+    }
+
     void DistanceJoint2D::SetActive(bool active)
     {
         m_active = active;
@@ -74,11 +79,7 @@ namespace NightSnack
         m_maxDistance = d;
     }
 
-    void DistanceJoint2D::Solve(
-        Coordinator& coord,
-        const Vec2& posA,
-        const Vec2& posB,
-        float /*deltaTime*/)
+    void DistanceJoint2D::Solve(Coordinator& coord, const Vec2& posA, const Vec2& posB, float /*dt*/)
     {
         if (!m_active)
             return;
@@ -141,7 +142,7 @@ namespace NightSnack
         // =========================
         bodyA.vel -= impulse * bodyA.invMass;
 
-        if (bodyB && bodyB->invMass > 0.f)
+        if (!m_lockAnchorB && bodyB && bodyB->invMass > 0.f)
             bodyB->vel += impulse * bodyB->invMass;
     }
 

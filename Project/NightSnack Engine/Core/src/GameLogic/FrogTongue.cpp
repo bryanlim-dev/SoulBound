@@ -65,6 +65,7 @@ namespace NightSnack
 
 		m_distanceJoint.SetActive(true);
 		m_distanceJoint.EnableSpring(true);
+		m_distanceJoint.LockBodyB(true);
 		UpdateTonguePos(coord);
 		
 		//If tongue ownwer is player

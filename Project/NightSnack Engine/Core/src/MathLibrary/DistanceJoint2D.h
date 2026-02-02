@@ -26,6 +26,7 @@ namespace NightSnack
             m_active(false),
             m_anchorA(0.f, 0.f),
             m_anchorB(0.f, 0.f),
+            m_lockAnchorB(false),
             m_enableCollision(false),
             m_autoConfigure(true),
             m_distance(0.f),
@@ -38,11 +39,12 @@ namespace NightSnack
 
         }
 
-        // Entity assignment (set externally)
+        //Entity assignment (set externally)
         void SetBodies(Entity idA, Entity idB);
+        void LockBodyB(bool isLocked);
         void SetActive(bool active);
 
-        // Configuration
+        //Configuration
         void SetAnchors(const Vec2& a, const Vec2& b);
         void SetDistance(float d);
         void SetLimits(float minD, float maxD);
@@ -53,48 +55,46 @@ namespace NightSnack
         void SetMaxForce(float maxForce);
         void EnableCollision(bool enable);
 
-        // Must be called once after setup
+        //Must be called once after setup
         void Initialize(
             Coordinator& coord,
             const Vec2& posA,
             const Vec2& posB
         );
 
-        // Called every physics step if active
-        void Solve(
-            Coordinator& coord,
-            const Vec2& posA,
-            const Vec2& posB,
-            float deltaTime
-        );
+        //Called every update if active
+        void Solve(Coordinator& coord, const Vec2& posA, const Vec2& posB, float deltaTime);
 
     private:
-        // Entity IDs
+        //Entity
         Entity m_bodyA;
         Entity m_bodyB;
 
         bool m_active;
 
-        // Anchors (local, body-centered)
+        //Anchors
         Vec2 m_anchorA;
         Vec2 m_anchorB;
+        bool m_lockAnchorB;
 
-        // Collision flag (handled externally)
+        //Collision flag
         bool m_enableCollision;
 
-        // Distance
+        //Distance
         bool  m_autoConfigure;
         float m_distance;
         float m_minDistance;
         float m_maxDistance;
 
-        // Spring
+        //Spring
         bool  m_enableSpring;
         float m_frequencyHz;
         float m_dampingRatio;
 
-        // Force clamp
+        //Force clamp
         float m_maxForce;
+
+
 
     private:
         void ApplyForce(RigidBody& body, const Vec2& force);
