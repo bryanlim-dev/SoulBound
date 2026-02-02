@@ -71,6 +71,12 @@ namespace NightSnack {
 		Entity m_mainCamera;
 		Entity m_player;
 
+		Vec2 m_roomOriginOffset{ 0.f, 0.f };
+		Vec2 m_currentRoom;
+		Vec2 m_targetCamPos;
+		bool m_isLerping = false;
+		float m_lerpSpeed = 8.0f;
+
 		/**
 		 * @brief find or create the camera entity
 		 * @param coord reference to the ECS coordinator
@@ -87,5 +93,6 @@ namespace NightSnack {
 
 		void FollowEntity(Entity e, Transform& t);
 		void LimitWithinBounds(Transform& t);
+		void UpdateRoomCamera();
 	};
 }

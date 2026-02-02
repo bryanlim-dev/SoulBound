@@ -77,6 +77,7 @@ namespace NightSnack {
 		m_coord.RegisterComponent<Hierarchy>();
 
 		m_coord.RegisterComponent<Animator>();
+		m_coord.RegisterComponent<Particle>();
 		m_coord.RegisterComponent<Font>();
 		m_coord.RegisterComponent<ButtonInfo>();
 		m_coord.RegisterComponent<Script>();
@@ -101,6 +102,7 @@ namespace NightSnack {
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<AnimationSystem>(m_coord, core_dispatcher);
 		AddSystem<TextSystem>(m_coord, core_dispatcher);
+		AddSystem<ParticleSystem>(m_coord, core_dispatcher);
 
 
 		AddSystem<CameraSystem>(m_coord, core_dispatcher);

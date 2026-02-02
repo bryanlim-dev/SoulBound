@@ -67,6 +67,9 @@ namespace NightSnack {
 	void to_json(json&, Animator const&);
 	void from_json(json const&, Animator&);
 
+	// Particle
+	void from_json(json const& j, Particle& p);
+
 	// Font
 	void to_json(json&, Font const&);
 	void from_json(json const&, Font&);

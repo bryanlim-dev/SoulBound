@@ -515,6 +515,80 @@ namespace NightSnack {
 	}
 
 	// --------------------------------------------------------------
+	// PARTICLE
+	// --------------------------------------------------------------
+	void from_json(json const& j, Particle& p) {
+		try {
+			// Load velocity
+			if (j.contains("velocity")) {
+				auto& vel = j.at("velocity");
+				p.velocity.x = vel.value("x", 0.0f);
+				p.velocity.y = vel.value("y", 0.0f);
+			}
+
+			// Load acceleration
+			if (j.contains("acceleration")) {
+				auto& acc = j.at("acceleration");
+				p.acceleration.x = acc.value("x", 0.0f);
+				p.acceleration.y = acc.value("y", 0.0f);
+			}
+
+			// Load start size
+			if (j.contains("startSize")) {
+				auto& startSize = j.at("startSize");
+				p.startSize.x = startSize.value("x", 50.0f);
+				p.startSize.y = startSize.value("y", 50.0f);
+			}
+
+			// Load end size
+			if (j.contains("endSize")) {
+				auto& endSize = j.at("endSize");
+				p.endSize.x = endSize.value("x", 50.0f);
+				p.endSize.y = endSize.value("y", 50.0f);
+			}
+
+			// Load center position
+			if (j.contains("centerPos")) {
+				auto& centerPos = j.at("centerPos");
+				p.centerPos.x = centerPos.value("x", 0.0f);
+				p.centerPos.y = centerPos.value("y", 0.0f);
+			}
+
+			// Load orbit properties
+			p.orbitRadius = j.value("orbitRadius", 0.0f);
+			p.orbitSpeed = j.value("orbitSpeed", 0.0f);
+			p.orbitAngle = j.value("orbitAngle", 0.0f);
+
+			// Load rotation
+			p.angularVelocity = j.value("angularVelocity", 0.0f);
+
+			// Load glow properties
+			p.glowIntensity = j.value("glowIntensity", 1.5f);
+			p.glowFalloff = j.value("glowFalloff", 2.0f);
+
+			// Load lifetime and age
+			p.lifeTime = j.value("lifeTime", 100);
+			p.age = j.value("age", 0);
+
+			// Load gravity flag
+			p.affectedByGravity = j.value("affectedByGravity", true);
+
+			// Load particle type
+			if (j.contains("type")) {
+				std::string typeStr = j.value("type", "SMOKE");
+				if (typeStr == "SMOKE") p.type = PARTICLE_TYPE::SMOKE;
+				else if (typeStr == "GLOW_RISING") p.type = PARTICLE_TYPE::GLOW_RISING;
+				else if (typeStr == "GLOW_ORBIT") p.type = PARTICLE_TYPE::GLOW_ORBIT;
+				else if (typeStr == "SOIL") p.type = PARTICLE_TYPE::SOIL;
+				else p.type = PARTICLE_TYPE::SMOKE;
+			}
+		}
+		catch (std::exception const& e) {
+			std::cerr << "Invalid JSON format for Particle: " << e.what() << '\n';
+		}
+	}
+
+	// --------------------------------------------------------------
 	// FONT
 	// --------------------------------------------------------------
 	void to_json(json& j, Font const& f) {
