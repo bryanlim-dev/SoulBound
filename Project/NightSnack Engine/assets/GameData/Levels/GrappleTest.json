@@ -1510,8 +1510,8 @@
                         "Layer": "GameLayer",
                         "Name": "Collider",
                         "Position": {
-                            "x": -242.1194305419922,
-                            "y": -131.6515655517578,
+                            "x": -251.29310607910156,
+                            "y": -308.2437438964844,
                             "z": 1.0
                         },
                         "Rotation": 0.0,
@@ -1616,19 +1616,46 @@
             "isPrefab": false
         },
         {
-            "Prefab": "RedBall",
+            "Prefab": "GrapplePoint",
             "Transform": {
                 "Layer": "GameLayer",
                 "Name": "NoName",
                 "Position": {
-                    "x": 11.569303512573242,
-                    "y": 192.30308532714844,
+                    "x": -57.23280334472656,
+                    "y": 222.11734008789063,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 100.0,
-                    "y": 100.0
+                    "x": 20.0,
+                    "y": 20.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "GrapplePoint",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 706.0506591796875,
+                    "y": 230.7361602783203,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 20.0,
+                    "y": 20.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -1658,5 +1685,5 @@
         "width": 1600.0,
         "zoom": 1.0
     },
-    "Name": "G"
+    "Name": "GrappleTest"
 }
