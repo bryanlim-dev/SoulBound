@@ -79,9 +79,13 @@ namespace NightSnack
         m_maxDistance = d;
     }
 
-    void DistanceJoint2D::Solve(Coordinator& coord, const Vec2& posA, const Vec2& posB, float /*dt*/)
+    void DistanceJoint2D::Solve(
+        Coordinator& coord,
+        const Vec2& posA,
+        const Vec2& posB,
+        float dt)
     {
-        if (!m_active)
+        if (!m_active || dt <= 0.f)
             return;
 
         if (!coord.HasComponent<RigidBody>(m_bodyA))
@@ -93,6 +97,9 @@ namespace NightSnack
         if (coord.HasComponent<RigidBody>(m_bodyB))
             bodyB = &coord.ModifyComponent<RigidBody>(m_bodyB);
 
+        // --------------------------------------------------
+        // World anchors
+        // --------------------------------------------------
         Vec2 worldA = posA + m_anchorA;
         Vec2 worldB = posB + m_anchorB;
 
@@ -104,45 +111,52 @@ namespace NightSnack
 
         Vec2 n = delta / dist;
 
-        // =========================
-        // Distance error
-        // =========================
-        float targetDist = Clamp(dist, m_minDistance, m_maxDistance);
+        // --------------------------------------------------
+        // FIXED target distance
+        // --------------------------------------------------
+        const float targetDist = m_minDistance;
         float error = dist - targetDist;
 
-        // =========================
-        // Relative velocity
-        // =========================
+        // --------------------------------------------------
+        // Relative velocity along constraint axis
+        // --------------------------------------------------
         float relVel = -bodyA.vel.dot(n);
 
-        if (bodyB)
+        if (bodyB && !m_lockAnchorB)
             relVel += bodyB->vel.dot(n);
 
-        // =========================
-        // Baumgarte stabilization
-        // =========================
-        constexpr float beta = 0.2f; // positional correction strength
-        float bias = beta * error;
+        // --------------------------------------------------
+        // Baumgarte stabilization (dt-scaled)
+        // --------------------------------------------------
+        constexpr float beta = 0.3f; // slightly stronger
+        float bias = (beta / dt) * error;
 
-        // =========================
+        // --------------------------------------------------
         // Effective mass
-        // =========================
-        float invMassSum = bodyA.invMass + (bodyB ? bodyB->invMass : 0.f);
-        if (invMassSum == 0.f)
+        // --------------------------------------------------
+        float invMassSum = bodyA.invMass;
+
+        if (bodyB && !m_lockAnchorB)
+            invMassSum += bodyB->invMass;
+
+        if (invMassSum <= 0.f)
             return;
 
+        // --------------------------------------------------
+        // Constraint impulse
+        // --------------------------------------------------
         float lambda = -(relVel + bias) / invMassSum;
 
         lambda = Clamp(lambda, -m_maxForce, m_maxForce);
 
         Vec2 impulse = n * lambda;
 
-        // =========================
+        // --------------------------------------------------
         // Apply impulse
-        // =========================
+        // --------------------------------------------------
         bodyA.vel -= impulse * bodyA.invMass;
 
-        if (!m_lockAnchorB && bodyB && bodyB->invMass > 0.f)
+        if (bodyB && !m_lockAnchorB && bodyB->invMass > 0.f)
             bodyB->vel += impulse * bodyB->invMass;
     }
 
