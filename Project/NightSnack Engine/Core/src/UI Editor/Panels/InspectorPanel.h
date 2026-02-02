@@ -695,7 +695,35 @@ namespace NightSnack
     inline void InspectorPanel::TilemapComponent()
     {
         m_tilemap.DrawTilemapSettings();
-        m_tilemap.DrawTileEditor(m_coord, *m_selectedEntity);
+
+        ImGui::Text("Tilemap Texture:");
+        ImGui::SameLine();
+
+        // Show current texture name
+        std::string texName = "None";
+        if (!m_tilemap.tileTexturePath.empty())
+        {
+            std::filesystem::path p = m_tilemap.tileTexturePath;
+            texName = p.filename().string();
+        }
+        ImGui::TextColored(ImVec4(0.2f, 0.6f, 1.0f, 1.0f), "%s", texName.c_str());
+
+        // Drag-and-drop target for textures
+        ImVec2 rect_min = ImGui::GetItemRectMin();
+        ImVec2 rect_max = ImGui::GetItemRectMax();
+        if (ImGui::BeginDragDropTarget())
+        {
+            ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 80));
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE"))
+            {
+                // Set the tilemap's texture path
+                const char* droppedPath = static_cast<const char*>(payload->Data);
+                m_tilemap.tileTexturePath = droppedPath;
+            }
+            ImGui::EndDragDropTarget();
+        }
+        // Tilemap editor window
+        //m_tilemap.DrawTileEditor(m_coord, *m_selectedEntity);
     }
 
 	// Draws RigidBody component details which includes velocity, angular
@@ -829,6 +857,21 @@ namespace NightSnack
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 100.0f);
             ImGui::TableSetupColumn("Value2", ImGuiTableColumnFlags_WidthFixed, 100.0f);
 
+            // Camera mode dropdown
+            const char* modeNames[] = { "RoomLerp", "OriginalWithOffset" };
+            int modeIdx = static_cast<int>(cam.mode);
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Camera Mode");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::Combo("##CameraMode", &modeIdx, modeNames, IM_ARRAYSIZE(modeNames)))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
+                );
+                cam.mode = static_cast<CameraMode>(modeIdx);
+            }
+
             // Is Main Camera
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Is Main Cam");
@@ -836,7 +879,7 @@ namespace NightSnack
             ImGui::Checkbox("##IsMainCam", &cam.isMainCam);
 
             // Zoom
-			float zoom = cam.zoom;
+            float zoom = cam.zoom;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Zoom");
             ImGui::TableSetColumnIndex(1);
@@ -845,12 +888,12 @@ namespace NightSnack
             {
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
-				);
-				cam.zoom = zoom;
+                );
+                cam.zoom = zoom;
             }
 
             // Width
-			float width = cam.width;
+            float width = cam.width;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Width");
             ImGui::TableSetColumnIndex(1);
@@ -859,12 +902,12 @@ namespace NightSnack
             {
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
-				);
-				cam.width = width;
+                );
+                cam.width = width;
             }
 
             // Height
-			float height = cam.height;
+            float height = cam.height;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Height");
             ImGui::TableSetColumnIndex(1);
@@ -873,8 +916,8 @@ namespace NightSnack
             {
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
-				);
-				cam.height = height;
+                );
+                cam.height = height;
             }
 
             // Camera min and max positions
@@ -1190,10 +1233,11 @@ namespace NightSnack
 
         auto& fontComp = m_coord.ModifyComponent<Font>(*m_selectedEntity);
 
-        if (ImGui::BeginTable("FontTable", 2, ImGuiTableFlags_SizingFixedFit))
+        if (ImGui::BeginTable("FontTable", 3, ImGuiTableFlags_SizingFixedFit))
         {
             ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+            ImGui::TableSetupColumn("Value2", ImGuiTableColumnFlags_WidthFixed, 80.0f);
 
 			// Font Type (read-only)
             ImGui::TableNextRow();
@@ -1228,6 +1272,27 @@ namespace NightSnack
 				);
                 fontComp.fontSize = fontSize;
 			}
+
+			// Text Offset Position
+			float fontoffset[2] = { fontComp.offsetPosition.x, fontComp.offsetPosition.y };
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::Text("Offset Position");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Text("X"); ImGui::SameLine();
+            if (ImGui::InputFloat("##offsetx", &fontoffset[0], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::FontSnapshot{ *m_selectedEntity, fontComp }
+                );
+				fontComp.offsetPosition.x = fontoffset[0];
+            }
+            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Text("Y"); ImGui::SameLine();
+            if (ImGui::InputFloat("##offsety", &fontoffset[1], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::FontSnapshot{ *m_selectedEntity, fontComp }
+                );
+                fontComp.offsetPosition.y = fontoffset[1];
+            }
 
             // Text Color box
             float color[3] = { fontComp.textColor.x, fontComp.textColor.y, fontComp.textColor.z };

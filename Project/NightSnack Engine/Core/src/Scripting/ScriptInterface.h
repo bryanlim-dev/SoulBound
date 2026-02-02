@@ -22,10 +22,20 @@
 #include <mono/metadata/object.h>
 #include <string>
 
+
+
 namespace NightSnack::Scripting {
 
     // Interface that ScriptAPI will use to interact with engine
     class CORE_API ScriptInterface {
+
+        //Used for GetComponentIn<X>
+        using ComponentQueryFn = std::function<Entity(Coordinator&, Entity)>;
+        struct ComponentEntry
+        {
+            ComponentQueryFn getInChildren;
+            ComponentQueryFn getInParent;
+        };
 
     public:
         ScriptInterface(Coordinator& coord) : m_coord{ coord } {}
@@ -320,6 +330,8 @@ namespace NightSnack::Scripting {
         //Sets Camera of entity
         void SetCamera(Entity e, Cam cam);
 
+        Entity GetMainCamera();
+
         //Gets Camera isMain of entity
         bool GetCameraIsMain(Entity e);
         //Sets Camera isMain of entity
@@ -339,6 +351,11 @@ namespace NightSnack::Scripting {
         float GetCameraHeight(Entity e);
         //Sets Camera height of entity
         void SetCameraHeight(Entity e, float main);
+
+        //Gets Animator current animation UVTopLeft of entity
+        vec2 GetCameraOffset(Entity e);
+        //Sets Animator current animation UVTopLeft of entity
+        void SetCameraOffset(Entity e, vec2 offse);
 #pragma endregion
 
 #pragma region Audio
@@ -399,6 +416,12 @@ namespace NightSnack::Scripting {
         bool IsKeyReleased(int key);
 #pragma endregion
 
+        Entity GetComponentInChildren(Entity entity, std::string componentName);
+        MonoObject* GetScriptComponentInChildren(Entity entity, std::string scriptName);
+
+        Entity GetComponentInParent(Entity entity, std::string componentName);
+        MonoObject* GetScriptComponentInParent(Entity entity, std::string scriptName);
+
         // Audio play sound
         void PlaySound(const std::string& path);
 
@@ -423,6 +446,8 @@ namespace NightSnack::Scripting {
     private:
         //coordiator refrence
         Coordinator& m_coord;
+
+        static const std::unordered_map<std::string, ComponentEntry> componentRegistry;
     };
 
 } // namespace NightSnack::Scripting

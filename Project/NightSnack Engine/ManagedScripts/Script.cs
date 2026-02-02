@@ -11,7 +11,10 @@
  * All rights reserved.
  ******************************************************************************/
 
+using System;
+using System.Diagnostics;
 using System.Security.Cryptography.X509Certificates;
+using static ManagedScripts.Script;
 
 namespace ManagedScripts
 {
@@ -36,14 +39,28 @@ namespace ManagedScripts
         //Runs when script is destroyed
         public virtual void OnDestroy() { }
 
+        //public static T GetComponentInChildren<T>(uint entityParentID) where T : class
+        //{
+        //    Engine.Log("No overloaded component found, create the overloaded function for it! (GetComponentInChildren<T>())!");
+        //    return null;
+        //}
+
+
         public class Component
         {
             public uint EntityId;
             public Component(uint id)
-            { 
+            {
                 EntityId = id;
             }
+
+            //Gets name of component
+            //To overload in child classes add new, e.g.
+            //public new static string GetName() { return "Transform"; }
+            public static string GetName() { return "ComponentBase"; }
         }
+
+
 
         // Convenience properties
         #region Transform
@@ -89,7 +106,10 @@ namespace ManagedScripts
                 get => Engine.GetLayer(EntityId);
                 set => Engine.SetLayer(EntityId, value);
             }
+            public new static string GetName() { return "Transform"; }
+
         }
+
         #endregion
 
         #region RigidBody
@@ -157,6 +177,18 @@ namespace ManagedScripts
                 get => Engine.GetUseRotate(EntityId);
                 set => Engine.SetUseRotate(EntityId, value);
             }
+
+            public new static string GetName() { return "RigidBody"; }
+
+            public void ApplyForce(Vector2 force)
+            {
+                if (this.InvMass == 0f)
+                    return;
+                ForceDirection = force.Normalize();
+                ForceMagnitude = force.Length();
+                ForceActive = true;
+            }
+
         }
         #endregion //Rigidbody
 
@@ -212,6 +244,8 @@ namespace ManagedScripts
                 get => Engine.GetColliderColliding(EntityId);
                 set => Engine.SetColliderColliding(EntityId, value);
             }
+            public new static string GetName() { return "Collider"; }
+
         }
 
         #endregion
@@ -229,6 +263,9 @@ namespace ManagedScripts
                 get => Engine.GetRGBA(EntityId);
                 set => Engine.SetRGBA(EntityId, value);
             }
+
+            public new static string GetName() { return "Color"; }
+
         }
         #endregion
 
@@ -254,13 +291,16 @@ namespace ManagedScripts
                 get => Engine.GetIsWireframe(EntityId);
                 set => Engine.SetIsWireframe(EntityId, value);
             }
+
+            public new static string GetName() { return "Renderable"; }
+
         }
         #endregion
 
         #region Animator
-        public class Animnator : Component
+        public class Animator : Component
         {
-            public Animnator(uint id) : base(id)
+            public Animator(uint id) : base(id)
             {
             }
             //public string AnimatorCurrentClip
@@ -322,6 +362,9 @@ namespace ManagedScripts
             //    get => Engine.GetAnimatorUVBottomRight(EntityId);
             //    set => Engine.SetAnimatorUVTBottomRight(EntityId, value);
             //}
+
+            public new static string GetName() { return "Animator"; }
+
         }
 
 
@@ -360,6 +403,9 @@ namespace ManagedScripts
                 get => Engine.GetFontOffsetPosition(EntityId);
                 set => Engine.SetFontOffsetPosition(EntityId, value);
             }
+
+            public new static string GetName() { return "Font"; }
+
         }
 
 
@@ -367,7 +413,7 @@ namespace ManagedScripts
         #endregion
 
         #region Audio
-        
+
         public class Audio : Component
         {
             public Audio(uint id) : base(id)
@@ -403,9 +449,52 @@ namespace ManagedScripts
                 get => Engine.GetAudioIsPlaying(EntityId);
                 set => Engine.SetAudioIsPlaying(EntityId, value);
             }
+            public new static string GetName() { return "Audio"; }
+
         }
 
         #endregion
+
+        public class Camera : Component
+        {
+            public Camera(uint id) : base(id)
+            {
+            }
+
+            public static uint GetMainCamera()
+            {
+                return Engine.GetMainCamera();
+            }
+
+            public bool CameraIsMain
+            {
+                get => Engine.GetCameraIsMain(EntityId);
+                set => Engine.SetCameraIsMain(EntityId, value);
+            }
+            public float CameraZoom
+            {
+                get => Engine.GetCameraZoom(EntityId);
+                set => Engine.SetCameraZoom(EntityId, value);
+            }
+            public float CameraWidth
+            {
+                get => Engine.GetCameraWidth(EntityId);
+                set => Engine.SetCameraWidth(EntityId, value);
+            }
+            public float CameraHeight
+            {
+                get => Engine.GetCameraHeight(EntityId);
+                set => Engine.SetCameraHeight(EntityId, value);
+            }
+            public Vector2 CameraOffset
+            {
+                get => Engine.GetCameraOffset(EntityId);
+                set => Engine.SetCameraOffset(EntityId, value);
+            }
+
+            public new static string GetName() { return "Camera"; }
+
+        }
 
         #region Scripting
         //public class Scripting
@@ -424,6 +513,127 @@ namespace ManagedScripts
         //    get => Engine.GetScript(entityId, name) as T;
         //}
 
+        #endregion
+
+        #region GetComponentIn
+        public T GetComponentInChildren<T>(uint entityParentID) where T : Component
+        {
+            //Add more compoents as needed (Case Senstitive)
+            if (typeof(T) == typeof(Transform))
+            {
+                Transform component = new Transform(Engine.GetComponentInChildren(EntityId, Transform.GetName()));
+                return (T)(object)component;
+                //return GetTransformInChildren(parentID) as T;
+            }
+            else if (typeof(T) == typeof(RigidBody))
+            {
+                RigidBody component = new RigidBody(Engine.GetComponentInChildren(EntityId, RigidBody.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Collider))
+            {
+                Collider component = new Collider(Engine.GetComponentInChildren(EntityId, Collider.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Color))
+            {
+                Color component = new Color(Engine.GetComponentInChildren(EntityId, Color.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Renderer))
+            {
+                Renderer component = new Renderer(Engine.GetComponentInChildren(EntityId, Renderer.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Animator))
+            {
+                Animator component = new Animator(Engine.GetComponentInChildren(EntityId, Animator.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Font))
+            {
+                Font component = new Font(Engine.GetComponentInChildren(EntityId, Font.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Audio))
+            {
+                Audio component = new Audio(Engine.GetComponentInChildren(EntityId, Audio.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Camera))
+            {
+                Camera component = new Camera(Engine.GetComponentInChildren(EntityId, Camera.GetName()));
+                return (T)(object)component;
+            }
+
+            Engine.Log($"GetComponentInChildren<{typeof(T).Name}> not supported, add it in Script.cs & ScriptInterface.h!");
+            return null;
+        }
+
+        public T GetScriptComponentInChildren<T>(uint entityParentID, string scriptName) where T : Script
+        {
+            return Engine.GetScriptComponentInChildren<T>(entityParentID, scriptName) as T;
+        }
+
+
+        public T GetComponentInParent<T>(uint entityParentID) where T : Component
+        {
+            //Add more compoents as needed (Case Senstitive)
+            if (typeof(T) == typeof(Transform))
+            {
+                Transform component = new Transform(Engine.GetComponentInParent(EntityId, Transform.GetName()));
+                return (T)(object)component;
+                //return GetTransformInChildren(parentID) as T;
+            }
+            else if (typeof(T) == typeof(RigidBody))
+            {
+                RigidBody component = new RigidBody(Engine.GetComponentInParent(EntityId, RigidBody.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Collider))
+            {
+                Collider component = new Collider(Engine.GetComponentInParent(EntityId, Collider.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Color))
+            {
+                Color component = new Color(Engine.GetComponentInParent(EntityId, Color.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Renderer))
+            {
+                Renderer component = new Renderer(Engine.GetComponentInParent(EntityId, Renderer.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Animator))
+            {
+                Animator component = new Animator(Engine.GetComponentInParent(EntityId, Animator.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Font))
+            {
+                Font component = new Font(Engine.GetComponentInParent(EntityId, Font.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Audio))
+            {
+                Audio component = new Audio(Engine.GetComponentInParent(EntityId, Audio.GetName()));
+                return (T)(object)component;
+            }
+            else if (typeof(T) == typeof(Camera))
+            {
+                Camera component = new Camera(Engine.GetComponentInParent(EntityId, Camera.GetName()));
+                return (T)(object)component;
+            }
+
+            Engine.Log($"GetComponentInParent<{typeof(T).Name}> not supported, add it in Script.cs & ScriptInterface.h!");
+            return null;
+        }
+
+        public T GetScriptComponentInParent<T>(uint entityParentID, string scriptName) where T : Script
+        {
+            return Engine.GetScriptComponentInParent<T>(entityParentID, scriptName) as T;
+        }
         #endregion
 
         public float DeltaTime => Engine.DeltaTime;

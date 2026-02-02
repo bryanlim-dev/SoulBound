@@ -528,6 +528,13 @@ extern "C" {
     // --------------------------------------------------------------
     
 #pragma region Camera
+    //Get Main Camera
+    static uint32_t NightSnack_GetMainCamera() {
+        if (!g_scriptInterface) { return 0; }
+        return g_scriptInterface->GetMainCamera();
+    }
+
+    
     // isMainCam --------------
     static void NightSnack_GetCameraIsMain(uint32_t id, bool* outMain) {
         if (!g_scriptInterface || !outMain) { return; }
@@ -566,6 +573,16 @@ extern "C" {
     static void NightSnack_SetCameraHeight(uint32_t id, float* height) {
         if (!g_scriptInterface || !height) { return; }
         g_scriptInterface->SetCameraHeight(id, *height);
+    }
+
+    // Scale -----------------
+    static void NightSnack_GetCameraOffset(uint32_t id, NightSnack::Scripting::vec2* offset) {
+        if (!g_scriptInterface || !offset) { return; }
+        *offset = g_scriptInterface->GetCameraOffset(id);
+    }
+    static void NightSnack_SetCameraOffset(uint32_t id, NightSnack::Scripting::vec2* offset) {
+        if (!g_scriptInterface || !offset) { return; }
+        g_scriptInterface->SetCameraOffset(id, *offset);
     }
 
 #pragma endregion
@@ -685,6 +702,30 @@ extern "C" {
 
     // --------------------------------------------------------------
 
+    //GetComponent
+    static uint32_t NightSnack_GetComponentInChildren(uint32_t id, MonoString* componentType) {
+        if (!g_scriptInterface) { return 0; }
+        char* cStr = mono_string_to_utf8(componentType);
+        return g_scriptInterface->GetComponentInChildren(id, std::string(cStr));
+    }
+
+    static MonoObject* NightSnack_GetScriptComponentInChildren(uint32_t id, MonoString* scriptName) {
+        if (!g_scriptInterface) { return 0; }
+        char* cStr = mono_string_to_utf8(scriptName);
+        return g_scriptInterface->GetScriptComponentInChildren(id, std::string(cStr));
+    }
+
+    static uint32_t NightSnack_GetComponentInParent(uint32_t id, MonoString* componentType) {
+        if (!g_scriptInterface) { return 0; }
+        char* cStr = mono_string_to_utf8(componentType);
+        return g_scriptInterface->GetComponentInParent(id, std::string(cStr));
+    }
+
+    static MonoObject* NightSnack_GetScriptComponentInParent(uint32_t id, MonoString* scriptName) {
+        if (!g_scriptInterface) { return 0; }
+        char* cStr = mono_string_to_utf8(scriptName);
+        return g_scriptInterface->GetScriptComponentInParent(id, std::string(cStr));
+    }
 
     // Printing
     static void NightSnack_Log(MonoString* msg) {
@@ -920,6 +961,8 @@ namespace NightSnack::Scripting {
 
 #pragma region Camera
 
+        mono_add_internal_call("ManagedScripts.Engine::GetMainCamera_Internal", (void*)NightSnack_GetMainCamera);
+        
         mono_add_internal_call("ManagedScripts.Engine::GetCameraIsMain_Internal", (void*)NightSnack_GetCameraIsMain);
         mono_add_internal_call("ManagedScripts.Engine::SetCameraIsMain_Internal", (void*)NightSnack_SetCameraIsMain);
 
@@ -931,6 +974,9 @@ namespace NightSnack::Scripting {
 
         mono_add_internal_call("ManagedScripts.Engine::GetCameraHeight_Internal", (void*)NightSnack_GetCameraHeight);
         mono_add_internal_call("ManagedScripts.Engine::SetCameraHeight_Internal", (void*)NightSnack_SetCameraHeight);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetCameraOffset_Internal", (void*)NightSnack_GetCameraOffset);
+        mono_add_internal_call("ManagedScripts.Engine::SetCameraOffset_Internal", (void*)NightSnack_SetCameraOffset);
 
 #pragma endregion
 
@@ -967,6 +1013,11 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::IsKeyDown_Internal", (void*)NightSnack_IsKeyDown);
         mono_add_internal_call("ManagedScripts.Engine::IsKeyReleased_Internal", (void*)NightSnack_IsKeyReleased);
 #pragma endregion
+
+        mono_add_internal_call("ManagedScripts.Engine::GetComponentInChildren_Internal", (void*)NightSnack_GetComponentInChildren);
+        mono_add_internal_call("ManagedScripts.Engine::GetScriptComponentInChildren_Internal", (void*)NightSnack_GetScriptComponentInChildren);
+        mono_add_internal_call("ManagedScripts.Engine::GetComponentInParent_Internal", (void*)NightSnack_GetComponentInParent);
+        mono_add_internal_call("ManagedScripts.Engine::GetScriptComponentInParent_Internal", (void*)NightSnack_GetScriptComponentInParent);
 
         mono_add_internal_call("ManagedScripts.Engine::Log_Internal", (void*)NightSnack_Log);
         mono_add_internal_call("ManagedScripts.Engine::PlaySound_Internal", (void*)NightSnack_PlaySound);

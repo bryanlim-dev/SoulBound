@@ -58,12 +58,24 @@ namespace NightSnack {
 		 */
 		std::string GetName() const override;
 
+		/**
+		 * @brief retrieve the main camera entity
+		 * @return Main Camera Entity ID
+		 */
+		Entity GetMainCamera() const;
+
 	private:
 		Coordinator& m_coord;
 		EventDispatcher* m_dispatcher;
 
 		Entity m_mainCamera;
 		Entity m_player;
+
+		Vec2 m_roomOriginOffset{ 0.f, 0.f };
+		Vec2 m_currentRoom;
+		Vec2 m_targetCamPos;
+		bool m_isLerping = false;
+		float m_lerpSpeed = 8.0f;
 
 		/**
 		 * @brief find or create the camera entity
@@ -81,5 +93,6 @@ namespace NightSnack {
 
 		void FollowEntity(Entity e, Transform& t);
 		void LimitWithinBounds(Transform& t);
+		void UpdateRoomCamera();
 	};
 }

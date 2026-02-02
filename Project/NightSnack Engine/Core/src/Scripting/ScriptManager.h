@@ -112,6 +112,10 @@ namespace NightSnack::Scripting {
 		//Also updates the script component
 		void UpdateScriptValue(void* scriptInstance, const ExposedField& field, const ExposedValue& value);
 
+		bool FindScriptInEntity(Entity id, std::string scriptName, void** outScript);
+		void* GetScriptInChild(Entity parentID, std::string scriptName);
+		void* GetScriptInParent(Entity id, std::string scriptName);
+
 	private:
 		// Helper functions
 		void Initialize();
