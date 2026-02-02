@@ -91,12 +91,14 @@ namespace NightSnack::Scene {
 			// Register buttons
 			RegisterButtons();
 		}
-
+		
 		// Main function to be called in Core Update loop
 		void Update() override;
 		// Resets m_levelKeys and loads all json files in "GameData/Levels"
 		void ReloadLevels();
 		void CreateSceneCamera(json const&);
+		void ReadCameraKeyframes(json const&);
+		json WriteCameraKeyframes();
 
 		// Spawn Overlay menu (Pause menu) (currently not in use)
 		void CreateOverlayMenu();
@@ -143,6 +145,8 @@ namespace NightSnack::Scene {
 
 		Entity m_sceneCam{ INVALID_ENTITY };
 		float m_camDepth = 10.f;
+		// Camera frames - Read from level.json
+		std::map<Entity, json> m_camFrames;
 
 		std::vector<Entity> m_overlayEntites;
 
@@ -151,6 +155,9 @@ namespace NightSnack::Scene {
 		bool overlayOn = false;
 		bool m_mouseClicked = false;
 		bool m_restart = false;
+
+		Entity m_player = INVALID_ENTITY;
+		Entity m_camIndex = INVALID_ENTITY;
 	};
 
 }	// NightSnack::Scene

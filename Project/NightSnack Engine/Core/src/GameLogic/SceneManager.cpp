@@ -12,6 +12,9 @@
  * All rights reserved.
  ******************************************************************************/
 #include "SceneManager.h"
+#include "Systems/Physics/Physics.h"
+#include "Systems/PlayerController.h"
+#include "Graphics/Camera.h"
 
 // Private helper function that checks mouse and button collision
 static bool ButtonCollisionCheck(float mx, float my, NightSnack::Transform const& t, NightSnack::Collider const& c) {
@@ -43,6 +46,23 @@ namespace NightSnack::Scene {
 		if (m_restart) {
 			RestartLevel();
 			m_restart = false;
+		}
+
+
+		// Check if player is colliding with a CamTrigger -> if so, interpolate camera to new position;
+		m_player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+
+		if (m_player != INVALID_ENTITY) {
+			auto const& physics = m_coord.GetSystem<PhysicsSystem>();
+			for (auto& [a, b] : m_camFrames) {
+				if (a == m_camIndex) continue;
+				if (!m_coord.HasComponent<Collider>(a) || !m_coord.GetComponent<Collider>(a).colliding) continue;
+				if (physics->EntitiesAreColliding(a, m_player)) {
+					m_coord.GetSystem<CameraSystem>()->UpdateCamBounds(b);
+					m_camIndex = a;
+					break;
+				}
+			}
 		}
 	}
 
@@ -98,6 +118,109 @@ namespace NightSnack::Scene {
 			}
 		}
 	}
+
+	void SceneManager::ReadCameraKeyframes(json const& j) {
+		m_camFrames.clear();
+		auto const& factory = m_coord.GetSystem<EntityFactory>();
+
+		for (auto const& item : j) {
+			json c;
+			// Camera data to be stored
+			if (item.contains("minX")) c["minX"] = item["minX"];
+			if (item.contains("maxX")) c["maxX"] = item["maxX"];
+
+			if (item.contains("minY")) c["minY"] = item["minY"];
+			if (item.contains("maxY")) c["maxY"] = item["maxY"];
+
+			if (item.contains("zoom")) c["zoom"] = item["zoom"];
+
+			// Create trigger collider entity
+			Vec2 scale;
+			if (!item.contains("scale")) scale = Vec2(10.f);
+			else scale = item["scale"];
+
+			Entity e = factory->Create();
+			Transform t = {
+				item["pos"], 0.f, Vec2{100.f, 100.f},
+				Vec3{}, Vec2{},
+				LayerType::GAMELAYER,
+				false,
+				true,
+				"CamTrigger"	// Don't change name; else also edit EntityFactory::CacheLevelEntities;
+			};
+			m_coord.ModifyComponent<Transform>(e) = t;
+
+			Collider col = {
+				ShapeType::AABB, ColliderType::Trigger, true,
+				scale.x, scale.y, scale.x / 2.f,
+				false, false
+			};
+			m_coord.AddComponent<Collider>(e, col);
+
+			// Invisible renderer component
+			m_coord.AddComponent<Renderable>(e, Renderable{});
+			m_coord.AddComponent<Color>(e, Color{});    // zero alpha
+			// Required for Physics system
+			m_coord.AddComponent<RigidBody>(e, RigidBody{});
+
+			m_camFrames.insert({e, c});
+			
+			//// Create Triggers colliders for Cam Data
+			//for (auto const& trig : item["triggers"]) {
+			//	if (!trig.contains("pos")) continue;
+			//	Vec2 scale;
+			//	if (!trig.contains("scale")) scale = Vec2(10.f);
+			//	else scale = trig["scale"];
+			//	
+			//	Entity e = factory->Create();
+			//	Transform t = {
+			//		trig["pos"], 0.f, scale,
+			//		Vec3{}, Vec2{},
+			//		LayerType::GAMELAYER,
+			//		false,
+			//		true,
+			//		"CamTrigger"
+			//	};
+			//	m_coord.ModifyComponent<Transform>(e) = t;
+			//	Collider col = {
+			//		ShapeType::AABB, ColliderType::Trigger, true,
+			//		scale.x, scale.y, scale.x / 2.f,
+			//		false, false
+			//	};
+			//	m_coord.AddComponent<Collider>(e, col);
+			//	// Invisible renderer component
+			//	m_coord.AddComponent<Renderable>(e, Renderable{});
+			//	m_coord.AddComponent<Color>(e, Color{});    // zero alpha
+			//	// Required for Physics system
+			//	m_coord.AddComponent<RigidBody>(e, RigidBody{});
+			//	// entity mapped to cam data
+			//	m_camFrames.push_back({ e, c });	
+			//}
+		}
+	}
+	json SceneManager::WriteCameraKeyframes() {
+		json keyframes = json::array();
+
+		for (auto& [a, b] : m_camFrames) {
+			json j;
+			
+			j["minX"] = b["minX"]; j["maxX"] = b["maxX"];
+			j["minY"] = b["minY"]; j["maxY"] = b["maxY"];
+			j["zoom"] = b["zoom"];
+
+			Transform const& t = m_coord.GetComponent<Transform>(a);
+			Collider const& c = m_coord.GetComponent<Collider>(a);
+
+			j["pos"] = t.pos;
+			j["scale"] = Vec2(c.width, c.height);
+
+			keyframes.push_back(j);
+
+			//m_coord.DestroyEntity(a);
+		}
+
+		return keyframes;
+	}
 	
 	// Creates all entities required for a level through the entity factory
 	// and sets up BGM for level, refreshes script manager.
@@ -112,7 +235,11 @@ namespace NightSnack::Scene {
 		// Create all Entities
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
+
+		// Camera
+		ReadCameraKeyframes(level["MainCamera"]["KeyFrames"]);
 		CreateSceneCamera(level);
+		
 		factory->CreateLevelEntities(level);
 
 		// Play Background Music
@@ -131,15 +258,31 @@ namespace NightSnack::Scene {
 		if (!j.contains("MainCamera")) return;
 
 		Entity e = m_coord.CreateEntity();
-		json c = j["MainCamera"];
+		json c;
+		c = j["MainCamera"];
 
 		Transform t;
-		t.pos.x = c["posX"]; t.pos.y = c["posY"]; t.pos.z = m_camDepth;
-		t.layer = LayerType::GAMEUI;
-		m_coord.AddComponent<Transform>(e, t);
-		m_coord.AddComponent<Hierarchy>(e, Hierarchy{});
 
 		Camera cam = j["MainCamera"];
+		//Camera cam;
+
+		if (!m_camFrames.empty()) {
+			cam.minX = (m_camFrames.begin()->second)["minX"];
+			cam.maxX = (m_camFrames.begin()->second)["maxX"];
+			cam.minY = (m_camFrames.begin()->second)["minY"];
+			cam.maxY = (m_camFrames.begin()->second)["maxY"];
+			
+			m_camIndex = m_camFrames.begin()->first;
+		}
+		else {
+			cam.minX = cam.maxX = cam.minY = cam.maxY = 0.f;
+		}
+		t.pos.x = t.pos.y = 0.f;
+		t.pos.z = m_camDepth;
+		t.layer = LayerType::GAMEUI;
+
+		m_coord.AddComponent<Transform>(e, t);
+		m_coord.AddComponent<Hierarchy>(e, Hierarchy{});
 		m_coord.AddComponent<Camera>(e, cam);
 
 		m_sceneCam = e;
@@ -152,6 +295,7 @@ namespace NightSnack::Scene {
 		factory->DestroyLevelEntities();
 
 		// Reset Camera
+		ReadCameraKeyframes(level["MainCamera"]["KeyFrames"]);
 		CreateSceneCamera(level);
 
 		// Create all Entities
@@ -191,6 +335,7 @@ namespace NightSnack::Scene {
 
 		// Save Camera data;
 		level["MainCamera"] = m_coord.GetComponent<Camera>(m_sceneCam);
+		level["MainCamera"]["KeyFrames"] = WriteCameraKeyframes();
 		Transform const& t = m_coord.GetComponent<Transform>(m_sceneCam);
 		level["MainCamera"]["posX"] = t.pos.x;
 		level["MainCamera"]["posY"] = t.pos.y;
@@ -268,13 +413,15 @@ namespace NightSnack::Scene {
 		std::set<Entity> entities = m_coord.GetLivingEntities();
 		if (entities.empty()) { return; }
 
-		m_levelCache["Entities"] = m_coord.GetSystem<EntityFactory>()->CacheLevelEntities();
 		m_levelCache["MainCamera"] = m_coord.GetComponent<Camera>(m_sceneCam);
+		m_levelCache["MainCamera"]["KeyFrames"] = WriteCameraKeyframes();
 
 		Transform const& t = m_coord.GetComponent<Transform>(m_sceneCam);
 		m_levelCache["MainCamera"]["posX"] = t.pos.x;
 		m_levelCache["MainCamera"]["posY"] = t.pos.y;
 		m_levelCache["MainCamera"]["posZ"] = t.pos.z;
+
+		m_levelCache["Entities"] = m_coord.GetSystem<EntityFactory>()->CacheLevelEntities();
 	}
 
 	// Restore scene to cached level -> restore after Stopping simulation in Editor
@@ -285,6 +432,8 @@ namespace NightSnack::Scene {
 		// Restore all entities to original
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
+
+		ReadCameraKeyframes(m_levelCache["MainCamera"]["KeyFrames"]);
 		CreateSceneCamera(m_levelCache);
 		factory->CreateLevelEntities(m_levelCache);
 		

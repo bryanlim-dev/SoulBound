@@ -126,6 +126,8 @@ namespace NightSnack {
         //bool CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2);
         bool CheckTunneling(Transform const& t1, Transform const& t2, RigidBody const& r1);
 
+        bool EntitiesAreColliding(Entity e1, Entity e2);
+
         float GetGravity() const { return gravity; }
         float GetDrag() const { return drag; }
         float GetFriction() const { return friction; }

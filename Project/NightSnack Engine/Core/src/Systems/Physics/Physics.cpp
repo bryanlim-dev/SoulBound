@@ -517,6 +517,18 @@ namespace NightSnack {
 		return false;
 	}
 
+	bool PhysicsSystem::EntitiesAreColliding(Entity e1, Entity e2) {
+
+		Vec2 normal; float depth;
+		return CheckCollision(
+			m_coord.GetComponent<Transform>(e1),
+			m_coord.GetComponent<Transform>(e2),
+			m_coord.GetComponent<Collider>(e1),
+			m_coord.GetComponent<Collider>(e2),
+			normal, depth
+		);
+	}
+
 	//bool PhysicsSystem::CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2) {
 	//	
 	//	if (c1.shape == ShapeType::AABB && c2.shape == ShapeType::AABB) {

@@ -337,7 +337,7 @@ namespace NightSnack
         strncpy_s(nameBuffer, (*m_uiNames)[entity].c_str(), sizeof(nameBuffer));
         nameBuffer[sizeof(nameBuffer) - 1] = 0;
 
-        if (!m_coord.HasComponent<Camera>(entity)) {
+        if (!m_coord.HasComponent<Camera>(entity) && m_coord.GetComponent<Transform>(entity).name != "CamTrigger") {
             ImGui::PushID("EntityNameField");
             ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 80.0f);
             if (ImGui::InputText("##EntityName", nameBuffer, sizeof(nameBuffer))) {

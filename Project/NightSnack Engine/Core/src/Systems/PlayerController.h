@@ -30,7 +30,7 @@ struct PlayerFlags {
     bool isPossessing = false;
     bool useAbility = false;
 
-    bool canDoubleJump = true;
+    bool canDoubleJump = false;
     // add more flags if needed
 };
 

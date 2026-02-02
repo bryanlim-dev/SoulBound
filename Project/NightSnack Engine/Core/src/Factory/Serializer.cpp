@@ -429,8 +429,8 @@ namespace NightSnack {
 			{"width", c.width},
 			{"zoom", c.zoom},
 
-			{"minX", c.minX}, {"minY", c.minY},
-			{"maxX", c.maxX}, {"maxY", c.maxY},
+			//{"minX", c.minX}, {"minY", c.minY},
+			//{"maxX", c.maxX}, {"maxY", c.maxY},
 			{"offsetX", c.offset.x}, {"offsetY", c.offset.y},
 			{"cameraLock", c.lock}
 		};
@@ -442,14 +442,14 @@ namespace NightSnack {
 			j.at("width").get_to(c.width);
 			j.at("height").get_to(c.height);
 
-			if (j.contains("minX")) j.at("minX").get_to(c.minX);
+			/*if (j.contains("minX")) j.at("minX").get_to(c.minX);
 			if (j.contains("maxX")) j.at("maxX").get_to(c.maxX);
 			if (j.contains("minY")) j.at("minY").get_to(c.minY);
-			if (j.contains("maxY")) j.at("maxY").get_to(c.maxY);
+			if (j.contains("maxY")) j.at("maxY").get_to(c.maxY);*/
 			if (j.contains("cameraLock")) j.at("cameraLock").get_to(c.lock);
 
-			if (j.contains("offsetX")) j.at("offsetX").get_to(c.offset.x);
-			if (j.contains("offsetY")) j.at("offsetY").get_to(c.offset.y);
+			//if (j.contains("offsetX")) j.at("offsetX").get_to(c.offset.x);
+			//if (j.contains("offsetY")) j.at("offsetY").get_to(c.offset.y);
 		}
 		catch (std::exception const& e) {
 			std::cerr << "Invalid JSON format " << e.what() << '\n';

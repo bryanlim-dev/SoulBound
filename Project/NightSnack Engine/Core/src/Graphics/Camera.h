@@ -45,6 +45,7 @@ namespace NightSnack {
 
 		Transform FollowPlayer();
 		void CenterCameraWhenIdle();
+		void UpdateCamBounds(json const&);
 
 		/**
 		 * @brief retrieve the system signature
@@ -94,6 +95,6 @@ namespace NightSnack {
 
 		void FollowEntity(Entity e, Transform& t);
 		void LimitWithinBounds(Transform& t);
-		void UpdateRoomCamera();
+		void LerpCameraPosition(Transform& camT);
 	};
 }
