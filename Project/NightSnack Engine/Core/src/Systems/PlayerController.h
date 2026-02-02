@@ -7,7 +7,7 @@
  * Controls the Player Entity and sets their Velocity component when key inputs
  * are detected.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -16,6 +16,7 @@
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/Input.h"
 #include "Systems/AudioSystem.h"
+#include "Systems/ParticleSystem.h"
 
 struct PlayerFlags {
     bool movingLeft = false;
@@ -97,9 +98,33 @@ namespace NightSnack {
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
                             if (!m_flags.justJumped)
                             m_flags.jumpRequested = true;
+
+                            // Start this emitter to emit particles, if it doesnt exist yet
+                            if (m_testParticleRisingGlow == 0) {
+
+                                Entity player = FindPlayer(m_coord);
+                                Vec3& updatedPlayerPos = m_coord.ModifyComponent<Transform>(player).pos;
+
+                                m_testParticleRisingGlow = m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
+                                    "Particle-RisingGlow",      // Prefab name
+                                    updatedPlayerPos,                         // Spawn position (center)
+                                    {},							// End position (unused)
+                                    10.f,                       // Spawn radius
+                                    10,                         // Max particles per cycle
+                                    5,                         // Spawn delay (steps between particles)
+                                    false                        // Should loop
+                                );
+                            }
+
                         }
                         else {
                             m_flags.jumpRequested = false;
+
+                            // Stop this emitter from emitting particles, if it exists
+                            if (m_testParticleRisingGlow != 0) {
+                                m_coord.GetSystem<ParticleSystem>()->StopEmitter(m_testParticleRisingGlow);
+                                m_testParticleRisingGlow = 0;
+                            }
                         }
                         break;
                     case InputEvent::InputAction::PlayerSpecialAbility:
@@ -239,7 +264,9 @@ namespace NightSnack {
 
         //Time to consider the player "grounded" for jumping
         //Lenght of time to store a jump
-        //const float m_storedJumpThreshold = 0.2f;
+        const float m_storedJumpThreshold = 0.2f;
+
+        EmitterID m_testParticleRisingGlow{};
     };
 
 }   // namespace NightSnack

@@ -908,7 +908,7 @@ namespace NightSnack
             ImGui::Checkbox("##IsMainCam", &cam.isMainCam);
 
             // Zoom
-			float zoom = cam.zoom;
+            float zoom = cam.zoom;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Zoom");
             ImGui::TableSetColumnIndex(1);
@@ -917,12 +917,12 @@ namespace NightSnack
             {
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
-				);
-				cam.zoom = zoom;
+                );
+                cam.zoom = zoom;
             }
 
             // Width
-			float width = cam.width;
+            float width = cam.width;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Width");
             ImGui::TableSetColumnIndex(1);
@@ -931,12 +931,12 @@ namespace NightSnack
             {
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
-				);
-				cam.width = width;
+                );
+                cam.width = width;
             }
 
             // Height
-			float height = cam.height;
+            float height = cam.height;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Height");
             ImGui::TableSetColumnIndex(1);
@@ -945,8 +945,8 @@ namespace NightSnack
             {
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
-				);
-				cam.height = height;
+                );
+                cam.height = height;
             }
 
             // Camera min and max positions

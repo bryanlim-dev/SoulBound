@@ -211,6 +211,37 @@ namespace NightSnack {
         Vec3 offsetPosition{ 0.f, 0.f, 0.f };
     };
 
+    enum class PARTICLE_TYPE {
+        SMOKE,
+        GLOW_RISING,
+        GLOW_ORBIT,
+        SOIL
+    };
+
+    struct Particle {
+        PARTICLE_TYPE type = PARTICLE_TYPE::SMOKE;
+        
+        // General shared data
+        Vec2 velocity{};
+        Vec2 acceleration{};
+        Vec2 startSize{ 50.f, 50.f };
+        Vec2 endSize{ 50.f, 50.f };
+        Vec2 centerPos{};
+
+        // Specific for glowing particles
+        float orbitRadius{};
+        float orbitSpeed{};
+        float orbitAngle{};
+        float angularVelocity{};
+        float glowIntensity{ 1.5 };
+        float glowFalloff{ 2.f };
+
+        int lifeTime{ 100 }; // int instead of float since we accumulate using m_coord.steps
+        int age{};
+
+        bool affectedByGravity{ true }; // can vary for different types of particles
+    };
+
     // Only camera objects will have this component
     struct Camera {
         bool isMainCam{ true };
@@ -224,7 +255,7 @@ namespace NightSnack {
 
         Vec2 offset;
 
-        CameraMode mode{ CameraMode::OriginalWithOffset };
+		CameraMode mode{ CameraMode::OriginalWithOffset };
     };
 
 	// Audio component

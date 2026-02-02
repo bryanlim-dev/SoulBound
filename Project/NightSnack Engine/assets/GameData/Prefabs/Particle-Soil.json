@@ -1,0 +1,30 @@
+{
+    "Color": {
+        "a": 1.0,
+        "b": 1.0,
+        "g": 1.0,
+        "r": 1.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "TunnelEntrance1",
+        "meshName": "circle"
+    },
+    "Particle": {
+      "type": "SOIL",
+      "velocity": { "x": 20.0, "y": -120.0 },
+      "acceleration": { "x": 0.0, "y": 0.0 },
+      "startSize": { "x": 20.0, "y": 20.0 },
+      "endSize": { "x": 3.0, "y": 3.0 },
+      "centerPos": { "x": 0.0, "y": 0.0 },
+      "orbitRadius": 0.0,
+      "orbitSpeed": 0.0,
+      "orbitAngle": 0.0,
+      "angularVelocity": 0.0,
+      "glowIntensity": 0.0,
+      "glowFalloff": 0.0,
+      "lifeTime": 90,
+      "age": 0,
+      "affectedByGravity": true
+    }
+}

@@ -7,7 +7,7 @@
  * This file defines the CameraSystem class, which manages the camera entity.
  * The system ensures the camera follows the player as it is moved around the scene.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 #include "Camera.h"
@@ -24,7 +24,8 @@ namespace NightSnack {
         : m_coord(coordinator),
         m_dispatcher(&dispatcher),
         m_mainCamera(INVALID_ENTITY),
-        m_player(INVALID_ENTITY) {}
+        m_player(INVALID_ENTITY) {
+    }
 
     void CameraSystem::Update()
     {
@@ -67,7 +68,7 @@ namespace NightSnack {
         // make camera follow player
    //     if (m_mainCamera != INVALID_ENTITY && m_player != INVALID_ENTITY)
    //     {
-			//// check if both entities have Transform component
+            //// check if both entities have Transform component
    //         if (m_coord.HasComponent<Transform>(m_mainCamera) &&
    //             m_coord.HasComponent<Transform>(m_player))
    //         {
@@ -97,7 +98,7 @@ namespace NightSnack {
     }
 
     Transform CameraSystem::FollowPlayer() {
-        
+
         // get player position
         const auto& pt = m_coord.GetComponent<Transform>(m_player);
         Vec2 pv = m_coord.GetComponent<RigidBody>(m_player).vel;
@@ -115,7 +116,7 @@ namespace NightSnack {
     }
 
     void CameraSystem::LimitWithinBounds(Transform& ct) {
-        
+
         auto& cam = m_coord.GetComponent<Camera>(m_mainCamera);
 
         if (ct.pos.x < cam.minX) ct.pos.x = cam.minX;
@@ -193,7 +194,7 @@ namespace NightSnack {
 
         const auto& pt = m_coord.GetComponent<Transform>(m_player);
         Vec3& camCurr = m_coord.ModifyComponent<Transform>(m_mainCamera).pos;
-    
+
         // Increment timer;
         time += FixedDT;
 
@@ -205,7 +206,7 @@ namespace NightSnack {
         if (time >= 2.f) {
             idle = true;
         }
-        
+
         if (idle) {
             camCurr += (pt.pos - camCurr) * FixedDT;
         }

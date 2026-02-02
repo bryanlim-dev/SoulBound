@@ -7,7 +7,7 @@
  * This file declares the CameraSystem class, which manages the camera entity.
  * The system ensures the camera follows the player as it is moved around the scene.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 

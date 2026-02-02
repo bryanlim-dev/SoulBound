@@ -30,6 +30,8 @@ namespace NightSnack {
 		AddShader("texture", std::move(textureShader));
 		auto textShader = std::make_unique<Shader>("shaders/text_vs.vert", "shaders/text_fs.frag");
 		AddShader("text", std::move(textShader));
+		auto glowShader = std::make_unique<Shader>("shaders/particle_glow_vs.vert", "shaders/particle_glow_fs.frag");
+		AddShader("glow", std::move(glowShader));
 
 		// Meshes;
 		AddMesh("point", Mesh::CreatePoint());
@@ -44,6 +46,8 @@ namespace NightSnack {
 		auto colorMat = std::make_unique<Material>(GetShader("color"));
 		//colorMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
 		AddMaterial("ColorMat", std::move(colorMat));
+		auto glowMat = std::make_unique<Material>(GetShader("glow"));
+		AddMaterial("GlowMat", std::move(glowMat));
 
 		// Initialise buffer for Instanced Rendering
 		if (m_globalInstanceSSBO == 0) {
@@ -112,6 +116,8 @@ namespace NightSnack {
 				auto& rot = m_coord.GetComponent<Transform>(e).rot;
 				auto& scl = m_coord.GetComponent<Transform>(e).scale;
 
+				if (!trans.isActive) { continue; }
+
 				if (ren.wasModified) {
 					//std::cout << "Resolving renderable: " << e << '\n'; 
 					ResolveRenderable(e, m_coord.ModifyComponent<Renderable>(e));
@@ -174,6 +180,12 @@ namespace NightSnack {
 						instance.color = glm::vec4{ col.r, col.g, col.b, col.a };
 						data.material->SetBaseColor(col.r, col.g, col.b, col.a);
 						key += "_color";
+					} else if (ren.materialName == "GlowMat" && m_coord.HasComponent<Color>(e)) {
+						// Change the instance color to be based on its Color component values
+						auto& col = m_coord.GetComponent<Color>(e);
+						instance.color = glm::vec4{ col.r, col.g, col.b, col.a };
+						data.material->SetBaseColor(col.r, col.g, col.b, col.a);
+						key += "_glow";
 					} else {
 						// Entities that have textured materials
 						key = key + "_textured_" + ren.materialName;
@@ -226,6 +238,17 @@ namespace NightSnack {
 					shader->SetMat4("uModelToWorld", model);
 					shader->SetBool("uIsWireframe", ren.isWireframe);
 
+					if (shader == GetShader("glow")) {
+						if (m_coord.HasComponent<Particle>(e)) {
+							auto& particle = m_coord.GetComponent<Particle>(e);
+							shader->SetFloat("uGlowIntensity", particle.glowIntensity);
+							shader->SetFloat("uGlowFalloff", particle.glowFalloff);
+						} else {
+							shader->SetFloat("uGlowIntensity", 1.5f);
+							shader->SetFloat("uGlowFalloff", 2.f);
+						}
+					}
+
 					// Passing of variables for SOLID COLOR entities only 
 					// Only solid color entities have the component color
 					if (m_coord.HasComponent<Color>(e)) {
@@ -248,6 +271,11 @@ namespace NightSnack {
 
 					data.material->ApplyUniforms(ren.isWireframe);
 
+					if (shader == GetShader("glow")) {
+						glEnable(GL_BLEND);
+						glBlendFunc(GL_SRC_ALPHA, GL_ONE); // additive blending for the glow effect
+					}
+
 					// Change the polygon mode to wireframe
 					if (ren.isWireframe) {
 						glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -255,6 +283,11 @@ namespace NightSnack {
 						glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 					} else {
 						mesh->Draw();
+					}
+
+					if (shader == GetShader("glow")) {
+						glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // reset back to normal
+						glDisable(GL_BLEND);
 					}
 
 					GLenum err = glGetError();
@@ -303,7 +336,17 @@ namespace NightSnack {
 				shader->SetBool("uIsWireframe", instanceBatch.isWireframe);
 				shader->SetInt("uInstanceOffset", static_cast<int>(instanceBatch.ssboOffset));
 
+				if (shader == GetShader("glow")) {
+					shader->SetFloat("uGlowIntensity", 1.5f);
+					shader->SetFloat("uGlowFalloff", 2.f);
+				}
+
 				material->ApplyUniforms(instanceBatch.isWireframe);
+
+				if (shader == GetShader("glow")) {
+					glEnable(GL_BLEND);
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE); // additive blending for the glow effect
+				}
 
 				if (instanceBatch.isWireframe) {
 					glDepthMask(GL_TRUE);
@@ -316,6 +359,11 @@ namespace NightSnack {
 					glDepthMask(GL_FALSE);
 				} else {
 					mesh->DrawInstanced(instanceBatch.instanceCount);
+				}
+
+				if (shader == GetShader("glow")) {
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // reset back to normal
+					glDisable(GL_BLEND);
 				}
 			}
 		}
