@@ -123,6 +123,8 @@ namespace NightSnack {
             }
         }
 
+        ControlFade(1.0f / 60.0f);
+
         if (!m_fmodSystem.expired())
             m_fmodSystem.lock()->update();
 
@@ -576,7 +578,10 @@ namespace NightSnack {
         m_fadeTimer += deltaTime;
         float t = std::min(m_fadeTimer / m_fadeDuration, 1.0f);
 
-        float currentVolume = m_bgmVolume + (m_fadeTargetVolume - m_bgmVolume) * t;
+        // store the starting volume when fade begins
+        float startVolume = m_bgmVolume - (m_fadeTargetVolume - m_bgmVolume) * (m_fadeTimer - deltaTime) / m_fadeDuration;
+        float currentVolume = startVolume + (m_fadeTargetVolume - startVolume) * t;
+
         m_bgmChannel->setVolume(currentVolume * m_masterVolume);
 
         if (t >= 1.0f) {
