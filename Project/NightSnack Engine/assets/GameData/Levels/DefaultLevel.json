@@ -1,5 +1,5 @@
 {
-    "BGM": "mainMenu",
+    "BGM": "GameLevelMusic",
     "Entities": [
         {
             "Transform": {
