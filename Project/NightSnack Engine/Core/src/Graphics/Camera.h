@@ -70,8 +70,8 @@ namespace NightSnack {
 		Coordinator& m_coord;
 		EventDispatcher* m_dispatcher;
 
-		Entity m_mainCamera;
-		Entity m_player;
+		Entity m_mainCamera = INVALID_ENTITY;
+		Entity m_player = INVALID_ENTITY;
 
 		Vec2 m_roomOriginOffset{ 0.f, 0.f };
 		Vec2 m_currentRoom;

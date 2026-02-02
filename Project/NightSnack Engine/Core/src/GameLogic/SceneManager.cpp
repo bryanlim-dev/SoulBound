@@ -140,6 +140,7 @@ namespace NightSnack::Scene {
 			else scale = item["scale"];
 
 			Entity e = factory->Create();
+			//std::cout << "Created camtrigger at pos: " << item["pos"]["x"] << ", " << item["pos"]["y"] << '\n';
 			Transform t = {
 				item["pos"], 0.f, Vec2{100.f, 100.f},
 				Vec3{}, Vec2{},
@@ -237,8 +238,8 @@ namespace NightSnack::Scene {
 		factory->DestroyLevelEntities();
 
 		// Camera
-		ReadCameraKeyframes(level["MainCamera"]["KeyFrames"]);
 		CreateSceneCamera(level);
+		ReadCameraKeyframes(level["MainCamera"]["KeyFrames"]);
 		
 		factory->CreateLevelEntities(level);
 
@@ -275,7 +276,8 @@ namespace NightSnack::Scene {
 			m_camIndex = m_camFrames.begin()->first;
 		}
 		else {
-			cam.minX = cam.maxX = cam.minY = cam.maxY = 0.f;
+			cam.maxX = cam.minX = -200.f;
+			cam.minY = cam.maxY = 0.f;
 		}
 		t.pos.x = t.pos.y = 0.f;
 		t.pos.z = m_camDepth;
@@ -295,8 +297,8 @@ namespace NightSnack::Scene {
 		factory->DestroyLevelEntities();
 
 		// Reset Camera
-		ReadCameraKeyframes(level["MainCamera"]["KeyFrames"]);
 		CreateSceneCamera(level);
+		ReadCameraKeyframes(level["MainCamera"]["KeyFrames"]);
 
 		// Create all Entities
 		factory->CreateLevelEntities(level);
@@ -433,8 +435,8 @@ namespace NightSnack::Scene {
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
 
-		ReadCameraKeyframes(m_levelCache["MainCamera"]["KeyFrames"]);
 		CreateSceneCamera(m_levelCache);
+		ReadCameraKeyframes(m_levelCache["MainCamera"]["KeyFrames"]);
 		factory->CreateLevelEntities(m_levelCache);
 		
 		// Restart audio

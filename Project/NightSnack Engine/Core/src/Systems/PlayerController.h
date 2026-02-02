@@ -31,7 +31,7 @@ struct PlayerFlags {
     bool isPossessing = false;
     bool useAbility = false;
 
-    bool canDoubleJump = false;
+    bool canDoubleJump = true;
     // add more flags if needed
 };
 
@@ -167,6 +167,17 @@ namespace NightSnack {
             Transform& t = m_coord.ModifyComponent<Transform>(m_player);
 
             bool isGrounded = m_coord.GetComponent<Collider>(m_player).isGrounded;
+
+            if (isGrounded) m_flags.canDoubleJump = true;
+
+            //
+            static float time = 0.f;
+            time += FixedDT;
+            if (time >= 0.3f) {
+                time = 0.f;
+                m_flags.canDoubleJump = true;
+            }
+            //
 
             // Basic movement -----------------------------
             LeftAndRightMovement(vel, pcont);
