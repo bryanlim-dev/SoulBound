@@ -133,7 +133,7 @@ namespace NightSnack
 		trans.scale.y = DistanceToAnchor(ownerPt, anchorPt);
 
 		//==Set Rotation==
-		trans.rot = atan2(dirVec.y, dirVec.x) * (180.0f / PI) + 90;
+		trans.rot = atan2(dirVec.y, dirVec.x) * (float)(180.0f / PI) + 90;
 		//std::cout << "[Frog Grappble] Tongue Rot: " + std::to_string(trans.rot) + "!" << std::endl;
 
 		//==Set Transform==
