@@ -1,6 +1,8 @@
 {
     "Audio": {
         "audioKey": "playerHit",
+        "useVariants": false,
+        "numVariants": 1,
         "isPlaying": false,
         "loop": false,
         "playOnStart": false,

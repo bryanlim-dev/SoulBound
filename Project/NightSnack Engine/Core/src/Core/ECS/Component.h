@@ -258,6 +258,8 @@ namespace NightSnack {
 	// Audio component
     struct Audio {
         std::string audioKey;
+        bool useVariants = false;
+        int numVariants = 1;
         float volume = 1.0f;
         bool loop = false;
         bool playOnStart = false;

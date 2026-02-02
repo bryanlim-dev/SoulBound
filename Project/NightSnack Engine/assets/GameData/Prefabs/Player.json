@@ -6,10 +6,12 @@
         "spriteSheetName": ""
     },
     "Audio": {
-        "audioKey": "playerHit",
+        "audioKey": "playerHurt",
         "isPlaying": false,
         "loop": false,
+        "numVariants": 4,
         "playOnStart": false,
+        "useVariants": true,
         "volume": 1.0
     },
     "Collider": {

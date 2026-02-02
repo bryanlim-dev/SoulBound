@@ -17,6 +17,7 @@
 #include <iostream>
 #include <algorithm>
 #include <filesystem>
+#include <random>
 
 namespace NightSnack {
 
@@ -508,7 +509,19 @@ namespace NightSnack {
     {
         FMOD::Channel* channel = nullptr;
 
-        size_t id = m_keyToID[audio.audioKey];
+        // Determine which sound to play
+        std::string keyToPlay = audio.audioKey;
+
+        // If using variants, pick randomly
+        if (audio.useVariants && audio.numVariants > 1) {
+            static std::random_device rd;
+            static std::mt19937 gen(rd());
+            std::uniform_int_distribution<> dist(1, audio.numVariants);
+            int variant = dist(gen);
+            keyToPlay = audio.audioKey + "_" + std::to_string(variant);
+        }
+
+        size_t id = m_keyToID[keyToPlay];
         FMOD::Sound* sound = m_resourceMgr.lock()->GetSound(id);
         if (!sound) return;
 
@@ -523,29 +536,23 @@ namespace NightSnack {
         FMOD_RESULT result = m_fmodSystem.lock()->playSound(sound, nullptr, false, &channel);
 
         if (result != FMOD_OK || !channel) {
-            std::cerr << "[AudioSystem] Failed to play sound: " << audio.audioKey << std::endl;
+            std::cerr << "[AudioSystem] Failed to play sound: " << keyToPlay << std::endl;
             return;
         }
 
         // set loop properties on the channel
         if (audio.loop) {
             channel->setMode(FMOD_LOOP_NORMAL);
-            channel->setLoopCount(-1); // infinite loops
-            std::cout << "[AudioSystem] Set to LOOP: " << audio.audioKey << std::endl;
+            channel->setLoopCount(-1);
         }
         else {
             channel->setMode(FMOD_LOOP_OFF);
-            channel->setLoopCount(0); // no looping
-            std::cout << "[AudioSystem] Set to NO LOOP: " << audio.audioKey << std::endl;
+            channel->setLoopCount(0);
         }
 
         // set volume and store channel
         channel->setVolume(audio.volume * m_masterVolume);
         m_entityChannels[entity] = channel;
-
-        /*std::cout << "[AudioSystem] Playing: " << audio.audioKey
-            << " (loop: " << audio.loop
-            << ", entity: " << entity << ")" << std::endl;*/
     }
 
     // getter for audio keys to edit in prefab panel
@@ -588,6 +595,23 @@ namespace NightSnack {
             m_isFading = false;
             m_bgmVolume = m_fadeTargetVolume;
         }
+    }
+
+    void AudioSystem::PlayRandomVariant(const std::string& baseKey, int numVariants)
+    {
+        if (numVariants <= 0) {
+            PlaySFX(baseKey);
+            return;
+        }
+
+        // generate random number between 1 and numVariants
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dist(1, numVariants);
+
+        int variant = dist(gen);
+        std::string soundKey = baseKey + "_" + std::to_string(variant);
+        PlaySFX(soundKey);
     }
 
     Signature AudioSystem::GetSignature() const
