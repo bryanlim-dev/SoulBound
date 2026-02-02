@@ -69,6 +69,8 @@ namespace NightSnack::Scene {
 		Button loadButton(ButtonAction::LOADLEVEL, [](Coordinator& c, std::string const& s) {
 			if (s.empty()) { return; }
 			//c.GetSystem<Scene::SceneManager>()->LoadLevel(s);
+			// 
+			// loads level with fade, 1.5s fade out, 1.0s fade in
 			c.GetSystem<Scene::SceneManager>()->LoadLevelWithFade(s, 1.5f, 1.0f);
 		});
 		m_buttons.emplace(ButtonAction::LOADLEVEL, loadButton);
