@@ -220,6 +220,7 @@ namespace NightSnack {
 
         float minX, maxX;
         float minY, maxY;
+        bool lock = false;
 
         Vec2 offset;
 

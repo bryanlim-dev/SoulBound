@@ -12,6 +12,8 @@
  ******************************************************************************/
 #include "Camera.h"
 #include "Systems/Graphics.h"
+#include "Systems/PlayerController.h"
+
 #include <iostream>
 
 namespace NightSnack {
@@ -26,15 +28,17 @@ namespace NightSnack {
 
     void CameraSystem::Update()
     {
+        // Update target camera position
+        Transform& t = m_coord.ModifyComponent<Transform>(m_mainCamera);
+        Camera& c = m_coord.ModifyComponent<Camera>(m_mainCamera);
+
         if (m_coord.IsPaused()) 
         {
-            // Update target camera position
-            auto& camT = m_coord.ModifyComponent<Transform>(m_mainCamera);
-            m_targetCamPos = camT.pos;
+            m_targetCamPos = t.pos;
 
             // Set the room origin offset to the current camera position
-            m_roomOriginOffset.x = camT.pos.x;
-            m_roomOriginOffset.y = camT.pos.y;
+            m_roomOriginOffset.x = t.pos.x;
+            m_roomOriginOffset.y = t.pos.y;
 
             return;
         }
@@ -43,22 +47,22 @@ namespace NightSnack {
         if (!m_coord.EntityIsAlive(m_mainCamera)) {
             m_mainCamera = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
         }
-        // find player if we don't have one
-        if (!m_coord.EntityIsAlive(m_player)) {
-            m_player = FindPlayer(m_coord);
-        }
+        //// find player if we don't have one
+        //if (!m_coord.EntityIsAlive(m_player)) {
+        //    m_player = FindPlayer(m_coord);
+        //}
+        m_player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
 
         // Mode check
-        if (m_coord.GetComponent<Camera>(m_mainCamera).mode == CameraMode::RoomLerp)
+        if (c.mode == CameraMode::RoomLerp)
         {
             // Room Camera with lerping
             UpdateRoomCamera();
         }
-		else if (m_coord.GetComponent<Camera>(m_mainCamera).mode == CameraMode::OriginalWithOffset)
+		else if (c.mode == CameraMode::OriginalWithOffset)
         {
-			// Original Camera with offset
-            auto& t = m_coord.ModifyComponent<Transform>(m_mainCamera);
             FollowEntity(m_player, t);
+            if (c.lock)
             LimitWithinBounds(t);
         }
         
@@ -144,8 +148,8 @@ namespace NightSnack {
         // Start lerping if player entered new room
         if (!m_isLerping && (playerRoomX != currentRoomX || playerRoomY != currentRoomY))
         {
-            m_currentRoom.x = playerRoomX;
-            m_currentRoom.y = playerRoomY;
+            m_currentRoom.x = static_cast<float>(playerRoomX);
+            m_currentRoom.y = static_cast<float>(playerRoomY);
             m_targetCamPos =
             {
                 m_currentRoom.x * cam.width + m_roomOriginOffset.x,

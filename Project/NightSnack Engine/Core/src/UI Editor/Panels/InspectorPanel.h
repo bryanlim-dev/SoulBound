@@ -951,6 +951,13 @@ namespace NightSnack
 
             // Camera min and max positions
             ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("CamLock");
+            bool clock = cam.lock;
+            ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##CamLock", &clock);
+            if (clock != cam.lock)
+                cam.lock = clock;
+
+            ImGui::TableNextRow();
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Camera Bounds");
             ImGui::TableNextRow();

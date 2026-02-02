@@ -64,14 +64,14 @@ namespace NightSnack {
                         break;
                     case InputEvent::InputAction::PhysicsDebugStep:
                         stepRequest = true;
-                        std::cout << "Physics Entities: " << ' ';
-                        for (Layer& l : m_layers) {
-                            for (Entity e : l.Entities()) {
-                                if (e == INVALID_ENTITY) { break; }
-                                std::cout << e << " ";
-                            }
-                            std::cout << "\n";
-                        }
+                        //std::cout << "Physics Entities: " << ' ';
+                        //for (Layer& l : m_layers) {
+                        //    for (Entity e : l.Entities()) {
+                        //        if (e == INVALID_ENTITY) { break; }
+                        //        std::cout << e << " ";
+                        //    }
+                        //    std::cout << "\n";
+                        //}
                         break;
                     }
                 }

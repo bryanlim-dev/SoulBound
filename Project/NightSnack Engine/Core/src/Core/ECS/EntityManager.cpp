@@ -108,6 +108,7 @@ namespace NightSnack {
 
 	bool EntityManager::EntityIsAlive(Entity e) const {
 		if (m_livingEntities.find(e) != m_livingEntities.end()) {
+			if (e != INVALID_ENTITY)
 			return true;
 		}
 		return false;

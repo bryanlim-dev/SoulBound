@@ -72,8 +72,6 @@ namespace NightSnack {
         /************************************************************************/
         PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord }, m_dispatcher { &disp } {
 
-            m_player = 1;
-
             m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
                 {
                     switch (event.inputAction) {
@@ -95,6 +93,15 @@ namespace NightSnack {
                             m_flags.movingRight = false;
                         }
                         break;
+                    case InputEvent::InputAction::PlayerJump:
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                            if (!m_flags.justJumped)
+                            m_flags.jumpRequested = true;
+                        }
+                        else {
+                            m_flags.jumpRequested = false;
+                        }
+                        break;
                     case InputEvent::InputAction::PlayerSpecialAbility:
                         if (event.pressed == InputEvent::InputActionState::Pressed ||
                             event.pressed == InputEvent::InputActionState::Repeat) {
@@ -102,14 +109,6 @@ namespace NightSnack {
                         }
                         else {
                             m_flags.useAbility = false;
-                        }
-                        break;
-                    case InputEvent::InputAction::PlayerJump:
-                        if (event.pressed == InputEvent::InputActionState::Pressed) {
-                            m_flags.jumpRequested = true;
-                        }
-                        else {
-                            m_flags.jumpRequested = false;
                         }
                         break;
                     }
@@ -136,8 +135,6 @@ namespace NightSnack {
             if (m_coord.IsPaused()) return;
 
             m_player = FindPlayer(m_coord);
-            //static bool landed = true;
-
             if (m_player == INVALID_ENTITY) { return; }
 
             PlayerController const& pcont = m_coord.GetComponent<PlayerController>(m_player);
@@ -229,7 +226,9 @@ namespace NightSnack {
 
         //Cyote time
         float m_timeSinceGrounded{}; //Time since last grounded
-        const float m_groundedThreshhold = 0.2f;
+        const float m_groundedThreshhold = 0.1f;
+        float m_groundedTime{};
+        const float m_repeatJumpThreshhold = 0.1f;
 
         float m_timeSinceAbility{};
 

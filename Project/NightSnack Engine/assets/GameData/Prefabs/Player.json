@@ -14,7 +14,7 @@
         "width": 80.0
     },
     "PlayerController": {
-        "jumpSpeed": 900.0,
+        "jumpSpeed": 800.0,
         "moveSpeed": 400.0
     },
     "Renderable": {

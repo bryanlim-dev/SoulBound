@@ -431,7 +431,8 @@ namespace NightSnack {
 
 			{"minX", c.minX}, {"minY", c.minY},
 			{"maxX", c.maxX}, {"maxY", c.maxY},
-			{"offsetX", c.offset.x}, {"offsetY", c.offset.y}
+			{"offsetX", c.offset.x}, {"offsetY", c.offset.y},
+			{"cameraLock", c.lock}
 		};
 	}
 	void from_json(json const& j, Camera& c) {
@@ -445,6 +446,7 @@ namespace NightSnack {
 			if (j.contains("maxX")) j.at("maxX").get_to(c.maxX);
 			if (j.contains("minY")) j.at("minY").get_to(c.minY);
 			if (j.contains("maxY")) j.at("maxY").get_to(c.maxY);
+			if (j.contains("cameraLock")) j.at("cameraLock").get_to(c.lock);
 
 			if (j.contains("offsetX")) j.at("offsetX").get_to(c.offset.x);
 			if (j.contains("offsetY")) j.at("offsetY").get_to(c.offset.y);

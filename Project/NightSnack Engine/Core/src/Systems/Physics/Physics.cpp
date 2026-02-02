@@ -435,17 +435,26 @@ namespace NightSnack {
 		Vec2 correction = normal * std::max(depth - slop, 0.0f) * percent;
 
 		if (c2.isStatic) {
-			t1.pos = t1.pos - correction;
+			t1.pos.x = t1.pos.x - correction.x;
+			t1.pos.y = t1.pos.y - correction.y;
 		}
 		else if (c1.isStatic) {
-			t2.pos = t2.pos + correction;
+			t2.pos.x = t2.pos.x + correction.x;
+			t2.pos.y = t2.pos.y + correction.y;
 		}
 		else {
 			float mass1 = 1.f / r1.invMass;
 			float mass2 = 1.f / r2.invMass;
 			float totalMass = mass1 + mass2;
-			t1.pos = t1.pos - correction * (mass2 / totalMass);
-			t2.pos = t2.pos + correction * (mass1 / totalMass);
+			t1.pos.x = t1.pos.x - correction.x * (mass2 / totalMass);
+			t2.pos.x = t2.pos.x + correction.x * (mass1 / totalMass);
+
+			if (t1.pos.y > t2.pos.y && r1.vel.y < 0) {
+				t1.pos.y = t1.pos.y - correction.y * (mass2 / totalMass);
+			}
+			if (t2.pos.y > t1.pos.y && r2.vel.y < 0) {
+				t2.pos.y = t2.pos.y + correction.y * (mass1 / totalMass);
+			}
 		}
 
 		//// --- Velocity Resolution (impulse) ---

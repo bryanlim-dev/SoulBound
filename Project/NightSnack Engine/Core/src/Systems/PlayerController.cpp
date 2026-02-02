@@ -89,14 +89,15 @@ namespace NightSnack {
 
         bool jump = false;
         m_timeSinceGrounded += FixedDT;
-        if (m_timeSinceGrounded > m_groundedThreshhold)
+        m_groundedTime += FixedDT;
+        if (m_groundedTime > m_repeatJumpThreshhold)
             m_flags.justJumped = false;
         if (isGrounded)
             m_timeSinceGrounded = 0;
 
         if (m_flags.jumpRequested) {
             // allow jump if isgrounded
-            if (isGrounded) {
+            if (isGrounded && m_groundedTime > m_repeatJumpThreshhold) {
                 jump = true;
             }
             // allow jump if pressed right after being off ground
@@ -117,8 +118,7 @@ namespace NightSnack {
         //if (m_storedJump && isGrounded)
         //    jump = true;
 
-
-        if (jump) {
+        if (jump && !m_flags.justJumped) {
             vel.y = pcont.jumpSpeed;
             t.pos.y += 0.5f;
             m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
@@ -126,6 +126,7 @@ namespace NightSnack {
 
             //m_storedJump = false;
             m_flags.justJumped = true;
+            m_groundedTime = 0.f;
         }
     }
 }
