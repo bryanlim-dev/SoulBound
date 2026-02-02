@@ -65,6 +65,11 @@ namespace NightSnack
         //Called every update if active
         void Solve(Coordinator& coord, const Vec2& posA, const Vec2& posB, float deltaTime);
 
+        void ApplyForce(RigidBody& body, const Vec2& force);
+    
+    private:
+        static float Clamp(float v, float min, float max);
+
     private:
         //Entity
         Entity m_bodyA;
@@ -95,9 +100,5 @@ namespace NightSnack
         float m_maxForce;
 
 
-
-    private:
-        void ApplyForce(RigidBody& body, const Vec2& force);
-        static float Clamp(float v, float min, float max);
     };
 }

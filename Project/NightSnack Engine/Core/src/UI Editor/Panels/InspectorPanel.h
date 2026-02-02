@@ -1716,7 +1716,7 @@ namespace NightSnack
                     "##Property",
                     &comboIndex,
                     propertyNames.data(),
-                    propertyNames.size()))
+                    (int)propertyNames.size()))
                 {
                     if (comboIndex == 0)
                     {
@@ -1755,7 +1755,7 @@ namespace NightSnack
                 "##AddProperty",
                 &newPropertyIndex,
                 propertyNames.data(),
-                propertyNames.size()))
+                (int)propertyNames.size()))
             {
                 if (newPropertyIndex > 0 && newPropertyIndex < MAX_PROPERTIES)
                 {

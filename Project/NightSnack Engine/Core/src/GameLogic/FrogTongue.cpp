@@ -106,6 +106,15 @@ namespace NightSnack
 
 
 	}
+	void FrogTongue::SwingActivated(Coordinator& coord)
+	{
+		if (m_owner != coord.GetSystem<PlayerControllerSystem>()->GetPlayer() || !coord.HasComponent<RigidBody>(m_owner))
+			return;
+
+		//coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().
+		//std::cout << "Swing!" << std::endl;
+	}
+
 	void FrogTongue::UpdateTonguePos(Coordinator& coord)
 	{
 		if (m_tongue == INVALID_ENTITY || !coord.HasComponent<Transform>(m_tongue) || !coord.HasComponent<Transform>(m_owner) || !coord.HasComponent<Transform>(m_anchor))
@@ -124,7 +133,7 @@ namespace NightSnack
 		trans.scale.y = DistanceToAnchor(ownerPt, anchorPt);
 
 		//==Set Rotation==
-		trans.rot = atan2(dirVec.y, dirVec.x) * (180.0 / PI) + 90;
+		trans.rot = atan2(dirVec.y, dirVec.x) * (180.0f / PI) + 90;
 		//std::cout << "[Frog Grappble] Tongue Rot: " + std::to_string(trans.rot) + "!" << std::endl;
 
 		//==Set Transform==

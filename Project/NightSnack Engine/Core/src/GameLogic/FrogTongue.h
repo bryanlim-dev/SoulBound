@@ -17,7 +17,20 @@ namespace NightSnack {
 	public:
 		FrogTongue(){}
 
-		void Initalize(Entity owner) { m_owner = owner; }
+		void Initalize(Entity owner, Coordinator& coord, EventDispatcher& disp) { 
+			m_owner = owner; 
+			disp.Subscribe<InputEvent>([this, &coord](const InputEvent& event)
+				{
+					switch (event.inputAction) {
+					case InputEvent::InputAction::PlayerJump:
+						if (event.pressed == InputEvent::InputActionState::Pressed ||
+							event.pressed == InputEvent::InputActionState::Repeat) {
+							this->SwingActivated(coord);
+						}
+						break;
+					}
+				});
+		}
 		
 		//Finds thed cloest attachtable surface/entity
 		//Returns false if too far to attach or cant find
@@ -27,9 +40,13 @@ namespace NightSnack {
 		bool Update(Coordinator& coord);
 		void End(Coordinator& coord);
 
+		//Only supports player
+		void SwingActivated(Coordinator& coord);
+
+	private:
+
 		void UpdateTonguePos(Coordinator& coord);
 		float DistanceToAnchor(Vec3 ownerPos, Vec3 anchorPos);
-	private:
 
 	};
 }

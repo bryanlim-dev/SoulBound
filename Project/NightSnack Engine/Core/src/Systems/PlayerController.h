@@ -148,7 +148,7 @@ namespace NightSnack {
             AttachAbility();
             prev_ability = curr_ability;
 
-            m_frogTongue.Initalize(m_player);
+            m_frogTongue.Initalize(m_player, coord, *m_dispatcher);
 
         }
 
