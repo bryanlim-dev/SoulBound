@@ -197,7 +197,7 @@ namespace NightSnack {
         float playbackSpeed{ 1.f };
         bool isPlaying{ true };
         bool isLooping{ true };
-        bool lastFacingRight{ false };
+        bool lastFacingRight{ true };
         // The active region of the texture to sample from
         Vec2 uvTopLeft{ 0.f, 0.f };
         Vec2 uvBottomRight{ 1.f, 1.f }; 
