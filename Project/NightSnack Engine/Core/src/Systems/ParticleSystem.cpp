@@ -162,7 +162,7 @@ namespace NightSnack {
 
 	// endPos - Used for SOIL (right end position), unused for others
 	// spawnRadius - Used for RISING_GLOW (circular area), unused for others
-	EmitterID ParticleSystem::StartContinuousEmitter(const std::string& prefabName, Vec3 spawnPos, Vec3 endPos, float spawnRadius, int maxParticles, int spawnDelay, bool shouldLoop) {
+	EmitterID ParticleSystem::StartContinuousEmitter(const std::string& prefabName, Vec3 spawnPos, Vec3 endPos, float spawnRadius, int maxParticles, int spawnDelay, bool shouldLoop, Entity followEntity, Vec3 followOffset) {
 		ParticleEmitter emitter;
 		emitter.id = m_nextEmitterID++;
 		emitter.isActive = true;
@@ -176,26 +176,40 @@ namespace NightSnack {
 		emitter.particlesSpawned = 0;
 		emitter.stepsSinceLastSpawn = 0;
 		emitter.particleType = GetParticleTypeFromPrefabName(prefabName);
+		emitter.followEntity = followEntity;
+		emitter.followOffset = followOffset;
 
 		// Store the spawn function as a lambda that captures the parameters
 		switch (emitter.particleType) {
 		case PARTICLE_TYPE::SOIL:
 			emitter.spawnFunction = [this, prefabName, spawnPos, endPos]() {
 				SpawnSingleSoilParticle(prefabName, spawnPos, endPos);
-				};
+			};
 			break;
 
 		case PARTICLE_TYPE::GLOW_ORBIT:
 			emitter.spawnFunction = [this, prefabName, spawnPos]() {
 				SpawnSingleOrbitingParticle(prefabName, spawnPos);
-				};
+			};
 			break;
 
 		case PARTICLE_TYPE::GLOW_RISING:
 		default:
-			emitter.spawnFunction = [this, prefabName, spawnPos, spawnRadius]() {
-				SpawnSingleRisingGlowParticle(prefabName, spawnPos, spawnRadius);
-				};
+			EmitterID currentID = emitter.id; // Capture the ID
+			emitter.spawnFunction = [this, prefabName, currentID, spawnRadius]() {
+				// Find the actual emitter in the vector by the ID
+				for (auto& em : m_emitters) {
+					if (em.id == currentID) {
+						Vec3 finalSpawnPos = em.spawnPos;
+						// Final spawn position follows the entity that the emitter is following
+						if (em.followEntity != INVALID_ENTITY && m_coord.EntityIsAlive(em.followEntity)) {
+							finalSpawnPos = m_coord.GetComponent<Transform>(em.followEntity).pos + em.followOffset;
+						}
+						SpawnSingleRisingGlowParticle(prefabName, finalSpawnPos, spawnRadius);
+						break;
+					}
+				}
+			};
 			break;
 		}
 

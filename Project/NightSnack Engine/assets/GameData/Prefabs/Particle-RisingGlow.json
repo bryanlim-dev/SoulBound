@@ -1,14 +1,14 @@
 {
     "Color": {
         "a": 1.0,
-        "b": 0.18,
-        "g": 0.839,
-        "r": 0.976
+        "b": 0.988,
+        "g": 0.996,
+        "r": 0.368
     },
     "Renderable": {
         "isWireframe": false,
         "materialName": "GlowMat",
-        "meshName": "circle"
+        "meshName": "square"
     },
     "Particle": {
       "type": "GLOW_RISING",
