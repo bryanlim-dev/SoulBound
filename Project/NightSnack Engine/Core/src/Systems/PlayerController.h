@@ -173,7 +173,7 @@ namespace NightSnack {
             //
             static float time = 0.f;
             time += FixedDT;
-            if (time >= 0.3f) {
+            if (time >= 0.5f) {
                 time = 0.f;
                 m_flags.canDoubleJump = true;
             }
