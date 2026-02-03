@@ -16,6 +16,8 @@
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/Input.h"
 #include "Systems/AudioSystem.h"
+#include <Factory/EntityFactory.h>
+#include <GameLogic/FrogTongue.h>
 #include "Systems/ParticleSystem.h"
 
 struct PlayerFlags {
@@ -25,6 +27,8 @@ struct PlayerFlags {
     bool jumpRequested = false;
     bool justJumped{};
 
+    bool disableMovement = false;
+
     bool playerChange = false;
     bool isGrounded = false;
 
@@ -32,6 +36,7 @@ struct PlayerFlags {
     bool useAbility = false;
 
     bool canDoubleJump = true;
+    bool grappling = false;
     // add more flags if needed
 };
 
@@ -141,6 +146,9 @@ namespace NightSnack {
             RegisterAbilities();
             AttachAbility();
             prev_ability = curr_ability;
+
+            m_frogTongue.Initalize(m_player, coord, *m_dispatcher);
+
         }
 
         /************************************************************************/
@@ -180,8 +188,11 @@ namespace NightSnack {
             //
 
             // Basic movement -----------------------------
-            LeftAndRightMovement(vel, pcont);
-            Jump(t, vel, pcont, isGrounded);
+            if (!m_flags.disableMovement)
+            {
+                LeftAndRightMovement(vel, pcont);
+                Jump(t, vel, pcont, isGrounded);
+            }
 
             if (isGrounded) m_flags.canDoubleJump = true;
             // Special Abilities --------------------------
@@ -189,6 +200,14 @@ namespace NightSnack {
                 if (!AttachAbility()) std::cerr << "Failed to attach ability!\n";
             if (m_flags.useAbility)
                 UseSpecialAbility();
+            else
+            {
+                if (m_flags.grappling)
+                {
+                    m_frogTongue.End(m_coord);
+                    m_flags.grappling = false;
+                }
+            }
                 //if (!UseSpecialAbility()) std::cerr << "Failed to use ability!\n";
 
             prev_ability = curr_ability;
@@ -218,12 +237,17 @@ namespace NightSnack {
         void LeftAndRightMovement(Vec2& vel, PlayerController const&) const;
         void Jump(Transform& t, Vec2& vel, PlayerController pcont, bool isGrounded);
 
+        PlayerFlags& GetPlayerFlags();
         void ResetFlags() { m_flags = PlayerFlags{}; }
 
         // Store movement abilities as void pointers
         // std::function jump;
         // std::function special -> e.g double_jump, glide, grapple
         // 
+
+        FrogTongue& GetFrogTongue() {
+            return m_frogTongue;
+        };
     
         // Ability stuff
         void RegisterAbilities();
@@ -237,6 +261,14 @@ namespace NightSnack {
         // Required by ISystem base class.
         std::string GetName() const override { return "PlayerController"; }
         Signature GetSignature() const override { return m_systemSignature; }
+
+        float DistanceToPlayer(Entity point)
+        {
+            if (!m_coord.HasComponent<Transform>(point) || !m_coord.HasComponent<Transform>(m_player))
+                return 0;
+
+            return magnitude(m_coord.GetComponent<Transform>(m_player).pos, m_coord.GetComponent<Transform>(point).pos);
+        }
 
 
         /************************************************************************/
@@ -268,6 +300,8 @@ namespace NightSnack {
 
         float m_timeSinceAbility{};
 
+        FrogTongue m_frogTongue;
+
         //bool m_midAir{}; //Is the player midair (used to help track if player jumped)
         //If spacebar is pressed right before landing allow 
         //bool m_storedJump = false;
@@ -275,7 +309,7 @@ namespace NightSnack {
 
         //Time to consider the player "grounded" for jumping
         //Lenght of time to store a jump
-        const float m_storedJumpThreshold = 0.2f;
+        //const float m_storedJumpThreshold = 0.2f;
 
         EmitterID m_testParticleRisingGlow{};
     };

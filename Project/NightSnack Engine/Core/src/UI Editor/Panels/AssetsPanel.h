@@ -364,7 +364,6 @@ namespace NightSnack
 							{
 								prefabName = prefabName.substr(0, prefabName.size() - 5);
 							}
-
 							m_prefabsPanel.SelectPrefab(prefabName);
 						}
 					}

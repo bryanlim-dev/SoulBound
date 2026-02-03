@@ -1,0 +1,62 @@
+#pragma once
+#include <MathLibrary/DistanceJoint2D.h>
+
+namespace NightSnack {
+	class FrogTongue
+	{
+	private:
+		Entity m_owner = INVALID_ENTITY;
+		Entity m_anchor = INVALID_ENTITY;
+		Entity m_tongue = INVALID_ENTITY;
+
+		DistanceJoint2D m_distanceJoint;
+
+		float m_tongueLengthMax = 450.0f;
+		float m_tongueWidth = 35.0f;
+		float m_swingForce = 50.0f;
+
+		bool m_active = false;
+
+	public:
+		FrogTongue(){}
+
+		void Initalize(Entity owner, Coordinator& coord, EventDispatcher& disp) { 
+			m_owner = owner; 
+			disp.Subscribe<InputEvent>([this, &coord](const InputEvent& event)
+				{
+					switch (event.inputAction) {
+					case InputEvent::InputAction::PlayerMoveLeft:
+						if (event.pressed == InputEvent::InputActionState::Pressed ||
+							event.pressed == InputEvent::InputActionState::Repeat) {
+							this->SwingActivated(coord, false);
+						}
+						break;
+					case InputEvent::InputAction::PlayerMoveRight:
+						if (event.pressed == InputEvent::InputActionState::Pressed ||
+							event.pressed == InputEvent::InputActionState::Repeat) {
+							this->SwingActivated(coord, true);
+						}
+						break;
+					}
+
+				});
+		}
+		
+		//Finds thed cloest attachtable surface/entity
+		//Returns false if too far to attach or cant find
+		bool Start(Coordinator& coord);
+		//Update function for tongue
+		//Returns false if ability stopped
+		bool Update(Coordinator& coord);
+		void End(Coordinator& coord);
+
+		//Only supports player
+		void SwingActivated(Coordinator& coord, bool isRight);
+
+	private:
+
+		void UpdateTonguePos(Coordinator& coord);
+		float DistanceToAnchor(Vec3 ownerPos, Vec3 anchorPos);
+
+	};
+}

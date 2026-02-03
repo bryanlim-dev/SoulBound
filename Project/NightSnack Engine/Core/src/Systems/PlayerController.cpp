@@ -32,10 +32,43 @@ namespace NightSnack {
         });
         m_abilities.insert({ abilityName, DoubleJumpAbility });
 
+        abilityName = "GrapplingTongue";
+        Gameplay::Ability GrapplingTongue(abilityName, [](Coordinator& c, Entity target, PlayerFlags& m_flags) {
+            //if (target == INVALID_ENTITY) return;
+            if (!c.HasComponent<RigidBody>(target)) return;
+            if (!c.HasComponent<PlayerController>(target)) return;
+
+            FrogTongue& tongue = c.GetSystem<PlayerControllerSystem>()->GetFrogTongue();
+            if (m_flags.grappling == false)
+            {
+                //std::cout << "[Frog Grapple] Grappble Looking!" << std::endl;
+                //Do distance check to nearest grabbling spot/enemy
+                if (tongue.Start(c))
+                {
+                    //Valid target
+                    m_flags.grappling = true;
+                }
+                //else
+                //    std::cout << "[Frog Grapple] Grappble NONE!" << std::endl;
+
+            }
+
+            if (m_flags.grappling)
+            {
+                if (!tongue.Update(c))
+                {
+                    m_flags.grappling = false;
+                    tongue.End(c);
+                }
+            }
+
+        });
+        m_abilities.insert({ abilityName, GrapplingTongue });
+
     }
 
     bool PlayerControllerSystem::AttachAbility() {
-        curr_ability = "DoubleJump";
+        curr_ability = "GrapplingTongue";
         return true;
     }
 
@@ -128,5 +161,9 @@ namespace NightSnack {
             m_flags.justJumped = true;
             m_groundedTime = 0.f;
         }
+    }
+    PlayerFlags& PlayerControllerSystem::GetPlayerFlags()
+    {
+        return m_flags;
     }
 }

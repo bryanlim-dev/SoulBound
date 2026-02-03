@@ -1,7 +1,7 @@
 
 #include "Serializer.h"
 #include "Factory/EntityFactory.h"
-
+#include <Systems/CharacterSystem.h>
 #include <vector>
 
 #if 1
@@ -665,6 +665,34 @@ namespace NightSnack {
 	void from_json(json const& j, Sprite& s) {
 		try {
 			j["textureName"].get_to(s.textureName);
+		}
+		catch (std::exception const& e) {
+			std::cerr << "Invalid JSON format " << e.what() << '\n';
+		}
+	}
+
+	// --------------------------------------------------------------
+	// Character
+	// --------------------------------------------------------------
+	void to_json(json& j, Character const& c) {
+
+		std::list<std::string> propertities{};
+
+		for (CharacterProperties prop : c.m_properties)
+		{
+			propertities.push_back(NightSnack::CharacterSystem::CharacterPropertiesToString(prop));
+		}
+
+		j = { {"Propertities", propertities} };
+	}
+	void from_json(json const& j, Character& c) {
+		try {
+			for (const auto& propStr : j["Propertities"])
+			{
+				CharacterProperties charProp = MAX_PROPERTIES;
+				if (NightSnack::CharacterSystem::StringToCharacterProperties(propStr, charProp))
+					c.m_properties.push_back(GRAPPLEABLE);
+			}
 		}
 		catch (std::exception const& e) {
 			std::cerr << "Invalid JSON format " << e.what() << '\n';

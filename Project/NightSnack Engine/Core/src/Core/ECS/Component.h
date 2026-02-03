@@ -291,6 +291,28 @@ namespace NightSnack {
         std::string target{};
     };
 
+
+#define CHARACTER_PROPERTIES_LIST \
+    PROPERTY(START_PROPERTIES)    \
+    PROPERTY(GRAPPLEABLE)         \
+    PROPERTY(CHECKPOINT)         
+//Add any new PROPERTY enum above
+//The enum to string is in character system
+
+    enum CharacterProperties
+    {
+#define PROPERTY(name) name,
+        CHARACTER_PROPERTIES_LIST
+#undef PROPERTY
+
+        MAX_PROPERTIES //Max number of propertities, put any new ones before this
+    };
+
+    struct Character
+    {
+        std::vector<CharacterProperties> m_properties{};
+    };
+
     // Add more Components here if necessary...
     
 }   // NightSnack

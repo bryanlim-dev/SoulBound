@@ -19,6 +19,7 @@
 #include <Scripting/ScriptManager.h>
 #include <Systems/AnimationSystem.h>
 #include <Graphics/Camera.h>
+#include <Systems/CharacterSystem.h>
 
 namespace NightSnack
 {
@@ -57,7 +58,8 @@ namespace NightSnack
                 "Scripting",
                 "Animator",
                 "Font",
-                "Hierarchy"
+                "Hierarchy",
+                "Character"
 			};
         }
 
@@ -98,6 +100,7 @@ namespace NightSnack
                     if (compName == "Animator")  { hasComponent = m_coord.HasComponent<Animator>(*m_selectedEntity); }
                     if (compName == "Font")      { hasComponent = m_coord.HasComponent<Font>(*m_selectedEntity); }
                     if (compName == "Hierarchy") { hasComponent = m_coord.HasComponent<Hierarchy>(*m_selectedEntity); }
+                    if (compName == "Character") { hasComponent = m_coord.HasComponent<Character>(*m_selectedEntity); }
 
                     if (hasComponent)
                     {
@@ -148,6 +151,7 @@ namespace NightSnack
                             if (compName == "Animator")  { AnimatorComponent(); }
                             if (compName == "Font")      { FontComponent(); }
                             if (compName == "Hierarchy") { HierarchyComponent(); }
+                            if (compName == "Character") { CharacterComponent(); }
                         }
                         ImGui::Separator();
                     }
@@ -304,6 +308,14 @@ namespace NightSnack
         */
         /************************************************************************/
         void ScriptingComponent();
+
+        /************************************************************************/
+        /*!
+        \brief
+            Draws Charcter component details which includes character propertities
+        */
+        /************************************************************************/
+        void CharacterComponent();
 
         /************************************************************************/
         /*!
@@ -1656,6 +1668,125 @@ namespace NightSnack
         } //End entire script table
     }
 
+    inline void InspectorPanel::CharacterComponent()
+    {
+        if (!m_coord.HasComponent<Character>(*m_selectedEntity))
+            return;
+
+        if (ImGui::BeginTable("CharacterTable", 3, ImGuiTableFlags_SizingFixedFit))
+        {
+            ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 160.0f);
+            ImGui::TableSetupColumn("Value2", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+            //ImGui::TableHeadersRow();
+
+            auto& t = m_coord.ModifyComponent<Character>(*m_selectedEntity);
+
+            constexpr int PropertyCount = MAX_PROPERTIES - START_PROPERTIES + 1;
+
+            std::array<std::string, PropertyCount> propertyNameStorage;
+            std::array<const char*, PropertyCount> propertyNames;
+            // Index 0 = REMOVE
+            propertyNames[0] = "REMOVE PROPERTY";
+
+            int idx = 1;
+            for (int i = START_PROPERTIES + 1; i < MAX_PROPERTIES; ++i)
+            {
+                propertyNameStorage[idx] =
+                    m_coord.GetSystem<CharacterSystem>()
+                    ->CharacterPropertiesToString(
+                        static_cast<CharacterProperties>(i));
+
+                propertyNames[idx] = propertyNameStorage[idx].c_str();
+                ++idx;
+            }
+
+            propertyNames[MAX_PROPERTIES] = "NEW PROPERTY";
+
+            for (size_t i = 0; i < t.m_properties.size();)
+            {
+                ImGui::TableNextRow();
+
+                // Label column
+                ImGui::TableNextColumn();
+                ImGui::Text("Property");
+
+                // Combo column
+                ImGui::TableNextColumn();
+
+                CharacterProperties& prop = t.m_properties[i];
+                int comboIndex = static_cast<int>(prop);
+
+                ImGui::PushID(static_cast<int>(i));
+                ImGui::SetNextItemWidth(-FLT_MIN);
+
+                if (ImGui::Combo(
+                    "##Property",
+                    &comboIndex,
+                    propertyNames.data(),
+                    (int)propertyNames.size()))
+                {
+                    if (comboIndex == 0)
+                    {
+                        // REMOVE PROPERTY
+                        t.m_properties.erase(t.m_properties.begin() + i);
+                        ImGui::PopID();
+                        continue;
+                    }
+                    else
+                    {
+                        prop = static_cast<CharacterProperties>(comboIndex);
+                    }
+                }
+
+                ImGui::PopID();
+
+                // Unused column
+                ImGui::TableNextColumn();
+
+                ++i;
+            }
+
+            //New CharacterProperties dropdown 
+
+            ImGui::TableNextRow();
+
+            ImGui::TableNextColumn();
+            ImGui::TextDisabled("+ Property");
+
+            ImGui::TableNextColumn();
+
+            int newPropertyIndex = MAX_PROPERTIES;
+            ImGui::SetNextItemWidth(-FLT_MIN);
+
+            if (ImGui::Combo(
+                "##AddProperty",
+                &newPropertyIndex,
+                propertyNames.data(),
+                (int)propertyNames.size()))
+            {
+                if (newPropertyIndex > 0 && newPropertyIndex < MAX_PROPERTIES)
+                {
+                    CharacterProperties newProp = static_cast<CharacterProperties>(newPropertyIndex);
+
+                    //No dupe properties
+                    if (std::find(
+                        t.m_properties.begin(),
+                        t.m_properties.end(),
+                        newProp) == t.m_properties.end())
+                    {
+                        t.m_properties.push_back(newProp);
+                    }
+                }
+                newPropertyIndex = 0;
+            }
+
+            ImGui::TableNextColumn();
+
+            ImGui::EndTable();
+        }
+    }
+
     inline void InspectorPanel::AddComponentButton()
     {
         // Center the button horizontally
@@ -1676,6 +1807,7 @@ namespace NightSnack
 		if (!m_coord.HasComponent<Script>(e))      missing.push_back({ "Scripting", false, [this, e] { m_coord.AddComponent<Script>(e, Script{}); } });
         if (!m_coord.HasComponent<Animator>(e))    missing.push_back({ "Animator", false, [this, e] { m_coord.AddComponent<Animator>(e, Animator{}); } });
         if (!m_coord.HasComponent<Font>(e))        missing.push_back({ "Font", false, [this, e] { m_coord.AddComponent<Font>(e, Font{}); } });
+        if (!m_coord.HasComponent<Character>(e))   missing.push_back({ "Character", false, [this, e] { m_coord.AddComponent<Character>(e, Character{}); } });
 
         // Disable button if no components left to add
         if (missing.empty())
@@ -1728,6 +1860,7 @@ namespace NightSnack
             addMenuItem("Scripting", [this, e] { m_coord.AddComponent<Script>(e, Script{}); }, m_coord.HasComponent<Script>(e));
             addMenuItem("Animator", [this, e] { m_coord.AddComponent<Animator>(e, Animator{}); }, m_coord.HasComponent<Animator>(e));
             addMenuItem("Font", [this, e] { m_coord.AddComponent<Font>(e, Font{}); }, m_coord.HasComponent<Font>(e));
+            addMenuItem("Character", [this, e] { m_coord.AddComponent<Character>(e, Character{}); }, m_coord.HasComponent<Character>(e));
             ImGui::EndPopup();
         }
 	}
@@ -1751,6 +1884,7 @@ namespace NightSnack
         if (m_coord.HasComponent<Script>(e))           removable.push_back({ "Scripting", true, [this, e] { m_coord.RemoveComponent<Script>(e); } });
         if (m_coord.HasComponent<Animator>(e))         removable.push_back({ "Animator", true, [this, e] { m_coord.RemoveComponent<Animator>(e); } });
         if (m_coord.HasComponent<Font>(e))             removable.push_back({ "Font", true, [this, e] { m_coord.RemoveComponent<Font>(e); } });
+        if (m_coord.HasComponent<Character>(e))        removable.push_back({ "Character", true, [this, e] { m_coord.RemoveComponent<Character>(e); } });
 
         // Disable button if no components left to remove
         if (removable.empty())
@@ -1801,6 +1935,8 @@ namespace NightSnack
                         snapshot.animator = m_coord.GetComponent<Animator>(*m_selectedEntity);
                     else if (strcmp(name, "Scripting") == 0)
 						snapshot.script = m_coord.GetComponent<Script>(*m_selectedEntity);
+                    else if (strcmp(name, "Character") == 0)
+						snapshot.character = m_coord.GetComponent<Character>(*m_selectedEntity);
 
                     NightSnack::UndoSystem::Instance().Push(snapshot);
 
