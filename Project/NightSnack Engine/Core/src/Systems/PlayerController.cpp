@@ -32,7 +32,7 @@ namespace NightSnack {
         });
         m_abilities.insert({ abilityName, DoubleJumpAbility });
 
-        abilityName = "GrapplingTongue";
+        abilityName = "Grapple";
         Gameplay::Ability GrapplingTongue(abilityName, [](Coordinator& c, Entity target, PlayerFlags& m_flags) {
             //if (target == INVALID_ENTITY) return;
             if (!c.HasComponent<RigidBody>(target)) return;
@@ -160,6 +160,19 @@ namespace NightSnack {
             //m_storedJump = false;
             m_flags.justJumped = true;
             m_groundedTime = 0.f;
+
+            // Start the emitter to spawn particles
+            // These particles spawn position will be based on the updated player position
+            m_playerJumpEmitter = m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
+                "Particle-RisingGlow",      // Prefab name
+                {},                         // Spawn position (center)
+                {},							// End position (unused)
+                10.f,                       // Spawn radius
+                10,                          // Max particles per cycle
+                1,                          // Spawn delay (steps between particles)
+                false,                      // Should loop
+                m_player                    // Follow entity
+            );
         }
     }
     PlayerFlags& PlayerControllerSystem::GetPlayerFlags()

@@ -340,16 +340,16 @@ namespace NightSnack {
 
 		Vec2 startSize = p.startSize;
 		p.startSize = {
-			RandomRange(startSize.x - 5.f, startSize.x + 5.f),
-			RandomRange(startSize.y - 5.f, startSize.y + 5.f)
+			RandomRange(startSize.x, startSize.x + 5.f),
+			RandomRange(startSize.y, startSize.y + 5.f)
 		};
 		p.startSize.x = std::max(0.f, p.startSize.x);
 		p.startSize.y = std::max(0.f, p.startSize.y);
 
 		Vec2 endSize = p.endSize;
 		p.endSize = {
-			RandomRange(endSize.x - 1.5f, endSize.x + 1.5f),
-			RandomRange(endSize.y - 1.5f, endSize.y + 1.5f)
+			RandomRange(endSize.x, endSize.x + 1.5f),
+			RandomRange(endSize.y, endSize.y + 1.5f)
 		};
 		p.endSize.x = std::max(0.f, p.endSize.x);
 		p.endSize.y = std::max(0.f, p.endSize.y);
@@ -368,10 +368,10 @@ namespace NightSnack {
 
 		// Transform component properties
 		auto& t = m_coord.ModifyComponent<Transform>(e);
-		t.layer = LayerType::FOREGROUND;
+		t.layer = LayerType::GAMELAYER;
 		t.pos = spawnPos;
 		t.scale = p.startSize;
-		t.rot = RandomRange(0.f, 360.f);
+		t.rot = 0.f; //RandomRange(0.f, 360.f);
 		t.isActive = true;
 	}
 

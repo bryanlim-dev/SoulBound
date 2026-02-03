@@ -100,7 +100,8 @@ namespace NightSnack {
                         }
                         break;
                     case InputEvent::InputAction::PlayerJump:
-                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                        if (event.pressed == InputEvent::InputActionState::Pressed ||
+                            event.pressed == InputEvent::InputActionState::Repeat) {
                             if (!m_flags.justJumped)
                             m_flags.jumpRequested = true;
                         }
@@ -165,18 +166,21 @@ namespace NightSnack {
             PlayerController const& pcont = m_coord.GetComponent<PlayerController>(m_player);
             Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
             Transform& t = m_coord.ModifyComponent<Transform>(m_player);
+            Collider& c = m_coord.ModifyComponent<Collider>(m_player);
 
-            bool isGrounded = m_coord.GetComponent<Collider>(m_player).isGrounded;
 
-            if (isGrounded) m_flags.canDoubleJump = true;
 
             //
             static float time = 0.f;
             time += FixedDT;
-            if (time >= 0.5f) {
+            if (time >= 0.5f && vel.y == 0.f) {
                 time = 0.f;
+                
+                c.isGrounded = true;
                 m_flags.canDoubleJump = true;
             }
+            bool isGrounded = c.isGrounded;
+            if (isGrounded) m_flags.canDoubleJump = true;
             //
 
             // Basic movement -----------------------------
@@ -205,29 +209,6 @@ namespace NightSnack {
             prev_ability = curr_ability;
             m_timeSinceAbility += FixedDT;
             if (m_timeSinceAbility >= 1.0f) m_timeSinceAbility = 0.f;
-
-            //HoldJump(vel, isGrounded);
-            if (m_storedJump && isGrounded) {
-                vel.y = pcont.jumpSpeed;
-                t.pos.y += 2.5f;
-                m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
-                m_coord.GetSystem<AudioSystem>()->PlaySFX("playerJump");
-                m_midAir = true;
-                m_storedJump = false;
-
-                // Start the emitter to spawn particles
-                // These particles spawn position will be based on the updated player position
-                m_playerJumpEmitter = m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
-                    "Particle-RisingGlow",      // Prefab name
-                    {},                         // Spawn position (center)
-                    {},							// End position (unused)
-                    10.f,                       // Spawn radius
-                    7,                         // Max particles per cycle
-                    5,                         // Spawn delay (steps between particles)
-                    false,                      // Should loop
-                    m_player                    // Follow entity
-                );
-            }
 
         }
 

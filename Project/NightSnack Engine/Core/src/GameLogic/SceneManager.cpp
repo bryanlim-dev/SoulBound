@@ -158,8 +158,10 @@ namespace NightSnack::Scene {
 			};
 			m_coord.AddComponent<Collider>(e, col);
 
+			Renderable r;
+			r.materialName = "InvisMat";
 			// Invisible renderer component
-			m_coord.AddComponent<Renderable>(e, Renderable{});
+			m_coord.AddComponent<Renderable>(e, r);
 			m_coord.AddComponent<Color>(e, Color{});    // zero alpha
 			// Required for Physics system
 			m_coord.AddComponent<RigidBody>(e, RigidBody{});

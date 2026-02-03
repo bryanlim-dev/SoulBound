@@ -240,13 +240,15 @@ namespace NightSnack {
 									if (r1.vel.y < 0.f)
 										r1.vel.y = 0.f;
 
-									c1.isGrounded = true;
+									if (t1.pos.x >= (t2.pos.x - c2.width / 2.f) && t1.pos.x <= (t2.pos.x + c2.width / 2.f))
+										c1.isGrounded = true;
 								}
 								if (t2.pos.y > t1.pos.y && !c2.isStatic) {
 									if (r2.vel.y < 0.f)
 										r2.vel.y = 0.f;
 									
-									c2.isGrounded = true;
+									if (t2.pos.x >= (t1.pos.x - c1.width / 2.f) && t2.pos.x <= (t1.pos.x + c1.width / 2.f))
+										c2.isGrounded = true;
 								}
 							}
 						}
@@ -327,10 +329,12 @@ namespace NightSnack {
 				r1.vel.y = 0.f;
 				r2.vel.y = 0.f;
 
-				if (t1.pos.y > t2.pos.y) {
+				if (t1.pos.y > t2.pos.y
+					&& t1.pos.x >= (t2.pos.x - t2.scale.x / 2.f) && t1.pos.x <= (t2.pos.x + t2.scale.x / 2.f)) {
 					c1.isGrounded = true;
 				}
-				if (t2.pos.y > t1.pos.y) {
+				if (t2.pos.y > t1.pos.y 
+					&& t2.pos.x >= (t1.pos.x - t1.scale.x / 2.f) && t2.pos.x <= (t1.pos.x + t1.scale.x/ 2.f)) {
 					c2.isGrounded = true;
 				}
 			}

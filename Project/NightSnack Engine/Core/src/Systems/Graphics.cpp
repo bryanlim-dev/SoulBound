@@ -32,6 +32,8 @@ namespace NightSnack {
 		AddShader("text", std::move(textShader));
 		auto glowShader = std::make_unique<Shader>("shaders/particle_glow_vs.vert", "shaders/particle_glow_fs.frag");
 		AddShader("glow", std::move(glowShader));
+		auto invisShader = std::make_unique<Shader>("shaders/invis_vs.vert", "shaders/invis_fs.frag");
+		AddShader("invis", std::move(invisShader));
 
 		// Meshes;
 		AddMesh("point", Mesh::CreatePoint());
@@ -48,6 +50,8 @@ namespace NightSnack {
 		AddMaterial("ColorMat", std::move(colorMat));
 		auto glowMat = std::make_unique<Material>(GetShader("glow"));
 		AddMaterial("GlowMat", std::move(glowMat));
+		auto invMat = std::make_unique<Material>(GetShader("invis"));
+		AddMaterial("InvisMat", std::move(invMat));
 
 		// Initialise buffer for Instanced Rendering
 		if (m_globalInstanceSSBO == 0) {
@@ -117,6 +121,7 @@ namespace NightSnack {
 				auto& scl = m_coord.GetComponent<Transform>(e).scale;
 
 				if (!trans.isActive) { continue; }
+				if (ren.materialName == "InvisMat") { continue; }
 
 				if (ren.wasModified) {
 					//std::cout << "Resolving renderable: " << e << '\n'; 
