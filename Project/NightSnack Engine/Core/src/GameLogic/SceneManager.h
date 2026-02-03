@@ -59,7 +59,10 @@ namespace NightSnack::Scene {
 			: m_coord{ coord }, m_dispatcher{ &disp } , 
 			m_scheduledLevelLoad(false),
 			m_scheduledLevelName(""),
-			m_levelLoadTimer(0.0f) {
+			m_levelLoadTimer(0.0f),
+			m_scheduledExit(false),
+			m_exitTimer(0.0f)
+		{
 
 			// set system signature
 			m_systemSignature.set(GetComponentTypeID<ButtonInfo>());
@@ -120,6 +123,7 @@ namespace NightSnack::Scene {
 		// Sets up bgm and menus
 		void LoadLevel(std::string const& filename);
 		void LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration);
+		void ScheduleExit(float delay);
 		void RestartLevel();
 		bool SaveLevel(std::string const& filename, bool overwrite = 0);
 
@@ -168,6 +172,9 @@ namespace NightSnack::Scene {
 		bool m_scheduledLevelLoad;
 		std::string m_scheduledLevelName;
 		float m_levelLoadTimer;
+
+		bool m_scheduledExit;
+		float m_exitTimer;
 	};
 
 }	// NightSnack::Scene

@@ -62,6 +62,15 @@ namespace NightSnack::Scene {
 				m_scheduledLevelName = "";
 			}
 		}
+
+		if (m_scheduledExit) {
+			m_exitTimer -= (1.0f / 60.0f);
+
+			if (m_exitTimer <= 0.0f) {
+				std::cerr << "[SceneManager] Exiting application\n";
+				exit(0);
+			}
+		}
 	}
 
 	// Register all button actions and stop buttons into m_buttons
@@ -97,9 +106,12 @@ namespace NightSnack::Scene {
 
 		// exit button
 		Button exitButton(ButtonAction::EXIT, [](Coordinator& c, std::string const& s) {
-			(void)c;
 			(void)s;
-			exit(0);  // Exit the application
+			// Fade out audio and schedule exit
+			auto audio = c.GetSystem<AudioSystem>();
+			audio->FadeToVolume(0.0f, 0.5f); // Fade out over 0.5s
+
+			c.GetSystem<Scene::SceneManager>()->ScheduleExit(0.5f); // Exit after fade
 			});
 		m_buttons.emplace(ButtonAction::EXIT, exitButton);
 	}
@@ -147,7 +159,6 @@ namespace NightSnack::Scene {
 		}
 	}
 	
-	
 	// Creates all entities required for a level through the entity factory
 	// and sets up BGM for level, refreshes script manager.
 	void SceneManager::LoadLevel(std::string const& levelname) {
@@ -180,6 +191,12 @@ namespace NightSnack::Scene {
 		m_scheduledLevelLoad = true;
 		m_scheduledLevelName = levelname;
 		m_levelLoadTimer = fadeOutDuration; // Wait for fade out to complete
+	}
+
+	void SceneManager::ScheduleExit(float delay) {
+		m_scheduledExit = true;
+		m_exitTimer = delay;
+		std::cerr << "[SceneManager] Exit scheduled in " << delay << " seconds\n";
 	}
 
 	void SceneManager::RestartLevel() {
