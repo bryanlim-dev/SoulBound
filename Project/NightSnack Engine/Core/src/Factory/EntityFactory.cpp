@@ -652,7 +652,7 @@ namespace NightSnack {
         // AUDIO ----------------------------------------------------------
         if (m_coord.HasComponent<Audio>(e)) j["Audio"] = m_coord.GetComponent<Audio>(e);
         // CHARACTER ----------------------------------------------------------
-        if (m_coord.HasComponent<Audio>(e)) j["Character"] = m_coord.GetComponent<Character>(e);
+        if (m_coord.HasComponent<Character>(e)) j["Character"] = m_coord.GetComponent<Character>(e);
 
         return j;
     }

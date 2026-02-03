@@ -293,7 +293,8 @@ namespace NightSnack {
 
 #define CHARACTER_PROPERTIES_LIST \
     PROPERTY(START_PROPERTIES)    \
-    PROPERTY(GRAPPLEABLE)
+    PROPERTY(GRAPPLEABLE)         \
+    PROPERTY(CHECKPOINT)         
 //Add any new PROPERTY enum above
 //The enum to string is in character system
 
