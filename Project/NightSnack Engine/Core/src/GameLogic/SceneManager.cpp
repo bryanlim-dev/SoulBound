@@ -334,8 +334,8 @@ namespace NightSnack::Scene {
 		// Restart audio
 		auto const& audio = m_coord.GetSystem<AudioSystem>();
 		std::string bgmkey = audio->GetBGM();
-		audio->StopBGM();
-		audio->PlayBGM(bgmkey);
+		audio->PlayBGM(bgmkey);  // handles continuation automatically
+
 
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();
 		script->RefreshScripts(); //	

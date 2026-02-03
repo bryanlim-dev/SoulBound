@@ -371,8 +371,15 @@ namespace NightSnack {
             return;
 
         auto it = m_loadedBGM.find(bgmKey);
-        if (it == m_loadedBGM.end()) {
+        if (it == m_loadedBGM.end()) 
+        {
             std::cerr << "[AudioSystem] BGM not found: " << bgmKey << "\n";
+            return;
+        }
+
+        if (m_currentKeyBGM == bgmKey && IsBGMPlaying()) 
+        {
+            std::cout << "[AudioSystem] Already playing " << bgmKey << ", continuing...\n";
             return;
         }
 
