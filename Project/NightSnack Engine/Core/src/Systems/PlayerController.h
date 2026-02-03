@@ -72,33 +72,9 @@ namespace NightSnack {
                     case InputEvent::InputAction::PlayerJump:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
                             m_flags.jumpRequested = true;
-
-                            // Start this emitter to emit particles, if it doesnt exist yet
-                            if (m_testParticleRisingGlow == 0) {
-
-                                Entity player = FindPlayer(m_coord);
-                                Vec3& updatedPlayerPos = m_coord.ModifyComponent<Transform>(player).pos;
-
-                                m_testParticleRisingGlow = m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
-                                    "Particle-RisingGlow",      // Prefab name
-                                    updatedPlayerPos,                         // Spawn position (center)
-                                    {},							// End position (unused)
-                                    10.f,                       // Spawn radius
-                                    10,                         // Max particles per cycle
-                                    5,                         // Spawn delay (steps between particles)
-                                    false                        // Should loop
-                                );
-                            }
-
                         }
                         else {
                             m_flags.jumpRequested = false;
-
-                            // Stop this emitter from emitting particles, if it exists
-                            if (m_testParticleRisingGlow != 0) {
-                                m_coord.GetSystem<ParticleSystem>()->StopEmitter(m_testParticleRisingGlow);
-                                m_testParticleRisingGlow = 0;
-                            }
                         }
                         break;
                     }
@@ -193,6 +169,19 @@ namespace NightSnack {
                 m_coord.GetSystem<AudioSystem>()->PlaySFX("playerJump");
                 m_midAir = true;
                 m_storedJump = false;
+
+                // Start the emitter to spawn particles
+                // These particles spawn position will be based on the updated player position
+                m_playerJumpEmitter = m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
+                    "Particle-RisingGlow",      // Prefab name
+                    {},                         // Spawn position (center)
+                    {},							// End position (unused)
+                    10.f,                       // Spawn radius
+                    7,                         // Max particles per cycle
+                    5,                         // Spawn delay (steps between particles)
+                    false,                      // Should loop
+                    m_player                    // Follow entity
+                );
             }
 
             m_flags.jumpRequested = false;
@@ -275,7 +264,7 @@ namespace NightSnack {
         //Lenght of time to store a jump
         const float m_storedJumpThreshold = 0.2f;
 
-        EmitterID m_testParticleRisingGlow{};
+        EmitterID m_playerJumpEmitter{};
     };
 
 }   // namespace NightSnack

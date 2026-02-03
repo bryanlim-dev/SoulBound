@@ -230,6 +230,7 @@ namespace NightSnack {
 
 	void AnimationSystem::ChangeAnimation() {
 		// Currently only change animation clip for the "AnimatedRubric" prefab
+		// For testing purposes
 		static int temp = 0;
 		for (Entity e : m_entities) {
 
@@ -262,12 +263,15 @@ namespace NightSnack {
 		j["spritesheet"] = spritesheet; 
 
 		json clips;
+		// Serialize each Animation Clip
 		for (const auto& [clipID, clip] : it->second) {
 			json clipJson;
 			clipJson["name"] = clip.name;
 
 			json frames = json::array();
+			// Serialize each Animation Frame
 			for (const auto& f : clip.frames) {
+				// Only have timeDelay to save 
 				frames.push_back({ {"timeDelay", f.timeDelay} });
 			}
 			clipJson["frames"] = frames;
@@ -278,9 +282,10 @@ namespace NightSnack {
 		j["clips"] = clips;
 
 		std::filesystem::path path = std::filesystem::path(RESOURCE_PATH) / "GameData/Animations/" / (spritesheet + ".json");
-
+		// Ensure directory exists before writing to it
 		std::filesystem::create_directories(path.parent_path());
 
+		// Write it to disk
 		std::ofstream ofs(path);
 		ofs << std::setw(4) << j;
 
@@ -295,21 +300,27 @@ namespace NightSnack {
 			return;
 		}
 
+		// Load data from the file
 		std::ifstream ifs(path);
 		json j;
 		ifs >> j;
 
+		// Get the Animation Clips from this spritesheet
 		auto& runtimeClips = m_animationClips[spritesheet];
 
+		// Iterate through the saved Animation Clips
 		for (auto& [clipID, clipJson] : j["clips"].items()) {
+			// Skip clips that do not exist in the current runtime data
 			if (runtimeClips.find(clipID) == runtimeClips.end())
 				continue;
 
 			auto& clip = runtimeClips[clipID];
 
+			// Restore clip name
 			if (clipJson.contains("name"))
 				clip.name = clipJson["name"].get<std::string>();
 
+			// Restore frame data
 			auto& frames = clipJson["frames"];
 			size_t count = std::min(frames.size(), clip.frames.size());
 			for (size_t i = 0; i < count; ++i) {
@@ -335,27 +346,6 @@ namespace NightSnack {
 		return "";
 	}
 
-	bool AnimationSystem::RenameAnimationClip(const std::string& spritesheet, const std::string& oldName, const std::string& newName)
-	{
-		auto sheetIt = m_animationClips.find(spritesheet);
-		if (sheetIt == m_animationClips.end())
-			return false;
-
-		auto& clips = sheetIt->second;
-
-		if (clips.find(oldName) == clips.end())
-			return false;
-
-		if (clips.find(newName) != clips.end())
-			return false; // Prevent overwrite
-
-		// Move clip data
-		clips[newName] = std::move(clips[oldName]);
-		clips.erase(oldName);
-
-		return true;
-	}
-
 	void AnimationSystem::PlayAnimation(Entity e, bool restart) {
 		if (!m_coord.HasComponent<Animator>(e)) {
 			return;
@@ -363,6 +353,7 @@ namespace NightSnack {
 		auto& animator = m_coord.ModifyComponent<Animator>(e);
 		animator.isPlaying = true;
 
+		// To restart or to continue playing from where it stopped?
 		if (restart) {
 			animator.currentTime = 0.f;
 			animator.currentFrameIndex = 0;

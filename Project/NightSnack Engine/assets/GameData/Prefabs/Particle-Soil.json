@@ -8,7 +8,7 @@
     "Renderable": {
         "isWireframe": false,
         "materialName": "TunnelEntrance1",
-        "meshName": "circle"
+        "meshName": "square"
     },
     "Particle": {
       "type": "SOIL",
