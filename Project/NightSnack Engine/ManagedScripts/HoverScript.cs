@@ -28,8 +28,8 @@ namespace ManagedScripts
         [SerializeField]
         public float time = 0.0f;
 
-        [SerializeField]
-        RotatorScript rotate = null;
+        //[SerializeField]
+        //RotatorScript rotate = null;
 
         public Transform transform;
 
