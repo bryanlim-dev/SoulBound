@@ -237,11 +237,15 @@ namespace NightSnack {
 
 							if (abs(normal.y) > abs(normal.x)) {
 								if (t1.pos.y > t2.pos.y && !c1.isStatic) {
-									r1.vel.y = 0.f;
+									if (r1.vel.y < 0.f)
+										r1.vel.y = 0.f;
+
 									c1.isGrounded = true;
 								}
 								if (t2.pos.y > t1.pos.y && !c2.isStatic) {
-									r2.vel.y = 0.f;
+									if (r2.vel.y < 0.f)
+										r2.vel.y = 0.f;
+									
 									c2.isGrounded = true;
 								}
 							}
@@ -456,41 +460,6 @@ namespace NightSnack {
 				t2.pos.y = t2.pos.y + correction.y * (mass1 / totalMass);
 			}
 		}
-
-		//// --- Velocity Resolution (impulse) ---
-		//Vec2 relativeVel = r1.vel - r2.vel;
-		//float velAlongNormal = relativeVel.dot(normal);
-
-		//// Don't resolve if velocities are separating
-		//if (velAlongNormal > 0) {
-		//	return;
-		//}
-
-		//// Calculate restitution (bounciness)
-		//float e = std::min(r1.restitution, r2.restitution);
-
-		//// Calculate impulse scalar
-		//float j = -(1.0f + e) * velAlongNormal;
-
-		//if (!c1.isStatic && !c2.isStatic) {
-		//	j /= (1.0f * r1.invMass + 1.0f * r2.invMass);
-		//}
-		//else if (c2.isStatic) {
-		//	j /= (1.0f * r1.invMass);
-		//}
-		//else { // c1.isStatic
-		//	j /= (1.0f * r2.invMass);
-		//}
-
-		//// Apply impulse
-		//Vec2 impulse = normal * j;
-
-		//if (!c1.isStatic) {
-		//	r1.vel -= impulse * r1.invMass;
-		//}
-		//if (!c2.isStatic) {
-		//	r2.vel += impulse * r2.invMass;
-		//}
 	}
 
 	bool PhysicsSystem::CheckTunneling(Transform const& t1, Transform const& t2, RigidBody const& r1) {
