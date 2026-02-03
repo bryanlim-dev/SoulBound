@@ -379,7 +379,7 @@ namespace NightSnack {
 
         if (m_currentKeyBGM == bgmKey && IsBGMPlaying()) 
         {
-            std::cout << "[AudioSystem] Already playing " << bgmKey << ", continuing...\n";
+            //std::cout << "[AudioSystem] Already playing " << bgmKey << ", continuing...\n";
             return;
         }
 
