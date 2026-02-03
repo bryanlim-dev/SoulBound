@@ -97,9 +97,7 @@ namespace NightSnack
         if (coord.HasComponent<RigidBody>(m_bodyB))
             bodyB = &coord.ModifyComponent<RigidBody>(m_bodyB);
 
-        // --------------------------------------------------
-        // World anchors
-        // --------------------------------------------------
+        //World anchors
         Vec2 worldA = posA + m_anchorA;
         Vec2 worldB = posB + m_anchorB;
 
@@ -111,29 +109,21 @@ namespace NightSnack
 
         Vec2 n = delta / dist;
 
-        // --------------------------------------------------
-        // FIXED target distance
-        // --------------------------------------------------
+        //Target distance
         const float targetDist = m_minDistance;
         float error = dist - targetDist;
 
-        // --------------------------------------------------
-        // Relative velocity along constraint axis
-        // --------------------------------------------------
+        //Relative velocity along constraint axis
         float relVel = -bodyA.vel.dot(n);
 
         if (bodyB && !m_lockAnchorB)
             relVel += bodyB->vel.dot(n);
 
-        // --------------------------------------------------
-        // Baumgarte stabilization (dt-scaled)
-        // --------------------------------------------------
+        //Baumgarte stabilization (some formula to help stablize the dist )
         constexpr float beta = 0.3f; // slightly stronger
         float bias = (beta / dt) * error;
 
-        // --------------------------------------------------
-        // Effective mass
-        // --------------------------------------------------
+        //Effective mass
         float invMassSum = bodyA.invMass;
 
         if (bodyB && !m_lockAnchorB)
@@ -142,18 +132,14 @@ namespace NightSnack
         if (invMassSum <= 0.f)
             return;
 
-        // --------------------------------------------------
-        // Constraint impulse
-        // --------------------------------------------------
+        //Constraint impulse
         float lambda = -(relVel + bias) / invMassSum;
 
         lambda = Clamp(lambda, -m_maxForce, m_maxForce);
 
         Vec2 impulse = n * lambda;
 
-        // --------------------------------------------------
-        // Apply impulse
-        // --------------------------------------------------
+        //Apply impulse
         bodyA.vel -= impulse * bodyA.invMass;
 
         if (bodyB && !m_lockAnchorB && bodyB->invMass > 0.f)
@@ -162,18 +148,42 @@ namespace NightSnack
 
     // --------------------------------------------------
 
-    void DistanceJoint2D::ApplyForce(RigidBody& body, const Vec2& force)
+    void DistanceJoint2D::ApplySwingForce(
+        Coordinator& coord,
+        float forceMagnitude
+    )
     {
-        if (body.invMass == 0.f)
+        if (!m_active || forceMagnitude == 0)
             return;
 
-        float mag = force.magnitude();
-        if (mag < 0.00001f)
+        if (!coord.HasComponent<RigidBody>(m_bodyA))
             return;
 
-        body.force.direction = force * (1.f / mag);
-        body.force.magnitude = mag;
-        body.force.isActive = true;
+        RigidBody& bodyA = coord.ModifyComponent<RigidBody>(m_bodyA);
+        Vec2 posA = coord.ModifyComponent<Transform>(m_bodyA).pos;
+        Vec2 posB = coord.ModifyComponent<Transform>(m_bodyB).pos;
+
+        //World anchor positions
+        Vec2 worldA = posA + m_anchorA;
+        Vec2 worldB = posB + m_anchorB;
+
+        Vec2 delta = worldA - worldB;
+        float dist = delta.magnitude();
+
+        if (dist < 0.00001f)
+            return;
+
+        //Rope direction (normalized)
+        Vec2 n = delta / dist;
+
+        //Tangent direction (perpendicular)
+        Vec2 tangent(-n.y, n.x);
+
+        //Convert force  impulse
+        Vec2 impulse = tangent * forceMagnitude;
+
+        //Apply to bodyA only
+        bodyA.vel += impulse * bodyA.invMass;
     }
 
     // --------------------------------------------------

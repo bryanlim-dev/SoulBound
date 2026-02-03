@@ -11,8 +11,11 @@ namespace NightSnack {
 
 		DistanceJoint2D m_distanceJoint;
 
-		float m_tongueLengthMax = 500.0f;
-		float m_tongueWidth = 50.0f;
+		float m_tongueLengthMax = 450.0f;
+		float m_tongueWidth = 35.0f;
+		float m_swingForce = 50.0f;
+
+		bool m_active = false;
 
 	public:
 		FrogTongue(){}
@@ -22,13 +25,20 @@ namespace NightSnack {
 			disp.Subscribe<InputEvent>([this, &coord](const InputEvent& event)
 				{
 					switch (event.inputAction) {
-					case InputEvent::InputAction::PlayerJump:
+					case InputEvent::InputAction::PlayerMoveLeft:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
-							this->SwingActivated(coord);
+							this->SwingActivated(coord, false);
+						}
+						break;
+					case InputEvent::InputAction::PlayerMoveRight:
+						if (event.pressed == InputEvent::InputActionState::Pressed ||
+							event.pressed == InputEvent::InputActionState::Repeat) {
+							this->SwingActivated(coord, true);
 						}
 						break;
 					}
+
 				});
 		}
 		
@@ -41,7 +51,7 @@ namespace NightSnack {
 		void End(Coordinator& coord);
 
 		//Only supports player
-		void SwingActivated(Coordinator& coord);
+		void SwingActivated(Coordinator& coord, bool isRight);
 
 	private:
 

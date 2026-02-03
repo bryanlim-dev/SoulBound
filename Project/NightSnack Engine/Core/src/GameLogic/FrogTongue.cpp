@@ -67,6 +67,7 @@ namespace NightSnack
 		m_distanceJoint.EnableSpring(true);
 		m_distanceJoint.LockBodyB(true);
 		UpdateTonguePos(coord);
+		m_active = true;
 		
 		//If tongue ownwer is player
 		if (m_owner == coord.GetSystem<PlayerControllerSystem>()->GetPlayer())
@@ -103,16 +104,24 @@ namespace NightSnack
 		m_distanceJoint.SetActive(false);
 		coord.DestroyEntity(m_tongue);
 		m_tongue = INVALID_ENTITY;
+		m_active = false;
 
 
 	}
-	void FrogTongue::SwingActivated(Coordinator& coord)
+	void FrogTongue::SwingActivated(Coordinator& coord, bool isRight)
 	{
-		if (m_owner != coord.GetSystem<PlayerControllerSystem>()->GetPlayer() || !coord.HasComponent<RigidBody>(m_owner))
+		if (!m_active || m_owner != coord.GetSystem<PlayerControllerSystem>()->GetPlayer() || !coord.HasComponent<RigidBody>(m_owner))
 			return;
 
 		//coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().
 		//std::cout << "Swing!" << std::endl;
+
+		if (isRight)
+			m_distanceJoint.ApplySwingForce(coord, m_swingForce);
+		else
+			m_distanceJoint.ApplySwingForce(coord, -m_swingForce);
+
+		UpdateTonguePos(coord);
 	}
 
 	void FrogTongue::UpdateTonguePos(Coordinator& coord)
@@ -138,6 +147,8 @@ namespace NightSnack
 
 		//==Set Transform==
 		trans.pos = (ownerPt + anchorPt) / 2;
+
+		//std::cout << "Tongue Length: " << DistanceToAnchor(ownerPt, anchorPt) << std::endl;
 	}
 
 	float FrogTongue::DistanceToAnchor(Vec3 ownerPos, Vec3 anchorPos)

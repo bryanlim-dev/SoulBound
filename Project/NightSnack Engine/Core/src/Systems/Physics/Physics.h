@@ -37,7 +37,7 @@ namespace NightSnack {
         \brief
         Constructor for PhysicsSystem that sets the system signature and sets up
         input events for step by steps physics debugging mode as well as
-        ApplyForce() function that is used in default scene for testing:
+        ApplySwingForce() function that is used in default scene for testing:
             Dynamic -> Dynamic collision
             Dynamic -> Static collsion
 
