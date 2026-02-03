@@ -68,7 +68,7 @@ namespace NightSnack {
     }
 
     bool PlayerControllerSystem::AttachAbility() {
-        curr_ability = "GrapplingTongue";
+        curr_ability = "Glide";
         return true;
     }
 

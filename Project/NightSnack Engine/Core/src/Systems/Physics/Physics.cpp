@@ -249,44 +249,6 @@ namespace NightSnack {
 									c2.isGrounded = true;
 								}
 							}
-
-						//	// Resolve overlaps;
-						//	ResolveOverlap(t1, t2, c1, c2, r1, r2);
-
-						//	// Not yet colliding, Check tunneling from e1;
-						//	if (CheckTunneling(t1, t2, r1) && !c1.isStatic) {
-						//		c1.colliding = c2.colliding = true;
-						//		Transform next{};
-						//		next.pos = t1.pos;
-
-						//		for (int i{}; i < 4; ++i) {
-						//			next.pos.x += r1.vel.x * FixedDT * 0.25f;
-						//			next.pos.y += r1.vel.y * FixedDT * 0.25f;
-						//			if (CheckCollision(next, t2, c1, c2)) {
-						//				next.pos.x -= r1.vel.x * FixedDT * 0.25f;
-						//				next.pos.y -= r1.vel.y * FixedDT * 0.25f;
-						//				break;
-						//			}
-						//		}
-						//		t1.pos = next.pos;
-						//	}
-						//	// Check tunneling from e2;
-						//	else if (CheckTunneling(t2, t1, r2) && !c2.isStatic) {
-						//		c1.colliding = c2.colliding = true;
-						//		Transform next{};
-						//		next.pos = t2.pos;
-
-						//		for (int i{}; i < 4; ++i) {
-						//			next.pos.x += r2.vel.x * FixedDT * 0.25f;
-						//			next.pos.y += r2.vel.y * FixedDT * 0.25f;
-						//			if (CheckCollision(t1, next, c1, c2)) {
-						//				next.pos.x -= r2.vel.x * FixedDT * 0.25f;
-						//				next.pos.y -= r2.vel.y * FixedDT * 0.25f;
-						//				break;
-						//			}
-						//		}
-						//		t2.pos = next.pos;
-						//	}
 						}
 					}
 				}

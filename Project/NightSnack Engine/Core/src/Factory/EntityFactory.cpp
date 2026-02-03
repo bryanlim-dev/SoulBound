@@ -325,6 +325,7 @@ namespace NightSnack {
         if (j.contains("Script")) m_coord.AddComponent<Script>(e, j["Script"]);
         if (j.contains("PlayerController")) m_coord.AddComponent<PlayerController>(e, j["PlayerController"]);
         if (j.contains("Audio")) m_coord.AddComponent<Audio>(e, j["Audio"]);
+        if (j.contains("Character")) m_coord.AddComponent<Character>(e, j["Character"]);
     }
 
     // Create all entities in a level given a level json

@@ -141,6 +141,21 @@ namespace NightSnack {
                             m_flags.useAbility = false;
                         }
                         break;
+                    case InputEvent::InputAction::Ability1:
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                            curr_ability = "Glide";
+                        }
+                        break;
+                    case InputEvent::InputAction::Ability2:
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                            curr_ability = "Grapple";
+                        }
+                        break;
+                    case InputEvent::InputAction::Ability3:
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                            curr_ability = "DoubleJump";
+                        }
+                        break;
                     }
                 });
             RegisterAbilities();
@@ -168,6 +183,7 @@ namespace NightSnack {
             if (m_coord.IsPaused()) return;
 
             m_player = FindPlayer(m_coord);
+            m_frogTongue.UpdateOwner(m_player);
             if (m_player == INVALID_ENTITY) { return; }
 
             PlayerController const& pcont = m_coord.GetComponent<PlayerController>(m_player);
@@ -196,8 +212,8 @@ namespace NightSnack {
 
             if (isGrounded) m_flags.canDoubleJump = true;
             // Special Abilities --------------------------
-            if (curr_ability != prev_ability)
-                if (!AttachAbility()) std::cerr << "Failed to attach ability!\n";
+            //if (curr_ability != prev_ability)
+            //    if (!AttachAbility()) std::cerr << "Failed to attach ability!\n";
             if (m_flags.useAbility)
                 UseSpecialAbility();
             else

@@ -151,6 +151,10 @@ namespace NightSnack
 		//std::cout << "Tongue Length: " << DistanceToAnchor(ownerPt, anchorPt) << std::endl;
 	}
 
+	void FrogTongue::UpdateOwner(Entity e) {
+		m_owner = e;
+	}
+
 	float FrogTongue::DistanceToAnchor(Vec3 ownerPos, Vec3 anchorPos)
 	{
 		Vec3 dirVec = (anchorPos - ownerPos);

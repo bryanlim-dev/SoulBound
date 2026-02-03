@@ -109,6 +109,10 @@ namespace NightSnack {
 		case GLFW_KEY_S: return InputEvent::InputAction::PlayerPossess;
 		case GLFW_KEY_D: return InputEvent::InputAction::PlayerUnPossess;
 
+		case GLFW_KEY_1: return InputEvent::InputAction::Ability1;
+		case GLFW_KEY_2: return InputEvent::InputAction::Ability2;
+		case GLFW_KEY_3: return InputEvent::InputAction::Ability3;
+
 			// Window tests
 		case GLFW_KEY_F1: return InputEvent::InputAction::DisplayFPS;
 		case GLFW_KEY_F4: return InputEvent::InputAction::ToggleFullscreen;
