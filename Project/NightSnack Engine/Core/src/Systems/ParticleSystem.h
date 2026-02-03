@@ -107,7 +107,7 @@ namespace NightSnack {
 
 		// endPos - Used for SOIL (right end position), unused for others
 		// spawnRadius - Used for RISING_GLOW (circular area), unused for others
-		EmitterID StartContinuousEmitter(const std::string& prefabName, Vec3 spawnPos, Vec3 endPos, float spawnRadius, int maxParticles, int spawnDelay, bool shouldLoop = true);
+		EmitterID StartContinuousEmitter(const std::string& prefabName, Vec3 spawnPos, Vec3 endPos, float spawnRadius, int maxParticles, int spawnDelay, bool shouldLoop = true, Entity followTarget = INVALID_ENTITY, Vec3 followOffset = {});
 
 		void StopEmitter(EmitterID id);
 		void StopAllEmitters();
@@ -162,9 +162,9 @@ namespace NightSnack {
 			Vec3 endPos{};			 // Right position for spawning (SOIL only for now)
 			float spawnRadius = 1.f;       // Radius of circular spawn area
 
-			// Follow target - to be implemented in the future
-			//const Vec3* followPos = nullptr;
-			//Vec3 offset{};
+			// Follow target for updated spawning position
+			Entity followEntity = INVALID_ENTITY;
+			Vec3 followOffset{};
 
 			// Store the spawn function
 			std::function<void()> spawnFunction;
