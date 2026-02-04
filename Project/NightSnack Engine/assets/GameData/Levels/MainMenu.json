@@ -7,31 +7,6 @@
                 "Position": {
                     "x": 0.0,
                     "y": 0.0,
-                    "z": 2.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 0.0,
-                    "y": 0.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "Prefab": "Cam"
-        },
-        {
-            "Transform": {
-                "Layer": "Background",
-                "Position": {
-                    "x": 0.0,
-                    "y": 0.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
@@ -177,5 +152,35 @@
             "Prefab": "MainMenu-Title"
         }
     ],
+    "MainCamera": {
+        "KeyFrames": [
+            {
+                "maxX": 0.0,
+                "maxY": 0.0,
+                "minX": 0.0,
+                "minY": 0.0,
+                "pos": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0
+                },
+                "scale": {
+                    "x": 0.0,
+                    "y": 0.0
+                },
+                "zoom": 1.0
+            }
+        ],
+        "cameraLock": true,
+        "height": 900.0,
+        "isMainCam": true,
+        "offsetX": 0.0,
+        "offsetY": 0.0,
+        "posX": 0.0,
+        "posY": 0.0,
+        "posZ": 10.0,
+        "width": 1600.0,
+        "zoom": 1.0
+    },
     "Name": "MainMenu"
 }
