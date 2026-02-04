@@ -148,7 +148,7 @@ namespace NightSnack {
             //Collision event for checkpoint
             m_dispatcher->Subscribe<CollisionEvent>([this, &coord](const CollisionEvent& event)
                 {
-                    std::cout << "Checkpoint col check" << std::endl;
+                    //std::cout << "Checkpoint col check" << std::endl;
 
                     if (!(m_player == (size_t)event.entityA || m_player == (size_t)event.entityB))
                         return;
@@ -172,7 +172,7 @@ namespace NightSnack {
 
                     //RespawnPlayer();
                     m_prevCheckpoint = checkPoint;
-                    std::cout << "Checkpoint found Entity: " << checkPoint << std::endl;
+                    //std::cout << "Checkpoint found Entity: " << checkPoint << std::endl;
 
                 });
 
