@@ -12,6 +12,12 @@ namespace NightSnack {
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
             if (vel.y <= -50.f) vel.y = -50.f;
 
+            //// Only play if not already playing
+            //if (!m_flags.isGlideSoundPlaying) {
+            //    c.GetSystem<AudioSystem>()->PlaySFX("playerGlide");
+            //    m_flags.isGlideSoundPlaying = true;
+            //}
+
             });
         m_abilities.insert({ abilityName, GlideAbility });
 
@@ -24,6 +30,8 @@ namespace NightSnack {
 
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
             vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
+
+            c.GetSystem<AudioSystem>()->PlaySFX("playerJump");
 
             // Start the emitter to spawn particles
             // These particles spawn position will be based on the updated player position
@@ -58,8 +66,13 @@ namespace NightSnack {
                 //Do distance check to nearest grabbling spot/enemy
                 if (tongue.Start(c))
                 {
+                    c.GetSystem<AudioSystem>()->PlayRandomVariant("frogTongue", 7);
                     //Valid target
                     m_flags.grappling = true;
+
+                    c.GetSystem<AudioSystem>()->PlaySFX("frogAttach");
+
+
                 }
                 //else
                 //    std::cout << "[Frog Grapple] Grappble NONE!" << std::endl;
@@ -127,6 +140,7 @@ namespace NightSnack {
     }
 
     void PlayerControllerSystem::LeftAndRightMovement(Vec2& vel, PlayerController const& pcont) const {
+
         if (m_flags.movingRight && !m_flags.movingLeft) {
             vel.x = pcont.moveSpeed;
         }
@@ -149,7 +163,10 @@ namespace NightSnack {
         if (m_groundedTime > m_repeatJumpThreshhold)
             m_flags.justJumped = false;
         if (isGrounded)
+        {
             m_timeSinceGrounded = 0;
+
+        }
 
         if (m_flags.jumpRequested) {
             // allow jump if isgrounded

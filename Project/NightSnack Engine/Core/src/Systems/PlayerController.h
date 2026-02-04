@@ -46,6 +46,12 @@ struct PlayerFlags {
     bool tryPossess = false;
     bool tryUnPossess = false;
     // add more flags if needed
+
+    bool isGlideSoundPlaying = false;
+    bool isGliding = false;
+
+    bool isWalking = false;
+    float walkStepTimer = 0.f;
 };
 
 namespace NightSnack::Gameplay {
@@ -247,6 +253,37 @@ namespace NightSnack {
             }
             bool isGrounded = m_flags.isGrounded = c.isGrounded;
             //
+
+
+            bool movingHorizontally = (m_flags.movingLeft ^ m_flags.movingRight);
+            bool isFrog = (r.materialName == "frog");
+
+            bool shouldWalk =
+                isFrog &&
+                isGrounded &&
+                movingHorizontally &&
+                !m_flags.disableMovement;
+
+            if (shouldWalk)
+            {
+                m_flags.walkStepTimer += FixedDT;
+
+                // Play a step every X seconds
+                if (m_flags.walkStepTimer >= 0.28f) // tweak for feel
+                {
+                    m_coord.GetSystem<AudioSystem>()
+                        ->PlayRandomVariant("frogWalk", 3);
+
+                    m_flags.walkStepTimer = 0.f;
+                    m_flags.isWalking = true;
+                }
+            }
+            else
+            {
+                // Reset when stopping / airborne / unpossess
+                m_flags.walkStepTimer = 0.f;
+                m_flags.isWalking = false;
+            }
 
             // Player tries to possess an enemy entity
             if (m_flags.tryPossess) {
