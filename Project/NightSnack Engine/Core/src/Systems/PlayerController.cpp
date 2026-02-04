@@ -101,7 +101,7 @@ namespace NightSnack {
     void PlayerControllerSystem::RespawnPlayer()
     {
 
-        m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("playerHurt", 4);
+        m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("PlayerHurt", 4);
 
         if (m_prevCheckpoint == INVALID_ENTITY)
             return;
