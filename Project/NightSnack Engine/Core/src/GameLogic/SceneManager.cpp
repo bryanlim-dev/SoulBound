@@ -17,6 +17,7 @@
 #include "Systems/PlayerController.h"
 #include "Graphics/Camera.h"
 #include "Systems/ParticleSystem.h"
+#include "Systems/CollectibleSystem.h"
 
 // Private helper function that checks mouse and button collision
 static bool ButtonCollisionCheck(float mx, float my, NightSnack::Transform const& t, NightSnack::Collider const& c) {
@@ -299,6 +300,7 @@ namespace NightSnack::Scene {
 		factory->DestroyLevelEntities();
 		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
+		m_coord.GetSystem<CollectibleSystem>()->SpawnCollectibleParticles();
 
 		// Set up Camera
 		CreateSceneCamera(level);
@@ -381,6 +383,7 @@ namespace NightSnack::Scene {
 		factory->DestroyLevelEntities();
 		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
+		m_coord.GetSystem<CollectibleSystem>()->SpawnCollectibleParticles();
 
 		// Reset Camera
 		CreateSceneCamera(level);
@@ -526,6 +529,7 @@ namespace NightSnack::Scene {
 		factory->DestroyLevelEntities();
 		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
+		m_coord.GetSystem<CollectibleSystem>()->SpawnCollectibleParticles();
 
 		CreateSceneCamera(m_levelCache);
 		ReadCameraKeyframes(m_levelCache["MainCamera"]["KeyFrames"]);

@@ -54,6 +54,8 @@ namespace NightSnack {
 		/************************************************************************/
 		void Update() override;
 
+		void SpawnCollectibleParticles();
+
 		/************************************************************************/
 		/*!
 		\brief
@@ -80,6 +82,8 @@ namespace NightSnack {
 
 	private:
 
+		void CreateParticleEmitters();
+
 		Signature m_systemSignature{};
 		// Reference to Coordinator;
 		Coordinator& m_coord;
@@ -87,6 +91,8 @@ namespace NightSnack {
 		EventDispatcher* m_dispatcher = nullptr;
 
 		Entity m_player = INVALID_ENTITY;
+
+		bool m_createdParticleEmitters{ false };
 	};
 
 } // NightSnack

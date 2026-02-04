@@ -581,6 +581,7 @@ namespace NightSnack {
 				if (typeStr == "SMOKE") p.type = PARTICLE_TYPE::SMOKE;
 				else if (typeStr == "GLOW_RISING") p.type = PARTICLE_TYPE::GLOW_RISING;
 				else if (typeStr == "GLOW_ORBIT") p.type = PARTICLE_TYPE::GLOW_ORBIT;
+				else if (typeStr == "GLOW_KEY") p.type = PARTICLE_TYPE::GLOW_KEY;
 				else if (typeStr == "SOIL") p.type = PARTICLE_TYPE::SOIL;
 				else p.type = PARTICLE_TYPE::SMOKE;
 			}
@@ -591,8 +592,8 @@ namespace NightSnack {
 	}
 
 	// --------------------------------------------------------------
-// COLLECTIBLE
-// --------------------------------------------------------------
+	// COLLECTIBLE
+	// --------------------------------------------------------------
 	void to_json(json& j, Collectible const& c)
 	{
 		std::string typeStr = "DOUBLE_JUMP";
@@ -602,6 +603,9 @@ namespace NightSnack {
 		case COLLECTIBLE_TYPE::DOUBLE_JUMP:
 		default:
 			typeStr = "DOUBLE_JUMP";
+			break;
+		case COLLECTIBLE_TYPE::KEY:
+			typeStr = "KEY";
 			break;
 		}
 
@@ -621,6 +625,8 @@ namespace NightSnack {
 			std::string typeStr = j.value("type", "DOUBLE_JUMP");
 			if (typeStr == "DOUBLE_JUMP")
 				c.type = COLLECTIBLE_TYPE::DOUBLE_JUMP;
+			else if (typeStr == "KEY")
+				c.type = COLLECTIBLE_TYPE::KEY;
 
 			// Timers
 			c.currTime = j.value("currTime", 0);

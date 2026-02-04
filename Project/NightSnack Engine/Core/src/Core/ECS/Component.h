@@ -215,6 +215,7 @@ namespace NightSnack {
         SMOKE,
         GLOW_RISING,
         GLOW_ORBIT,
+        GLOW_KEY, 
         SOIL
     };
 
@@ -243,7 +244,8 @@ namespace NightSnack {
     };
 
     enum class COLLECTIBLE_TYPE {
-        DOUBLE_JUMP = 0
+        DOUBLE_JUMP = 0,
+        KEY
     };
 
     struct Collectible {

@@ -19,6 +19,7 @@ namespace NightSnack {
 		RegisterParticlePrefab("Particle-Soil", PARTICLE_TYPE::SOIL);
 		RegisterParticlePrefab("Particle-OrbitGlow", PARTICLE_TYPE::GLOW_ORBIT);
 		RegisterParticlePrefab("Particle-RisingGlow", PARTICLE_TYPE::GLOW_RISING);
+		RegisterParticlePrefab("Particle-KeyGlow", PARTICLE_TYPE::GLOW_KEY);
 	}
 
 	void ParticleSystem::Update() {
@@ -134,6 +135,7 @@ namespace NightSnack {
 		break;
 
 		case PARTICLE_TYPE::GLOW_RISING:
+		case PARTICLE_TYPE::GLOW_KEY:
 		{
 			// Update position
 			t.pos += Vec3(p.velocity.x, p.velocity.y, 0.f) * FixedDT;
@@ -188,18 +190,53 @@ namespace NightSnack {
 			break;
 
 		case PARTICLE_TYPE::GLOW_ORBIT:
-			emitter.spawnFunction = [this, prefabName, spawnPos]() {
+			/*emitter.spawnFunction = [this, prefabName, spawnPos]() {
 				SpawnSingleOrbitingParticle(prefabName, spawnPos);
-			};
+			};*/
+		{
+			EmitterID currentID = emitter.id; // Capture the ID
+			emitter.spawnFunction = [this, prefabName, currentID]() {
+				// Find the actual emitter in the vector by the ID
+				for (auto& em : m_emitters) {
+					if (em.id == currentID) {
+
+						// If the followEntity is inactive (Double Jump collectible is collected), 
+						// stop this particular emitter
+						if (!m_coord.GetComponent<Transform>(em.followEntity).isActive) {
+							em.isActive = false;
+							break;
+						}
+
+						Vec3 finalSpawnPos = em.spawnPos;
+						// Final spawn position follows the entity that the emitter is following
+						if (em.followEntity != INVALID_ENTITY && m_coord.EntityIsAlive(em.followEntity)) {
+							finalSpawnPos = m_coord.GetComponent<Transform>(em.followEntity).pos + em.followOffset;
+						} 
+						SpawnSingleOrbitingParticle(prefabName, finalSpawnPos);
+						break;
+					}
+				}
+				};
+		}
 			break;
 
 		case PARTICLE_TYPE::GLOW_RISING:
+		case PARTICLE_TYPE::GLOW_KEY:
 		default:
+		{
 			EmitterID currentID = emitter.id; // Capture the ID
 			emitter.spawnFunction = [this, prefabName, currentID, spawnRadius]() {
 				// Find the actual emitter in the vector by the ID
 				for (auto& em : m_emitters) {
 					if (em.id == currentID) {
+
+						// If the followEntity is inactive (Key collectible is collected), 
+						// stop this particular emitter
+						if (!m_coord.GetComponent<Transform>(em.followEntity).isActive) {
+							em.isActive = false;
+							break;
+						}
+
 						Vec3 finalSpawnPos = em.spawnPos;
 						// Final spawn position follows the entity that the emitter is following
 						if (em.followEntity != INVALID_ENTITY && m_coord.EntityIsAlive(em.followEntity)) {
@@ -209,7 +246,8 @@ namespace NightSnack {
 						break;
 					}
 				}
-			};
+				};
+		}
 			break;
 		}
 
@@ -302,6 +340,10 @@ namespace NightSnack {
 		int lifeTime = p.lifeTime;
 		p.lifeTime = RandomRange(lifeTime - 10, lifeTime + 10);
 
+		// Spawning position from Emitter side override centerPos in Particle component JSON
+		p.centerPos.x = centerPos.x;
+		p.centerPos.y = centerPos.y;
+
 		// Set orbit properties
 		float orbitRadius = p.orbitRadius;
 		p.orbitRadius = RandomRange(orbitRadius * 0.5f, orbitRadius);
@@ -312,7 +354,7 @@ namespace NightSnack {
 		// Transform component properties
 		// Set transform (initial position on orbit)
 		auto& t = m_coord.ModifyComponent<Transform>(e);
-		t.layer = LayerType::FOREGROUND;
+		t.layer = LayerType::GAMELAYER;
 		t.pos = {
 			centerPos.x + std::cos(p.orbitAngle) * p.orbitRadius,
 			centerPos.y + std::sin(p.orbitAngle) * p.orbitRadius,

@@ -139,13 +139,13 @@ namespace NightSnack {
                     case InputEvent::InputAction::PlayerUnPossess:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
                             m_flags.tryUnPossess = true;
-                    /*    }
+                        }
                     case InputEvent::InputAction::Ability1:
-                        if (event.pressed == InputEvent::InputActionState::Pressed) {*/
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
                             curr_ability = "Glide";
                         }
                         break;
-                    /*case InputEvent::InputAction::Ability2:
+                    case InputEvent::InputAction::Ability2:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
                             curr_ability = "Grapple";
                         }
@@ -153,8 +153,9 @@ namespace NightSnack {
                     case InputEvent::InputAction::Ability3:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
                             curr_ability = "DoubleJump";
+                            loadBackMainMenu = true;
                         }
-                        break;*/
+                        break;
                     case InputEvent::InputAction::PlayerPossess:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
                             m_flags.tryPossess = true;
@@ -423,6 +424,8 @@ namespace NightSnack {
         */
         /************************************************************************/
         void RespawnPlayer();
+
+        bool loadBackMainMenu{ false };
 
     private:
         Signature m_systemSignature{};
