@@ -12,7 +12,7 @@ namespace NightSnack {
 		DistanceJoint2D m_distanceJoint;
 
 		float m_tongueLengthMax = 450.0f;
-		float m_tongueWidth = 35.0f;
+		float m_tongueWidth = 5.f;
 		float m_swingForce = 50.0f;
 
 		bool m_active = false;
@@ -52,6 +52,7 @@ namespace NightSnack {
 
 		//Only supports player
 		void SwingActivated(Coordinator& coord, bool isRight);
+		void UpdateOwner(Entity e);
 
 	private:
 

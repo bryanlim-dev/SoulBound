@@ -462,7 +462,7 @@ namespace NightSnack {
 		std::map<std::string, InstanceBatch> m_meshBatches; // Holds all the different InstanceBatch combinations
 		std::vector<Mesh::InstanceData> m_allInstances; // Holds all the InstanceData only, to upload to the GPU once
 
-		Entity m_camera;
+		Entity m_camera = INVALID_ENTITY;
 
 		/************************************************************************/
 		/*!

@@ -1,21 +1,21 @@
 {
     "Color": {
         "a": 1.0,
-        "b": 0.18,
-        "g": 0.839,
-        "r": 0.976
+        "b": 0.9215686274509804,
+        "g": 0.8274509803921569,
+        "r": 0.403921568627451
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "GlowMat",
-        "meshName": "circle"
+        "materialName": "ColorMat",
+        "meshName": "square"
     },
     "Particle": {
       "type": "GLOW_RISING",
       "velocity": { "x": 0.0, "y": 55.0 },
       "acceleration": { "x": 0.0, "y": 0.0 },
-      "startSize": { "x": 20.0, "y": 20.0 },
-      "endSize": { "x": 6.0, "y": 6.0 },
+      "startSize": { "x": 5.0, "y": 5.0 },
+      "endSize": { "x": 1.0, "y": 1.0 },
       "centerPos": { "x": 0.0, "y": 0.0 },
       "orbitRadius": 0.0,
       "orbitSpeed": 0.0,

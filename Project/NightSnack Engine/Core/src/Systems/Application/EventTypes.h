@@ -39,6 +39,10 @@ namespace NightSnack {
             PlayerSpecialAbility,   // A KEY
             PlayerUnPossess,        // D KEY
 
+            Ability1,
+            Ability2,
+            Ability3,
+
             ChangeAnimation,    // X
 
             // Debug tests

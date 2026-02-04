@@ -51,6 +51,7 @@ namespace NightSnack {
 			RegisterComponentLoader<Camera>("Camera");
 			RegisterComponentLoader<Audio>("Audio");
 			RegisterComponentLoader<Particle>("Particle");
+			RegisterComponentLoader<Collectible>("Collectible");
 
 			RegisterComponentLoader<ButtonInfo>("ButtonInfo");
 

@@ -1,7 +1,8 @@
 ﻿/******************************************************************************
  * File:        SceneManager.h
  * Project:     NightSnack
- * Author(s):	Chewn Thing Kwan (Primary, 100%)
+ * Author(s):	Chewn Thing Kwan (Primary, 60%)
+ *				Bryan Lim Jun Jie (Secondary, 40%)
  *
  * Description:
  * This file declares the SceneManager class that performs scene managment 
@@ -20,6 +21,7 @@
 #include "Factory/EntityFactory.h"
 #include "Systems/AudioSystem.h"
 #include "Scripting/ScriptManager.h"
+#include "Systems/Graphics.h"
 
 #include <fstream>
 #include <string>
@@ -45,6 +47,7 @@ namespace NightSnack::Scene {
 	private:
 		ButtonAction m_action;
 		void(*m_callable)(Coordinator& c, std::string const&);
+
 	};
 
 	// SceneManager system that handles level saving/loading, caching/restoring and
@@ -52,7 +55,13 @@ namespace NightSnack::Scene {
 	class SceneManager : public ISystem {
 	public:
 		SceneManager(Coordinator& coord, EventDispatcher& disp)
-			: m_coord{ coord }, m_dispatcher{ &disp } {
+			: m_coord{ coord }, m_dispatcher{ &disp } , 
+			m_scheduledLevelLoad(false),
+			m_scheduledLevelName(""),
+			m_levelLoadTimer(0.0f),
+			m_scheduledExit(false),
+			m_exitTimer(0.0f)
+		{
 
 			// set system signature
 			m_systemSignature.set(GetComponentTypeID<ButtonInfo>());
@@ -65,11 +74,11 @@ namespace NightSnack::Scene {
 					// Currently not in use
 					case InputEvent::InputAction::PauseGame:
 						if (!overlayOn) {
-							CreateOverlayMenu();
+							//CreateOverlayMenu();
 							m_coord.Pause();
 						}
 						else { 
-							RemoveOverlayMenu();
+							//RemoveOverlayMenu();
 							m_coord.Unpause();
 						}
 						break;
@@ -80,7 +89,7 @@ namespace NightSnack::Scene {
 						break;
 					// Used to signal a mouse press event
 					case InputEvent::InputAction::ClickLMB:
-						if (m_coord.IsPaused()) return;
+						//if (m_coord.IsPaused()) return;
 						CheckButtonCollisions();
 						break;
 					}
@@ -91,16 +100,18 @@ namespace NightSnack::Scene {
 			// Register buttons
 			RegisterButtons();
 		}
-
+		
 		// Main function to be called in Core Update loop
 		void Update() override;
 		// Resets m_levelKeys and loads all json files in "GameData/Levels"
 		void ReloadLevels();
 		void CreateSceneCamera(json const&);
+		void ReadCameraKeyframes(json const&);
+		json WriteCameraKeyframes();
 
 		// Spawn Overlay menu (Pause menu) (currently not in use)
-		void CreateOverlayMenu();
-		void RemoveOverlayMenu();
+		//void CreateOverlayMenu();
+		//void RemoveOverlayMenu();
 		
 		//void SetOverlayMenu(std::string const& filename);
 		
@@ -113,12 +124,18 @@ namespace NightSnack::Scene {
 		// Calls factory to create entities
 		// Sets up bgm and menus
 		void LoadLevel(std::string const& filename);
+		void LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration);
+		void ScheduleExit(float delay);
 		void RestartLevel();
 		bool SaveLevel(std::string const& filename, bool overwrite = 0);
 
 		// Play/Pause/Stop functionality
 		void CacheLevel();
 		void RestoreLevel();
+
+		void OpenMenu(std::string const& menuname);
+		void CloseMenu();
+		bool IsMenuOpen() const { return m_menuOpen; }
 
 		// Getters
 		const std::unordered_map<std::string, size_t>& GetAvailableLevels() const { return m_levelKeys; }
@@ -143,6 +160,8 @@ namespace NightSnack::Scene {
 
 		Entity m_sceneCam{ INVALID_ENTITY };
 		float m_camDepth = 10.f;
+		// Camera frames - Read from level.json
+		std::map<Entity, json> m_camFrames;
 
 		std::vector<Entity> m_overlayEntites;
 
@@ -151,6 +170,20 @@ namespace NightSnack::Scene {
 		bool overlayOn = false;
 		bool m_mouseClicked = false;
 		bool m_restart = false;
+
+		bool m_menuOpen = false;
+		std::vector<Entity> m_menuEntities;
+		std::string m_currentMenu;
+		std::unordered_map<std::string, size_t> m_menuKeys; // Cache menu JSON keys
+		
+		bool m_scheduledLevelLoad;
+		std::string m_scheduledLevelName;
+		float m_levelLoadTimer;
+
+		bool m_scheduledExit;
+		float m_exitTimer;
+		Entity m_player = INVALID_ENTITY;
+		Entity m_camIndex = INVALID_ENTITY;
 	};
 
 }	// NightSnack::Scene

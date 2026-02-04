@@ -23,7 +23,7 @@ namespace NightSnack
 {
 	struct DefaultEditorCamera
 	{
-		Vec3 pos{ 0.f, 0.f, 2.f };
+		Vec3 pos{ 0.f, 0.f, 10.f };
 		float rot{ 1.0f };
 		Vec2 scale{ 1.0f, 1.0f };
 		float zoom{ 1.0f };
@@ -199,7 +199,7 @@ namespace NightSnack
 						constexpr float panSpeed = 1.65f;
 						camTransform.pos.x -= dragDelta.x * (panSpeed / camMod.zoom);
 						camTransform.pos.y += dragDelta.y * (panSpeed / camMod.zoom);
-						camTransform.pos.z = 2.f;
+						camTransform.pos.z = m_editorCameraData.pos.z;
 						m_editorCameraData.pos = camTransform.pos;
 						ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
 					}
@@ -1075,8 +1075,8 @@ namespace NightSnack
 				// Snap to grid cell center if tilemap overlay is enabled
 				if (m_tilemap.tileOverlayEnabled)
 				{
-					newX = std::floor(newX / grid) * grid + grid * 0.5f;
-					newY = std::floor(newY / grid) * grid + grid * 0.5f;
+					newX = std::floor(newX / (grid / 8)) * (grid / 8);
+					newY = std::floor(newY / (grid / 8)) * (grid / 8);
 				}
 
 				t.pos.x = newX;
@@ -1330,7 +1330,7 @@ namespace NightSnack
 		// Gizmo sizes
 		float arrowLength = 60.0f;
 		float arrowThickness = 4.0f;
-		float circleRadius = 30.0f;
+		//float circleRadius = 30.0f;
 		float handleRadius = 10.0f;
 		float scaleHandleSize = 14.0f;
 

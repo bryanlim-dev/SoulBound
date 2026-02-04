@@ -1,0 +1,28 @@
+{
+    "Collider": {
+        "height": 100.0,
+        "isStatic": true,
+        "radius": 50.0,
+        "shape": "AABB",
+        "type": "Trigger",
+        "width": 100.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "Grass2",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "gravityMult": 2.0,
+        "mass": 1.0,
+        "restitution": 0.0,
+        "useGravity": false,
+        "useRotate": false
+    }, 
+    "Collectible": {
+        "type": "DOUBLE_JUMP",
+        "currTime": 0,
+        "respawnTimeSteps": 500,
+        "willRespawn": true
+    }
+}

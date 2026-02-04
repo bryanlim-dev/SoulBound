@@ -7,7 +7,7 @@
  * Controls the Player Entity and sets their Velocity component when key inputs
  * are detected.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -78,8 +78,6 @@ namespace NightSnack {
         /************************************************************************/
         PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord }, m_dispatcher { &disp } {
 
-            m_player = 1;
-
             m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
                 {
                     switch (event.inputAction) {
@@ -101,6 +99,16 @@ namespace NightSnack {
                             m_flags.movingRight = false;
                         }
                         break;
+                    case InputEvent::InputAction::PlayerJump:
+                        if (event.pressed == InputEvent::InputActionState::Pressed ||
+                            event.pressed == InputEvent::InputActionState::Repeat) {
+                            if (!m_flags.justJumped)
+                            m_flags.jumpRequested = true;
+                        }
+                        else {
+                            m_flags.jumpRequested = false;
+                        }
+                        break;
                     case InputEvent::InputAction::PlayerSpecialAbility:
                         if (event.pressed == InputEvent::InputActionState::Pressed ||
                             event.pressed == InputEvent::InputActionState::Repeat) {
@@ -110,36 +118,19 @@ namespace NightSnack {
                             m_flags.useAbility = false;
                         }
                         break;
-                    case InputEvent::InputAction::PlayerJump:
+                    case InputEvent::InputAction::Ability1:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
-                            m_flags.jumpRequested = true;
-
-                            // Start this emitter to emit particles, if it doesnt exist yet
-                            if (m_testParticleRisingGlow == 0) {
-
-                                Entity player = FindPlayer(m_coord);
-                                Vec3& updatedPlayerPos = m_coord.ModifyComponent<Transform>(player).pos;
-
-                                m_testParticleRisingGlow = m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
-                                    "Particle-RisingGlow",      // Prefab name
-                                    updatedPlayerPos,                         // Spawn position (center)
-                                    {},							// End position (unused)
-                                    10.f,                       // Spawn radius
-                                    10,                         // Max particles per cycle
-                                    5,                         // Spawn delay (steps between particles)
-                                    false                        // Should loop
-                                );
-                            }
-
+                            curr_ability = "Glide";
                         }
-                        else {
-                            m_flags.jumpRequested = false;
-
-                            // Stop this emitter from emitting particles, if it exists
-                            if (m_testParticleRisingGlow != 0) {
-                                m_coord.GetSystem<ParticleSystem>()->StopEmitter(m_testParticleRisingGlow);
-                                m_testParticleRisingGlow = 0;
-                            }
+                        break;
+                    case InputEvent::InputAction::Ability2:
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                            curr_ability = "Grapple";
+                        }
+                        break;
+                    case InputEvent::InputAction::Ability3:
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                            curr_ability = "DoubleJump";
                         }
                         break;
                     }
@@ -201,15 +192,26 @@ namespace NightSnack {
             if (m_coord.IsPaused()) return;
 
             m_player = FindPlayer(m_coord);
-            //static bool landed = true;
-
+            m_frogTongue.UpdateOwner(m_player);
             if (m_player == INVALID_ENTITY) { return; }
 
             PlayerController const& pcont = m_coord.GetComponent<PlayerController>(m_player);
             Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
             Transform& t = m_coord.ModifyComponent<Transform>(m_player);
+            Collider& c = m_coord.ModifyComponent<Collider>(m_player);
 
-            bool isGrounded = m_coord.GetComponent<Collider>(m_player).isGrounded;
+            //
+            static float time = 0.f;
+            time += FixedDT;
+            if (time >= 0.5f && vel.y == 0.f) {
+                time = 0.f;
+                
+                c.isGrounded = true;
+                m_flags.canDoubleJump = true;
+            }
+            bool isGrounded = c.isGrounded;
+            if (isGrounded) m_flags.canDoubleJump = true;
+            //
 
             // Basic movement -----------------------------
             if (!m_flags.disableMovement)
@@ -220,8 +222,8 @@ namespace NightSnack {
 
             if (isGrounded) m_flags.canDoubleJump = true;
             // Special Abilities --------------------------
-            if (curr_ability != prev_ability)
-                if (!AttachAbility()) std::cerr << "Failed to attach ability!\n";
+            //if (curr_ability != prev_ability)
+            //    if (!AttachAbility()) std::cerr << "Failed to attach ability!\n";
             if (m_flags.useAbility)
                 UseSpecialAbility();
             else
@@ -237,8 +239,6 @@ namespace NightSnack {
             prev_ability = curr_ability;
             m_timeSinceAbility += FixedDT;
             if (m_timeSinceAbility >= 1.0f) m_timeSinceAbility = 0.f;
-
-            //HoldJump(vel, isGrounded);
 
         }
 
@@ -263,6 +263,7 @@ namespace NightSnack {
 
         PlayerFlags& GetPlayerFlags();
         void ResetFlags() { m_flags = PlayerFlags{}; }
+        void EnableDoubleJumpFlag() { m_flags.canDoubleJump = true; }
 
         // Store movement abilities as void pointers
         // std::function jump;
@@ -327,7 +328,9 @@ namespace NightSnack {
 
         //Cyote time
         float m_timeSinceGrounded{}; //Time since last grounded
-        const float m_groundedThreshhold = 0.2f;
+        const float m_groundedThreshhold = 0.1f;
+        float m_groundedTime{};
+        const float m_repeatJumpThreshhold = 0.1f;
 
         float m_timeSinceAbility{};
 
@@ -343,9 +346,8 @@ namespace NightSnack {
         //Time to consider the player "grounded" for jumping
         //Lenght of time to store a jump
         //const float m_storedJumpThreshold = 0.2f;
-        const float m_storedJumpThreshold = 0.2f;
 
-        EmitterID m_testParticleRisingGlow{};
+        EmitterID m_playerJumpEmitter{};
     };
 
 }   // namespace NightSnack

@@ -187,6 +187,26 @@ namespace NightSnack {
          */
         std::string GetBGM() const;
 
+        /**
+         * @brief fades the current BGM to a target volume over a duration
+         * @param targetVolume target volume level (0.0 to 1.0)
+         * @param duration fade duration in seconds
+         */
+        void FadeToVolume(float targetVolume, float duration);
+
+        /**
+         * @brief updates the fade transition for BGM
+         * @param deltaTime time elapsed since last frame in seconds
+         */
+        void ControlFade(float deltaTime);
+
+        /**
+         * @brief plays a random variant of a sound effect
+         * @param baseKey base name of the sound (e.g., "playerHurt")
+         * @param numVariants number of variants available
+         */
+        void PlayRandomVariant(const std::string& baseKey, int numVariants);
+
         // ISystem overrides
 
         /**
@@ -200,6 +220,7 @@ namespace NightSnack {
          * @return system name
          */
         std::string GetName() const override;
+
 
     private:
         // Resource management
@@ -241,6 +262,12 @@ namespace NightSnack {
         float m_bgmVolume;
         float m_sfxVolume;
 
+        // for transition audio
+        bool m_isFading;
+        float m_fadeTimer;
+        float m_fadeDuration;
+        float m_fadeTargetVolume;
+
         /**
          * @brief loads a single sound file and assigns it a string key based on filename
          * @param filepath path to the audio file
@@ -269,6 +296,7 @@ namespace NightSnack {
          * @return true if file is a valid audio format
          */
         bool IsValidAudioFile(const std::string& filepath) const;
+
     };
 
 } // namespace NightSnack

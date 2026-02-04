@@ -871,9 +871,9 @@ namespace NightSnack
         }
 
         /**
-        * @brief draws editor UI for Audio component properties
-        * @param j JSON data for the Audio component
-        */
+  * @brief draws editor UI for Audio component properties
+  * @param j JSON data for the Audio component
+  */
         void DrawAudioEditor(nlohmann::json& j)
         {
             // Get available audio keys for dropdown
@@ -890,8 +890,7 @@ namespace NightSnack
             std::string audioKey = j["audioKey"];
             int currentAudioIdx = 0;
             bool foundAudio = false;
-
-            for (int i = 0; i < availableAudio.size(); i++) 
+            for (int i = 0; i < availableAudio.size(); i++)
             {
                 if (audioKey == availableAudio[i]) {
                     currentAudioIdx = i;
@@ -901,7 +900,7 @@ namespace NightSnack
             }
 
             // if current audio not found, default to first one
-            if (!foundAudio && !availableAudio.empty() && availableAudio[0] != "No audio system available") 
+            if (!foundAudio && !availableAudio.empty() && availableAudio[0] != "No audio system available")
             {
                 currentAudioIdx = 0;
                 j["audioKey"] = availableAudio[0];
@@ -909,20 +908,74 @@ namespace NightSnack
             }
 
             std::vector<const char*> audioNames;
-            for (const auto& audioName : availableAudio) 
+            for (const auto& audioName : availableAudio)
             {
                 audioNames.push_back(audioName.c_str());
             }
 
-            if (ImGui::Combo("Audio Key", &currentAudioIdx, audioNames.data(), static_cast<int>(audioNames.size()))) 
+            if (ImGui::Combo("Audio Key", &currentAudioIdx, audioNames.data(), static_cast<int>(audioNames.size())))
             {
                 j["audioKey"] = availableAudio[currentAudioIdx];
                 m_prefabModified = true;
             }
 
+            // ADD THIS: Use variants checkbox
+            bool useVariants = j.value("useVariants", false);
+            if (ImGui::Checkbox("Use Random Variants", &useVariants))
+            {
+                j["useVariants"] = useVariants;
+                m_prefabModified = true;
+            }
+
+            // number of variants (only show if useVariants is checked)
+            if (useVariants) {
+                ImGui::Indent();
+
+                int numVariants = j.value("numVariants", 1);
+                if (ImGui::InputInt("Number of Variants", &numVariants))
+                {
+                    numVariants = std::max(1, numVariants);
+                    j["numVariants"] = numVariants;
+                    m_prefabModified = true;
+                }
+
+                // Show expected file names
+                ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "Expected files:");
+                for (int i = 1; i <= numVariants; i++) {
+                    std::string variantName = audioKey + "_" + std::to_string(i);
+                    bool exists = std::find(availableAudio.begin(), availableAudio.end(), variantName) != availableAudio.end();
+
+                    if (exists) {
+                        ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), "  %s", variantName.c_str());
+                    }
+                    else {
+                        ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.0f, 1.0f), "  %s (missing)", variantName.c_str());
+                    }
+                }
+
+                // Test button for variants
+                if (ImGui::Button("Test Random Variant")) {
+                    if (audioSystem) {
+                        audioSystem->PlayRandomVariant(audioKey, numVariants);
+                    }
+                }
+
+                ImGui::Unindent();
+            }
+            else {
+                // Normal single sound test button
+                if (ImGui::Button("Test Sound")) {
+                    if (audioSystem) {
+                        audioSystem->PlaySFX(audioKey);
+                    }
+                }
+            }
+
+            ImGui::Separator();
+
             // volume slider
             float volume = j["volume"];
-            if (ImGui::SliderFloat("Volume", &volume, 0.0f, 1.0f, "%.2f")) 
+            if (ImGui::SliderFloat("Volume", &volume, 0.0f, 1.0f, "%.2f"))
             {
                 j["volume"] = volume;
                 m_prefabModified = true;
@@ -930,7 +983,7 @@ namespace NightSnack
 
             //loop checkbox
             bool loop = j["loop"];
-            if (ImGui::Checkbox("Loop", &loop)) 
+            if (ImGui::Checkbox("Loop", &loop))
             {
                 j["loop"] = loop;
                 m_prefabModified = true;
@@ -938,19 +991,11 @@ namespace NightSnack
 
             // play on start checkbox
             bool playOnStart = j["playOnStart"];
-            if (ImGui::Checkbox("Play on Start", &playOnStart)) 
+            if (ImGui::Checkbox("Play on Start", &playOnStart))
             {
                 j["playOnStart"] = playOnStart;
                 m_prefabModified = true;
             }
-
-            //// 3D audio checkbox
-            //bool is3D = j["is3D"];
-            //if (ImGui::Checkbox("3D Audio", &is3D)) 
-            //{
-            //    j["is3D"] = is3D;
-            //    m_prefabModified = true;
-            //}
         }
     };
 }

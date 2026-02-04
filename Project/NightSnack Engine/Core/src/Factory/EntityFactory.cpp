@@ -522,6 +522,7 @@ namespace NightSnack {
 
             // Only process root entities for level saving
             if (h.parent != INVALID_ENTITY) continue;
+            if (t.name == "CamTrigger") continue;
 
             // Build entity JSON
             json j;
@@ -555,6 +556,7 @@ namespace NightSnack {
 
             Hierarchy const& h = m_coord.GetComponent<Hierarchy>(e);
             Transform const& t = m_coord.GetComponent<Transform>(e);
+            if (t.name == "CamTrigger") continue;
 
             // Only process root entities for level saving
             if (h.parent != INVALID_ENTITY) continue;

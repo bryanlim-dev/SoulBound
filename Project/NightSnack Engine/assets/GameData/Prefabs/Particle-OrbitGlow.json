@@ -8,7 +8,7 @@
     "Renderable": {
         "isWireframe": false,
         "materialName": "GlowMat",
-        "meshName": "circle"
+        "meshName": "square"
     },
     "Particle": {
       "type": "GLOW_ORBIT", 

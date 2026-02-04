@@ -64,14 +64,14 @@ namespace NightSnack {
                         break;
                     case InputEvent::InputAction::PhysicsDebugStep:
                         stepRequest = true;
-                        std::cout << "Physics Entities: " << ' ';
-                        for (Layer& l : m_layers) {
-                            for (Entity e : l.Entities()) {
-                                if (e == INVALID_ENTITY) { break; }
-                                std::cout << e << " ";
-                            }
-                            std::cout << "\n";
-                        }
+                        //std::cout << "Physics Entities: " << ' ';
+                        //for (Layer& l : m_layers) {
+                        //    for (Entity e : l.Entities()) {
+                        //        if (e == INVALID_ENTITY) { break; }
+                        //        std::cout << e << " ";
+                        //    }
+                        //    std::cout << "\n";
+                        //}
                         break;
                     }
                 }
@@ -125,6 +125,8 @@ namespace NightSnack {
         void ResolveOverlap(Transform& t1, Transform& t2, Collider& c1, Collider& c2, RigidBody& r1, RigidBody& r2);
         //bool CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2);
         bool CheckTunneling(Transform const& t1, Transform const& t2, RigidBody const& r1);
+
+        bool EntitiesAreColliding(Entity e1, Entity e2);
 
         float GetGravity() const { return gravity; }
         float GetDrag() const { return drag; }

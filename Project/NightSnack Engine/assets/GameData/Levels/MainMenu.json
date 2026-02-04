@@ -1,0 +1,186 @@
+{
+    "BGM": "MainMenu",
+    "Entities": [
+        {
+            "Transform": {
+                "Layer": "Background",
+                "Position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 1800,
+                    "y": 1100
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "Prefab": "MainMenu-Background"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -12.0,
+                    "y": -84.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 265.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "Prefab": "MainMenu-CreditButton"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -12.0,
+                    "y": 36.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 265.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "Prefab": "MainMenu-PlayButton"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -12.0,
+                    "y": -204.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 265.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "Prefab": "MainMenu-SettingButton"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": -12.0,
+                    "y": -324.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 265.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "Prefab": "MainMenu-Exitbutton"
+        },
+        {
+            "Transform": {
+                "Layer": "GameLayer",
+                "Position": {
+                    "x": 10.0,
+                    "y": 190.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 1000.0,
+                    "y": 200.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "Prefab": "MainMenu-Title"
+        }
+    ],
+    "MainCamera": {
+        "KeyFrames": [
+            {
+                "maxX": 0.0,
+                "maxY": 0.0,
+                "minX": 0.0,
+                "minY": 0.0,
+                "pos": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0
+                },
+                "scale": {
+                    "x": 0.0,
+                    "y": 0.0
+                },
+                "zoom": 1.0
+            }
+        ],
+        "cameraLock": true,
+        "height": 900.0,
+        "isMainCam": true,
+        "offsetX": 0.0,
+        "offsetY": 0.0,
+        "posX": 0.0,
+        "posY": 0.0,
+        "posZ": 10.0,
+        "width": 1600.0,
+        "zoom": 1.0
+    },
+    "Name": "MainMenu"
+}

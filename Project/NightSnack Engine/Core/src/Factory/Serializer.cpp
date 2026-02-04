@@ -429,9 +429,10 @@ namespace NightSnack {
 			{"width", c.width},
 			{"zoom", c.zoom},
 
-			{"minX", c.minX}, {"minY", c.minY},
-			{"maxX", c.maxX}, {"maxY", c.maxY},
-			{"offsetX", c.offset.x}, {"offsetY", c.offset.y}
+			//{"minX", c.minX}, {"minY", c.minY},
+			//{"maxX", c.maxX}, {"maxY", c.maxY},
+			{"offsetX", c.offset.x}, {"offsetY", c.offset.y},
+			{"cameraLock", c.lock}
 		};
 	}
 	void from_json(json const& j, Camera& c) {
@@ -441,13 +442,14 @@ namespace NightSnack {
 			j.at("width").get_to(c.width);
 			j.at("height").get_to(c.height);
 
-			if (j.contains("minX")) j.at("minX").get_to(c.minX);
+			/*if (j.contains("minX")) j.at("minX").get_to(c.minX);
 			if (j.contains("maxX")) j.at("maxX").get_to(c.maxX);
 			if (j.contains("minY")) j.at("minY").get_to(c.minY);
-			if (j.contains("maxY")) j.at("maxY").get_to(c.maxY);
+			if (j.contains("maxY")) j.at("maxY").get_to(c.maxY);*/
+			if (j.contains("cameraLock")) j.at("cameraLock").get_to(c.lock);
 
-			if (j.contains("offsetX")) j.at("offsetX").get_to(c.offset.x);
-			if (j.contains("offsetY")) j.at("offsetY").get_to(c.offset.y);
+			//if (j.contains("offsetX")) j.at("offsetX").get_to(c.offset.x);
+			//if (j.contains("offsetY")) j.at("offsetY").get_to(c.offset.y);
 		}
 		catch (std::exception const& e) {
 			std::cerr << "Invalid JSON format " << e.what() << '\n';
@@ -589,6 +591,51 @@ namespace NightSnack {
 	}
 
 	// --------------------------------------------------------------
+// COLLECTIBLE
+// --------------------------------------------------------------
+	void to_json(json& j, Collectible const& c)
+	{
+		std::string typeStr = "DOUBLE_JUMP";
+
+		switch (c.type)
+		{
+		case COLLECTIBLE_TYPE::DOUBLE_JUMP:
+		default:
+			typeStr = "DOUBLE_JUMP";
+			break;
+		}
+
+		j = {
+			{ "type", typeStr },
+			{ "currTime", c.currTime },
+			{ "respawnTime", c.respawnTimeSteps },
+			{ "willRespawn", c.willRespawn }
+		};
+	}
+
+	void from_json(json const& j, Collectible& c)
+	{
+		try
+		{
+			// Type
+			std::string typeStr = j.value("type", "DOUBLE_JUMP");
+			if (typeStr == "DOUBLE_JUMP")
+				c.type = COLLECTIBLE_TYPE::DOUBLE_JUMP;
+
+			// Timers
+			c.currTime = j.value("currTime", 0);
+			c.respawnTimeSteps = j.value("respawnTimeSteps", 0);
+
+			// Respawn flag
+			c.willRespawn = j.value("willRespawn", false);
+		}
+		catch (std::exception const& e)
+		{
+			std::cerr << "Invalid JSON format for Collectible: " << e.what() << '\n';
+		}
+	}
+
+	// --------------------------------------------------------------
 	// FONT
 	// --------------------------------------------------------------
 	void to_json(json& j, Font const& f) {
@@ -631,7 +678,9 @@ namespace NightSnack {
 		if (ButtonAction::PLAYAUDIO == b.action) j["action"] = std::string{ "PlayAudio"};
 		if (ButtonAction::LOADLEVEL == b.action) j["action"] = std::string{ "LoadLevel"};
 		if (ButtonAction::OPENMENU == b.action) j["action"] = std::string{ "OpenMenu"};
+		if (ButtonAction::CLOSEMENU == b.action) j["action"] = std::string{ "CloseMenu" };
 		if (ButtonAction::NOACTION == b.action) j["action"] = std::string{ "NoAction"};
+		if (ButtonAction::EXIT == b.action) j["action"] = std::string{ "ExitGame" };
 
 		if (ButtonType::SLIDER == b.type) j["type"] = std::string{ "Slider" };
 		if (ButtonType::CLICKER == b.type) j["type"] = std::string{ "Clicker" };
@@ -642,7 +691,9 @@ namespace NightSnack {
 			// Menu actions
 			if (j["action"] == "LoadLevel") { b.action = ButtonAction::LOADLEVEL; }
 			if (j["action"] == "OpenMenu") { b.action = ButtonAction::OPENMENU; }
+			if (j["action"] == "CloseMenu") { b.action = ButtonAction::CLOSEMENU; }
 			if (j["action"] == "NoAction") { b.action = ButtonAction::NOACTION; }
+			if (j["action"] == "ExitGame") { b.action = ButtonAction::EXIT; }
 			// Button type
 			if (j["type"] == "Slider") { b.type = ButtonType::SLIDER; }
 			if (j["type"] == "Clicker") { b.type = ButtonType::CLICKER; }

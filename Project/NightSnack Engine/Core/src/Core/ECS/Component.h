@@ -33,12 +33,12 @@ namespace NightSnack {
     // ================================================================================================
     // When updating this update the one in Engine.cs
     enum class LayerType : std::uint8_t {
-        _ENGINE,
-        BACKGROUND,
-        GAMELAYER,
-        FOREGROUND,
-        GAMEUI,
-        _ENGINE2
+        _ENGINE,        // 0.f
+        BACKGROUND,     // 1.f
+        GAMELAYER,      // 2.f
+        FOREGROUND,     // 3.f
+        GAMEUI,         // 4.f
+        _ENGINE2        // 5.f
     };
 
     enum class CameraMode
@@ -197,7 +197,7 @@ namespace NightSnack {
         float playbackSpeed{ 1.f };
         bool isPlaying{ true };
         bool isLooping{ true };
-        bool lastFacingRight{ false };
+        bool lastFacingRight{ true };
         // The active region of the texture to sample from
         Vec2 uvTopLeft{ 0.f, 0.f };
         Vec2 uvBottomRight{ 1.f, 1.f }; 
@@ -242,6 +242,17 @@ namespace NightSnack {
         bool affectedByGravity{ true }; // can vary for different types of particles
     };
 
+    enum class COLLECTIBLE_TYPE {
+        DOUBLE_JUMP = 0
+    };
+
+    struct Collectible {
+        COLLECTIBLE_TYPE type = COLLECTIBLE_TYPE::DOUBLE_JUMP;
+        int currTime{};
+        int respawnTimeSteps{};
+        bool willRespawn{ false };
+    };
+
     // Only camera objects will have this component
     struct Camera {
         bool isMainCam{ true };
@@ -251,6 +262,7 @@ namespace NightSnack {
 
         float minX, maxX;
         float minY, maxY;
+        bool lock = false;
 
         Vec2 offset;
 
@@ -260,6 +272,8 @@ namespace NightSnack {
 	// Audio component
     struct Audio {
         std::string audioKey;
+        bool useVariants = false;
+        int numVariants = 1;
         float volume = 1.0f;
         bool loop = false;
         bool playOnStart = false;
@@ -281,6 +295,7 @@ namespace NightSnack {
 
         LOADLEVEL,
         OPENMENU,
+        CLOSEMENU,
         NOACTION,
         EXIT,
     };

@@ -7,7 +7,7 @@
  * This file declares the CameraSystem class, which manages the camera entity.
  * The system ensures the camera follows the player as it is moved around the scene.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -45,6 +45,7 @@ namespace NightSnack {
 
 		Transform FollowPlayer();
 		void CenterCameraWhenIdle();
+		void UpdateCamBounds(json const&);
 
 		/**
 		 * @brief retrieve the system signature
@@ -64,12 +65,13 @@ namespace NightSnack {
 		 */
 		Entity GetMainCamera() const;
 
+
 	private:
 		Coordinator& m_coord;
 		EventDispatcher* m_dispatcher;
 
-		Entity m_mainCamera;
-		Entity m_player;
+		Entity m_mainCamera = INVALID_ENTITY;
+		Entity m_player = INVALID_ENTITY;
 
 		Vec2 m_roomOriginOffset{ 0.f, 0.f };
 		Vec2 m_currentRoom;
@@ -93,6 +95,6 @@ namespace NightSnack {
 
 		void FollowEntity(Entity e, Transform& t);
 		void LimitWithinBounds(Transform& t);
-		void UpdateRoomCamera();
+		void LerpCameraPosition(Transform& camT);
 	};
 }

@@ -18,6 +18,7 @@
 #include <filesystem>
 #include <Scripting/ScriptManager.h>
 #include <Systems/AnimationSystem.h>
+#include <Graphics/Camera.h>
 #include <Systems/CharacterSystem.h>
 
 namespace NightSnack
@@ -348,7 +349,7 @@ namespace NightSnack
         strncpy_s(nameBuffer, (*m_uiNames)[entity].c_str(), sizeof(nameBuffer));
         nameBuffer[sizeof(nameBuffer) - 1] = 0;
 
-        if (!m_coord.HasComponent<Camera>(entity)) {
+        if (!m_coord.HasComponent<Camera>(entity) && m_coord.GetComponent<Transform>(entity).name != "CamTrigger") {
             ImGui::PushID("EntityNameField");
             ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 80.0f);
             if (ImGui::InputText("##EntityName", nameBuffer, sizeof(nameBuffer))) {
@@ -961,6 +962,13 @@ namespace NightSnack
             }
 
             // Camera min and max positions
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("CamLock");
+            bool clock = cam.lock;
+            ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##CamLock", &clock);
+            if (clock != cam.lock)
+                cam.lock = clock;
+
             ImGui::TableNextRow();
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Camera Bounds");

@@ -1,12 +1,17 @@
 /******************************************************************************
  * File:        AnimationPanel.h
  * Project:     NightSnack
- * Author(s):
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Animation Panel in the level editor
  *
  * Description:
+ * Animation Panel functionalities include:
+ * - Selecting any Animation Clip that is owned by the selected entity via a dropdown menu
+ * - Renaming an Animation Clip name that is owned by the selected entity
+ * - Selecting any Animation Frame of the selected Animation Clip, and edit the frame duration of the frame
+ * - Can apply the changes of the frame durations, and preview the whole Animation Clip with play and pause button
+ * - Can save the changes of the frame durations to the disk via JSON
  *
- *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2026 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -129,12 +134,12 @@ namespace NightSnack
 			// The entity has a list of Animation Clips
 			if (!clipNames.empty())
 			{
-				// Dropdown list of all Animation Clips under this particular spritesheet
 				ImGui::Text("Animation Clips");
 				ImGui::SameLine();
 
 				int previousSelectedClip = selectedClip;
 
+				// Dropdown list of all Animation Clips under this particular spritesheet
 				ImGui::Combo(
 					"##AnimationClipsCombo", // ## makes it not visible, this is an ID only
 					&selectedClip,
@@ -172,8 +177,6 @@ namespace NightSnack
 				ImGui::SameLine();
 
 				const std::string& currentClipName = clipNames[selectedClip];
-
-				// Initialize buffer when selection changes
 				static int lastRenameClipIndex = -1;
 				static Entity lastRenameEntity = INVALID_ENTITY;
 
@@ -193,6 +196,7 @@ namespace NightSnack
 				ImGui::InputText("##ClipName", clipNameBuffer, sizeof(clipNameBuffer));
 
 				ImGui::SameLine();
+				// Save the new name of the AnimationClip
 				if (ImGui::Button("Rename"))
 				{
 					std::string newName = clipNameBuffer;
@@ -239,7 +243,7 @@ namespace NightSnack
 					selectedFrame = -1;
 				}
 
-				// Draw the frame number in 1 row
+				// Draw the frame number in 1 row, the frame numbers will be on top of the rendered AnimationFrame texture afterwards
 				for (int i{ 0 }; i < frameCount; ++i) {
 					ImGui::PushID(i);
 
@@ -258,6 +262,7 @@ namespace NightSnack
 
 					ImVec2 rectMin = ImGui::GetItemRectMin();
 
+					// Draw the frame duration (number of steps) below the frame number
 					ImGui::GetWindowDrawList()->AddText(
 						ImVec2(rectMin.x + 2, rectMin.y + 22),
 						IM_COL32(160, 160, 160, 255),
@@ -269,7 +274,7 @@ namespace NightSnack
 				}
 				ImGui::NewLine();
 
-				// Draw each frame of the current Animation clip in 1 rpw
+				// Draw each frame of the current Animation clip in 1 row
 				for (int i{ 0 }; i < frameCount; ++i) {
 					ImTextureID texID = GetOrLoadTexture(spritesheetName);
 					if (!texID) {
@@ -337,6 +342,7 @@ namespace NightSnack
 
 				ImGui::Text("Preview");
 				ImGui::Separator();
+				// Draw the preview Animation accordingly
 				ImTextureID texID = GetOrLoadTexture(spritesheetName);
 				if (texID && frameCount > 0)
 				{
@@ -348,6 +354,7 @@ namespace NightSnack
 					if (frameToShow < 0)
 						frameToShow = 0;
 
+					// Calculate the UV values based on the current frame that is showing
 					float u0 = static_cast<float>(frameToShow) / cols;
 					float v0 = static_cast<float>(selectedClip) / rows;
 					float u1 = static_cast<float>(frameToShow + 1) / cols;
@@ -379,6 +386,7 @@ namespace NightSnack
 				ImGui::Separator();
 				ImGui::Text("Frame Properties");
 
+				// Draw the slider along with the AnimationFrame data of the current AnimationFrame
 				if (selectedFrame >= 0 && selectedFrame < static_cast<int>(clipIt->second.frames.size())) {
 
 					// Frame selection has changed, update the slider data accordingly
@@ -400,9 +408,10 @@ namespace NightSnack
 					}
 
 					ImGui::Text("Selected Frame: %d", selectedFrame);
-					ImGui::SliderInt("Frame Duration (steps)", &timeDelay, 1, 200);
+					ImGui::SliderInt("Frame Duration (steps)", &timeDelay, 1, 200); // Frame duration clamp between 1-200
 
 					if (ImGui::Button("Apply")) {
+						// Update the time delay, but dont save it yet
 						clipIt->second.frames[selectedFrame].timeDelay = timeDelay;
 					}
 

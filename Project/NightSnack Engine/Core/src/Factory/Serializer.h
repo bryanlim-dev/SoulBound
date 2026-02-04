@@ -70,6 +70,10 @@ namespace NightSnack {
 	// Particle
 	void from_json(json const& j, Particle& p);
 
+	// Collectible
+	void to_json(json& j, Collectible const& c);
+	void from_json(json const& j, Collectible& c);
+
 	// Font
 	void to_json(json&, Font const&);
 	void from_json(json const&, Font&);

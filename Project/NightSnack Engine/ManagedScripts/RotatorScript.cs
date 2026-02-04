@@ -66,11 +66,11 @@ namespace ManagedScripts
             //Log($"Has Script: {Engine.HasScript(EntityId, "RotatorScript")}");
 
 
-            Vector3 pos;
-            pos.X = 100;
-            pos.Y = 100;
-            pos.Z = 0;
-            uint id1 = Engine.CreateEntityArchetype("BlueBallScripting", pos);
+            //Vector3 pos;
+            //pos.X = 100;
+            //pos.Y = 100;
+            //pos.Z = 0;
+            //uint id1 = Engine.CreateEntityArchetype("BlueBallScripting", pos);
             //pos.X = 200;
             //uint id2 = Engine.CreateEntityArchetype("BlueBallScripting2", pos);
             //pos.X = 300;
