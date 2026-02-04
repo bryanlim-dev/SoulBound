@@ -19,6 +19,7 @@
 #include <Factory/EntityFactory.h>
 #include <GameLogic/FrogTongue.h>
 #include "Systems/ParticleSystem.h"
+#include "Systems/Physics/Physics.h"
 
 struct PlayerFlags {
     bool movingLeft = false;
@@ -39,6 +40,9 @@ struct PlayerFlags {
     bool grappling = false;
     bool justDoubleJumped = false;
     float timeSinceDouble = 0.f;
+
+    bool tryPossess = false;
+    bool tryUnPossess = false;
     // add more flags if needed
 };
 
@@ -120,7 +124,7 @@ namespace NightSnack {
                             m_flags.useAbility = false;
                         }
                         break;
-                    case InputEvent::InputAction::Ability1:
+                    /*case InputEvent::InputAction::Ability1:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
                             curr_ability = "Glide";
                         }
@@ -133,6 +137,16 @@ namespace NightSnack {
                     case InputEvent::InputAction::Ability3:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
                             curr_ability = "DoubleJump";
+                        }
+                        break;*/
+                    case InputEvent::InputAction::PlayerPossess:
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                            m_flags.tryPossess = true;
+                        }
+                        break;
+                    case InputEvent::InputAction::PlayerUnPossess:
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                            m_flags.tryUnPossess = true;
                         }
                         break;
                     }
@@ -169,6 +183,7 @@ namespace NightSnack {
             Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
             Transform& t = m_coord.ModifyComponent<Transform>(m_player);
             Collider& c = m_coord.ModifyComponent<Collider>(m_player);
+            Renderable& r = m_coord.ModifyComponent<Renderable>(m_player);
 
             //
             static float time = 0.f;
@@ -188,6 +203,40 @@ namespace NightSnack {
                 //m_flags.justDoubleJumped = false;
             }
             //
+
+            // Player tries to possess an enemy entity
+            if (m_flags.tryPossess) {
+                // Collision detection between both the entities 
+                for (Entity e : m_coord.GetLivingEntities()) {
+                    auto& et = m_coord.GetComponent<Transform>(e);
+                    if (!et.isActive) { continue; }
+                    std::cout << "name is: " << et.name << std::endl;
+                    if (et.name == "Frog" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
+                        r.materialName = "frog"; // depends on the texture name
+                        curr_ability = "Grapple";
+                        m_flags.tryPossess = false;
+                        break;
+
+                    } else if (et.name == "Ghost" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
+                        r.materialName = "ghost_4_1"; // depends on the texture name
+                        curr_ability = "DoubleJump";
+                        m_flags.tryPossess = false;
+                        break;
+                    }
+                }
+                // If no collision with any entities, still reset it to false
+                m_flags.tryPossess = false;
+            } 
+            // Player tries to unpossess and go back to its original form
+            if (m_flags.tryUnPossess) {
+                // Switch back to the Rain Charm (original player) if it is not in the first place
+                if (r.materialName != "SpiritMove_4_1") {
+                    r.materialName = "SpiritMove_4_1";
+                    curr_ability = "Glide";
+                }
+                // Reset it back anyways
+                m_flags.tryUnPossess = false;
+            }
 
             // Basic movement -----------------------------
             if (!m_flags.disableMovement)
@@ -254,7 +303,7 @@ namespace NightSnack {
         void RegisterAbilities();
         bool UseSpecialAbility();
         bool AttachAbility();
-        std::string curr_ability;
+        std::string curr_ability = "Glide";
         std::string prev_ability;
 
         std::unordered_map<std::string, Gameplay::Ability> m_abilities;

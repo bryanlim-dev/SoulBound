@@ -6,7 +6,7 @@
  * Description:
  * This file contains the definitions of the Collectible System.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2026 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -15,7 +15,6 @@
 namespace NightSnack {
 
 	void CollectibleSystem::Init() {
-		std::cout << "hello\n";
 
 	}
 

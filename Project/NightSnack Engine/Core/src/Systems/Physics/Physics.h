@@ -17,7 +17,7 @@
 
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/IEvent.h"
-#include "Systems/PlayerController.h"
+//#include "Systems/PlayerController.h"
 
 #include <bitset>
 #include <unordered_set>

@@ -6,7 +6,7 @@
  * Description:
  * This file contains the declarations of the Collectible System.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2026 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
