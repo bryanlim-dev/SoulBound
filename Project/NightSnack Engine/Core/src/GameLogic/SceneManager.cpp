@@ -16,6 +16,7 @@
 #include "Systems/Physics/Physics.h"
 #include "Systems/PlayerController.h"
 #include "Graphics/Camera.h"
+#include "Systems/ParticleSystem.h"
 
 // Private helper function that checks mouse and button collision
 static bool ButtonCollisionCheck(float mx, float my, NightSnack::Transform const& t, NightSnack::Collider const& c) {
@@ -293,14 +294,16 @@ namespace NightSnack::Scene {
 		m_previousLevelKey = m_currentLevelKey;
 		m_currentLevelKey = key;
 
-		// Create all Entities
+		// Unload everything first
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
+		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
+		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
 
-		// Camera
+		// Set up Camera
 		CreateSceneCamera(level);
 		ReadCameraKeyframes(level["MainCamera"]["KeyFrames"]);
-		
+		// Create new level entities
 		factory->CreateLevelEntities(level);
 
 		// Play Background Music
@@ -376,6 +379,8 @@ namespace NightSnack::Scene {
 		json const& level = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelKey);
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
+		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
+		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
 
 		// Reset Camera
 		CreateSceneCamera(level);
@@ -519,6 +524,8 @@ namespace NightSnack::Scene {
 		// Restore all entities to original
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
+		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
+		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
 
 		CreateSceneCamera(m_levelCache);
 		ReadCameraKeyframes(m_levelCache["MainCamera"]["KeyFrames"]);

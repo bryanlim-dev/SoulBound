@@ -9,10 +9,9 @@ namespace NightSnack {
             //if (target == INVALID_ENTITY) return;
             if (!c.HasComponent<RigidBody>(target)) return;
 
-            m_flags.useAbility = true;
-
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
             if (vel.y <= -50.f) vel.y = -50.f;
+
             });
         m_abilities.insert({ abilityName, GlideAbility });
 
@@ -21,18 +20,27 @@ namespace NightSnack {
             //if (target == INVALID_ENTITY) return;
             if (!c.HasComponent<RigidBody>(target)) return;
             if (!c.HasComponent<PlayerController>(target)) return;
-            if (!m_flags.canDoubleJump) return;
-
-
-            if (m_flags.timeSinceDouble < 0.3f) {
-                return;
-            }
+            if (!m_flags.canDoubleJump || m_flags.isGrounded) return;
 
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
             vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
 
-            m_flags.justDoubleJumped = true;
+            // Start the emitter to spawn particles
+            // These particles spawn position will be based on the updated player position
+            c.GetSystem<ParticleSystem>()->StartContinuousEmitter(
+                "Particle-RisingGlow",      // Prefab name
+                {},                         // Spawn position (center)
+                {},							// End position (unused)
+                10.f,                       // Spawn radius
+                10,                          // Max particles per cycle
+                1,                          // Spawn delay (steps between particles)
+                false,                      // Should loop
+                m_flags.m_playerID            // Follow entity
+            );
+
+            m_flags.timeSinceLastDoubleJump = 0.f;
             m_flags.canDoubleJump = false;
+            m_flags.useAbility = false;
 
         });
         m_abilities.insert({ abilityName, DoubleJumpAbility });
@@ -178,6 +186,8 @@ namespace NightSnack {
                 false,                      // Should loop
                 m_player                    // Follow entity
             );
+
+            m_flags.canDoubleJump = true;
         }
     }
     PlayerFlags& PlayerControllerSystem::GetPlayerFlags()

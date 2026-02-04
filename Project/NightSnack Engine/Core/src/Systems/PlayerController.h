@@ -36,10 +36,12 @@ struct PlayerFlags {
     bool isPossessing = false;
     bool useAbility = false;
 
-    bool canDoubleJump = true;
     bool grappling = false;
-    bool justDoubleJumped = false;
-    float timeSinceDouble = 0.f;
+    bool canDoubleJump = true;
+    bool abilityKeyRelease = false;
+    float timeSinceLastDoubleJump = 0.f;
+
+    NightSnack::Entity m_playerID;
 
     bool tryPossess = false;
     bool tryUnPossess = false;
@@ -109,7 +111,7 @@ namespace NightSnack {
                         if (event.pressed == InputEvent::InputActionState::Pressed ||
                             event.pressed == InputEvent::InputActionState::Repeat) {
                             if (!m_flags.justJumped)
-                            m_flags.jumpRequested = true;
+                                m_flags.jumpRequested = true;
                         }
                         else {
                             m_flags.jumpRequested = false;
@@ -120,16 +122,24 @@ namespace NightSnack {
                             event.pressed == InputEvent::InputActionState::Repeat) {
                             m_flags.useAbility = true;
                         }
+                        else if (event.pressed == InputEvent::InputActionState::Released) {
+                            m_flags.abilityKeyRelease = true;
+                            m_flags.useAbility = false;
+                        }
                         else {
                             m_flags.useAbility = false;
                         }
                         break;
-                    /*case InputEvent::InputAction::Ability1:
+                    case InputEvent::InputAction::PlayerUnPossess:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
+                            m_flags.tryUnPossess = true;
+                    /*    }
+                    case InputEvent::InputAction::Ability1:
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {*/
                             curr_ability = "Glide";
                         }
                         break;
-                    case InputEvent::InputAction::Ability2:
+                    /*case InputEvent::InputAction::Ability2:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
                             curr_ability = "Grapple";
                         }
@@ -144,11 +154,6 @@ namespace NightSnack {
                             m_flags.tryPossess = true;
                         }
                         break;
-                    case InputEvent::InputAction::PlayerUnPossess:
-                        if (event.pressed == InputEvent::InputActionState::Pressed) {
-                            m_flags.tryUnPossess = true;
-                        }
-                        break;
                     }
                 });
             RegisterAbilities();
@@ -156,7 +161,6 @@ namespace NightSnack {
             prev_ability = curr_ability;
 
             m_frogTongue.Initalize(m_player, coord, *m_dispatcher);
-
         }
 
         /************************************************************************/
@@ -173,11 +177,23 @@ namespace NightSnack {
         /************************************************************************/
         void Update() override {
 
-            if (m_coord.IsPaused()) return;
+            static bool emitted = false;
+            if (m_coord.IsPaused()) {
+                //emitted = false;
+                //m_coord.GetSystem<ParticleSystem>()->StopEmitter(m_playerJumpEmitter);
+                return;
+            }
 
             m_player = FindPlayer(m_coord);
+            m_flags.m_playerID = m_player;
             m_frogTongue.UpdateOwner(m_player);
             if (m_player == INVALID_ENTITY) { return; }
+
+            if (reset) {
+                AttachAbility();
+                m_flags = PlayerFlags{};
+                reset = false;
+            }
 
             PlayerController const& pcont = m_coord.GetComponent<PlayerController>(m_player);
             Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
@@ -187,21 +203,17 @@ namespace NightSnack {
 
             //
             static float time = 0.f;
-            time += FixedDT;
-            if (time >= 0.5f && vel.y == 0.f) {
+            if (vel.y == 0.f) {
+                time += FixedDT;
+            }
+            else {
                 time = 0.f;
-                
+            }
+            if (time >= 0.3f) {
                 c.isGrounded = true;
-                m_flags.canDoubleJump = true;
+                time = 0.f;
             }
-
-            m_flags.timeSinceDouble += FixedDT;
-            bool isGrounded = c.isGrounded;
-            if (isGrounded) {
-                m_flags.canDoubleJump = true;
-                m_flags.timeSinceDouble = 0.f;
-                //m_flags.justDoubleJumped = false;
-            }
+            bool isGrounded = m_flags.isGrounded = c.isGrounded;
             //
 
             // Player tries to possess an enemy entity
@@ -245,10 +257,14 @@ namespace NightSnack {
                 Jump(t, vel, pcont, isGrounded);
             }
 
-            if (isGrounded) m_flags.canDoubleJump = true;
             // Special Abilities --------------------------
-            //if (curr_ability != prev_ability)
-            //    if (!AttachAbility()) std::cerr << "Failed to attach ability!\n";
+            if (curr_ability == "DoubleJump") {
+                m_flags.timeSinceLastDoubleJump += FixedDT;
+                if (isGrounded) {
+                    m_flags.canDoubleJump = true;
+                }
+            }
+
             if (m_flags.useAbility)
                 UseSpecialAbility();
             else
@@ -259,12 +275,9 @@ namespace NightSnack {
                     m_flags.grappling = false;
                 }
             }
-                //if (!UseSpecialAbility()) std::cerr << "Failed to use ability!\n";
 
             prev_ability = curr_ability;
-            m_timeSinceAbility += FixedDT;
-            if (m_timeSinceAbility >= 1.0f) m_timeSinceAbility = 0.f;
-
+            m_flags.abilityKeyRelease = false;
         }
 
         /************************************************************************/
@@ -332,12 +345,15 @@ namespace NightSnack {
         /************************************************************************/
         Entity GetPlayer() { return m_player; }
 
+        void Reset() { reset = true; }
+
     private:
         Signature m_systemSignature{};
         EventDispatcher* m_dispatcher = nullptr;
         Coordinator& m_coord;
 
         Entity m_player;
+        bool reset;
 
         // Accumulates states
         PlayerFlags m_flags{};
