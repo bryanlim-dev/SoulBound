@@ -210,7 +210,7 @@ namespace NightSnack {
                 for (Entity e : m_coord.GetLivingEntities()) {
                     auto& et = m_coord.GetComponent<Transform>(e);
                     if (!et.isActive) { continue; }
-                    std::cout << "name is: " << et.name << std::endl;
+                    
                     if (et.name == "Frog" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
                         r.materialName = "frog"; // depends on the texture name
                         curr_ability = "Grapple";
