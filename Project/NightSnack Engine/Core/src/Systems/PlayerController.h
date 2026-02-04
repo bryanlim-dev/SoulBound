@@ -156,6 +156,38 @@ namespace NightSnack {
                         break;
                     }
                 });
+
+            //Collision event for checkpoint
+            m_dispatcher->Subscribe<CollisionEvent>([this, &coord](const CollisionEvent& event)
+                {
+                    //std::cout << "Checkpoint col check" << std::endl;
+
+                    if (!(m_player == (size_t)event.entityA || m_player == (size_t)event.entityB))
+                        return;
+
+                    Entity checkPoint = INVALID_ENTITY;
+
+                    //Check which entity is the checkpoint
+                    if (coord.HasComponent<Character>(event.entityA) && 
+                        std::find(coord.GetComponent<Character>(event.entityA).m_properties.cbegin(), coord.GetComponent<Character>(event.entityA).m_properties.cend(), CHECKPOINT) != coord.GetComponent<Character>(event.entityA).m_properties.cend())
+                    {
+                        checkPoint = event.entityA;
+                    }
+                    else if (coord.HasComponent<Character>(event.entityB) &&
+                        std::find(coord.GetComponent<Character>(event.entityB).m_properties.cbegin(), coord.GetComponent<Character>(event.entityB).m_properties.cend(), CHECKPOINT) != coord.GetComponent<Character>(event.entityB).m_properties.cend())
+                    {
+                        checkPoint = event.entityB;
+                    }
+
+                    if (checkPoint == INVALID_ENTITY)
+                        return;
+
+                    //RespawnPlayer();
+                    m_prevCheckpoint = checkPoint;
+                    //std::cout << "Checkpoint found Entity: " << checkPoint << std::endl;
+
+                });
+
             RegisterAbilities();
             AttachAbility();
             prev_ability = curr_ability;
@@ -345,7 +377,18 @@ namespace NightSnack {
         /************************************************************************/
         Entity GetPlayer() { return m_player; }
 
+<<<<<<< HEAD
         void Reset() { reset = true; }
+=======
+        /************************************************************************/
+        /*!
+        \brief
+        Respawns player to cloest checkpoint
+        Fails if previous checkpoint does not exist
+        */
+        /************************************************************************/
+        void RespawnPlayer();
+>>>>>>> FrogTongueAbility
 
     private:
         Signature m_systemSignature{};
@@ -367,6 +410,8 @@ namespace NightSnack {
         float m_timeSinceAbility{};
 
         FrogTongue m_frogTongue;
+
+        Entity m_prevCheckpoint = INVALID_ENTITY;
 
         //bool m_midAir{}; //Is the player midair (used to help track if player jumped)
         //If spacebar is pressed right before landing allow 

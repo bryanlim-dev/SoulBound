@@ -136,6 +136,30 @@ namespace NightSnack {
     /************************************************************************/
     bool ShouldFlipVelocity(float pos1, float pos2, float vel1, float dt);
 
+    /************************************************************************/
+    /*!
+    \brief
+    Helper function to check collision based on collider type
+    
+    \param aPos
+    Position of the first object
+    
+    \param aCol
+    Collider of first object
+
+    \param bPod
+    Position of the second object
+    
+    \param bCol
+    Collider of second object
+    
+    \return
+    True if colliding
+    False if not colliding
+    */
+    /************************************************************************/
+    bool CheckEntityCollision(const Vec3& aPos, const Collider& aCol,
+        const Vec3& bPos, const Collider& bCol);
 }   // NightSnack
 
 #endif // COLLISION_HPP

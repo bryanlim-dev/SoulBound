@@ -85,6 +85,16 @@ namespace NightSnack {
         return true;
     }
 
+    void PlayerControllerSystem::RespawnPlayer()
+    {
+        if (m_prevCheckpoint == INVALID_ENTITY)
+            return;
+
+        m_coord.ModifyComponent<Transform>(m_player).pos = m_coord.GetComponent<Transform>(m_prevCheckpoint).pos;
+
+        ResetFlags();
+    }
+
     bool PlayerControllerSystem::UseSpecialAbility() {
 
         std::unordered_map<std::string, Gameplay::Ability>::iterator it = m_abilities.find(curr_ability);

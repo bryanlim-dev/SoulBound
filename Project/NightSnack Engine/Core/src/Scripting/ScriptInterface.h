@@ -200,6 +200,11 @@ namespace NightSnack::Scripting {
         bool GetColliderColliding(Entity e);
         //Sets Collider isCOlliding of entity
         void SetColliderColliding(Entity e, bool colliding);
+
+        //Checks collision with 2 entiies
+        //returns true if colliding
+        //return false if not or 1 or both entities do not have the required components
+        bool CheckCollision(Entity a, Entity b);
 #pragma endregion
 
 #pragma region Color
@@ -434,9 +439,13 @@ namespace NightSnack::Scripting {
         //Create Entity
         Entity CreateEntityArchetype(std::string archeTypeName, vec3 pos);
 
+#pragma region player
         //Gets player ID
         Entity GetPlayerID();
 
+        //Respawns Player
+        void KillPlayer();
+#pragma endregion
         //Loads level based on a name
         void LoadLevel(std::string lvlName);
 

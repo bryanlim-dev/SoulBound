@@ -740,7 +740,7 @@ namespace NightSnack {
 			{
 				CharacterProperties charProp = MAX_PROPERTIES;
 				if (NightSnack::CharacterSystem::StringToCharacterProperties(propStr, charProp))
-					c.m_properties.push_back(GRAPPLEABLE);
+					c.m_properties.push_back(charProp);
 			}
 		}
 		catch (std::exception const& e) {

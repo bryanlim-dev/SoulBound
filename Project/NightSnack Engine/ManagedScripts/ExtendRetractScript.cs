@@ -11,6 +11,7 @@ namespace ManagedScripts
         //Amount of units to move
         public float maxMoveUnits = 50;
 
+
         //Units it has moved in this dir
         private float movedUnits = 0;
 
@@ -21,6 +22,19 @@ namespace ManagedScripts
         //If true the object is currently extended, currently moving down
         //If flase object is currently retracted, currently moving up
         public bool isExtended = true;
+
+
+        //How long before it starts extending
+        [SerializeField]
+        public float maxStartExtendWaitTime = 5.0f;
+
+        //How long before it starts retracting
+        [SerializeField]
+        public float maxStartRetractWaitTime = 5.0f;
+
+        //Tracks how long the 
+        [SerializeField]
+        public float waitTimer = 0f;
 
         public Transform transform;
 
@@ -35,6 +49,39 @@ namespace ManagedScripts
         }
 
         public override void OnUpdate()
+        {
+            bool allowedMovement = false;
+
+            //Checks to see if the entity has waiting beforew moving again
+            if (isExtended) //Currently extended
+            {
+                if (waitTimer >= maxStartExtendWaitTime)
+                    allowedMovement = true;
+            }
+            else //Currently retracted
+            {
+                if (waitTimer >= maxStartRetractWaitTime)
+                    allowedMovement = true;
+            }
+
+            if (allowedMovement)
+            {
+                MoveEntity();
+                //Engine.Log("Can Move: " + waitTimer);
+            }
+            else
+            {
+                waitTimer += DeltaTime;
+                //Engine.Log("Waiting Time: " + waitTimer);
+            }
+        }
+
+        public override void OnDestroy()
+        {
+
+        }
+
+        public void MoveEntity()
         {
             bool isMaxMoved = false;
             float unitsToMove = DeltaTime * moveSpeed;
@@ -69,12 +116,8 @@ namespace ManagedScripts
             {
                 isExtended = !isExtended;
                 movedUnits = 0;
+                waitTimer = 0;
             }
-
-        }
-
-        public override void OnDestroy()
-        {
 
         }
     }
