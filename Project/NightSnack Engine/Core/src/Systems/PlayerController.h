@@ -377,9 +377,7 @@ namespace NightSnack {
         /************************************************************************/
         Entity GetPlayer() { return m_player; }
 
-<<<<<<< HEAD
         void Reset() { reset = true; }
-=======
         /************************************************************************/
         /*!
         \brief
@@ -388,7 +386,6 @@ namespace NightSnack {
         */
         /************************************************************************/
         void RespawnPlayer();
->>>>>>> FrogTongueAbility
 
     private:
         Signature m_systemSignature{};
