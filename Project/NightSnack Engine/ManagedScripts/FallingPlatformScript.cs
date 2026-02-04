@@ -133,6 +133,10 @@ namespace ManagedScripts
         {
             hasFallen = true;
             fallVelocity = 0f;
+            if (collider != null)
+            {
+                collider.ColType = ColliderType.Trigger;
+            }
         }
 
         private void UpdateFall()
@@ -146,6 +150,11 @@ namespace ManagedScripts
         private void ResetPlatform()
         {
             transform.Position = initialPosition;
+
+            if (collider != null)
+            {
+                collider.ColType = ColliderType.Solid;
+            }
 
             hasFallen = false;
             fallVelocity = 0f;
