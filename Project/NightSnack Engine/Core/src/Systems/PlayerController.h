@@ -240,6 +240,13 @@ namespace NightSnack {
             Collider& c = m_coord.ModifyComponent<Collider>(m_player);
             Renderable& r = m_coord.ModifyComponent<Renderable>(m_player);
 
+            // Basic movement -----------------------------
+            if (!m_flags.disableMovement)
+            {
+                LeftAndRightMovement(vel, pcont);
+                Jump(t, vel, pcont, c.isGrounded);
+            }
+
             //
             static float time = 0.f;
             if (vel.y == 0.f) {
@@ -294,13 +301,13 @@ namespace NightSnack {
                     if (!et.isActive) { continue; }
                     
                     if (et.name == "Frog" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                        r.materialName = "frog"; // depends on the texture name
+                        r.materialName = "FrogIdle_1_1"; // depends on the texture name
                         curr_ability = "Grapple";
                         m_flags.tryPossess = false;
                         break;
 
                     } else if (et.name == "Ghost" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                        r.materialName = "ghost_4_1"; // depends on the texture name
+                        r.materialName = "EyeMove_4_1"; // depends on the texture name
                         curr_ability = "DoubleJump";
                         m_flags.tryPossess = false;
                         break;
@@ -318,13 +325,6 @@ namespace NightSnack {
                 }
                 // Reset it back anyways
                 m_flags.tryUnPossess = false;
-            }
-
-            // Basic movement -----------------------------
-            if (!m_flags.disableMovement)
-            {
-                LeftAndRightMovement(vel, pcont);
-                Jump(t, vel, pcont, isGrounded);
             }
 
             // Special Abilities --------------------------

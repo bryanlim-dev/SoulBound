@@ -8168,7 +8168,7 @@
                                 "Layer": "Background",
                                 "Name": "Sprite-Spikes1",
                                 "Position": {
-                                    "x": -2250.0,
+                                    "x": -2248.5,
                                     "y": 2000.0,
                                     "z": 0.0
                                 },
@@ -8257,7 +8257,7 @@
                                 "Layer": "Background",
                                 "Name": "Sprite-Spikes1",
                                 "Position": {
-                                    "x": -2250.0,
+                                    "x": -2248.5,
                                     "y": 2100.0,
                                     "z": 0.0
                                 },
@@ -12611,7 +12611,7 @@
         {
             "Components": {
                 "Collider": {
-                    "height": 100.0,
+                    "height": 80.0,
                     "isStatic": true,
                     "radius": 50.0,
                     "shape": "AABB",
@@ -12620,7 +12620,7 @@
                 },
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "frog",
+                    "materialName": "FrogIdle_1_1",
                     "meshName": "square"
                 },
                 "RigidBody": {
@@ -12637,7 +12637,7 @@
                 "Name": "Frog",
                 "Position": {
                     "x": 1523.00341796875,
-                    "y": 900.010009765625,
+                    "y": 890.010009765625,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
@@ -12663,7 +12663,7 @@
                     "isLooping": true,
                     "isPlaying": true,
                     "playbackSpeed": 1.0,
-                    "spriteSheetName": "Sprites\\ghost_4_1.png"
+                    "spriteSheetName": "Sprites\\EyeMove_4_1.png"
                 },
                 "Collider": {
                     "height": 100.0,
@@ -12675,7 +12675,7 @@
                 },
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "ghost_4_1",
+                    "materialName": "EyeMove_4_1",
                     "meshName": "square"
                 },
                 "RigidBody": {
@@ -12715,7 +12715,7 @@
         {
             "Components": {
                 "Collider": {
-                    "height": 100.0,
+                    "height": 80.0,
                     "isStatic": true,
                     "radius": 50.0,
                     "shape": "AABB",
@@ -12724,7 +12724,7 @@
                 },
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "frog",
+                    "materialName": "FrogIdle_1_1",
                     "meshName": "square"
                 },
                 "RigidBody": {
@@ -12741,7 +12741,7 @@
                 "Name": "Frog",
                 "Position": {
                     "x": 1867.487548828125,
-                    "y": 2382.11962890625,
+                    "y": 2392.11962890625,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
@@ -12767,7 +12767,7 @@
                     "isLooping": true,
                     "isPlaying": true,
                     "playbackSpeed": 1.0,
-                    "spriteSheetName": "Sprites\\ghost_4_1.png"
+                    "spriteSheetName": "Sprites\\EyeMove_4_1.png"
                 },
                 "Collider": {
                     "height": 100.0,
@@ -12779,7 +12779,7 @@
                 },
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "ghost_4_1",
+                    "materialName": "EyeMove_4_1",
                     "meshName": "square"
                 },
                 "RigidBody": {

@@ -92,13 +92,14 @@ namespace NightSnack {
 					if (!animator.lastFacingRight) {
 						// Entity is currently facing the left direction
 						// Set the UV coordinates as default state, facing to the left
-						animator.uvTopLeft = { 1.f, 0.f };
-						animator.uvBottomRight = { 0.f, 1.f };
+						animator.uvTopLeft = { 0.f, 0.f };
+						animator.uvBottomRight = { 1.f, 1.f };
+						
 					} else {
 						// Entity is currently facing the right direction
 						// Face to the right
-						animator.uvTopLeft = { 0.f, 0.f };
-						animator.uvBottomRight = { 1.f, 1.f };
+						animator.uvTopLeft = { 1.f, 0.f };
+						animator.uvBottomRight = { 0.f, 1.f };
 					}
 
 				} else {

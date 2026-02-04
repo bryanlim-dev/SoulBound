@@ -143,18 +143,36 @@ namespace NightSnack {
     }
 
     void PlayerControllerSystem::LeftAndRightMovement(Vec2& vel, PlayerController const& pcont) const {
+        m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
 
         if (m_flags.movingRight && !m_flags.movingLeft) {
             vel.x = pcont.moveSpeed;
+
+            if (curr_ability == "Grapple") {
+                m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogMove_4_1";
+                m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+            }
         }
         else if (m_flags.movingLeft && !m_flags.movingRight) {
             vel.x = -pcont.moveSpeed;
+            if (curr_ability == "Grapple") {
+                m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogMove_4_1";
+                m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+            }
         }
         else if (!m_flags.movingLeft && !m_flags.movingRight) {
             vel.x = 0.f; // Stop moving when no keys pressed
+            if (curr_ability == "Grapple") {
+                m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogIdle_4_1";
+                m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
+            }
         }
         else if (m_flags.movingLeft && m_flags.movingRight) {
             vel.x = 0.f; // Stop moving when both keys pressed
+            if (curr_ability == "Grapple") {
+                m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogIdle_4_1";
+                m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
+            }
         }
     }
 
