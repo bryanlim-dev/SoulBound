@@ -44,7 +44,7 @@ namespace NightSnack::Scene {
 	// Main update function to be called in core loop
 	void SceneManager::Update() {
 		// If somehow no level is loaded, return to default scene
-		if (!m_gameLoaded) LoadLevel("Level1");
+		if (!m_gameLoaded) LoadLevel("MainMenu");
 
 		if (m_restart) {
 			RestartLevel();

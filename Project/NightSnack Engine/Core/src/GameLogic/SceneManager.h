@@ -89,7 +89,7 @@ namespace NightSnack::Scene {
 						break;
 					// Used to signal a mouse press event
 					case InputEvent::InputAction::ClickLMB:
-						//if (m_coord.IsPaused()) return;
+						if (m_coord.IsPaused()) return;
 						CheckButtonCollisions();
 						break;
 					}

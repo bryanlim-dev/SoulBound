@@ -690,6 +690,8 @@ namespace NightSnack {
 
 		if (ButtonType::SLIDER == b.type) j["type"] = std::string{ "Slider" };
 		if (ButtonType::CLICKER == b.type) j["type"] = std::string{ "Clicker" };
+
+		j["target"] = b.target;
 	}
 	void from_json(json const& j, ButtonInfo& b) {
 		try {
