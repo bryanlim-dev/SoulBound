@@ -36,8 +36,7 @@ namespace NightSnack::Scene {
 	public:
 		// Construct button with action and callable
 		Button(ButtonAction a, void(*func)(Coordinator& c, std::string const&))
-			: m_action{ a }, m_callable{ func } {
-		}
+			: m_action{ a }, m_callable{ func } {}
 		Button(Button const& b) noexcept {
 			m_action = b.m_action;
 			m_callable = b.m_callable;
@@ -101,11 +100,14 @@ namespace NightSnack::Scene {
 			// Register buttons
 			RegisterButtons();
 		}
-
+		
 		// Main function to be called in Core Update loop
 		void Update() override;
 		// Resets m_levelKeys and loads all json files in "GameData/Levels"
 		void ReloadLevels();
+		void CreateSceneCamera(json const&);
+		void ReadCameraKeyframes(json const&);
+		json WriteCameraKeyframes();
 
 		// Spawn Overlay menu (Pause menu) (currently not in use)
 		//void CreateOverlayMenu();
@@ -156,6 +158,11 @@ namespace NightSnack::Scene {
 		size_t m_currentLevelKey{};
 		size_t m_previousLevelKey{};
 
+		Entity m_sceneCam{ INVALID_ENTITY };
+		float m_camDepth = 10.f;
+		// Camera frames - Read from level.json
+		std::map<Entity, json> m_camFrames;
+
 		std::vector<Entity> m_overlayEntites;
 
 		// Overlay menu
@@ -175,6 +182,8 @@ namespace NightSnack::Scene {
 
 		bool m_scheduledExit;
 		float m_exitTimer;
+		Entity m_player = INVALID_ENTITY;
+		Entity m_camIndex = INVALID_ENTITY;
 	};
 
 }	// NightSnack::Scene

@@ -82,6 +82,10 @@ namespace NightSnack {
 	void to_json(json&, Sprite const&);
 	void from_json(json const&, Sprite&);
 
+	// Character
+	void to_json(json&, Character const&);
+	void from_json(json const&, Character&);
+
 }	// Namespace NightSnack::Serializer
 
 #endif

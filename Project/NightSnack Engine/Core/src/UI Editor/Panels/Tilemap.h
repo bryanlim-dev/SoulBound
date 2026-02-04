@@ -21,7 +21,7 @@ namespace NightSnack
 
         // Tilemap overlay settings
         bool tileOverlayEnabled = false;
-        float gridSize = 24.0f;
+        float gridSize = 100.0f;
         ImU32 gridColor = IM_COL32(200, 200, 200, 100);
 
         // Tile editor settings

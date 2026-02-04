@@ -7,7 +7,7 @@
  * Controls the Player Entity and sets their Velocity component when key inputs
  * are detected.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -16,16 +16,48 @@
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/Input.h"
 #include "Systems/AudioSystem.h"
+#include <Factory/EntityFactory.h>
+#include <GameLogic/FrogTongue.h>
 #include "Systems/ParticleSystem.h"
 
 struct PlayerFlags {
     bool movingLeft = false;
     bool movingRight = false;
+
     bool jumpRequested = false;
+    bool justJumped{};
+
+    bool disableMovement = false;
 
     bool playerChange = false;
+    bool isGrounded = false;
+
+    bool isPossessing = false;
+    bool useAbility = false;
+
+    bool canDoubleJump = true;
+    bool grappling = false;
     // add more flags if needed
 };
+
+namespace NightSnack::Gameplay {
+    class Ability {
+    public:
+        // Constructors
+        Ability(std::string n, void(*func)(Coordinator& c, Entity e, PlayerFlags& m_flags))
+            : m_name{ n }, m_callable{ func } {}
+        Ability(Ability const& a) {
+            m_name = a.m_name;
+            m_callable = a.m_callable;
+        }
+        // Invoke callable to activate ability
+        void operator()(Coordinator& c, Entity tgt, PlayerFlags& flags) { m_callable(c, tgt, flags); }
+    private:
+        std::string m_name;
+        void(*m_callable)(Coordinator& c, Entity tgt, PlayerFlags& m_flags);
+
+    };
+}
 
 namespace NightSnack {
 
@@ -45,8 +77,6 @@ namespace NightSnack {
         */
         /************************************************************************/
         PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord }, m_dispatcher { &disp } {
-
-            m_player = 1;
 
             m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
                 {
@@ -70,15 +100,47 @@ namespace NightSnack {
                         }
                         break;
                     case InputEvent::InputAction::PlayerJump:
-                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                        if (event.pressed == InputEvent::InputActionState::Pressed ||
+                            event.pressed == InputEvent::InputActionState::Repeat) {
+                            if (!m_flags.justJumped)
                             m_flags.jumpRequested = true;
                         }
                         else {
                             m_flags.jumpRequested = false;
                         }
                         break;
+                    case InputEvent::InputAction::PlayerSpecialAbility:
+                        if (event.pressed == InputEvent::InputActionState::Pressed ||
+                            event.pressed == InputEvent::InputActionState::Repeat) {
+                            m_flags.useAbility = true;
+                        }
+                        else {
+                            m_flags.useAbility = false;
+                        }
+                        break;
+                    case InputEvent::InputAction::Ability1:
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                            curr_ability = "Glide";
+                        }
+                        break;
+                    case InputEvent::InputAction::Ability2:
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                            curr_ability = "Grapple";
+                        }
+                        break;
+                    case InputEvent::InputAction::Ability3:
+                        if (event.pressed == InputEvent::InputActionState::Pressed) {
+                            curr_ability = "DoubleJump";
+                        }
+                        break;
                     }
                 });
+            RegisterAbilities();
+            AttachAbility();
+            prev_ability = curr_ability;
+
+            m_frogTongue.Initalize(m_player, coord, *m_dispatcher);
+
         }
 
         /************************************************************************/
@@ -98,93 +160,56 @@ namespace NightSnack {
             if (m_coord.IsPaused()) return;
 
             m_player = FindPlayer(m_coord);
-            //static bool landed = true;
-
+            m_frogTongue.UpdateOwner(m_player);
             if (m_player == INVALID_ENTITY) { return; }
 
             PlayerController const& pcont = m_coord.GetComponent<PlayerController>(m_player);
             Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
             Transform& t = m_coord.ModifyComponent<Transform>(m_player);
+            Collider& c = m_coord.ModifyComponent<Collider>(m_player);
 
-            if (m_coord.GetComponent<Collider>(m_player).isGrounded)
-            {
-                if (m_midAir) //was mid air but is grounded now
-                {
-                    m_midAir = false;
-                    m_coord.GetSystem<AudioSystem>()->PlaySFX("playerHurt");
-                }
 
-                m_timeSinceGrounded = 0;
+
+            //
+            static float time = 0.f;
+            time += FixedDT;
+            if (time >= 0.5f && vel.y == 0.f) {
+                time = 0.f;
+                
+                c.isGrounded = true;
+                m_flags.canDoubleJump = true;
             }
+            bool isGrounded = c.isGrounded;
+            if (isGrounded) m_flags.canDoubleJump = true;
+            //
+
+            // Basic movement -----------------------------
+            if (!m_flags.disableMovement)
+            {
+                LeftAndRightMovement(vel, pcont);
+                Jump(t, vel, pcont, isGrounded);
+            }
+
+            if (isGrounded) m_flags.canDoubleJump = true;
+            // Special Abilities --------------------------
+            //if (curr_ability != prev_ability)
+            //    if (!AttachAbility()) std::cerr << "Failed to attach ability!\n";
+            if (m_flags.useAbility)
+                UseSpecialAbility();
             else
             {
-                m_timeSinceGrounded += m_coord.GetSystem<ApplicationSystem>()->GetDT();
-            }
-
-            bool isGrounded = (m_timeSinceGrounded <= m_groundedThreshhold);
-
-            if (!isGrounded)
-                m_midAir = true;
-            
-
-            /*if (!m_coord.GetComponent<Collider>(m_player).isGrounded && isGrounded)
-                std::cout << "Coyte TIME!" << std::endl;*/
-
-            if (m_flags.movingRight && !m_flags.movingLeft) {
-                vel.x = pcont.moveSpeed;
-            }
-            else if (m_flags.movingLeft && !m_flags.movingRight) {
-                vel.x = -pcont.moveSpeed;
-            }
-            else if (!m_flags.movingLeft && !m_flags.movingRight) {
-                vel.x = 0.f; // Stop moving when no keys pressed
-            }
-            else if (m_flags.movingLeft && m_flags.movingRight) {
-                vel.x = 0.f; // Stop moving when both keys pressed
-            }
-
-            if (m_flags.jumpRequested)
-            {
-                m_storedJump = true;
-                m_storedJumpTimer = 0;
-                //std::cout << "Stored Jump!" << std::endl;
-            }
-
-            if (m_storedJump)
-            {
-                m_storedJumpTimer += m_coord.GetSystem<ApplicationSystem>()->GetDT();
-
-                //Too long since pressing jump
-                if (m_storedJumpTimer >= m_storedJumpThreshold)
+                if (m_flags.grappling)
                 {
-                    m_storedJump = false;
-                    //std::cout << "Unstored Jump." << std::endl;
+                    m_frogTongue.End(m_coord);
+                    m_flags.grappling = false;
                 }
             }
+                //if (!UseSpecialAbility()) std::cerr << "Failed to use ability!\n";
 
-            if (m_storedJump && isGrounded) {
-                vel.y = pcont.jumpSpeed;
-                t.pos.y += 2.5f;
-                m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
-                m_coord.GetSystem<AudioSystem>()->PlaySFX("playerJump");
-                m_midAir = true;
-                m_storedJump = false;
+            prev_ability = curr_ability;
+            m_timeSinceAbility += FixedDT;
+            if (m_timeSinceAbility >= 1.0f) m_timeSinceAbility = 0.f;
 
-                // Start the emitter to spawn particles
-                // These particles spawn position will be based on the updated player position
-                m_playerJumpEmitter = m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
-                    "Particle-RisingGlow",      // Prefab name
-                    {},                         // Spawn position (center)
-                    {},							// End position (unused)
-                    10.f,                       // Spawn radius
-                    7,                         // Max particles per cycle
-                    5,                         // Spawn delay (steps between particles)
-                    false,                      // Should loop
-                    m_player                    // Follow entity
-                );
-            }
-
-            m_flags.jumpRequested = false;
         }
 
         /************************************************************************/
@@ -199,35 +224,45 @@ namespace NightSnack {
         The ID of the current Player Entity.
         */
         /************************************************************************/
-        Entity FindPlayer(Coordinator& coord) {
-            // Camera Signature (only have components Camera and Tranform)
-            Signature playerSig;
-
-            playerSig.set(GetComponentTypeID<PlayerController>());
-            playerSig.set(GetComponentTypeID<Transform>());
-            playerSig.set(GetComponentTypeID<RigidBody>());
-            playerSig.set(GetComponentTypeID<Collider>());
-
-            // Iterate through all living Entities in the COORDINATOR instead
-            // Since the GraphicsSystem will not have a Camera Entity
-            for (Entity e : coord.GetLivingEntities()) {
-                if ((coord.GetEntitySignature(e) & playerSig) == playerSig) { // This camera Entity is the main camera
-                    return e;
-                }
-            }
-            //std::cerr << "Error: No Player Entity found in scene!\n";
-            return INVALID_ENTITY;
-        }
+        Entity FindPlayer(Coordinator& coord);
 
         Entity GetPlayer() const noexcept { return m_player; }
 
-        void ResetFlags() {
-            m_flags = PlayerFlags{};
-        }
+        void LeftAndRightMovement(Vec2& vel, PlayerController const&) const;
+        void Jump(Transform& t, Vec2& vel, PlayerController pcont, bool isGrounded);
+
+        PlayerFlags& GetPlayerFlags();
+        void ResetFlags() { m_flags = PlayerFlags{}; }
+
+        // Store movement abilities as void pointers
+        // std::function jump;
+        // std::function special -> e.g double_jump, glide, grapple
+        // 
+
+        FrogTongue& GetFrogTongue() {
+            return m_frogTongue;
+        };
+    
+        // Ability stuff
+        void RegisterAbilities();
+        bool UseSpecialAbility();
+        bool AttachAbility();
+        std::string curr_ability;
+        std::string prev_ability;
+
+        std::unordered_map<std::string, Gameplay::Ability> m_abilities;
 
         // Required by ISystem base class.
         std::string GetName() const override { return "PlayerController"; }
         Signature GetSignature() const override { return m_systemSignature; }
+
+        float DistanceToPlayer(Entity point)
+        {
+            if (!m_coord.HasComponent<Transform>(point) || !m_coord.HasComponent<Transform>(m_player))
+                return 0;
+
+            return magnitude(m_coord.GetComponent<Transform>(m_player).pos, m_coord.GetComponent<Transform>(point).pos);
+        }
 
 
         /************************************************************************/
@@ -251,18 +286,24 @@ namespace NightSnack {
         // Accumulates states
         PlayerFlags m_flags{};
 
+        //Cyote time
         float m_timeSinceGrounded{}; //Time since last grounded
-        bool m_midAir{}; //Is the player midair (used to help track if player jumped)
+        const float m_groundedThreshhold = 0.1f;
+        float m_groundedTime{};
+        const float m_repeatJumpThreshhold = 0.1f;
 
+        float m_timeSinceAbility{};
+
+        FrogTongue m_frogTongue;
+
+        //bool m_midAir{}; //Is the player midair (used to help track if player jumped)
         //If spacebar is pressed right before landing allow 
-        bool m_storedJump = false;
-        float m_storedJumpTimer{};
+        //bool m_storedJump = false;
+        //float m_storedJumpTimer{};
 
         //Time to consider the player "grounded" for jumping
-        //Cyote time
-        const float m_groundedThreshhold = 0.2f;
         //Lenght of time to store a jump
-        const float m_storedJumpThreshold = 0.2f;
+        //const float m_storedJumpThreshold = 0.2f;
 
         EmitterID m_playerJumpEmitter{};
     };

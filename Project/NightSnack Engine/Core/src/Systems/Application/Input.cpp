@@ -115,9 +115,16 @@ namespace NightSnack {
 			// Map every single key/mouse press to their relevant input events
 			// 
 			// Player movement
-		case GLFW_KEY_A: return InputEvent::InputAction::PlayerMoveLeft;
-		case GLFW_KEY_D: return InputEvent::InputAction::PlayerMoveRight;
-		case GLFW_KEY_W: return InputEvent::InputAction::PlayerJump;
+		case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
+		case GLFW_KEY_RIGHT: return InputEvent::InputAction::PlayerMoveRight;
+		case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJump;
+		case GLFW_KEY_A: return InputEvent::InputAction::PlayerSpecialAbility;
+		case GLFW_KEY_S: return InputEvent::InputAction::PlayerPossess;
+		case GLFW_KEY_D: return InputEvent::InputAction::PlayerUnPossess;
+
+		case GLFW_KEY_1: return InputEvent::InputAction::Ability1;
+		case GLFW_KEY_2: return InputEvent::InputAction::Ability2;
+		case GLFW_KEY_3: return InputEvent::InputAction::Ability3;
 
 			// Window tests
 		case GLFW_KEY_F1: return InputEvent::InputAction::DisplayFPS;
@@ -134,8 +141,10 @@ namespace NightSnack {
 		case GLFW_MOUSE_BUTTON_LEFT: return InputEvent::InputAction::ClickLMB;
 
 			// Modifier events
-		case GLFW_KEY_S: // (CTRL+S)
-			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::Save : InputEvent::InputAction::NumTotalInputAction;
+		case GLFW_KEY_C: // (CTRL+C)
+			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::Copy : InputEvent::InputAction::NumTotalInputAction;
+		case GLFW_KEY_V: // (CTRL+C)
+			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::Paste : InputEvent::InputAction::NumTotalInputAction;
 		case GLFW_KEY_P: // (CTRL+P)
 			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::PhysicsDebugMode : InputEvent::InputAction::PhysicsDebugStep;
 		case GLFW_KEY_Z: // (CTRL+Z)

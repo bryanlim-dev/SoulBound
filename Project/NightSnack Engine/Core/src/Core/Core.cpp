@@ -81,6 +81,7 @@ namespace NightSnack {
 		m_coord.RegisterComponent<Font>();
 		m_coord.RegisterComponent<ButtonInfo>();
 		m_coord.RegisterComponent<Script>();
+		m_coord.RegisterComponent<Character>();
 
 		// Add more Components here...
 
@@ -110,6 +111,7 @@ namespace NightSnack {
 		AddSystem<Scene::SceneManager>(m_coord, core_dispatcher);
 		AddSystem<Scripting::ScriptManager>(m_coord, core_dispatcher);
 		AddSystem<FiniteStateMachine>(m_coord);
+		AddSystem<CharacterSystem>(m_coord, core_dispatcher);
 
 #ifdef EDITOR
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);

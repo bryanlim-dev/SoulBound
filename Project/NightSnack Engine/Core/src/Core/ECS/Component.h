@@ -33,12 +33,12 @@ namespace NightSnack {
     // ================================================================================================
     // When updating this update the one in Engine.cs
     enum class LayerType : std::uint8_t {
-        _ENGINE,
-        BACKGROUND,
-        GAMELAYER,
-        FOREGROUND,
-        GAMEUI,
-        _ENGINE2
+        _ENGINE,        // 0.f
+        BACKGROUND,     // 1.f
+        GAMELAYER,      // 2.f
+        FOREGROUND,     // 3.f
+        GAMEUI,         // 4.f
+        _ENGINE2        // 5.f
     };
 
     enum class CameraMode
@@ -55,9 +55,11 @@ namespace NightSnack {
         Vec3 UIbasePos{ 0.f, 0.f, 0.f };
         Vec2 UIbaseScale{ 0.f, 0.f };
 
-        LayerType layer;
+        LayerType layer{ LayerType::GAMELAYER };
         bool prefabModified{ false };
         bool isActive{ true };
+
+        std::string name{ "NoName" };
     };
 
     struct Force {
@@ -71,18 +73,18 @@ namespace NightSnack {
     };
 
     struct RigidBody {
-        Force force;
-        Vec2 vel;
-        Vec2 accel;
+        Force force{};
+        Vec2 vel{};
+        Vec2 accel{};
 
         float invMass = 1.f;
         float invInertia = 1.f;
 
         float restitution{};
-        float gravitymult;
+        float gravitymult = 1.f;
 
-        bool useGravity;
-        bool useRotate;
+        bool useGravity = true;
+        bool useRotate = false;
     };
 
     //Types of enums supported for scripting
@@ -195,7 +197,7 @@ namespace NightSnack {
         float playbackSpeed{ 1.f };
         bool isPlaying{ true };
         bool isLooping{ true };
-        bool lastFacingRight{ false };
+        bool lastFacingRight{ true };
         // The active region of the texture to sample from
         Vec2 uvTopLeft{ 0.f, 0.f };
         Vec2 uvBottomRight{ 1.f, 1.f }; 
@@ -249,6 +251,7 @@ namespace NightSnack {
 
         float minX, maxX;
         float minY, maxY;
+        bool lock = false;
 
         Vec2 offset;
 
@@ -286,9 +289,31 @@ namespace NightSnack {
         EXIT,
     };
     struct ButtonInfo {
-        ButtonAction action;
-        ButtonType type;
-        std::string target;
+        ButtonAction action{ ButtonAction::NOACTION };
+        ButtonType type{ ButtonType::INVALID_BUTTON };
+        std::string target{};
+    };
+
+
+#define CHARACTER_PROPERTIES_LIST \
+    PROPERTY(START_PROPERTIES)    \
+    PROPERTY(GRAPPLEABLE)         \
+    PROPERTY(CHECKPOINT)         
+//Add any new PROPERTY enum above
+//The enum to string is in character system
+
+    enum CharacterProperties
+    {
+#define PROPERTY(name) name,
+        CHARACTER_PROPERTIES_LIST
+#undef PROPERTY
+
+        MAX_PROPERTIES //Max number of propertities, put any new ones before this
+    };
+
+    struct Character
+    {
+        std::vector<CharacterProperties> m_properties{};
     };
 
     // Add more Components here if necessary...

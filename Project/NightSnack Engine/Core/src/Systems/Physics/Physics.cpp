@@ -237,52 +237,20 @@ namespace NightSnack {
 
 							if (abs(normal.y) > abs(normal.x)) {
 								if (t1.pos.y > t2.pos.y && !c1.isStatic) {
-									r1.vel.y = 0.f;
-									c1.isGrounded = true;
+									if (r1.vel.y < 0.f)
+										r1.vel.y = 0.f;
+
+									if (t1.pos.x >= (t2.pos.x - c2.width / 2.f) && t1.pos.x <= (t2.pos.x + c2.width / 2.f))
+										c1.isGrounded = true;
 								}
 								if (t2.pos.y > t1.pos.y && !c2.isStatic) {
-									r2.vel.y = 0.f;
-									c2.isGrounded = true;
+									if (r2.vel.y < 0.f)
+										r2.vel.y = 0.f;
+									
+									if (t2.pos.x >= (t1.pos.x - c1.width / 2.f) && t2.pos.x <= (t1.pos.x + c1.width / 2.f))
+										c2.isGrounded = true;
 								}
 							}
-
-						//	// Resolve overlaps;
-						//	ResolveOverlap(t1, t2, c1, c2, r1, r2);
-
-						//	// Not yet colliding, Check tunneling from e1;
-						//	if (CheckTunneling(t1, t2, r1) && !c1.isStatic) {
-						//		c1.colliding = c2.colliding = true;
-						//		Transform next{};
-						//		next.pos = t1.pos;
-
-						//		for (int i{}; i < 4; ++i) {
-						//			next.pos.x += r1.vel.x * FixedDT * 0.25f;
-						//			next.pos.y += r1.vel.y * FixedDT * 0.25f;
-						//			if (CheckCollision(next, t2, c1, c2)) {
-						//				next.pos.x -= r1.vel.x * FixedDT * 0.25f;
-						//				next.pos.y -= r1.vel.y * FixedDT * 0.25f;
-						//				break;
-						//			}
-						//		}
-						//		t1.pos = next.pos;
-						//	}
-						//	// Check tunneling from e2;
-						//	else if (CheckTunneling(t2, t1, r2) && !c2.isStatic) {
-						//		c1.colliding = c2.colliding = true;
-						//		Transform next{};
-						//		next.pos = t2.pos;
-
-						//		for (int i{}; i < 4; ++i) {
-						//			next.pos.x += r2.vel.x * FixedDT * 0.25f;
-						//			next.pos.y += r2.vel.y * FixedDT * 0.25f;
-						//			if (CheckCollision(t1, next, c1, c2)) {
-						//				next.pos.x -= r2.vel.x * FixedDT * 0.25f;
-						//				next.pos.y -= r2.vel.y * FixedDT * 0.25f;
-						//				break;
-						//			}
-						//		}
-						//		t2.pos = next.pos;
-						//	}
 						}
 					}
 				}
@@ -361,10 +329,12 @@ namespace NightSnack {
 				r1.vel.y = 0.f;
 				r2.vel.y = 0.f;
 
-				if (t1.pos.y > t2.pos.y) {
+				if (t1.pos.y > t2.pos.y
+					&& t1.pos.x >= (t2.pos.x - t2.scale.x / 2.f) && t1.pos.x <= (t2.pos.x + t2.scale.x / 2.f)) {
 					c1.isGrounded = true;
 				}
-				if (t2.pos.y > t1.pos.y) {
+				if (t2.pos.y > t1.pos.y 
+					&& t2.pos.x >= (t1.pos.x - t1.scale.x / 2.f) && t2.pos.x <= (t1.pos.x + t1.scale.x/ 2.f)) {
 					c2.isGrounded = true;
 				}
 			}
@@ -435,53 +405,27 @@ namespace NightSnack {
 		Vec2 correction = normal * std::max(depth - slop, 0.0f) * percent;
 
 		if (c2.isStatic) {
-			t1.pos = t1.pos - correction;
+			t1.pos.x = t1.pos.x - correction.x;
+			t1.pos.y = t1.pos.y - correction.y;
 		}
 		else if (c1.isStatic) {
-			t2.pos = t2.pos + correction;
+			t2.pos.x = t2.pos.x + correction.x;
+			t2.pos.y = t2.pos.y + correction.y;
 		}
 		else {
 			float mass1 = 1.f / r1.invMass;
 			float mass2 = 1.f / r2.invMass;
 			float totalMass = mass1 + mass2;
-			t1.pos = t1.pos - correction * (mass2 / totalMass);
-			t2.pos = t2.pos + correction * (mass1 / totalMass);
+			t1.pos.x = t1.pos.x - correction.x * (mass2 / totalMass);
+			t2.pos.x = t2.pos.x + correction.x * (mass1 / totalMass);
+
+			if (t1.pos.y > t2.pos.y && r1.vel.y < 0) {
+				t1.pos.y = t1.pos.y - correction.y * (mass2 / totalMass);
+			}
+			if (t2.pos.y > t1.pos.y && r2.vel.y < 0) {
+				t2.pos.y = t2.pos.y + correction.y * (mass1 / totalMass);
+			}
 		}
-
-		//// --- Velocity Resolution (impulse) ---
-		//Vec2 relativeVel = r1.vel - r2.vel;
-		//float velAlongNormal = relativeVel.dot(normal);
-
-		//// Don't resolve if velocities are separating
-		//if (velAlongNormal > 0) {
-		//	return;
-		//}
-
-		//// Calculate restitution (bounciness)
-		//float e = std::min(r1.restitution, r2.restitution);
-
-		//// Calculate impulse scalar
-		//float j = -(1.0f + e) * velAlongNormal;
-
-		//if (!c1.isStatic && !c2.isStatic) {
-		//	j /= (1.0f * r1.invMass + 1.0f * r2.invMass);
-		//}
-		//else if (c2.isStatic) {
-		//	j /= (1.0f * r1.invMass);
-		//}
-		//else { // c1.isStatic
-		//	j /= (1.0f * r2.invMass);
-		//}
-
-		//// Apply impulse
-		//Vec2 impulse = normal * j;
-
-		//if (!c1.isStatic) {
-		//	r1.vel -= impulse * r1.invMass;
-		//}
-		//if (!c2.isStatic) {
-		//	r2.vel += impulse * r2.invMass;
-		//}
 	}
 
 	bool PhysicsSystem::CheckTunneling(Transform const& t1, Transform const& t2, RigidBody const& r1) {
@@ -506,6 +450,18 @@ namespace NightSnack {
 			return true;
 		}
 		return false;
+	}
+
+	bool PhysicsSystem::EntitiesAreColliding(Entity e1, Entity e2) {
+
+		Vec2 normal; float depth;
+		return CheckCollision(
+			m_coord.GetComponent<Transform>(e1),
+			m_coord.GetComponent<Transform>(e2),
+			m_coord.GetComponent<Collider>(e1),
+			m_coord.GetComponent<Collider>(e2),
+			normal, depth
+		);
 	}
 
 	//bool PhysicsSystem::CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2) {
@@ -610,7 +566,7 @@ namespace NightSnack {
 		}
 
 		if (rig.useGravity && !col.isGrounded) {
-			rig.accel.y += gravity;
+			rig.accel.y += gravity * rig.gravitymult;
 		}
 		// Compute Velocity;
 		rig.vel += rig.accel * FixedDT;

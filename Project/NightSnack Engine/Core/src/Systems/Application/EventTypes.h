@@ -32,10 +32,16 @@ namespace NightSnack {
         enum class InputAction {
 
             // Player movement
-            PlayerMoveLeft,     // A
-            PlayerMoveRight,    // D
-            PlayerJump,         // W
-            ChangePlayer,      // Down arrow;
+            PlayerMoveLeft,     // LEFT ARROW
+            PlayerMoveRight,    // RIGHT ARROW
+            PlayerJump,         // UP ARROW
+            PlayerPossess,          // S KEY
+            PlayerSpecialAbility,   // A KEY
+            PlayerUnPossess,        // D KEY
+
+            Ability1,
+            Ability2,
+            Ability3,
 
             ChangeAnimation,    // X
 
@@ -53,7 +59,9 @@ namespace NightSnack {
             ClickLMB,           // LMB
 
             // Modifier events
-            Save,               // CTRL + S
+            Copy,               // CTRL + C
+            Paste,              // CTRL + V
+
             PhysicsDebugMode,   // CTRL + P
 			UndoStep,           // CTRL + Z
 			ToggleUIEditor,     // Backslash ( \ )

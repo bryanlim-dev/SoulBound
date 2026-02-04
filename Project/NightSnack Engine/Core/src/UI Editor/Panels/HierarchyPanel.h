@@ -12,10 +12,13 @@
  ******************************************************************************/
 
 #pragma once
+
 #include "AllPanels.h"
 
 namespace NightSnack
 {
+    class ImguiSystem;
+
     class HierarchyPanel {
     public:
 
@@ -69,6 +72,19 @@ namespace NightSnack
                     {
                         factory->Create();
                     }
+                    ImGui::SameLine();
+                    if (ImGui::Button("Create Collider")) {
+
+                        //Vec3 campos = m_coord.GetComponent<Transform>(m_imgui.GetScenePanel().GetEditorCamera()).pos;
+                        Transform t;
+                        //t.pos = Vec3{ campos.x, campos.y, 0.f };
+                        t.scale = Vec2{ 100.f, 100.f };
+                        t.pos.z = 1.f;
+                        Collider c;
+                        c.width = c.height = 100.f;
+                        c.radius = 50.f;
+                        factory->CreateCollider(c, t);
+                    }
 
                     // Delete button to remove selected entity
                     if (m_selectedEntity && *m_selectedEntity != INVALID_ENTITY)
@@ -95,7 +111,12 @@ namespace NightSnack
 							// Hide SceneCam from hierarchy
                             if (m_uiNames->count(e) && (*m_uiNames)[e] == "SceneCam") continue;
 
-							// Draw Hierarchy Tree
+							// Assign default UI name if not present
+                            if (m_uiNames->find(e) == m_uiNames->end()) {
+                                (*m_uiNames)[e] = factory ? factory->GetEntityPrefabName(e) : "Entity " + std::to_string(e);
+                            }
+
+                            // Draw Hierarchy Tree
                             if (!m_coord.HasComponent<Hierarchy>(e)) continue;
                             auto& h = m_coord.GetComponent<Hierarchy>(e);
                             if (h.parent == INVALID_ENTITY)
@@ -173,6 +194,7 @@ namespace NightSnack
             if (selected) flags |= ImGuiTreeNodeFlags_Selected;
 
             std::string label = uiNames[e] + "##" + std::to_string(e);
+            if (m_coord.HasComponent<Camera>(e)) label = "CAMERA";
             bool open = ImGui::TreeNodeEx(label.c_str(), flags);
 
             // Handle selection

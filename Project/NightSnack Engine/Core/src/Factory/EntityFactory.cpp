@@ -34,16 +34,21 @@ namespace NightSnack {
 
         // Destroy all removed entities
         for (Entity e : m_toBeDestroyed) {
-            auto range = prefabToEntities.equal_range(entityToPrefab[e]);
-            std::unordered_multimap<std::string, Entity>::iterator it;
-            for (auto i = range.first; i != range.second; ++i) {
-                if (i->second == e) {
-                    it = i;
-                    break;
+
+            if (entityToPrefab.find(e) != entityToPrefab.end()) {
+
+                auto range = prefabToEntities.equal_range(entityToPrefab[e]);
+                std::unordered_multimap<std::string, Entity>::iterator it;
+
+                for (auto i = range.first; i != range.second; ++i) {
+                    if (i->second == e) {
+                        it = i;
+                        break;
+                    }
                 }
+                entityToPrefab.erase(e);
+                prefabToEntities.erase(it);
             }
-            prefabToEntities.erase(it);
-            entityToPrefab.erase(e);
             m_coord.DestroyEntity(e);
         }
         m_toBeDestroyed.clear();
@@ -69,8 +74,7 @@ namespace NightSnack {
         trans.layer = LayerType::GAMELAYER;
 
         m_coord.AddComponent<Transform>(e, trans);
-        entityToPrefab[e] = "++Default";
-        prefabToEntities.insert({ "++Default", e });
+        m_coord.AddComponent<Hierarchy>(e, Hierarchy{});
 
         m_coord.BufferEntitySignature(e);
 
@@ -106,21 +110,28 @@ namespace NightSnack {
 	}
 
     // Create an entity with a json file of entity information and a Transform
-    Entity EntityFactory::Create(json const& prefab, Transform const& trans) {
-        Entity e = m_prefabManager.CreateFromPrefab(prefab);
-        if (e == INVALID_ENTITY) { return e; }
+    Entity EntityFactory::Create(json const& j, Transform const& trans) {
+        Entity e = INVALID_ENTITY;
 
         m_coord.ModifyComponent<Transform>(e) = trans;
 
-        entityToPrefab[e] = prefab["name"];
-        prefabToEntities.insert({ prefab["name"], e });
+        if (j["isPrefab"]) {
+            e = m_prefabManager.CreateFromPrefab(j["name"]);
+
+            entityToPrefab[e] = j["name"];
+            prefabToEntities.insert({ j["name"], e });
+        }
+        else {
+            e = Create();
+            UnpackEntityComponents(e, j["Components"]);
+        }
 
         m_coord.BufferEntitySignature(e);
 
         return e;
     }
 
-    // For creating entities at specific locations, scaling etc...
+    // Create entity from prefab with a specific Transform;
     Entity EntityFactory::Create(std::string const& name, Transform const& trans) {
 
         size_t key = m_prefabKeys[name];
@@ -138,23 +149,51 @@ namespace NightSnack {
 		return e;
 	}
 
+    void EntityFactory::MapEntityPrefab(Entity e, std::string const& name) {
+        
+        if (entityToPrefab.find(e) != entityToPrefab.end()) {
+            std::string old = entityToPrefab[e];
+            entityToPrefab.erase(e);
+            entityToPrefab[e] = name;
+
+            auto const& it = prefabToEntities.equal_range(old);
+            for (auto i = it.first; i != it.second; ++i) {
+                if (i->second == e) {
+                    prefabToEntities.erase(i);
+                    break;
+                }
+            }
+        }
+        prefabToEntities.insert({ name, e });
+        m_prefabNames.push_back(name);
+    }
+
     // Clone an entity prefab at specific locations, scaling etc...
-    Entity EntityFactory::Clone(Entity e) {
+    Entity EntityFactory::Clone(Entity e, Vec2 const& pos) {
 
-        std::string name = entityToPrefab[e];
-        size_t key = m_prefabKeys[name];
-        if (key == 0) return Create();
+        Entity clone = INVALID_ENTITY;
+        if (entityToPrefab.find(e) != entityToPrefab.end()) {
 
-        Entity clone = m_prefabManager.CreateFromPrefab(GetArchetypes(key));
+            std::string name = entityToPrefab[e];
+            size_t key = m_prefabKeys[name];
+
+            clone = m_prefabManager.CreateFromPrefab(GetArchetypes(key));
+
+            entityToPrefab[clone] = name;
+            prefabToEntities.insert({ name, clone });
+        }
+        else {
+            json j = CacheEntityComponents(e);
+            
+            clone = Create();
+            UnpackEntityComponents(clone, j);
+        }
         if (clone == INVALID_ENTITY) { return clone; }
 
         Transform& t = m_coord.ModifyComponent<Transform>(clone);
         t = m_coord.GetComponent<Transform>(e);
-        t.pos.x = m_coord.GetSystem<InputSystem>()->GetMousePosX();
-        t.pos.y = m_coord.GetSystem<InputSystem>()->GetMousePosY();
-
-        entityToPrefab[clone] = name;
-        prefabToEntities.insert({name, clone});
+        t.pos.x = m_coord.GetSystem<InputSystem>()->GetMouseWorldPosX() + pos.x;
+        t.pos.y = m_coord.GetSystem<InputSystem>()->GetMouseWorldPosY() + pos.y;
 
         m_coord.BufferEntitySignature(clone);
 
@@ -162,8 +201,33 @@ namespace NightSnack {
 	}
 
     // Queue entity to be destroyed at end of Core loop
-    void EntityFactory::RemoveEntity(Entity e) {
-        m_toBeDestroyed.insert(e);
+    void EntityFactory::RemoveEntity(Entity e) { 
+
+        // Update Hierarchy chain
+        Hierarchy const& h = m_coord.GetComponent<Hierarchy>(e);
+
+        // if has parent
+        if (h.parent != INVALID_ENTITY) {
+
+            // erase himself from parent's children
+            Hierarchy& ph = m_coord.ModifyComponent<Hierarchy>(h.parent);
+            ph.children.erase(e);
+
+            // add children to parent's children
+            for (Entity c : h.children) {
+                m_coord.ModifyComponent<Hierarchy>(c).parent = h.parent;
+                ph.children.insert(c);
+            }
+        }
+        else {
+            // else unparent all children
+            for (Entity c : h.children) {
+                m_coord.ModifyComponent<Hierarchy>(c).parent = INVALID_ENTITY;
+            }
+        }
+
+        // Mark Entity for deletion
+        m_toBeDestroyed.insert(e); 
     }
 
     // Print names of loaded prefabs
@@ -213,7 +277,7 @@ namespace NightSnack {
         if (it != entityToPrefab.end()) {
             return it->second;
         }
-        return "UnknownPrefab";
+        return m_coord.GetComponent<Transform>(e).name;
     }
 
     // Reloads a specific prefab -> Updates json stored by the RM
@@ -250,17 +314,54 @@ namespace NightSnack {
         return m_coord.GetSystem<ResourceManager>()->GetJsonRaw(key);
     }
 
+    void EntityFactory::UnpackEntityComponents(Entity e, json const& j) {
+        if (j.contains("RigidBody")) m_coord.AddComponent<RigidBody>(e, j["RigidBody"]);
+        if (j.contains("Collider")) m_coord.AddComponent<Collider>(e, j["Collider"]);
+        if (j.contains("Renderable")) m_coord.AddComponent<Renderable>(e, j["Renderable"]);
+        if (j.contains("Color")) m_coord.AddComponent<Color>(e, j["Color"]);
+        if (j.contains("Animator")) m_coord.AddComponent<Animator>(e, j["Animator"]);
+        if (j.contains("Font")) m_coord.AddComponent<Font>(e, j["Font"]);
+        if (j.contains("ButtonInfo")) m_coord.AddComponent<ButtonInfo>(e, j["ButtonInfo"]);
+        if (j.contains("Script")) m_coord.AddComponent<Script>(e, j["Script"]);
+        if (j.contains("PlayerController")) m_coord.AddComponent<PlayerController>(e, j["PlayerController"]);
+        if (j.contains("Audio")) m_coord.AddComponent<Audio>(e, j["Audio"]);
+        if (j.contains("Character")) m_coord.AddComponent<Character>(e, j["Character"]);
+    }
+
     // Create all entities in a level given a level json
     void EntityFactory::CreateLevelEntities(json const& level) {
         // Resets ECS and destroys all current entities;
-        DestroyLevelEntities();
+        //DestroyLevelEntities();
         try {
             for (auto const& item : level["Entities"]) {
-                Entity e = Create(std::string{ item["Prefab"] }, item["Transform"]);
-                //std::cout << "[EntityFactory] Creating prefab<" << item["prefab"] << "> at ("
-                //    << item["Transform"]["Position"]["x"] << ", "
-                //    << item["Transform"]["Position"]["y"] << ", "
-                //    << item["Transform"]["Position"]["z"] << ")\n";
+                Entity e;
+                if (item["isPrefab"]) {
+                    e = Create(std::string{ item["Prefab"] }, item["Transform"]);
+                    //std::cout << "[EntityFactory] Creating prefab<" << item["Prefab"] << "> at ("
+                    //    << item["Transform"]["Position"]["x"] << ", "
+                    //    << item["Transform"]["Position"]["y"] << ", "
+                    //    << item["Transform"]["Position"]["z"] << ")\n";
+                }
+                else if (item.contains("Components")) {
+                    e = Create();
+                    m_coord.ModifyComponent<Transform>(e) = item["Transform"];
+                    UnpackEntityComponents(e, item["Components"]);
+                }
+                else {
+                    std::cerr << "[EntityFactory] Failed to create a Level Entity, no <Components> or <Prefab> in json\n";
+                    continue;
+                }
+
+                //if (item.contains("Collider")) {
+                //    if (m_coord.HasComponent<Collider>(e))
+                //        m_coord.ModifyComponent<Collider>(e) = item["Collider"];
+                //    else
+                //        m_coord.AddComponent<Collider>(e, item["Collider"]);
+                //    //if (m_coord.ModifyComponent<Collider>(e).shape == ShapeType::AABB)
+                //    //    std::cout << "Entity collider: AABB\n";
+                //    //else
+                //    //    std::cout << "Entity collider: Circle\n";
+                //}
 
                 // Create child entities
                 if (item.contains("Children")) {
@@ -274,12 +375,32 @@ namespace NightSnack {
         }
     }
     void EntityFactory::CreateEntityChildren(json const& j, Entity parent) {
-        //if (!j.contains("children")) return;
 
         Hierarchy& h = m_coord.ModifyComponent<Hierarchy>(parent);
 
         for (auto const& e : j) {
-            Entity child = Create(std::string{ e["Prefab"] }, e["Transform"]);
+            Entity child;
+            
+            if (e["isPrefab"]) {
+                child = Create(std::string{ e["Prefab"] }, e["Transform"]);
+            }
+            else {
+                child = Create();
+                try {
+                    m_coord.ModifyComponent<Transform>(child) = e["Transform"];
+                    UnpackEntityComponents(child, e["Components"]);
+                }
+                catch (std::exception& e) {
+                    std::cerr << "[Factory] Failed to create child: << " << e.what() << '\n';
+                }
+            }
+
+            if (e.contains("Collider")) {
+                if (m_coord.HasComponent<Collider>(child))
+                    m_coord.ModifyComponent<Collider>(child) = e["Collider"];
+                else
+                    m_coord.AddComponent<Collider>(child, e["Collider"]);
+            }
 
             m_coord.ModifyComponent<Hierarchy>(child).parent = parent;
             h.children.insert(child);
@@ -329,14 +450,24 @@ namespace NightSnack {
 
     json EntityFactory::CacheEntityChildren(Hierarchy const& h) {
         json j = json::array();
-        //if (h.children.empty()) return j;
 
         for (Entity c : h.children) {
             try {
                 json child;
 
                 child["Transform"] = m_coord.GetComponent<Transform>(c);
-                child["Prefab"] = GetEntityPrefabName(c);
+
+                if (entityToPrefab.find(c) != entityToPrefab.end()) {
+                    child["Prefab"] = entityToPrefab[c];
+                    child["isPrefab"] = true;
+                }
+                else {
+                    child["Components"] = CacheEntityComponents(c);
+                    child["isPrefab"] = false;
+                }
+                if (m_coord.HasComponent<Collider>(c)) {
+                    child["Collider"] = m_coord.GetComponent<Collider>(c);
+                }
 
                 Hierarchy const& hc = m_coord.GetComponent<Hierarchy>(c);
                 if (!hc.children.empty()) {
@@ -352,32 +483,66 @@ namespace NightSnack {
         return j;
     }
 
+    Entity EntityFactory::CreateCollider(Collider const& c, Transform const& t) {
+
+        Entity e = Create();
+        Transform& trans = m_coord.ModifyComponent<Transform>(e);
+        trans = t;
+        trans.name = "Collider";
+        m_coord.AddComponent<Collider>(e, c);
+
+        // Invisible renderer component
+        m_coord.AddComponent<Renderable>(e, Renderable{});
+        m_coord.AddComponent<Color>(e, Color{});    // zero alpha
+
+        m_coord.AddComponent<RigidBody>(e, RigidBody{});
+
+        return e;
+    }
+    Entity EntityFactory::CreateSprite(Renderable const& r, Transform const& t) {
+        Entity e = Create();
+        Transform& trans = m_coord.ModifyComponent<Transform>(e);
+        trans = t;
+        trans.name = "Sprite-" + t.name;
+        m_coord.AddComponent<Renderable>(e, r);
+
+        return e;
+    }
+
     json EntityFactory::CacheLevelEntities() {
         json entities = json::array();
 
         for (Entity e : m_coord.GetLivingEntities()) {
+
+            // Skip camera entities (they should be handled by SceneManager and Level.jsons)
+            if (m_coord.HasComponent<Camera>(e)) continue;
+
             Hierarchy const& h = m_coord.GetComponent<Hierarchy>(e);
             Transform const& t = m_coord.GetComponent<Transform>(e);
 
             // Only process root entities for level saving
             if (h.parent != INVALID_ENTITY) continue;
+            if (t.name == "CamTrigger") continue;
 
-            std::string prefabName = entityToPrefab[e];
-
-            // Skip unmodified default entities
-            if (prefabName == "++Default" && !t.prefabModified) {
-                continue;
-            }
             // Build entity JSON
             json j;
-            j["Prefab"] = prefabName;
             j["Transform"] = t;
+            if (entityToPrefab.find(e) != entityToPrefab.end()) {
+                j["Prefab"] = entityToPrefab[e];
+                j["isPrefab"] = true;
+            }
+            else {
+                j["Components"] = CacheEntityComponents(e);
+                j["isPrefab"] = false;
+            }
 
             if (!h.children.empty()) {
                 j["Children"] = CacheEntityChildren(h);
             }
+
             entities.push_back(j);
         }
+
         return entities;
     }
 
@@ -385,26 +550,34 @@ namespace NightSnack {
         json entities = json::array();
 
         for (Entity e : m_coord.GetLivingEntities()) {
+
+            // Skip camera entities (they should be handled by SceneManager and Level.jsons)
+            if (m_coord.HasComponent<Camera>(e)) continue;
+
             Hierarchy const& h = m_coord.GetComponent<Hierarchy>(e);
             Transform const& t = m_coord.GetComponent<Transform>(e);
+            if (t.name == "CamTrigger") continue;
 
             // Only process root entities for level saving
             if (h.parent != INVALID_ENTITY) continue;
 
-            std::string prefabName = entityToPrefab[e];
-
-            // Skip unmodified default entities
-            if (prefabName == "++Default" && !t.prefabModified) {
-                continue;
-            }
-
-            // Handle prefab saving/updating
-            std::string finalPrefabName = EnsurePrefabExists(e, prefabName, t.prefabModified);
-
             // Build entity JSON
             json j;
-            j["Prefab"] = finalPrefabName;
+
             j["Transform"] = t;
+
+            if (entityToPrefab.find(e) != entityToPrefab.end()) {
+                std::string prefabName = entityToPrefab[e];
+
+                // Handle prefab saving/updating
+                SaveAsPrefab(e, prefabName, t.prefabModified);
+                j["Prefab"] = prefabName;
+                j["isPrefab"] = true;
+            }
+            else {
+                j["Components"] = CacheEntityComponents(e);
+                j["isPrefab"] = false;
+            }
 
             if (!h.children.empty()) {
                 j["Children"] = CacheEntityChildren(h);
@@ -468,7 +641,7 @@ namespace NightSnack {
         // COLOR ----------------------------------------------------------
         if (m_coord.HasComponent<Color>(e)) j["Color"] = m_coord.GetComponent<Color>(e);
         // CAMERA ---------------------------------------------------------
-        if (m_coord.HasComponent<Camera>(e)) j["Camera"] = m_coord.GetComponent<Camera>(e);
+        //if (m_coord.HasComponent<Camera>(e)) j["Camera"] = m_coord.GetComponent<Camera>(e);
         // ANIMATOR -------------------------------------------------------
         if (m_coord.HasComponent<Animator>(e)) j["Animator"] = m_coord.GetComponent<Animator>(e);
         // FONT -----------------------------------------------------------
@@ -481,6 +654,8 @@ namespace NightSnack {
         if (m_coord.HasComponent<PlayerController>(e)) j["PlayerController"] = m_coord.GetComponent<PlayerController>(e);
         // AUDIO ----------------------------------------------------------
         if (m_coord.HasComponent<Audio>(e)) j["Audio"] = m_coord.GetComponent<Audio>(e);
+        // CHARACTER ----------------------------------------------------------
+        if (m_coord.HasComponent<Character>(e)) j["Character"] = m_coord.GetComponent<Character>(e);
 
         return j;
     }
@@ -526,11 +701,11 @@ namespace NightSnack {
             RemoveEntity(i->second);
         }
         // Update mappings of current entity to new created prefab
-        if (!std::filesystem::exists(outPath) && !overwrite) {
-            entityToPrefab[e] = prefabName;
-            prefabToEntities.insert({ prefabName, e });
-            m_prefabNames.push_back(prefabName);
-        }
+        //if (!std::filesystem::exists(outPath) && !overwrite) {
+        entityToPrefab[e] = prefabName;
+        prefabToEntities.insert({ prefabName, e });
+        m_prefabNames.push_back(prefabName);
+        //}
 
         m_coord.ModifyComponent<Transform>(e).prefabModified = false;
 

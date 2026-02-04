@@ -1,0 +1,12 @@
+{
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "ColorMat",
+        "meshName": "square"
+    },
+    "Script": {
+        "name": [
+            "ExtendRetractScript"
+        ]
+    }
+}

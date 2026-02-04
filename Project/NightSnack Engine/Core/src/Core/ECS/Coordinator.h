@@ -366,13 +366,13 @@ namespace NightSnack {
 		
 		// Collider default size
 		Transform const& t = GetComponent<Transform>(e);
-		if (HasComponent<Renderable>(e)) {
-			Renderable const& r = GetComponent<Renderable>(e);
-			if (r.meshName == "circle")
-				c.shape = ShapeType::Circle;
-			else
-				c.shape = ShapeType::AABB;
-		}
+		//if (HasComponent<Renderable>(e)) {
+		//	Renderable const& r = GetComponent<Renderable>(e);
+		//	if (r.meshName == "circle")
+		//		c.shape = ShapeType::Circle;
+		//	else
+		//		c.shape = ShapeType::AABB;
+		//}
 		if (c.width == 0.f) { c.width = t.scale.x; }
 		if (c.height == 0.f) { c.height = t.scale.y; }
 		if (c.radius == 0.f) { c.radius = (t.scale.x + t.scale.y) / 2.f; }

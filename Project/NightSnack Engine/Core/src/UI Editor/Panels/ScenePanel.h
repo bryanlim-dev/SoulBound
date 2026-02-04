@@ -17,12 +17,13 @@
 
 #pragma once
 #include "AllPanels.h"
+#include "Factory/EntityFactory.h"
 
 namespace NightSnack
 {
 	struct DefaultEditorCamera
 	{
-		Vec3 pos{ 0.f, 0.f, 2.f };
+		Vec3 pos{ 0.f, 0.f, 10.f };
 		float rot{ 1.0f };
 		Vec2 scale{ 1.0f, 1.0f };
 		float zoom{ 1.0f };
@@ -44,6 +45,7 @@ namespace NightSnack
 		{
 			// Create framebuffer and color/depth attachments
 			CreateFramebuffer(1600, 900);
+
 		}
 
 		/************************************************************************/
@@ -197,7 +199,7 @@ namespace NightSnack
 						constexpr float panSpeed = 1.65f;
 						camTransform.pos.x -= dragDelta.x * (panSpeed / camMod.zoom);
 						camTransform.pos.y += dragDelta.y * (panSpeed / camMod.zoom);
-						camTransform.pos.z = 2.f;
+						camTransform.pos.z = m_editorCameraData.pos.z;
 						m_editorCameraData.pos = camTransform.pos;
 						ImGui::ResetMouseDragDelta(ImGuiMouseButton_Right);
 					}
@@ -339,7 +341,7 @@ namespace NightSnack
 
 					// Tile Painting
 					if (currentTool == SceneTool::Paint && ImGui::IsMouseDown(ImGuiMouseButton_Left)
-						&& m_tilemap.tileOverlayEnabled && m_tilemap.showTileEditor)
+						&& m_tilemap.tileOverlayEnabled/* && m_tilemap.showTileEditor*/)
 					{
 						// Calculate grid position
 						float grid = m_tilemap.gridSize;
@@ -377,7 +379,7 @@ namespace NightSnack
 					}
 				}
 
-				// drag and drop image
+				// drag and drop prefab
 				if (ImGui::BeginDragDropTarget())
 				{
 					if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_PREFAB")) {
@@ -410,6 +412,40 @@ namespace NightSnack
 					}
 					ImGui::EndDragDropTarget();
 				}
+				//// drag and drop textures into scene
+				//if (ImGui::BeginDragDropTarget())
+				//{
+				//	if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE")) {
+				//		const char* droppedPath = static_cast<const char*>(payload->Data);
+
+				//		// Dropped path: ../assets\GameData\Prefabs\Ghost.json
+				//		std::cout << "Dropped path: " << droppedPath << "\n";
+
+				//		// Get the Prefab name from the path, which is 'Ghost' in this case
+				//		std::filesystem::path filePath(droppedPath);
+
+				//		std::cout << "Creating entity from Texture: " << filePath.filename().stem().string() << "\n";
+
+				//		Transform trans{};
+
+				//		trans.pos.x = mouseWorldX + m_dragOffset.x;
+				//		trans.pos.y = mouseWorldY + m_dragOffset.y;
+				//		trans.pos.z = 0.f;
+				//		// default layer...
+				//		trans.layer = LayerType::GAMELAYER;
+
+				//		trans.scale = Vec2{ 100.f, 100.f };	// default scale...
+
+				//		// Record undo for entity creation by drag drop of prefab
+				//		NightSnack::UndoSystem::Instance().Push(NightSnack::EntityCreateSnapshot{
+				//			//m_coord.GetSystem<EntityFactory>()->Create(filePath.filename().stem().string(), trans) 
+				//			});
+
+				//		std::cout << "Transform: " << trans.pos.x << ", " << trans.pos.y << std::endl;
+
+				//	}
+				//	ImGui::EndDragDropTarget();
+				//}
 			}
 			// Draw tool bar for mouse tool selection
 			DrawToolBar();
@@ -441,7 +477,30 @@ namespace NightSnack
 		/************************************************************************/
 		void DestroyEditorCamera();
 
+		/************************************************************************/
+		/*!
+		\brief
+			Calculates the world position of the mouse based on the image's
+			position and size.
+
+		\param[in] imageTopLeft
+			- Top-left corner of the image in world space.
+
+		\param[in] imageSize
+			- Size of the image in world space.
+
+		\param[out] mouseWorldX
+			- Output mouse X coordinate in world space.
+
+		\param[out] mouseWorldY
+			- Output mouse Y coordinate in world space.
+		*/
+		/************************************************************************/
+		void CalculateMouseWorldPosition(const ImVec2& imageTopLeft, const ImVec2& imageSize, float& mouseWorldX, float& mouseWorldY);
+
 		void DisableEditorCameraIsMain();
+
+		Entity GetEditorCamera() const noexcept { return m_editorCameraEntity; }
 
 	private:
 		GLuint m_sceneTexture = 0;
@@ -566,27 +625,6 @@ namespace NightSnack
 		*/
 		/************************************************************************/
 		void RenderSceneToFramebuffer();
-
-		/************************************************************************/
-		/*!
-		\brief
-			Calculates the world position of the mouse based on the image's
-			position and size.
-
-		\param[in] imageTopLeft
-			- Top-left corner of the image in world space.
-
-		\param[in] imageSize
-			- Size of the image in world space.
-
-		\param[out] mouseWorldX
-			- Output mouse X coordinate in world space.
-
-		\param[out] mouseWorldY
-			- Output mouse Y coordinate in world space.
-		*/
-		/************************************************************************/
-		void CalculateMouseWorldPosition(const ImVec2& imageTopLeft, const ImVec2& imageSize, float& mouseWorldX, float& mouseWorldY);
 
 		/************************************************************************/
 		/*!
@@ -1037,8 +1075,8 @@ namespace NightSnack
 				// Snap to grid cell center if tilemap overlay is enabled
 				if (m_tilemap.tileOverlayEnabled)
 				{
-					newX = std::floor(newX / grid) * grid + grid * 0.5f;
-					newY = std::floor(newY / grid) * grid + grid * 0.5f;
+					newX = std::floor(newX / (grid / 8)) * (grid / 8);
+					newY = std::floor(newY / (grid / 8)) * (grid / 8);
 				}
 
 				t.pos.x = newX;
@@ -1201,7 +1239,7 @@ namespace NightSnack
 	{
 		auto tilePos = std::make_pair(gridX, gridY);
 		int currentTile = m_tilemap.selectedTile;
-		auto factory = m_coord.GetSystem<EntityFactory>();
+		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		if (!factory) { return; }
 
 		auto it = m_paintedTiles.find(tilePos);
@@ -1214,7 +1252,7 @@ namespace NightSnack
 				Entity toDelete = it->second.second;
 				if (toDelete != INVALID_ENTITY)
 				{
-					m_coord.DestroyEntity(toDelete);
+					factory->RemoveEntity(toDelete);
 				}
 				m_paintedTiles.erase(it);
 			}
@@ -1230,7 +1268,7 @@ namespace NightSnack
 			Entity toDelete = it->second.second;
 			if (toDelete != INVALID_ENTITY)
 			{
-				m_coord.DestroyEntity(toDelete);
+				factory->RemoveEntity(toDelete);
 			}
 			m_paintedTiles.erase(it);
 		}
@@ -1240,34 +1278,23 @@ namespace NightSnack
 		Vec3 pos{ gridX * grid + grid * 0.5f, gridY * grid + grid * 0.5f, 0.0f };
 		Vec2 scale{ grid, grid };
 
-		// Create tile entity
-		Entity tileEntity = m_coord.CreateEntity();
-
 		// Add components to tile entity
+		std::filesystem::path p = m_tilemap.tileTexturePath;
+		std::string texName = p.filename().stem().string();
+		Renderable r{ "square", texName, false, true };
 		Transform t;
 		t.pos = pos;
 		t.scale = scale;
 		t.rot = 0.0f;
 		t.layer = LayerType::GAMELAYER;
-		m_coord.AddComponent(tileEntity, t);
+		t.prefabModified = true;
+		t.name = texName;
 
-		Renderable r;
-		r.meshName = "square";
-		r.isWireframe = false;
-		r.wasModified = true;
-		m_coord.AddComponent(tileEntity, r);
+		// Create tile entity
+		Entity tileEntity = factory->CreateSprite(r, t);
 
-		RigidBody rb;
-		rb.invMass = 1.f;
-		rb.useGravity = false;
-		m_coord.AddComponent(tileEntity, rb);
-
-		Collider c;
-		c.shape = ShapeType::AABB;
-		c.type = ColliderType::Ground;
-		c.width = grid;
-		c.height = grid;
-		m_coord.AddComponent(tileEntity, c);
+		/*m_coord.AddComponent(tileEntity, t);
+		m_coord.AddComponent<Hierarchy>(tileEntity, Hierarchy{});*/
 
 		// Update material texture of tile
 		auto graphics = m_coord.GetSystem<GraphicsSystem>();
@@ -1276,10 +1303,10 @@ namespace NightSnack
 			graphics->UpdateTextureOfMaterial(m_tilemap.tileTexturePath, tileEntity);
 		}
 
-		// Save tile as prefab if not already existing
-		auto& tileR = m_coord.GetComponent<Renderable>(tileEntity);
-		std::string prefabName = "Tile_" + tileR.materialName;
-		factory->SaveAsPrefab(tileEntity, prefabName, true);
+		//// Save tile as prefab if not already existing
+		//auto& tileR = m_coord.GetComponent<Renderable>(tileEntity);
+		//std::string prefabName = "Tile_" + tileR.materialName;
+		//factory->SaveAsPrefab(tileEntity, prefabName, true);
 
 		// Record painted tile
 		m_paintedTiles[tilePos] = std::make_pair(currentTile, tileEntity);
@@ -1303,7 +1330,7 @@ namespace NightSnack
 		// Gizmo sizes
 		float arrowLength = 60.0f;
 		float arrowThickness = 4.0f;
-		float circleRadius = 30.0f;
+		//float circleRadius = 30.0f;
 		float handleRadius = 10.0f;
 		float scaleHandleSize = 14.0f;
 
@@ -1332,13 +1359,13 @@ namespace NightSnack
 		drawList->AddLine(center, ImVec2(yEnd.x, yEnd.y + 12), IM_COL32(0, 255, 0, 255), arrowThickness);
 		drawList->AddTriangleFilled(arrowTipY, arrowBaseL_Y, arrowBaseR_Y, IM_COL32(0, 255, 0, 255));
 
-		// Rotation Circle (blue)
-		ImVec2 deltaRot = ImVec2(mouse.x - center.x, mouse.y - center.y);
-		float dist = sqrtf(deltaRot.x * deltaRot.x + deltaRot.y * deltaRot.y);
-		float distToCircle = std::abs(dist - circleRadius);
-		bool hoverRot = distToCircle < 8.0f;
-		ImU32 rotColor = hoverRot ? IM_COL32(100, 100, 255, 255) : IM_COL32(0, 128, 255, 180);
-		drawList->AddCircle(center, circleRadius, rotColor, 64, 3.0f);
+		//// Rotation Circle (blue)
+		//ImVec2 deltaRot = ImVec2(mouse.x - center.x, mouse.y - center.y);
+		//float dist = sqrtf(deltaRot.x * deltaRot.x + deltaRot.y * deltaRot.y);
+		//float distToCircle = std::abs(dist - circleRadius);
+		//bool hoverRot = distToCircle < 8.0f;
+		//ImU32 rotColor = hoverRot ? IM_COL32(100, 100, 255, 255) : IM_COL32(0, 128, 255, 180);
+		//drawList->AddCircle(center, circleRadius, rotColor, 64, 3.0f);
 
 		// X-axis Scale
 		ImVec2 xScaleMin = ImVec2(xEnd.x + 8, xEnd.y - scaleHandleSize * 0.5f);
@@ -1356,7 +1383,7 @@ namespace NightSnack
 
 		bool hoverX = ImLengthSqr(ImVec2(mouse.x - xEnd.x, mouse.y - xEnd.y)) < handleRadius * handleRadius * 2;
 		bool hoverY = ImLengthSqr(ImVec2(mouse.x - yEnd.x, mouse.y - yEnd.y)) < handleRadius * handleRadius * 2;
-		if (hoverX || hoverY || hoverRot || hoverScaleX || hoverScaleY) m_gizmoHovering = true;
+		if (hoverX || hoverY /*|| hoverRot*/ || hoverScaleX || hoverScaleY) m_gizmoHovering = true;
 
 		// Handle interaction
 		auto& trans = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
@@ -1364,7 +1391,7 @@ namespace NightSnack
 		{
 			if (hoverX) { m_gizmoActivePart = GizmoPart::MoveX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.x; }
 			else if (hoverY) { m_gizmoActivePart = GizmoPart::MoveY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.y; }
-			else if (hoverRot) { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.rot; }
+			//else if (hoverRot) { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.rot; }
 			else if (hoverScaleX) { m_gizmoActivePart = GizmoPart::ScaleX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.x; }
 			else if (hoverScaleY) { m_gizmoActivePart = GizmoPart::ScaleY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.y; }
 
@@ -1386,14 +1413,14 @@ namespace NightSnack
 			{
 				trans.pos.y = m_gizmoStartValue - delta.y * (worldTop - worldBottom) / imageSize.y;
 			}
-			else if (m_gizmoActivePart == GizmoPart::Rotate)
-			{
-				ImVec2 centerTrans = WorldToScreen(trans.pos.x, trans.pos.y, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
-				float startAngle = atan2f(m_gizmoDragStartMouse.y - centerTrans.y, m_gizmoDragStartMouse.x - centerTrans.x);
-				float currAngle = atan2f(mouse.y - centerTrans.y, mouse.x - centerTrans.x);
-				constexpr float RAD2DEG = 180.0f / 3.14159265f;
-				trans.rot = m_gizmoStartValue - (currAngle - startAngle) * RAD2DEG;
-			}
+			//else if (m_gizmoActivePart == GizmoPart::Rotate)
+			//{
+			//	ImVec2 centerTrans = WorldToScreen(trans.pos.x, trans.pos.y, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+			//	float startAngle = atan2f(m_gizmoDragStartMouse.y - centerTrans.y, m_gizmoDragStartMouse.x - centerTrans.x);
+			//	float currAngle = atan2f(mouse.y - centerTrans.y, mouse.x - centerTrans.x);
+			//	constexpr float RAD2DEG = 180.0f / 3.14159265f;
+			//	trans.rot = m_gizmoStartValue - (currAngle - startAngle) * RAD2DEG;
+			//}
 			else if (m_gizmoActivePart == GizmoPart::ScaleX)
 			{
 				float scaleDelta = delta.x * (worldRight - worldLeft) / imageSize.x;

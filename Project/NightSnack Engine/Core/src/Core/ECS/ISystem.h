@@ -166,6 +166,7 @@ namespace NightSnack {
 	// ISYSTEM ---------------------------------------------------------------------------------------
 	// -----------------------------------------------------------------------------------------------
 	inline void ISystem::AddLayer(Layer&& l) {
+		//std::cout << "Layers are sized: " << sizeof(l) << std::endl;
 		m_layers.emplace_back(l);
 		std::sort(m_layers.begin(), m_layers.end());
 

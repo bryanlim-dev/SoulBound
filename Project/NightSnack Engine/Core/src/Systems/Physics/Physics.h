@@ -37,7 +37,7 @@ namespace NightSnack {
         \brief
         Constructor for PhysicsSystem that sets the system signature and sets up
         input events for step by steps physics debugging mode as well as
-        ApplyForce() function that is used in default scene for testing:
+        ApplySwingForce() function that is used in default scene for testing:
             Dynamic -> Dynamic collision
             Dynamic -> Static collsion
 
@@ -64,14 +64,14 @@ namespace NightSnack {
                         break;
                     case InputEvent::InputAction::PhysicsDebugStep:
                         stepRequest = true;
-                        std::cout << "Physics Entities: " << ' ';
-                        for (Layer& l : m_layers) {
-                            for (Entity e : l.Entities()) {
-                                if (e == INVALID_ENTITY) { break; }
-                                std::cout << e << " ";
-                            }
-                            std::cout << "\n";
-                        }
+                        //std::cout << "Physics Entities: " << ' ';
+                        //for (Layer& l : m_layers) {
+                        //    for (Entity e : l.Entities()) {
+                        //        if (e == INVALID_ENTITY) { break; }
+                        //        std::cout << e << " ";
+                        //    }
+                        //    std::cout << "\n";
+                        //}
                         break;
                     }
                 }
@@ -126,6 +126,8 @@ namespace NightSnack {
         //bool CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2);
         bool CheckTunneling(Transform const& t1, Transform const& t2, RigidBody const& r1);
 
+        bool EntitiesAreColliding(Entity e1, Entity e2);
+
         float GetGravity() const { return gravity; }
         float GetDrag() const { return drag; }
         float GetFriction() const { return friction; }
@@ -140,8 +142,6 @@ namespace NightSnack {
         Coordinator& m_coord;
 
         // Collision stuff;
-        std::vector<std::bitset<MAX_ENTITIES>> m_grid1;
-        std::vector<std::bitset<MAX_ENTITIES>> m_grid2;
         std::vector<std::vector<std::bitset<MAX_ENTITIES>>> m_grid;
         std::unordered_set<std::uint64_t> m_testedEntityPairs;
 

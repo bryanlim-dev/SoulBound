@@ -32,6 +32,8 @@ namespace NightSnack {
 		AddShader("text", std::move(textShader));
 		auto glowShader = std::make_unique<Shader>("shaders/particle_glow_vs.vert", "shaders/particle_glow_fs.frag");
 		AddShader("glow", std::move(glowShader));
+		auto invisShader = std::make_unique<Shader>("shaders/invis_vs.vert", "shaders/invis_fs.frag");
+		AddShader("invis", std::move(invisShader));
 
 		// Meshes;
 		AddMesh("point", Mesh::CreatePoint());
@@ -48,6 +50,8 @@ namespace NightSnack {
 		AddMaterial("ColorMat", std::move(colorMat));
 		auto glowMat = std::make_unique<Material>(GetShader("glow"));
 		AddMaterial("GlowMat", std::move(glowMat));
+		auto invMat = std::make_unique<Material>(GetShader("invis"));
+		AddMaterial("InvisMat", std::move(invMat));
 
 		// Initialise buffer for Instanced Rendering
 		if (m_globalInstanceSSBO == 0) {
@@ -101,7 +105,9 @@ namespace NightSnack {
 		m_meshBatches.clear();
 		m_allInstances.clear();
 
+		float layerZ = -1.f;
 		for (Layer& l : m_layers) {
+			layerZ += 1.f;
 			if (l.Empty() || !l.IsVisible() || !l.IsActive()) { continue; }
 			for (Entity e : l.Entities()) {
 				// Reached the end of Valid Entities
@@ -115,6 +121,7 @@ namespace NightSnack {
 				auto& scl = m_coord.GetComponent<Transform>(e).scale;
 
 				if (!trans.isActive) { continue; }
+				if (ren.materialName == "InvisMat") { continue; }
 
 				if (ren.wasModified) {
 					//std::cout << "Resolving renderable: " << e << '\n'; 
@@ -151,7 +158,7 @@ namespace NightSnack {
 
 					// Prepare instance data
 					Mesh::InstanceData instance{};
-					instance.pos_rot = glm::vec4{ pos.x, pos.y, pos.z, glm::radians(rot) };
+					instance.pos_rot = glm::vec4{ pos.x, pos.y, -0.f, glm::radians(rot) };	//
 					instance.scale = glm::vec4{ scl.x, scl.y, 1.f, 1.f };
 
 					// UV coordinates
@@ -217,7 +224,8 @@ namespace NightSnack {
 
 				} else { // Non-Instanced Rendering
 					// Position and scale has been modified before getting the model matrix for UI entities
-					glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl);
+					Vec3 posz = { pos.x, pos.y, pos.z + layerZ };
+					glm::mat4 model = GetModelToWorldMatrix(posz, rot, scl);		//
 
 					Shader* shader = data.material->GetShader();
 					Mesh* mesh = data.mesh;
@@ -397,7 +405,9 @@ namespace NightSnack {
 
 		m_meshBatches.clear();
 
+		float layerZ = -1.f;
 		for (Layer& l : m_layers) {
+			layerZ += 1.f;
 			if (l.Empty() || !l.IsVisible() || !l.IsActive()) { continue; }
 			for (Entity e : l.Entities()) {
 				// Reached the end of Valid Entities
@@ -425,7 +435,7 @@ namespace NightSnack {
 					{
 						// Model matrix according to its collider's scale
 						// Make the z value of the collider be slightly in front of its entity
-						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, rot, Vec2{ col.width, col.height });
+						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f + layerZ }, rot, Vec2{ col.width, col.height });		//
 						glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 						shader->SetMat4("uDebugMVP", debugMVP);
 						shader->SetVec3("uEntityColor", colliderColor);
@@ -437,7 +447,7 @@ namespace NightSnack {
 					{
 						// Model matrix according to its collider's scale
 						// Make the z value of the collider be slightly in front of its entity
-						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, rot, Vec2{ col.radius, col.radius });
+						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f + layerZ }, rot, Vec2{ col.radius, col.radius });		//
 						glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 						shader->SetMat4("uDebugMVP", debugMVP);
 						shader->SetVec3("uEntityColor", colliderColor);
@@ -452,7 +462,7 @@ namespace NightSnack {
 					glm::vec3 outlineColor(0.5f);
 					// Model matrix according to its collider's scale
 						// Make the z value of the collider be slightly in front of its entity
-					glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, rot, Vec2{ scl.x, scl.y });
+					glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f + layerZ }, rot, Vec2{ scl.x, scl.y });				//
 					glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 					shader->SetMat4("uDebugMVP", debugMVP);
 					shader->SetVec3("uEntityColor", outlineColor);
@@ -481,7 +491,7 @@ namespace NightSnack {
 
 						// Model matrix according to its new rotation, and y-scale so line size reflects speed
 						// Make the z value of the collider be slightly in front of its entity
-						glm::mat4 debugModel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, angle, Vec2{ 1.f, length });
+						glm::mat4 debugModel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f + layerZ }, angle, Vec2{ 1.f, length });		//
 						glm::mat4 debugMVP = proj * view * debugModel;
 						shader->SetMat4("uDebugMVP", debugMVP);
 						shader->SetVec3("uEntityColor", glm::vec3(0.1f, 0.9f, 0.9f));

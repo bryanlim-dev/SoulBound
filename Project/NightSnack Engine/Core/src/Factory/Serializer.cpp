@@ -1,7 +1,7 @@
 
 #include "Serializer.h"
 #include "Factory/EntityFactory.h"
-
+#include <Systems/CharacterSystem.h>
 #include <vector>
 
 #if 1
@@ -45,7 +45,8 @@ namespace NightSnack {
 				{ "Scale",    { {"x", t.scale.x}, {"y", t.scale.y} } },
 				{ "UIBasePosition", { {"x", t.UIbasePos.x}, {"y", t.UIbasePos.y}, {"z", t.UIbasePos.z} } },
 				{ "UIBaseScale",    { {"x", t.UIbaseScale.x}, {"y", t.UIbaseScale.y} } },
-				{ "Layer", layer }
+				{ "Layer", layer },
+				{ "Name", t.name }
 		};
 	}
 	void from_json(json const& j, Transform& t) {
@@ -75,6 +76,9 @@ namespace NightSnack {
 			else if (l == "GameUI") { t.layer = LayerType::GAMEUI; }
 			else if (l == "_Engine2") { t.layer = LayerType::_ENGINE2; }
 			else { t.layer = LayerType::GAMELAYER; }
+
+			if (j.contains("Name"))
+				t.name = j["Name"];
 		}
 		catch (std::exception const& e) {
 			std::cerr << "Invalid JSON format " << e.what() << '\n';
@@ -116,6 +120,8 @@ namespace NightSnack {
 			r.vel = Vec2{};
 			r.useGravity = false;
 			j.at("useGravity").get_to(r.useGravity);
+
+			if (j.contains("gravityMult")) j.at("gravityMult").get_to(r.gravitymult);
 		}
 		catch (std::exception const& e) {
 			std::cerr << "Invalid JSON format " << e.what() << '\n';
@@ -297,11 +303,11 @@ namespace NightSnack {
 		// Shape
 		if (ShapeType::AABB == c.shape) {
 			j["shape"] = "AABB";
-			std::cerr << "Collider shape is AABB\n";
+			//std::cerr << "Collider shape is AABB\n";
 		}
 		else if (ShapeType::Circle == c.shape) {
-			j["shape"] = "circle";
-			std::cerr << "Collider shape is Circle\n";
+			j["shape"] = "Circle";
+			//std::cerr << "Collider shape is Circle\n";
 		}
 		// Collider type
 		if (ColliderType::Solid == c.type) j["type"] = "solid";
@@ -315,11 +321,11 @@ namespace NightSnack {
 
 			if (shapeStr == "AABB") {
 				c.shape = ShapeType::AABB;
-				std::cerr << "Collider become AABB\n";
+				//std::cerr << "Collider become AABB\n";
 			}
 			else if (shapeStr == "Circle") {
 				c.shape = ShapeType::Circle;
-				std::cerr << "Collider become Circle\n";
+				//std::cerr << "Collider become Circle\n";
 			}
 
 			if (typeStr == "Solid") c.type = ColliderType::Solid;
@@ -423,9 +429,10 @@ namespace NightSnack {
 			{"width", c.width},
 			{"zoom", c.zoom},
 
-			{"minX", c.minX}, {"minY", c.minY},
-			{"maxX", c.maxX}, {"maxY", c.maxY},
-			{"offsetX", c.offset.x}, {"offsetY", c.offset.y}
+			//{"minX", c.minX}, {"minY", c.minY},
+			//{"maxX", c.maxX}, {"maxY", c.maxY},
+			{"offsetX", c.offset.x}, {"offsetY", c.offset.y},
+			{"cameraLock", c.lock}
 		};
 	}
 	void from_json(json const& j, Camera& c) {
@@ -435,13 +442,14 @@ namespace NightSnack {
 			j.at("width").get_to(c.width);
 			j.at("height").get_to(c.height);
 
-			if (j.contains("minX")) j.at("minX").get_to(c.minX);
+			/*if (j.contains("minX")) j.at("minX").get_to(c.minX);
 			if (j.contains("maxX")) j.at("maxX").get_to(c.maxX);
 			if (j.contains("minY")) j.at("minY").get_to(c.minY);
-			if (j.contains("maxY")) j.at("maxY").get_to(c.maxY);
+			if (j.contains("maxY")) j.at("maxY").get_to(c.maxY);*/
+			if (j.contains("cameraLock")) j.at("cameraLock").get_to(c.lock);
 
-			if (j.contains("offsetX")) j.at("offsetX").get_to(c.offset.x);
-			if (j.contains("offsetY")) j.at("offsetY").get_to(c.offset.y);
+			//if (j.contains("offsetX")) j.at("offsetX").get_to(c.offset.x);
+			//if (j.contains("offsetY")) j.at("offsetY").get_to(c.offset.y);
 		}
 		catch (std::exception const& e) {
 			std::cerr << "Invalid JSON format " << e.what() << '\n';
@@ -661,6 +669,34 @@ namespace NightSnack {
 	void from_json(json const& j, Sprite& s) {
 		try {
 			j["textureName"].get_to(s.textureName);
+		}
+		catch (std::exception const& e) {
+			std::cerr << "Invalid JSON format " << e.what() << '\n';
+		}
+	}
+
+	// --------------------------------------------------------------
+	// Character
+	// --------------------------------------------------------------
+	void to_json(json& j, Character const& c) {
+
+		std::list<std::string> propertities{};
+
+		for (CharacterProperties prop : c.m_properties)
+		{
+			propertities.push_back(NightSnack::CharacterSystem::CharacterPropertiesToString(prop));
+		}
+
+		j = { {"Propertities", propertities} };
+	}
+	void from_json(json const& j, Character& c) {
+		try {
+			for (const auto& propStr : j["Propertities"])
+			{
+				CharacterProperties charProp = MAX_PROPERTIES;
+				if (NightSnack::CharacterSystem::StringToCharacterProperties(propStr, charProp))
+					c.m_properties.push_back(GRAPPLEABLE);
+			}
 		}
 		catch (std::exception const& e) {
 			std::cerr << "Invalid JSON format " << e.what() << '\n';

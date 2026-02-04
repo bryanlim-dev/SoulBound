@@ -82,6 +82,8 @@ namespace NightSnack {
 		/************************************************************************/
 		void ResetGame();
 
+		ScenePanel& GetScenePanel() { return *m_scenePanel; }
+
 		// Required by ISystem base class.
 		Signature GetSignature() const override { return m_systemSignature; }
 		std::string GetName() const override { return "ImguiSystem"; }
@@ -172,6 +174,8 @@ namespace NightSnack {
 		// Check for UI toggle input event
 		m_dispatcher->Subscribe<InputEvent>([this](const InputEvent& event)
 			{
+				auto factory = m_coord.GetSystem<EntityFactory>();
+
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
 					case InputEvent::InputAction::ToggleUIEditor:
@@ -185,10 +189,16 @@ namespace NightSnack {
 						break;
 
 					case InputEvent::InputAction::UndoStep:
-						auto factory = m_coord.GetSystem<EntityFactory>();
+						
 						if (factory)
 						{
 							NightSnack::UndoSystem::Instance().PerformUndo(m_coord, *factory);
+						}
+						break;
+					case InputEvent::InputAction::Copy:
+						if (event.pressed == InputEvent::InputActionState::Pressed) {
+							Vec2 p = m_coord.GetComponent<Transform>(m_scenePanel->GetEditorCamera()).pos;
+							factory->Clone(*m_selectedEntity, p);
 						}
 						break;
 					}
@@ -377,7 +387,7 @@ namespace NightSnack {
 				auto factory = m_coord.GetSystem<EntityFactory>();
 
 				// Save current level
-				static char levelName[128] = "MyLevel1";
+				static char levelName[128] = "NewLevel";
 				ImGui::InputText("Level Name", levelName, IM_ARRAYSIZE(levelName));
 				ImGui::SameLine();
 				static bool overwrite = true;
@@ -397,7 +407,7 @@ namespace NightSnack {
 				}
 
 				// Load level by name
-				static char loadLevelName[128] = "DefaultLevel";
+				static char loadLevelName[128] = "Level1";
 				ImGui::InputText("Load Level", loadLevelName, IM_ARRAYSIZE(loadLevelName));
 				ImGui::SameLine();
 				if (ImGui::Button("Load")) {

@@ -81,6 +81,8 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		json SaveLevelEntities();
+		void UnpackEntityComponents(Entity e, json const&);
+
 		json CacheLevelEntities();
 		json CacheEntityChildren(Hierarchy const&);
 		void CreateEntityChildren(json const&, Entity);
@@ -189,7 +191,10 @@ namespace NightSnack {
 		Returns ID of entity cloned.
 		*/
 		/************************************************************************/
-		Entity Clone(Entity e);
+		Entity Clone(Entity e, Vec2 const& pos);
+
+		Entity CreateCollider(Collider const&, Transform const&);
+		Entity CreateSprite(Renderable const& r, Transform const& t);
 
 		/************************************************************************/
 		/*!
@@ -268,6 +273,8 @@ namespace NightSnack {
 		// Required functions from base class ISystem.
 		Signature GetSignature() const override { return Signature{}; }
 		std::string GetName() const override { return "EntityFactory"; }
+
+		void MapEntityPrefab(Entity e, std::string const&);
 
 	private:
 		Coordinator& m_coord;

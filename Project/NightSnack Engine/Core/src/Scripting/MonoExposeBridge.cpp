@@ -325,8 +325,8 @@ namespace NightSnack::Scripting {
 			if(monoClass)
 				return mono_class_get_name(monoClass);
 		}
-		else
-			return "ErrorNotScript";
+		
+		return "ErrorNotScript";
 	}
 
 	bool MonoExposeBridge::GetVariableMatchingType(void* scriptInstance, std::string varName, MonoValueType vauleType)

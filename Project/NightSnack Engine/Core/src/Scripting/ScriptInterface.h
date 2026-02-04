@@ -444,7 +444,7 @@ namespace NightSnack::Scripting {
         void RestartLevel();
 
     private:
-        //coordiator refrence
+        //coordiator refrence6
         Coordinator& m_coord;
 
         static const std::unordered_map<std::string, ComponentEntry> componentRegistry;
