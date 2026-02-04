@@ -1,3 +1,16 @@
+/******************************************************************************
+ * File:        ExtendRetractScript.cs
+ * Project:     NightSnack
+ * Author(s):	Clement Ang Yang Ying - (Primary, 100%)
+ *
+ * Description:
+ * This file declares class ExtendRetractScript which extends and retracts an object
+ * It can be set to move up and down or left and right
+ * The speed can be modified as well as the time it stays in each position
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 using System.Diagnostics;
 
 namespace ManagedScripts
