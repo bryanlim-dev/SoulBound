@@ -9,8 +9,14 @@
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "Grass2",
+        "materialName": "TitleFireAnim_4_1",
         "meshName": "square"
+    },
+    "Animator": {
+        "isLooping": true,
+        "isPlaying": true,
+        "playbackSpeed": 1.5,
+        "spriteSheetName": "Sprites\\MainMenu\\TitleFireAnim_4_1.png"
     },
     "RigidBody": {
         "gravityMult": 2.0,

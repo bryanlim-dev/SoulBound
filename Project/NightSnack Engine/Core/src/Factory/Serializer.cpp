@@ -612,7 +612,7 @@ namespace NightSnack {
 		j = {
 			{ "type", typeStr },
 			{ "currTime", c.currTime },
-			{ "respawnTime", c.respawnTimeSteps },
+			{ "respawnTimeSteps", c.respawnTimeSteps },
 			{ "willRespawn", c.willRespawn }
 		};
 	}

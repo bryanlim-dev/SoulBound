@@ -1,4 +1,10 @@
 {
+    "Collectible": {
+        "currTime": 0,
+        "respawnTimeSteps": 300,
+        "type": "DOUBLE_JUMP",
+        "willRespawn": true
+    },
     "Collider": {
         "height": 100.0,
         "isStatic": true,
@@ -9,7 +15,7 @@
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "Grass2",
+        "materialName": "DoubleJumpCollectable",
         "meshName": "square"
     },
     "RigidBody": {
@@ -19,10 +25,9 @@
         "useGravity": false,
         "useRotate": false
     },
-    "Collectible": {
-        "type": "DOUBLE_JUMP",
-        "currTime": 0,
-        "respawnTimeSteps": 300,
-        "willRespawn": true
+    "Script": {
+        "name": [
+            "BobberScript"
+        ]
     }
 }
