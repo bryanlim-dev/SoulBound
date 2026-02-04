@@ -170,6 +170,7 @@ namespace NightSnack {
                     if (checkPoint == INVALID_ENTITY)
                         return;
 
+                    //RespawnPlayer();
                     m_prevCheckpoint = checkPoint;
                     std::cout << "Checkpoint found Entity: " << checkPoint << std::endl;
 
@@ -304,6 +305,15 @@ namespace NightSnack {
         */
         /************************************************************************/
         Entity GetPlayer() { return m_player; }
+
+        /************************************************************************/
+        /*!
+        \brief
+        Respawns player to cloest checkpoint
+        Fails if previous checkpoint does not exist
+        */
+        /************************************************************************/
+        void RespawnPlayer();
 
     private:
         Signature m_systemSignature{};
