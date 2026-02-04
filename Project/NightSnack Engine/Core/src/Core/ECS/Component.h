@@ -242,6 +242,17 @@ namespace NightSnack {
         bool affectedByGravity{ true }; // can vary for different types of particles
     };
 
+    enum class COLLECTIBLE_TYPE {
+        DOUBLE_JUMP = 0
+    };
+
+    struct Collectible {
+        COLLECTIBLE_TYPE type = COLLECTIBLE_TYPE::DOUBLE_JUMP;
+        int currTime{};
+        int respawnTimeSteps{};
+        bool willRespawn{ false };
+    };
+
     // Only camera objects will have this component
     struct Camera {
         bool isMainCam{ true };

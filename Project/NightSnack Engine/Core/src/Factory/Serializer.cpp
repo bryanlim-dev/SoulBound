@@ -591,6 +591,51 @@ namespace NightSnack {
 	}
 
 	// --------------------------------------------------------------
+// COLLECTIBLE
+// --------------------------------------------------------------
+	void to_json(json& j, Collectible const& c)
+	{
+		std::string typeStr = "DOUBLE_JUMP";
+
+		switch (c.type)
+		{
+		case COLLECTIBLE_TYPE::DOUBLE_JUMP:
+		default:
+			typeStr = "DOUBLE_JUMP";
+			break;
+		}
+
+		j = {
+			{ "type", typeStr },
+			{ "currTime", c.currTime },
+			{ "respawnTime", c.respawnTimeSteps },
+			{ "willRespawn", c.willRespawn }
+		};
+	}
+
+	void from_json(json const& j, Collectible& c)
+	{
+		try
+		{
+			// Type
+			std::string typeStr = j.value("type", "DOUBLE_JUMP");
+			if (typeStr == "DOUBLE_JUMP")
+				c.type = COLLECTIBLE_TYPE::DOUBLE_JUMP;
+
+			// Timers
+			c.currTime = j.value("currTime", 0);
+			c.respawnTimeSteps = j.value("respawnTimeSteps", 0);
+
+			// Respawn flag
+			c.willRespawn = j.value("willRespawn", false);
+		}
+		catch (std::exception const& e)
+		{
+			std::cerr << "Invalid JSON format for Collectible: " << e.what() << '\n';
+		}
+	}
+
+	// --------------------------------------------------------------
 	// FONT
 	// --------------------------------------------------------------
 	void to_json(json& j, Font const& f) {

@@ -17,6 +17,8 @@
 #include "Text.h"
 #include "Graphics.h"
 #include "Physics/Physics.h"
+#include "Factory/EntityFactory.h"
+#include "Systems/PlayerController.h"
 
 namespace NightSnack {
 
@@ -180,7 +182,7 @@ namespace NightSnack {
 						if (m_coord.GetComponent<Collider>(e).type == ColliderType::Trigger) {
 
 							Entity player = m_coord.GetSystem<PlayerControllerSystem>()->FindPlayer(m_coord);
-							//if (!m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, player)) {
+							if (!m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, player)) {
 								// Player is not colliding with the trigger collider, do not render the text
 								// Skip this entity to render
 
@@ -191,7 +193,7 @@ namespace NightSnack {
 								}
 
 								continue;
-							//}
+							}
 
 							// Change the material name to the texture you want 
 							// so that it will be rendered when player is colliding

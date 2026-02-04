@@ -5905,40 +5905,6 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "Grass2",
-                            "meshName": "square"
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "Sprite-PlatformTile1",
-                        "Position": {
-                            "x": -3912.5,
-                            "y": 1187.5,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Components": {
-                        "Renderable": {
-                            "isWireframe": false,
                             "materialName": "PlatformTile1",
                             "meshName": "square"
                         },
@@ -6174,40 +6140,6 @@
                             "x": -3750.0,
                             "y": 1375.0,
                             "z": 1.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Components": {
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "Grass2",
-                            "meshName": "square"
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "Sprite-PlatformTile1",
-                        "Position": {
-                            "x": -3150.0,
-                            "y": 1487.5,
-                            "z": 0.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
@@ -7057,6 +6989,76 @@
                         }
                     },
                     "isPrefab": false
+                },
+                {
+                    "Collider": {
+                        "height": 100.0,
+                        "isStatic": true,
+                        "radius": 50.0,
+                        "shape": "AABB",
+                        "type": "trigger",
+                        "width": 100.0
+                    },
+                    "Prefab": "Collectible-DoubleJump",
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "NoName",
+                        "Position": {
+                            "x": -3912.03369140625,
+                            "y": 1187.722412109375,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": true
+                },
+                {
+                    "Collider": {
+                        "height": 100.0,
+                        "isStatic": true,
+                        "radius": 50.0,
+                        "shape": "AABB",
+                        "type": "trigger",
+                        "width": 100.0
+                    },
+                    "Prefab": "Collectible-DoubleJump",
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "NoName",
+                        "Position": {
+                            "x": -3150.743896484375,
+                            "y": 1488.425537109375,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": true
                 }
             ],
             "Components": {
@@ -8204,6 +8206,41 @@
         },
         {
             "Children": [
+                {
+                    "Collider": {
+                        "height": 100.0,
+                        "isStatic": true,
+                        "radius": 50.0,
+                        "shape": "AABB",
+                        "type": "trigger",
+                        "width": 100.0
+                    },
+                    "Prefab": "Collectible-DoubleJump",
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "NoName",
+                        "Position": {
+                            "x": 1048.730712890625,
+                            "y": 2200.372802734375,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": true
+                },
                 {
                     "Children": [
                         {
@@ -9604,40 +9641,6 @@
                     "isPrefab": false
                 },
                 {
-                    "Components": {
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "Grass2",
-                            "meshName": "square"
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "Sprite-PlatformTile1",
-                        "Position": {
-                            "x": 1050.0,
-                            "y": 2200.0,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
                     "Children": [
                         {
                             "Components": {
@@ -9754,6 +9757,74 @@
                                 "Layer": "GameLayer",
                                 "Name": "Sprite-Spikes1",
                                 "Position": {
+                                    "x": 850.0,
+                                    "y": 2050.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "Spikes1",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Sprite-Spikes1",
+                                "Position": {
+                                    "x": 1050.0,
+                                    "y": 2050.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "Spikes1",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Sprite-Spikes1",
+                                "Position": {
                                     "x": -350.0,
                                     "y": 2050.0,
                                     "z": 0.0
@@ -9788,7 +9859,75 @@
                                 "Layer": "GameLayer",
                                 "Name": "Sprite-Spikes1",
                                 "Position": {
+                                    "x": -50.0,
+                                    "y": 2050.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "Spikes1",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Sprite-Spikes1",
+                                "Position": {
                                     "x": 1150.0,
+                                    "y": 2050.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "Spikes1",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Sprite-Spikes1",
+                                "Position": {
+                                    "x": 150.0,
                                     "y": 2050.0,
                                     "z": 0.0
                                 },
@@ -9890,6 +10029,40 @@
                                 "Layer": "GameLayer",
                                 "Name": "Sprite-Spikes1",
                                 "Position": {
+                                    "x": 350.0,
+                                    "y": 2050.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "Spikes1",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Sprite-Spikes1",
+                                "Position": {
                                     "x": -150.0,
                                     "y": 2050.0,
                                     "z": 0.0
@@ -9958,7 +10131,7 @@
                                 "Layer": "GameLayer",
                                 "Name": "Sprite-Spikes1",
                                 "Position": {
-                                    "x": -50.0,
+                                    "x": 550.0,
                                     "y": 2050.0,
                                     "z": 0.0
                                 },
@@ -10060,40 +10233,6 @@
                                 "Layer": "GameLayer",
                                 "Name": "Sprite-Spikes1",
                                 "Position": {
-                                    "x": 150.0,
-                                    "y": 2050.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "Spikes1",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Sprite-Spikes1",
-                                "Position": {
                                     "x": 250.0,
                                     "y": 2050.0,
                                     "z": 0.0
@@ -10128,143 +10267,7 @@
                                 "Layer": "GameLayer",
                                 "Name": "Sprite-Spikes1",
                                 "Position": {
-                                    "x": 350.0,
-                                    "y": 2050.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "Spikes1",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Sprite-Spikes1",
-                                "Position": {
                                     "x": 450.0,
-                                    "y": 2050.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "Spikes1",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Sprite-Spikes1",
-                                "Position": {
-                                    "x": 550.0,
-                                    "y": 2050.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "Spikes1",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Sprite-Spikes1",
-                                "Position": {
-                                    "x": 850.0,
-                                    "y": 2050.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "Spikes1",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Sprite-Spikes1",
-                                "Position": {
-                                    "x": 1050.0,
                                     "y": 2050.0,
                                     "z": 0.0
                                 },

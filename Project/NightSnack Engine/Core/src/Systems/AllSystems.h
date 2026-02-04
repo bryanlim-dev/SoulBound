@@ -26,6 +26,7 @@
 #include "./UI Editor/Imgui.h"
 #include "AnimationSystem.h"
 #include "ParticleSystem.h"
+#include "CollectibleSystem.h"
 #include "Graphics/Camera.h"
 #include "StateMachine/FiniteStateMachine.h"
 #include "GameLogic/SceneManager.h"

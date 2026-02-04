@@ -1,0 +1,92 @@
+/******************************************************************************
+ * File:        CollectibleSystem.h
+ * Project:     NightSnack
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Collectible System
+ *
+ * Description:
+ * This file contains the declarations of the Collectible System.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
+#pragma once
+
+#include "Core/ECS/Coordinator.h"
+#include "Systems/Application/IEvent.h"
+#include "PlayerController.h"
+#include "Physics/Physics.h"
+
+namespace NightSnack {
+
+	class CollectibleSystem : public ISystem {
+
+	public:
+
+		
+
+		/************************************************************************/
+		/*!
+		\brief
+		Constructor for the CollectibleSystem
+
+		\param[in] coord
+		Reference to the ECS Coordinator
+
+		\param[in] dispatcher
+		Reference to the event dispatcher used for Input Events
+		*/
+		/************************************************************************/
+		CollectibleSystem(Coordinator& coord, EventDispatcher& dispatcher) : m_coord{ coord }, m_dispatcher{ &dispatcher } {
+			m_systemSignature.set(GetComponentTypeID<Collectible>());
+
+			Init();
+
+		}
+
+		void Init();
+
+		/************************************************************************/
+		/*!
+		\brief
+		Main update called by the core.
+		*/
+		/************************************************************************/
+		void Update() override;
+
+		/************************************************************************/
+		/*!
+		\brief
+		Get the system's signature.
+		Required by ISystem inheritance
+
+		\return
+		Signature (set of required components)
+		*/
+		/************************************************************************/
+		Signature GetSignature() const override { return m_systemSignature; }
+
+		/************************************************************************/
+		/*!
+		\brief
+		Gets the name of this system, for debugging purposes
+		Required by ISystem inheritance
+
+		\return
+		Name of the system
+		*/
+		/************************************************************************/
+		std::string GetName() const { return "CollectibleSystem"; }
+
+	private:
+
+		Signature m_systemSignature{};
+		// Reference to Coordinator;
+		Coordinator& m_coord;
+		// System event dispatcher
+		EventDispatcher* m_dispatcher = nullptr;
+
+		Entity m_player = INVALID_ENTITY;
+	};
+
+} // NightSnack

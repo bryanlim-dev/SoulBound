@@ -168,8 +168,6 @@ namespace NightSnack {
             Transform& t = m_coord.ModifyComponent<Transform>(m_player);
             Collider& c = m_coord.ModifyComponent<Collider>(m_player);
 
-
-
             //
             static float time = 0.f;
             time += FixedDT;
@@ -233,6 +231,7 @@ namespace NightSnack {
 
         PlayerFlags& GetPlayerFlags();
         void ResetFlags() { m_flags = PlayerFlags{}; }
+        void EnableDoubleJumpFlag() { m_flags.canDoubleJump = true; }
 
         // Store movement abilities as void pointers
         // std::function jump;
