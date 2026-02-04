@@ -1448,8 +1448,8 @@ namespace NightSnack
 
 
                     std::filesystem::path filePath = static_cast<const char*>(payload->Data);
-
                     std::string scriptName = filePath.filename().stem().string();
+
                     std::cout << "Accepted script: " << scriptName << std::endl;
 
                     m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->CreateScript(*m_selectedEntity, scriptName);

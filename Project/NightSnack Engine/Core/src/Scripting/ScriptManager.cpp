@@ -46,7 +46,8 @@ namespace NightSnack::Scripting {
                 //AttachScript(e, m_coord.GetComponent<Script>(e).name);
                 for (const std::string& scriptName : m_coord.GetComponent<Script>(e).names)
                 {
-                    m_scriptInstances.push_back(AttachScript(e, scriptName));
+                    AttachScript(e, scriptName);
+                    //m_scriptInstances.push_back(AttachScript(e, scriptName));
                 }
             }
             m_attached = true;
@@ -413,7 +414,7 @@ namespace NightSnack::Scripting {
         m_entityScripts[e].push_back(instance);
         m_scriptNameMap.insert({ instance,  m_monoHost->GetScriptName(instance) }); //Insert name into a map
         m_scriptOwner.insert({ instance, e });
-
+        m_scriptInstances.push_back(instance);
 
         //This is the first frame of a scene, all scripts are being reloaded
         //Do not run onLoad yet, all scripts will run it after all scripts are created
