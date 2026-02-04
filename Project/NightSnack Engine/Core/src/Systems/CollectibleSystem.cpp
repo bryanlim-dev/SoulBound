@@ -22,10 +22,8 @@ namespace NightSnack {
 	void CollectibleSystem::Update() {
 		if (m_coord.IsPaused()) return;
 
-        if (m_player == INVALID_ENTITY) {
-            m_player = m_coord.GetSystem<PlayerControllerSystem>()->FindPlayer(m_coord);
-            if (m_player == INVALID_ENTITY) return;
-        }
+        m_player = m_coord.GetSystem<PlayerControllerSystem> ()->GetPlayer();
+
 
         // Check collision between player and collectible
         for (Entity e : m_entities) {
@@ -43,7 +41,7 @@ namespace NightSnack {
                         t.isActive = true;
                     }
                 }
-
+                //std::cout << "dj collect not active!!\n";
                 continue;
             }
 
@@ -53,7 +51,7 @@ namespace NightSnack {
                 if (m_coord.GetComponent<Collectible>(e).type == COLLECTIBLE_TYPE::DOUBLE_JUMP) {
                     m_coord.GetSystem<PlayerControllerSystem>()->EnableDoubleJumpFlag();
                 }
-
+                //std::cout << "double jump +1\n";
                 // Make the collectible inactive
                 t.isActive = false;
             }

@@ -326,6 +326,7 @@ namespace NightSnack {
         if (j.contains("PlayerController")) m_coord.AddComponent<PlayerController>(e, j["PlayerController"]);
         if (j.contains("Audio")) m_coord.AddComponent<Audio>(e, j["Audio"]);
         if (j.contains("Character")) m_coord.AddComponent<Character>(e, j["Character"]);
+        if (j.contains("Collectible")) m_coord.AddComponent<Collectible>(e, j["Collectible"]);
     }
 
     // Create all entities in a level given a level json
@@ -395,13 +396,6 @@ namespace NightSnack {
                 }
             }
 
-            if (e.contains("Collider")) {
-                if (m_coord.HasComponent<Collider>(child))
-                    m_coord.ModifyComponent<Collider>(child) = e["Collider"];
-                else
-                    m_coord.AddComponent<Collider>(child, e["Collider"]);
-            }
-
             m_coord.ModifyComponent<Hierarchy>(child).parent = parent;
             h.children.insert(child);
 
@@ -464,9 +458,6 @@ namespace NightSnack {
                 else {
                     child["Components"] = CacheEntityComponents(c);
                     child["isPrefab"] = false;
-                }
-                if (m_coord.HasComponent<Collider>(c)) {
-                    child["Collider"] = m_coord.GetComponent<Collider>(c);
                 }
 
                 Hierarchy const& hc = m_coord.GetComponent<Hierarchy>(c);
@@ -656,6 +647,8 @@ namespace NightSnack {
         if (m_coord.HasComponent<Audio>(e)) j["Audio"] = m_coord.GetComponent<Audio>(e);
         // CHARACTER ----------------------------------------------------------
         if (m_coord.HasComponent<Character>(e)) j["Character"] = m_coord.GetComponent<Character>(e);
+        // COLLECTIBLE ----------------------------------------------------
+        if (m_coord.HasComponent<Collectible>(e)) j["Collectible"] = m_coord.GetComponent<Collectible>(e);
 
         return j;
     }

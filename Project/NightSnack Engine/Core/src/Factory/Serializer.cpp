@@ -310,8 +310,8 @@ namespace NightSnack {
 			//std::cerr << "Collider shape is Circle\n";
 		}
 		// Collider type
-		if (ColliderType::Solid == c.type) j["type"] = "solid";
-		if (ColliderType::Trigger == c.type) j["type"] = "trigger";
+		if (ColliderType::Solid == c.type) j["type"] = "Solid";
+		if (ColliderType::Trigger == c.type) j["type"] = "Trigger";
 	}
 	void from_json(json const& j, Collider& c) {
 		try {

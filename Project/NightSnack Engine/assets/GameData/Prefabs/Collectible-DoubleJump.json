@@ -18,11 +18,11 @@
         "restitution": 0.0,
         "useGravity": false,
         "useRotate": false
-    }, 
+    },
     "Collectible": {
         "type": "DOUBLE_JUMP",
         "currTime": 0,
-        "respawnTimeSteps": 500,
+        "respawnTimeSteps": 300,
         "willRespawn": true
     }
 }

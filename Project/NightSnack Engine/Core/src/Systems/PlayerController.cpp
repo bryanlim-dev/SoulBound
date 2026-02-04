@@ -23,10 +23,15 @@ namespace NightSnack {
             if (!c.HasComponent<PlayerController>(target)) return;
             if (!m_flags.canDoubleJump) return;
 
+
+            if (m_flags.timeSinceDouble < 0.3f) {
+                return;
+            }
+
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
             vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
 
-            m_flags.useAbility = true;
+            m_flags.justDoubleJumped = true;
             m_flags.canDoubleJump = false;
 
         });

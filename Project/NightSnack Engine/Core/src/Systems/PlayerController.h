@@ -37,6 +37,8 @@ struct PlayerFlags {
 
     bool canDoubleJump = true;
     bool grappling = false;
+    bool justDoubleJumped = false;
+    float timeSinceDouble = 0.f;
     // add more flags if needed
 };
 
@@ -177,8 +179,14 @@ namespace NightSnack {
                 c.isGrounded = true;
                 m_flags.canDoubleJump = true;
             }
+
+            m_flags.timeSinceDouble += FixedDT;
             bool isGrounded = c.isGrounded;
-            if (isGrounded) m_flags.canDoubleJump = true;
+            if (isGrounded) {
+                m_flags.canDoubleJump = true;
+                m_flags.timeSinceDouble = 0.f;
+                //m_flags.justDoubleJumped = false;
+            }
             //
 
             // Basic movement -----------------------------
