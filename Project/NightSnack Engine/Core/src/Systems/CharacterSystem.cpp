@@ -1,6 +1,7 @@
 #include "CharacterSystem.h"
 #include "Physics/Physics.h"
 #include "Physics/Collision.h"
+#include "PlayerController.h"
 
 namespace NightSnack {
 
