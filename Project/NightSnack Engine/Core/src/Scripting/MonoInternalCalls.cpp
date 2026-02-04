@@ -310,6 +310,12 @@ extern "C" {
         g_scriptInterface->SetColliderColliding(id, *collided);
     }
 
+    // Check Collision between 2 entities
+    static void NightSnack_CheckCollision(uint32_t idA, uint32_t idB, bool* outcollided) {
+        if (!g_scriptInterface || !outcollided) { return; }
+        *outcollided = g_scriptInterface->CheckCollision(idA, idB);
+    }
+
 #pragma endregion
 
     // --------------------------------------------------------------
@@ -758,11 +764,19 @@ extern "C" {
         return g_scriptInterface->CreateEntityArchetype(std::string(cStr), *pos);
     }
 
+#pragma region Player
     static uint32_t NightSnack_GetPlayerID() {
         if (!g_scriptInterface) { return 0; }
         return g_scriptInterface->GetPlayerID();
     }
 
+    static void NightSnack_KillPlayer()
+    {
+        if (!g_scriptInterface) { return; }
+        return g_scriptInterface->KillPlayer();
+    }
+
+#pragma endregion
 
     static void NightSnack_LoadLevel(MonoString* lvl)
     {
@@ -888,6 +902,8 @@ namespace NightSnack::Scripting {
         
         mono_add_internal_call("ManagedScripts.Engine::GetColliderColliding_Internal", (void*)NightSnack_GetColliderColliding);
         mono_add_internal_call("ManagedScripts.Engine::SetColliderColliding_Internal", (void*)NightSnack_SetColliderColliding);
+
+        mono_add_internal_call("ManagedScripts.Engine::CheckCollision_Internal", (void*)NightSnack_CheckCollision);
 
 #pragma endregion
 
@@ -1024,7 +1040,12 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::GetDeltaTime_Internal", (void*)NightSnack_GetDeltaTime);
 
         mono_add_internal_call("ManagedScripts.Engine::CreateEntityArchetype_Internal", (void*)NightSnack_CreateEntityArchetype);
+
+#pragma region Player
         mono_add_internal_call("ManagedScripts.Engine::GetPlayerID_Internal", (void*)NightSnack_GetPlayerID);
+        mono_add_internal_call("ManagedScripts.Engine::KillPlayer_Internal", (void*)NightSnack_KillPlayer);
+#pragma endregion
+
 
         mono_add_internal_call("ManagedScripts.Engine::LoadLevel_Internal", (void*)NightSnack_LoadLevel);
         mono_add_internal_call("ManagedScripts.Engine::RestartLevel_Internal", (void*)NightSnack_RestartLevel);

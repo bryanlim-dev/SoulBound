@@ -203,6 +203,13 @@ namespace ManagedScripts
         private static extern void GetColliderColliding_Internal(uint entityId, out bool colliding);
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetColliderColliding_Internal(uint entityId, ref bool colliding);
+
+
+        //Checks collision with 2 entiies
+        //returns true if colliding
+        //return false if not or 1 or both entities do not have the required components
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void CheckCollision_Internal(uint entityIdA, uint entiyIDB, out bool colliding);
         #endregion
 
         // ----------------------------
@@ -475,8 +482,16 @@ namespace ManagedScripts
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint CreateEntityArchetype_Internal(string archetypeName, Vector3 pos);
 
+        // ----------------------------
+        // Player Internal for Scripts
+        // ----------------------------
+        #region Player
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern uint GetPlayerID_Internal();
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        public static extern uint KillPlayer_Internal();
+        #endregion
+
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void LoadLevel_Internal(string levelName);
@@ -793,7 +808,14 @@ namespace ManagedScripts
             SetColliderColliding_Internal(entityId, ref colliding);
         }
 
-
+        //Checks collision with 2 entiies
+        //returns true if colliding
+        //return false if not or 1 or both entities do not have the required components
+        public static bool CheckCollision(uint entityIDA, uint entityIDB)
+        {
+            CheckCollision_Internal(entityIDA, entityIDB, out bool collision);
+            return collision;
+        }
         #endregion
 
         // ----------------------------
@@ -1205,6 +1227,11 @@ namespace ManagedScripts
         public static uint GetPlayerID()
         {
             return GetPlayerID_Internal();
+        }
+
+        public static void KillPlayer()
+        {
+            KillPlayer_Internal();
         }
 
         public static float DeltaTime => GetDeltaTime_Internal();

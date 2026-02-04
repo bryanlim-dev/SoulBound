@@ -449,6 +449,15 @@ namespace NightSnack::Scripting {
         m_coord.ModifyComponent<Collider>(e).colliding = colliding;
     }
 
+    bool ScriptInterface::CheckCollision(Entity a, Entity b)
+    {
+        if (m_coord.HasComponent<Transform>(a) && m_coord.HasComponent<Transform>(b) && m_coord.HasComponent<Collider>(a) && m_coord.HasComponent<Collider>(b))
+        {
+            return CheckEntityCollision(m_coord.GetComponent<Transform>(a).pos, m_coord.GetComponent<Collider>(a), m_coord.GetComponent<Transform>(b).pos, m_coord.GetComponent<Collider>(b));
+        }
+        return false;
+    }
+
 
 #pragma endregion
 
@@ -1042,6 +1051,11 @@ namespace NightSnack::Scripting {
     Entity ScriptInterface::GetPlayerID()
     {
         return m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();;
+    }
+
+    void ScriptInterface::KillPlayer()
+    {
+        m_coord.GetSystem<PlayerControllerSystem>()->RespawnPlayer();
     }
 
     void ScriptInterface::LoadLevel(std::string lvlName)

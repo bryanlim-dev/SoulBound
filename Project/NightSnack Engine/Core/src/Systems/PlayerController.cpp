@@ -75,6 +75,7 @@ namespace NightSnack {
             return;
 
         m_coord.ModifyComponent<Transform>(m_player).pos = m_coord.GetComponent<Transform>(m_prevCheckpoint).pos;
+
         ResetFlags();
     }
 

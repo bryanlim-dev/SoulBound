@@ -244,6 +244,14 @@ namespace ManagedScripts
                 get => Engine.GetColliderColliding(EntityId);
                 set => Engine.SetColliderColliding(EntityId, value);
             }
+
+            public bool CheckCollision(uint entityIDB) => Engine.CheckCollision(EntityId, entityIDB);
+
+            public bool CheckPlayerCollision()
+            {
+                return Engine.CheckCollision(EntityId, Engine.GetPlayerID());
+            }
+
             public new static string GetName() { return "Collider"; }
 
         }
@@ -647,6 +655,7 @@ namespace ManagedScripts
         public void PlaySound(string path) => Engine.PlaySound(path);
         public uint CreateEntityArchetype(string archetypeName, Vector3 pos) => Engine.CreateEntityArchetype(archetypeName, pos);
         public uint GetPlayerID() => Engine.GetPlayerID();
+        public void KillPlayer() => Engine.KillPlayer();
 
     }
 }   // ManagedScripts
