@@ -84,11 +84,11 @@ namespace NightSnack {
 		if (mainCam == INVALID_ENTITY) return;
 
 		if (ScreenSizeChanged()) {
-			TranslateUIEntities(mainCam);
+			//TranslateUIEntities(mainCam);
 			lastHvp = Hvp;
 			lastWvp = Wvp;
 		}
-
+		TranslateUIEntities(mainCam);
 		RenderWithCamera(mainCam);
 	}
 
