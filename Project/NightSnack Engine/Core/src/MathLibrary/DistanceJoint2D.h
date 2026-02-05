@@ -41,7 +41,9 @@ namespace NightSnack
 
         //Entity assignment (set externally)
         void SetBodies(Entity idA, Entity idB);
+        //Makes entity B into a unmoving anchor
         void LockBodyB(bool isLocked);
+        //Enables or disables the DistanceJoint2D
         void SetActive(bool active);
 
         //Configuration
@@ -55,16 +57,47 @@ namespace NightSnack
         void SetMaxForce(float maxForce);
         void EnableCollision(bool enable);
 
-        //Must be called once after setup
-        void Initialize(
-            Coordinator& coord,
-            const Vec2& posA,
-            const Vec2& posB
-        );
+        /************************************************************************/
+        /*!
+        \brief
+        Initalizes the DistanceJoint2D
+        */
+        /************************************************************************/
+        void Initialize(Coordinator& coord, const Vec2& posA, const Vec2& posB);
 
-        //Called every update if active
+        /************************************************************************/
+        /*!
+        \brief
+        Solves/updates the distance joint movement and force applied to the entity
+
+        \param coord
+        Refrence to the coordinator
+
+        \param posA
+        position of entity A
+
+        \param posB
+        position of entity B
+
+        \return deltaTime
+        deltaTime passed
+        */
+        /************************************************************************/
         void Solve(Coordinator& coord, const Vec2& posA, const Vec2& posB, float deltaTime);
 
+        /************************************************************************/
+        /*!
+        \brief
+        Adds swing force to entity A
+
+        \param coord
+        Refrence to the coordinator
+
+        \param force
+        Swing force applied to entity A
+
+        */
+        /************************************************************************/
         void ApplySwingForce(Coordinator& coord, float force);
     
     private:
