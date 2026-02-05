@@ -1,8 +1,8 @@
 /******************************************************************************
  * File:        ScriptInterface.h
  * Project:     NightSnack
- * Author(s):	Chewn Thing Kwan - (Primary, 30%) - Created base file and Transform/Input/Sound functions
-                Clement Ang Yang Ying - (Secondary, 70%) - Added other component and entity functions, orgnized functions
+ * Author(s):	Chewn Thing Kwan - (Primary, 20%) - Created base file and Transform/Input/Sound functions
+                Clement Ang Yang Ying - (Secondary, 80%) - Added other component and entity functions, orgnized functions
  *
  * Description:
  * This file declares class ScriptInterface which contain functions which can 
@@ -421,10 +421,14 @@ namespace NightSnack::Scripting {
         bool IsKeyReleased(int key);
 #pragma endregion
 
+        //Gets non-script component in self or children if not found in self
         Entity GetComponentInChildren(Entity entity, std::string componentName);
+        //Gets script object in self or children if not found in self
         MonoObject* GetScriptComponentInChildren(Entity entity, std::string scriptName);
 
+        //Gets non-script component in self or parent if not found in self
         Entity GetComponentInParent(Entity entity, std::string componentName);
+        //Gets script object in self or parent if not found in self
         MonoObject* GetScriptComponentInParent(Entity entity, std::string scriptName);
 
         // Audio play sound
@@ -456,6 +460,7 @@ namespace NightSnack::Scripting {
         //coordiator refrence6
         Coordinator& m_coord;
 
+        //map of component name to component
         static const std::unordered_map<std::string, ComponentEntry> componentRegistry;
     };
 
