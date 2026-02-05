@@ -589,7 +589,7 @@ namespace NightSnack
             float pos[3];
             float scale[2];
             if (t.layer == LayerType::GAMEUI && !m_coord.HasComponent<Camera>(*m_selectedEntity)) {
-                pos[0] = t.UIbasePos.x; pos[1] = t.UIbasePos.y;
+                pos[0] = t.UIbasePos.x; pos[1] = t.UIbasePos.y; pos[2] = t.UIbasePos.z;
                 scale[0] = t.UIbaseScale.x; scale[1] = t.UIbaseScale.y;
             } else {
                 pos[0] = t.pos.x; pos[1] = t.pos.y; pos[2] = t.pos.z;
@@ -605,7 +605,13 @@ namespace NightSnack
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::TransformSnapshot{ *m_selectedEntity, t }
                 );
-				t.pos.x = pos[0];
+                if (t.layer == LayerType::GAMEUI) {
+                    t.UIbasePos.x = pos[0];
+                }
+                else {
+				    t.pos.x = pos[0];
+
+                }
             }
             ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN);
             if (ImGui::InputFloat("##posy", &pos[1], 0.0f, 0.0f, "%.2f"))
@@ -613,7 +619,13 @@ namespace NightSnack
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::TransformSnapshot{ *m_selectedEntity, t }
                 );
-				t.pos.y = pos[1];
+                if (t.layer == LayerType::GAMEUI) {
+                    t.UIbasePos.y = pos[1];
+                }
+                else {
+                    t.pos.y = pos[1];
+
+                }
 			}
             ImGui::TableSetColumnIndex(3); ImGui::SetNextItemWidth(-FLT_MIN);
             if (ImGui::InputFloat("##posz", &pos[2], 0.0f, 0.0f, "%.2f"))
@@ -621,7 +633,13 @@ namespace NightSnack
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::TransformSnapshot{ *m_selectedEntity, t }
                 );
-				t.pos.z = pos[2];
+                if (t.layer == LayerType::GAMEUI) {
+                    t.UIbasePos.z = pos[2];
+                }
+                else {
+                    t.pos.z = pos[2];
+
+                }
             }
 
             // Rotation row

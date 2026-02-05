@@ -1,7 +1,7 @@
 {
     "ButtonInfo": {
         "action": "LoadLevel",
-        "target": "MyLevel1",
+        "target": "Level1",
         "type": "Clicker"
     },
     "Collider": {
@@ -14,7 +14,7 @@
     },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "Play",
+        "materialName": "FrogIdle_1_1",
         "meshName": "square"
     },
     "Audio": {

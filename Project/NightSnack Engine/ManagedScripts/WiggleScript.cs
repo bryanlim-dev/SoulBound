@@ -67,23 +67,23 @@ namespace ManagedScripts
                 }
             }
             // Only Wiggle every 2 seconds
-            //if (time > interval) {
-            //    // Stop after Wiggling for 0.3 seconds
-            //    if (time > (interval + duration))
-            //    {
-            //        pos = originalPos;
-            //        time = 0.0f;
-            //    }
-            //    else
-            //    {
-            //        // Wiggle
-            //        float Xval = (float)(rseed.NextDouble() * (max - min) + min);
-            //        float Yval = (float)(rseed.NextDouble() * (max - min) + min);
+            if (time > interval) {
+                // Stop after Wiggling for 0.3 seconds
+                if (time > (interval + duration))
+                {
+                    pos = originalPos;
+                    time = 0.0f;
+                }
+                else
+                {
+                    // Wiggle
+                    float Xval = (float)(rseed.NextDouble() * (max - min) + min);
+                    float Yval = (float)(rseed.NextDouble() * (max - min) + min);
 
-            //        // Apply wiggle offset
-            //        pos = originalPos + new Vector3(Xval, Yval, 0f);
-            //    }
-            //}
+                    // Apply wiggle offset
+                    pos = originalPos + new Vector3(Xval, Yval, 0f);
+                }
+            }
             time += DeltaTime;
 
             // Update ECS transform

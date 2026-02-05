@@ -78,7 +78,13 @@ namespace NightSnack {
 
 		for (int s{}; s < m_coord.steps; ++s) {
 
-			UpdateGridPosition();
+			Entity cam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
+			// For skipping entities that are outside of grid range;
+			float rad = std::max(m_gridWidth, m_gridHeight);
+			Transform const& camT = m_coord.GetComponent<Transform>(cam);
+			Vec2 camPos{ camT.pos.x, camT.pos.y };
+
+			UpdateGridPosition(cam, camT);
 
 			for (Layer& l : m_layers) {
 				// Skip inactive and empty layers;
@@ -106,6 +112,10 @@ namespace NightSnack {
 					if (e == INVALID_ENTITY) { break; }
 
 					Transform& trans = m_coord.ModifyComponent<Transform>(e);
+					Vec2 ePos { trans.pos.x, trans.pos.y };
+					Vec2 distv = ePos - camPos;
+					if (distv.magnitude() > rad) { continue; }
+
 					RigidBody& rig = m_coord.ModifyComponent<RigidBody>(e);
 					Collider& col = m_coord.ModifyComponent<Collider>(e);
 
@@ -135,10 +145,7 @@ namespace NightSnack {
 
 		return { cellX, cellY };
 	}
-	void PhysicsSystem::UpdateGridPosition() {
-		Entity cam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
-		Transform const& t = m_coord.GetComponent<Transform>(cam);
-
+	void PhysicsSystem::UpdateGridPosition(Entity cam, Transform const& t) {
 		Vec2 dir = t.pos - m_gridCenter;
 
 		float xStep = std::floor(dir.x / m_cellSize.x);

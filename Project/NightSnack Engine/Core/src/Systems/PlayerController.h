@@ -264,7 +264,6 @@ namespace NightSnack {
             bool isGrounded = m_flags.isGrounded = c.isGrounded;
             //
 
-
             bool movingHorizontally = (m_flags.movingLeft ^ m_flags.movingRight);
             bool isFrog = (r.materialName == "FrogMove_4_1");
 

@@ -320,6 +320,7 @@ namespace NightSnack::Scene {
 		script->RefreshScripts();
 
 		m_gameLoaded = true;
+		CacheLevel();
 	}
 
 	void SceneManager::LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration) {

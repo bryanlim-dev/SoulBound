@@ -81,8 +81,8 @@ namespace NightSnack {
             AddLayer(LayerType::GAMELAYER);
 
             // Initialize collision grid;
-            m_gridCols = 42; m_gridRows = 30;
-            m_gridWidth = 3000.f; m_gridHeight = 2100.f;
+            m_gridCols = 14; m_gridRows = 10;
+            m_gridWidth = 2200; m_gridHeight = 1200.f;
             m_cellSize.x = m_gridWidth / (float) m_gridCols;
             m_cellSize.y = m_gridHeight / (float) m_gridRows;
             m_gridCenter = {};
@@ -120,7 +120,7 @@ namespace NightSnack {
 
         std::pair<int, int> GetCell(Vec2 const& pos) const;
         void CollisionGridInsert(Entity, Collider const&, Transform const&);
-        void UpdateGridPosition();
+        void UpdateGridPosition(Entity cam, Transform const& t);
         void ResolveCollisions();
         void ResolveOverlap(Transform& t1, Transform& t2, Collider& c1, Collider& c2, RigidBody& r1, RigidBody& r2);
         //bool CheckCollision(Transform const& t1, Transform const& t2, Collider const& c1, Collider const& c2);

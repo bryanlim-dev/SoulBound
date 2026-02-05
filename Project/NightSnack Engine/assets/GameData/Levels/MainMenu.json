@@ -28,6 +28,11 @@
                     "materialName": "MainMenu-PlayButton",
                     "meshName": "square"
                 },
+                "Script": {
+                    "name": [
+                        "WiggleScript"
+                    ]
+                },
                 "modified": true
             },
             "Transform": {
