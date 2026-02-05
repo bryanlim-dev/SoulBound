@@ -1,7 +1,8 @@
 /******************************************************************************
- * File:        MonoScriptHost.cpp
+ * File:        MonoScriptHost.h
  * Project:     NightSnack
- * Author(s):	Chewn Thing Kwan
+ * Author(s):	Chewn Thing Kwan (Primary, 70%) - Added and implemeted base class
+ *              Clement Ang Yang Ying (Secondary, 30%) - Modified and added value changing
  *
  * Description:
  * This file defines the member functions of MonoScriptHost.
