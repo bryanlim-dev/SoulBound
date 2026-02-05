@@ -94,7 +94,7 @@ namespace NightSnack {
 		EventDispatcher* m_dispatcher = nullptr;
 
 		// Editor state
-		bool m_toggleEditor = true;
+		bool m_toggleEditor = false;
 		bool m_isPlaying = false;
 
 		Tilemap m_tilemap;

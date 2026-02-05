@@ -317,7 +317,7 @@ namespace NightSnack {
 		std::unique_ptr<ComponentManager> m_componentManager;
 		std::unique_ptr<SystemManager> m_systemManager;
 
-		bool m_paused = true;
+		bool m_paused = false;
 	};
 
 
