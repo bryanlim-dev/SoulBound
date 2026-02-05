@@ -262,8 +262,8 @@ namespace NightSnack {
         float width{ 1600.f };
         float height{ 900.f };
 
-        float minX, maxX;
-        float minY, maxY;
+        float minX{}, maxX{};
+        float minY{}, maxY{};
         bool lock = false;
 
         Vec2 offset;

@@ -268,7 +268,24 @@
         }
     ],
     "MainCamera": {
-        "KeyFrames": [],
+        "KeyFrames": [
+            {
+                "maxX": 0.0,
+                "maxY": 0.0,
+                "minX": 0.0,
+                "minY": 0.0,
+                "pos": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0
+                },
+                "scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "zoom": 1.0
+            }
+        ],
         "cameraLock": false,
         "height": 900.0,
         "isMainCam": true,

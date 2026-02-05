@@ -305,6 +305,8 @@ namespace NightSnack::Scene {
 		// Set up Camera
 		CreateSceneCamera(level);
 		ReadCameraKeyframes(level["MainCamera"]["KeyFrames"]);
+		InitSceneCameraBounds();
+
 		// Create new level entities
 		factory->CreateLevelEntities(level);
 
@@ -356,7 +358,7 @@ namespace NightSnack::Scene {
 			m_camIndex = m_camFrames.begin()->first;
 		}
 		else {
-			cam.maxX = cam.minX = -200.f;
+			cam.maxX = cam.minX = 0.f;
 			cam.minY = cam.maxY = 0.f;
 		}
 		t.pos.x = t.pos.y = 0.f;
@@ -368,6 +370,23 @@ namespace NightSnack::Scene {
 		m_coord.AddComponent<Camera>(e, cam);
 
 		m_sceneCam = e;
+	}
+
+	void SceneManager::InitSceneCameraBounds() {
+		Camera& cam = m_coord.ModifyComponent<Camera>(m_sceneCam);
+
+		if (!m_camFrames.empty()) {
+			cam.minX = (m_camFrames.begin()->second)["minX"];
+			cam.maxX = (m_camFrames.begin()->second)["maxX"];
+			cam.minY = (m_camFrames.begin()->second)["minY"];
+			cam.maxY = (m_camFrames.begin()->second)["maxY"];
+
+			m_camIndex = m_camFrames.begin()->first;
+		}
+		else {
+			cam.maxX = cam.minX = 0.f;
+			cam.minY = cam.maxY = 0.f;
+		}
 	}
 
 	void SceneManager::RestartLevel() {
@@ -388,6 +407,7 @@ namespace NightSnack::Scene {
 		// Reset Camera
 		CreateSceneCamera(level);
 		ReadCameraKeyframes(level["MainCamera"]["KeyFrames"]);
+		InitSceneCameraBounds();
 
 		// Create all Entities
 		factory->CreateLevelEntities(level);
@@ -533,6 +553,8 @@ namespace NightSnack::Scene {
 
 		CreateSceneCamera(m_levelCache);
 		ReadCameraKeyframes(m_levelCache["MainCamera"]["KeyFrames"]);
+		InitSceneCameraBounds();
+
 		factory->CreateLevelEntities(m_levelCache);
 		
 		// Restart audio

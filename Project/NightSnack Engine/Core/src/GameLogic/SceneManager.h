@@ -129,6 +129,11 @@ namespace NightSnack::Scene {
 		 */
 		void CreateSceneCamera(json const&);
 		/**
+		 * @brief Initializes the scene camera's max and min bounds.
+		 */
+		void InitSceneCameraBounds();
+
+		/**
 		 * @brief Reads camera animation keyframes from JSON.
 		 * @param cameraJson JSON containing camera keyframe data.
 		 */

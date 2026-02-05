@@ -140,12 +140,13 @@ namespace NightSnack {
                     case InputEvent::InputAction::PlayerUnPossess:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
                             m_flags.tryUnPossess = true;
+                            curr_ability = "Glide";
                         }
-                    case InputEvent::InputAction::Ability1:
+                    /*case InputEvent::InputAction::Ability1:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
                             curr_ability = "Glide";
                         }
-                        break;
+                        break;*/
                     case InputEvent::InputAction::Ability2:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
                             curr_ability = "Grapple";
