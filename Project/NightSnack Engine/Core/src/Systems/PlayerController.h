@@ -378,6 +378,16 @@ namespace NightSnack {
         // std::function special -> e.g double_jump, glide, grapple
         // 
 
+
+        /************************************************************************/
+        /*!
+        \brief
+        Gets refrence to FrogTongue which controls the grapple ability
+
+        \return
+        Refrence to FrogTongue
+        */
+        /************************************************************************/
         FrogTongue& GetFrogTongue() {
             return m_frogTongue;
         };
@@ -395,6 +405,18 @@ namespace NightSnack {
         std::string GetName() const override { return "PlayerController"; }
         Signature GetSignature() const override { return m_systemSignature; }
 
+        /************************************************************************/
+        /*!
+        \brief
+        Return distance entity is to player
+
+        \param point
+        Entity to check distacne to player
+
+        \return
+        float of distance of object to player
+        */
+        /************************************************************************/
         float DistanceToPlayer(Entity point)
         {
             if (!m_coord.HasComponent<Transform>(point) || !m_coord.HasComponent<Transform>(m_player))
