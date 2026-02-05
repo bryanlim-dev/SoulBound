@@ -34,14 +34,23 @@ namespace NightSnack::Scene {
 	// When the button is activated.
 	class Button {
 	public:
-		// Construct button with action and callable
+		/**
+		 * @brief Constructs a button with an action and callable.
+		 * @param a Button action enum value.
+		 * @param func Function pointer to invoke when the button is triggered.
+		 */
 		Button(ButtonAction a, void(*func)(Coordinator& c, std::string const&))
 			: m_action{ a }, m_callable{ func } {}
 		Button(Button const& b) noexcept {
 			m_action = b.m_action;
 			m_callable = b.m_callable;
 		}
-		// Invoke callable, passing a string target
+
+		/**
+		 * @brief Invokes the button's callable.
+		 * @param c ECS coordinator reference.
+		 * @param s String argument (e.g., level or menu name).
+		 */
 		void operator()(Coordinator& c, std::string const& s) { m_callable(c, s); }
 
 	private:
@@ -54,6 +63,11 @@ namespace NightSnack::Scene {
 	// GameUI elements like button presses
 	class SceneManager : public ISystem {
 	public:
+		/**
+		 * @brief Constructs the SceneManager system.
+		 * @param coord Reference to ECS Coordinator.
+		 * @param disp Reference to the global EventDispatcher.
+		 */
 		SceneManager(Coordinator& coord, EventDispatcher& disp)
 			: m_coord{ coord }, m_dispatcher{ &disp } , 
 			m_scheduledLevelLoad(false),
@@ -101,12 +115,28 @@ namespace NightSnack::Scene {
 			RegisterButtons();
 		}
 		
-		// Main function to be called in Core Update loop
+		/**
+		 * @brief Per-frame update called in the core update loop.
+		*/
 		void Update() override;
-		// Resets m_levelKeys and loads all json files in "GameData/Levels"
+		/**
+		 * @brief Resets m_levelKeys and loads all json files in "GameData/Levels"
+		 */
 		void ReloadLevels();
+		/**
+		 * @brief Creates the scene camera from level data.
+		 * @param levelJson JSON describing the camera configuration.
+		 */
 		void CreateSceneCamera(json const&);
+		/**
+		 * @brief Reads camera animation keyframes from JSON.
+		 * @param cameraJson JSON containing camera keyframe data.
+		 */
 		void ReadCameraKeyframes(json const&);
+		/**
+		 * @brief Serializes camera keyframes into JSON.
+		 * @return JSON representation of camera keyframes.
+		 */
 		json WriteCameraKeyframes();
 
 		// Spawn Overlay menu (Pause menu) (currently not in use)
@@ -115,26 +145,75 @@ namespace NightSnack::Scene {
 		
 		//void SetOverlayMenu(std::string const& filename);
 		
-		// Register button callable functions and store them in m_buttons
+		/**
+		 * @brief  Register button callable functions and store them in m_buttons
+		 */
 		void RegisterButtons();
-		// Check for collision btw mouse and all button entities
+		/**
+		 * @brief Check for collision btw mouse and all button entities
+		 */
 		void CheckButtonCollisions();
 
 		// Load Level - Sets up everything needed to spawn level
 		// Calls factory to create entities
 		// Sets up bgm and menus
+
+		/**
+		 * @brief Loads a level immediately.
+		 * @param filename Level file to load.
+		 */
 		void LoadLevel(std::string const& filename);
+
+		/**
+		 * @brief Loads a level with fade-out and fade-in transitions.
+		 * @param levelname Target level name.
+		 * @param fadeOutDuration Fade-out duration in seconds.
+		 * @param fadeInDuration Fade-in duration in seconds.
+		 */
 		void LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration);
+		/**
+		 * @brief Schedules an application exit after a delay.
+		 * @param delay Delay in seconds.
+		 */
 		void ScheduleExit(float delay);
+		/**
+		 * @brief Restarts the currently loaded level.
+		 */
 		void RestartLevel();
+		/**
+		 * @brief Saves the current level to a file.
+		 * @param filename Level file to save to.
+		 * @param overwrite Whether to overwrite existing file.
+		 * @return True if save was successful, false otherwise.
+		 */
 		bool SaveLevel(std::string const& filename, bool overwrite = 0);
 
 		// Play/Pause/Stop functionality
+
+		/**
+		 * @brief Caches the current level state.
+		 */
 		void CacheLevel();
+		/**
+		 * @brief Restores the previously cached level state.
+		 */
 		void RestoreLevel();
 
+		/**
+		 * @brief Opens a UI menu.
+		 * @param menuname Menu identifier.
+		 */
 		void OpenMenu(std::string const& menuname);
+
+		/**
+		 * @brief Closes the currently open menu.
+		 */
 		void CloseMenu();
+
+		/**
+		 * @brief Checks if a menu is currently open.
+		 * @return True if a menu is open.
+		 */
 		bool IsMenuOpen() const { return m_menuOpen; }
 
 		// Getters
