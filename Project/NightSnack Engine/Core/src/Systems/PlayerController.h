@@ -327,6 +327,12 @@ namespace NightSnack {
                 }
                 // Reset it back anyways
                 m_flags.tryUnPossess = false;
+
+                if (m_flags.grappling)
+                {
+                    m_frogTongue.End(m_coord);
+                    m_flags.grappling = false;
+                }
             }
 
             // Special Abilities --------------------------
