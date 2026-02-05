@@ -266,7 +266,7 @@ namespace NightSnack {
 
 
             bool movingHorizontally = (m_flags.movingLeft ^ m_flags.movingRight);
-            bool isFrog = (r.materialName == "frog");
+            bool isFrog = (r.materialName == "FrogMove_4_1");
 
             bool shouldWalk =
                 isFrog &&
