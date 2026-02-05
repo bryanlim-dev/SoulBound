@@ -832,10 +832,24 @@ namespace NightSnack {
 				float ratioScaleY = UIscale.y / camInfo.height;
 
 				// Get the new position and scaling based on the current screen resolution
-				m_coord.ModifyComponent<Transform>(e).pos.x = ratioPosX * Wvp;
-				m_coord.ModifyComponent<Transform>(e).pos.y = ratioPosY * Hvp;
-				m_coord.ModifyComponent<Transform>(e).scale.x = ratioScaleX * Wvp;
-				m_coord.ModifyComponent<Transform>(e).scale.y = ratioScaleY * Hvp;
+				auto& trans = m_coord.ModifyComponent<Transform>(e);
+				trans.pos.x = ratioPosX * Wvp;
+				trans.pos.y = ratioPosY * Hvp;
+				trans.scale.x = ratioScaleX * Wvp;
+				trans.scale.y = ratioScaleY * Hvp;
+
+				// Scale the collider too!!!
+				if (m_coord.HasComponent<Collider>(e)) {
+					auto& col = m_coord.ModifyComponent<Collider>(e);
+
+					// Scale collider to match the scaled transform
+					if (col.shape == ShapeType::AABB) {
+						col.width = trans.scale.x;
+						col.height = trans.scale.y;
+					} else if (col.shape == ShapeType::Circle) {
+						col.radius = std::max(trans.scale.x, trans.scale.y) * 0.5f;
+					}
+				}
 			}
 		}
 	}

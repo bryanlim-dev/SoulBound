@@ -18,6 +18,7 @@
 #pragma once
 #include "AllPanels.h"
 #include "Factory/EntityFactory.h"
+#include "Systems/Graphics.h"
 
 namespace NightSnack
 {
@@ -1319,12 +1320,33 @@ namespace NightSnack
 
 		// Get selected entity's transform
 		auto& t1 = m_coord.GetComponent<Transform>(*m_selectedEntity);
+		ImVec2 center;
 
-		// World position of the entity
-		float wx = t1.pos.x, wy = t1.pos.y;
+		// Check if entity is on UI layer
+		if (t1.layer == LayerType::GAMEUI) {
+			// UI entities are already in screen space
+			// Need to convert from screen space (0,0 = top-left) to ImGui screen space
+			auto& cam = m_coord.GetComponent<Camera>(m_editorCameraEntity);
 
-		// Convert to screen position
-		ImVec2 center = WorldToScreen(wx, wy, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+			// Get the camera's resolution (your base resolution)
+			float baseWidth = cam.width;   // 1600
+			float baseHeight = cam.height; // 900
+			
+			// Calculate the scale factor from base resolution to actual render size
+			float scaleX = imageSize.x / baseWidth;
+			float scaleY = imageSize.y / baseHeight;
+
+			// Use UIbasePos instead of pos!!!
+			// We must use the reference position, not the runtime scaled position, 
+			// to ensure consistency across window modes 
+			center.x = imageTopLeft.x + (t1.UIbasePos.x * scaleX);
+			center.y = imageTopLeft.y + (t1.UIbasePos.y * scaleY);
+		} else {
+			// Game entities use world coordinates - convert to screen
+			float wx = t1.pos.x, wy = t1.pos.y;
+			center = WorldToScreen(wx, wy, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+		}
+
 		ImDrawList* drawList = ImGui::GetWindowDrawList();
 
 		// Gizmo sizes
@@ -1389,11 +1411,19 @@ namespace NightSnack
 		auto& trans = m_coord.ModifyComponent<Transform>(*m_selectedEntity);
 		if (!m_gizmoDragging && ImGui::IsMouseClicked(ImGuiMouseButton_Left))
 		{
-			if (hoverX) { m_gizmoActivePart = GizmoPart::MoveX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.x; }
-			else if (hoverY) { m_gizmoActivePart = GizmoPart::MoveY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.y; }
-			//else if (hoverRot) { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.rot; }
-			else if (hoverScaleX) { m_gizmoActivePart = GizmoPart::ScaleX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.x; }
-			else if (hoverScaleY) { m_gizmoActivePart = GizmoPart::ScaleY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.y; }
+			if (trans.layer == LayerType::GAMEUI) { // Game UI entities
+				if (hoverX) { m_gizmoActivePart = GizmoPart::MoveX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.UIbasePos.x; }
+				else if (hoverY) { m_gizmoActivePart = GizmoPart::MoveY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.UIbasePos.y; }
+				//else if (hoverRot) { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.rot; }
+				else if (hoverScaleX) { m_gizmoActivePart = GizmoPart::ScaleX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.UIbaseScale.x; }
+				else if (hoverScaleY) { m_gizmoActivePart = GizmoPart::ScaleY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.UIbaseScale.y; }
+			} else { // Game Layer entities
+				if (hoverX) { m_gizmoActivePart = GizmoPart::MoveX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.x; }
+				else if (hoverY) { m_gizmoActivePart = GizmoPart::MoveY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.pos.y; }
+				//else if (hoverRot) { m_gizmoActivePart = GizmoPart::Rotate; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.rot; }
+				else if (hoverScaleX) { m_gizmoActivePart = GizmoPart::ScaleX; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.x; }
+				else if (hoverScaleY) { m_gizmoActivePart = GizmoPart::ScaleY; m_gizmoDragging = true; m_gizmoDragStartMouse = mouse; m_gizmoStartValue = t1.scale.y; }
+			}
 
 			// Record initial transform for undo
 			if (m_gizmoDragging)
@@ -1404,43 +1434,90 @@ namespace NightSnack
 		}
 		if (m_gizmoDragging && ImGui::IsMouseDown(ImGuiMouseButton_Left))
 		{
+			// Update the position of the UI entity if it is in fullscreen mode
+			// Position of UI entities should be based on updated UIbasePos
+			m_coord.GetSystem<GraphicsSystem>()->TranslateUIEntities(m_editorCameraEntity);
+
 			ImVec2 delta = ImVec2(mouse.x - m_gizmoDragStartMouse.x, mouse.y - m_gizmoDragStartMouse.y);
-			if (m_gizmoActivePart == GizmoPart::MoveX)
-			{
-				trans.pos.x = m_gizmoStartValue + delta.x * (worldRight - worldLeft) / imageSize.x;
-			}
-			else if (m_gizmoActivePart == GizmoPart::MoveY)
-			{
-				trans.pos.y = m_gizmoStartValue - delta.y * (worldTop - worldBottom) / imageSize.y;
-			}
-			//else if (m_gizmoActivePart == GizmoPart::Rotate)
-			//{
-			//	ImVec2 centerTrans = WorldToScreen(trans.pos.x, trans.pos.y, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
-			//	float startAngle = atan2f(m_gizmoDragStartMouse.y - centerTrans.y, m_gizmoDragStartMouse.x - centerTrans.x);
-			//	float currAngle = atan2f(mouse.y - centerTrans.y, mouse.x - centerTrans.x);
-			//	constexpr float RAD2DEG = 180.0f / 3.14159265f;
-			//	trans.rot = m_gizmoStartValue - (currAngle - startAngle) * RAD2DEG;
-			//}
-			else if (m_gizmoActivePart == GizmoPart::ScaleX)
-			{
-				float scaleDelta = delta.x * (worldRight - worldLeft) / imageSize.x;
-				trans.scale.x = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+			
+			if (trans.layer == LayerType::GAMEUI) {
+				// For UI entities, work directly in screen space
+				auto& cam = m_coord.GetComponent<Camera>(m_editorCameraEntity);
+				float scaleX = imageSize.x / cam.width;
+				float scaleY = imageSize.y / cam.height;
 
-				if (m_coord.HasComponent<Collider>(*m_selectedEntity)) {
-					auto& col = m_coord.ModifyComponent<Collider>(*m_selectedEntity);
-					col.width = std::max(1.0f, m_gizmoStartValue + scaleDelta);
-					col.radius = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+				if (m_gizmoActivePart == GizmoPart::MoveX)
+				{
+					trans.UIbasePos.x = m_gizmoStartValue + (delta.x / scaleX);
+				} else if (m_gizmoActivePart == GizmoPart::MoveY)
+				{
+					trans.UIbasePos.y = m_gizmoStartValue + (delta.y / scaleY);
+				} /*else if (m_gizmoActivePart == GizmoPart::Rotate)
+				{
+					// Rotation works the same
+					ImVec2 centerTrans;
+					centerTrans.x = imageTopLeft.x + (trans.pos.x * scaleX);
+					centerTrans.y = imageTopLeft.y + (trans.pos.y * scaleY);
+
+					float startAngle = atan2f(m_gizmoDragStartMouse.y - centerTrans.y, m_gizmoDragStartMouse.x - centerTrans.x);
+					float currAngle = atan2f(mouse.y - centerTrans.y, mouse.x - centerTrans.x);
+					constexpr float RAD2DEG = 180.0f / 3.14159265f;
+					trans.rot = m_gizmoStartValue - (currAngle - startAngle) * RAD2DEG;
+				}*/ else if (m_gizmoActivePart == GizmoPart::ScaleX)
+				{
+					float scaleDelta = delta.x / scaleX;
+					trans.UIbaseScale.x = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+
+					if (m_coord.HasComponent<Collider>(*m_selectedEntity)) {
+						auto& col = m_coord.ModifyComponent<Collider>(*m_selectedEntity);
+						col.width = trans.scale.x;
+						col.radius = trans.scale.x;
+					}
+				} else if (m_gizmoActivePart == GizmoPart::ScaleY)
+				{
+					float scaleDelta = delta.y / scaleY;
+					trans.UIbaseScale.y = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+
+					if (m_coord.HasComponent<Collider>(*m_selectedEntity)) {
+						auto& col = m_coord.ModifyComponent<Collider>(*m_selectedEntity);
+						col.height = trans.scale.y;
+						col.radius = trans.scale.y;
+					}
 				}
-			}
-			else if (m_gizmoActivePart == GizmoPart::ScaleY)
-			{
-				float scaleDelta = -delta.y * (worldTop - worldBottom) / imageSize.y;
-				trans.scale.y = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+			} else { // GameLayer entities
+				if (m_gizmoActivePart == GizmoPart::MoveX)
+				{
+					trans.pos.x = m_gizmoStartValue + delta.x * (worldRight - worldLeft) / imageSize.x;
+				} else if (m_gizmoActivePart == GizmoPart::MoveY)
+				{
+					trans.pos.y = m_gizmoStartValue - delta.y * (worldTop - worldBottom) / imageSize.y;
+				} else if (m_gizmoActivePart == GizmoPart::Rotate)
+				{
+					ImVec2 centerTrans = WorldToScreen(trans.pos.x, trans.pos.y, imageTopLeft, imageSize, worldLeft, worldRight, worldBottom, worldTop);
+					float startAngle = atan2f(m_gizmoDragStartMouse.y - centerTrans.y, m_gizmoDragStartMouse.x - centerTrans.x);
+					float currAngle = atan2f(mouse.y - centerTrans.y, mouse.x - centerTrans.x);
+					constexpr float RAD2DEG = 180.0f / 3.14159265f;
+					trans.rot = m_gizmoStartValue - (currAngle - startAngle) * RAD2DEG;
+				} else if (m_gizmoActivePart == GizmoPart::ScaleX)
+				{
+					float scaleDelta = delta.x * (worldRight - worldLeft) / imageSize.x;
+					trans.scale.x = std::max(1.0f, m_gizmoStartValue + scaleDelta);
 
-				if (m_coord.HasComponent<Collider>(*m_selectedEntity)) {
-					auto& col = m_coord.ModifyComponent<Collider>(*m_selectedEntity);
-					col.height = std::max(1.0f, m_gizmoStartValue + scaleDelta);
-					col.radius = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+					if (m_coord.HasComponent<Collider>(*m_selectedEntity)) {
+						auto& col = m_coord.ModifyComponent<Collider>(*m_selectedEntity);
+						col.width = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+						col.radius = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+					}
+				} else if (m_gizmoActivePart == GizmoPart::ScaleY)
+				{
+					float scaleDelta = -delta.y * (worldTop - worldBottom) / imageSize.y;
+					trans.scale.y = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+
+					if (m_coord.HasComponent<Collider>(*m_selectedEntity)) {
+						auto& col = m_coord.ModifyComponent<Collider>(*m_selectedEntity);
+						col.height = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+						col.radius = std::max(1.0f, m_gizmoStartValue + scaleDelta);
+					}
 				}
 			}
 		}

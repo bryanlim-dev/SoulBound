@@ -412,6 +412,17 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Translate and scale all UI entities accordingly to the new screen resolution.
+
+		\param[in] mainCam
+		The current main camera in the scene
+		*/
+		/************************************************************************/
+		void TranslateUIEntities(Entity mainCam);
+
+		/************************************************************************/
+		/*!
+		\brief
 		Get the system's signature.
 		Required by ISystem inheritance
 
@@ -536,17 +547,6 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		bool ScreenSizeChanged() const noexcept;
-
-		/************************************************************************/
-		/*!
-		\brief
-		Translate and scale all UI entities accordingly to the new screen resolution. 
-
-		\param[in] mainCam
-		The current main camera in the scene
-		*/
-		/************************************************************************/
-		void TranslateUIEntities(Entity mainCam);
 
 		/************************************************************************/
 		/*!
