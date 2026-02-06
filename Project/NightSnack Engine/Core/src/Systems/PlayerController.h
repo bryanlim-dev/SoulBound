@@ -1,8 +1,8 @@
 /******************************************************************************
  * File:        PlayerController.h
  * Project:     NightSnack
- * Author(s):   Chewn Thing Kwan (Primary, 80%)
- *              Bryan Lim Jun Jie (Secondary, 20%)    
+ * Author(s):   Chewn Thing Kwan (Primary, 90%)
+ *              Bryan Lim Jun Jie (Secondary, 10%)    
  *
  * Description:
  * Controls the Player Entity and sets their Velocity component when key inputs
