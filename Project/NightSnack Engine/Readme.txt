@@ -16,7 +16,6 @@ Left Click: Interact with Editor
 ## Debug Controls
 ## --------------------------
 O: Activate debug-drawing
-X: Change Animation for animation test
 F1: Display FPS
 Escape: Pauses Game Scene
 
