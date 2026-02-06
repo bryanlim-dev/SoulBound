@@ -1,8 +1,7 @@
 /******************************************************************************
  * File:        FallingPlatformScript.cs
  * Project:     NightSnack
- * Author(s):	Clement Ang Yang Ying - (Primary, 30%) - Created base file
- *              Wei Jie Lim - (70%) - Added falling platform logic
+ * Author(s):	Wei Jie Lim - (Primary, 100%) - Added falling platform logic
  *
  * Description:
  * This script makes a platform fall after the player stands on it for a short duration.
@@ -18,7 +17,7 @@ namespace ManagedScripts
     public class FallingPlatformScript : Script
     {
         [SerializeField]
-        public float respawnDelay = 2f;
+        public float respawnDelay = 3f;
 
         [SerializeField]
         public float fallGravityMultiplier = 2000f;
@@ -33,12 +32,13 @@ namespace ManagedScripts
             Respawning
         }
 
+        // Platform state variables
         private State currentState = State.Idle;
         private float stateTimer = 0f;
         private Vector3 initialPosition;
         private float fallVelocity = 0f;
-        private bool hasFallen = false;
 
+        // Component references
         private Transform transform;
         private RigidBody rigidBody;
         private Collider collider;
@@ -46,6 +46,7 @@ namespace ManagedScripts
 
         public override void OnLoad()
         {
+            // Component initialization
             transform = new Transform(EntityId);
             rigidBody = new RigidBody(EntityId);
             collider = new Collider(EntityId);
@@ -54,6 +55,7 @@ namespace ManagedScripts
 
         public override void OnStart()
         {
+            currentState = State.Idle;
             initialPosition = transform.Position;
             ResetPlatform();
         }
@@ -131,7 +133,6 @@ namespace ManagedScripts
 
         private void StartFalling()
         {
-            hasFallen = true;
             fallVelocity = 0f;
             if (collider != null)
             {
@@ -156,7 +157,6 @@ namespace ManagedScripts
                 collider.ColType = ColliderType.Solid;
             }
 
-            hasFallen = false;
             fallVelocity = 0f;
             currentState = State.Idle;
             stateTimer = 0f;
