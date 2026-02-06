@@ -96,7 +96,7 @@ namespace NightSnack {
 		Level json, containing information of entities to create.
 		*/
 		/************************************************************************/
-		void CreateLevelEntities(json const& level);
+		void CreateLevelEntities(json const& level, Vec2 const& posOffset = Vec2{});
 
 		/************************************************************************/
 		/*!

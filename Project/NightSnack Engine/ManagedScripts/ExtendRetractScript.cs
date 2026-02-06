@@ -8,7 +8,7 @@
  * It can be set to move up and down or left and right
  * The speed can be modified as well as the time it stays in each position
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 using System.Diagnostics;
@@ -22,7 +22,7 @@ namespace ManagedScripts
 
         [SerializeField]
         //Amount of units to move
-        public float maxMoveUnits = 50;
+        public float maxMoveUnits = 45;
 
 
         //Units it has moved in this dir

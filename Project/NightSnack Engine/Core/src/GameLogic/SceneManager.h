@@ -268,6 +268,15 @@ namespace NightSnack::Scene {
 		float m_exitTimer;
 		Entity m_player = INVALID_ENTITY;
 		Entity m_camIndex = INVALID_ENTITY;
+
+		// Winzone
+		Entity m_winCollider;
+		std::string m_winScreen;
+		bool winScreenOn = false;
+
+		void CreateWinCollider(json const& level);
+		json CacheWinCollider();
+		void CreateWinScreen();
 	};
 
 }	// NightSnack::Scene

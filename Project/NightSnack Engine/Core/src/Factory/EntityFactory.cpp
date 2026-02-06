@@ -14,7 +14,6 @@
 
 namespace NightSnack {
 
-    // unused for now...
     void EntityFactory::Update() {
 
         static bool printed = false;
@@ -330,7 +329,7 @@ namespace NightSnack {
     }
 
     // Create all entities in a level given a level json
-    void EntityFactory::CreateLevelEntities(json const& level) {
+    void EntityFactory::CreateLevelEntities(json const& level, Vec2 const& posOffset) {
         // Resets ECS and destroys all current entities;
         //DestroyLevelEntities();
         try {
@@ -345,7 +344,10 @@ namespace NightSnack {
                 }
                 else if (item.contains("Components")) {
                     e = Create();
-                    m_coord.ModifyComponent<Transform>(e) = item["Transform"];
+                    Transform& t = m_coord.ModifyComponent<Transform>(e);
+                    t = item["Transform"];
+                    t.pos.x += posOffset.x;
+                    t.pos.y += posOffset.y;
                     UnpackEntityComponents(e, item["Components"]);
                 }
                 else {
@@ -513,7 +515,7 @@ namespace NightSnack {
 
             // Only process root entities for level saving
             if (h.parent != INVALID_ENTITY) continue;
-            if (t.name == "CamTrigger") continue;
+            if (t.name == "CamTrigger" || t.name == "WinZone") continue;
 
             // Build entity JSON
             json j;
@@ -547,7 +549,7 @@ namespace NightSnack {
 
             Hierarchy const& h = m_coord.GetComponent<Hierarchy>(e);
             Transform const& t = m_coord.GetComponent<Transform>(e);
-            if (t.name == "CamTrigger") continue;
+            if (t.name == "CamTrigger" || t.name == "WinZone") continue;
 
             // Only process root entities for level saving
             if (h.parent != INVALID_ENTITY) continue;

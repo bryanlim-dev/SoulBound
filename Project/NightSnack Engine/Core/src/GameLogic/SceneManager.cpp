@@ -90,6 +90,12 @@ namespace NightSnack::Scene {
 					break;
 				}
 			}
+			if (m_coord.GetComponent<Collider>(m_winCollider).colliding && !winScreenOn) {
+				if (physics->EntitiesAreColliding(m_winCollider, m_player)) {
+					CreateWinScreen();
+					winScreenOn = true;
+				}
+			}
 		}
 	}
 
@@ -100,6 +106,7 @@ namespace NightSnack::Scene {
 			//c.GetSystem<Scene::SceneManager>()->LoadLevel(s);
 			// 
 			// loads level with fade, 1.5s fade out, 1.0s fade in
+			c.Unpause();
 			c.GetSystem<Scene::SceneManager>()->LoadLevelWithFade(s, 1.5f, 1.0f);
 		});
 		m_buttons.emplace(ButtonAction::LOADLEVEL, loadButton);
@@ -284,6 +291,58 @@ namespace NightSnack::Scene {
 
 		return keyframes;
 	}
+	void SceneManager::CreateWinCollider(json const& level) {
+
+		if (!level.contains("WinZone")) return;
+
+		m_winCollider = m_coord.GetSystem<EntityFactory>()->Create();
+		m_winScreen = level["WinZone"]["ConfigFile"];
+
+		Collider col{
+			ShapeType::AABB, ColliderType::Trigger, true,	// isStatic
+			level["WinZone"]["Scale"]["x"], level["WinZone"]["Scale"]["y"],
+			std::max(level["WinZone"]["Scale"]["x"], level["WinZone"]["Scale"]["y"]) / 2.f
+		};
+		m_coord.AddComponent<Collider>(m_winCollider, col);
+		m_coord.AddComponent<RigidBody>(m_winCollider, RigidBody{});	// Required for physics system
+
+		// Invisible renderer component
+		m_coord.AddComponent<Renderable>(m_winCollider, Renderable{});
+		m_coord.AddComponent<Color>(m_winCollider, Color{});    // zero alpha
+
+		Transform& t = m_coord.ModifyComponent<Transform>(m_winCollider);
+		t.pos = {
+			level["WinZone"]["Position"]["x"],
+			level["WinZone"]["Position"]["y"],
+			1.f
+		};
+		t.name = "WinZone";
+	}
+	json SceneManager::CacheWinCollider() {
+		Transform const& t = m_coord.GetComponent<Transform>(m_winCollider);
+		Collider const& c = m_coord.GetComponent<Collider>(m_winCollider);
+
+		json j;
+		j["Position"]["x"] = t.pos.x;
+		j["Position"]["y"] = t.pos.y;
+
+		j["Scale"]["x"] = c.width;
+		j["Scale"]["y"] = c.height;
+
+		j["ConfigFile"] = m_winScreen;
+
+		return j;
+	}
+	void SceneManager::CreateWinScreen() {
+
+		json const& w = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_levelKeys[m_winScreen]);
+
+		Entity cam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
+		Vec3 const& camPos = m_coord.GetComponent<Transform>(cam).pos;
+
+		m_coord.GetSystem<EntityFactory>()->CreateLevelEntities(w, Vec2{camPos.x, camPos.y});
+		m_coord.GetSystem<PlayerControllerSystem>()->PauseInputs();
+	}
 	
 	// Creates all entities required for a level through the entity factory
 	// and sets up BGM for level, refreshes script manager.
@@ -294,6 +353,7 @@ namespace NightSnack::Scene {
 
 		m_previousLevelKey = m_currentLevelKey;
 		m_currentLevelKey = key;
+		//std::cout << "Curr level key: " << key << std::endl;
 
 		// Unload everything first
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
@@ -306,6 +366,8 @@ namespace NightSnack::Scene {
 		CreateSceneCamera(level);
 		ReadCameraKeyframes(level["MainCamera"]["KeyFrames"]);
 		InitSceneCameraBounds();
+		CreateWinCollider(level);
+		winScreenOn = false;
 
 		// Create new level entities
 		factory->CreateLevelEntities(level);
@@ -409,6 +471,7 @@ namespace NightSnack::Scene {
 		CreateSceneCamera(level);
 		ReadCameraKeyframes(level["MainCamera"]["KeyFrames"]);
 		InitSceneCameraBounds();
+		CreateWinCollider(level);
 
 		// Create all Entities
 		factory->CreateLevelEntities(level);
@@ -425,6 +488,7 @@ namespace NightSnack::Scene {
 		std::cerr << "[SceneManager] Level restarted\n";
 
 		m_gameLoaded = true;
+		winScreenOn = false;
 	}
 
 	// Saves information required for levels, including entity information, BGM and name
@@ -452,6 +516,8 @@ namespace NightSnack::Scene {
 		level["MainCamera"]["posX"] = t.pos.x;
 		level["MainCamera"]["posY"] = t.pos.y;
 		level["MainCamera"]["posZ"] = t.pos.z;
+		// Winzone data;
+		level["WinZone"] = CacheWinCollider();
 
 		// Save Level data;
 		level["Entities"] = m_coord.GetSystem<EntityFactory>()->SaveLevelEntities();
@@ -527,6 +593,7 @@ namespace NightSnack::Scene {
 
 		m_levelCache["MainCamera"] = m_coord.GetComponent<Camera>(m_sceneCam);
 		m_levelCache["MainCamera"]["KeyFrames"] = WriteCameraKeyframes();
+		m_levelCache["WinZone"] = CacheWinCollider();
 
 		Transform const& t = m_coord.GetComponent<Transform>(m_sceneCam);
 		m_levelCache["MainCamera"]["posX"] = t.pos.x;
@@ -544,6 +611,7 @@ namespace NightSnack::Scene {
 		m_menuEntities.clear();
 		m_menuOpen = false;
 		m_currentMenu.clear();
+		winScreenOn = false;
 
 		// Restore all entities to original
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
@@ -555,6 +623,7 @@ namespace NightSnack::Scene {
 		CreateSceneCamera(m_levelCache);
 		ReadCameraKeyframes(m_levelCache["MainCamera"]["KeyFrames"]);
 		InitSceneCameraBounds();
+		CreateWinCollider(m_levelCache);
 
 		factory->CreateLevelEntities(m_levelCache);
 		

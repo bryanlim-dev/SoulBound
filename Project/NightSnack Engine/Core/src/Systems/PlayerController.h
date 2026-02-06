@@ -234,7 +234,9 @@ namespace NightSnack {
                 AttachAbility();
                 m_flags = PlayerFlags{};
                 reset = false;
+                m_pauseInputs = false;
             }
+            if (m_pauseInputs) return;
 
             PlayerController const& pcont = m_coord.GetComponent<PlayerController>(m_player);
             Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
@@ -444,7 +446,6 @@ namespace NightSnack {
         /************************************************************************/
         Entity GetPlayer() { return m_player; }
 
-        void Reset() { reset = true; }
         /************************************************************************/
         /*!
         \brief
@@ -453,6 +454,9 @@ namespace NightSnack {
         */
         /************************************************************************/
         void RespawnPlayer();
+
+        void Reset() { reset = true; }
+        void PauseInputs() { m_pauseInputs = true; }
 
         bool loadBackMainMenu{ false };
 
@@ -463,6 +467,7 @@ namespace NightSnack {
 
         Entity m_player;
         bool reset;
+        bool m_pauseInputs = false;
 
         // Accumulates states
         PlayerFlags m_flags{};
