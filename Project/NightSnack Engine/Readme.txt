@@ -7,7 +7,7 @@
 ## Editor Controls
 ## --------------------------
 \: Open UI Editor
-F11: Toggle Fullscreen
+F4: Toggle Fullscreen
 Ctrl + S: Save scene
 Ctrl + Z: Undo action
 Left Click: Interact with Editor
@@ -18,14 +18,18 @@ Left Click: Interact with Editor
 O: Activate debug-drawing
 X: Change Animation for animation test
 F1: Display FPS
-Escape: Pauses Game Scene 
+Escape: Pauses Game Scene
 
 
 ## Player Controls
 ## --------------------------
-W: Player jump
-A: Moves player left
-D: Moves player right
+Up Arrow Key: Player jump
+Left Arrow Key: Moves player left
+Right Arrow Key: Moves player right
+
+A: Monster special ability (Ghost|Glide, HellFrog|Tongue, FlyEye|Extra Jump)
+S: Possess monster player touches
+D: Unpossess current possessed monster
 
 
 ## Step by Step Physics debug

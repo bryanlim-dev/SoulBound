@@ -85,19 +85,19 @@ namespace NightSnack::Scene {
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
-					// Currently not in use
-					//case InputEvent::InputAction::PauseGame:
-					//	if (!overlayOn) {
-					//		//CreateOverlayMenu();
-					//		overlayOn = true;
-					//		m_coord.Pause();
-					//	}
-					//	else if (overlayOn) { 
-					//		//RemoveOverlayMenu();
-					//		overlayOn = false;
-					//		m_coord.Unpause();
-					//	}
-					//	break;
+					// Pause toggle
+					case InputEvent::InputAction::PauseGame:
+						if (!overlayOn) {
+							//CreateOverlayMenu();
+							overlayOn = true;
+							m_coord.Pause();
+						}
+						else if (overlayOn) { 
+							//RemoveOverlayMenu();
+							overlayOn = false;
+							m_coord.Unpause();
+						}
+						break;
 					// Restart current level
 					case InputEvent::InputAction::RestartGame:
 						m_restart = true;
