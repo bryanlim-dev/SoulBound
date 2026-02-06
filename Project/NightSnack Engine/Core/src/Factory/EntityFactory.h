@@ -81,6 +81,14 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		json SaveLevelEntities();
+
+		/************************************************************************/
+		/*!
+		\brief
+		Deserializes an entity's components from a json file and adds components
+		to the entity.
+		*/
+		/************************************************************************/
 		void UnpackEntityComponents(Entity e, json const&);
 
 		json CacheLevelEntities();

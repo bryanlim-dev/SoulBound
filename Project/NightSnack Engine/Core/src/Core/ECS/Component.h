@@ -172,7 +172,7 @@ namespace NightSnack {
         std::shared_ptr<StateBase> currState = nullptr;
         //Is this the first time running any state?
         //(Used to detect and call Enter on first state)
-        bool isFirstState = true; 
+        bool isFirstState = false; 
     };
 
     // ================================================================================================

@@ -5,6 +5,40 @@
             "Components": {
                 "Renderable": {
                     "isWireframe": false,
+                    "materialName": "LevelComplete-Overlay",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Overlay",
+                "Position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 2.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 1920.0,
+                    "y": 1080.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
                     "materialName": "LevelComplete",
                     "meshName": "square"
                 },
@@ -45,26 +79,26 @@
                 "modified": true
             },
             "Transform": {
-                "Layer": "Foreground",
-                "Name": "Chain",
+                "Layer": "GameUI",
+                "Name": "Banner",
                 "Position": {
-                    "x": 0.0,
-                    "y": 60.0,
+                    "x": 960.0,
+                    "y": 468.0,
                     "z": 6.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 616.0,
-                    "y": 40.0
+                    "x": 739.199951171875,
+                    "y": -48.0
                 },
                 "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
+                    "x": 800.0,
+                    "y": 390.0,
                     "z": 0.0
                 },
                 "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
+                    "x": 616.0,
+                    "y": -40.0
                 }
             },
             "isPrefab": false
@@ -120,7 +154,7 @@
                 },
                 "ButtonInfo": {
                     "action": "LoadLevel",
-                    "target": "Level1",
+                    "target": "Level1A",
                     "type": "Clicker"
                 },
                 "Collider": {
@@ -216,40 +250,6 @@
                 }
             },
             "isPrefab": false
-        },
-        {
-            "Components": {
-                "Renderable": {
-                    "isWireframe": false,
-                    "materialName": "LevelComplete-Overlay",
-                    "meshName": "square"
-                },
-                "modified": true
-            },
-            "Transform": {
-                "Layer": "GameLayer",
-                "Name": "Overlay",
-                "Position": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 5.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 1920.0,
-                    "y": 1080.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "isPrefab": false
         }
     ],
     "MainCamera": {
@@ -282,5 +282,16 @@
         "width": 1600.0,
         "zoom": 1.0
     },
-    "Name": "WinScreen"
+    "Name": "WinScreen",
+    "WinZone": {
+        "ConfigFile": "WinScreen",
+        "Position": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "Scale": {
+            "x": 100.0,
+            "y": 100.0
+        }
+    }
 }

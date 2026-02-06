@@ -12,7 +12,7 @@
                 },
                 "ButtonInfo": {
                     "action": "LoadLevel",
-                    "target": "Level1",
+                    "target": "Level1A",
                     "type": "Clicker"
                 },
                 "Collider": {
