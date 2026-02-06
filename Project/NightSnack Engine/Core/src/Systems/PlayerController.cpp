@@ -123,6 +123,12 @@ namespace NightSnack {
         m_coord.ModifyComponent<Transform>(m_player).pos = m_coord.GetComponent<Transform>(m_prevCheckpoint).pos;
 
         ResetFlags();
+
+        //Reset velocity
+        if (m_coord.HasComponent<RigidBody>(m_player))
+        {
+            m_coord.ModifyComponent<RigidBody>(m_player).vel = Vec2();
+        }
     }
 
     bool PlayerControllerSystem::UseSpecialAbility() {
