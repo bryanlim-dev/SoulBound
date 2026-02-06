@@ -919,7 +919,7 @@ namespace NightSnack
                 m_prefabModified = true;
             }
 
-            // ADD THIS: Use variants checkbox
+            // Use variants checkbox
             bool useVariants = j.value("useVariants", false);
             if (ImGui::Checkbox("Use Random Variants", &useVariants))
             {
