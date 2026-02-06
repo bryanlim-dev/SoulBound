@@ -1,7 +1,7 @@
 # ------------------------------------------------------------ #
 # Readme file for NightSnack Engine
 # Team: Midnight Munchies
-# Module: GAM_200
+# Module: CSD2451
 # ------------------------------------------------------------ #
 
 ## Editor Controls
