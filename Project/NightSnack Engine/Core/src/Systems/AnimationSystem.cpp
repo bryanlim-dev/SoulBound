@@ -8,7 +8,7 @@
  * It initializes the AnimationClips and AnimationFrames of every texture loaded, based on its number of columns and rows.
  * It manages the updating of UV coordinates of the current AnimationClip, which is used by the Graphics System.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2026 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 

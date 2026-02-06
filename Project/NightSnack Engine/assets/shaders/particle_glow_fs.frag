@@ -7,7 +7,7 @@
  * Particle Glow Fragment shader is responsible for determining the final color of each pixel.
  * This fragment shader only supports Particle entities. 
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2026 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 // Particle Glow Fragment shader

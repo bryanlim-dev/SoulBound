@@ -1,10 +1,11 @@
 ﻿/******************************************************************************
  * File:        ScenePanel.h
  * Project:     NightSnack
- * Author(s):	Lim Wei Jie (Primary, 95%) - Created and implemented scene panel
+ * Author(s):	Lim Wei Jie (Primary, 90%) - Created and implemented scene panel
  *              rendering and editor camera
  *              Bryan Lim Jun Jie (Secondary, 5%) - Added creation of entity
  *              from dragging assets into scene panel
+ *				Goh Bei Lai (Secondary, 5%) - Added Gizmos interactions for entities on GameUI layer
  *
  *
  * Description:

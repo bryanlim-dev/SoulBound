@@ -5,8 +5,14 @@
  *
  * Description:
  * This file contains the definitions of the Particle System.
+ * Particle System functionalities include:
+ * - Updating of all active particle emitters to determine when and where to spawn more particles
+ * - Updating of all active particles transform properties
+ * - Particle emitters have the option to follow an Entity, to have updated spawn positions instead of just a fixed position to spawn
+ * - Each particle prefab entity has its own Particle component, whose values are read from their own JSON file
+ * - Upon spawning a particle, most of its properties such as size, velocity and lifetime etc are randomized within a range
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2026 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -57,11 +63,7 @@ namespace NightSnack {
 			if (emitter.stepsSinceLastSpawn >= emitter.spawnDelay) {
 				emitter.stepsSinceLastSpawn = 0;
 
-				// Get the final spawn position based on whether it is following a target or not
-				//Vec3 finalSpawnPos = emitter.followPos ? (*emitter.followPos + emitter.offset) : emitter.spawnPos;
-				// Call the stored spawn function (spawns 1 particle)
-				//emitter.spawnFunction(finalSpawnPos);
-
+				// Call each emitter's own spawn function
 				emitter.spawnFunction();
 
 				emitter.particlesSpawned++;
@@ -162,8 +164,6 @@ namespace NightSnack {
 		}
 	}
 
-	// endPos - Used for SOIL (right end position), unused for others
-	// spawnRadius - Used for RISING_GLOW (circular area), unused for others
 	EmitterID ParticleSystem::StartContinuousEmitter(const std::string& prefabName, Vec3 spawnPos, Vec3 endPos, float spawnRadius, int maxParticles, int spawnDelay, bool shouldLoop, Entity followEntity, Vec3 followOffset) {
 		ParticleEmitter emitter;
 		emitter.id = m_nextEmitterID++;
@@ -190,9 +190,6 @@ namespace NightSnack {
 			break;
 
 		case PARTICLE_TYPE::GLOW_ORBIT:
-			/*emitter.spawnFunction = [this, prefabName, spawnPos]() {
-				SpawnSingleOrbitingParticle(prefabName, spawnPos);
-			};*/
 		{
 			EmitterID currentID = emitter.id; // Capture the ID
 			emitter.spawnFunction = [this, prefabName, currentID]() {

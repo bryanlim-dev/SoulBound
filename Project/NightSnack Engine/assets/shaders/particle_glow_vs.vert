@@ -8,7 +8,7 @@
  * clip space, and passing texture coordinates to the fragment shader.
  * This vertex shader will only take care of particle entities. 
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2026 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 // Particle Glow Vertex shader

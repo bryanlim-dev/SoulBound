@@ -3,7 +3,7 @@
  * Project:     NightSnack
  * Author(s):	Chewn Thing Kwan (Primary) - Created basic components | Defined json 
  *              overloads for reading components
- *				Goh Bei Lai (Secondary, 15%) - Created Graphics components (RenderLayer, Renderable, Camera)
+ *				Goh Bei Lai (Secondary, 15%) - Created Graphics components (RenderLayer, Renderable, Camera), Particle component, Collectible component
  *              Bryan Lim Jun Jie (Secondary, 5%) - Created Button components (ButtonType, ButtonAction, ButtonInfo)
  *              Clement Ang Yang Ying (Secondary, 5%) - Create States component
  *

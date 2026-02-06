@@ -14,10 +14,6 @@
 
 namespace NightSnack {
 
-	void CollectibleSystem::Init() {
-
-	}
-
 	void CollectibleSystem::Update() {
 		if (m_coord.IsPaused()) return;
 

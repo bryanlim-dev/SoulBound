@@ -1,8 +1,9 @@
 /******************************************************************************
  * File:        PlayerController.h
  * Project:     NightSnack
- * Author(s):   Chewn Thing Kwan (Primary, 90%)
+ * Author(s):   Chewn Thing Kwan (Primary, 80%)
  *              Bryan Lim Jun Jie (Secondary, 10%)    
+ *              Goh Bei Lai (Secondary, 10%) - Added player possession mechanic 
  *
  * Description:
  * Controls the Player Entity and sets their Velocity component when key inputs

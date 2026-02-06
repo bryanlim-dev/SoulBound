@@ -5,7 +5,10 @@
  *
  * Description:
  * This file contains the declarations of the Collectible System.
- *
+ * Collectible System functionalities include:
+ * - Despawn collectible upon collision with player, and respawn again after a certain period of time if needed
+ * - Spawning and despawning of collectibles' particles whenever the collectible is active or inactive
+ * 
  * Copyright © 2026 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
@@ -39,12 +42,7 @@ namespace NightSnack {
 		/************************************************************************/
 		CollectibleSystem(Coordinator& coord, EventDispatcher& dispatcher) : m_coord{ coord }, m_dispatcher{ &dispatcher } {
 			m_systemSignature.set(GetComponentTypeID<Collectible>());
-
-			Init();
-
 		}
-
-		void Init();
 
 		/************************************************************************/
 		/*!
@@ -54,6 +52,12 @@ namespace NightSnack {
 		/************************************************************************/
 		void Update() override;
 
+		/************************************************************************/
+		/*!
+		\brief
+		Function call to start to spawn all particle emitters once, when the level is reloaded
+		*/
+		/************************************************************************/
 		void SpawnCollectibleParticles();
 
 		/************************************************************************/
@@ -82,6 +86,12 @@ namespace NightSnack {
 
 	private:
 
+		/************************************************************************/
+		/*!
+		\brief
+		Create all particle emitters that are meant for each collectible object 
+		*/
+		/************************************************************************/
 		void CreateParticleEmitters();
 
 		Signature m_systemSignature{};
