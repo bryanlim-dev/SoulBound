@@ -86,16 +86,18 @@ namespace NightSnack::Scene {
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
 					// Currently not in use
-					case InputEvent::InputAction::PauseGame:
-						if (!overlayOn) {
-							//CreateOverlayMenu();
-							m_coord.Pause();
-						}
-						else { 
-							//RemoveOverlayMenu();
-							m_coord.Unpause();
-						}
-						break;
+					//case InputEvent::InputAction::PauseGame:
+					//	if (!overlayOn) {
+					//		//CreateOverlayMenu();
+					//		overlayOn = true;
+					//		m_coord.Pause();
+					//	}
+					//	else if (overlayOn) { 
+					//		//RemoveOverlayMenu();
+					//		overlayOn = false;
+					//		m_coord.Unpause();
+					//	}
+					//	break;
 					// Restart current level
 					case InputEvent::InputAction::RestartGame:
 						m_restart = true;
