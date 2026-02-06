@@ -146,6 +146,8 @@ namespace NightSnack {
 		return { cellX, cellY };
 	}
 	void PhysicsSystem::UpdateGridPosition(Entity cam, Transform const& t) {
+		(void)cam;
+
 		Vec2 dir = t.pos - m_gridCenter;
 
 		float xStep = std::floor(dir.x / m_cellSize.x);

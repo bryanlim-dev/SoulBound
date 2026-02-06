@@ -66,6 +66,8 @@ namespace NightSnack
         const Vec2& posA,
         const Vec2& posB)
     {
+        (void)coord;
+
         if (!m_autoConfigure)
             return;
 

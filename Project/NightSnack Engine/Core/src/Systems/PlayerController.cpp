@@ -20,6 +20,7 @@ namespace NightSnack {
 
         std::string abilityName = "Glide";
         Gameplay::Ability GlideAbility(abilityName, [](Coordinator& c, Entity target, PlayerFlags& m_flags) {
+            (void)m_flags;
             //if (target == INVALID_ENTITY) return;
             if (!c.HasComponent<RigidBody>(target)) return;
 

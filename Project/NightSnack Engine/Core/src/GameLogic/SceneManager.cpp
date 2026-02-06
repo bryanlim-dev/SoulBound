@@ -387,6 +387,8 @@ namespace NightSnack::Scene {
 	}
 
 	void SceneManager::LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration) {
+		(void)fadeInDuration;
+
 		// Start fade out
 		m_coord.GetSystem<AudioSystem>()->FadeToVolume(0.0f, fadeOutDuration);
 
