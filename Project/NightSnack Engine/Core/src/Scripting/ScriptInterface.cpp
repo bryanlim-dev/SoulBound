@@ -25,7 +25,15 @@
 #include <iostream>
 
 namespace NightSnack::Scripting {
+     using ComponentQueryFn =
+         std::function<Entity(Coordinator&, Entity)>;
 
+     struct ComponentEntry
+     {
+         ComponentQueryFn getInChildren;
+         ComponentQueryFn getInParent;
+     };
+    
 
     //Macro to help register component for GetComponentIn<X>
 #define REGISTER_COMPONENT(T)                                    \
@@ -50,8 +58,8 @@ namespace NightSnack::Scripting {
 }
 
 
-    const std::unordered_map<std::string, NightSnack::Scripting::ScriptInterface::ComponentEntry>
-        ScriptInterface::componentRegistry =
+    const std::unordered_map<std::string, NightSnack::Scripting::ComponentEntry>
+        componentRegistry =
     {
         REGISTER_COMPONENT(Transform),
         REGISTER_COMPONENT(RigidBody),

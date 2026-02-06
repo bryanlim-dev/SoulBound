@@ -29,14 +29,6 @@ namespace NightSnack::Scripting {
     // Interface that ScriptAPI will use to interact with engine
     class CORE_API ScriptInterface {
 
-        //Used for GetComponentIn<X>
-        using ComponentQueryFn = std::function<Entity(Coordinator&, Entity)>;
-        struct ComponentEntry
-        {
-            ComponentQueryFn getInChildren;
-            ComponentQueryFn getInParent;
-        };
-
     public:
         ScriptInterface(Coordinator& coord) : m_coord{ coord } {}
         ~ScriptInterface() = default;
@@ -461,7 +453,6 @@ namespace NightSnack::Scripting {
         Coordinator& m_coord;
 
         //map of component name to component
-        static const std::unordered_map<std::string, ComponentEntry> componentRegistry;
     };
 
 } // namespace NightSnack::Scripting
