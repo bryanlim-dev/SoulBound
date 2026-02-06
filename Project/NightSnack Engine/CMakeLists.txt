@@ -1,7 +1,7 @@
 # ------------------------------------------------------------ #
 # CMake file for NightSnack Engine
 # Team: Midnight Munchies
-# Module: GAM_200
+# Module: CSD2451
 # ------------------------------------------------------------ #
 
 # Minimum version of CMake required

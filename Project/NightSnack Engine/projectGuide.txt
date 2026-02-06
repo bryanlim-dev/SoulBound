@@ -1,7 +1,7 @@
 # ------------------------------------------------------------ #
 # Project Guide file for NightSnack Engine
 # Team: Midnight Munchies
-# Module: GAM_200
+# Module: CSD2451
 # ------------------------------------------------------------ #
 
 
