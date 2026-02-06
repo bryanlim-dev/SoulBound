@@ -1,3 +1,14 @@
+/******************************************************************************
+ * File:        invis_vs.vert
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan (Primary, 100%) - Created Invisible Vertex Shader
+ *
+ * Description:
+ * Invisible Vertex shader is responsible for determining the final color of each pixel.
+ *
+ * Copyright © 2026 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 
 // Color Vertex shader
 #version 450 core
