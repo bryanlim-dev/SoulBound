@@ -1,3 +1,16 @@
+/******************************************************************************
+ * File:        DistanceJoint2D.cpp
+ * Project:     NightSnack
+ * Author(s):	Clement Ang Yang Ying (Primary, 100%)
+ *
+ * Description:
+ * This file defines the the class DistanceJoint2D and its functions, it
+ * connector to entity and rigidbodies together and allows a swing force to be
+ * added to body A to swing about body B
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 #include "DistanceJoint2D.h"
 
 namespace NightSnack
@@ -122,7 +135,7 @@ namespace NightSnack
             relVel += bodyB->vel.dot(n);
 
         //Baumgarte stabilization (some formula to help stablize the dist )
-        constexpr float beta = 0.3f; // slightly stronger
+        constexpr float beta = 0.8f;
         float bias = (beta / dt) * error;
 
         //Effective mass
@@ -181,10 +194,45 @@ namespace NightSnack
         //Tangent direction (perpendicular)
         Vec2 tangent(-n.y, n.x);
 
-        //Convert force  impulse
-        Vec2 impulse = tangent * forceMagnitude;
+        // How vertical the rope is (1 = vertical, 0 = horizontal)
+        float gravityFactor = fabs(n.y);
 
-        //Apply to bodyA only
+        forceMagnitude *= (0.3f + 0.7f * fabs(n.y));
+
+        // Convert force to impulse
+
+        // Current tangential velocity
+        float tangentialVel = bodyA.vel.dot(tangent);
+
+        // If barely moving, do not inject energy
+        if (fabs(tangentialVel) < 0.01f)
+            return;
+
+        // -----------
+        // Controlled progressive boost
+        // -----------
+
+        const float refSpeed = 8; 
+        float normalizedSpeed = (fabs(tangentialVel) / (refSpeed));
+
+        // Linear growth instead of exponential
+        float speedFactor = 1.0f + (normalizedSpeed * 0.75f);
+
+        // Only boost strongly near bottom of arc
+        float bottomBoost = fabs(n.y); // 1 at bottom, 0 at sides
+
+        // Sharp falloff away from bottom (prevents pivot explosion)
+        bottomBoost = bottomBoost * bottomBoost;
+
+        speedFactor *= bottomBoost;
+
+        // Clamp to avoid instability
+        speedFactor = Clamp(speedFactor, 0.0f, 2.0f);
+
+        // Build impulse
+        Vec2 impulse = tangent * forceMagnitude * speedFactor * coord.GetSystem<ApplicationSystem>()->GetDT();
+
+        //Apply impulse
         bodyA.vel += impulse * bodyA.invMass;
     }
 

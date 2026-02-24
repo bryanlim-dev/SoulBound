@@ -1,10 +1,12 @@
 /******************************************************************************
- * File:        Vector.h
+ * File:        DistanceJoint2D.h
  * Project:     NightSnack
  * Author(s):	Clement Ang Yang Ying (Primary, 100%)
  *
  * Description:
- * This file declares the the class DistanceJoint and its functions
+ * This file declares the the class DistanceJoint2D and its functions, it 
+ * connector to entity and rigidbodies together and allows a swing force to be
+ * added to body A to swing about body B
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.

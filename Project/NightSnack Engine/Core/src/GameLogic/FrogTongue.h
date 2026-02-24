@@ -1,3 +1,16 @@
+/******************************************************************************
+ * File:        FrogTongue.h
+ * Project:     NightSnack
+ * Author(s):	Clement Ang Yang Ying (Primary, 100%)
+ *
+ * Description:
+ * This file declares the the class FrogTongue and its functions
+ * When triggered it finds grappbleable points and connects the owner to that point
+ * via DistanceJoint2D and draws a line/tongue between them
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 #pragma once
 #include <MathLibrary/DistanceJoint2D.h>
 
@@ -13,7 +26,7 @@ namespace NightSnack {
 
 		float m_tongueLengthMax = 450.0f;
 		float m_tongueWidth = 5.f;
-		float m_swingForce = 50.0f;
+		float m_swingForce = 1250.0f;
 
 		bool m_active = false;
 

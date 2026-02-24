@@ -1,3 +1,16 @@
+/******************************************************************************
+ * File:        CharacterSystem.cpp
+ * Project:     NightSnack
+ * Author(s):	Clement Ang Yang Ying (Primary, 100%)
+ *
+ * Description:
+ * This file defines the the class CharacterSystem and its functions, it
+ * is a system that tracks and store CharacterProperties on entities and updates them as needed
+ * added to body A to swing about body B
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 #include "CharacterSystem.h"
 #include "Physics/Physics.h"
 #include "Physics/Collision.h"

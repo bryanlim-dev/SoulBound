@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        FrogTongue.cpp
+ * Project:     NightSnack
+ * Author(s):	Clement Ang Yang Ying (Primary, 100%)
+ *
+ * Description:
+ * This file defines the the class FrogTongue and its functions
+ * When triggered it finds grappbleable points and connects the owner to that point
+ * via DistanceJoint2D and draws a line/tongue between them
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "FrogTongue.h"
 #include <Factory/EntityFactory.h>
 #include <Systems/CharacterSystem.h>
