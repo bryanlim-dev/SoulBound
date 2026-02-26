@@ -219,7 +219,6 @@ namespace NightSnack {
             }
 
 
-            vel.x = -pcont.moveSpeed;
             if (curr_ability == "Grapple") {
                 m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogMove_4_1";
                 m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
@@ -245,6 +244,7 @@ namespace NightSnack {
                 m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
             }
         }
+        //std::cout << "Player Vel: " << vel << std::endl;
     }
 
     void PlayerControllerSystem::Jump(Transform& t, Vec2& vel, PlayerController pcont, bool isGrounded) {

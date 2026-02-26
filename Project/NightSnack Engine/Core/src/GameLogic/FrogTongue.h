@@ -26,7 +26,7 @@ namespace NightSnack {
 
 		float m_tongueLengthMax = 450.0f;
 		float m_tongueWidth = 5.f;
-		float m_swingForce = 1250.0f;
+		float m_swingForce = 750.0f;
 
 		bool m_active = false;
 
