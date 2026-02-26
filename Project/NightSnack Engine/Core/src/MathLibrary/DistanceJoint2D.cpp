@@ -46,6 +46,11 @@ namespace NightSnack
         m_autoConfigure = false;
     }
 
+    float DistanceJoint2D::GetDistance()
+    {
+        return m_distance;
+    }
+
     void DistanceJoint2D::SetLimits(float minD, float maxD)
     {
         m_minDistance = minD;
@@ -62,6 +67,11 @@ namespace NightSnack
     {
         m_frequencyHz = frequencyHz;
         m_dampingRatio = dampingRatio;
+    }
+
+    void DistanceJoint2D::SetAutoConfigure(bool autoConfig)
+    {
+        m_autoConfigure = autoConfig;
     }
 
     void DistanceJoint2D::SetMaxForce(float maxForce)

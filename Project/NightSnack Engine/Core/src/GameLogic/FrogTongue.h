@@ -30,6 +30,8 @@ namespace NightSnack {
 
 		bool m_active = false;
 
+		float m_extendRate = 500.0f;
+
 	public:
 		FrogTongue(){}
 
@@ -37,6 +39,9 @@ namespace NightSnack {
 			m_owner = owner; 
 			disp.Subscribe<InputEvent>([this, &coord](const InputEvent& event)
 				{
+					if (!m_active)
+						return;
+
 					switch (event.inputAction) {
 					case InputEvent::InputAction::PlayerMoveLeft:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
@@ -50,7 +55,15 @@ namespace NightSnack {
 							this->SwingActivated(coord, true);
 						}
 						break;
+					case InputEvent::InputAction::PlayerJump:
+						if (event.pressed == InputEvent::InputActionState::Pressed ||
+							event.pressed == InputEvent::InputActionState::Repeat) {
+							this->ExtendRetractTongue(coord, false);
+						}
+						break;
 					}
+					
+
 
 				});
 		}
@@ -65,6 +78,10 @@ namespace NightSnack {
 
 		//Only supports player
 		void SwingActivated(Coordinator& coord, bool isRight);
+
+		//Extends the tongue
+		void ExtendRetractTongue(Coordinator& coord, bool isExtend);
+
 		void UpdateOwner(Entity e);
 
 	private:

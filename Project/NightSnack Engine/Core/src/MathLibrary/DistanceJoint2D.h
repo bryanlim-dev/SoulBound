@@ -51,10 +51,15 @@ namespace NightSnack
         //Configuration
         void SetAnchors(const Vec2& a, const Vec2& b);
         void SetDistance(float d);
+        float GetDistance();
         void SetLimits(float minD, float maxD);
 
         void EnableSpring(bool enable);
         void SetSpring(float frequencyHz, float dampingRatio);
+
+        //Sets if to auto set the dist between 2 bodies on Initalize
+        //Default is true unless Set Distance/Limits are called
+        void SetAutoConfigure(bool autoConfig);
 
         void SetMaxForce(float maxForce);
         void EnableCollision(bool enable);
