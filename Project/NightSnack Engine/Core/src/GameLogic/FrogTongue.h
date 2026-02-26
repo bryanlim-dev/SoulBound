@@ -61,6 +61,12 @@ namespace NightSnack {
 							this->ExtendRetractTongue(coord, false);
 						}
 						break;
+					case InputEvent::InputAction::PlayerDown:
+						if (event.pressed == InputEvent::InputActionState::Pressed ||
+							event.pressed == InputEvent::InputActionState::Repeat) {
+							this->ExtendRetractTongue(coord, true);
+						}
+						break;
 					}
 					
 

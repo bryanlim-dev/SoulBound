@@ -118,6 +118,7 @@ namespace NightSnack {
 		case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
 		case GLFW_KEY_RIGHT: return InputEvent::InputAction::PlayerMoveRight;
 		case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJump;
+		case GLFW_KEY_DOWN: return InputEvent::InputAction::PlayerDown;
 		case GLFW_KEY_A: return InputEvent::InputAction::PlayerSpecialAbility;
 		case GLFW_KEY_S: return InputEvent::InputAction::PlayerPossess;
 		case GLFW_KEY_D: return InputEvent::InputAction::PlayerUnPossess;
