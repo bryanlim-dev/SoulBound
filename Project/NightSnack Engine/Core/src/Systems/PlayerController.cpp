@@ -121,7 +121,13 @@ namespace NightSnack {
         if (m_prevCheckpoint == INVALID_ENTITY)
             return;
 
+        if (m_flags.grappling)
+        {
+            m_frogTongue.End(m_coord);
+        }
+
         m_coord.ModifyComponent<Transform>(m_player).pos = m_coord.GetComponent<Transform>(m_prevCheckpoint).pos;
+
 
         ResetFlags();
 
@@ -130,6 +136,7 @@ namespace NightSnack {
         {
             m_coord.ModifyComponent<RigidBody>(m_player).vel = Vec2();
         }
+
     }
 
     bool PlayerControllerSystem::UseSpecialAbility() {
