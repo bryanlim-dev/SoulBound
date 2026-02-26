@@ -98,6 +98,7 @@ namespace NightSnack {
 		case GLFW_KEY_RIGHT: return KeyboardKeys::RIGHT_ARROW;
 		case GLFW_KEY_LEFT: return KeyboardKeys::LEFT_ARROW;
 		case GLFW_KEY_UP: return KeyboardKeys::UP_ARROW;
+		case GLFW_KEY_DOWN: return KeyboardKeys::DOWN_ARROW;
 		default: return KeyboardKeys::NUM_TOTAL_KEYBOARD_KEY;
 		}
 	}

@@ -1469,8 +1469,9 @@ namespace ManagedScripts
         RIGHT_ARROW,
         LEFT_ARROW,
         UP_ARROW,
+        DOWN_ARROW,
 
-        NUM_TOTAL_KEYBOARD_KEY  // MUST BE THE LAST
+        NUM_TOTAL_KEYBOARD_KEY	// MUST BE THE LAST
     };
 
 
