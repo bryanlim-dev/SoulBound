@@ -60,7 +60,8 @@ namespace NightSnack
                 "Animator",
                 "Font",
                 "Hierarchy",
-                "Character"
+                "Character",
+                "Collectible"
 			};
         }
 
@@ -102,6 +103,7 @@ namespace NightSnack
                     if (compName == "Font")      { hasComponent = m_coord.HasComponent<Font>(*m_selectedEntity); }
                     if (compName == "Hierarchy") { hasComponent = m_coord.HasComponent<Hierarchy>(*m_selectedEntity); }
                     if (compName == "Character") { hasComponent = m_coord.HasComponent<Character>(*m_selectedEntity); }
+                    if (compName == "Collectible") { hasComponent = m_coord.HasComponent<Collectible>(*m_selectedEntity); }
 
                     if (hasComponent)
                     {
@@ -153,6 +155,7 @@ namespace NightSnack
                             if (compName == "Font")      { FontComponent(); }
                             if (compName == "Hierarchy") { HierarchyComponent(); }
                             if (compName == "Character") { CharacterComponent(); }
+                            if (compName == "Collectible") { CollectibleComponent(); }
                         }
                         ImGui::Separator();
                     }
@@ -317,6 +320,8 @@ namespace NightSnack
         */
         /************************************************************************/
         void CharacterComponent();
+
+        void CollectibleComponent();
 
         /************************************************************************/
         /*!
@@ -1806,6 +1811,66 @@ namespace NightSnack
         }
     }
 
+    inline void InspectorPanel::CollectibleComponent() {
+        if (!m_coord.HasComponent<Collectible>(*m_selectedEntity))
+            return;
+
+        auto& c = m_coord.ModifyComponent<Collectible>(*m_selectedEntity);
+
+        if (ImGui::BeginTable("CollectibleTable", 2, ImGuiTableFlags_SizingFixedFit))
+        {
+            ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+            // Collectible Type
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Type");
+
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+
+            const char* typeNames[] = {
+                "Double Jump",
+                "Key",
+                "Icon"
+            };
+
+            int typeIndex = static_cast<int>(c.type);
+
+            if (ImGui::Combo("##CollectibleType", &typeIndex, typeNames, IM_ARRAYSIZE(typeNames)))
+            {
+                c.type = static_cast<COLLECTIBLE_TYPE>(typeIndex);
+            }
+
+            // Will Respawn
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Will Respawn");
+
+            ImGui::TableNextColumn();
+            ImGui::Checkbox("##WillRespawn", &c.willRespawn);
+
+            // Respawn Time
+            if (c.willRespawn)
+            {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Respawn Steps");
+
+                ImGui::TableNextColumn();
+                ImGui::SetNextItemWidth(-FLT_MIN);
+
+                if (ImGui::InputInt("##RespawnSteps", &c.respawnTimeSteps))
+                {
+                    if (c.respawnTimeSteps < 0)
+                        c.respawnTimeSteps = 0;
+                }
+            }
+            ImGui::EndTable();
+        }
+    }
+
     inline void InspectorPanel::AddComponentButton()
     {
         // Center the button horizontally
@@ -1827,6 +1892,7 @@ namespace NightSnack
         if (!m_coord.HasComponent<Animator>(e))    missing.push_back({ "Animator", false, [this, e] { m_coord.AddComponent<Animator>(e, Animator{}); } });
         if (!m_coord.HasComponent<Font>(e))        missing.push_back({ "Font", false, [this, e] { m_coord.AddComponent<Font>(e, Font{}); } });
         if (!m_coord.HasComponent<Character>(e))   missing.push_back({ "Character", false, [this, e] { m_coord.AddComponent<Character>(e, Character{}); } });
+        if (!m_coord.HasComponent<Collectible>(e))   missing.push_back({ "Collectible", false, [this, e] { m_coord.AddComponent<Collectible>(e, Collectible{}); } });
 
         // Disable button if no components left to add
         if (missing.empty())
@@ -1880,6 +1946,7 @@ namespace NightSnack
             addMenuItem("Animator", [this, e] { m_coord.AddComponent<Animator>(e, Animator{}); }, m_coord.HasComponent<Animator>(e));
             addMenuItem("Font", [this, e] { m_coord.AddComponent<Font>(e, Font{}); }, m_coord.HasComponent<Font>(e));
             addMenuItem("Character", [this, e] { m_coord.AddComponent<Character>(e, Character{}); }, m_coord.HasComponent<Character>(e));
+            addMenuItem("Collectible", [this, e] { m_coord.AddComponent<Collectible>(e, Collectible{}); }, m_coord.HasComponent<Collectible>(e));
             ImGui::EndPopup();
         }
 	}
@@ -1904,6 +1971,7 @@ namespace NightSnack
         if (m_coord.HasComponent<Animator>(e))         removable.push_back({ "Animator", true, [this, e] { m_coord.RemoveComponent<Animator>(e); } });
         if (m_coord.HasComponent<Font>(e))             removable.push_back({ "Font", true, [this, e] { m_coord.RemoveComponent<Font>(e); } });
         if (m_coord.HasComponent<Character>(e))        removable.push_back({ "Character", true, [this, e] { m_coord.RemoveComponent<Character>(e); } });
+        if (m_coord.HasComponent<Collectible>(e))        removable.push_back({ "Collectible", true, [this, e] { m_coord.RemoveComponent<Collectible>(e); } });
 
         // Disable button if no components left to remove
         if (removable.empty())
@@ -1956,6 +2024,8 @@ namespace NightSnack
 						snapshot.script = m_coord.GetComponent<Script>(*m_selectedEntity);
                     else if (strcmp(name, "Character") == 0)
 						snapshot.character = m_coord.GetComponent<Character>(*m_selectedEntity);
+                    else if (strcmp(name, "Collectible") == 0)
+                        snapshot.collectible = m_coord.GetComponent<Collectible>(*m_selectedEntity);
 
                     NightSnack::UndoSystem::Instance().Push(snapshot);
 

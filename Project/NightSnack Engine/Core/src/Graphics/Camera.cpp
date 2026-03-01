@@ -384,18 +384,21 @@ namespace NightSnack {
     }
 
     void CameraSystem::StartCamPan() {
-        const auto& entities = m_coord.GetLivingEntities();
+        m_currCamPanTimer = 0.0f;
+        m_cameraState = CAMERASTATE::PAN_ROOM_COUNTDOWN;
 
-        for (Entity e : entities)
-        {
-            if (m_coord.HasComponent<Collectible>(e) && m_coord.GetComponent<Collectible>(e).type == COLLECTIBLE_TYPE::KEY) {
-                m_targetCamPos = m_coord.GetComponent<Transform>(e).pos;
-                m_currCamPanTimer = 0.0f; // Reset the countdown timer
-                //m_lerpSpeed = m_camPanLerpSpeed; // Reset the speed here if it was changed
-                m_cameraState = CAMERASTATE::PAN_ROOM_COUNTDOWN;
-                break;
-            }
-        }
+        //const auto& entities = m_coord.GetLivingEntities();
+
+        //for (Entity e : entities)
+        //{
+        //    if (m_coord.HasComponent<Collectible>(e) && m_coord.GetComponent<Collectible>(e).type == COLLECTIBLE_TYPE::KEY) {
+        //        m_targetCamPos = m_coord.GetComponent<Transform>(e).pos;
+        //        m_currCamPanTimer = 0.0f; // Reset the countdown timer
+        //        //m_lerpSpeed = m_camPanLerpSpeed; // Reset the speed here if it was changed
+        //        m_cameraState = CAMERASTATE::PAN_ROOM_COUNTDOWN;
+        //        break;
+        //    }
+        //}
     }
 
     void CameraSystem::CenterCameraWhenIdle() {
