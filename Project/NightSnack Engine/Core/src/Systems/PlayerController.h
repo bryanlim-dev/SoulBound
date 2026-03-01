@@ -265,7 +265,12 @@ namespace NightSnack {
                 time = 0.f;
             }
             bool isGrounded = m_flags.isGrounded = c.isGrounded;
-            //
+
+			// reset glide when grounded
+            if (isGrounded && m_flags.isGliding) 
+            {
+                m_flags.isGliding = false;
+            }
 
             bool movingHorizontally = (m_flags.movingLeft ^ m_flags.movingRight);
             bool isFrog = (r.materialName == "FrogMove_4_1");
@@ -278,16 +283,22 @@ namespace NightSnack {
 
             if (shouldWalk)
             {
+                // if just started walking, play immediately
+                if (!m_flags.isWalking)
+                {
+                    m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("frogWalk", 3);
+                    m_flags.walkStepTimer = 0.0f;
+                    m_flags.isWalking = true;
+                }
+
+                // accumulate time
                 m_flags.walkStepTimer += FixedDT;
 
-                // Play a step every X seconds
-                if (m_flags.walkStepTimer >= 0.28f) // tweak for feel
+                // repeat every 0.355f
+                if (m_flags.walkStepTimer >= 0.355f)
                 {
-                    m_coord.GetSystem<AudioSystem>()
-                        ->PlayRandomVariant("frogWalk", 3);
-
+                    m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("frogWalk", 3);
                     m_flags.walkStepTimer = 0.f;
-                    m_flags.isWalking = true;
                 }
             }
             else
@@ -354,6 +365,18 @@ namespace NightSnack {
                     m_frogTongue.End(m_coord);
                     m_flags.grappling = false;
                 }
+
+                // reset glide flag when not gliding
+                if (curr_ability == "Glide" && m_flags.isGliding) 
+                {
+                    m_flags.isGliding = false;
+                }
+            }
+
+            // reset glide flag when grounded
+            if (isGrounded && m_flags.isGliding) 
+            {
+                m_flags.isGliding = false;
             }
 
             prev_ability = curr_ability;
