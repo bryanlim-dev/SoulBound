@@ -1058,7 +1058,7 @@ namespace NightSnack::Scripting {
 
     Entity ScriptInterface::GetPlayerID()
     {
-        return m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();;
+        return m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
     }
 
     void ScriptInterface::KillPlayer()

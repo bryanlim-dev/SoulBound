@@ -94,6 +94,7 @@ namespace NightSnack::Scene {
 				if (physics->EntitiesAreColliding(m_winCollider, m_player)) {
 					CreateWinScreen();
 					m_coord.GetSystem<AudioSystem>()->PlaySFX("playerWin");
+					m_coord.GetSystem<CollectibleSystem>()->ToggleCollectibleIcons(false);
 					winScreenOn = true;
 				}
 			}
@@ -342,8 +343,8 @@ namespace NightSnack::Scene {
 		m_coord.AddComponent<RigidBody>(m_winCollider, RigidBody{});	// Required for physics system
 
 		// Invisible renderer component
-		m_coord.AddComponent<Renderable>(m_winCollider, Renderable{});
-		m_coord.AddComponent<Color>(m_winCollider, Color{});    // zero alpha
+		//m_coord.AddComponent<Renderable>(m_winCollider, Renderable{});
+		//m_coord.AddComponent<Color>(m_winCollider, Color{});    // zero alpha
 
 		Transform& t = m_coord.ModifyComponent<Transform>(m_winCollider);
 		t.pos = {
@@ -418,6 +419,9 @@ namespace NightSnack::Scene {
 
 		m_gameLoaded = true;
 		CacheLevel();
+
+		// Start the camera panning at the very start of the level
+		m_coord.GetSystem<CameraSystem>()->StartCamPan();
 	}
 
 	void SceneManager::LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration) {
@@ -526,6 +530,9 @@ namespace NightSnack::Scene {
 
 		m_gameLoaded = true;
 		winScreenOn = false;
+
+		// Start the camera panning at the very start of the level
+		m_coord.GetSystem<CameraSystem>()->StartCamPan();
 	}
 
 	// Saves information required for levels, including entity information, BGM and name

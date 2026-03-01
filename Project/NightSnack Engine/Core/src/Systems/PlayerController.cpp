@@ -121,7 +121,13 @@ namespace NightSnack {
         if (m_prevCheckpoint == INVALID_ENTITY)
             return;
 
+        if (m_flags.grappling)
+        {
+            m_frogTongue.End(m_coord);
+        }
+
         m_coord.ModifyComponent<Transform>(m_player).pos = m_coord.GetComponent<Transform>(m_prevCheckpoint).pos;
+
 
         ResetFlags();
 
@@ -130,6 +136,7 @@ namespace NightSnack {
         {
             m_coord.ModifyComponent<RigidBody>(m_player).vel = Vec2();
         }
+
     }
 
     bool PlayerControllerSystem::UseSpecialAbility() {
@@ -219,7 +226,6 @@ namespace NightSnack {
             }
 
 
-            vel.x = -pcont.moveSpeed;
             if (curr_ability == "Grapple") {
                 m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogMove_4_1";
                 m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
@@ -229,6 +235,10 @@ namespace NightSnack {
 
             if (m_flags.isGrounded)
                 vel.x = 0.f; // Stop moving when no keys pressed when grounded
+            else if (vel.x >= -pcont.moveSpeed && vel.x <= pcont.moveSpeed) //Midair & within player movment
+            {
+                vel.x = 0.f; // Stop moving when no keys and within speed
+            }
 
             if (curr_ability == "Grapple") {
                 m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogIdle_4_1";
@@ -245,6 +255,7 @@ namespace NightSnack {
                 m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
             }
         }
+        //std::cout << "Player Vel: " << vel << std::endl;
     }
 
     void PlayerControllerSystem::Jump(Transform& t, Vec2& vel, PlayerController pcont, bool isGrounded) {

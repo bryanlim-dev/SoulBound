@@ -35,6 +35,7 @@ namespace NightSnack {
             PlayerMoveLeft,     // LEFT ARROW
             PlayerMoveRight,    // RIGHT ARROW
             PlayerJump,         // UP ARROW
+            PlayerDown,         // DOWN ARROW
             PlayerPossess,          // S KEY
             PlayerSpecialAbility,   // A KEY
             PlayerUnPossess,        // D KEY
