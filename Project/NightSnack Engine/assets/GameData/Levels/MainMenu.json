@@ -63,6 +63,65 @@
         {
             "Components": {
                 "Audio": {
+                    "audioKey": "buttonSelect",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "OpenMenu",
+                    "target": "SettingsMenu",
+                    "type": "Clicker"
+                },
+                "Collider": {
+                    "height": 128.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "GroundTileTop",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "name": [
+                        "WiggleScript"
+                    ]
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "Settings-Button",
+                "Position": {
+                    "x": 1.8254623413085938,
+                    "y": -387.511474609375,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 320.0,
+                    "y": 128.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Audio": {
                     "audioKey": "buttonQuit",
                     "isPlaying": false,
                     "loop": false,
@@ -207,7 +266,7 @@
                 "Position": {
                     "x": 0.0,
                     "y": 83.94999694824219,
-                    "z": 0.0
+                    "z": 2.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -232,7 +291,7 @@
                     "isLooping": true,
                     "isPlaying": true,
                     "playbackSpeed": 1.5,
-                    "spriteSheetName": "Sprites\\MainMenu\\TitleFireAnim_4_1.png"
+                    "spriteSheetName": "Sprites\\UI\\MainMenu\\TitleFireAnim_4_1.png"
                 },
                 "Renderable": {
                     "isWireframe": false,
@@ -247,12 +306,12 @@
                 "modified": true
             },
             "Transform": {
-                "Layer": "Foreground",
+                "Layer": "GameLayer",
                 "Name": "TitleFire",
                 "Position": {
                     "x": -6.033731460571289,
                     "y": 102.0199966430664,
-                    "z": 0.0
+                    "z": 4.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -298,9 +357,20 @@
         "offsetY": 0.0,
         "posX": 0.0,
         "posY": 0.0,
-        "posZ": 10.0,
+        "posZ": 20.0,
         "width": 1600.0,
         "zoom": 1.0
     },
-    "Name": "MainMenu"
+    "Name": "MainMenu",
+    "WinZone": {
+        "ConfigFile": "",
+        "Position": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "Scale": {
+            "x": 100.0,
+            "y": 100.0
+        }
+    }
 }

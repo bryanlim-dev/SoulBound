@@ -27,6 +27,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <stack>
 
 namespace NightSnack::Scene {
 
@@ -258,8 +259,8 @@ namespace NightSnack::Scene {
 		bool m_restart = false;
 
 		bool m_menuOpen = false;
-		std::vector<Entity> m_menuEntities;
-		std::string m_currentMenu;
+		std::stack<std::set<Entity>> m_menuEntities;
+		//std::string m_currentMenu;
 		std::unordered_map<std::string, size_t> m_menuKeys; // Cache menu JSON keys
 		
 		bool m_scheduledLevelLoad;

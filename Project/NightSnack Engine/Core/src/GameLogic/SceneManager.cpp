@@ -158,10 +158,10 @@ namespace NightSnack::Scene {
 			// only check menu buttons
 			if (m_menuOpen) {
 				// Check if this entity is in the menu entities list
-				auto it = std::find(m_menuEntities.begin(), m_menuEntities.end(), e);
+				auto it = std::find(m_menuEntities.top().begin(), m_menuEntities.top().end(), e);
 
 				// skip if not a menu button
-				if (it == m_menuEntities.end()) { continue; }
+				if (it == m_menuEntities.top().end()) { continue; }
 			}
 
 			Transform const& t = m_coord.GetComponent<Transform>(e);
@@ -611,9 +611,9 @@ namespace NightSnack::Scene {
 
 		if (m_levelCache.empty()) { return; }
 		// Reset menus
-		m_menuEntities.clear();
+		while (!m_menuEntities.empty()) { m_menuEntities.pop(); }
 		m_menuOpen = false;
-		m_currentMenu.clear();
+		//m_currentMenu.clear();
 		winScreenOn = false;
 
 		// Restore all entities to original
@@ -672,10 +672,10 @@ namespace NightSnack::Scene {
 	}
 
 	void SceneManager::OpenMenu(std::string const& menuname) {
-		if (m_menuOpen) {
-			std::cerr << "[SceneManager] Menu already open, closing first\n";
-			CloseMenu();
-		}
+		//if (m_menuOpen) {
+		//	std::cerr << "[SceneManager] Menu already open, closing first\n";
+		//	CloseMenu();
+		//}
 		std::cerr << "[SceneManager] Opening menu: " << menuname << "\n";
 
 		// Build the menu file path
@@ -717,6 +717,8 @@ namespace NightSnack::Scene {
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 
 		if (menuData.contains("Entities")) {
+			std::set<Entity> currMenuEntities;
+
 			for (auto const& entityData : menuData["Entities"]) {
 				Entity e = 0;
 				std::cerr << "[Open Menu] Check 1\n";
@@ -736,7 +738,7 @@ namespace NightSnack::Scene {
 						// offset menu position by camera position
 						transform.pos.x += camX;
 						transform.pos.y += camY;
-						transform.pos.z = 1.5f;
+						transform.pos.z += (float)m_menuEntities.size() * 5.f;
 
 						std::cerr << "  Prefab: " << prefabName
 							<< " positioned at (" << transform.pos.x << ", " << transform.pos.y << ", " << transform.pos.z << ")"
@@ -747,9 +749,22 @@ namespace NightSnack::Scene {
 
 					e = factory->Create(prefabName, transform);
 				}
+				else if (entityData.contains("Components")) {
+					//std::cerr << "[Open Menu] Check 3\n";
+					e = factory->Create();
+					Transform t = entityData["Transform"];
+					t.pos += { camX, camY, 0.f };
+					t.pos.z += (float)m_menuEntities.size() * 5.f;
+					// Divide by zoom to make menu appear same size on screen
+					t.scale.x /= zoom;
+					t.scale.y /= zoom;
+					m_coord.ModifyComponent<Transform>(e) = t;
+
+					factory->UnpackEntityComponents(e, entityData["Components"]);
+				}
 
 				if (e != INVALID_ENTITY) {
-					m_menuEntities.push_back(e);
+					currMenuEntities.insert(e);
 
 					// Check if entity is a button and add to system
 					if (m_coord.HasComponent<ButtonInfo>(e) &&
@@ -760,10 +775,11 @@ namespace NightSnack::Scene {
 					}
 				}
 			}
+			m_menuEntities.push(currMenuEntities);
 		}
 
 		m_menuOpen = true;
-		m_currentMenu = menuname;
+		//m_currentMenu = menuname;
 
 		// only pause for in game menus
 		if (menuname == "PauseMenu") {
@@ -772,7 +788,7 @@ namespace NightSnack::Scene {
 		}
 
 		std::cerr << "[SceneManager] Opened menu: " << menuname
-			<< " with " << m_menuEntities.size() << " entities\n";
+			<< " with " << m_menuEntities.top().size() << " entities\n";
 	}
 
 	void SceneManager::CloseMenu() {
@@ -784,8 +800,9 @@ namespace NightSnack::Scene {
 
 		// destroy all menu entities
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
+		std::set<Entity> currMenuEntities = m_menuEntities.top();
 
-		for (Entity e : m_menuEntities) {
+		for (Entity e : currMenuEntities) {
 
 			factory->RemoveEntity(e);
 		}
@@ -796,11 +813,11 @@ namespace NightSnack::Scene {
 			//std::cerr << "[SceneManager] Game unpaused\n";
 		}
 
-		m_menuEntities.clear();
-		m_menuOpen = false;
-		m_currentMenu.clear();
+		m_menuEntities.pop();
+		if (m_menuEntities.empty()) { m_menuOpen = false; }
+		//m_currentMenu.clear();
 
-		//std::cerr << "[SceneManager] Closed menu\n";
+		std::cerr << "[SceneManager] Closed menu\n";
 	}
 
 }	// NightSnack

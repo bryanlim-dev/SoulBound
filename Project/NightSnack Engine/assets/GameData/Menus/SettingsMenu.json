@@ -3,6 +3,14 @@
     "offsetY": 0.0,
     "Entities": [
         {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Background color",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
             "Transform": {
                 "Layer": "Foreground",
                 "Position": { 
@@ -14,15 +22,104 @@
                 "Scale": { 
                     "x": 1000.0, 
                     "y": 800.0 
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                    },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
                 }
-            },
-            "prefab": "MainMenu-Background"
+            }
         },
         {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonSelect",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "OpenMenu",
+                    "target": "CreditsMenu",
+                    "type": "Clicker"
+                },
+                "Collider": {
+                    "height": 128.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "DoubleJumpCollectable",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Settings-Button",
+                "Position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 4.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 320.0,
+                    "y": 128.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            }
+        },
+        {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonQuit",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "CloseMenu",
+                    "target": "",
+                    "type": "Clicker"
+                },
+                "Collider": {
+                    "height": 64.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 64.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "TunnelEntrance1",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
             "Transform": {
                 "Layer": "Foreground",
                 "Position": { 
-                    "x": 0.0, 
+                    "x": 400.0, 
                     "y": -300.0, 
                     "z": 1.0 
                 },
@@ -40,8 +137,7 @@
                     "x": 0.0,
                     "y": 0.0
                 }
-            },
-            "prefab": "CloseButton"
+            }
         }
     ]
 }
