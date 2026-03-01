@@ -60,6 +60,7 @@ namespace NightSnack
 		}
 
 		m_anchor = cloestGrappable;
+		m_distanceJoint.SetAutoConfigure(true);
 		m_distanceJoint.Initialize(coord, ownerPos, coord.GetComponent<Transform>(m_anchor).pos);
 		m_distanceJoint.SetBodies(m_owner, m_anchor);
 
@@ -98,8 +99,9 @@ namespace NightSnack
 		Vec3 ownerPt = coord.GetComponent<Transform>(m_owner).pos;
 		Vec3 anchorPt = coord.GetComponent<Transform>(m_anchor).pos;
 
-		if (DistanceToAnchor(ownerPt, anchorPt) >= m_tongueLengthMax)
-			return false;
+		//Removed max dist check its messing with the extend/retract
+		//if (DistanceToAnchor(ownerPt, anchorPt) >= m_tongueLengthMax)
+		//	return false;
 
 		m_distanceJoint.Solve(coord, ownerPt, anchorPt, dt);
 		UpdateTonguePos(coord);
@@ -134,6 +136,28 @@ namespace NightSnack
 			m_distanceJoint.ApplySwingForce(coord, m_swingForce);
 		else
 			m_distanceJoint.ApplySwingForce(coord, -m_swingForce);
+
+		UpdateTonguePos(coord);
+	}
+
+	void FrogTongue::ExtendRetractTongue(Coordinator& coord, bool isExtend)
+	{
+		if (!m_active || m_tongue == INVALID_ENTITY)
+			return;
+
+		float dt = coord.GetSystem<ApplicationSystem>()->GetDT();
+
+		float newLength = m_distanceJoint.GetDistance();
+
+		if (isExtend)
+			newLength += (m_extendRate * dt);
+		else
+			newLength -= (m_extendRate * dt);
+
+		//Make sure it dosnt over or undershoot
+		newLength = std::clamp(newLength, 0.0f, m_tongueLengthMax);
+
+		m_distanceJoint.SetDistance(newLength);
 
 		UpdateTonguePos(coord);
 	}

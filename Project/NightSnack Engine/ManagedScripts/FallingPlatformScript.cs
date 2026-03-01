@@ -22,7 +22,7 @@ namespace ManagedScripts
         [SerializeField]
         public float fallGravityMultiplier = 2000f;
 
-        private enum State
+        public enum State
         {
             Idle,
             Wiggle1,
@@ -33,7 +33,7 @@ namespace ManagedScripts
         }
 
         // Platform state variables
-        private State currentState = State.Idle;
+        public State currentState = State.Idle;
         private float stateTimer = 0f;
         private Vector3 initialPosition;
         private float fallVelocity = 0f;
