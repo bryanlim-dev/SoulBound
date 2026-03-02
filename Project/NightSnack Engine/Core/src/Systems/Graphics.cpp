@@ -67,7 +67,7 @@ namespace NightSnack {
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
 			////std::cout << "Size of InstanceData: " << sizeof(Mesh::InstanceData);
 		}
-
+		glEnable(GL_DEPTH_TEST);
 		LoadTextures();
 	}
 

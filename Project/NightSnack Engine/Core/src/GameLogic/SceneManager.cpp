@@ -158,10 +158,10 @@ namespace NightSnack::Scene {
 			// only check menu buttons
 			if (m_menuOpen) {
 				// Check if this entity is in the menu entities list
-				auto it = std::find(m_menuEntities.top().begin(), m_menuEntities.top().end(), e);
+				auto it = std::find(m_menuEntities.begin(), m_menuEntities.end(), e);
 
 				// skip if not a menu button
-				if (it == m_menuEntities.top().end()) { continue; }
+				if (it == m_menuEntities.end()) { continue; }
 			}
 
 			Transform const& t = m_coord.GetComponent<Transform>(e);
@@ -611,7 +611,7 @@ namespace NightSnack::Scene {
 
 		if (m_levelCache.empty()) { return; }
 		// Reset menus
-		while (!m_menuEntities.empty()) { m_menuEntities.pop(); }
+		m_menuEntities.clear();
 		m_menuOpen = false;
 		//m_currentMenu.clear();
 		winScreenOn = false;
@@ -672,11 +672,13 @@ namespace NightSnack::Scene {
 	}
 
 	void SceneManager::OpenMenu(std::string const& menuname) {
-		//if (m_menuOpen) {
-		//	std::cerr << "[SceneManager] Menu already open, closing first\n";
-		//	CloseMenu();
-		//}
-		std::cerr << "[SceneManager] Opening menu: " << menuname << "\n";
+
+		if (m_menuOpen) {
+			std::cerr << "[SceneManager] Menu already open, closing first\n";
+			CloseMenu(true);
+		}
+
+		//std::cerr << "[SceneManager] Opening menu: " << menuname << "\n";
 
 		// Build the menu file path
 		std::string menuPath = "GameData/Menus/" + menuname + ".json";
@@ -710,15 +712,13 @@ namespace NightSnack::Scene {
 		float camY = camTransform.pos.y;
 		float zoom = camera.zoom;
 
-		std::cerr << "[SceneManager] Centering menu on camera at (" << camX << ", " << camY
-			<< ") with zoom: " << zoom << "\n";
+		//std::cerr << "[SceneManager] Centering menu on camera at (" << camX << ", " << camY
+		//	<< ") with zoom: " << zoom << "\n";
 
 		// Create menu entities
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 
 		if (menuData.contains("Entities")) {
-			std::set<Entity> currMenuEntities;
-
 			for (auto const& entityData : menuData["Entities"]) {
 				Entity e = 0;
 				std::cerr << "[Open Menu] Check 1\n";
@@ -738,7 +738,7 @@ namespace NightSnack::Scene {
 						// offset menu position by camera position
 						transform.pos.x += camX;
 						transform.pos.y += camY;
-						transform.pos.z += (float)m_menuEntities.size() * 5.f;
+						transform.pos.z += (float)m_menuEntities.size() * 2.f;
 
 						std::cerr << "  Prefab: " << prefabName
 							<< " positioned at (" << transform.pos.x << ", " << transform.pos.y << ", " << transform.pos.z << ")"
@@ -754,17 +754,19 @@ namespace NightSnack::Scene {
 					e = factory->Create();
 					Transform t = entityData["Transform"];
 					t.pos += { camX, camY, 0.f };
-					t.pos.z += (float)m_menuEntities.size() * 5.f;
+					t.pos.z += (float)m_menuEntities.size() * 2.f;
 					// Divide by zoom to make menu appear same size on screen
 					t.scale.x /= zoom;
 					t.scale.y /= zoom;
+					//std::cerr << "[SceneManager] Created menu entity " << e << " to system\n"
+					//	<< "Position <" << t.pos.x << ',' << t.pos.y << ',' << t.pos.z << ">\n";
 					m_coord.ModifyComponent<Transform>(e) = t;
 
 					factory->UnpackEntityComponents(e, entityData["Components"]);
 				}
 
 				if (e != INVALID_ENTITY) {
-					currMenuEntities.insert(e);
+					m_menuEntities.insert(e);
 
 					// Check if entity is a button and add to system
 					if (m_coord.HasComponent<ButtonInfo>(e) &&
@@ -775,49 +777,66 @@ namespace NightSnack::Scene {
 					}
 				}
 			}
-			m_menuEntities.push(currMenuEntities);
+			m_menus.push(menuname);
 		}
-
 		m_menuOpen = true;
-		//m_currentMenu = menuname;
 
-		// only pause for in game menus
-		if (menuname == "PauseMenu") {
-			m_coord.Pause();
-			std::cerr << "[SceneManager] Game paused\n";
+		// pause for in game menus
+		if (m_dispatcher)
+		{
+			m_dispatcher->QueueEvent(
+				std::make_unique<InputEvent>(InputEvent::InputAction::PhysicsDebugMode, 
+											InputEvent::InputActionState::Pressed));
 		}
+		std::cerr << "[SceneManager] Game paused\n";
 
 		std::cerr << "[SceneManager] Opened menu: " << menuname
-			<< " with " << m_menuEntities.top().size() << " entities\n";
+			<< " with " << m_menuEntities.size() << " entities\n";
 	}
 
-	void SceneManager::CloseMenu() {
+	void SceneManager::CloseMenu(bool opening) {
 		if (!m_menuOpen) {
 			return;
 		}
 
-		//std::cerr << "[SceneManager] Closing menu: " << m_currentMenu << '\n';
-
-		// destroy all menu entities
+		// destroy all menu entities ------------------------------------------------
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
-		std::set<Entity> currMenuEntities = m_menuEntities.top();
-
-		for (Entity e : currMenuEntities) {
-
+		for (Entity e : m_menuEntities) {
 			factory->RemoveEntity(e);
 		}
+		m_menuEntities.clear();
+		//m_menus.pop();
+		// --------------------------------------------------------------------------
 
-		// unpause only if it was paused
-		if (m_coord.IsPaused()) {
-			m_coord.Unpause();
-			//std::cerr << "[SceneManager] Game unpaused\n";
+		if (!opening) {
+			if (!m_menus.empty()) {
+				m_menus.pop();
+				if (!m_menus.empty()) {
+					OpenMenu(m_menus.top());
+					m_menus.pop();
+				}
+			}
 		}
 
-		m_menuEntities.pop();
-		if (m_menuEntities.empty()) { m_menuOpen = false; }
-		//m_currentMenu.clear();
+		if (m_menuEntities.empty()) {
+			if (m_dispatcher)
+			{
+				m_dispatcher->QueueEvent(
+					std::make_unique<InputEvent>(InputEvent::InputAction::PhysicsDebugMode,
+						InputEvent::InputActionState::Pressed));
+			}
+			//std::cerr << "[SceneManager] Game unpaused\n";
+			m_menuOpen = false;
+		}
 
 		std::cerr << "[SceneManager] Closed menu\n";
+		std::cout << '\n';
+		std::stack<std::string> temp = m_menus;
+		while (!temp.empty()) {
+			std::cout << temp.top() << "\n";
+			temp.pop();
+		}
+		std::cout << '\n';
 	}
 
 }	// NightSnack

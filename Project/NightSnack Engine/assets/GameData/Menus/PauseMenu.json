@@ -3,6 +3,14 @@
     "offsetY": 0.0,
     "Entities": [
         {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Background Color",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
             "Transform": {
                 "Layer": "Foreground",
                 "Position": { 
@@ -12,24 +20,51 @@
                 },
                 "Rotation": 0.0,
                 "Scale": { 
-                    "x": 1000.0, 
-                    "y": 800.0 
+                    "x": 400.0, 
+                    "y": 1200.0
                 }
-            },
-            "prefab": "MainMenu-Background"
+            }
         },
         {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonQuit",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "CloseMenu",
+                    "target": "",
+                    "type": "Clicker"
+                },
+                "Collider": {
+                    "height": 64.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 64.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "FrogIdle_1_1",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
             "Transform": {
                 "Layer": "Foreground",
                 "Position": { 
                     "x": 0.0, 
                     "y": -300.0, 
-                    "z": 1.0 
+                    "z": 1.2 
                 },
                 "Rotation": 0.0,
                 "Scale": { 
-                    "x": 100.0, 
-                    "y": 100.0 
+                    "x": 500.0, 
+                    "y": 350.0 
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -40,8 +75,7 @@
                     "x": 0.0,
                     "y": 0.0
                 }
-            },
-            "prefab": "CloseButton"
+            }
         }
     ]
 }

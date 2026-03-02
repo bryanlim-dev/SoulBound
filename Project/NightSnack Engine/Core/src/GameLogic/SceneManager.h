@@ -216,7 +216,7 @@ namespace NightSnack::Scene {
 		/**
 		 * @brief Closes the currently open menu.
 		 */
-		void CloseMenu();
+		void CloseMenu(bool o = false);
 
 		/**
 		 * @brief Checks if a menu is currently open.
@@ -259,8 +259,8 @@ namespace NightSnack::Scene {
 		bool m_restart = false;
 
 		bool m_menuOpen = false;
-		std::stack<std::set<Entity>> m_menuEntities;
-		//std::string m_currentMenu;
+		std::set<Entity> m_menuEntities;
+		std::stack<std::string> m_menus;
 		std::unordered_map<std::string, size_t> m_menuKeys; // Cache menu JSON keys
 		
 		bool m_scheduledLevelLoad;
