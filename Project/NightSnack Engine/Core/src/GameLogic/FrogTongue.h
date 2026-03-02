@@ -24,7 +24,7 @@ namespace NightSnack {
 
 		DistanceJoint2D m_distanceJoint;
 
-		float m_tongueLengthMax = 450.0f;
+		float m_tongueLengthMax = 550.0f;
 		float m_tongueWidth = 5.f;
 		float m_swingForce = 750.0f;
 
