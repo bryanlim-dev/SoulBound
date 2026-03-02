@@ -6,7 +6,39 @@
             "Components": {
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "Background Color",
+                    "materialName": "UIMenu-Overlay",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Position": { 
+                    "x": 0.0, 
+                    "y": 0.0, 
+                    "z": 1.0 
+                },
+                "Rotation": 0.0,
+                "Scale": { 
+                    "x": 1600.0, 
+                    "y": 900.0 
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                    },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            }
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "UIMenu-Backdrop",
                     "meshName": "square"
                 },
                 "modified": true

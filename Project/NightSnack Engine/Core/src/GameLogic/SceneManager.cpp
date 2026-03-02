@@ -805,9 +805,7 @@ namespace NightSnack::Scene {
 			factory->RemoveEntity(e);
 		}
 		m_menuEntities.clear();
-		//m_menus.pop();
 		// --------------------------------------------------------------------------
-
 		if (!opening) {
 			if (!m_menus.empty()) {
 				m_menus.pop();
@@ -817,7 +815,6 @@ namespace NightSnack::Scene {
 				}
 			}
 		}
-
 		if (m_menuEntities.empty()) {
 			if (m_dispatcher)
 			{
@@ -828,15 +825,6 @@ namespace NightSnack::Scene {
 			//std::cerr << "[SceneManager] Game unpaused\n";
 			m_menuOpen = false;
 		}
-
-		std::cerr << "[SceneManager] Closed menu\n";
-		std::cout << '\n';
-		std::stack<std::string> temp = m_menus;
-		while (!temp.empty()) {
-			std::cout << temp.top() << "\n";
-			temp.pop();
-		}
-		std::cout << '\n';
 	}
 
 }	// NightSnack

@@ -1,0 +1,46 @@
+{
+    "BGM": "MainMenu",
+    "Entities": [],
+    "MainCamera": {
+        "KeyFrames": [
+            {
+                "maxX": 0.0,
+                "maxY": 0.0,
+                "minX": 0.0,
+                "minY": 0.0,
+                "pos": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0
+                },
+                "scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "zoom": 1.0
+            }
+        ],
+        "cameraLock": false,
+        "height": 900.0,
+        "isMainCam": true,
+        "offsetX": 0.0,
+        "offsetY": 0.0,
+        "posX": 0.0,
+        "posY": 0.0,
+        "posZ": 10.0,
+        "width": 1600.0,
+        "zoom": 1.0
+    },
+    "Name": "OptionsMenuBuild",
+    "WinZone": {
+        "ConfigFile": "",
+        "Position": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "Scale": {
+            "x": 100.0,
+            "y": 100.0
+        }
+    }
+}
