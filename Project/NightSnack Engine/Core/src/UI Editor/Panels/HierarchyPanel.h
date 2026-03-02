@@ -14,6 +14,7 @@
 #pragma once
 
 #include "AllPanels.h"
+#include "GameLogic/SceneManager.h"
 
 namespace NightSnack
 {
@@ -51,6 +52,8 @@ namespace NightSnack
 			// Set initial window size and style
             //ImGui::SetNextWindowSize(ImVec2(260, 300), ImGuiCond_Once);
 
+            std::vector<Entity> camTriggerDeleteQueue;
+
 			// Hierarchy Window
             ImGui::Begin("Hierarchy");
 
@@ -72,6 +75,8 @@ namespace NightSnack
                     {
                         factory->Create();
                     }
+
+					// Add Collider button to Create collider entity
                     ImGui::SameLine();
                     if (ImGui::Button("Create Collider")) {
 
@@ -131,10 +136,99 @@ namespace NightSnack
                     ImGui::EndTabItem();
                 }
 
+                // CamTriggers Tab
+                if (ImGui::BeginTabItem("CamTriggers"))
+                {
+                    auto sceneManager = m_coord.GetSystem<NightSnack::Scene::SceneManager>();
+                    auto keyframesCopy = sceneManager->GetCameraKeyframes();
+                    static int selectedKeyframe = 0;
+
+                    ImGui::Text("Select Keyframe for CamTrigger:");
+                    for (int i = 0; i < keyframesCopy.size(); ++i)
+                    {
+                        float minX = keyframesCopy[i].second["minX"];
+                        float maxX = keyframesCopy[i].second["maxX"];
+                        char label[64];
+                        sprintf(label, "Keyframe %d (minX: %.1f, maxX: %.1f)", i, minX, maxX);
+                        if (ImGui::Selectable(label, selectedKeyframe == i))
+                        {
+                            selectedKeyframe = i;
+                        }
+                    }
+                    if (ImGui::Button("Create CamTrigger"))
+                    {
+                        Entity sceneCam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
+                        Vec3 camPos = m_coord.GetComponent<Transform>(sceneCam).pos;
+                        Vec2 scale = Vec2{ 100.f, 100.f };
+                        json bounds = keyframesCopy[selectedKeyframe].second;
+                        sceneManager->CreateCamTrigger(camPos, scale, bounds);
+                    }
+                    ImGui::Separator();
+                    ImGui::Text("Existing CamTriggers:");
+                    for (int i = 0; i < keyframesCopy.size(); ++i)
+                    {
+                        ImGui::PushID(i);
+                        Entity camTriggerEntity = keyframesCopy[i].first;
+                        json& bounds = keyframesCopy[i].second;
+
+                        ImGui::Text("CamTrigger %d: minX=%.1f, maxX=%.1f, zoom=%.2f", i, bounds["minX"], bounds["maxX"], bounds["zoom"]);
+                        Transform& t = m_coord.ModifyComponent<Transform>(camTriggerEntity);
+                        Collider& c = m_coord.ModifyComponent<Collider>(camTriggerEntity);
+
+                        // Position
+                        float pos[3] = { t.pos.x, t.pos.y, t.pos.z };
+                        if (ImGui::InputFloat3("Position", pos)) {
+                            t.pos.x = pos[0];
+                            t.pos.y = pos[1];
+                            t.pos.z = pos[2];
+                            bounds["pos"]["x"] = pos[0];
+                            bounds["pos"]["y"] = pos[1];
+                            bounds["pos"]["z"] = pos[2];
+                        }
+
+                        // Scale
+                        float scale[2] = { t.scale.x, t.scale.y };
+                        if (ImGui::InputFloat2("Scale", scale)) {
+                            t.scale.x = scale[0];
+                            t.scale.y = scale[1];
+                            c.width = scale[0];
+                            c.height = scale[1];
+                            bounds["scale"]["x"] = scale[0];
+                            bounds["scale"]["y"] = scale[1];
+                        }
+
+						// Bounds
+                        float minX = bounds["minX"];
+                        float maxX = bounds["maxX"];
+                        float zoom = bounds["zoom"];
+                        if (ImGui::InputFloat("minX", &minX)) bounds["minX"] = minX;
+                        if (ImGui::InputFloat("maxX", &maxX)) bounds["maxX"] = maxX;
+                        if (ImGui::InputFloat("zoom", &zoom)) bounds["zoom"] = zoom;
+
+                        if (ImGui::Button("Delete CamTrigger"))
+                        {
+                            camTriggerDeleteQueue.push_back(camTriggerEntity);
+                        }
+                        ImGui::PopID();
+                        ImGui::Separator();
+                    }
+                    ImGui::EndTabItem();
+                }
+
                 ImGui::EndTabBar();
             }
 
             ImGui::End();
+
+            // Process CamTrigger deletions after ImGui::End()
+            if (!camTriggerDeleteQueue.empty())
+            {
+                auto sceneManager = m_coord.GetSystem<NightSnack::Scene::SceneManager>();
+                for (Entity e : camTriggerDeleteQueue)
+                {
+                    sceneManager->DeleteCamTrigger(e);
+                }
+            }
         }
 
     private:
@@ -152,18 +246,29 @@ namespace NightSnack
         void DeleteEntity()
         {
             auto factory = m_coord.GetSystem<EntityFactory>();
-
-			// Record entity deletion for undo
             auto prefabName = factory->GetEntityPrefabName(*m_selectedEntity);
             auto transform = m_coord.GetComponent<Transform>(*m_selectedEntity);
-            NightSnack::UndoSystem::Instance().Push(
-                NightSnack::EntityDeleteSnapshot{ *m_selectedEntity, prefabName, transform }
-            );
 
-			// Remove entity from ECS
-            factory->RemoveEntity(*m_selectedEntity);
-            m_uiNames->erase(*m_selectedEntity);
-            *m_selectedEntity = INVALID_ENTITY;
+            if (m_coord.HasComponent<Transform>(*m_selectedEntity) && m_coord.GetComponent<Transform>(*m_selectedEntity).name == "CamTrigger") {
+                auto sceneManager = m_coord.GetSystem<NightSnack::Scene::SceneManager>();
+                if (sceneManager) {
+                    NightSnack::UndoSystem::Instance().Push(
+                        NightSnack::EntityDeleteSnapshot{ *m_selectedEntity, prefabName, transform }
+                    );
+                    sceneManager->DeleteCamTrigger(*m_selectedEntity);
+                }
+            }
+            else {
+                // Record entity deletion for undo
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::EntityDeleteSnapshot{ *m_selectedEntity, prefabName, transform }
+                );
+
+                // Remove entity from ECS
+                factory->RemoveEntity(*m_selectedEntity);
+                m_uiNames->erase(*m_selectedEntity);
+                *m_selectedEntity = INVALID_ENTITY;
+            }
         }
 
         /************************************************************************/

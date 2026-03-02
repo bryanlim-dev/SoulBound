@@ -165,8 +165,14 @@ namespace NightSnack {
 					if (m_coord.HasComponent<Animator>(e)) {
 						auto& animator = m_coord.GetComponent<Animator>(e);
 						// Pass the UV coordinates that were updated from the AnimationSystem
-						instance.uvRect = glm::vec4{ animator.uvTopLeft.x, animator.uvTopLeft.y,
-							animator.uvBottomRight.x, animator.uvBottomRight.y };
+						glm::vec4 uv = { animator.uvTopLeft.x, animator.uvTopLeft.y,
+											animator.uvBottomRight.x, animator.uvBottomRight.y };
+						// Swap the y coordinates for animated entities on the GAMEUI layer
+						if (l.Type() == LayerType::GAMEUI) {
+							std::swap(uv.y, uv.w);
+						}
+						instance.uvRect = uv;
+
 					} else {
 						// Non-animated textures will use default values
 						instance.uvRect = glm::vec4{ 0.f, 0.f, 1.f, 1.f };
@@ -265,8 +271,15 @@ namespace NightSnack {
 						// Entities with textures
 						if (m_coord.HasComponent<Animator>(e)) {
 							auto& animator = m_coord.GetComponent<Animator>(e);
-							shader->SetVec4("uUVRect", { animator.uvTopLeft.x, animator.uvTopLeft.y,
-								animator.uvBottomRight.x, animator.uvBottomRight.y });
+
+							glm::vec4 uv = { animator.uvTopLeft.x, animator.uvTopLeft.y,
+											animator.uvBottomRight.x, animator.uvBottomRight.y };
+							// Swap the y coordinates for animated entities on the GAMEUI layer
+							if (l.Type() == LayerType::GAMEUI) {
+								std::swap(uv.y, uv.w);
+							}
+							shader->SetVec4("uUVRect", uv);
+
 						} else {
 							shader->SetVec4("uUVRect", { 0.f, 0.f, 1.f, 1.f });
 						}

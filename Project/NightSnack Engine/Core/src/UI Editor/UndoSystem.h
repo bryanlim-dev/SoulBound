@@ -91,6 +91,7 @@ namespace NightSnack {
 		std::optional<Animator> animator;
 		std::optional<Font> font;
 		std::optional<Character> character;
+		std::optional<Collectible> collectible;
     };
 
     struct EntityCreateSnapshot
