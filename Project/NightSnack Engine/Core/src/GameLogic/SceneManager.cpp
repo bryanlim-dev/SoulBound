@@ -421,7 +421,11 @@ namespace NightSnack::Scene {
 		CacheLevel();
 
 		// Start the camera panning at the very start of the level
-		m_coord.GetSystem<CameraSystem>()->StartCamPan();
+		if (levelname == "LevelTutorial")
+			m_coord.GetSystem<CameraSystem>()->StartCamPan(false);
+		else
+			m_coord.GetSystem<CameraSystem>()->StartCamPan(true);
+
 	}
 
 	void SceneManager::LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration) {

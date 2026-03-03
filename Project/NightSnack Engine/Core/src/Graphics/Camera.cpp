@@ -383,7 +383,22 @@ namespace NightSnack {
         }
     }
 
+    void CameraSystem::StartCamPan(bool isPannningEnabled)
+    {
+        m_panEnabled = isPannningEnabled;
+        if (m_panEnabled)
+            StartCamPan();
+        else
+            m_cameraState = CAMERASTATE::FOLLOW_PLAYER;
+    }
+
     void CameraSystem::StartCamPan() {
+        if (!m_panEnabled)
+        {
+            m_cameraState = CAMERASTATE::FOLLOW_PLAYER;
+            return;
+        }
+
         m_currCamPanTimer = 0.0f;
         m_cameraState = CAMERASTATE::PAN_ROOM_COUNTDOWN;
 
