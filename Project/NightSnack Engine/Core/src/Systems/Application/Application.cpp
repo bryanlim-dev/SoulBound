@@ -175,29 +175,29 @@ namespace NightSnack {
 			glfwGetWindowSize(m_windowHandle, &m_appWindowedWidth, &m_appWindowedHeight);
 		}
 
-		if (m_pressedMaximizeButton) {
-			// Restore the window first, to update the window's properties like the maximise/minimise button
-			glfwRestoreWindow(m_windowHandle);
-
-			GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-			const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-
-			// Remove borders
-			glfwSetWindowAttrib(m_windowHandle, GLFW_DECORATED, GLFW_FALSE);
-			glfwSetWindowAttrib(m_windowHandle, GLFW_RESIZABLE, GLFW_FALSE);
-
-			// Resize to monitor
-			glfwSetWindowPos(m_windowHandle, 0, 0);
-			glfwSetWindowSize(m_windowHandle, mode->width, mode->height);
-
-			m_appHeight = mode->height;
-			m_appWidth = mode->width;
-
-			glfwSetWindowMonitor(m_windowHandle, monitor, 0, 0, m_appWidth, m_appHeight, GLFW_DONT_CARE);
-
-			m_pressedMaximizeButton = false;
-		}
-
+		//if (m_pressedMaximizeButton) {
+		//	// Restore the window first, to update the window's properties like the maximise/minimise button
+		//	glfwRestoreWindow(m_windowHandle);
+		//
+		//	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+		//	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+		//
+		//	// Remove borders
+		//	glfwSetWindowAttrib(m_windowHandle, GLFW_DECORATED, GLFW_FALSE);
+		//	glfwSetWindowAttrib(m_windowHandle, GLFW_RESIZABLE, GLFW_FALSE);
+		//
+		//	// Resize to monitor
+		//	glfwSetWindowPos(m_windowHandle, 0, 0);
+		//	glfwSetWindowSize(m_windowHandle, mode->width, mode->height);
+		//
+		//	m_appHeight = mode->height;
+		//	m_appWidth = mode->width;
+		//
+		//	glfwSetWindowMonitor(m_windowHandle, monitor, 0, 0, m_appWidth, m_appHeight, GLFW_DONT_CARE);
+		//
+		//	m_pressedMaximizeButton = false;
+		//}
+		
 		// Display FPS object in game if toggled on
 		if (m_showFPS && m_fpsEntity != INVALID_ENTITY && m_coord.HasComponent<Font>(m_fpsEntity))
 		{

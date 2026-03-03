@@ -1,0 +1,34 @@
+{
+    "Collider": {
+        "height": 100.0,
+        "isStatic": true,
+        "radius": 50.0,
+        "shape": "AABB",
+        "type": "Trigger",
+        "width": 100.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "TitleFireAnim_4_1",
+        "meshName": "square"
+    },
+    "Animator": {
+        "isLooping": true,
+        "isPlaying": true,
+        "playbackSpeed": 1.5,
+        "spriteSheetName": "Sprites\\MainMenu\\TitleFireAnim_4_1.png"
+    },
+    "RigidBody": {
+        "gravityMult": 2.0,
+        "mass": 1.0,
+        "restitution": 0.0,
+        "useGravity": false,
+        "useRotate": false
+    },
+    "Collectible": {
+        "type": "KEY",
+        "currTime": 0,
+        "respawnTimeSteps": 0,
+        "willRespawn": false
+    }
+}

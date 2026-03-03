@@ -1,0 +1,35 @@
+{
+    "Audio": {
+        "audioKey": "playerCollect",
+        "isPlaying": false,
+        "loop": false,
+        "playOnStart": false,
+        "volume": 1.0
+    },
+    "Collider": {
+        "height": 100.0,
+        "isStatic": false,
+        "radius": 100.0,
+        "shape": "Circle",
+        "type": "Solid",
+        "width": 100.0
+    },
+    "Color": {
+        "a": 0.0,
+        "b": 0.0,
+        "g": 1.0,
+        "r": 0.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "ColorMat",
+        "meshName": "circle"
+    },
+    "RigidBody": {
+        "gravityMult": 0.0,
+        "mass": 1.0,
+        "restitution": 0.0,
+        "useGravity": false,
+        "useRotate": false
+    }
+}

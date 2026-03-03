@@ -1,8 +1,9 @@
 /******************************************************************************
  * File:        InspectorPanel.h
  * Project:     NightSnack
- * Author(s):	Wei Jie Lim (Primary, 90%) - Created and implemented inspector panel
- *              Clement Ang Yang Ying (Secondary, 10%) - Added scripting component
+ * Author(s):	Wei Jie Lim (Primary, 88%) - Created and implemented inspector panel
+ *              Clement Ang Yang Ying (Secondary, 10%) - Added scripting & character component 
+ *              Goh Bei Lai (Secondary, 2%) - Added current Animation Clip dropdown in Animator component
  *
  * Description:
  * Inspector panel showing details of selected entity. Displays components and
@@ -17,6 +18,9 @@
 #include <stb_image.h>
 #include <filesystem>
 #include <Scripting/ScriptManager.h>
+#include <Systems/AnimationSystem.h>
+#include <Graphics/Camera.h>
+#include <Systems/CharacterSystem.h>
 
 namespace NightSnack
 {
@@ -45,8 +49,8 @@ namespace NightSnack
             m_components =
             {
                 "Transform",
-                "Physics",
-                "Tilemap",
+                //"Physics",
+                //"Tilemap",
                 "PlayerController",
                 "Camera",
                 "Rigidbody",
@@ -54,7 +58,10 @@ namespace NightSnack
                 "Renderer",
                 "Scripting",
                 "Animator",
-                "Font"
+                "Font",
+                "Hierarchy",
+                "Character",
+                "Collectible"
 			};
         }
 
@@ -94,10 +101,14 @@ namespace NightSnack
 					if (compName == "Scripting") { hasComponent = m_coord.HasComponent<Script>(*m_selectedEntity); }
                     if (compName == "Animator")  { hasComponent = m_coord.HasComponent<Animator>(*m_selectedEntity); }
                     if (compName == "Font")      { hasComponent = m_coord.HasComponent<Font>(*m_selectedEntity); }
+                    if (compName == "Hierarchy") { hasComponent = m_coord.HasComponent<Hierarchy>(*m_selectedEntity); }
+                    if (compName == "Character") { hasComponent = m_coord.HasComponent<Character>(*m_selectedEntity); }
+                    if (compName == "Collectible") { hasComponent = m_coord.HasComponent<Collectible>(*m_selectedEntity); }
 
                     if (hasComponent)
                     {
                         std::string headerLabel = compName + "##" + std::to_string(i);
+
                         bool open = ImGui::CollapsingHeader(headerLabel.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
 
                         // When header is clicked/held
@@ -132,8 +143,8 @@ namespace NightSnack
                         if (open)
                         {
                             if (compName == "Transform") { TransformComponent(); }
-                            if (compName == "Physics")   { PhysicsComponent(); }
-							if (compName == "Tilemap")   { TilemapComponent(); }
+                            //if (compName == "Physics")   { PhysicsComponent(); }
+							//if (compName == "Tilemap")   { TilemapComponent(); }
 							if (compName == "PlayerController") { PlayerControllerComponent(); }
 							if (compName == "Camera")    { CameraComponent(); }
                             if (compName == "Rigidbody") { RigidBodyComponent(); }
@@ -142,6 +153,9 @@ namespace NightSnack
 							if (compName == "Scripting") { ScriptingComponent(); }
                             if (compName == "Animator")  { AnimatorComponent(); }
                             if (compName == "Font")      { FontComponent(); }
+                            if (compName == "Hierarchy") { HierarchyComponent(); }
+                            if (compName == "Character") { CharacterComponent(); }
+                            if (compName == "Collectible") { CollectibleComponent(); }
                         }
                         ImGui::Separator();
                     }
@@ -156,6 +170,8 @@ namespace NightSnack
             {
                 ImGui::Text("No entity selected.");
             }
+            TilemapComponent();
+            PhysicsComponent();
 
             ImGui::End();
         }
@@ -170,6 +186,9 @@ namespace NightSnack
 
 		Tilemap& m_tilemap;
 
+        static inline bool s_layerVisibility[6] = { true, true, true, true, true, true };
+        static constexpr const char* s_layerNames[6] = { "_ENGINE", "BACKGROUND", "GAMELAYER", "FOREGROUND", "GAMEUI", "_ENGINE2" };
+
         /************************************************************************/
         /*!
         \brief
@@ -180,6 +199,14 @@ namespace NightSnack
         */
         /************************************************************************/
         void DrawEntityInfo(Entity entity);
+
+        /************************************************************************/
+        /*!
+        \brief
+		    Draws layer visibility toggles for different layers.
+        */
+        /************************************************************************/
+        void LayerManager(Entity entity, int currentLayer);
 
         /************************************************************************/
         /*!
@@ -271,11 +298,30 @@ namespace NightSnack
         /************************************************************************/
         /*!
         \brief
+            Draws Hierarchy component details which includes parent ID and prefab
+            and children IDs and prefabs.
+        */
+        /************************************************************************/
+        void HierarchyComponent();
+
+        /************************************************************************/
+        /*!
+        \brief
             Draws Scripting component details which includes script name, and
             other scripting-related properties.
         */
         /************************************************************************/
         void ScriptingComponent();
+
+        /************************************************************************/
+        /*!
+        \brief
+            Draws Charcter component details which includes character propertities
+        */
+        /************************************************************************/
+        void CharacterComponent();
+
+        void CollectibleComponent();
 
         /************************************************************************/
         /*!
@@ -303,19 +349,28 @@ namespace NightSnack
         if (m_uiNames->find(entity) == m_uiNames->end()) {
             (*m_uiNames)[entity] = factory ? factory->GetEntityPrefabName(entity) : "Entity " + std::to_string(entity);
         }
+        std::string curr_name = (*m_uiNames)[entity];
 		// Input field for entity name
         char nameBuffer[128];
         strncpy_s(nameBuffer, (*m_uiNames)[entity].c_str(), sizeof(nameBuffer));
         nameBuffer[sizeof(nameBuffer) - 1] = 0;
 
-        ImGui::PushID("EntityNameField");
-        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 80.0f);
-        if (ImGui::InputText("##EntityName", nameBuffer, sizeof(nameBuffer))) {
-            (*m_uiNames)[entity] = std::string(nameBuffer);
+        if (!m_coord.HasComponent<Camera>(entity) && m_coord.GetComponent<Transform>(entity).name != "CamTrigger") {
+            ImGui::PushID("EntityNameField");
+            ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 80.0f);
+            if (ImGui::InputText("##EntityName", nameBuffer, sizeof(nameBuffer))) {
+                (*m_uiNames)[entity] = std::string(nameBuffer);
+            }
+            ImGui::PopID();
         }
+        // Change name
+        if (nameBuffer != curr_name) {
+            m_coord.ModifyComponent<Transform>(entity).name = nameBuffer;
+            std::cout << "Changed Name to: " << nameBuffer << std::endl;
+        }
+
         ImGui::SameLine();
         ImGui::TextDisabled("ID: %u", entity);
-        ImGui::PopID();
 
 		// Layer selection dropdown
         if (m_coord.HasComponent<Transform>(entity))
@@ -328,37 +383,194 @@ namespace NightSnack
             ImGui::SameLine();
             ImGui::SetNextItemWidth(120.0f);
             if (ImGui::Combo("##LayerCombo", &currentLayer, layerNames, IM_ARRAYSIZE(layerNames))) {
-                //std::cout << "original: " << static_cast<int>(t.layer) << ", new: " << currentLayer << std::endl;
                 t.layer = static_cast<LayerType>(currentLayer);
                 m_coord.BufferEntitySignature(entity);
-				//std::cout << "Now: " << static_cast<int>(t.layer) << std::endl;
             }
+            LayerManager(entity, currentLayer);
         }
 
 		// Current Prefab display
         std::string entityName = (*m_uiNames)[entity];
 		std::string prefabName = factory ? factory->GetEntityPrefabName(entity) : "UnknownPrefab";
+        bool isCam = m_coord.HasComponent<Camera>(entity);
+        if (isCam) prefabName = "CAMERA";
+
         ImGui::Dummy(ImVec2(0.0f, 5.0f));
         ImGui::Columns(2, nullptr, false);
         ImGui::Text("Prefab: %s", prefabName.c_str());
         ImGui::NextColumn();
 
-        // Save / Overwrite entity's prefab
-        if (ImGui::Button("Save Prefab"))
-        {
-            // Overwrite if prefab with same name exists
-            bool exists = false;
-            for (const auto& name : factory->GetPrefabNames())
+        if (!isCam) {
+            // Save / Overwrite entity's prefab
+            if (ImGui::Button("Save Prefab"))
             {
-                if (name == entityName)
+                // Overwrite if prefab with same name exists
+                bool exists = false;
+                for (const auto& name : factory->GetPrefabNames())
                 {
-                    exists = true;
+                    if (name == entityName)
+                    {
+                        exists = true;
+                        break;
+                    }
+                }
+                factory->SaveAsPrefab(entity, entityName, exists);
+            }
+        }
+        ImGui::Columns(1);
+    }
+
+	// Draws layer visibility toggles for different layers.
+    inline void InspectorPanel::LayerManager(Entity entity, int currentLayer)
+    {
+        auto& t = m_coord.ModifyComponent<Transform>(entity);
+        auto graphics = m_coord.GetSystem<GraphicsSystem>();
+        auto physics = m_coord.GetSystem<PhysicsSystem>();
+		auto text = m_coord.GetSystem<TextSystem>();
+		auto scripting = m_coord.GetSystem<Scripting::ScriptManager>();
+        ImGui::SameLine();
+        bool layerActive = true;
+
+        // Check the active state for this layer in System
+        if (graphics)
+        {
+            for (auto& layer : graphics->m_layers)
+            {
+                if (layer.Type() == t.layer)
+                {
+                    layerActive = layer.IsActive();
                     break;
                 }
             }
-            factory->SaveAsPrefab(entity, entityName, exists);
         }
-        ImGui::Columns(1);
+        if (physics)
+        {
+            for (auto& layer : physics->m_layers)
+            {
+                if (layer.Type() == t.layer)
+                {
+                    layerActive = layer.IsActive();
+                    break;
+                }
+            }
+		}
+        if (text)
+        {
+            for (auto& layer : text->m_layers)
+            {
+                if (layer.Type() == t.layer)
+                {
+                    layerActive = layer.IsActive();
+                    break;
+                }
+            }
+		}
+        if (scripting)
+        {
+            for (auto& layer : scripting->m_layers)
+            {
+                if (layer.Type() == t.layer)
+                {
+                    layerActive = layer.IsActive();
+                    break;
+                }
+            }
+		}
+
+        std::string label = std::string("Active##LayerActive") + std::to_string(currentLayer);
+        if (ImGui::Checkbox(label.c_str(), &layerActive))
+        {
+			// Toggle layer in GraphicsSystem
+            if (graphics)
+            {
+                for (auto& layer : graphics->m_layers)
+                {
+                    if (layer.Type() == static_cast<LayerType>(currentLayer))
+                    {
+                        if (layer.IsActive() != layerActive)
+                            layer.ToggleActive();
+
+                        for (Entity e : layer.Entities())
+                        {
+                            if (e == INVALID_ENTITY) 
+                                continue;
+                            if (m_coord.HasComponent<Transform>(e))
+                            {
+                                m_coord.ModifyComponent<Transform>(e).isActive = layerActive;
+                            }
+                        }
+                    }
+                }
+            }
+            // Toggle layer in PhysicsSystem
+            if (physics)
+            {
+                for (auto& layer : physics->m_layers)
+                {
+                    if (layer.Type() == static_cast<LayerType>(currentLayer))
+                    {
+                        if (layer.IsActive() != layerActive)
+                            layer.ToggleActive();
+
+                        for (Entity e : layer.Entities())
+                        {
+                            if (e == INVALID_ENTITY) 
+                                continue;
+                            if (m_coord.HasComponent<Transform>(e))
+                            {
+                                m_coord.ModifyComponent<Transform>(e).isActive = layerActive;
+                            }
+                        }
+                    }
+                }
+            }
+			// Toggle layer in TextSystem
+            if (text)
+            {
+                for (auto& layer : text->m_layers)
+                {
+                    if (layer.Type() == static_cast<LayerType>(currentLayer))
+                    {
+                        if (layer.IsActive() != layerActive)
+                            layer.ToggleActive();
+
+                        for (Entity e : layer.Entities())
+                        {
+                            if (e == INVALID_ENTITY)
+                                continue;
+                            if (m_coord.HasComponent<Transform>(e))
+                            {
+                                m_coord.ModifyComponent<Transform>(e).isActive = layerActive;
+                            }
+                        }
+                    }
+                }
+            }
+			// Toggle layer in ScriptingSystem
+            if (scripting)
+            {
+                for (auto& layer : scripting->m_layers)
+                {
+                    if (layer.Type() == static_cast<LayerType>(currentLayer))
+                    {
+                        if (layer.IsActive() != layerActive)
+                            layer.ToggleActive();
+
+                        for (Entity e : layer.Entities())
+                        {
+                            if (e == INVALID_ENTITY)
+                                continue;
+                            if (m_coord.HasComponent<Transform>(e))
+                            {
+                                m_coord.ModifyComponent<Transform>(e).isActive = layerActive;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+        }
     }
 
 	// Draws Transform component details which includes position, rotation, and scale.
@@ -382,8 +594,8 @@ namespace NightSnack
             // Display the respective position based on its entity layer
             float pos[3];
             float scale[2];
-            if (t.layer == LayerType::GAMEUI) {
-                pos[0] = t.UIbasePos.x; pos[1] = t.UIbasePos.y;
+            if (t.layer == LayerType::GAMEUI && !m_coord.HasComponent<Camera>(*m_selectedEntity)) {
+                pos[0] = t.UIbasePos.x; pos[1] = t.UIbasePos.y; pos[2] = t.UIbasePos.z;
                 scale[0] = t.UIbaseScale.x; scale[1] = t.UIbaseScale.y;
             } else {
                 pos[0] = t.pos.x; pos[1] = t.pos.y; pos[2] = t.pos.z;
@@ -399,7 +611,13 @@ namespace NightSnack
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::TransformSnapshot{ *m_selectedEntity, t }
                 );
-				t.pos.x = pos[0];
+                if (t.layer == LayerType::GAMEUI) {
+                    t.UIbasePos.x = pos[0];
+                }
+                else {
+				    t.pos.x = pos[0];
+
+                }
             }
             ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN);
             if (ImGui::InputFloat("##posy", &pos[1], 0.0f, 0.0f, "%.2f"))
@@ -407,7 +625,13 @@ namespace NightSnack
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::TransformSnapshot{ *m_selectedEntity, t }
                 );
-				t.pos.y = pos[1];
+                if (t.layer == LayerType::GAMEUI) {
+                    t.UIbasePos.y = pos[1];
+                }
+                else {
+                    t.pos.y = pos[1];
+
+                }
 			}
             ImGui::TableSetColumnIndex(3); ImGui::SetNextItemWidth(-FLT_MIN);
             if (ImGui::InputFloat("##posz", &pos[2], 0.0f, 0.0f, "%.2f"))
@@ -415,7 +639,13 @@ namespace NightSnack
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::TransformSnapshot{ *m_selectedEntity, t }
                 );
-				t.pos.z = pos[2];
+                if (t.layer == LayerType::GAMEUI) {
+                    t.UIbasePos.z = pos[2];
+                }
+                else {
+                    t.pos.z = pos[2];
+
+                }
             }
 
             // Rotation row
@@ -519,7 +749,35 @@ namespace NightSnack
     inline void InspectorPanel::TilemapComponent()
     {
         m_tilemap.DrawTilemapSettings();
-        m_tilemap.DrawTileEditor(m_coord, *m_selectedEntity);
+
+        ImGui::Text("Tilemap Texture:");
+        ImGui::SameLine();
+
+        // Show current texture name
+        std::string texName = "None";
+        if (!m_tilemap.tileTexturePath.empty())
+        {
+            std::filesystem::path p = m_tilemap.tileTexturePath;
+            texName = p.filename().string();
+        }
+        ImGui::TextColored(ImVec4(0.2f, 0.6f, 1.0f, 1.0f), "%s", texName.c_str());
+
+        // Drag-and-drop target for textures
+        ImVec2 rect_min = ImGui::GetItemRectMin();
+        ImVec2 rect_max = ImGui::GetItemRectMax();
+        if (ImGui::BeginDragDropTarget())
+        {
+            ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 80));
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_IMAGE"))
+            {
+                // Set the tilemap's texture path
+                const char* droppedPath = static_cast<const char*>(payload->Data);
+                m_tilemap.tileTexturePath = droppedPath;
+            }
+            ImGui::EndDragDropTarget();
+        }
+        // Tilemap editor window
+        //m_tilemap.DrawTileEditor(m_coord, *m_selectedEntity);
     }
 
 	// Draws RigidBody component details which includes velocity, angular
@@ -547,6 +805,17 @@ namespace NightSnack
                     NightSnack::RigidBodySnapshot{ *m_selectedEntity, rb }
                 );
                 rb.invMass = 1.f / mass;
+            }
+            float gm = rb.gravitymult;
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Gravity Multiply");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::InputFloat("##gravmult", &gm, 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::RigidBodySnapshot{ *m_selectedEntity, rb }
+                );
+                rb.gravitymult = gm;
             }
 
             // Velocity
@@ -653,6 +922,21 @@ namespace NightSnack
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 100.0f);
             ImGui::TableSetupColumn("Value2", ImGuiTableColumnFlags_WidthFixed, 100.0f);
 
+            // Camera mode dropdown
+            const char* modeNames[] = { "RoomLerp", "OriginalWithOffset" };
+            int modeIdx = static_cast<int>(cam.mode);
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Camera Mode");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::Combo("##CameraMode", &modeIdx, modeNames, IM_ARRAYSIZE(modeNames)))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
+                );
+                cam.mode = static_cast<CameraMode>(modeIdx);
+            }
+
             // Is Main Camera
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Is Main Cam");
@@ -660,7 +944,7 @@ namespace NightSnack
             ImGui::Checkbox("##IsMainCam", &cam.isMainCam);
 
             // Zoom
-			float zoom = cam.zoom;
+            float zoom = cam.zoom;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Zoom");
             ImGui::TableSetColumnIndex(1);
@@ -669,12 +953,12 @@ namespace NightSnack
             {
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
-				);
-				cam.zoom = zoom;
+                );
+                cam.zoom = zoom;
             }
 
             // Width
-			float width = cam.width;
+            float width = cam.width;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Width");
             ImGui::TableSetColumnIndex(1);
@@ -683,12 +967,12 @@ namespace NightSnack
             {
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
-				);
-				cam.width = width;
+                );
+                cam.width = width;
             }
 
             // Height
-			float height = cam.height;
+            float height = cam.height;
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Height");
             ImGui::TableSetColumnIndex(1);
@@ -697,11 +981,18 @@ namespace NightSnack
             {
                 NightSnack::UndoSystem::Instance().Push(
                     NightSnack::CameraSnapshot{ *m_selectedEntity, cam }
-				);
-				cam.height = height;
+                );
+                cam.height = height;
             }
 
             // Camera min and max positions
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("CamLock");
+            bool clock = cam.lock;
+            ImGui::TableSetColumnIndex(1); ImGui::Checkbox("##CamLock", &clock);
+            if (clock != cam.lock)
+                cam.lock = clock;
+
             ImGui::TableNextRow();
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Camera Bounds");
@@ -912,6 +1203,29 @@ namespace NightSnack
             return;
 
         auto& animator = m_coord.GetComponent<Animator>(*m_selectedEntity);
+        auto animSystem = m_coord.GetSystem<AnimationSystem>();
+        
+        auto spritesheetIt = animSystem->m_animationClips.find(animator.spriteSheetName);
+        if (spritesheetIt == animSystem->m_animationClips.end()) {
+            return;
+        }
+
+        // Vector of clip names (user-editable names, not IDs)
+        std::vector<std::string> clipNames;
+        std::vector<std::string> clipIDs;
+
+        for (const auto& [clipID, clip] : spritesheetIt->second) {
+            clipIDs.push_back(clipID);
+            clipNames.push_back(clip.name);
+        }
+        // Find the current clip index
+        int currClipIndex = 0;
+        for (int i = 0; i < static_cast<int>(clipIDs.size()); ++i) {
+            if (clipIDs[i] == animator.currentAnimationClip) {
+                currClipIndex = i;
+                break;
+            }
+        }
 
         if (ImGui::BeginTable("AnimatorTable", 2, ImGuiTableFlags_SizingFixedFit))
         {
@@ -919,8 +1233,29 @@ namespace NightSnack
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 130.0f);
 
             ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0); ImGui::Text("Current Animation Clip");
-            ImGui::TableSetColumnIndex(1); ImGui::Text("%s", animator.currentAnimationClip.c_str());
+            ImGui::TableSetColumnIndex(0);
+            ImGui::Text("Current Animation Clip");
+
+            ImGui::TableSetColumnIndex(1);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+
+            if (ImGui::Combo(
+                "##CurrentAnimClip",
+                &currClipIndex,
+                [](void* data, int idx, const char** out_text)
+                {
+                    auto& clips = *static_cast<std::vector<std::string>*>(data);
+                    *out_text = clips[idx].c_str();
+                    return true;
+                },
+                &clipNames,
+                static_cast<int>(clipNames.size())))
+            {
+                // undo snapshot here???
+                // UndoSystem::Instance().Push(AnimatorSnapshot{ *m_selectedEntity, animator });
+                
+                animSystem->SetCurrentAnimationClipByID(clipIDs[currClipIndex], *m_selectedEntity);
+            }
 
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Sprite Sheet");
@@ -970,10 +1305,11 @@ namespace NightSnack
 
         auto& fontComp = m_coord.ModifyComponent<Font>(*m_selectedEntity);
 
-        if (ImGui::BeginTable("FontTable", 2, ImGuiTableFlags_SizingFixedFit))
+        if (ImGui::BeginTable("FontTable", 3, ImGuiTableFlags_SizingFixedFit))
         {
             ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
             ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+            ImGui::TableSetupColumn("Value2", ImGuiTableColumnFlags_WidthFixed, 80.0f);
 
 			// Font Type (read-only)
             ImGui::TableNextRow();
@@ -1009,6 +1345,27 @@ namespace NightSnack
                 fontComp.fontSize = fontSize;
 			}
 
+			// Text Offset Position
+			float fontoffset[2] = { fontComp.offsetPosition.x, fontComp.offsetPosition.y };
+			ImGui::TableNextRow();
+			ImGui::TableSetColumnIndex(0); ImGui::Text("Offset Position");
+			ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Text("X"); ImGui::SameLine();
+            if (ImGui::InputFloat("##offsetx", &fontoffset[0], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::FontSnapshot{ *m_selectedEntity, fontComp }
+                );
+				fontComp.offsetPosition.x = fontoffset[0];
+            }
+            ImGui::TableSetColumnIndex(2); ImGui::SetNextItemWidth(-FLT_MIN); ImGui::Text("Y"); ImGui::SameLine();
+            if (ImGui::InputFloat("##offsety", &fontoffset[1], 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::FontSnapshot{ *m_selectedEntity, fontComp }
+                );
+                fontComp.offsetPosition.y = fontoffset[1];
+            }
+
             // Text Color box
             float color[3] = { fontComp.textColor.x, fontComp.textColor.y, fontComp.textColor.z };
             ImGui::TableNextRow();
@@ -1031,6 +1388,54 @@ namespace NightSnack
                 isEditingColor = false;
             }
 
+            ImGui::EndTable();
+        }
+    }
+
+    inline void InspectorPanel::HierarchyComponent()
+    {
+        if (!m_coord.HasComponent<Hierarchy>(*m_selectedEntity))
+            return;
+
+        Hierarchy const& h = m_coord.GetComponent<Hierarchy>(*m_selectedEntity);
+
+        if (ImGui::BeginTable("HierarchyTable", 3, ImGuiTableFlags_SizingFixedFit)) {
+
+            ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+            ImGui::TableSetupColumn("ID", ImGuiTableColumnFlags_WidthFixed, 30.0f);
+            ImGui::TableSetupColumn("Prefab", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Parent:");
+
+            // Parent
+            if (h.parent != INVALID_ENTITY) {
+                ImGui::TableSetColumnIndex(1); ImGui::TextDisabled("%d", h.parent);
+                ImGui::TableSetColumnIndex(2); 
+                ImGui::TextDisabled("%s", m_coord.GetSystem<EntityFactory>()->GetEntityPrefabName(h.parent).c_str());
+
+            }
+            else {
+                ImGui::TableSetColumnIndex(1); ImGui::TextDisabled("%s", "No");
+                ImGui::TableSetColumnIndex(2); ImGui::TextDisabled("%s", "Parents :(");
+            }
+
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Children:");
+
+            // Children
+            if (h.children.empty()) {
+                ImGui::TableSetColumnIndex(1); ImGui::TextDisabled("%s", "No");
+                ImGui::TableSetColumnIndex(2); ImGui::TextDisabled("%s", "Children :(");
+            }
+            else {
+                for (Entity c : h.children) {
+                    ImGui::TableSetColumnIndex(1); ImGui::TextDisabled("%d", c);
+                    ImGui::TableSetColumnIndex(2); 
+                    ImGui::TextDisabled("%s", m_coord.GetSystem<EntityFactory>()->GetEntityPrefabName(c).c_str());
+                    ImGui::TableNextRow();
+                }
+            }
             ImGui::EndTable();
         }
     }
@@ -1067,8 +1472,8 @@ namespace NightSnack
 
 
                     std::filesystem::path filePath = static_cast<const char*>(payload->Data);
-
                     std::string scriptName = filePath.filename().stem().string();
+
                     std::cout << "Accepted script: " << scriptName << std::endl;
 
                     m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->CreateScript(*m_selectedEntity, scriptName);
@@ -1077,6 +1482,7 @@ namespace NightSnack
             }
 
             ImGui::Indent(10.0f);
+            int variableDisplayCnt = 0;
             //Loop through each script instance
             for (void* instance : m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetEntityScripts(*m_selectedEntity))
             {
@@ -1098,9 +1504,11 @@ namespace NightSnack
                         ImGui::TableNextRow();
 
                         auto& bridge = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetMonoExposeBridge();
+                        NightSnack::Scripting::ScriptManager* scriptManager = m_coord.GetSystem<NightSnack::Scripting::ScriptManager>().get();
 
                         for (auto& fields : bridge.GetExposedFields(instance))
                         {
+                            variableDisplayCnt++;
                             Scripting::ExposedValue val = bridge.ReadValue(instance, fields);
                             ImGui::TableSetColumnIndex(0); ImGui::TextDisabled("%s: ", fields.m_name.c_str());
 
@@ -1108,37 +1516,148 @@ namespace NightSnack
                             switch (fields.m_valueType)
                             {
                                 //int
-                            case Scripting::MonoValueType::MONO_INT:
-                                ImGui::TableSetColumnIndex(1); ImGui::Text("%i", val.m_i);
-                                break;
-                            case Scripting::MonoValueType::MONO_BOOL:
-                                ImGui::TableSetColumnIndex(1); ImGui::Checkbox(" ", &val.m_b);
-                                break;
-                            case Scripting::MonoValueType::MONO_FLOAT:
-                                ImGui::TableSetColumnIndex(1); ImGui::Text("%.5f", val.m_f);
-                                break;
-                            case Scripting::MonoValueType::MONO_STRING:
-                                ImGui::TableSetColumnIndex(1); ImGui::Text(val.m_s.c_str());
-                                break;
-                            case Scripting::MonoValueType::MONO_VECTOR2:
+                            case MonoValueType::MONO_INT:
                             {
-                                Vec2 vec = bridge.ConvertVec2(val);
-                                ImGui::TableSetColumnIndex(1); ImGui::Text("x: %.5f", vec.x);
-                                ImGui::TableNextRow();
-                                ImGui::TableSetColumnIndex(1); ImGui::Text("y: %.5f", vec.y);
+
+                                //ImGui::TableSetColumnIndex(1); ImGui::Text("%i", val.m_i);
+
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                std::string inputLabel = "##i" + std::to_string(variableDisplayCnt);
+                                if (ImGui::InputInt(inputLabel.c_str(), &std::get<int>(val.value), 0, 0))
+                                {
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
+                                }
                                 break;
                             }
-                            case Scripting::MonoValueType::MONO_VECTOR3:
+                            case MonoValueType::MONO_BOOL:
                             {
-                                Vec3 vec = bridge.ConvertVec3(val);
-                                ImGui::TableSetColumnIndex(1); ImGui::Text("x: %.5f", vec.x);
-                                ImGui::TableNextRow();
-                                ImGui::TableSetColumnIndex(1); ImGui::Text("y: %.5f", vec.y);
-                                ImGui::TableNextRow();
-                                ImGui::TableSetColumnIndex(1); ImGui::Text("z: %.5f", vec.z);
+                                 //ImGui::TableSetColumnIndex(1); ImGui::Checkbox(" ", &val.m_b);
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                std::string inputLabel = "##b" + std::to_string(variableDisplayCnt);
+                                if (ImGui::Checkbox(inputLabel.c_str(), &std::get<bool>(val.value)))
+                                {
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
+                                }
+
                                 break;
                             }
-                            case Scripting::MonoValueType::MONO_SCRIPT:
+                            case MonoValueType::MONO_FLOAT:
+                            {
+                                //ImGui::TableSetColumnIndex(1); ImGui::Text("%.5f", val.m_f);
+
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                std::string inputLabel = "##f" + std::to_string(variableDisplayCnt);
+                                if (ImGui::InputFloat(inputLabel.c_str(), &std::get<float>(val.value), 0.0f, 0.0f, "%.5f"))
+                                {
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
+                                }
+                                break;
+                            }
+                            case MonoValueType::MONO_STRING:
+                            {
+                                //ImGui::TableSetColumnIndex(1); ImGui::Text(val.m_s.c_str());
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                std::string inputLabel = "##str" + std::to_string(variableDisplayCnt);  
+
+                                char strBuffer[128];
+                                strncpy_s(strBuffer, std::get<std::string>(val.value).c_str(), sizeof(strBuffer));
+                                strBuffer[sizeof(strBuffer) - 1] = 0;
+
+                                if (ImGui::InputText(inputLabel.c_str(), strBuffer, sizeof(strBuffer)))
+                                {
+                                    std::get<std::string>(val.value) = strBuffer;
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
+                                }
+
+                                break;
+                            }
+                            case MonoValueType::MONO_VECTOR2:
+                            {
+
+                                Vec2 vec = std::get<Vec2>(val.value);
+
+
+                                ImGui::TableNextRow();
+
+                                ImGui::TableSetColumnIndex(0); ImGui::Text("x: ");
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                std::string inputLabel = "##f" + std::to_string(variableDisplayCnt);
+                                if (ImGui::InputFloat(inputLabel.c_str(), &vec.x, 0.0f, 0.0f, "%.5f"))
+                                {
+                                    val.value = vec;
+                                    //bridge.ConvertValueFromVec2(val, vec);
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
+                                }
+                                ImGui::TableNextRow();
+
+                                ImGui::TableSetColumnIndex(0); ImGui::Text("y: ");
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                inputLabel = "##f" + std::to_string(++variableDisplayCnt);
+                                if (ImGui::InputFloat(inputLabel.c_str(), &vec.y, 0.0f, 0.0f, "%.5f"))
+                                {
+                                    //bridge.ConvertValueFromVec2(val, vec);
+                                    val.value = vec;
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
+                                }
+                                ImGui::TableNextRow();
+
+
+                                break;
+                            }
+                            case MonoValueType::MONO_VECTOR3:
+                            {
+                                Vec3 vec = std::get<Vec3>(val.value);
+                                //ImGui::TableSetColumnIndex(1); ImGui::Text("x: %.5f", vec.x);
+                                //ImGui::TableNextRow();
+                                //ImGui::TableSetColumnIndex(1); ImGui::Text("y: %.5f", vec.y);
+                                //ImGui::TableNextRow();
+                                //ImGui::TableSetColumnIndex(1); ImGui::Text("z: %.5f", vec.z);
+
+                                ImGui::TableNextRow();
+
+                                ImGui::TableSetColumnIndex(0); ImGui::Text("x: ");
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                std::string inputLabel = "##f" + std::to_string(variableDisplayCnt);
+                                if (ImGui::InputFloat(inputLabel.c_str(), &vec.x, 0.0f, 0.0f, "%.5f"))
+                                {
+                                    //bridge.ConvertValueFromVec3(val, vec);
+                                    val.value = vec;
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
+                                }
+                                ImGui::TableNextRow();
+
+                                ImGui::TableSetColumnIndex(0); ImGui::Text("y: ");
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                inputLabel = "##f" + std::to_string(++variableDisplayCnt);
+                                if (ImGui::InputFloat(inputLabel.c_str(), &vec.y, 0.0f, 0.0f, "%.5f"))
+                                {
+                                    //bridge.ConvertValueFromVec3(val, vec);
+                                    val.value = vec;
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
+                                }
+                                ImGui::TableNextRow();
+
+                                ImGui::TableSetColumnIndex(0); ImGui::Text("z: ");
+                                ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+                                inputLabel = "##f" + std::to_string(++variableDisplayCnt);
+                                if (ImGui::InputFloat(inputLabel.c_str(), &vec.z, 0.0f, 0.0f, "%.5f"))
+                                {
+                                    //bridge.ConvertValueFromVec3(val, vec);
+                                    val.value = vec;
+                                    scriptManager->UpdateScriptValue(instance, fields, val);
+                                    //bridge.WriteValue(instance, fields, val);
+                                }
+                                break;
+                            }
+                            case MonoValueType::MONO_SCRIPT:
                             {
                                 if (val.m_object == nullptr) //No refrence
                                 {
@@ -1148,13 +1667,13 @@ namespace NightSnack
                                 {
                                     std::string scriptDisplay = "ID ";
                                     scriptDisplay += std::to_string(m_coord.GetSystem<NightSnack::Scripting::ScriptManager>()->GetScriptOwner(fields.m_scriptInstance));
-                                    scriptDisplay += " : " + val.m_s;
+                                    scriptDisplay += " : " + std::get<std::string>(val.value);
                                     ImGui::TableSetColumnIndex(1); ImGui::Text(scriptDisplay.c_str());
                                 }
 
                                 break;
                             }
-                            case Scripting::MonoValueType::MONO_UNSUPPORTED:
+                            case MonoValueType::MONO_UNSUPPORTED:
                                 ImGui::TableSetColumnIndex(1); ImGui::Text("Unsupported type!");
                                 break;
                             }
@@ -1171,6 +1690,185 @@ namespace NightSnack
 
             ImGui::EndTable();
         } //End entire script table
+    }
+
+    inline void InspectorPanel::CharacterComponent()
+    {
+        if (!m_coord.HasComponent<Character>(*m_selectedEntity))
+            return;
+
+        if (ImGui::BeginTable("CharacterTable", 3, ImGuiTableFlags_SizingFixedFit))
+        {
+            ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthFixed, 160.0f);
+            ImGui::TableSetupColumn("Value2", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+            //ImGui::TableHeadersRow();
+
+            auto& t = m_coord.ModifyComponent<Character>(*m_selectedEntity);
+
+            constexpr int PropertyCount = MAX_PROPERTIES - START_PROPERTIES + 1;
+
+            std::array<std::string, PropertyCount> propertyNameStorage;
+            std::array<const char*, PropertyCount> propertyNames;
+            // Index 0 = REMOVE
+            propertyNames[0] = "REMOVE PROPERTY";
+
+            int idx = 1;
+            for (int i = START_PROPERTIES + 1; i < MAX_PROPERTIES; ++i)
+            {
+                propertyNameStorage[idx] =
+                    m_coord.GetSystem<CharacterSystem>()
+                    ->CharacterPropertiesToString(
+                        static_cast<CharacterProperties>(i));
+
+                propertyNames[idx] = propertyNameStorage[idx].c_str();
+                ++idx;
+            }
+
+            propertyNames[MAX_PROPERTIES] = "NEW PROPERTY";
+
+            for (size_t i = 0; i < t.m_properties.size();)
+            {
+                ImGui::TableNextRow();
+
+                // Label column
+                ImGui::TableNextColumn();
+                ImGui::Text("Property");
+
+                // Combo column
+                ImGui::TableNextColumn();
+
+                CharacterProperties& prop = t.m_properties[i];
+                int comboIndex = static_cast<int>(prop);
+
+                ImGui::PushID(static_cast<int>(i));
+                ImGui::SetNextItemWidth(-FLT_MIN);
+
+                if (ImGui::Combo(
+                    "##Property",
+                    &comboIndex,
+                    propertyNames.data(),
+                    (int)propertyNames.size()))
+                {
+                    if (comboIndex == 0)
+                    {
+                        // REMOVE PROPERTY
+                        t.m_properties.erase(t.m_properties.begin() + i);
+                        ImGui::PopID();
+                        continue;
+                    }
+                    else
+                    {
+                        prop = static_cast<CharacterProperties>(comboIndex);
+                    }
+                }
+
+                ImGui::PopID();
+
+                // Unused column
+                ImGui::TableNextColumn();
+
+                ++i;
+            }
+
+            //New CharacterProperties dropdown 
+
+            ImGui::TableNextRow();
+
+            ImGui::TableNextColumn();
+            ImGui::TextDisabled("+ Property");
+
+            ImGui::TableNextColumn();
+
+            int newPropertyIndex = MAX_PROPERTIES;
+            ImGui::SetNextItemWidth(-FLT_MIN);
+
+            if (ImGui::Combo(
+                "##AddProperty",
+                &newPropertyIndex,
+                propertyNames.data(),
+                (int)propertyNames.size()))
+            {
+                if (newPropertyIndex > 0 && newPropertyIndex < MAX_PROPERTIES)
+                {
+                    CharacterProperties newProp = static_cast<CharacterProperties>(newPropertyIndex);
+
+                    //No dupe properties
+                    if (std::find(
+                        t.m_properties.begin(),
+                        t.m_properties.end(),
+                        newProp) == t.m_properties.end())
+                    {
+                        t.m_properties.push_back(newProp);
+                    }
+                }
+                newPropertyIndex = 0;
+            }
+
+            ImGui::TableNextColumn();
+
+            ImGui::EndTable();
+        }
+    }
+
+    inline void InspectorPanel::CollectibleComponent() {
+        if (!m_coord.HasComponent<Collectible>(*m_selectedEntity))
+            return;
+
+        auto& c = m_coord.ModifyComponent<Collectible>(*m_selectedEntity);
+
+        if (ImGui::BeginTable("CollectibleTable", 2, ImGuiTableFlags_SizingFixedFit))
+        {
+            ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+            // Collectible Type
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Type");
+
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+
+            const char* typeNames[] = {
+                "Double Jump",
+                "Key",
+                "Icon"
+            };
+
+            int typeIndex = static_cast<int>(c.type);
+
+            if (ImGui::Combo("##CollectibleType", &typeIndex, typeNames, IM_ARRAYSIZE(typeNames)))
+            {
+                c.type = static_cast<COLLECTIBLE_TYPE>(typeIndex);
+            }
+
+            // Will Respawn
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Will Respawn");
+
+            ImGui::TableNextColumn();
+            ImGui::Checkbox("##WillRespawn", &c.willRespawn);
+
+            // Respawn Time
+            if (c.willRespawn)
+            {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                ImGui::Text("Respawn Steps");
+
+                ImGui::TableNextColumn();
+                ImGui::SetNextItemWidth(-FLT_MIN);
+
+                if (ImGui::InputInt("##RespawnSteps", &c.respawnTimeSteps))
+                {
+                    if (c.respawnTimeSteps < 0)
+                        c.respawnTimeSteps = 0;
+                }
+            }
+            ImGui::EndTable();
+        }
     }
 
     inline void InspectorPanel::AddComponentButton()
@@ -1193,6 +1891,8 @@ namespace NightSnack
 		if (!m_coord.HasComponent<Script>(e))      missing.push_back({ "Scripting", false, [this, e] { m_coord.AddComponent<Script>(e, Script{}); } });
         if (!m_coord.HasComponent<Animator>(e))    missing.push_back({ "Animator", false, [this, e] { m_coord.AddComponent<Animator>(e, Animator{}); } });
         if (!m_coord.HasComponent<Font>(e))        missing.push_back({ "Font", false, [this, e] { m_coord.AddComponent<Font>(e, Font{}); } });
+        if (!m_coord.HasComponent<Character>(e))   missing.push_back({ "Character", false, [this, e] { m_coord.AddComponent<Character>(e, Character{}); } });
+        if (!m_coord.HasComponent<Collectible>(e))   missing.push_back({ "Collectible", false, [this, e] { m_coord.AddComponent<Collectible>(e, Collectible{}); } });
 
         // Disable button if no components left to add
         if (missing.empty())
@@ -1245,6 +1945,8 @@ namespace NightSnack
             addMenuItem("Scripting", [this, e] { m_coord.AddComponent<Script>(e, Script{}); }, m_coord.HasComponent<Script>(e));
             addMenuItem("Animator", [this, e] { m_coord.AddComponent<Animator>(e, Animator{}); }, m_coord.HasComponent<Animator>(e));
             addMenuItem("Font", [this, e] { m_coord.AddComponent<Font>(e, Font{}); }, m_coord.HasComponent<Font>(e));
+            addMenuItem("Character", [this, e] { m_coord.AddComponent<Character>(e, Character{}); }, m_coord.HasComponent<Character>(e));
+            addMenuItem("Collectible", [this, e] { m_coord.AddComponent<Collectible>(e, Collectible{}); }, m_coord.HasComponent<Collectible>(e));
             ImGui::EndPopup();
         }
 	}
@@ -1268,6 +1970,8 @@ namespace NightSnack
         if (m_coord.HasComponent<Script>(e))           removable.push_back({ "Scripting", true, [this, e] { m_coord.RemoveComponent<Script>(e); } });
         if (m_coord.HasComponent<Animator>(e))         removable.push_back({ "Animator", true, [this, e] { m_coord.RemoveComponent<Animator>(e); } });
         if (m_coord.HasComponent<Font>(e))             removable.push_back({ "Font", true, [this, e] { m_coord.RemoveComponent<Font>(e); } });
+        if (m_coord.HasComponent<Character>(e))        removable.push_back({ "Character", true, [this, e] { m_coord.RemoveComponent<Character>(e); } });
+        if (m_coord.HasComponent<Collectible>(e))        removable.push_back({ "Collectible", true, [this, e] { m_coord.RemoveComponent<Collectible>(e); } });
 
         // Disable button if no components left to remove
         if (removable.empty())
@@ -1318,6 +2022,10 @@ namespace NightSnack
                         snapshot.animator = m_coord.GetComponent<Animator>(*m_selectedEntity);
                     else if (strcmp(name, "Scripting") == 0)
 						snapshot.script = m_coord.GetComponent<Script>(*m_selectedEntity);
+                    else if (strcmp(name, "Character") == 0)
+						snapshot.character = m_coord.GetComponent<Character>(*m_selectedEntity);
+                    else if (strcmp(name, "Collectible") == 0)
+                        snapshot.collectible = m_coord.GetComponent<Collectible>(*m_selectedEntity);
 
                     NightSnack::UndoSystem::Instance().Push(snapshot);
 

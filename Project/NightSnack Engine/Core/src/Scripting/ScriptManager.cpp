@@ -47,6 +47,7 @@ namespace NightSnack::Scripting {
                 for (const std::string& scriptName : m_coord.GetComponent<Script>(e).names)
                 {
                     AttachScript(e, scriptName);
+                    //m_scriptInstances.push_back(AttachScript(e, scriptName));
                 }
             }
             m_attached = true;
@@ -57,7 +58,9 @@ namespace NightSnack::Scripting {
                 //Now start all scripts that have not called OnStart()
                 for (void* script : m_scriptsToLoad)
                 {
-                    m_monoHost->CallMethod(script, "OnLoad");
+                    m_monoHost->LoadScript(script);
+                    //m_monoHost->CallMethod(script, "OnLoad");
+                    ModifyScriptValuesToPresetValues(script); //Modify values
                 }
                 m_scriptsToLoad.clear();
             }
@@ -83,15 +86,37 @@ namespace NightSnack::Scripting {
             //Now start all scripts that have not called OnStart()
             for (void* script : m_scriptsToStart)
             {
-                m_monoHost->CallMethod(script, "OnStart");
+                m_monoHost->StartScript(script);
+                //m_monoHost->CallMethod(script, "OnStart");
             }
             m_scriptsToStart.clear();
         }
 
 
+        //Map layer type to layer class
+        std::map<LayerType, Layer*> layerMap;
+        for (Layer& layer : m_layers)
+        {
+            layerMap.insert({ layer.Type(), &layer });
+        }
+
         for (int s{}; s < m_coord.steps; ++s) {
-            // Update all active scripts
-            m_monoHost->UpdateAllScripts();
+            for (void* instance : m_scriptInstances)
+            {
+                bool validUpdate = true;
+                LayerType layerType = m_coord.GetComponent<Transform>(m_scriptOwner[instance]).layer;
+                if (!layerMap.contains(layerType))
+                    validUpdate = true; //Layer not in list, just let script do its thing
+                else
+                    validUpdate = layerMap[layerType]->IsActive();
+
+                //if entity layer is active -> Update
+                
+                // Update all active scripts
+                if (validUpdate)
+                    m_monoHost->UpdateScript(instance);
+                
+            }
         }
 
         if (debugMode) stepRequest = false; // reset step request
@@ -154,6 +179,116 @@ namespace NightSnack::Scripting {
         m_monoExposeBridge.UnloadAll();
     }
 
+    void ScriptManager::ModifyScriptValuesToPresetValues(void* script)
+    {
+        Entity id{};
+
+        if (m_scriptOwner.find(script) == m_scriptOwner.end())
+            return;
+
+        id = m_scriptOwner[script];
+        std::string scriptName = m_monoHost->GetScriptName(script);
+
+        if (!m_coord.HasComponent<Script>(id) || !m_coord.GetComponent<Script>(id).modifiedValuesMap.contains(scriptName))
+            return;
+
+        //Loop through multimap with key to get each modified value
+        for (auto [it, endIt] = m_coord.GetComponent<Script>(id).modifiedValuesMap.equal_range(scriptName); it != endIt; ++it)
+        {
+            m_monoHost->SetScriptValue(script, it->second);
+        }
+    }
+
+    void ScriptManager::UpdateScriptValue(void* scriptInstance, const ExposedField& field, const ExposedValue& value)
+    {
+        //Update the value in c# script
+        m_monoExposeBridge.WriteValue(scriptInstance, field, value);
+
+        if (!m_scriptOwner.contains(scriptInstance) || !m_scriptNameMap.contains(scriptInstance))
+            return;
+
+        Entity id = m_scriptOwner[scriptInstance];
+
+        //Update the component
+
+        //Loop through each variable saved in the modifiedValuesMap
+        for (auto [itValue, endItValue] = m_coord.ModifyComponent<Script>(id).modifiedValuesMap.equal_range(m_scriptNameMap[scriptInstance]); itValue != endItValue; ++itValue)
+        {
+            if (itValue->second.variableName == field.m_name)
+            {
+                itValue->second.value = value.value;
+                return;
+            }
+        }
+
+        //If it reaches here nothing was found
+        ScriptModifiedValue modifiedValue{};
+        modifiedValue.scriptName = m_scriptNameMap[scriptInstance];
+        modifiedValue.value = value.value;
+        modifiedValue.variableName = field.m_name;
+        modifiedValue.valueType = field.m_valueType;
+        //Add into component
+        m_coord.ModifyComponent<Script>(id).modifiedValuesMap.insert({m_scriptNameMap[scriptInstance], modifiedValue});
+    }
+
+    bool ScriptManager::FindScriptInEntity(Entity id, std::string scriptName, void** outScript)
+    {
+        std::vector<void*> scripts = GetEntityScripts(id);
+        if (!scripts.empty())
+        {
+            for (void* script : scripts)
+            {
+                if (m_scriptNameMap[script] == scriptName)
+                {
+                    *outScript = script;
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+
+    void* ScriptManager::GetScriptInChild(Entity parentID, std::string scriptName)
+    {
+        void* retScript = nullptr;
+        if (FindScriptInEntity(parentID, scriptName, &retScript)) //Found script in self
+            return retScript;
+
+        Hierarchy const& h = m_coord.GetComponent<Hierarchy>(parentID);
+        if (h.children.empty()) {
+            return nullptr;
+        }
+        //Loop thru children
+        for (Entity c : h.children) {
+            retScript = GetScriptInChild(c, scriptName); //Recursive func to search child's child
+            if (retScript != nullptr) //Found script in child (or child's children), return it
+                return retScript;
+        }
+
+        return nullptr;
+    }
+
+    void* ScriptManager::GetScriptInParent(Entity id, std::string scriptName)
+    {
+        void* retScript = nullptr;
+        if (FindScriptInEntity(id, scriptName, &retScript)) //Found script in self
+            return retScript;
+
+        Hierarchy const& h = m_coord.GetComponent<Hierarchy>(id);
+        if (h.parent == INVALID_ENTITY) {
+            return nullptr;
+        }
+
+        retScript = GetScriptInParent(h.parent, scriptName);
+        if (retScript != nullptr)
+            return retScript;
+
+        return nullptr;
+    }
+
     void ScriptManager::Initialize() {
 
         // Create script interface (bridge to engine)
@@ -213,10 +348,13 @@ namespace NightSnack::Scripting {
             //std::cout << "ScriptManager Desotry:" << m_scriptNameMap[instance] << std::endl;
             m_monoHost->DestroyScriptInstance(instance);
             m_scriptNameMap.erase(instance);
+            std::erase(m_scriptInstances, instance);
+            std::erase(m_scriptsToStart, instance);
+            std::erase(m_scriptsToLoad, instance);
+            m_scriptOwner.erase(instance);
         }
         // Remove from map
         m_entityScripts[e].clear();
-        m_scriptOwner.clear();
 
         //m_coord.ModifyComponent<Script>(e).names.clear();
     }
@@ -276,7 +414,7 @@ namespace NightSnack::Scripting {
         m_entityScripts[e].push_back(instance);
         m_scriptNameMap.insert({ instance,  m_monoHost->GetScriptName(instance) }); //Insert name into a map
         m_scriptOwner.insert({ instance, e });
-
+        m_scriptInstances.push_back(instance);
 
         //This is the first frame of a scene, all scripts are being reloaded
         //Do not run onLoad yet, all scripts will run it after all scripts are created
@@ -287,7 +425,8 @@ namespace NightSnack::Scripting {
         //Script is created mid game, safe to load it now
         else
         {
-            m_monoHost->CallMethod(instance, "OnLoad");
+            m_monoHost->LoadScript(instance);
+            //m_monoHost->CallMethod(instance, "OnLoad");
         }
 
 
@@ -302,7 +441,8 @@ namespace NightSnack::Scripting {
         //Game is running and not first update frame (mid game), should be fine to call onStart
         else
         {
-            m_monoHost->CallMethod(instance, "OnStart");
+            m_monoHost->StartScript(instance);
+            //m_monoHost->CallMethod(instance, "OnStart");
         }
 
         //m_coord.ModifyComponent<Script>(e).names.push_back(scriptName);

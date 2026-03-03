@@ -23,6 +23,15 @@ namespace ManagedScripts
         private Random rseed;
         private float min, max;
 
+        // External wiggle burst
+        private int wiggleBurstsLeft = 0;
+        private float wiggleBurstTimer = 0f;
+        private bool isWiggleBurst = false;
+
+        // Common References
+        private FallingPlatformScript fallingPlatformScript;
+
+
         public override void OnStart()
         {
             transform = new Transform(EntityId);
@@ -31,6 +40,8 @@ namespace ManagedScripts
 
             min = -wiggleAmount;
             max = wiggleAmount;
+
+            fallingPlatformScript = GetScriptComponentInChildren<FallingPlatformScript>(EntityId, "FallingPlatformScript");
         }
 
         public override void OnUpdate()
@@ -38,28 +49,67 @@ namespace ManagedScripts
             // Get current position
             Vector3 pos = transform.Position;
 
-            // Only Wiggle every 2 seconds
-            if (time > interval) {
-                // Stop after Wiggling for 0.3 seconds
-                if (time > (interval + duration))
+            // Handle externally triggered wiggle bursts first
+            if (isWiggleBurst && wiggleBurstsLeft > 0)
+            {
+                wiggleBurstTimer += DeltaTime;
+                if (wiggleBurstTimer < duration)
+                {
+                    float Xval = (float)(rseed.NextDouble() * (max - min) + min);
+                    float Yval = (float)(rseed.NextDouble() * (max - min) + min);
+                    pos = originalPos + new Vector3(Xval, Yval, 0f);
+                }
+                else
                 {
                     pos = originalPos;
+                    wiggleBurstsLeft--;
+                    wiggleBurstTimer = 0f;
+                    if (wiggleBurstsLeft == 0)
+                    {
+                        isWiggleBurst = false;
+                        time = 0.0f;
+                    }
+                }
+            }
+            // Only Wiggle every 2 seconds
+            if (time > interval) {
+                if ((fallingPlatformScript != null) && (fallingPlatformScript.currentState == FallingPlatformScript.State.Falling))
+                {
                     time = 0.0f;
                 }
                 else
                 {
-                    // Wiggle
-                    float Xval = (float)(rseed.NextDouble() * (max - min) + min);
-                    float Yval = (float)(rseed.NextDouble() * (max - min) + min);
+                    // Stop after Wiggling for 0.3 seconds
+                    if (time > (interval + duration))
+                    {
+                        pos = originalPos;
+                        time = 0.0f;
+                    }
+                    else
+                    {
+                        // Wiggle
+                        float Xval = (float)(rseed.NextDouble() * (max - min) + min);
+                        float Yval = (float)(rseed.NextDouble() * (max - min) + min);
 
-                    // Apply wiggle offset
-                    pos = originalPos + new Vector3(Xval, Yval, 0f);
+                        // Apply wiggle offset
+                        pos = originalPos + new Vector3(Xval, Yval, 0f);
+                    }
                 }
             }
             time += DeltaTime;
 
             // Update ECS transform
             transform.Position = pos;
+        }
+
+        public void TriggerWiggle(int times)
+        {
+            if (times > 0)
+            {
+                isWiggleBurst = true;
+                wiggleBurstsLeft = times;
+                wiggleBurstTimer = 0f;
+            }
         }
 
         public override void OnDestroy()

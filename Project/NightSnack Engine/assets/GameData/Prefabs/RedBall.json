@@ -6,12 +6,17 @@
         "playOnStart": false,
         "volume": 1.0
     },
+    "Character": {
+        "Propertities": [
+            "GRAPPLEABLE"
+        ]
+    },
     "Collider": {
         "height": 200.0,
         "isStatic": false,
-        "radius": 0.5,
+        "radius": 150.0,
         "shape": "AABB",
-        "type": "Solid",
+        "type": "solid",
         "width": 200.0
     },
     "Color": {
@@ -26,7 +31,10 @@
         "meshName": "circle"
     },
     "RigidBody": {
+        "gravityMult": 0.0,
         "mass": 1.0,
-        "useGravity": false
+        "restitution": 0.5,
+        "useGravity": false,
+        "useRotate": false
     }
 }

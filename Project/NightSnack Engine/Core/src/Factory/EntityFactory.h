@@ -85,12 +85,26 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Deserializes an entity's components from a json file and adds components
+		to the entity.
+		*/
+		/************************************************************************/
+		void UnpackEntityComponents(Entity e, json const&);
+
+		json CacheLevelEntities();
+		json CacheEntityChildren(Hierarchy const&);
+		void CreateEntityChildren(json const&, Entity);
+		std::string EnsurePrefabExists(Entity e, std::string const& prefabName, bool isModified);
+
+		/************************************************************************/
+		/*!
+		\brief
 		Creates entities found in a level from a level json file.
 		\param
 		Level json, containing information of entities to create.
 		*/
 		/************************************************************************/
-		void CreateLevelEntities(json const& level);
+		void CreateLevelEntities(json const& level, Vec2 const& posOffset = Vec2{});
 
 		/************************************************************************/
 		/*!
@@ -185,7 +199,10 @@ namespace NightSnack {
 		Returns ID of entity cloned.
 		*/
 		/************************************************************************/
-		Entity Clone(Entity e);
+		Entity Clone(Entity e, Vec2 const& pos);
+
+		Entity CreateCollider(Collider const&, Transform const&);
+		Entity CreateSprite(Renderable const& r, Transform const& t);
 
 		/************************************************************************/
 		/*!
@@ -265,6 +282,8 @@ namespace NightSnack {
 		Signature GetSignature() const override { return Signature{}; }
 		std::string GetName() const override { return "EntityFactory"; }
 
+		void MapEntityPrefab(Entity e, std::string const&);
+
 	private:
 		Coordinator& m_coord;
 		PrefabManager m_prefabManager;
@@ -277,6 +296,7 @@ namespace NightSnack {
 		//std::unordered_map<std::string, size_t> m_levelKeys;
 
 		std::vector<size_t> m_toBeUnloaded;
+		std::vector<std::pair<std::string, Transform>> m_prefabCache;
 
 		// map of prefab name to entity;
 		std::unordered_map<Entity, std::string> entityToPrefab;

@@ -30,6 +30,10 @@ namespace NightSnack {
 		AddShader("texture", std::move(textureShader));
 		auto textShader = std::make_unique<Shader>("shaders/text_vs.vert", "shaders/text_fs.frag");
 		AddShader("text", std::move(textShader));
+		auto glowShader = std::make_unique<Shader>("shaders/particle_glow_vs.vert", "shaders/particle_glow_fs.frag");
+		AddShader("glow", std::move(glowShader));
+		auto invisShader = std::make_unique<Shader>("shaders/invis_vs.vert", "shaders/invis_fs.frag");
+		AddShader("invis", std::move(invisShader));
 
 		// Meshes;
 		AddMesh("point", Mesh::CreatePoint());
@@ -44,6 +48,10 @@ namespace NightSnack {
 		auto colorMat = std::make_unique<Material>(GetShader("color"));
 		//colorMat->SetBaseColor(1.f, 1.f, 1.f, 1.f);
 		AddMaterial("ColorMat", std::move(colorMat));
+		auto glowMat = std::make_unique<Material>(GetShader("glow"));
+		AddMaterial("GlowMat", std::move(glowMat));
+		auto invMat = std::make_unique<Material>(GetShader("invis"));
+		AddMaterial("InvisMat", std::move(invMat));
 
 		// Initialise buffer for Instanced Rendering
 		if (m_globalInstanceSSBO == 0) {
@@ -59,7 +67,7 @@ namespace NightSnack {
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
 			////std::cout << "Size of InstanceData: " << sizeof(Mesh::InstanceData);
 		}
-
+		glEnable(GL_DEPTH_TEST);
 		LoadTextures();
 	}
 
@@ -76,11 +84,11 @@ namespace NightSnack {
 		if (mainCam == INVALID_ENTITY) return;
 
 		if (ScreenSizeChanged()) {
-			TranslateUIEntities(mainCam);
+			//TranslateUIEntities(mainCam);
 			lastHvp = Hvp;
 			lastWvp = Wvp;
 		}
-
+		TranslateUIEntities(mainCam);
 		RenderWithCamera(mainCam);
 	}
 
@@ -94,11 +102,13 @@ namespace NightSnack {
 		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
-		m_meshBatches.clear();
+		m_orderedBatches.clear();
 		m_allInstances.clear();
 
+		float layerZ = -2.f;
 		for (Layer& l : m_layers) {
-			if (l.Empty() || !l.IsVisible()) { continue; }
+			layerZ += 2.f;
+			if (l.Empty() || !l.IsVisible() || !l.IsActive()) { continue; }
 			for (Entity e : l.Entities()) {
 				// Reached the end of Valid Entities
 				if (e == INVALID_ENTITY) { break; }
@@ -109,6 +119,11 @@ namespace NightSnack {
 				auto& pos = m_coord.GetComponent<Transform>(e).pos;
 				auto& rot = m_coord.GetComponent<Transform>(e).rot;
 				auto& scl = m_coord.GetComponent<Transform>(e).scale;
+
+				float normalZ = (pos.z + layerZ) / camPos.z;
+
+				if (!trans.isActive) { continue; }
+				if (ren.materialName == "InvisMat") { continue; }
 
 				if (ren.wasModified) {
 					//std::cout << "Resolving renderable: " << e << '\n'; 
@@ -145,15 +160,21 @@ namespace NightSnack {
 
 					// Prepare instance data
 					Mesh::InstanceData instance{};
-					instance.pos_rot = glm::vec4{ pos.x, pos.y, pos.z, glm::radians(rot) };
+					instance.pos_rot = glm::vec4{ pos.x, pos.y, normalZ, glm::radians(rot) };	//
 					instance.scale = glm::vec4{ scl.x, scl.y, 1.f, 1.f };
 
 					// UV coordinates
 					if (m_coord.HasComponent<Animator>(e)) {
 						auto& animator = m_coord.GetComponent<Animator>(e);
 						// Pass the UV coordinates that were updated from the AnimationSystem
-						instance.uvRect = glm::vec4{ animator.uvTopLeft.x, animator.uvTopLeft.y,
-							animator.uvBottomRight.x, animator.uvBottomRight.y };
+						glm::vec4 uv = { animator.uvTopLeft.x, animator.uvTopLeft.y,
+											animator.uvBottomRight.x, animator.uvBottomRight.y };
+						// Swap the y coordinates for animated entities on the GAMEUI layer
+						if (l.Type() == LayerType::GAMEUI) {
+							std::swap(uv.y, uv.w);
+						}
+						instance.uvRect = uv;
+
 					} else {
 						// Non-animated textures will use default values
 						instance.uvRect = glm::vec4{ 0.f, 0.f, 1.f, 1.f };
@@ -170,7 +191,14 @@ namespace NightSnack {
 						// Change the instance color to be based on its Color component values
 						auto& col = m_coord.GetComponent<Color>(e);
 						instance.color = glm::vec4{ col.r, col.g, col.b, col.a };
+						data.material->SetBaseColor(col.r, col.g, col.b, col.a);
 						key += "_color";
+					} else if (ren.materialName == "GlowMat" && m_coord.HasComponent<Color>(e)) {
+						// Change the instance color to be based on its Color component values
+						auto& col = m_coord.GetComponent<Color>(e);
+						instance.color = glm::vec4{ col.r, col.g, col.b, col.a };
+						data.material->SetBaseColor(col.r, col.g, col.b, col.a);
+						key += "_glow";
 					} else {
 						// Entities that have textured materials
 						key = key + "_textured_" + ren.materialName;
@@ -196,15 +224,23 @@ namespace NightSnack {
 					case LayerType::_ENGINE2:	key = "layer5_" + key;	break;
 					}
 
-					m_meshBatches[key].instances.push_back(instance);
-					m_meshBatches[key].mesh = data.mesh;
-					m_meshBatches[key].material = data.material;
-					m_meshBatches[key].isWireframe = ren.isWireframe;
-					m_meshBatches[key].layerType = l.Type();
+					InstanceBatch batch = {
+						data.mesh,
+						data.material,
+						ren.isWireframe,
+						{ instance },
+						l.Type(),
+						0,
+						0,
+						static_cast<int>(l.Type())
+					};
+					batch.zPos = instance.pos_rot.z;
+					m_orderedBatches.push_back(batch);
 
 				} else { // Non-Instanced Rendering
 					// Position and scale has been modified before getting the model matrix for UI entities
-					glm::mat4 model = GetModelToWorldMatrix(pos, rot, scl);
+					Vec3 posz = { pos.x, pos.y, normalZ };
+					glm::mat4 model = GetModelToWorldMatrix(posz, rot, scl);		//
 
 					Shader* shader = data.material->GetShader();
 					Mesh* mesh = data.mesh;
@@ -222,26 +258,50 @@ namespace NightSnack {
 					shader->SetMat4("uModelToWorld", model);
 					shader->SetBool("uIsWireframe", ren.isWireframe);
 
+					if (shader == GetShader("glow")) {
+						if (m_coord.HasComponent<Particle>(e)) {
+							auto& particle = m_coord.GetComponent<Particle>(e);
+							shader->SetFloat("uGlowIntensity", particle.glowIntensity);
+							shader->SetFloat("uGlowFalloff", particle.glowFalloff);
+						} else {
+							shader->SetFloat("uGlowIntensity", 1.5f);
+							shader->SetFloat("uGlowFalloff", 2.f);
+						}
+					}
+
 					// Passing of variables for SOLID COLOR entities only 
 					// Only solid color entities have the component color
 					if (m_coord.HasComponent<Color>(e)) {
 						// Entities with solid color
 						auto& clr = m_coord.GetComponent<Color>(e);
-						shader->SetVec3("uColor", glm::vec3{ clr.r, clr.g, clr.b });
+						shader->SetVec4("uColor", glm::vec4{ clr.r, clr.g, clr.b, clr.a });
+						data.material->SetBaseColor(clr.r, clr.g, clr.b, clr.a);
 					} else {
 						// Entities with textures
 						if (m_coord.HasComponent<Animator>(e)) {
 							auto& animator = m_coord.GetComponent<Animator>(e);
-							shader->SetVec4("uUVRect", { animator.uvTopLeft.x, animator.uvTopLeft.y,
-								animator.uvBottomRight.x, animator.uvBottomRight.y });
+
+							glm::vec4 uv = { animator.uvTopLeft.x, animator.uvTopLeft.y,
+											animator.uvBottomRight.x, animator.uvBottomRight.y };
+							// Swap the y coordinates for animated entities on the GAMEUI layer
+							if (l.Type() == LayerType::GAMEUI) {
+								std::swap(uv.y, uv.w);
+							}
+							shader->SetVec4("uUVRect", uv);
+
 						} else {
 							shader->SetVec4("uUVRect", { 0.f, 0.f, 1.f, 1.f });
 						}
 						// Default color is white, if the texture is not initialized
-						shader->SetVec3("uColor", glm::vec3{ 1.f, 1.f, 1.f });
+						shader->SetVec4("uColor", glm::vec4{ 1.f, 1.f, 1.f, 1.f });
 					}
 
 					data.material->ApplyUniforms(ren.isWireframe);
+
+					if (shader == GetShader("glow")) {
+						glEnable(GL_BLEND);
+						glBlendFunc(GL_SRC_ALPHA, GL_ONE); // additive blending for the glow effect
+					}
 
 					// Change the polygon mode to wireframe
 					if (ren.isWireframe) {
@@ -252,6 +312,11 @@ namespace NightSnack {
 						mesh->Draw();
 					}
 
+					if (shader == GetShader("glow")) {
+						glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // reset back to normal
+						glDisable(GL_BLEND);
+					}
+
 					GLenum err = glGetError();
 					if (err != GL_NO_ERROR) std::cerr << "GL ERROR: " << err << "\n";
 				}
@@ -260,11 +325,22 @@ namespace NightSnack {
 
 		// Uploading and Drawing for Instanced Rendering
 		if (m_enableInstancedRendering) {
-			////std::cout << "Num unique instances total: " << m_meshBatches.size() << std::endl;
+			////std::cout << "Num unique instances total: " << m_orderedBatches.size() << std::endl;
+
+			// After collecting all mesh batches, sort them according to layer order
+			std::stable_sort(m_orderedBatches.begin(), m_orderedBatches.end(),
+				[](const InstanceBatch& a, const InstanceBatch& b) {
+					// Sort by different layers
+					if (a.layerOrder != b.layerOrder) {
+						return a.layerOrder < b.layerOrder;
+					}
+					// Sort by different z positions
+					return a.zPos < b.zPos;
+				});
 
 			// Update m_allInstances with the collected InstanceBatches, and the SSBO offsets
 			size_t currentOffset{ 0 };
-			for (auto& [key, instanceBatch] : m_meshBatches) {
+			for (auto& instanceBatch : m_orderedBatches) {
 				instanceBatch.ssboOffset = currentOffset;
 				instanceBatch.instanceCount = instanceBatch.instances.size();
 				m_allInstances.insert(m_allInstances.end(), instanceBatch.instances.begin(), instanceBatch.instances.end());
@@ -276,7 +352,7 @@ namespace NightSnack {
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
 
 			// Upload uniforms in respect to its InstanceBatch
-			for (auto& [key, instanceBatch] : m_meshBatches) {
+			for (auto& instanceBatch : m_orderedBatches) {
 				//std::cout << "uploading unique mesh with name: " << meshName;
 				//std::cout << " with its instance count: " << instances.size() << std::endl;
 
@@ -298,7 +374,17 @@ namespace NightSnack {
 				shader->SetBool("uIsWireframe", instanceBatch.isWireframe);
 				shader->SetInt("uInstanceOffset", static_cast<int>(instanceBatch.ssboOffset));
 
+				if (shader == GetShader("glow")) {
+					shader->SetFloat("uGlowIntensity", 1.5f);
+					shader->SetFloat("uGlowFalloff", 2.f);
+				}
+
 				material->ApplyUniforms(instanceBatch.isWireframe);
+
+				if (shader == GetShader("glow")) {
+					glEnable(GL_BLEND);
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE); // additive blending for the glow effect
+				}
 
 				if (instanceBatch.isWireframe) {
 					glDepthMask(GL_TRUE);
@@ -311,6 +397,11 @@ namespace NightSnack {
 					glDepthMask(GL_FALSE);
 				} else {
 					mesh->DrawInstanced(instanceBatch.instanceCount);
+				}
+
+				if (shader == GetShader("glow")) {
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // reset back to normal
+					glDisable(GL_BLEND);
 				}
 			}
 		}
@@ -345,10 +436,12 @@ namespace NightSnack {
 		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
-		m_meshBatches.clear();
+		m_orderedBatches.clear();
 
+		float layerZ = -1.f;
 		for (Layer& l : m_layers) {
-			if (l.Empty() || !l.IsVisible()) { continue; }
+			layerZ += 1.f;
+			if (l.Empty() || !l.IsVisible() || !l.IsActive()) { continue; }
 			for (Entity e : l.Entities()) {
 				// Reached the end of Valid Entities
 				if (e == INVALID_ENTITY) { break; }
@@ -357,6 +450,8 @@ namespace NightSnack {
 				auto& pos = m_coord.GetComponent<Transform>(e).pos;
 				auto& rot = m_coord.GetComponent<Transform>(e).rot;
 				auto& scl = m_coord.GetComponent<Transform>(e).scale;
+
+				float normalZ = (pos.z + layerZ) / camPos.z;
 
 				// Entities on the GAMEUI layer will have different transformation matrices
 				glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
@@ -375,7 +470,7 @@ namespace NightSnack {
 					{
 						// Model matrix according to its collider's scale
 						// Make the z value of the collider be slightly in front of its entity
-						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, rot, Vec2{ col.width, col.height });
+						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, normalZ + 0.1f }, rot, Vec2{ col.width, col.height });		//
 						glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 						shader->SetMat4("uDebugMVP", debugMVP);
 						shader->SetVec3("uEntityColor", colliderColor);
@@ -387,7 +482,7 @@ namespace NightSnack {
 					{
 						// Model matrix according to its collider's scale
 						// Make the z value of the collider be slightly in front of its entity
-						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, rot, Vec2{ col.radius, col.radius });
+						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, normalZ + 0.1f }, rot, Vec2{ col.radius, col.radius });		//
 						glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 						shader->SetMat4("uDebugMVP", debugMVP);
 						shader->SetVec3("uEntityColor", colliderColor);
@@ -402,7 +497,7 @@ namespace NightSnack {
 					glm::vec3 outlineColor(0.5f);
 					// Model matrix according to its collider's scale
 						// Make the z value of the collider be slightly in front of its entity
-					glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, rot, Vec2{ scl.x, scl.y });
+					glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, normalZ + 0.1f }, rot, Vec2{ scl.x, scl.y });				//
 					glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 					shader->SetMat4("uDebugMVP", debugMVP);
 					shader->SetVec3("uEntityColor", outlineColor);
@@ -431,7 +526,7 @@ namespace NightSnack {
 
 						// Model matrix according to its new rotation, and y-scale so line size reflects speed
 						// Make the z value of the collider be slightly in front of its entity
-						glm::mat4 debugModel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f }, angle, Vec2{ 1.f, length });
+						glm::mat4 debugModel = GetModelToWorldMatrix({ pos.x, pos.y, normalZ + 0.1f }, angle, Vec2{ 1.f, length });		//
 						glm::mat4 debugMVP = proj * view * debugModel;
 						shader->SetMat4("uDebugMVP", debugMVP);
 						shader->SetVec3("uEntityColor", glm::vec3(0.1f, 0.9f, 0.9f));
@@ -526,6 +621,8 @@ namespace NightSnack {
 		int numCol = std::stoi(numColStr);
 		int numRow = std::stoi(numRowStr);
 
+		//std::cout << "texture name is : " << textureFilePath << std::endl;
+
 		auto tex = std::make_unique<Texture>(textureFilePath, rm, numCol, numRow);
 		//std::cout << "[Graphics] Created Animated Texture: " << textureFilePath << '\n';
 		AddTexture(textureFilePath, std::move(tex));
@@ -542,7 +639,7 @@ namespace NightSnack {
 	void GraphicsSystem::UpdateTextureOfMaterial(const std::string& textureFilePath, Entity e) {
 		auto& ren = m_coord.ModifyComponent<Renderable>(e);
 
-		std::filesystem::path filePath = textureFilePath;
+		std::filesystem::path filePath = textureFilePath; 
 		
 		// Check whether the current texture exists
 		Texture* tex = GetTexture(filePath.string());
@@ -557,16 +654,17 @@ namespace NightSnack {
 			// Name of the material will be the texture file path, but the name only
 			AddMaterial(matName, std::move(newMat));
 
+
 			// Change the name of this Renderable's material name to the new material name
 			ren.materialName = matName;
-			////std::cout << "New texture detected!\n";
-			////std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
-			////std::cout << "and this texture name is: " << m_materials[ren.materialName]->GetTexture()->GetTextureName() << std::endl;
+			//std::cout << "New texture detected!\n";
+			//std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
+			//std::cout << "and this texture name is: " << m_materials[ren.materialName]->GetTexture()->GetTextureName() << std::endl;
 
 		} else {
 			// Texture already exists, but Material might not
 			// Check whether combination of this Material exists with this Texture
-			////std::cout << "Texture exists already!\n";
+			//std::cout << "Texture exists already!\n";
 			bool found = false;
 			for (const auto& [matName, material] : m_materials) {
 				// Check whether the texture exists first! 
@@ -575,17 +673,17 @@ namespace NightSnack {
 				if (!matTex) continue;
 
 				// If it exists already, change the name of this Renderable's material to the existing material name
-				////std::cout << "Checking for texture name: " << textureFileName << std::endl;
+				//std::cout << "Checking for texture name: " << textureFileName << std::endl;
 				if (filePath.string() == matTex->GetTextureName()) {
 					ren.materialName = filePath.filename().stem().string();
 					found = true;
-					////std::cout << "Material for this texture exists too!\n";
+					//std::cout << "Material for this texture exists too!\n";
 					break;
 				}
 
 			}
 			if (!found) {
-				////std::cout << "Material for this texture doesnt exist yet, creating one ...\n";
+				//std::cout << "Material for this texture doesnt exist yet, creating one ...\n";
 				// if it does not exist, create new material with this texture combination
 				auto newMat = std::make_unique<Material>(GetShader("texture"), GetTexture(filePath.string()));
 				std::string matName = filePath.filename().stem().string();
@@ -594,10 +692,10 @@ namespace NightSnack {
 				// change the name of this Renderable's material name to the new material name
 				ren.materialName = matName;
 			}
-			////std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
+			//std::cout << "Entity " << e << " material changed to " << ren.materialName << std::endl;
 		}
 
-		////std::cout << "UpdateTextureOfMaterial(), mat name: " << ren.materialName << std::endl;
+		//std::cout << "UpdateTextureOfMaterial(), mat name: " << ren.materialName << std::endl;
 	}
 
 	// Helper functions to add resources --------------------------------------------------------------------
@@ -769,10 +867,24 @@ namespace NightSnack {
 				float ratioScaleY = UIscale.y / camInfo.height;
 
 				// Get the new position and scaling based on the current screen resolution
-				m_coord.ModifyComponent<Transform>(e).pos.x = ratioPosX * Wvp;
-				m_coord.ModifyComponent<Transform>(e).pos.y = ratioPosY * Hvp;
-				m_coord.ModifyComponent<Transform>(e).scale.x = ratioScaleX * Wvp;
-				m_coord.ModifyComponent<Transform>(e).scale.y = ratioScaleY * Hvp;
+				auto& trans = m_coord.ModifyComponent<Transform>(e);
+				trans.pos.x = ratioPosX * Wvp;
+				trans.pos.y = ratioPosY * Hvp;
+				trans.scale.x = ratioScaleX * Wvp;
+				trans.scale.y = ratioScaleY * Hvp;
+
+				// Scale the collider too!!!
+				if (m_coord.HasComponent<Collider>(e)) {
+					auto& col = m_coord.ModifyComponent<Collider>(e);
+
+					// Scale collider to match the scaled transform
+					if (col.shape == ShapeType::AABB) {
+						col.width = trans.scale.x;
+						col.height = trans.scale.y;
+					} else if (col.shape == ShapeType::Circle) {
+						col.radius = std::max(trans.scale.x, trans.scale.y) * 0.5f;
+					}
+				}
 			}
 		}
 	}

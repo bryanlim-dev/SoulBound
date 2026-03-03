@@ -1,6 +1,6 @@
 {
     "ButtonInfo": {
-        "action": "LoadLevel",
+        "action": "ExitGame",
         "target": "",
         "type": "Clicker"
     },
@@ -18,7 +18,7 @@
         "meshName": "square"
     },
     "Audio": {
-        "audioKey": "playerHit",
+        "audioKey": "buttonQuit",
         "volume": 1.0,
         "loop": false,
         "playOnStart": false,

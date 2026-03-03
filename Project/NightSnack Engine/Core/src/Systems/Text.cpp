@@ -16,6 +16,9 @@
 
 #include "Text.h"
 #include "Graphics.h"
+#include "Physics/Physics.h"
+#include "Factory/EntityFactory.h"
+#include "Systems/PlayerController.h"
 
 namespace NightSnack {
 
@@ -165,10 +168,41 @@ namespace NightSnack {
 
 		// Currently, only iterating through GAMELAYER and GAMEUI layers
 		for (Layer& l : m_layers) {
-			if (l.Empty() || !l.IsVisible()) { continue; }
+			if (l.Empty() || !l.IsVisible() || !l.IsActive()) { continue; }
 			for (Entity e : l.Entities()) {
 				// Reached the end of Valid Entities
 				if (e == INVALID_ENTITY) { break; }
+
+				// Check whether the player is colliding with an entity that is specifically used to 
+				// render text when collided upon (CURRENTLY NOT USED, WOULD NEED TWEAKS AFTERWARDS TOO)
+				//if (m_coord.HasComponent<Collider>(e)) {
+				//	// This current entity shall not be the player to avoid own checks
+				//	if (m_coord.GetSystem<EntityFactory>()->GetEntityPrefabName(e) != "Player") {
+				//		// Collider must be TRIGGER type
+				//		if (m_coord.GetComponent<Collider>(e).type == ColliderType::Trigger) {
+
+				//			Entity player = m_coord.GetSystem<PlayerControllerSystem>()->FindPlayer(m_coord);
+				//			if (!m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, player)) {
+				//				// Player is not colliding with the trigger collider, do not render the text
+				//				// Skip this entity to render
+
+				//				// Reset the material name here so that the texture will not be rendered
+				//				// when the player is not colliding 
+				//				if (m_coord.HasComponent<Renderable>(e)) {
+				//					m_coord.ModifyComponent<Renderable>(e).materialName = "ColorMat";
+				//				}
+
+				//				continue;
+				//			}
+
+				//			// Change the material name to the texture you want 
+				//			// so that it will be rendered when player is colliding
+				//			if (m_coord.HasComponent<Renderable>(e)) {
+				//				m_coord.ModifyComponent<Renderable>(e).materialName = "Tunnel1";
+				//			}
+				//		}
+				//	}
+				//}
 
 				bool isUILayer = (l.Type() == LayerType::GAMEUI);
 				// Flip the y axis for orthographic proj if using UI Layer (screen coords)

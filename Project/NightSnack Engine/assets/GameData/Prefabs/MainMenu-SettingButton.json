@@ -1,7 +1,7 @@
 {
     "ButtonInfo": {
-        "action": "LoadLevel",
-        "target": "",
+        "action": "OpenMenu",
+        "target": "SettingsMenu",
         "type": "Clicker"
     },
     "Collider": {
@@ -18,7 +18,7 @@
         "meshName": "square"
     },
     "Audio": {
-        "audioKey": "stoneHit",
+        "audioKey": "buttonSelect",
         "volume": 1.0,
         "loop": false,
         "playOnStart": false,

@@ -1,0 +1,27 @@
+{
+    "Character": {
+        "Propertities": [
+            "CHECKPOINT"
+        ]
+    },
+    "Collider": {
+        "height": 50.0,
+        "isStatic": false,
+        "radius": 50.0,
+        "shape": "AABB",
+        "type": "Trigger",
+        "width": 300.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "InvisMat",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "gravityMult": 1.0,
+        "mass": 1.0,
+        "restitution": 0.0,
+        "useGravity": false,
+        "useRotate": false
+    }
+}

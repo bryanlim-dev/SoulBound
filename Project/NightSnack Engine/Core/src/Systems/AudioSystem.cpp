@@ -17,6 +17,7 @@
 #include <iostream>
 #include <algorithm>
 #include <filesystem>
+#include <random>
 
 namespace NightSnack {
 
@@ -33,7 +34,11 @@ namespace NightSnack {
         m_bgmPaused(false),
         m_masterVolume(0.5f),
         m_bgmVolume(0.2f),
-        m_sfxVolume(0.4f)
+        m_sfxVolume(0.4f),
+        m_isFading(false),     
+        m_fadeTimer(0.0f),      
+        m_fadeDuration(0.0f),   
+        m_fadeTargetVolume(0.0f)
     {
         m_systemSignature.set(GetComponentTypeID<Audio>());
 
@@ -118,6 +123,8 @@ namespace NightSnack {
                 }
             }
         }
+
+        ControlFade(1.0f / 60.0f);
 
         if (!m_fmodSystem.expired())
             m_fmodSystem.lock()->update();
@@ -364,8 +371,15 @@ namespace NightSnack {
             return;
 
         auto it = m_loadedBGM.find(bgmKey);
-        if (it == m_loadedBGM.end()) {
+        if (it == m_loadedBGM.end()) 
+        {
             std::cerr << "[AudioSystem] BGM not found: " << bgmKey << "\n";
+            return;
+        }
+
+        if (m_currentKeyBGM == bgmKey && IsBGMPlaying()) 
+        {
+            //std::cout << "[AudioSystem] Already playing " << bgmKey << ", continuing...\n";
             return;
         }
 
@@ -502,7 +516,19 @@ namespace NightSnack {
     {
         FMOD::Channel* channel = nullptr;
 
-        size_t id = m_keyToID[audio.audioKey];
+        // Determine which sound to play
+        std::string keyToPlay = audio.audioKey;
+
+        // If using variants, pick randomly
+        if (audio.useVariants && audio.numVariants > 1) {
+            static std::random_device rd;
+            static std::mt19937 gen(rd());
+            std::uniform_int_distribution<> dist(1, audio.numVariants);
+            int variant = dist(gen);
+            keyToPlay = audio.audioKey + "_" + std::to_string(variant);
+        }
+
+        size_t id = m_keyToID[keyToPlay];
         FMOD::Sound* sound = m_resourceMgr.lock()->GetSound(id);
         if (!sound) return;
 
@@ -517,29 +543,23 @@ namespace NightSnack {
         FMOD_RESULT result = m_fmodSystem.lock()->playSound(sound, nullptr, false, &channel);
 
         if (result != FMOD_OK || !channel) {
-            std::cerr << "[AudioSystem] Failed to play sound: " << audio.audioKey << std::endl;
+            std::cerr << "[AudioSystem] Failed to play sound: " << keyToPlay << std::endl;
             return;
         }
 
         // set loop properties on the channel
         if (audio.loop) {
             channel->setMode(FMOD_LOOP_NORMAL);
-            channel->setLoopCount(-1); // infinite loops
-            std::cout << "[AudioSystem] Set to LOOP: " << audio.audioKey << std::endl;
+            channel->setLoopCount(-1);
         }
         else {
             channel->setMode(FMOD_LOOP_OFF);
-            channel->setLoopCount(0); // no looping
-            std::cout << "[AudioSystem] Set to NO LOOP: " << audio.audioKey << std::endl;
+            channel->setLoopCount(0);
         }
 
         // set volume and store channel
         channel->setVolume(audio.volume * m_masterVolume);
         m_entityChannels[entity] = channel;
-
-        /*std::cout << "[AudioSystem] Playing: " << audio.audioKey
-            << " (loop: " << audio.loop
-            << ", entity: " << entity << ")" << std::endl;*/
     }
 
     // getter for audio keys to edit in prefab panel
@@ -555,6 +575,50 @@ namespace NightSnack {
             keys.push_back(key);
         }
         return keys;
+    }
+
+    void AudioSystem::FadeToVolume(float targetVolume, float duration)
+    {
+        m_isFading = true;
+        m_fadeTimer = 0.0f;
+        m_fadeDuration = duration;
+        m_fadeTargetVolume = targetVolume;
+    }
+
+    void AudioSystem::ControlFade(float deltaTime)
+    {
+        if (!m_isFading || !m_bgmChannel) return;
+
+        m_fadeTimer += deltaTime;
+        float t = std::min(m_fadeTimer / m_fadeDuration, 1.0f);
+
+        // store the starting volume when fade begins
+        float startVolume = m_bgmVolume - (m_fadeTargetVolume - m_bgmVolume) * (m_fadeTimer - deltaTime) / m_fadeDuration;
+        float currentVolume = startVolume + (m_fadeTargetVolume - startVolume) * t;
+
+        m_bgmChannel->setVolume(currentVolume * m_masterVolume);
+
+        if (t >= 1.0f) {
+            m_isFading = false;
+            m_bgmVolume = m_fadeTargetVolume;
+        }
+    }
+
+    void AudioSystem::PlayRandomVariant(const std::string& baseKey, int numVariants)
+    {
+        if (numVariants <= 0) {
+            PlaySFX(baseKey);
+            return;
+        }
+
+        // generate random number between 1 and numVariants
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dist(1, numVariants);
+
+        int variant = dist(gen);
+        std::string soundKey = baseKey + "_" + std::to_string(variant);
+        PlaySFX(soundKey);
     }
 
     Signature AudioSystem::GetSignature() const

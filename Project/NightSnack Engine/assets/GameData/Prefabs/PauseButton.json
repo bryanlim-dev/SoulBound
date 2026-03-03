@@ -1,0 +1,32 @@
+{
+    "ButtonInfo": {
+        "action": "OpenMenu",
+        "target": "PauseMenu",
+        "type": "Clicker"
+    },
+    "Collider": {
+        "height": 100.0,
+        "isStatic": true,
+        "radius": 0.0,
+        "shape": "AABB",
+        "type": "Trigger",
+        "width": 265.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "Menu",
+        "meshName": "square"
+    },
+    "Script": {
+        "name": [
+            "WiggleScript"
+        ]
+    },
+    "Audio": {
+        "audioKey": "buttonClick",
+        "volume": 1.0,
+        "loop": false,
+        "playOnStart": false,
+        "isPlaying": false
+    }
+}

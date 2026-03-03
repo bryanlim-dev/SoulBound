@@ -21,7 +21,7 @@ namespace NightSnack
 
         // Tilemap overlay settings
         bool tileOverlayEnabled = false;
-        float gridSize = 24.0f;
+        float gridSize = 100.0f;
         ImU32 gridColor = IM_COL32(200, 200, 200, 100);
 
         // Tile editor settings
@@ -129,7 +129,7 @@ namespace NightSnack
     {
         ImGui::Checkbox("Tile Overlay", &tileOverlayEnabled);
         ImGui::SliderFloat("Grid Size", &gridSize, 8.0f, 128.0f, "%.0f");
-        if (ImGui::Button("Open Tile Editor")) showTileEditor = true;
+        //if (ImGui::Button("Open Tile Editor")) showTileEditor = true;
     }
 
 	// Draw the tilemap overlay on the scene panel.

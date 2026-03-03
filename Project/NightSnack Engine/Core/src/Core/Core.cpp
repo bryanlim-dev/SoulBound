@@ -73,13 +73,16 @@ namespace NightSnack {
 		m_coord.RegisterComponent<Camera>();
 
 		m_coord.RegisterComponent<PlayerController>();
-		m_coord.RegisterComponent<States>();
+		//m_coord.RegisterComponent<States>();
 		m_coord.RegisterComponent<Hierarchy>();
 
 		m_coord.RegisterComponent<Animator>();
+		m_coord.RegisterComponent<Particle>();
+		m_coord.RegisterComponent<Collectible>();
 		m_coord.RegisterComponent<Font>();
 		m_coord.RegisterComponent<ButtonInfo>();
 		m_coord.RegisterComponent<Script>();
+		m_coord.RegisterComponent<Character>();
 
 		// Add more Components here...
 
@@ -100,7 +103,8 @@ namespace NightSnack {
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<AnimationSystem>(m_coord, core_dispatcher);
 		AddSystem<TextSystem>(m_coord, core_dispatcher);
-
+		AddSystem<ParticleSystem>(m_coord, core_dispatcher);
+		AddSystem<CollectibleSystem>(m_coord, core_dispatcher);
 
 		AddSystem<CameraSystem>(m_coord, core_dispatcher);
 		AddSystem<EntityFactory>(m_coord, core_dispatcher);
@@ -108,6 +112,7 @@ namespace NightSnack {
 		AddSystem<Scene::SceneManager>(m_coord, core_dispatcher);
 		AddSystem<Scripting::ScriptManager>(m_coord, core_dispatcher);
 		AddSystem<FiniteStateMachine>(m_coord);
+		AddSystem<CharacterSystem>(m_coord, core_dispatcher);
 
 #ifdef EDITOR
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
@@ -118,7 +123,7 @@ namespace NightSnack {
 			m_coord.BufferEntitySignature(e);
 		}
 
-		// Set to 0 to disable frame cap
+		// Set to 60 to disable frame cap
 		m_coord.GetSystem<ApplicationSystem>()->SetFrameCap(60.f);
 	}
 

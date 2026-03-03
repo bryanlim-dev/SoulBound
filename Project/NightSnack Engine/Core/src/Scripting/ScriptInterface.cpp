@@ -1,8 +1,8 @@
 /******************************************************************************
  * File:        ScriptInterface.cpp
  * Project:     NightSnack
- * Author(s):	Chewn Thing Kwan - (Primary, 30%) - Created base file and Transform/Input/Sound functions
-				Clement Ang Yang Ying - (Secondary, 70%) - Added other component and entity functions, orgnized functions
+ * Author(s):	Chewn Thing Kwan - (Primary, 20%) - Created base file and Transform/Input/Sound functions
+				Clement Ang Yang Ying - (Secondary, 80%) - Added other component and entity functions, orgnized functions
  *
  * Description:
  * This file defines functions convert native component types to types visible
@@ -25,6 +25,52 @@
 #include <iostream>
 
 namespace NightSnack::Scripting {
+     using ComponentQueryFn =
+         std::function<Entity(Coordinator&, Entity)>;
+
+     struct ComponentEntry
+     {
+         ComponentQueryFn getInChildren;
+         ComponentQueryFn getInParent;
+     };
+    
+
+    //Macro to help register component for GetComponentIn<X>
+#define REGISTER_COMPONENT(T)                                    \
+{                                                                \
+    #T,                                                          \
+    {                                                            \
+        /* GetComponentInChildren */                             \
+        [](Coordinator& c, Entity e) -> Entity                   \
+        {                                                        \
+            if (auto comp = c.GetComponentInChild<T>(e))        \
+                return comp->second;                             \
+            return Entity{};                                     \
+        },                                                       \
+        /* GetComponentInParent */                               \
+        [](Coordinator& c, Entity e) -> Entity                   \
+        {                                                        \
+            if (auto comp = c.GetComponentInParent<T>(e))       \
+                return comp->second;                             \
+            return Entity{};                                     \
+        }                                                        \
+    }                                                            \
+}
+
+
+    const std::unordered_map<std::string, NightSnack::Scripting::ComponentEntry>
+        componentRegistry =
+    {
+        REGISTER_COMPONENT(Transform),
+        REGISTER_COMPONENT(RigidBody),
+        REGISTER_COMPONENT(Collider),
+        REGISTER_COMPONENT(Color),
+        REGISTER_COMPONENT(Renderable),
+        REGISTER_COMPONENT(Animator),
+        REGISTER_COMPONENT(Font),
+        REGISTER_COMPONENT(Audio),
+        REGISTER_COMPONENT(Camera)
+    };
 
     // --------------------------------------------------------------
     // Transform operations
@@ -411,6 +457,15 @@ namespace NightSnack::Scripting {
         m_coord.ModifyComponent<Collider>(e).colliding = colliding;
     }
 
+    bool ScriptInterface::CheckCollision(Entity a, Entity b)
+    {
+        if (m_coord.HasComponent<Transform>(a) && m_coord.HasComponent<Transform>(b) && m_coord.HasComponent<Collider>(a) && m_coord.HasComponent<Collider>(b))
+        {
+            return CheckEntityCollision(m_coord.GetComponent<Transform>(a).pos, m_coord.GetComponent<Collider>(a), m_coord.GetComponent<Transform>(b).pos, m_coord.GetComponent<Collider>(b));
+        }
+        return false;
+    }
+
 
 #pragma endregion
 
@@ -530,7 +585,7 @@ namespace NightSnack::Scripting {
         return m_coord.GetComponent<Animator>(e).currentAnimationClip;
     }
     void ScriptInterface::SetAnimatorCurrentAnimationClip(Entity e, std::string name) {
-        m_coord.GetSystem<AnimationSystem>()->SetCurrentAnimationClip(name, e);
+        m_coord.GetSystem<AnimationSystem>()->SetCurrentAnimationClipByID(name, e);
     }
 
     //---spriteSheetName---
@@ -717,6 +772,12 @@ namespace NightSnack::Scripting {
         t.width = cam.width;
     }
 
+    //Get Main Camera
+    Entity ScriptInterface::GetMainCamera()
+    {
+        return m_coord.GetSystem<CameraSystem>()->GetMainCamera();
+    }
+
     //---isMainCam---
     bool ScriptInterface::GetCameraIsMain(Entity e) {
         return m_coord.GetComponent<Camera>(e).isMainCam;
@@ -747,6 +808,18 @@ namespace NightSnack::Scripting {
     }
     void ScriptInterface::SetCameraHeight(Entity e, float height) {
         m_coord.ModifyComponent<Camera>(e).height = height;
+    }
+
+    vec2 ScriptInterface::GetCameraOffset(Entity e)
+    {
+        Vec2 offset = m_coord.GetComponent<Camera>(e).offset;
+        return vec2(offset.x, offset.y);
+    }
+
+    void ScriptInterface::SetCameraOffset(Entity e, vec2 offse)
+    {
+        Vec2& offset = m_coord.ModifyComponent<Camera>(e).offset;
+        offset = Vec2(offse.x, offse.y);
     }
 
 
@@ -918,7 +991,44 @@ namespace NightSnack::Scripting {
     bool ScriptInterface::IsKeyReleased(int key) {
         return m_coord.GetSystem<InputSystem>()->IsKeyReleased(key);
     }
+
 #pragma endregion
+
+    Entity ScriptInterface::GetComponentInChildren(Entity entity, std::string componentName)
+    {
+        auto it = componentRegistry.find(componentName);
+        if (it != componentRegistry.end())
+            return it->second.getInChildren(m_coord, entity);
+
+        return Entity{};
+    }
+
+    MonoObject* ScriptInterface::GetScriptComponentInChildren(Entity entity, std::string scriptName)
+    {
+        //If curr obj has the script return it
+        if (MonoObject* obj = reinterpret_cast<MonoObject*>(m_coord.GetSystem<ScriptManager>()->GetScriptInChild(entity, scriptName)))
+            return obj;
+        else
+            return nullptr;
+    }
+
+    Entity ScriptInterface::GetComponentInParent(Entity entity, std::string componentName)
+    {
+        auto it = componentRegistry.find(componentName);
+        if (it != componentRegistry.end())
+            return it->second.getInParent(m_coord, entity);
+
+        return Entity{};
+    }
+
+    MonoObject* ScriptInterface::GetScriptComponentInParent(Entity entity, std::string scriptName)
+    {
+        //If curr obj has the script return it
+        if (MonoObject* obj = reinterpret_cast<MonoObject*>(m_coord.GetSystem<ScriptManager>()->GetScriptInParent(entity, scriptName)))
+            return obj;
+        else
+            return nullptr;
+    }
 
     // --------------------------------------------------------------
     // Audio
@@ -948,7 +1058,12 @@ namespace NightSnack::Scripting {
 
     Entity ScriptInterface::GetPlayerID()
     {
-        return m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();;
+        return m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+    }
+
+    void ScriptInterface::KillPlayer()
+    {
+        m_coord.GetSystem<PlayerControllerSystem>()->RespawnPlayer();
     }
 
     void ScriptInterface::LoadLevel(std::string lvlName)

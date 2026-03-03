@@ -88,6 +88,7 @@ namespace NightSnack {
 				}
 			});
 			AddLayer(LayerType::BACKGROUND);
+			//AddLayer(LayerType::SPRITE);
 			AddLayer(LayerType::GAMELAYER);
 			AddLayer(LayerType::FOREGROUND);
 			AddLayer(LayerType::GAMEUI);
@@ -411,6 +412,17 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Translate and scale all UI entities accordingly to the new screen resolution.
+
+		\param[in] mainCam
+		The current main camera in the scene
+		*/
+		/************************************************************************/
+		void TranslateUIEntities(Entity mainCam);
+
+		/************************************************************************/
+		/*!
+		\brief
 		Get the system's signature.
 		Required by ISystem inheritance
 
@@ -450,6 +462,8 @@ namespace NightSnack {
 			LayerType layerType = LayerType::GAMELAYER;
 			size_t ssboOffset{ 0 };
 			size_t instanceCount{ 0 };
+			int layerOrder{ 0 }; // explicit sort key
+			float zPos{ 0.f };
 		};
 
 		// Resource stores (owned by system);
@@ -458,10 +472,10 @@ namespace NightSnack {
 		std::unordered_map<std::string, std::unique_ptr<Mesh>>     m_meshes;
 		std::unordered_map<std::string, std::unique_ptr<Material>> m_materials;
 
-		std::map<std::string, InstanceBatch> m_meshBatches; // Holds all the different InstanceBatch combinations
+		std::vector<InstanceBatch> m_orderedBatches; // Holds all the different InstanceBatch combinations
 		std::vector<Mesh::InstanceData> m_allInstances; // Holds all the InstanceData only, to upload to the GPU once
 
-		Entity m_camera;
+		Entity m_camera = INVALID_ENTITY;
 
 		/************************************************************************/
 		/*!
@@ -535,17 +549,6 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		bool ScreenSizeChanged() const noexcept;
-
-		/************************************************************************/
-		/*!
-		\brief
-		Translate and scale all UI entities accordingly to the new screen resolution. 
-
-		\param[in] mainCam
-		The current main camera in the scene
-		*/
-		/************************************************************************/
-		void TranslateUIEntities(Entity mainCam);
 
 		/************************************************************************/
 		/*!
