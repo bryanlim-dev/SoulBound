@@ -105,9 +105,9 @@ namespace NightSnack {
 		m_orderedBatches.clear();
 		m_allInstances.clear();
 
-		float layerZ = -1.f;
+		float layerZ = -2.f;
 		for (Layer& l : m_layers) {
-			layerZ += 1.f;
+			layerZ += 2.f;
 			if (l.Empty() || !l.IsVisible() || !l.IsActive()) { continue; }
 			for (Entity e : l.Entities()) {
 				// Reached the end of Valid Entities
@@ -718,7 +718,8 @@ namespace NightSnack {
 		float halfHeight = (height * 0.5f) / zoom;
 		// Orthographic projection keeps objects the same size regardless of depth
 		// Arguments in the order of (left, right, bottom, top, near, far)
-		return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, Z_EPSILON, 10.f);
+		return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, Z_EPSILON, 
+			m_coord.GetComponent<Transform>(GetCamera()).pos.z);
 	}
 
 	glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Vec3 position, float rotation, Vec2 scale) {

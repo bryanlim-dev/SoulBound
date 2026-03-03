@@ -759,7 +759,7 @@ namespace NightSnack::Scene {
 			CloseMenu(true);
 		}
 
-		//std::cerr << "[SceneManager] Opening menu: " << menuname << "\n";
+		std::cerr << "[SceneManager] Opening menu: " << menuname << "\n";
 
 		// Build the menu file path
 		std::string menuPath = "GameData/Menus/" + menuname + ".json";
@@ -819,7 +819,7 @@ namespace NightSnack::Scene {
 						// offset menu position by camera position
 						transform.pos.x += camX;
 						transform.pos.y += camY;
-						transform.pos.z += (float)m_menuEntities.size() * 2.f;
+						transform.pos.z += (float)m_menus.size() * 2.f;
 
 						/*std::cerr << "  Prefab: " << prefabName
 							<< " positioned at (" << transform.pos.x << ", " << transform.pos.y << ", " << transform.pos.z << ")"
@@ -835,7 +835,7 @@ namespace NightSnack::Scene {
 					e = factory->Create();
 					Transform t = entityData["Transform"];
 					t.pos += { camX, camY, 0.f };
-					t.pos.z += (float)m_menuEntities.size() * 2.f;
+					t.pos.z += (float)m_menus.size() * 2.f;
 					// Divide by zoom to make menu appear same size on screen
 					t.scale.x /= zoom;
 					t.scale.y /= zoom;
@@ -869,7 +869,7 @@ namespace NightSnack::Scene {
 				std::make_unique<InputEvent>(InputEvent::InputAction::PhysicsDebugMode, 
 											InputEvent::InputActionState::Pressed));
 		}
-		std::cerr << "[SceneManager] Game paused\n";
+		//std::cerr << "[SceneManager] Game paused\n";
 
 		std::cerr << "[SceneManager] Opened menu: " << menuname
 			<< " with " << m_menuEntities.size() << " entities\n";
