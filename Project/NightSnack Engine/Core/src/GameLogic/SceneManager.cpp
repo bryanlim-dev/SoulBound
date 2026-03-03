@@ -762,7 +762,7 @@ namespace NightSnack::Scene {
 		if (menuData.contains("Entities")) {
 			for (auto const& entityData : menuData["Entities"]) {
 				Entity e = 0;
-				std::cerr << "[Open Menu] Check 1\n";
+				//std::cerr << "[Open Menu] Check 1\n";
 
 				if (entityData.contains("prefab")) {
 					std::string prefabName = entityData["prefab"];
@@ -781,12 +781,12 @@ namespace NightSnack::Scene {
 						transform.pos.y += camY;
 						transform.pos.z += (float)m_menuEntities.size() * 2.f;
 
-						std::cerr << "  Prefab: " << prefabName
+						/*std::cerr << "  Prefab: " << prefabName
 							<< " positioned at (" << transform.pos.x << ", " << transform.pos.y << ", " << transform.pos.z << ")"
-							<< " scaled to (" << transform.scale.x << ", " << transform.scale.y << ")\n";
+							<< " scaled to (" << transform.scale.x << ", " << transform.scale.y << ")\n";*/
 					}
 
-					std::cerr << "[Open Menu] Check 2 - Creating: " << prefabName << "\n";
+					//std::cerr << "[Open Menu] Check 2 - Creating: " << prefabName << "\n";
 
 					e = factory->Create(prefabName, transform);
 				}

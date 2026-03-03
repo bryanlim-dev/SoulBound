@@ -1,6 +1,489 @@
 {
     "BGM": "MainMenu",
-    "Entities": [],
+    "Entities": [
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "UIMenu-Overlay",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "MenuOverlay",
+                "Position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 1600.0,
+                    "y": 900.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "UIMenu-Backdrop",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Backdrop",
+                "Position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 900.0,
+                    "y": 460.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Children": [
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "OptionsHeader",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Foreground",
+                        "Name": "Options",
+                        "Position": {
+                            "x": 0.0,
+                            "y": 212.5,
+                            "z": 0.550000011920929
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 512.0,
+                            "y": 64.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                }
+            ],
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "UIMenu-Frame",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Frame-Header",
+                "Position": {
+                    "x": 0.0,
+                    "y": 212.5,
+                    "z": 0.5
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 340.0,
+                    "y": 88.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Children": [
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "UIMenu-Frame",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Foreground",
+                        "Name": "AudioSlider",
+                        "Position": {
+                            "x": 100.0,
+                            "y": 62.5,
+                            "z": 0.550000011920929
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 512.0,
+                            "y": 12.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "Menu-SliderKnob",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Foreground",
+                        "Name": "AudioKnob",
+                        "Position": {
+                            "x": 87.5,
+                            "y": 62.5,
+                            "z": 0.5
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                }
+            ],
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Menu-Audio",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "audio",
+                "Position": {
+                    "x": -300.0,
+                    "y": 62.5,
+                    "z": 0.550000011920929
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Children": [
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "UIMenu-Frame",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Foreground",
+                        "Name": "Frame-Mode",
+                        "Position": {
+                            "x": 100.0,
+                            "y": -87.5,
+                            "z": 0.5
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 450.0,
+                            "y": 88.06941223144531
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "Menu-FrameArrowLeft",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Foreground",
+                        "Name": "ModeArrowLeft",
+                        "Position": {
+                            "x": -137.5,
+                            "y": -87.5,
+                            "z": 0.5
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "Menu-FrameArrowRight",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Foreground",
+                        "Name": "ModeArrowRight",
+                        "Position": {
+                            "x": 337.5,
+                            "y": -87.5,
+                            "z": 0.5
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                }
+            ],
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Menu-Mode",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "mode",
+                "Position": {
+                    "x": -300.0,
+                    "y": -87.5,
+                    "z": 0.550000011920929
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Menu-Fullscreen",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "fullscreen",
+                "Position": {
+                    "x": 100.0,
+                    "y": -87.5,
+                    "z": 0.550000011920929
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 384.0,
+                    "y": 48.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "UIMenu-Frame",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Frame-Close",
+                "Position": {
+                    "x": 437.5,
+                    "y": 212.5,
+                    "z": 0.5
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 88.0,
+                    "y": 88.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Menu-Cross",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "CloseCross",
+                "Position": {
+                    "x": 437.5,
+                    "y": 212.5,
+                    "z": 0.550000011920929
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        }
+    ],
     "MainCamera": {
         "KeyFrames": [
             {
@@ -9,8 +492,8 @@
                 "minX": 0.0,
                 "minY": 0.0,
                 "pos": {
-                    "x": 0.0,
-                    "y": 0.0,
+                    "x": -812.5,
+                    "y": 500.0,
                     "z": 1.0
                 },
                 "scale": {
