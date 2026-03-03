@@ -300,7 +300,8 @@ namespace NightSnack {
         OPENMENU,
         CLOSEMENU,
         NOACTION,
-        EXIT,
+        TOGGLEFULLSCREEN,
+        EXIT
     };
     struct ButtonInfo {
         ButtonAction action{ ButtonAction::NOACTION };

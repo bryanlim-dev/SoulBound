@@ -106,7 +106,8 @@ namespace NightSnack::Scene {
 
 	// Register all button actions and stop buttons into m_buttons
 	void SceneManager::RegisterButtons() {
-		Button loadButton(ButtonAction::LOADLEVEL, [](Coordinator& c, std::string const& s) {
+		Button loadButton(ButtonAction::LOADLEVEL, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)e;
 			if (s.empty()) { return; }
 			//c.GetSystem<Scene::SceneManager>()->LoadLevel(s);
 			// 
@@ -116,29 +117,52 @@ namespace NightSnack::Scene {
 		});
 		m_buttons.emplace(ButtonAction::LOADLEVEL, loadButton);
 
-		Button NoAction(ButtonAction::NOACTION, [](Coordinator& c, std::string const& s) {
+		Button NoAction(ButtonAction::NOACTION, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)e;
 			(void)c;
 			if (s.empty()) { return; }
 		});
 		m_buttons.emplace(ButtonAction::NOACTION, NoAction);
 
 		// open menu button
-		Button menuButton(ButtonAction::OPENMENU, [](Coordinator& c, std::string const& s) {
+		Button menuButton(ButtonAction::OPENMENU, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)e;
 			if (s.empty()) { return; }
 			c.GetSystem<Scene::SceneManager>()->OpenMenu(s);
 			});
 		m_buttons.emplace(ButtonAction::OPENMENU, menuButton);
 
 		// close menu button
-		Button closeButton(ButtonAction::CLOSEMENU, [](Coordinator& c, std::string const& s) {
+		Button closeButton(ButtonAction::CLOSEMENU, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)e;
 			(void)s; // Menu name not needed for close
 			c.GetSystem<Scene::SceneManager>()->CloseMenu();
 			});
 		m_buttons.emplace(ButtonAction::CLOSEMENU, closeButton);
 
-		// exit button
-		Button exitButton(ButtonAction::EXIT, [](Coordinator& c, std::string const& s) {
+		// toggle fullscreen button
+		Button fullscreenButton(ButtonAction::TOGGLEFULLSCREEN, [](Coordinator& c, std::string const& s, Entity e) {
 			(void)s;
+			auto const& a = c.GetSystem<ApplicationSystem>();
+			auto& b = c.ModifyComponent<ButtonInfo>(e);
+
+			if (a->m_appIsFullscreen) { 
+				a->ExitFullscreen();
+				b.defaultTex = b.clickTex = b.hoverTex = "Menu-Windowed";
+				c.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
+			}
+			else { 
+				a->EnterFullscreen(); 
+				b.defaultTex = b.clickTex = b.hoverTex = "Menu-Fullscreen";
+				c.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
+			}
+			});
+		m_buttons.emplace(ButtonAction::TOGGLEFULLSCREEN, fullscreenButton);
+
+		// exit button
+		Button exitButton(ButtonAction::EXIT, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)s;
+			(void)e;
 			// Fade out audio and schedule exit
 			auto audio = c.GetSystem<AudioSystem>();
 			audio->FadeToVolume(0.0f, 0.5f); // Fade out over 0.5s
@@ -156,7 +180,7 @@ namespace NightSnack::Scene {
 
 		for (Entity e : m_entities) {
 			// Get button info
-			ButtonInfo const& b = m_coord.GetComponent<ButtonInfo>(e);
+			ButtonInfo& b = m_coord.ModifyComponent<ButtonInfo>(e);
 			if (b.type == INVALID_BUTTON) { continue; }
 
 			// only check menu buttons
@@ -166,6 +190,10 @@ namespace NightSnack::Scene {
 
 				// skip if not a menu button
 				if (it == m_menuEntities.end()) { continue; }
+				if (b.action == ButtonAction::TOGGLEFULLSCREEN) {
+					b.defaultTex = b.hoverTex = b.clickTex = 
+						(m_coord.GetSystem<ApplicationSystem>()->m_appIsFullscreen ? "Menu-Fullscreen" : "Menu-Windowed");
+				}
 			}
 
 			Transform const& t = m_coord.GetComponent<Transform>(e);
@@ -178,7 +206,7 @@ namespace NightSnack::Scene {
 			}
 			auto& m = m_coord.ModifyComponent<Renderable>(e).materialName;
 			m = b.hoverTex;
-			std::cout << "changed texture of button: " << e << " to " << b.hoverTex << '\n';
+			//std::cout << "changed texture of button: " << e << " to " << b.hoverTex << '\n';
 
 			if (m_mouseClick) {
 				m = b.clickTex;
@@ -188,7 +216,7 @@ namespace NightSnack::Scene {
 					// Play audio if available
 					m_coord.GetSystem<AudioSystem>()->PlayEntityAudio(e);
 					// Invoke button Callable
-					it->second(m_coord, b.target);
+					it->second(m_coord, b.target, e);
 					// Only interact with 1 button
 					return;
 				}

@@ -40,7 +40,7 @@ namespace NightSnack::Scene {
 		 * @param a Button action enum value.
 		 * @param func Function pointer to invoke when the button is triggered.
 		 */
-		Button(ButtonAction a, void(*func)(Coordinator& c, std::string const&))
+		Button(ButtonAction a, void(*func)(Coordinator& c, std::string const&, Entity))
 			: m_action{ a }, m_callable{ func } {}
 		Button(Button const& b) noexcept {
 			m_action = b.m_action;
@@ -52,11 +52,11 @@ namespace NightSnack::Scene {
 		 * @param c ECS coordinator reference.
 		 * @param s String argument (e.g., level or menu name).
 		 */
-		void operator()(Coordinator& c, std::string const& s) { m_callable(c, s); }
+		void operator()(Coordinator& c, std::string const& s, Entity e) { m_callable(c, s, e); }
 
 	private:
 		ButtonAction m_action;
-		void(*m_callable)(Coordinator& c, std::string const&);
+		void(*m_callable)(Coordinator& c, std::string const&, Entity);
 
 	};
 

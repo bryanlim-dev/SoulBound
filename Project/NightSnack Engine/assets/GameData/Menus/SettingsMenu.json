@@ -50,13 +50,13 @@
                 "Name": "Backdrop",
                 "Position": {
                     "x": 0.0,
-                    "y": 0.0,
+                    "y": -10.0,
                     "z": 0.20000000298023224
                 },
                 "Rotation": 0.0,
                 "Scale": {
                     "x": 900.0,
-                    "y": 460.0
+                    "y": 440.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -84,7 +84,7 @@
                 "Name": "Frame-Header",
                 "Position": {
                     "x": 0.0,
-                    "y": 212.5,
+                    "y": 202.5,
                     "z": 0.5
                 },
                 "Rotation": 0.0,
@@ -344,6 +344,30 @@
         },
         {
             "Components": {
+                "Audio": {
+                    "audioKey": "buttonQuit",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "ToggleFullscreen",
+                    "target": "",
+                    "type": "Clicker",
+
+                    "defaultTex": "Menu-Fullscreen",
+                    "hoverTex": "Menu-Fullscreen",
+                    "clickTex": "Menu-Fullscreen"
+                },
+                "Collider": {
+                    "height": 88.0,
+                    "isStatic": true,
+                    "radius": 44.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 500.0
+                },
                 "Renderable": {
                     "isWireframe": false,
                     "materialName": "Menu-Fullscreen",
@@ -390,7 +414,7 @@
                 "Name": "Options",
                 "Position": {
                     "x": 0.0,
-                    "y": 212.5,
+                    "y": 202.5,
                     "z": 0.550000011920929
                 },
                 "Rotation": 0.0,
@@ -422,7 +446,11 @@
                 "ButtonInfo": {
                     "action": "CloseMenu",
                     "target": "",
-                    "type": "Clicker"
+                    "type": "Clicker",
+
+                    "defaultTex": "UIMenu-Frame",
+                    "hoverTex": "UIMenu-Frame",
+                    "clickTex": "UIMenu-Frame"
                 },
                 "Collider": {
                     "height": 88.0,
@@ -444,7 +472,7 @@
                 "Name": "Frame-Close",
                 "Position": {
                     "x": 437.5,
-                    "y": 212.5,
+                    "y": 202.5,
                     "z": 0.5
                 },
                 "Rotation": 0.0,
@@ -468,7 +496,7 @@
             "Components": {
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "Menu-Cross",
+                    "materialName": "Menu-CrossWhite",
                     "meshName": "square"
                 },
                 "modified": true
@@ -478,7 +506,7 @@
                 "Name": "CloseCross",
                 "Position": {
                     "x": 437.5,
-                    "y": 212.5,
+                    "y": 202.5,
                     "z": 0.550000011920929
                 },
                 "Rotation": 0.0,
