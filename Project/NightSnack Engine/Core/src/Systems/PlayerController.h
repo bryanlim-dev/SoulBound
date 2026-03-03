@@ -231,6 +231,11 @@ namespace NightSnack {
             m_frogTongue.UpdateOwner(m_player);
             if (m_player == INVALID_ENTITY) { return; }
 
+            // Skip Player Update if camera is currently in a panning animation
+            if (m_coord.GetSystem<CameraSystem>()->GetCameraIsPanning()) {
+                return;
+            }
+
             if (reset) {
                 AttachAbility();
                 m_flags = PlayerFlags{};

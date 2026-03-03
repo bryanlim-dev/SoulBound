@@ -17,6 +17,7 @@
 
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/IEvent.h"
+#include "Graphics/Camera.h"
 //#include "Systems/PlayerController.h"
 
 #include <bitset>

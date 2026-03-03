@@ -146,6 +146,25 @@ namespace NightSnack::Scene {
 		 * @return JSON representation of camera keyframes.
 		 */
 		json WriteCameraKeyframes();
+		/**
+		 * @brief Gets all camera keyframes.
+		 * @return Vector of pairs containing entity IDs and their corresponding keyframe JSON data.
+		 */
+		std::vector<std::pair<Entity, json>> GetCameraKeyframes() const;
+
+		/**
+		 * @brief Creates a camera trigger entity.
+		 * @param pos Position of the camera trigger.
+		 * @param scale Scale of the camera trigger.
+		 * @param bounds JSON object containing the camera trigger's bounds.
+		 * @return The created camera trigger entity.
+		 */
+		Entity CreateCamTrigger(const Vec3& pos, const Vec2& scale, const json& bounds);
+		/**
+		 * @brief Deletes a camera trigger entity.
+		 * @param camTriggerEntity The camera trigger entity to delete.
+		 */
+		void DeleteCamTrigger(Entity camTriggerEntity);
 
 		// Spawn Overlay menu (Pause menu) (currently not in use)
 		//void CreateOverlayMenu();

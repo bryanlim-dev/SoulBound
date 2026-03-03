@@ -245,7 +245,8 @@ namespace NightSnack {
 
     enum class COLLECTIBLE_TYPE {
         DOUBLE_JUMP = 0,
-        KEY
+        KEY,
+        ICON
     };
 
     struct Collectible {

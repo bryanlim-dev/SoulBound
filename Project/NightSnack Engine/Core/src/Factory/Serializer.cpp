@@ -607,6 +607,9 @@ namespace NightSnack {
 		case COLLECTIBLE_TYPE::KEY:
 			typeStr = "KEY";
 			break;
+		case COLLECTIBLE_TYPE::ICON:
+			typeStr = "ICON";
+			break;
 		}
 
 		j = {
@@ -627,6 +630,8 @@ namespace NightSnack {
 				c.type = COLLECTIBLE_TYPE::DOUBLE_JUMP;
 			else if (typeStr == "KEY")
 				c.type = COLLECTIBLE_TYPE::KEY;
+			else if (typeStr == "ICON")
+				c.type = COLLECTIBLE_TYPE::ICON;
 
 			// Timers
 			c.currTime = j.value("currTime", 0);

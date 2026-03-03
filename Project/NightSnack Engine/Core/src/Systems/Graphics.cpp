@@ -102,7 +102,7 @@ namespace NightSnack {
 		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
-		m_meshBatches.clear();
+		m_orderedBatches.clear();
 		m_allInstances.clear();
 
 		float layerZ = -1.f;
@@ -165,8 +165,14 @@ namespace NightSnack {
 					if (m_coord.HasComponent<Animator>(e)) {
 						auto& animator = m_coord.GetComponent<Animator>(e);
 						// Pass the UV coordinates that were updated from the AnimationSystem
-						instance.uvRect = glm::vec4{ animator.uvTopLeft.x, animator.uvTopLeft.y,
-							animator.uvBottomRight.x, animator.uvBottomRight.y };
+						glm::vec4 uv = { animator.uvTopLeft.x, animator.uvTopLeft.y,
+											animator.uvBottomRight.x, animator.uvBottomRight.y };
+						// Swap the y coordinates for animated entities on the GAMEUI layer
+						if (l.Type() == LayerType::GAMEUI) {
+							std::swap(uv.y, uv.w);
+						}
+						instance.uvRect = uv;
+
 					} else {
 						// Non-animated textures will use default values
 						instance.uvRect = glm::vec4{ 0.f, 0.f, 1.f, 1.f };
@@ -216,11 +222,17 @@ namespace NightSnack {
 					case LayerType::_ENGINE2:	key = "layer5_" + key;	break;
 					}
 
-					m_meshBatches[key].instances.push_back(instance);
-					m_meshBatches[key].mesh = data.mesh;
-					m_meshBatches[key].material = data.material;
-					m_meshBatches[key].isWireframe = ren.isWireframe;
-					m_meshBatches[key].layerType = l.Type();
+					InstanceBatch batch = {
+						data.mesh,
+						data.material,
+						ren.isWireframe,
+						{ instance },
+						l.Type(),
+						0,
+						0,
+						static_cast<int>(l.Type())
+					};
+					m_orderedBatches.push_back(batch);
 
 				} else { // Non-Instanced Rendering
 					// Position and scale has been modified before getting the model matrix for UI entities
@@ -265,8 +277,15 @@ namespace NightSnack {
 						// Entities with textures
 						if (m_coord.HasComponent<Animator>(e)) {
 							auto& animator = m_coord.GetComponent<Animator>(e);
-							shader->SetVec4("uUVRect", { animator.uvTopLeft.x, animator.uvTopLeft.y,
-								animator.uvBottomRight.x, animator.uvBottomRight.y });
+
+							glm::vec4 uv = { animator.uvTopLeft.x, animator.uvTopLeft.y,
+											animator.uvBottomRight.x, animator.uvBottomRight.y };
+							// Swap the y coordinates for animated entities on the GAMEUI layer
+							if (l.Type() == LayerType::GAMEUI) {
+								std::swap(uv.y, uv.w);
+							}
+							shader->SetVec4("uUVRect", uv);
+
 						} else {
 							shader->SetVec4("uUVRect", { 0.f, 0.f, 1.f, 1.f });
 						}
@@ -303,11 +322,17 @@ namespace NightSnack {
 
 		// Uploading and Drawing for Instanced Rendering
 		if (m_enableInstancedRendering) {
-			////std::cout << "Num unique instances total: " << m_meshBatches.size() << std::endl;
+			////std::cout << "Num unique instances total: " << m_orderedBatches.size() << std::endl;
+
+			// After collecting all mesh batches, sort them according to layer order
+			std::stable_sort(m_orderedBatches.begin(), m_orderedBatches.end(),
+				[](const InstanceBatch& a, const InstanceBatch& b) {
+					return a.layerOrder < b.layerOrder;
+				});
 
 			// Update m_allInstances with the collected InstanceBatches, and the SSBO offsets
 			size_t currentOffset{ 0 };
-			for (auto& [key, instanceBatch] : m_meshBatches) {
+			for (auto& instanceBatch : m_orderedBatches) {
 				instanceBatch.ssboOffset = currentOffset;
 				instanceBatch.instanceCount = instanceBatch.instances.size();
 				m_allInstances.insert(m_allInstances.end(), instanceBatch.instances.begin(), instanceBatch.instances.end());
@@ -319,7 +344,7 @@ namespace NightSnack {
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
 
 			// Upload uniforms in respect to its InstanceBatch
-			for (auto& [key, instanceBatch] : m_meshBatches) {
+			for (auto& instanceBatch : m_orderedBatches) {
 				//std::cout << "uploading unique mesh with name: " << meshName;
 				//std::cout << " with its instance count: " << instances.size() << std::endl;
 
@@ -403,7 +428,7 @@ namespace NightSnack {
 		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
-		m_meshBatches.clear();
+		m_orderedBatches.clear();
 
 		float layerZ = -1.f;
 		for (Layer& l : m_layers) {

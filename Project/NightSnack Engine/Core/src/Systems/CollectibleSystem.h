@@ -60,6 +60,8 @@ namespace NightSnack {
 		/************************************************************************/
 		void SpawnCollectibleParticles();
 
+		void ToggleCollectibleIcons(bool enable);
+
 		/************************************************************************/
 		/*!
 		\brief
@@ -94,6 +96,10 @@ namespace NightSnack {
 		/************************************************************************/
 		void CreateParticleEmitters();
 
+		bool GetFlameCollectibleIcons();
+
+		void LightUpFlameCollectibleIcon();
+
 		Signature m_systemSignature{};
 		// Reference to Coordinator;
 		Coordinator& m_coord;
@@ -103,6 +109,10 @@ namespace NightSnack {
 		Entity m_player = INVALID_ENTITY;
 
 		bool m_createdParticleEmitters{ false };
+		bool m_getFlameCollectibleIcons{ false };
+
+		std::vector<Entity> m_flameCollectibleIcons{};
+		int m_numFlamesCollected{};
 	};
 
 } // NightSnack

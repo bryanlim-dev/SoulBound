@@ -76,6 +76,12 @@ namespace NightSnack {
 			return;
 		}
 
+		// Skip Physics if camera is currently in a panning animation
+		// This is because of collision grids being based on the camera position
+		if (m_coord.GetSystem<CameraSystem>()->GetCameraIsPanning()) {
+			return;
+		}
+
 		for (int s{}; s < m_coord.steps; ++s) {
 
 			Entity cam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
