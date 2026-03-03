@@ -2030,8 +2030,8 @@
                 "Layer": "GameLayer",
                 "Name": "GrapplePointRoom2",
                 "Position": {
-                    "x": 1312.5,
-                    "y": 487.5,
+                    "x": 1300.0,
+                    "y": 387.5,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
@@ -2087,7 +2087,7 @@
                                 "Collider": {
                                     "height": 400.0,
                                     "isStatic": true,
-                                    "radius": 0.0,
+                                    "radius": 201.19638061523438,
                                     "shape": "AABB",
                                     "type": "Solid",
                                     "width": 200.0
@@ -2111,7 +2111,7 @@
                                 "Name": "CollidarPillar1",
                                 "Position": {
                                     "x": 2200.0,
-                                    "y": 1000.3919067382813,
+                                    "y": 1000.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -2286,7 +2286,7 @@
                                     "radius": 0.0,
                                     "shape": "AABB",
                                     "type": "Solid",
-                                    "width": 1200.0
+                                    "width": 2700.0
                                 },
                                 "Renderable": {
                                     "isWireframe": false,
@@ -2306,13 +2306,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "ColliderFloor1",
                                 "Position": {
-                                    "x": 2700.0,
+                                    "x": 1950.0,
                                     "y": 450.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 1200.0,
+                                    "x": 2700.0,
                                     "y": 100.0
                                 },
                                 "UIBasePosition": {
@@ -2669,13 +2669,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "WallMiddle",
                                 "Position": {
-                                    "x": 2700.0,
+                                    "x": 1950.0,
                                     "y": 450.0,
                                     "z": 10.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 1200.0,
+                                    "x": 2700.0,
                                     "y": 100.0
                                 },
                                 "UIBasePosition": {
