@@ -302,6 +302,14 @@ namespace NightSnack::Scene {
 		}
 		return result;
 	}
+	void SceneManager::UpdateCameraKeyframes(std::vector<std::pair<Entity, json>> keyframes)
+	{
+		m_camFrames.clear();
+		for (const auto& [entity, bounds] : keyframes)
+		{
+			m_camFrames[entity] = bounds;
+		}
+	}
 
 	Entity SceneManager::CreateCamTrigger(const Vec3& pos, const Vec2& scale, const json& bounds)
 	{

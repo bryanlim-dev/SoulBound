@@ -212,6 +212,7 @@ namespace NightSnack
                         ImGui::PopID();
                         ImGui::Separator();
                     }
+					sceneManager->UpdateCameraKeyframes(keyframesCopy);
                     ImGui::EndTabItem();
                 }
 
