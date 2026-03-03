@@ -16,6 +16,7 @@
 #include <Factory/EntityFactory.h>
 #include <Systems/CharacterSystem.h>
 #include <Systems/PlayerController.h>
+#include "Bounce.h"
 
 namespace NightSnack
 {
@@ -199,6 +200,8 @@ namespace NightSnack
 	void FrogTongue::UpdateOwner(Entity e) {
 		m_owner = e;
 	}
+
+
 
 	float FrogTongue::DistanceToAnchor(Vec3 ownerPos, Vec3 anchorPos)
 	{

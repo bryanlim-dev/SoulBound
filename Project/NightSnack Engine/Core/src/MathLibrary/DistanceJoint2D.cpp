@@ -209,37 +209,35 @@ namespace NightSnack
 
         forceMagnitude *= (0.3f + 0.7f * fabs(n.y));
 
-        // Convert force to impulse
+        //Convert force to impulse
 
-        // Current tangential velocity
+        //Current tangential velocity
         float tangentialVel = bodyA.vel.dot(tangent);
 
         // If barely moving, do not inject energy
         if (fabs(tangentialVel) < 0.01f)
             return;
 
-        // -----------
-        // Controlled progressive boost
-        // -----------
+        //Progressive boost
 
         const float refSpeed = 8; 
         float normalizedSpeed = (fabs(tangentialVel) / (refSpeed));
 
-        // Linear growth instead of exponential
+        // inear growth instead of exponential
         float speedFactor = 1.0f + (normalizedSpeed * 0.75f);
 
-        // Only boost strongly near bottom of arc
+        //Only boost strongly near bottom of arc
         float bottomBoost = fabs(n.y); // 1 at bottom, 0 at sides
 
-        // Sharp falloff away from bottom (prevents pivot explosion)
+        //Sharp falloff away from bottom (prevents pivot explosion)
         bottomBoost = bottomBoost * bottomBoost;
 
         speedFactor *= bottomBoost;
 
-        // Clamp to avoid instability
+        //Clamp to avoid instability
         speedFactor = Clamp(speedFactor, 0.0f, 2.0f);
 
-        // Build impulse
+        //Build impulse
         Vec2 impulse = tangent * forceMagnitude * speedFactor * coord.GetSystem<ApplicationSystem>()->GetDT();
 
         //Apply impulse

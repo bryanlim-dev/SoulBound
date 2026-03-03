@@ -22,6 +22,7 @@
 #include <GameLogic/FrogTongue.h>
 #include "Systems/ParticleSystem.h"
 #include "Systems/Physics/Physics.h"
+#include <GameLogic/Bounce.h>
 
 struct PlayerFlags {
     bool movingLeft = false;
@@ -39,6 +40,7 @@ struct PlayerFlags {
     bool useAbility = false;
 
     bool grappling = false;
+    bool bouncing = false;
     bool canDoubleJump = true;
     bool abilityKeyRelease = false;
     float timeSinceLastDoubleJump = 0.f;
@@ -203,6 +205,7 @@ namespace NightSnack {
             prev_ability = curr_ability;
 
             m_frogTongue.Initalize(m_player, coord, *m_dispatcher);
+            m_bounce.Initalize(m_player, coord, *m_dispatcher);
         }
 
         /************************************************************************/
@@ -228,7 +231,6 @@ namespace NightSnack {
 
             m_player = FindPlayer(m_coord);
             m_flags.m_playerID = m_player;
-            m_frogTongue.UpdateOwner(m_player);
             if (m_player == INVALID_ENTITY) { return; }
 
             // Skip Player Update if camera is currently in a panning animation
@@ -255,6 +257,18 @@ namespace NightSnack {
             {
                 LeftAndRightMovement(vel, pcont);
                 Jump(t, vel, pcont, c.isGrounded);
+            }
+
+
+            if (m_flags.bouncing == true)
+            {
+                if (!m_bounce.IsActive() || !m_bounce.Update(m_coord))
+                {
+                    m_flags.disableMovement = false;
+                    m_flags.bouncing = false;
+
+                    m_bounce.End(m_coord);
+                }
             }
 
             //
@@ -406,6 +420,19 @@ namespace NightSnack {
         FrogTongue& GetFrogTongue() {
             return m_frogTongue;
         };
+
+        /************************************************************************/
+        /*!
+        \brief
+        Gets refrence to Bounce which controls the bounce ability
+
+        \return
+        Refrence to Bounce
+        */
+        /************************************************************************/
+        Bounce& GetBounce() {
+            return m_bounce;
+        };
     
         // Ability stuff
         void RegisterAbilities();
@@ -487,6 +514,7 @@ namespace NightSnack {
         float m_timeSinceAbility{};
 
         FrogTongue m_frogTongue;
+        Bounce m_bounce;
 
         Entity m_prevCheckpoint = INVALID_ENTITY;
 
