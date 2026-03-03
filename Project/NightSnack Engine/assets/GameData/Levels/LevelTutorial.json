@@ -2349,7 +2349,7 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 1300.0,
+                                    "height": 1700.0,
                                     "isStatic": true,
                                     "radius": 0.0,
                                     "shape": "AABB",
@@ -2375,13 +2375,13 @@
                                 "Name": "ColliderWallRight",
                                 "Position": {
                                     "x": 4350.0,
-                                    "y": 737.5,
+                                    "y": 850.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 100.0,
-                                    "y": 1300.0
+                                    "y": 1700.0
                                 },
                                 "UIBasePosition": {
                                     "x": 0.0,
@@ -2403,7 +2403,7 @@
                                     "radius": 0.0,
                                     "shape": "AABB",
                                     "type": "Solid",
-                                    "width": 3700.0
+                                    "width": 3600.0
                                 },
                                 "Renderable": {
                                     "isWireframe": false,
@@ -2423,13 +2423,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "ColliderFloor1",
                                 "Position": {
-                                    "x": 2350.0,
+                                    "x": 2200.0,
                                     "y": 450.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 3700.0,
+                                    "x": 3600.0,
                                     "y": 100.0
                                 },
                                 "UIBasePosition": {
@@ -2643,7 +2643,7 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 1300.0,
+                                    "height": 1600.0,
                                     "isStatic": true,
                                     "radius": 0.0,
                                     "shape": "AABB",
@@ -2666,16 +2666,65 @@
                             },
                             "Transform": {
                                 "Layer": "GameLayer",
-                                "Name": "ColliderWallRightEdge",
+                                "Name": "ColliderWallRLeftEdge2",
                                 "Position": {
                                     "x": 4250.0,
-                                    "y": 850.0,
+                                    "y": 900.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 100.0,
-                                    "y": 1300.0
+                                    "y": 1600.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Collider": {
+                                    "height": 500.0,
+                                    "isStatic": true,
+                                    "radius": 201.19638061523438,
+                                    "shape": "AABB",
+                                    "type": "Solid",
+                                    "width": 100.0
+                                },
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "ColorMat",
+                                    "meshName": "square"
+                                },
+                                "RigidBody": {
+                                    "gravityMult": 1.0,
+                                    "mass": 1.0,
+                                    "restitution": 0.0,
+                                    "useGravity": false,
+                                    "useRotate": false
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "CollidarWall",
+                                "Position": {
+                                    "x": 5050.0,
+                                    "y": 950.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 500.0
                                 },
                                 "UIBasePosition": {
                                     "x": 0.0,
@@ -2734,13 +2783,13 @@
                                 "Name": "WallRight",
                                 "Position": {
                                     "x": 4350.0,
-                                    "y": 737.5,
+                                    "y": 850.0,
                                     "z": 10.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 100.0,
-                                    "y": 1300.0
+                                    "y": 1700.0
                                 },
                                 "UIBasePosition": {
                                     "x": 100.0,
@@ -2835,13 +2884,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "WallMiddle",
                                 "Position": {
-                                    "x": 2350.0,
+                                    "x": 2200.0,
                                     "y": 450.0,
                                     "z": 10.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 3700.0,
+                                    "x": 3600.0,
                                     "y": 100.0
                                 },
                                 "UIBasePosition": {
@@ -3336,16 +3385,50 @@
                             },
                             "Transform": {
                                 "Layer": "GameLayer",
-                                "Name": "WallRightEdge",
+                                "Name": "WallLeftEdge2",
                                 "Position": {
                                     "x": 4250.0,
-                                    "y": 850.0,
+                                    "y": 900.0,
                                     "z": 10.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 100.0,
-                                    "y": 1300.0
+                                    "y": 1600.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 100.0,
+                                    "y": -100.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 500.0,
+                                    "y": 500.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "GroundTile",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Wall",
+                                "Position": {
+                                    "x": 5050.0,
+                                    "y": 950.0,
+                                    "z": 10.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 500.0
                                 },
                                 "UIBasePosition": {
                                     "x": 100.0,
@@ -3417,7 +3500,7 @@
                         "Name": "Frog",
                         "Position": {
                             "x": 5050.0,
-                            "y": 550.0,
+                            "y": 537.5,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
@@ -4396,6 +4479,172 @@
                 "Scale": {
                     "x": 50.0,
                     "y": 50.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "GroundTile",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "WallLeftEdge3",
+                "Position": {
+                    "x": 4150.0,
+                    "y": 1000.0,
+                    "z": 10.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 1400.0
+                },
+                "UIBasePosition": {
+                    "x": 100.0,
+                    "y": -100.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 500.0,
+                    "y": 500.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Collider": {
+                    "height": 1400.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Solid",
+                    "width": 100.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "ColorMat",
+                    "meshName": "square"
+                },
+                "RigidBody": {
+                    "gravityMult": 1.0,
+                    "mass": 1.0,
+                    "restitution": 0.0,
+                    "useGravity": false,
+                    "useRotate": false
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "ColliderEdge3",
+                "Position": {
+                    "x": 4150.0,
+                    "y": 1000.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 1400.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "GroundTile",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "WallLeftEdge4",
+                "Position": {
+                    "x": 4050.0,
+                    "y": 1050.0,
+                    "z": 10.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 1300.0
+                },
+                "UIBasePosition": {
+                    "x": 100.0,
+                    "y": -100.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 500.0,
+                    "y": 500.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Collider": {
+                    "height": 1300.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Solid",
+                    "width": 100.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "ColorMat",
+                    "meshName": "square"
+                },
+                "RigidBody": {
+                    "gravityMult": 1.0,
+                    "mass": 1.0,
+                    "restitution": 0.0,
+                    "useGravity": false,
+                    "useRotate": false
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "ColliderEdge4",
+                "Position": {
+                    "x": 4050.0,
+                    "y": 1050.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 1300.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
