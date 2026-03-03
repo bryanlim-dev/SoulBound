@@ -107,7 +107,7 @@ namespace NightSnack::Scene {
 					// Used to signal a mouse press event
 					case InputEvent::InputAction::ClickLMB:
 						if (m_coord.IsPaused()) return;
-						CheckButtonCollisions();
+						m_mouseClick = true;
 						break;
 					}
 				}
@@ -274,7 +274,7 @@ namespace NightSnack::Scene {
 		// Overlay menu
 		bool m_gameLoaded = false;
 		bool overlayOn = false;
-		bool m_mouseClicked = false;
+		bool m_mouseClick = false;
 		bool m_restart = false;
 
 		bool m_menuOpen = false;

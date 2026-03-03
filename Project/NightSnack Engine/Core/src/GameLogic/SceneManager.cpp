@@ -52,6 +52,8 @@ namespace NightSnack::Scene {
 			m_restart = false;
 		}
 
+		CheckButtonCollisions();
+
 		if (m_scheduledLevelLoad) {
 			m_levelLoadTimer -= (1.0f / 60.0f); // to use actual deltaTime if available
 
@@ -99,6 +101,7 @@ namespace NightSnack::Scene {
 				}
 			}
 		}
+		m_mouseClick = false;
 	}
 
 	// Register all button actions and stop buttons into m_buttons
@@ -170,20 +173,29 @@ namespace NightSnack::Scene {
 
 			// Check collision with mouse
 			if (!ButtonCollisionCheck(mx, my, t, c)) {
+				m_coord.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
 				continue;
 			}
+			auto& m = m_coord.ModifyComponent<Renderable>(e).materialName;
+			m = b.hoverTex;
+			std::cout << "changed texture of button: " << e << " to " << b.hoverTex << '\n';
 
-			std::unordered_map<ButtonAction, Button>::iterator it = m_buttons.find(b.action);
-			if (it != m_buttons.end()) {
-				// Play audio if available
-				m_coord.GetSystem<AudioSystem>()->PlayEntityAudio(e);
-				// Invoke button Callable
-				it->second(m_coord, b.target);
-				// Only interact with 1 button
-				return;
-			}
-			else {
-				std::cerr << "[SceneManager] Button action of Entity: " << e << " not registered\n";
+			if (m_mouseClick) {
+				m = b.clickTex;
+
+				std::unordered_map<ButtonAction, Button>::iterator it = m_buttons.find(b.action);
+				if (it != m_buttons.end()) {
+					// Play audio if available
+					m_coord.GetSystem<AudioSystem>()->PlayEntityAudio(e);
+					// Invoke button Callable
+					it->second(m_coord, b.target);
+					// Only interact with 1 button
+					return;
+				}
+				else {
+					std::cerr << "[SceneManager] Button action of Entity: " << e << " not registered\n";
+				}
+				m_mouseClick = false;
 			}
 		}
 	}

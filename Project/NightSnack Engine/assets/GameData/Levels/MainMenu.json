@@ -13,7 +13,10 @@
                 "ButtonInfo": {
                     "action": "LoadLevel",
                     "target": "Level1A",
-                    "type": "Clicker"
+                    "type": "Clicker",
+                    "defaultTex": "MainMenu-Play",
+                    "hoverTex": "MainMenu-PlayHover",
+                    "clickTex": "MainMenu-Play"
                 },
                 "Collider": {
                     "height": 64.0,
@@ -72,7 +75,10 @@
                 "ButtonInfo": {
                     "action": "OpenMenu",
                     "target": "SettingsMenu",
-                    "type": "Clicker"
+                    "type": "Clicker",
+                    "defaultTex": "MainMenu-Options",
+                    "hoverTex": "MainMenu-OptionsHover",
+                    "clickTex": "MainMenu-Options"
                 },
                 "Collider": {
                     "height": 64.0,
@@ -126,7 +132,10 @@
                 "ButtonInfo": {
                     "action": "ExitGame",
                     "target": "",
-                    "type": "Clicker"
+                    "type": "Clicker",
+                    "defaultTex": "MainMenu-Quit",
+                    "hoverTex": "MainMenu-QuitHover",
+                    "clickTex": "MainMenu-Quit"
                 },
                 "Collider": {
                     "height": 64.0,
@@ -337,7 +346,10 @@
                 "ButtonInfo": {
                     "action": "OpenMenu",
                     "target": "SettingsMenu",
-                    "type": "Clicker"
+                    "type": "Clicker",
+                    "defaultTex": "MainMenu-Credits",
+                    "hoverTex": "MainMenu-CreditsHover",
+                    "clickTex": "MainMenu-Credits"
                 },
                 "Collider": {
                     "height": 64.0,

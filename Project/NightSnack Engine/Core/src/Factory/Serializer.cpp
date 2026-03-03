@@ -697,6 +697,9 @@ namespace NightSnack {
 		if (ButtonType::CLICKER == b.type) j["type"] = std::string{ "Clicker" };
 
 		j["target"] = b.target;
+		j["defaultTex"] = b.defaultTex;
+		j["hoverTex"] = b.hoverTex;
+		j["clickTex"] = b.clickTex;
 	}
 	void from_json(json const& j, ButtonInfo& b) {
 		try {
@@ -712,6 +715,10 @@ namespace NightSnack {
 			if (j["type"] == "Clicker") { b.type = ButtonType::CLICKER; }
 
 			b.target = j["target"];
+
+			if (j.contains("defaultTex")) { b.defaultTex = j["defaultTex"]; }
+			if (j.contains("hoverTex")) { b.hoverTex = j["hoverTex"]; }
+			if (j.contains("clickTex")) { b.clickTex = j["clickTex"]; }
 		}
 		catch(std::exception const& e) {
 			std::cerr << "Invalid JSON format " << e.what() << '\n';
