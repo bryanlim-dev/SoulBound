@@ -463,6 +463,7 @@ namespace NightSnack {
 			size_t ssboOffset{ 0 };
 			size_t instanceCount{ 0 };
 			int layerOrder{ 0 }; // explicit sort key
+			float zPos{ 0.f };
 		};
 
 		// Resource stores (owned by system);
