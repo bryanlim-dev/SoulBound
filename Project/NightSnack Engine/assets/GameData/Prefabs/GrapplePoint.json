@@ -12,12 +12,12 @@
         ]
     },
     "Collider": {
-        "height": 200.0,
-        "isStatic": false,
+        "height": 20.0,
+        "isStatic": true,
         "radius": 20.0,
         "shape": "Circle",
-        "type": "solid",
-        "width": 200.0
+        "type": "Trigger",
+        "width": 20.0
     },
     "Color": {
         "a": 1.0,

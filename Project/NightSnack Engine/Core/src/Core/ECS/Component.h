@@ -300,12 +300,17 @@ namespace NightSnack {
         OPENMENU,
         CLOSEMENU,
         NOACTION,
-        EXIT,
+        TOGGLEFULLSCREEN,
+        EXIT
     };
     struct ButtonInfo {
         ButtonAction action{ ButtonAction::NOACTION };
         ButtonType type{ ButtonType::INVALID_BUTTON };
         std::string target{};
+        
+        std::string defaultTex;
+        std::string hoverTex;
+        std::string clickTex;
     };
 
 
