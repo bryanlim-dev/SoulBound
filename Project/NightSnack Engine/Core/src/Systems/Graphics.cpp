@@ -158,7 +158,7 @@ namespace NightSnack {
 
 					// Prepare instance data
 					Mesh::InstanceData instance{};
-					instance.pos_rot = glm::vec4{ pos.x, pos.y, -0.f, glm::radians(rot) };	//
+					instance.pos_rot = glm::vec4{ pos.x, pos.y, pos.z + layerZ, glm::radians(rot) };	//
 					instance.scale = glm::vec4{ scl.x, scl.y, 1.f, 1.f };
 
 					// UV coordinates
@@ -232,6 +232,7 @@ namespace NightSnack {
 						0,
 						static_cast<int>(l.Type())
 					};
+					batch.zPos = instance.pos_rot.z;
 					m_orderedBatches.push_back(batch);
 
 				} else { // Non-Instanced Rendering
@@ -327,7 +328,12 @@ namespace NightSnack {
 			// After collecting all mesh batches, sort them according to layer order
 			std::stable_sort(m_orderedBatches.begin(), m_orderedBatches.end(),
 				[](const InstanceBatch& a, const InstanceBatch& b) {
-					return a.layerOrder < b.layerOrder;
+					// Sort by different layers
+					if (a.layerOrder != b.layerOrder) {
+						return a.layerOrder < b.layerOrder;
+					}
+					// Sort by different z positions
+					return a.zPos < b.zPos;
 				});
 
 			// Update m_allInstances with the collected InstanceBatches, and the SSBO offsets
