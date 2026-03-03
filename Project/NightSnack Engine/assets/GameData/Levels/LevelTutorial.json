@@ -785,7 +785,7 @@
                         "Layer": "GameLayer",
                         "Name": "Frog",
                         "Position": {
-                            "x": 1025.0,
+                            "x": 950.0,
                             "y": 137.5,
                             "z": 0.0
                         },
@@ -816,7 +816,7 @@
                                     "radius": 0.0,
                                     "shape": "AABB",
                                     "type": "Solid",
-                                    "width": 300.0
+                                    "width": 200.0
                                 },
                                 "Renderable": {
                                     "isWireframe": false,
@@ -836,13 +836,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "ColliderLeft",
                                 "Position": {
-                                    "x": 950.0,
+                                    "x": 900.0,
                                     "y": -200.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 300.0,
+                                    "x": 200.0,
                                     "y": 600.0
                                 },
                                 "UIBasePosition": {
@@ -860,12 +860,12 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 550.0,
+                                    "height": 500.0,
                                     "isStatic": true,
                                     "radius": 0.0,
                                     "shape": "AABB",
                                     "type": "Solid",
-                                    "width": 500.0
+                                    "width": 600.0
                                 },
                                 "Renderable": {
                                     "isWireframe": false,
@@ -885,14 +885,14 @@
                                 "Layer": "GameLayer",
                                 "Name": "ColliderMiddle",
                                 "Position": {
-                                    "x": 1350.0,
-                                    "y": -275.0,
+                                    "x": 1300.0,
+                                    "y": -250.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 500.0,
-                                    "y": 550.0
+                                    "x": 600.0,
+                                    "y": 500.0
                                 },
                                 "UIBasePosition": {
                                     "x": 0.0,
@@ -999,13 +999,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "GroundLeftSide",
                                 "Position": {
-                                    "x": 950.0,
-                                    "y": -212.5,
+                                    "x": 900.0,
+                                    "y": -225.0,
                                     "z": 10.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 300.0,
+                                    "x": 200.0,
                                     "y": 600.0
                                 },
                                 "UIBasePosition": {
@@ -1033,13 +1033,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "PlatfromSpriteLeft",
                                 "Position": {
-                                    "x": 950.0,
+                                    "x": 900.0,
                                     "y": 50.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 300.0,
+                                    "x": 200.0,
                                     "y": 100.0
                                 },
                                 "UIBasePosition": {
@@ -1135,14 +1135,14 @@
                                 "Layer": "GameLayer",
                                 "Name": "GroundMiddle",
                                 "Position": {
-                                    "x": 1350.0,
-                                    "y": -275.0,
+                                    "x": 1300.0,
+                                    "y": -250.0,
                                     "z": 10.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 500.0,
-                                    "y": 550.0
+                                    "x": 600.0,
+                                    "y": 500.0
                                 },
                                 "UIBasePosition": {
                                     "x": 100.0,
@@ -1169,13 +1169,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "PlatfromSpriteMiddle",
                                 "Position": {
-                                    "x": 1350.0,
+                                    "x": 1300.0,
                                     "y": -50.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 500.0,
+                                    "x": 600.0,
                                     "y": 100.0
                                 },
                                 "UIBasePosition": {
