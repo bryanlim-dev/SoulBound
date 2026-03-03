@@ -1265,13 +1265,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "PlatfromSprite4",
                                 "Position": {
-                                    "x": 5000.0,
+                                    "x": 4950.0,
                                     "y": 450.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 200.0,
+                                    "x": 300.0,
                                     "y": 100.0
                                 },
                                 "UIBasePosition": {
@@ -1333,13 +1333,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "GroundPlatform4",
                                 "Position": {
-                                    "x": 5000.0,
+                                    "x": 4950.0,
                                     "y": 400.0,
                                     "z": 10.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 200.0,
+                                    "x": 300.0,
                                     "y": 200.0
                                 },
                                 "UIBasePosition": {
@@ -1375,40 +1375,6 @@
                                 "Scale": {
                                     "x": 1100.0,
                                     "y": 200.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 100.0,
-                                    "y": -100.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 500.0,
-                                    "y": 500.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "GroundTile",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "GroundPlatform3",
-                                "Position": {
-                                    "x": 4850.0,
-                                    "y": 350.0,
-                                    "z": 10.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
                                 },
                                 "UIBasePosition": {
                                     "x": 100.0,
@@ -1486,40 +1452,6 @@
                                 "UIBaseScale": {
                                     "x": 500.0,
                                     "y": 500.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "PlatformTile1",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "PlatfromSprite3",
-                                "Position": {
-                                    "x": 4850.0,
-                                    "y": 350.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
                                 }
                             },
                             "isPrefab": false
@@ -1743,55 +1675,6 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 100.0,
-                                    "isStatic": true,
-                                    "radius": 0.0,
-                                    "shape": "AABB",
-                                    "type": "Solid",
-                                    "width": 100.0
-                                },
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "ColorMat",
-                                    "meshName": "square"
-                                },
-                                "RigidBody": {
-                                    "gravityMult": 1.0,
-                                    "mass": 1.0,
-                                    "restitution": 0.0,
-                                    "useGravity": false,
-                                    "useRotate": false
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "ColliderPlatform3",
-                                "Position": {
-                                    "x": 4850.0,
-                                    "y": 350.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Collider": {
                                     "height": 800.0,
                                     "isStatic": true,
                                     "radius": 0.0,
@@ -1944,7 +1827,7 @@
                                     "radius": 0.0,
                                     "shape": "AABB",
                                     "type": "Solid",
-                                    "width": 200.0
+                                    "width": 300.0
                                 },
                                 "Renderable": {
                                     "isWireframe": false,
@@ -1964,13 +1847,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "ColliderPlatform4",
                                 "Position": {
-                                    "x": 5000.0,
+                                    "x": 4950.0,
                                     "y": 400.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 200.0,
+                                    "x": 300.0,
                                     "y": 200.0
                                 },
                                 "UIBasePosition": {
@@ -2147,7 +2030,7 @@
                 "Layer": "GameLayer",
                 "Name": "GrapplePointRoom2",
                 "Position": {
-                    "x": 1300.0,
+                    "x": 1250.0,
                     "y": 400.0,
                     "z": 0.0
                 },
@@ -2619,8 +2502,8 @@
                                 "Layer": "GameLayer",
                                 "Name": "CollidarPillar3",
                                 "Position": {
-                                    "x": 7712.5,
-                                    "y": 687.5,
+                                    "x": 7700.0,
+                                    "y": 700.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -2692,7 +2575,7 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 500.0,
+                                    "height": 700.0,
                                     "isStatic": true,
                                     "radius": 201.19638061523438,
                                     "shape": "AABB",
@@ -2717,14 +2600,14 @@
                                 "Layer": "GameLayer",
                                 "Name": "CollidarWall",
                                 "Position": {
-                                    "x": 5050.0,
-                                    "y": 950.0,
+                                    "x": 7950.0,
+                                    "y": 1250.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 100.0,
-                                    "y": 500.0
+                                    "y": 700.0
                                 },
                                 "UIBasePosition": {
                                     "x": 0.0,
@@ -2953,13 +2836,13 @@
                                 "Name": "FloorLarge",
                                 "Position": {
                                     "x": 7100.0,
-                                    "y": 400.0,
+                                    "y": 250.0,
                                     "z": 10.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 4000.0,
-                                    "y": 200.0
+                                    "y": 500.0
                                 },
                                 "UIBasePosition": {
                                     "x": 100.0,
@@ -3251,8 +3134,8 @@
                                 "Layer": "GameLayer",
                                 "Name": "GroundPillar3",
                                 "Position": {
-                                    "x": 7712.5,
-                                    "y": 687.5,
+                                    "x": 7700.0,
+                                    "y": 700.0,
                                     "z": 10.0
                                 },
                                 "Rotation": 0.0,
@@ -3353,13 +3236,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "SpritePillar3",
                                 "Position": {
-                                    "x": 7712.5,
-                                    "y": 837.5,
+                                    "x": 7650.0,
+                                    "y": 850.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 600.0,
+                                    "x": 500.0,
                                     "y": 100.0
                                 },
                                 "UIBasePosition": {
@@ -3421,14 +3304,14 @@
                                 "Layer": "GameLayer",
                                 "Name": "Wall",
                                 "Position": {
-                                    "x": 5050.0,
-                                    "y": 950.0,
+                                    "x": 7950.0,
+                                    "y": 1250.0,
                                     "z": 10.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 100.0,
-                                    "y": 500.0
+                                    "y": 700.0
                                 },
                                 "UIBasePosition": {
                                     "x": 100.0,
@@ -4774,10 +4657,10 @@
                 "zoom": 1.0
             },
             {
-                "maxX": 6800.0,
+                "maxX": 7200.0,
                 "maxY": 1250.0,
                 "minX": 4870.0,
-                "minY": 850.0,
+                "minY": 835.0,
                 "pos": {
                     "x": 4650.0,
                     "y": 462.5,
@@ -4805,8 +4688,8 @@
     "WinZone": {
         "ConfigFile": "WinScreen",
         "Position": {
-            "x": 7837.033203125,
-            "y": 1262.9190673828125
+            "x": 7854.6279296875,
+            "y": 1143.5264892578125
         },
         "Scale": {
             "x": 100.0,
