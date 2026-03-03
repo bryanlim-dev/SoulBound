@@ -120,6 +120,8 @@ namespace NightSnack {
 				auto& rot = m_coord.GetComponent<Transform>(e).rot;
 				auto& scl = m_coord.GetComponent<Transform>(e).scale;
 
+				float normalZ = (pos.z + layerZ) / camPos.z;
+
 				if (!trans.isActive) { continue; }
 				if (ren.materialName == "InvisMat") { continue; }
 
@@ -158,7 +160,7 @@ namespace NightSnack {
 
 					// Prepare instance data
 					Mesh::InstanceData instance{};
-					instance.pos_rot = glm::vec4{ pos.x, pos.y, pos.z + layerZ, glm::radians(rot) };	//
+					instance.pos_rot = glm::vec4{ pos.x, pos.y, normalZ, glm::radians(rot) };	//
 					instance.scale = glm::vec4{ scl.x, scl.y, 1.f, 1.f };
 
 					// UV coordinates
@@ -237,7 +239,7 @@ namespace NightSnack {
 
 				} else { // Non-Instanced Rendering
 					// Position and scale has been modified before getting the model matrix for UI entities
-					Vec3 posz = { pos.x, pos.y, pos.z + layerZ };
+					Vec3 posz = { pos.x, pos.y, normalZ };
 					glm::mat4 model = GetModelToWorldMatrix(posz, rot, scl);		//
 
 					Shader* shader = data.material->GetShader();
@@ -449,6 +451,8 @@ namespace NightSnack {
 				auto& rot = m_coord.GetComponent<Transform>(e).rot;
 				auto& scl = m_coord.GetComponent<Transform>(e).scale;
 
+				float normalZ = (pos.z + layerZ) / camPos.z;
+
 				// Entities on the GAMEUI layer will have different transformation matrices
 				glm::mat4 viewToUse = (l.Type() == LayerType::GAMEUI) ? glm::mat4(1.f) : view;
 				glm::mat4 projToUse = (l.Type() == LayerType::GAMEUI) ? glm::ortho(0.f, screenW, screenH, 0.f) : proj;
@@ -466,7 +470,7 @@ namespace NightSnack {
 					{
 						// Model matrix according to its collider's scale
 						// Make the z value of the collider be slightly in front of its entity
-						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f + layerZ }, rot, Vec2{ col.width, col.height });		//
+						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, normalZ + 0.1f }, rot, Vec2{ col.width, col.height });		//
 						glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 						shader->SetMat4("uDebugMVP", debugMVP);
 						shader->SetVec3("uEntityColor", colliderColor);
@@ -478,7 +482,7 @@ namespace NightSnack {
 					{
 						// Model matrix according to its collider's scale
 						// Make the z value of the collider be slightly in front of its entity
-						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f + layerZ }, rot, Vec2{ col.radius, col.radius });		//
+						glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, normalZ + 0.1f }, rot, Vec2{ col.radius, col.radius });		//
 						glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 						shader->SetMat4("uDebugMVP", debugMVP);
 						shader->SetVec3("uEntityColor", colliderColor);
@@ -493,7 +497,7 @@ namespace NightSnack {
 					glm::vec3 outlineColor(0.5f);
 					// Model matrix according to its collider's scale
 						// Make the z value of the collider be slightly in front of its entity
-					glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f + layerZ }, rot, Vec2{ scl.x, scl.y });				//
+					glm::mat4 debugmodel = GetModelToWorldMatrix({ pos.x, pos.y, normalZ + 0.1f }, rot, Vec2{ scl.x, scl.y });				//
 					glm::mat4 debugMVP = projToUse * viewToUse * debugmodel;
 					shader->SetMat4("uDebugMVP", debugMVP);
 					shader->SetVec3("uEntityColor", outlineColor);
@@ -522,7 +526,7 @@ namespace NightSnack {
 
 						// Model matrix according to its new rotation, and y-scale so line size reflects speed
 						// Make the z value of the collider be slightly in front of its entity
-						glm::mat4 debugModel = GetModelToWorldMatrix({ pos.x, pos.y, pos.z + 0.1f + layerZ }, angle, Vec2{ 1.f, length });		//
+						glm::mat4 debugModel = GetModelToWorldMatrix({ pos.x, pos.y, normalZ + 0.1f }, angle, Vec2{ 1.f, length });		//
 						glm::mat4 debugMVP = proj * view * debugModel;
 						shader->SetMat4("uDebugMVP", debugMVP);
 						shader->SetVec3("uEntityColor", glm::vec3(0.1f, 0.9f, 0.9f));
@@ -718,8 +722,7 @@ namespace NightSnack {
 		float halfHeight = (height * 0.5f) / zoom;
 		// Orthographic projection keeps objects the same size regardless of depth
 		// Arguments in the order of (left, right, bottom, top, near, far)
-		return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, Z_EPSILON, 
-			m_coord.GetComponent<Transform>(GetCamera()).pos.z);
+		return glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight, Z_EPSILON, 10.f);
 	}
 
 	glm::mat4 GraphicsSystem::GetModelToWorldMatrix(Vec3 position, float rotation, Vec2 scale) {
