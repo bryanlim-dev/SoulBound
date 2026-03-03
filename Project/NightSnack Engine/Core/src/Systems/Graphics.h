@@ -462,6 +462,7 @@ namespace NightSnack {
 			LayerType layerType = LayerType::GAMELAYER;
 			size_t ssboOffset{ 0 };
 			size_t instanceCount{ 0 };
+			int layerOrder{ 0 }; // explicit sort key
 		};
 
 		// Resource stores (owned by system);
@@ -470,7 +471,7 @@ namespace NightSnack {
 		std::unordered_map<std::string, std::unique_ptr<Mesh>>     m_meshes;
 		std::unordered_map<std::string, std::unique_ptr<Material>> m_materials;
 
-		std::map<std::string, InstanceBatch> m_meshBatches; // Holds all the different InstanceBatch combinations
+		std::vector<InstanceBatch> m_orderedBatches; // Holds all the different InstanceBatch combinations
 		std::vector<Mesh::InstanceData> m_allInstances; // Holds all the InstanceData only, to upload to the GPU once
 
 		Entity m_camera = INVALID_ENTITY;

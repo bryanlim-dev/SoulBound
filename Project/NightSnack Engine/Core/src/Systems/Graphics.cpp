@@ -102,7 +102,7 @@ namespace NightSnack {
 		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
-		m_meshBatches.clear();
+		m_orderedBatches.clear();
 		m_allInstances.clear();
 
 		float layerZ = -1.f;
@@ -222,11 +222,17 @@ namespace NightSnack {
 					case LayerType::_ENGINE2:	key = "layer5_" + key;	break;
 					}
 
-					m_meshBatches[key].instances.push_back(instance);
-					m_meshBatches[key].mesh = data.mesh;
-					m_meshBatches[key].material = data.material;
-					m_meshBatches[key].isWireframe = ren.isWireframe;
-					m_meshBatches[key].layerType = l.Type();
+					InstanceBatch batch = {
+						data.mesh,
+						data.material,
+						ren.isWireframe,
+						{ instance },
+						l.Type(),
+						0,
+						0,
+						static_cast<int>(l.Type())
+					};
+					m_orderedBatches.push_back(batch);
 
 				} else { // Non-Instanced Rendering
 					// Position and scale has been modified before getting the model matrix for UI entities
@@ -316,11 +322,17 @@ namespace NightSnack {
 
 		// Uploading and Drawing for Instanced Rendering
 		if (m_enableInstancedRendering) {
-			////std::cout << "Num unique instances total: " << m_meshBatches.size() << std::endl;
+			////std::cout << "Num unique instances total: " << m_orderedBatches.size() << std::endl;
+
+			// After collecting all mesh batches, sort them according to layer order
+			std::stable_sort(m_orderedBatches.begin(), m_orderedBatches.end(),
+				[](const InstanceBatch& a, const InstanceBatch& b) {
+					return a.layerOrder < b.layerOrder;
+				});
 
 			// Update m_allInstances with the collected InstanceBatches, and the SSBO offsets
 			size_t currentOffset{ 0 };
-			for (auto& [key, instanceBatch] : m_meshBatches) {
+			for (auto& instanceBatch : m_orderedBatches) {
 				instanceBatch.ssboOffset = currentOffset;
 				instanceBatch.instanceCount = instanceBatch.instances.size();
 				m_allInstances.insert(m_allInstances.end(), instanceBatch.instances.begin(), instanceBatch.instances.end());
@@ -332,7 +344,7 @@ namespace NightSnack {
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_globalInstanceSSBO);
 
 			// Upload uniforms in respect to its InstanceBatch
-			for (auto& [key, instanceBatch] : m_meshBatches) {
+			for (auto& instanceBatch : m_orderedBatches) {
 				//std::cout << "uploading unique mesh with name: " << meshName;
 				//std::cout << " with its instance count: " << instances.size() << std::endl;
 
@@ -416,7 +428,7 @@ namespace NightSnack {
 		glm::mat4 proj = GetCameraProjectionMatrix(camInfo.width, camInfo.height, camInfo.zoom);
 		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-camPos.x, -camPos.y, -camPos.z));
 
-		m_meshBatches.clear();
+		m_orderedBatches.clear();
 
 		float layerZ = -1.f;
 		for (Layer& l : m_layers) {
