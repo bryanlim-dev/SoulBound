@@ -290,6 +290,7 @@ namespace NightSnack::Scene {
 		float m_exitTimer;
 		Entity m_player = INVALID_ENTITY;
 		Entity m_camIndex = INVALID_ENTITY;
+		Entity m_hoveredEntity = INVALID_ENTITY;
 
 		// Winzone
 		Entity m_winCollider;

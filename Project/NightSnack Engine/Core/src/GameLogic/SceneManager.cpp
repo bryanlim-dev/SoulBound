@@ -202,11 +202,23 @@ namespace NightSnack::Scene {
 			// Check collision with mouse
 			if (!ButtonCollisionCheck(mx, my, t, c)) {
 				m_coord.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
+
+				// clear hover state if mouse left this button
+				if (m_hoveredEntity == e) 
+				{
+					m_hoveredEntity = INVALID_ENTITY;
+				}
 				continue;
 			}
 			auto& m = m_coord.ModifyComponent<Renderable>(e).materialName;
 			m = b.hoverTex;
 			//std::cout << "changed texture of button: " << e << " to " << b.hoverTex << '\n';
+			// only play hover sound when first entering the button
+			if (m_hoveredEntity != e) 
+			{
+				m_hoveredEntity = e;
+				m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("buttonHover", 2);
+			}
 
 			if (m_mouseClick) {
 				m = b.clickTex;
