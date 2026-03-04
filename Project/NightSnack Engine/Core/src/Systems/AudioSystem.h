@@ -107,6 +107,9 @@ namespace NightSnack {
          */
         void StopBGM();
 
+        void StopBGM(const std::string& bgmKey);
+
+
         /**
          * @brief pauses the currently playing background music
          */
@@ -256,6 +259,7 @@ namespace NightSnack {
 
         // CurrentBGM
         std::string m_currentKeyBGM;
+        std::unordered_map<std::string, FMOD::Channel*> m_bgmChannels;  // Map of BGM key to channel
 
         // Volume levels
         float m_masterVolume;

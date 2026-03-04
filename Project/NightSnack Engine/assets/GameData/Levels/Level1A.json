@@ -1,5 +1,5 @@
 {
-    "BGM": "GameLevelMusic",
+    "BGM": ["GameLevelMusic", "WindBlow", "FrogAmbience", "NightForest"],
     "Entities": [
         {
             "Prefab": "Player",
@@ -939,6 +939,13 @@
                                     "restitution": 0.0,
                                     "useGravity": true,
                                     "useRotate": false
+                                },
+                                "Audio": {
+                                    "AudioKey": "rockFall",
+                                    "AudioVolume": 1.0,
+                                    "AudioLoop": false,
+                                    "AudioPlayOnStart": false,
+                                    "AudioIsPlaying": false
                                 },
                                 "Script": {
                                     "name": [

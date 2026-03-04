@@ -51,7 +51,8 @@ namespace NightSnack {
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
             vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
 
-            c.GetSystem<AudioSystem>()->PlaySFX("playerJump");
+            c.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerJump", 0.4f);
+
 
             // Start the emitter to spawn particles
             // These particles spawn position will be based on the updated player position
@@ -299,7 +300,7 @@ namespace NightSnack {
             vel.y = pcont.jumpSpeed;
             t.pos.y += 0.5f;
             m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
-            m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerJump", 0.3f);
+            m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerJump", 0.4f);
 
             //m_storedJump = false;
             m_flags.justJumped = true;

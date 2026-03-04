@@ -60,7 +60,7 @@ namespace NightSnack::Scene {
 				LoadLevel(m_scheduledLevelName);
 
 				// Fade in the new BGM
-				m_coord.GetSystem<AudioSystem>()->FadeToVolume(0.2f, 1.0f); // 0.2f is bgm volume
+				//m_coord.GetSystem<AudioSystem>()->FadeToVolume(0.2f, 1.0f); // 0.2f is bgm volume
 
 				// Reset scheduled load
 				m_scheduledLevelLoad = false;
@@ -375,8 +375,33 @@ namespace NightSnack::Scene {
 
 		// Play Background Music
 		auto audio = m_coord.GetSystem<AudioSystem>();
-		if (level.contains("BGM")) audio->PlayBGM(level["BGM"]);
-		else audio->StopBGM();
+
+		audio->StopBGM(); // stop previous bgm
+		audio->SetBGMVolume(0.0f); // start silent for fade-in
+
+		if (level.contains("BGM"))
+		{
+			if (level["BGM"].is_array())
+			{
+				// Multiple BGMs
+				for (const auto& bgm : level["BGM"])
+				{
+					audio->PlayBGM(bgm.get<std::string>());
+				}
+			}
+			else
+			{
+				// Single BGM
+				audio->PlayBGM(level["BGM"].get<std::string>());
+			}
+		}
+		else
+		{
+			audio->StopBGM();
+		}
+
+		// Fade BGM volume back in
+		audio->FadeToVolume(0.2f, 1.5f);
 
 		// Refresh Scripts for loaded level
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();

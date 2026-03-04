@@ -371,89 +371,112 @@ namespace NightSnack {
             return;
 
         auto it = m_loadedBGM.find(bgmKey);
-        if (it == m_loadedBGM.end()) 
+        if (it == m_loadedBGM.end())
         {
             std::cerr << "[AudioSystem] BGM not found: " << bgmKey << "\n";
             return;
         }
 
-        if (m_currentKeyBGM == bgmKey && IsBGMPlaying()) 
-        {
-            //std::cout << "[AudioSystem] Already playing " << bgmKey << ", continuing...\n";
-            return;
-        }
-
-        FMOD::Sound* bgm = it->second;
-
-        if (m_bgmChannel)
+        // Check if this BGM is already playing
+        auto channelIt = m_bgmChannels.find(bgmKey);
+        if (channelIt != m_bgmChannels.end())
         {
             bool isPlaying = false;
-            m_bgmChannel->isPlaying(&isPlaying);
+            channelIt->second->isPlaying(&isPlaying);
             if (isPlaying)
-                m_bgmChannel->stop();
+            {
+                //std::cout << "[AudioSystem] Already playing " << bgmKey << ", continuing...\n";
+                return;
+            }
         }
 
-        m_fmodSystem.lock()->playSound(bgm, nullptr, false, &m_bgmChannel);
+        // Play the new BGM
+        FMOD::Sound* bgm = it->second;
+        FMOD::Channel* newChannel = nullptr;
 
-        if (m_bgmChannel)
+        m_fmodSystem.lock()->playSound(bgm, nullptr, false, &newChannel);
+
+        if (newChannel)
         {
-            m_bgmChannel->setVolume(m_bgmVolume * m_masterVolume);
+            newChannel->setVolume(m_bgmVolume * m_masterVolume);
+            m_bgmChannels[bgmKey] = newChannel;  // Store in map
         }
 
         m_bgmPaused = false;
-        m_currentKeyBGM = bgmKey;
+        m_currentKeyBGM = bgmKey;  // Track most recent for backwards compatibility
         //std::cout << "[AudioSystem] Playing BGM: " << bgmKey << "\n";
     }
 
-    // stops the currently playing background music
+    // Stop specific BGM
+    void AudioSystem::StopBGM(const std::string& bgmKey)
+    {
+        auto it = m_bgmChannels.find(bgmKey);
+        if (it != m_bgmChannels.end())
+        {
+            if (it->second)
+                it->second->stop();
+            m_bgmChannels.erase(it);
+
+            if (m_currentKeyBGM == bgmKey)
+                m_currentKeyBGM = "";
+        }
+    }
+
+    // Stop all BGM
     void AudioSystem::StopBGM()
     {
-        if (m_bgmChannel)
+        for (auto& [key, channel] : m_bgmChannels)
         {
-            bool isPlaying = false;
-            m_bgmChannel->isPlaying(&isPlaying);
-            if (isPlaying)
-            {
-                m_bgmChannel->stop();
-            }
+            if (channel)
+                channel->stop();
         }
-        m_bgmPaused = false;
+        m_bgmChannels.clear();
         m_currentKeyBGM = "";
+        m_bgmPaused = false;
     }
 
     // pauses the currently playing background music
     void AudioSystem::PauseBGM()
     {
-        if (m_bgmChannel && !m_bgmPaused)
+        for (auto& [key, channel] : m_bgmChannels)
         {
-            bool isPlaying = false;
-            m_bgmChannel->isPlaying(&isPlaying);
-            if (isPlaying)
+            if (channel && !m_bgmPaused)
             {
-                m_bgmChannel->setPaused(true);
-                m_bgmPaused = true;
+                bool isPlaying = false;
+                channel->isPlaying(&isPlaying);
+                if (isPlaying)
+                {
+                    channel->setPaused(true);
+                }
             }
         }
+        m_bgmPaused = true;
     }
 
-    // resumes the paused background music
     void AudioSystem::ResumeBGM()
     {
-        if (m_bgmChannel && m_bgmPaused)
+        for (auto& [key, channel] : m_bgmChannels)
         {
-            m_bgmChannel->setPaused(false);
-            m_bgmPaused = false;
+            if (channel && m_bgmPaused)
+            {
+                channel->setPaused(false);
+            }
         }
+        m_bgmPaused = false;
     }
 
     // checks if background music is currently playing
     bool AudioSystem::IsBGMPlaying() const
     {
-        if (m_bgmChannel)
+        for (const auto& [key, channel] : m_bgmChannels)
         {
-            bool isPlaying = false;
-            m_bgmChannel->isPlaying(&isPlaying);
-            return isPlaying && !m_bgmPaused;
+            if (channel)
+            {
+                bool isPlaying = false;
+                channel->isPlaying(&isPlaying);
+                if (isPlaying && !m_bgmPaused)
+                    return true;
+            }
         }
         return false;
     }
@@ -463,20 +486,24 @@ namespace NightSnack {
     {
         m_masterVolume = std::clamp(volume, 0.0f, 1.0f);
 
-        if (m_bgmChannel)
+        // Update all BGM channels
+        for (auto& [key, channel] : m_bgmChannels)
         {
-            m_bgmChannel->setVolume(m_bgmVolume * m_masterVolume);
+            if (channel)
+                channel->setVolume(m_bgmVolume * m_masterVolume);
         }
     }
 
-    // sets the volume for background music
+    // sets the bgm volume
     void AudioSystem::SetBGMVolume(float volume)
     {
         m_bgmVolume = std::clamp(volume, 0.0f, 1.0f);
 
-        if (m_bgmChannel)
+        // Update all BGM channels
+        for (auto& [key, channel] : m_bgmChannels)
         {
-            m_bgmChannel->setVolume(m_bgmVolume * m_masterVolume);
+            if (channel)
+                channel->setVolume(m_bgmVolume * m_masterVolume);
         }
     }
 
@@ -587,16 +614,21 @@ namespace NightSnack {
 
     void AudioSystem::ControlFade(float deltaTime)
     {
-        if (!m_isFading || !m_bgmChannel) return;
+        if (!m_isFading) return;
 
         m_fadeTimer += deltaTime;
         float t = std::min(m_fadeTimer / m_fadeDuration, 1.0f);
 
-        // store the starting volume when fade begins
+        // Calculate current volume
         float startVolume = m_bgmVolume - (m_fadeTargetVolume - m_bgmVolume) * (m_fadeTimer - deltaTime) / m_fadeDuration;
         float currentVolume = startVolume + (m_fadeTargetVolume - startVolume) * t;
 
-        m_bgmChannel->setVolume(currentVolume * m_masterVolume);
+        // Apply to ALL BGM channels
+        for (auto& [key, channel] : m_bgmChannels)
+        {
+            if (channel)
+                channel->setVolume(currentVolume * m_masterVolume);
+        }
 
         if (t >= 1.0f) {
             m_isFading = false;
