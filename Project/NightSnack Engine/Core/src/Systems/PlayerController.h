@@ -319,12 +319,14 @@ namespace NightSnack {
                         r.materialName = "FrogIdle_1_1"; // depends on the texture name
                         curr_ability = "Grapple";
                         m_flags.tryPossess = false;
+                        m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
                         break;
 
                     } else if (et.name == "Ghost" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
                         r.materialName = "EyeMove_4_1"; // depends on the texture name
                         curr_ability = "DoubleJump";
                         m_flags.tryPossess = false;
+                        m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
                         break;
                     }
                 }
@@ -337,6 +339,7 @@ namespace NightSnack {
                 if (r.materialName != "SpiritMove_4_1") {
                     r.materialName = "SpiritMove_4_1";
                     curr_ability = "Glide";
+                    m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
                 }
                 // Reset it back anyways
                 m_flags.tryUnPossess = false;
