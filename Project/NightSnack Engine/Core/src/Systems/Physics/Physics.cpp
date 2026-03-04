@@ -135,6 +135,10 @@ namespace NightSnack {
 					// Reset colliders for this frame;
 					col.isGrounded = false;
 					col.colliding = false;
+
+					col.collidedGround = INVALID_ENTITY;
+					col.collidedSolid = INVALID_ENTITY;
+					col.collidedTrigger = INVALID_ENTITY;
 				}
 				ResolveCollisions();
 			}
@@ -244,6 +248,32 @@ namespace NightSnack {
 						Vec2 normal; float depth;
 						if (!CheckCollision(t1, t2, c1, c2, normal, depth)) { continue; }
 						c1.colliding = c2.colliding = true;
+
+						switch (c1.type)
+						{
+						case ColliderType::Trigger:
+							c2.collidedTrigger = e1;
+							break;
+						case ColliderType::Solid:
+							c2.collidedSolid = e1;
+							break;
+						case ColliderType::Ground:
+							c2.collidedGround = e1;
+							break;
+						}
+
+						switch (c2.type)
+						{
+						case ColliderType::Trigger:
+							c1.collidedTrigger = e2;
+							break;
+						case ColliderType::Solid:
+							c1.collidedSolid = e2;
+							break;
+						case ColliderType::Ground:
+							c1.collidedGround = e2;
+							break;
+						}
 
 						//if (!CheckCollision(t1, t2, c1, c2) && !CheckTunneling(t1, t2, r1) && !CheckTunneling(t2, t1, r2)) { continue; }
 

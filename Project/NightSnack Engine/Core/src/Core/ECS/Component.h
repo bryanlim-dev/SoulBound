@@ -5,7 +5,7 @@
  *              overloads for reading components
  *				Goh Bei Lai (Secondary, 15%) - Created Graphics components (RenderLayer, Renderable, Camera), Particle component, Collectible component
  *              Bryan Lim Jun Jie (Secondary, 5%) - Created Button components (ButtonType, ButtonAction, ButtonInfo)
- *              Clement Ang Yang Ying (Secondary, 5%) - Create States component
+ *              Clement Ang Yang Ying (Secondary, 5%) - Create Character, States component
  *
  * Description:
  * This file defines all components for this project, it also defines a specific
@@ -21,6 +21,10 @@
 #include <json.hpp>
 #include "MathLibrary/Math.h"
 #include <variant>
+
+using Entity = std::uint32_t;
+constexpr Entity INVALID_ENTITY = UINT32_MAX;
+
 namespace NightSnack {
 
     constexpr float FixedDT = 1.f / 60.f;
@@ -148,6 +152,10 @@ namespace NightSnack {
         // Collision state
         bool isGrounded{ false };
         bool colliding{ false };
+
+        Entity collidedSolid   {INVALID_ENTITY};
+        Entity collidedGround  {INVALID_ENTITY};
+        Entity collidedTrigger {INVALID_ENTITY};
     };
 
     struct Sprite {
