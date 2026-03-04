@@ -345,7 +345,7 @@
                 },
                 "ButtonInfo": {
                     "action": "OpenMenu",
-                    "target": "SettingsMenu",
+                    "target": "PauseMenu",
                     "type": "Clicker",
                     "defaultTex": "MainMenu-Credits",
                     "hoverTex": "MainMenu-CreditsHover",

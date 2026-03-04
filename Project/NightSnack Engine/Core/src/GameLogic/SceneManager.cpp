@@ -60,6 +60,7 @@ namespace NightSnack::Scene {
 			if (m_levelLoadTimer <= 0.0f) {
 				// Load the new level
 				LoadLevel(m_scheduledLevelName);
+				CloseMenu();
 
 				// Fade in the new BGM
 				m_coord.GetSystem<AudioSystem>()->FadeToVolume(0.2f, 1.0f); // 0.2f is bgm volume
@@ -794,7 +795,7 @@ namespace NightSnack::Scene {
 		float zoom = camera.zoom;
 
 		//std::cerr << "[SceneManager] Centering menu on camera at (" << camX << ", " << camY
-		//	<< ") with zoom: " << zoom << "\n";
+		//	<< ") with zoom: " << zoom << "\n";``
 
 		// Create menu entities
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
