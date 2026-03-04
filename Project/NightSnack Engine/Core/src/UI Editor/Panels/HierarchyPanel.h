@@ -163,9 +163,26 @@ namespace NightSnack
                         Entity sceneCam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
                         Vec3 camPos = m_coord.GetComponent<Transform>(sceneCam).pos;
                         Vec2 scale = Vec2{ 100.f, 100.f };
-                        json bounds = keyframesCopy[selectedKeyframe].second;
+                        json bounds;
+                        if (!keyframesCopy.empty() && (selectedKeyframe >= 0 && selectedKeyframe < keyframesCopy.size()))
+                        {
+							camPos = keyframesCopy[selectedKeyframe].second["pos"];
+							scale = keyframesCopy[selectedKeyframe].second["scale"];
+                            bounds = keyframesCopy[selectedKeyframe].second;
+                        }
+                        else
+                        {
+                            bounds["minX"] = 0.f;
+                            bounds["maxX"] = 0.f;
+                            bounds["minY"] = 0.f;
+                            bounds["maxY"] = 0.f;
+							bounds["zoom"] = 1.f;
+                            bounds["pos"] = { {"x", camPos.x}, {"y", camPos.y}, {"z", camPos.z} };
+                            bounds["scale"] = { {"x", scale.x}, {"y", scale.y} };
+                        }
                         sceneManager->CreateCamTrigger(camPos, scale, bounds);
                     }
+                    keyframesCopy = sceneManager->GetCameraKeyframes();
                     ImGui::Separator();
                     ImGui::Text("Existing CamTriggers:");
                     for (int i = 0; i < keyframesCopy.size(); ++i)
