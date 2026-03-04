@@ -13,6 +13,7 @@
  ******************************************************************************/
 #pragma once
 #include <MathLibrary/DistanceJoint2D.h>
+#include "../Systems/Physics/Physics.h"
 
 namespace NightSnack {
 	class Bounce
@@ -51,32 +52,53 @@ namespace NightSnack {
 		const float m_minVel = 20.0f;
 
 		//How long until start checking for grounded during launch state
-		float m_groundedDelayTime = 0;
-		float m_maxGroundedDelayTime = 0.25f;
+		float m_bounceDelayTime = 0;
+		const float m_maxGroundedDelayTime = 0.15f;
+
+		float m_ownerInitalRestitution = 0;
 
 	public:
 		Bounce(){}
 
 		void Initalize(Entity owner, Coordinator& coord, EventDispatcher& disp) { 
 			m_owner = owner; 
+			disp.Subscribe<CollisionEvent>([this, &coord](const CollisionEvent& event)
+				{
+					//If not active or either entity is 
+					if (!m_active || !(event.entityA == this->m_owner || event.entityB == m_owner))
+						return;
+
+					Entity other = INVALID_ENTITY;
+					if ((Entity)(event.entityA) != m_owner)
+						other = event.entityA;
+					else
+						other = event.entityB;
+
+					Collided(coord, other);
+				});
+
 			disp.Subscribe<InputEvent>([this, &coord](const InputEvent& event)
 				{
 					if (!m_active)
 						return;
 
+					//Flip launch direction to left
 					switch (event.inputAction) {
-						//case InputEvent::InputAction::PlayerMoveLeft:
-						//	if (event.pressed == InputEvent::InputActionState::Pressed ||
-						//		event.pressed == InputEvent::InputActionState::Repeat) {
-						//		//this->SwingActivated(coord, false);
-						//	}
-						//	break;
-						//case InputEvent::InputAction::PlayerMoveRight:
-						//	if (event.pressed == InputEvent::InputActionState::Pressed ||
-						//		event.pressed == InputEvent::InputActionState::Repeat) {
-						//		//this->SwingActivated(coord, true);
-						//	}
-						//	break;
+						case InputEvent::InputAction::PlayerMoveLeft:
+							if (event.pressed == InputEvent::InputActionState::Pressed ||
+								event.pressed == InputEvent::InputActionState::Repeat) {
+								//this->SwingActivated(coord, false);
+								m_facingRight = false;
+							}
+							break;
+					//Flip launch direction to right
+						case InputEvent::InputAction::PlayerMoveRight:
+							if (event.pressed == InputEvent::InputActionState::Pressed ||
+								event.pressed == InputEvent::InputActionState::Repeat) {
+								//this->SwingActivated(coord, true);
+								m_facingRight = true;
+							}
+							break;
 					case InputEvent::InputAction::PlayerJump:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
@@ -116,6 +138,7 @@ namespace NightSnack {
 		void Launch(Coordinator& coord);
 		void ChangeAngle(Coordinator& coord, bool isAngleIncrease);
 
+
 		bool IsActive() const {
 			return m_active;
 		}
@@ -125,5 +148,8 @@ namespace NightSnack {
 		void UpdateDisplays(Coordinator& coord);
 
 		void DeleteDisplay(Coordinator& coord);
+
+		void Collided(Coordinator& coord, Entity collidedEntity);
+
 	};
 }

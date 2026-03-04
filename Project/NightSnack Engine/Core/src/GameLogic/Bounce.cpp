@@ -32,7 +32,14 @@ namespace NightSnack
 		m_launchAngle = 45.0f;
 
 		m_active = true;
-		m_groundedDelayTime = 0;
+		m_bounceDelayTime = 0;
+		m_ownerInitalRestitution = 0;
+
+		if (coord.HasComponent<RigidBody>(m_owner))
+		{
+			m_ownerInitalRestitution = coord.GetComponent<RigidBody>(m_owner).restitution;
+			coord.ModifyComponent<RigidBody>(m_owner).restitution = 1;
+		}
 
 		return true;
 	}
@@ -72,16 +79,35 @@ namespace NightSnack
 		}
 		case BOUNCE_RELEASED:
 		{
-			m_groundedDelayTime += coord.GetSystem<ApplicationSystem>()->GetDT();
-			if (m_groundedDelayTime >= m_maxGroundedDelayTime)
+			m_bounceDelayTime += coord.GetSystem<ApplicationSystem>()->GetDT();
+			if (m_bounceDelayTime >= m_maxGroundedDelayTime)
 			{
+				Collider& col = coord.ModifyComponent<Collider>(m_owner);
 				//Check if gounded, end bounce
-				if (coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().isGrounded)
+				if (coord.GetComponent<Collider>(m_owner).isGrounded)
 				{
 					//Reset vel
 					coord.ModifyComponent<RigidBody>(m_owner).vel = Vec2();
+					coord.ModifyComponent<RigidBody>(m_owner).force.isActive = false;
+					coord.ModifyComponent<RigidBody>(m_owner).restitution = m_ownerInitalRestitution;
+					std::cout << "Grounded!" << std::endl;
 					return false;
 				}
+				else if (col.colliding)
+				{
+					Entity other = INVALID_ENTITY;
+					if (col.collidedGround != INVALID_ENTITY)
+						other = col.collidedGround;
+					else
+						other = col.collidedSolid;
+
+					Collided(coord, other);
+					m_bounceDelayTime = 0;
+				}
+			}
+			else
+			{
+				std::cout << "Bounce CD" << std::endl;
 			}
 
 			break;
@@ -124,7 +150,10 @@ namespace NightSnack
 		{
 			//Launch force based on how long its charged
 			float launchPower = m_maxLaunchForce / m_maxChargeTime * m_chargeTime;
-			coord.ModifyComponent<RigidBody>(m_owner).vel.x += launchPower * cos(m_launchAngle * PI/180);
+
+			int dir = m_facingRight ? 1 : -1;
+
+			coord.ModifyComponent<RigidBody>(m_owner).vel.x += launchPower * cos(m_launchAngle * PI/180) * dir;
 			coord.ModifyComponent<RigidBody>(m_owner).vel.y += launchPower * sin(m_launchAngle * PI/180);
 			std::cout << "Bounce Launch! X Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.x << ", " 
 				<< "Y Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.y << std::endl;
@@ -159,5 +188,34 @@ namespace NightSnack
 
 		m_targetLine = INVALID_ENTITY;
 		m_chargeBar = INVALID_ENTITY;
+	}
+	void Bounce::Collided(Coordinator& coord, Entity other)
+	{
+		if (!m_active || other == INVALID_ENTITY)
+			return;
+
+		if (coord.HasComponent<Transform>(m_owner) &&
+			coord.HasComponent<RigidBody>(m_owner) &&
+			coord.HasComponent<Collider>(m_owner) &&
+			coord.HasComponent<Transform>(other) &&
+			coord.HasComponent<RigidBody>(other) &&
+			coord.HasComponent<Collider>(other))
+		{
+			coord.ModifyComponent<RigidBody>(m_owner).force.isActive = true;
+
+			coord.GetSystem<PhysicsSystem>()->TransferForce(
+				coord.ModifyComponent<Transform>(m_owner),
+				coord.ModifyComponent<Transform>(other),
+				coord.ModifyComponent<RigidBody>(m_owner),
+				coord.ModifyComponent<RigidBody>(other),
+				coord.ModifyComponent<Collider>(m_owner),
+				coord.ModifyComponent<Collider>(other)
+			);
+			Transform& tra = coord.ModifyComponent<Transform>(m_owner);
+			Transform& traWall = coord.ModifyComponent<Transform>(other);
+			RigidBody& bod = coord.ModifyComponent<RigidBody>(m_owner);
+			std::cout << "BOING! Entity pos: " << tra.pos << ", Wall/Floor Pos: " << traWall.pos 
+				<< ", Entity Vel: " << bod.vel << ", Entity Force Mag: " << bod.force.magnitude << ", Entity Force Dir: " << bod.force.direction << std::endl;
+		}
 	}
 }
