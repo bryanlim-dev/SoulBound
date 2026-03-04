@@ -195,6 +195,12 @@ namespace NightSnack {
 							NightSnack::UndoSystem::Instance().PerformUndo(m_coord, *factory);
 						}
 						break;
+					case InputEvent::InputAction::RedoStep:
+						if (factory)
+						{
+							NightSnack::UndoSystem::Instance().PerformRedo(m_coord, *factory);
+						}
+						break;
 					case InputEvent::InputAction::Copy:
 						if (event.pressed == InputEvent::InputActionState::Pressed) {
 							Vec2 p = m_coord.GetComponent<Transform>(m_scenePanel->GetEditorCamera()).pos;

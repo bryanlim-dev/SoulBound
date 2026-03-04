@@ -65,6 +65,7 @@ namespace NightSnack {
 
             PhysicsDebugMode,   // CTRL + P
 			UndoStep,           // CTRL + Z
+			RedoStep,           // CTRL + Y
 			ToggleUIEditor,     // Backslash ( \ )
 
             NumTotalInputAction
