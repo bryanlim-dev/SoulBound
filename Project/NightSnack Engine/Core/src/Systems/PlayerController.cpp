@@ -241,6 +241,10 @@ namespace NightSnack {
 
             if (m_flags.isGrounded)
                 vel.x = 0.f; // Stop moving when no keys pressed when grounded
+            else if (vel.x >= -pcont.moveSpeed && vel.x <= pcont.moveSpeed) //Midair & within player movment
+            {
+                vel.x = 0.f; // Stop moving when no keys and within speed
+            }
 
             if (curr_ability == "Grapple") {
                 m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogIdle_4_1";

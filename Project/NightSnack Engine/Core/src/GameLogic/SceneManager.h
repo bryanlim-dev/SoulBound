@@ -40,7 +40,7 @@ namespace NightSnack::Scene {
 		 * @param a Button action enum value.
 		 * @param func Function pointer to invoke when the button is triggered.
 		 */
-		Button(ButtonAction a, void(*func)(Coordinator& c, std::string const&))
+		Button(ButtonAction a, void(*func)(Coordinator& c, std::string const&, Entity))
 			: m_action{ a }, m_callable{ func } {}
 		Button(Button const& b) noexcept {
 			m_action = b.m_action;
@@ -52,11 +52,11 @@ namespace NightSnack::Scene {
 		 * @param c ECS coordinator reference.
 		 * @param s String argument (e.g., level or menu name).
 		 */
-		void operator()(Coordinator& c, std::string const& s) { m_callable(c, s); }
+		void operator()(Coordinator& c, std::string const& s, Entity e) { m_callable(c, s, e); }
 
 	private:
 		ButtonAction m_action;
-		void(*m_callable)(Coordinator& c, std::string const&);
+		void(*m_callable)(Coordinator& c, std::string const&, Entity);
 
 	};
 
@@ -107,7 +107,7 @@ namespace NightSnack::Scene {
 					// Used to signal a mouse press event
 					case InputEvent::InputAction::ClickLMB:
 						if (m_coord.IsPaused()) return;
-						CheckButtonCollisions();
+						m_mouseClick = true;
 						break;
 					}
 				}
@@ -146,6 +146,25 @@ namespace NightSnack::Scene {
 		 * @return JSON representation of camera keyframes.
 		 */
 		json WriteCameraKeyframes();
+		/**
+		 * @brief Gets all camera keyframes.
+		 * @return Vector of pairs containing entity IDs and their corresponding keyframe JSON data.
+		 */
+		std::vector<std::pair<Entity, json>> GetCameraKeyframes() const;
+
+		/**
+		 * @brief Creates a camera trigger entity.
+		 * @param pos Position of the camera trigger.
+		 * @param scale Scale of the camera trigger.
+		 * @param bounds JSON object containing the camera trigger's bounds.
+		 * @return The created camera trigger entity.
+		 */
+		Entity CreateCamTrigger(const Vec3& pos, const Vec2& scale, const json& bounds);
+		/**
+		 * @brief Deletes a camera trigger entity.
+		 * @param camTriggerEntity The camera trigger entity to delete.
+		 */
+		void DeleteCamTrigger(Entity camTriggerEntity);
 
 		// Spawn Overlay menu (Pause menu) (currently not in use)
 		//void CreateOverlayMenu();
@@ -216,7 +235,7 @@ namespace NightSnack::Scene {
 		/**
 		 * @brief Closes the currently open menu.
 		 */
-		void CloseMenu();
+		void CloseMenu(bool o = false);
 
 		/**
 		 * @brief Checks if a menu is currently open.
@@ -255,12 +274,12 @@ namespace NightSnack::Scene {
 		// Overlay menu
 		bool m_gameLoaded = false;
 		bool overlayOn = false;
-		bool m_mouseClicked = false;
+		bool m_mouseClick = false;
 		bool m_restart = false;
 
 		bool m_menuOpen = false;
-		std::stack<std::set<Entity>> m_menuEntities;
-		//std::string m_currentMenu;
+		std::set<Entity> m_menuEntities;
+		std::stack<std::string> m_menus;
 		std::unordered_map<std::string, size_t> m_menuKeys; // Cache menu JSON keys
 		
 		bool m_scheduledLevelLoad;

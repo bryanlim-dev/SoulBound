@@ -52,6 +52,8 @@ namespace NightSnack::Scene {
 			m_restart = false;
 		}
 
+		CheckButtonCollisions();
+
 		if (m_scheduledLevelLoad) {
 			m_levelLoadTimer -= (1.0f / 60.0f); // to use actual deltaTime if available
 
@@ -94,15 +96,18 @@ namespace NightSnack::Scene {
 				if (physics->EntitiesAreColliding(m_winCollider, m_player)) {
 					CreateWinScreen();
 					m_coord.GetSystem<AudioSystem>()->PlaySFX("playerWin");
+					m_coord.GetSystem<CollectibleSystem>()->ToggleCollectibleIcons(false);
 					winScreenOn = true;
 				}
 			}
 		}
+		m_mouseClick = false;
 	}
 
 	// Register all button actions and stop buttons into m_buttons
 	void SceneManager::RegisterButtons() {
-		Button loadButton(ButtonAction::LOADLEVEL, [](Coordinator& c, std::string const& s) {
+		Button loadButton(ButtonAction::LOADLEVEL, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)e;
 			if (s.empty()) { return; }
 			//c.GetSystem<Scene::SceneManager>()->LoadLevel(s);
 			// 
@@ -112,29 +117,52 @@ namespace NightSnack::Scene {
 		});
 		m_buttons.emplace(ButtonAction::LOADLEVEL, loadButton);
 
-		Button NoAction(ButtonAction::NOACTION, [](Coordinator& c, std::string const& s) {
+		Button NoAction(ButtonAction::NOACTION, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)e;
 			(void)c;
 			if (s.empty()) { return; }
 		});
 		m_buttons.emplace(ButtonAction::NOACTION, NoAction);
 
 		// open menu button
-		Button menuButton(ButtonAction::OPENMENU, [](Coordinator& c, std::string const& s) {
+		Button menuButton(ButtonAction::OPENMENU, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)e;
 			if (s.empty()) { return; }
 			c.GetSystem<Scene::SceneManager>()->OpenMenu(s);
 			});
 		m_buttons.emplace(ButtonAction::OPENMENU, menuButton);
 
 		// close menu button
-		Button closeButton(ButtonAction::CLOSEMENU, [](Coordinator& c, std::string const& s) {
+		Button closeButton(ButtonAction::CLOSEMENU, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)e;
 			(void)s; // Menu name not needed for close
 			c.GetSystem<Scene::SceneManager>()->CloseMenu();
 			});
 		m_buttons.emplace(ButtonAction::CLOSEMENU, closeButton);
 
-		// exit button
-		Button exitButton(ButtonAction::EXIT, [](Coordinator& c, std::string const& s) {
+		// toggle fullscreen button
+		Button fullscreenButton(ButtonAction::TOGGLEFULLSCREEN, [](Coordinator& c, std::string const& s, Entity e) {
 			(void)s;
+			auto const& a = c.GetSystem<ApplicationSystem>();
+			auto& b = c.ModifyComponent<ButtonInfo>(e);
+
+			if (a->m_appIsFullscreen) { 
+				a->ExitFullscreen();
+				b.defaultTex = b.clickTex = b.hoverTex = "Menu-Windowed";
+				c.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
+			}
+			else { 
+				a->EnterFullscreen(); 
+				b.defaultTex = b.clickTex = b.hoverTex = "Menu-Fullscreen";
+				c.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
+			}
+			});
+		m_buttons.emplace(ButtonAction::TOGGLEFULLSCREEN, fullscreenButton);
+
+		// exit button
+		Button exitButton(ButtonAction::EXIT, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)s;
+			(void)e;
 			// Fade out audio and schedule exit
 			auto audio = c.GetSystem<AudioSystem>();
 			audio->FadeToVolume(0.0f, 0.5f); // Fade out over 0.5s
@@ -152,16 +180,20 @@ namespace NightSnack::Scene {
 
 		for (Entity e : m_entities) {
 			// Get button info
-			ButtonInfo const& b = m_coord.GetComponent<ButtonInfo>(e);
+			ButtonInfo& b = m_coord.ModifyComponent<ButtonInfo>(e);
 			if (b.type == INVALID_BUTTON) { continue; }
 
 			// only check menu buttons
 			if (m_menuOpen) {
 				// Check if this entity is in the menu entities list
-				auto it = std::find(m_menuEntities.top().begin(), m_menuEntities.top().end(), e);
+				auto it = std::find(m_menuEntities.begin(), m_menuEntities.end(), e);
 
 				// skip if not a menu button
-				if (it == m_menuEntities.top().end()) { continue; }
+				if (it == m_menuEntities.end()) { continue; }
+				if (b.action == ButtonAction::TOGGLEFULLSCREEN) {
+					b.defaultTex = b.hoverTex = b.clickTex = 
+						(m_coord.GetSystem<ApplicationSystem>()->m_appIsFullscreen ? "Menu-Fullscreen" : "Menu-Windowed");
+				}
 			}
 
 			Transform const& t = m_coord.GetComponent<Transform>(e);
@@ -169,20 +201,29 @@ namespace NightSnack::Scene {
 
 			// Check collision with mouse
 			if (!ButtonCollisionCheck(mx, my, t, c)) {
+				m_coord.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
 				continue;
 			}
+			auto& m = m_coord.ModifyComponent<Renderable>(e).materialName;
+			m = b.hoverTex;
+			//std::cout << "changed texture of button: " << e << " to " << b.hoverTex << '\n';
 
-			std::unordered_map<ButtonAction, Button>::iterator it = m_buttons.find(b.action);
-			if (it != m_buttons.end()) {
-				// Play audio if available
-				m_coord.GetSystem<AudioSystem>()->PlayEntityAudio(e);
-				// Invoke button Callable
-				it->second(m_coord, b.target);
-				// Only interact with 1 button
-				return;
-			}
-			else {
-				std::cerr << "[SceneManager] Button action of Entity: " << e << " not registered\n";
+			if (m_mouseClick) {
+				m = b.clickTex;
+
+				std::unordered_map<ButtonAction, Button>::iterator it = m_buttons.find(b.action);
+				if (it != m_buttons.end()) {
+					// Play audio if available
+					m_coord.GetSystem<AudioSystem>()->PlayEntityAudio(e);
+					// Invoke button Callable
+					it->second(m_coord, b.target, e);
+					// Only interact with 1 button
+					return;
+				}
+				else {
+					std::cerr << "[SceneManager] Button action of Entity: " << e << " not registered\n";
+				}
+				m_mouseClick = false;
 			}
 		}
 	}
@@ -292,6 +333,40 @@ namespace NightSnack::Scene {
 
 		return keyframes;
 	}
+	std::vector<std::pair<Entity, json>> SceneManager::GetCameraKeyframes() const
+	{
+		std::vector<std::pair<Entity, json>> result;
+		for (const auto& [entity, bounds] : m_camFrames)
+		{
+			result.emplace_back(entity, bounds);
+		}
+		return result;
+	}
+
+	Entity SceneManager::CreateCamTrigger(const Vec3& pos, const Vec2& scale, const json& bounds)
+	{
+		auto const& factory = m_coord.GetSystem<EntityFactory>();
+		Transform t = { pos, 0.f, scale, Vec3{}, Vec2{}, LayerType::GAMELAYER, false, true, "CamTrigger" };
+		Collider col = { ShapeType::AABB, ColliderType::Trigger, true, scale.x, scale.y, scale.x / 2.f, false, false };
+		Entity e = factory->Create();
+		m_coord.ModifyComponent<Transform>(e) = t;
+		m_coord.AddComponent<Collider>(e, col);
+		m_coord.AddComponent<Renderable>(e, Renderable{ "InvisMat" });
+		m_coord.AddComponent<Color>(e, Color{});
+		m_coord.AddComponent<RigidBody>(e, RigidBody{});
+		m_camFrames[e] = bounds;
+		m_coord.BufferEntitySignature(e);
+		return e;
+	}
+
+	void SceneManager::DeleteCamTrigger(Entity camTriggerEntity)
+	{
+		auto const& factory = m_coord.GetSystem<EntityFactory>();
+		m_camFrames.erase(camTriggerEntity);
+		factory->RemoveEntity(camTriggerEntity);
+	}
+
+	
 	void SceneManager::CreateWinCollider(json const& level) {
 
 		if (!level.contains("WinZone")) return;
@@ -308,8 +383,8 @@ namespace NightSnack::Scene {
 		m_coord.AddComponent<RigidBody>(m_winCollider, RigidBody{});	// Required for physics system
 
 		// Invisible renderer component
-		m_coord.AddComponent<Renderable>(m_winCollider, Renderable{});
-		m_coord.AddComponent<Color>(m_winCollider, Color{});    // zero alpha
+		//m_coord.AddComponent<Renderable>(m_winCollider, Renderable{});
+		//m_coord.AddComponent<Color>(m_winCollider, Color{});    // zero alpha
 
 		Transform& t = m_coord.ModifyComponent<Transform>(m_winCollider);
 		t.pos = {
@@ -409,6 +484,9 @@ namespace NightSnack::Scene {
 
 		m_gameLoaded = true;
 		CacheLevel();
+
+		// Start the camera panning at the very start of the level
+		m_coord.GetSystem<CameraSystem>()->StartCamPan();
 	}
 
 	void SceneManager::LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration) {
@@ -517,6 +595,9 @@ namespace NightSnack::Scene {
 
 		m_gameLoaded = true;
 		winScreenOn = false;
+
+		// Start the camera panning at the very start of the level
+		m_coord.GetSystem<CameraSystem>()->StartCamPan();
 	}
 
 	// Saves information required for levels, including entity information, BGM and name
@@ -636,7 +717,7 @@ namespace NightSnack::Scene {
 
 		if (m_levelCache.empty()) { return; }
 		// Reset menus
-		while (!m_menuEntities.empty()) { m_menuEntities.pop(); }
+		m_menuEntities.clear();
 		m_menuOpen = false;
 		//m_currentMenu.clear();
 		winScreenOn = false;
@@ -697,10 +778,12 @@ namespace NightSnack::Scene {
 	}
 
 	void SceneManager::OpenMenu(std::string const& menuname) {
-		//if (m_menuOpen) {
-		//	std::cerr << "[SceneManager] Menu already open, closing first\n";
-		//	CloseMenu();
-		//}
+
+		if (m_menuOpen) {
+			std::cerr << "[SceneManager] Menu already open, closing first\n";
+			CloseMenu(true);
+		}
+
 		std::cerr << "[SceneManager] Opening menu: " << menuname << "\n";
 
 		// Build the menu file path
@@ -735,18 +818,16 @@ namespace NightSnack::Scene {
 		float camY = camTransform.pos.y;
 		float zoom = camera.zoom;
 
-		std::cerr << "[SceneManager] Centering menu on camera at (" << camX << ", " << camY
-			<< ") with zoom: " << zoom << "\n";
+		//std::cerr << "[SceneManager] Centering menu on camera at (" << camX << ", " << camY
+		//	<< ") with zoom: " << zoom << "\n";
 
 		// Create menu entities
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 
 		if (menuData.contains("Entities")) {
-			std::set<Entity> currMenuEntities;
-
 			for (auto const& entityData : menuData["Entities"]) {
 				Entity e = 0;
-				std::cerr << "[Open Menu] Check 1\n";
+				//std::cerr << "[Open Menu] Check 1\n";
 
 				if (entityData.contains("prefab")) {
 					std::string prefabName = entityData["prefab"];
@@ -763,14 +844,14 @@ namespace NightSnack::Scene {
 						// offset menu position by camera position
 						transform.pos.x += camX;
 						transform.pos.y += camY;
-						transform.pos.z += (float)m_menuEntities.size() * 5.f;
+						transform.pos.z += (float)m_menus.size() * 2.f;
 
-						std::cerr << "  Prefab: " << prefabName
+						/*std::cerr << "  Prefab: " << prefabName
 							<< " positioned at (" << transform.pos.x << ", " << transform.pos.y << ", " << transform.pos.z << ")"
-							<< " scaled to (" << transform.scale.x << ", " << transform.scale.y << ")\n";
+							<< " scaled to (" << transform.scale.x << ", " << transform.scale.y << ")\n";*/
 					}
 
-					std::cerr << "[Open Menu] Check 2 - Creating: " << prefabName << "\n";
+					//std::cerr << "[Open Menu] Check 2 - Creating: " << prefabName << "\n";
 
 					e = factory->Create(prefabName, transform);
 				}
@@ -779,17 +860,19 @@ namespace NightSnack::Scene {
 					e = factory->Create();
 					Transform t = entityData["Transform"];
 					t.pos += { camX, camY, 0.f };
-					t.pos.z += (float)m_menuEntities.size() * 5.f;
+					t.pos.z += (float)m_menus.size() * 2.f;
 					// Divide by zoom to make menu appear same size on screen
 					t.scale.x /= zoom;
 					t.scale.y /= zoom;
+					//std::cerr << "[SceneManager] Created menu entity " << e << " to system\n"
+					//	<< "Position <" << t.pos.x << ',' << t.pos.y << ',' << t.pos.z << ">\n";
 					m_coord.ModifyComponent<Transform>(e) = t;
 
 					factory->UnpackEntityComponents(e, entityData["Components"]);
 				}
 
 				if (e != INVALID_ENTITY) {
-					currMenuEntities.insert(e);
+					m_menuEntities.insert(e);
 
 					// Check if entity is a button and add to system
 					if (m_coord.HasComponent<ButtonInfo>(e) &&
@@ -800,49 +883,54 @@ namespace NightSnack::Scene {
 					}
 				}
 			}
-			m_menuEntities.push(currMenuEntities);
+			m_menus.push(menuname);
 		}
-
 		m_menuOpen = true;
-		//m_currentMenu = menuname;
 
-		// only pause for in game menus
-		if (menuname == "PauseMenu") {
-			m_coord.Pause();
-			std::cerr << "[SceneManager] Game paused\n";
+		// pause for in game menus
+		if (m_dispatcher)
+		{
+			m_dispatcher->QueueEvent(
+				std::make_unique<InputEvent>(InputEvent::InputAction::PhysicsDebugMode, 
+											InputEvent::InputActionState::Pressed));
 		}
+		//std::cerr << "[SceneManager] Game paused\n";
 
 		std::cerr << "[SceneManager] Opened menu: " << menuname
-			<< " with " << m_menuEntities.top().size() << " entities\n";
+			<< " with " << m_menuEntities.size() << " entities\n";
 	}
 
-	void SceneManager::CloseMenu() {
+	void SceneManager::CloseMenu(bool opening) {
 		if (!m_menuOpen) {
 			return;
 		}
 
-		//std::cerr << "[SceneManager] Closing menu: " << m_currentMenu << '\n';
-
-		// destroy all menu entities
+		// destroy all menu entities ------------------------------------------------
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
-		std::set<Entity> currMenuEntities = m_menuEntities.top();
-
-		for (Entity e : currMenuEntities) {
-
+		for (Entity e : m_menuEntities) {
 			factory->RemoveEntity(e);
 		}
-
-		// unpause only if it was paused
-		if (m_coord.IsPaused()) {
-			m_coord.Unpause();
-			//std::cerr << "[SceneManager] Game unpaused\n";
+		m_menuEntities.clear();
+		// --------------------------------------------------------------------------
+		if (!opening) {
+			if (!m_menus.empty()) {
+				m_menus.pop();
+				if (!m_menus.empty()) {
+					OpenMenu(m_menus.top());
+					m_menus.pop();
+				}
+			}
 		}
-
-		m_menuEntities.pop();
-		if (m_menuEntities.empty()) { m_menuOpen = false; }
-		//m_currentMenu.clear();
-
-		std::cerr << "[SceneManager] Closed menu\n";
+		if (m_menuEntities.empty()) {
+			if (m_dispatcher)
+			{
+				m_dispatcher->QueueEvent(
+					std::make_unique<InputEvent>(InputEvent::InputAction::PhysicsDebugMode,
+						InputEvent::InputActionState::Pressed));
+			}
+			//std::cerr << "[SceneManager] Game unpaused\n";
+			m_menuOpen = false;
+		}
 	}
 
 }	// NightSnack

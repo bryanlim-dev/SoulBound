@@ -13,10 +13,13 @@
                 "ButtonInfo": {
                     "action": "LoadLevel",
                     "target": "Level1A",
-                    "type": "Clicker"
+                    "type": "Clicker",
+                    "defaultTex": "MainMenu-Play",
+                    "hoverTex": "MainMenu-PlayHover",
+                    "clickTex": "MainMenu-Play"
                 },
                 "Collider": {
-                    "height": 128.0,
+                    "height": 64.0,
                     "isStatic": true,
                     "radius": 0.0,
                     "shape": "AABB",
@@ -25,7 +28,7 @@
                 },
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "MainMenu-PlayButton",
+                    "materialName": "MainMenu-Play",
                     "meshName": "square"
                 },
                 "Script": {
@@ -39,14 +42,14 @@
                 "Layer": "GameLayer",
                 "Name": "Play-Button",
                 "Position": {
-                    "x": 1.8254623413085938,
-                    "y": -107.51148223876953,
+                    "x": 0.0,
+                    "y": -87.5,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 320.0,
-                    "y": 128.0
+                    "x": 512.0,
+                    "y": 64.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -72,10 +75,13 @@
                 "ButtonInfo": {
                     "action": "OpenMenu",
                     "target": "SettingsMenu",
-                    "type": "Clicker"
+                    "type": "Clicker",
+                    "defaultTex": "MainMenu-Options",
+                    "hoverTex": "MainMenu-OptionsHover",
+                    "clickTex": "MainMenu-Options"
                 },
                 "Collider": {
-                    "height": 128.0,
+                    "height": 64.0,
                     "isStatic": true,
                     "radius": 0.0,
                     "shape": "AABB",
@@ -84,13 +90,8 @@
                 },
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "GroundTileTop",
+                    "materialName": "MainMenu-Options",
                     "meshName": "square"
-                },
-                "Script": {
-                    "name": [
-                        "WiggleScript"
-                    ]
                 },
                 "modified": true
             },
@@ -98,14 +99,14 @@
                 "Layer": "GameLayer",
                 "Name": "Settings-Button",
                 "Position": {
-                    "x": 1.8254623413085938,
-                    "y": -387.511474609375,
+                    "x": 0.0,
+                    "y": -162.5,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 320.0,
-                    "y": 128.0
+                    "x": 512.0,
+                    "y": 64.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -131,10 +132,13 @@
                 "ButtonInfo": {
                     "action": "ExitGame",
                     "target": "",
-                    "type": "Clicker"
+                    "type": "Clicker",
+                    "defaultTex": "MainMenu-Quit",
+                    "hoverTex": "MainMenu-QuitHover",
+                    "clickTex": "MainMenu-Quit"
                 },
                 "Collider": {
-                    "height": 128.0,
+                    "height": 64.0,
                     "isStatic": true,
                     "radius": 0.0,
                     "shape": "AABB",
@@ -143,7 +147,7 @@
                 },
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "MainMenu-QuitButton",
+                    "materialName": "MainMenu-Quit",
                     "meshName": "square"
                 },
                 "modified": true
@@ -152,14 +156,14 @@
                 "Layer": "GameLayer",
                 "Name": "Quit-Button",
                 "Position": {
-                    "x": 1.1899452209472656,
-                    "y": -242.6451873779297,
+                    "x": 0.0,
+                    "y": -312.5,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 320.0,
-                    "y": 128.0
+                    "x": 512.0,
+                    "y": 64.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -317,6 +321,63 @@
                 "Scale": {
                     "x": 192.0,
                     "y": 192.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonSelect",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "OpenMenu",
+                    "target": "SettingsMenu",
+                    "type": "Clicker",
+                    "defaultTex": "MainMenu-Credits",
+                    "hoverTex": "MainMenu-CreditsHover",
+                    "clickTex": "MainMenu-Credits"
+                },
+                "Collider": {
+                    "height": 64.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "MainMenu-Credits",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "Settings-Button",
+                "Position": {
+                    "x": 0.0,
+                    "y": -237.5,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
