@@ -207,8 +207,9 @@ namespace NightSnack {
          * @brief plays a random variant of a sound effect
          * @param baseKey base name of the sound (e.g., "playerHurt")
          * @param numVariants number of variants available
+		 * @param volume volume level (0.0 to 1.0)
          */
-        void PlayRandomVariant(const std::string& baseKey, int numVariants);
+        void PlayRandomVariant(const std::string& baseKey, int numVariants, float volume);
 
         /**
 		 * @brief plays spatial audio based on player position and max distance

@@ -647,10 +647,10 @@ namespace NightSnack {
         }
     }
 
-    void AudioSystem::PlayRandomVariant(const std::string& baseKey, int numVariants)
+    void AudioSystem::PlayRandomVariant(const std::string& baseKey, int numVariants, float volume)
     {
         if (numVariants <= 0) {
-            PlaySFX(baseKey);
+            PlaySFXWithVolume(baseKey, volume);
             return;
         }
 
@@ -661,7 +661,7 @@ namespace NightSnack {
 
         int variant = dist(gen);
         std::string soundKey = baseKey + "_" + std::to_string(variant);
-        PlaySFX(soundKey);
+        PlaySFXWithVolume(soundKey, volume);
     }
 
     void AudioSystem::UpdateSpatialAudio(Vec2 const& playerPos, float maxDistance)
