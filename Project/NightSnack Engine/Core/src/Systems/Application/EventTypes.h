@@ -40,6 +40,7 @@ namespace NightSnack {
             PlayerSpecialAbility,   // A KEY
             PlayerUnPossess,        // D KEY
 
+            SkipDialogue,       // ENTER key
             Ability1,
             Ability2,
             Ability3,

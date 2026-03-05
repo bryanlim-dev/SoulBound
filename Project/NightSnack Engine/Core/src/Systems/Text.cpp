@@ -172,6 +172,7 @@ namespace NightSnack {
 			for (Entity e : l.Entities()) {
 				// Reached the end of Valid Entities
 				if (e == INVALID_ENTITY) { break; }
+				if (!m_coord.GetComponent<Transform>(e).isActive) { continue; }
 
 				// Check whether the player is colliding with an entity that is specifically used to 
 				// render text when collided upon (CURRENTLY NOT USED, WOULD NEED TWEAKS AFTERWARDS TOO)
@@ -243,13 +244,63 @@ namespace NightSnack {
 				}
 
 				// Render the actual text string
-				RenderText(txt.text, finalPosX, finalPosY, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType);
+				RenderText(txt.text, finalPosX, finalPosY, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType, txt.textWrapWidth);
 			}
 		}
 		glDisable(GL_BLEND);
 	}
 
-	void TextSystem::RenderText(std::string text, float x, float y, float scale, glm::vec3 color, const glm::mat4& proj, const glm::mat4& view, const std::string& fontName)
+	std::vector<std::string> TextSystem::WrapText(const std::string& text, const std::string& fontName, float maxWidth, float scale) {
+		std::vector<std::string> lines;
+		if (m_fontCharacters.find(fontName) == m_fontCharacters.end()) {
+			return lines;
+		}
+
+		auto& chars = m_fontCharacters[fontName];
+
+		std::istringstream wordStream(text);
+		std::string word;
+		std::string currentLine;
+		float currentLineWidth = 0.f;
+
+		auto MeasureWord = [&](const std::string& w) -> float {
+			float width = 0.f;
+			for (char c : w) {
+				width += (chars[c].advance >> 6) * scale;
+			}
+			return width;
+		};
+
+		float spaceWidth = (chars[' '].advance >> 6) * scale;
+
+		while (wordStream >> word) {
+			float wordWidth = MeasureWord(word);
+
+			if (currentLine.empty()) {
+				// First word on this line, always place it regardless of width
+				currentLine = word;
+				currentLineWidth = wordWidth;
+			} else if (currentLineWidth + spaceWidth + wordWidth <= maxWidth) {
+				// Word fits on the current line
+				currentLine += " " + word;
+				currentLineWidth += spaceWidth + wordWidth;
+			} else {
+				// Word doesnt fit, push the current line and start a new line
+				lines.push_back(currentLine);
+				currentLine = word;
+				currentLineWidth = wordWidth;
+			}
+		}
+
+		// Push in the last line
+		if (!currentLine.empty()) {
+			lines.push_back(currentLine);
+		}
+
+		return lines;
+	}
+
+	void TextSystem::RenderText(std::string text, float x, float y, float scale, glm::vec3 color, const glm::mat4& proj, const glm::mat4& view, const std::string& fontName, float maxWidth)
 	{
 		// Make sure the font exists
 		if (m_fontCharacters.find(fontName) == m_fontCharacters.end()) {
@@ -266,51 +317,105 @@ namespace NightSnack {
 		glActiveTexture(GL_TEXTURE0);
 		glBindVertexArray(m_vao);
 
-		// Get the width and height of the string of text, not the entity
-		// So that we can offset the position of the string of text, to be at the center of the entity position by default
-		float textWidth{};
-		float maxY{}, minY{};
-		for (char c : text) {
-			auto& ch = chars[c];
-			textWidth += (ch.advance >> 6) * scale;
-			maxY = std::max(maxY, ch.bearing.y * scale);
-			minY = std::max(minY, (ch.size.y - ch.bearing.y) * scale);
+		// Split into wrapped lines if maxWidth is set
+		std::vector<std::string> lines;
+		if (maxWidth > 0.f) {
+			lines = WrapText(text, fontName, maxWidth, scale);
+		} else {
+			lines.push_back(text); // a single line
 		}
-		float textHeight = maxY - minY;
-		float cursorX = x - (textWidth * 0.5f);
-		float cursorY = y - (textHeight * 0.5f);
 
-		// Render each character in the string
-		for (char c : text) {
-			auto& ch = chars[c];
+		// Line height = glyph size * scale * leading
+		float lineHeight = 48.f * scale * 1.2f;
 
-			float xpos = cursorX + ch.bearing.x * scale;
-			float ypos = cursorY - (ch.size.y - ch.bearing.y) * scale;
-			float w = ch.size.x * scale;
-			float h = ch.size.y * scale;
+		float startY = y;
 
-			// Define vertices for the character quad
-			float vertices[6][4] = {
-				{ xpos,     ypos + h,   0.f, 0.f },
-				{ xpos,     ypos,       0.f, 1.f },
-				{ xpos + w, ypos,       1.f, 1.f },
+		for (const std::string& line : lines) {
+			float cursorX = x;
+			float cursorY = startY;
 
-				{ xpos,     ypos + h,   0.f, 0.f },
-				{ xpos + w, ypos,       1.f, 1.f },
-				{ xpos + w, ypos + h,   1.f, 0.f }
-			};
-			// Bind the glyph texture and update the VBO
-			glBindTexture(GL_TEXTURE_2D, ch.textureID);
-			glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // use glBufferSubData and not glBufferData
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			// Draw quad
-			glDrawArrays(GL_TRIANGLES, 0, 6);
-			// Advance cursors for next glyph (note that advance is number of 1/64 pixels)
-			cursorX += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+			for (char c : line) {
+				auto& ch = chars[c];
+
+				float xpos = cursorX + ch.bearing.x * scale;
+				float ypos = cursorY - (ch.size.y - ch.bearing.y) * scale;
+				float w = ch.size.x * scale;
+				float h = ch.size.y * scale;
+
+				// Define vertices for the character quad
+				float vertices[6][4] = {
+					{ xpos,     ypos + h,   0.f, 0.f },
+					{ xpos,     ypos,       0.f, 1.f },
+					{ xpos + w, ypos,       1.f, 1.f },
+
+					{ xpos,     ypos + h,   0.f, 0.f },
+					{ xpos + w, ypos,       1.f, 1.f },
+					{ xpos + w, ypos + h,   1.f, 0.f }
+				};
+				// Bind the glyph texture and update the VBO
+				glBindTexture(GL_TEXTURE_2D, ch.textureID);
+				glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+				glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // use glBufferSubData and not glBufferData
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				// Draw quad
+				glDrawArrays(GL_TRIANGLES, 0, 6);
+				// Advance cursors for next glyph (note that advance is number of 1/64 pixels)
+				cursorX += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+			}
+			// Move down the y-axis for the next line
+			startY -= lineHeight;
 		}
+
 		glBindVertexArray(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+
+		// Get the width and height of the string of text, not the entity
+		// So that we can offset the position of the string of text, to be at the center of the entity position by default
+		//float textWidth{};
+		//float maxY{}, minY{};
+		//for (char c : text) {
+		//	auto& ch = chars[c];
+		//	textWidth += (ch.advance >> 6) * scale;
+		//	maxY = std::max(maxY, ch.bearing.y * scale);
+		//	minY = std::max(minY, (ch.size.y - ch.bearing.y) * scale);
+		//}
+		//float textHeight = maxY - minY;
+		////float cursorX = x - (textWidth * 0.5f); // centers the whole string
+		//float cursorX = x; // left anchored, text grows to the right
+		//float cursorY = y - (textHeight * 0.5f);
+
+		//// Render each character in the string
+		//for (char c : text) {
+		//	auto& ch = chars[c];
+
+		//	float xpos = cursorX + ch.bearing.x * scale;
+		//	float ypos = cursorY - (ch.size.y - ch.bearing.y) * scale;
+		//	float w = ch.size.x * scale;
+		//	float h = ch.size.y * scale;
+
+		//	// Define vertices for the character quad
+		//	float vertices[6][4] = {
+		//		{ xpos,     ypos + h,   0.f, 0.f },
+		//		{ xpos,     ypos,       0.f, 1.f },
+		//		{ xpos + w, ypos,       1.f, 1.f },
+
+		//		{ xpos,     ypos + h,   0.f, 0.f },
+		//		{ xpos + w, ypos,       1.f, 1.f },
+		//		{ xpos + w, ypos + h,   1.f, 0.f }
+		//	};
+		//	// Bind the glyph texture and update the VBO
+		//	glBindTexture(GL_TEXTURE_2D, ch.textureID);
+		//	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+		//	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // use glBufferSubData and not glBufferData
+		//	glBindBuffer(GL_ARRAY_BUFFER, 0);
+		//	// Draw quad
+		//	glDrawArrays(GL_TRIANGLES, 0, 6);
+		//	// Advance cursors for next glyph (note that advance is number of 1/64 pixels)
+		//	cursorX += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+		//}
+		//glBindVertexArray(0);
+		//glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 }

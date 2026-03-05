@@ -1506,6 +1506,19 @@ namespace NightSnack
                 fontComp.fontSize = fontSize;
 			}
 
+            // Text Wrap Width
+            float wrapWidth = fontComp.textWrapWidth;
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Text Wrap Width");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::InputFloat("##WrapWidth", &wrapWidth, 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::FontSnapshot{ *m_selectedEntity, fontComp }
+                );
+                fontComp.textWrapWidth = wrapWidth;
+            }
+
 			// Text Offset Position
 			float fontoffset[2] = { fontComp.offsetPosition.x, fontComp.offsetPosition.y };
 			ImGui::TableNextRow();

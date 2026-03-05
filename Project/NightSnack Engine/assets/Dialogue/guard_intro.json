@@ -1,0 +1,33 @@
+{
+  "startID": "guard_01",
+  "lines": {
+    "guard_01": {
+      "speaker": "Frog Guard",
+      "speakerMaterial": "FrogMove_4_1",
+      "text": "Halt! Who goes there?",
+      "nextID": "player_01",
+      "typingSpeed": 0.05
+    },
+    "player_01": {
+      "speaker": "Player",
+      "speakerMaterial": "SpiritMove_4_1",
+      "text": "Just a traveler, passing through.",
+      "nextID": "guard_02",
+      "typingSpeed": 0.04
+    },
+    "guard_02": {
+      "speaker": "Frog Guard",
+      "speakerMaterial": "FrogMove_4_1",
+      "text": "...",
+      "nextID": "guard_03",
+      "typingSpeed": 0.3
+    },
+    "guard_03": {
+      "speaker": "Frog Guard",
+      "speakerMaterial": "FrogMove_4_1",
+      "text": "Move along then. And stay out of trouble.",
+      "nextID": "",
+      "typingSpeed": 0.05
+    }
+  }
+}

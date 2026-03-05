@@ -653,6 +653,7 @@ namespace NightSnack {
 	void to_json(json& j, Font const& f) {
 		j = {
 			{"fontSize", f.fontSize},
+			{"textWrapWidth", f.textWrapWidth},
 			{"fontType", f.fontType},
 			{"text", f.text}
 		};
@@ -672,6 +673,7 @@ namespace NightSnack {
 			j.at("fontType").get_to(f.fontType);
 			j.at("text").get_to(f.text);
 			j.at("fontSize").get_to(f.fontSize);
+			j.at("textWrapWidth").get_to(f.textWrapWidth);
 			auto& clr = j.at("textColor");
 			f.textColor = { clr.value("r", 0.0f), clr.value("g", 0.0f), clr.value("b", 0.0f) };
 			auto& offsetPos = j.at("offsetPosition");
