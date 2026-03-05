@@ -84,7 +84,7 @@ namespace NightSnack::Scene {
 			m_systemSignature.set(GetComponentTypeID<Collider>());
 
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
-				// Handle ClickLMB outside the Pressed-only block so Released is caught
+				// Handle ClickLMB outside the Pressed-only block
 				if (event.inputAction == InputEvent::InputAction::ClickLMB) {
 					if (m_coord.IsPaused()) return;
 					if (event.pressed == InputEvent::InputActionState::Pressed) {

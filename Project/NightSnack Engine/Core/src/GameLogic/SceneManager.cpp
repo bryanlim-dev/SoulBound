@@ -238,9 +238,9 @@ namespace NightSnack::Scene {
 				m_coord.GetSystem<AudioSystem>()->PlaySFX("buttonHover_1");
 			}
 
-			// After the existing hover check, add slider drag handling:
+			// add slider drag handling
 			if (b.action == ButtonAction::VOLUMESLIDER) {
-				// Sliders drag while mouse is held down, not just on click
+				// Sliders drag while mouse is held down
 				if (m_mouseHeld) {
 					auto& mat = m_coord.ModifyComponent<Renderable>(e).materialName;
 					mat = b.clickTex;
