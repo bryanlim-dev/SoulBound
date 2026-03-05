@@ -1,5 +1,5 @@
 /******************************************************************************
- * File:        PlayerController.h
+ * File:        PlayerController.cpp
  * Project:     NightSnack
  * Author(s):   Chewn Thing Kwan (Primary, 90%)
  *              Bryan Lim Jun Jie (Secondary, 10%)

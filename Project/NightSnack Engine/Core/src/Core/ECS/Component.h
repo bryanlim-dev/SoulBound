@@ -283,6 +283,7 @@ namespace NightSnack {
         //bool is3D = false;
         bool isPlaying = false;
         //bool stop = false;
+        bool spatial = false;
     };
 
     enum ButtonType {
@@ -301,6 +302,7 @@ namespace NightSnack {
         CLOSEMENU,
         NOACTION,
         TOGGLEFULLSCREEN,
+        VOLUMESLIDER,
         EXIT
     };
     struct ButtonInfo {
@@ -311,6 +313,10 @@ namespace NightSnack {
         std::string defaultTex;
         std::string hoverTex;
         std::string clickTex;
+
+        float sliderMinX = 0.f;
+        float sliderMaxX = 0.f;
+        //Entity knobEntity{};
     };
 
 

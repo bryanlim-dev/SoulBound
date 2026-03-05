@@ -14,6 +14,7 @@
  ******************************************************************************/
 
 #include "AudioSystem.h"
+#include "Systems/PlayerController.h"
 #include <iostream>
 #include <algorithm>
 #include <filesystem>
@@ -177,6 +178,16 @@ namespace NightSnack {
 				m_entityChannels[e]->setMode(FMOD_LOOP_OFF);
 				m_entityChannels[e]->setLoopCount(0);
             }
+        }
+
+        Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+
+        if (player != INVALID_ENTITY && m_coord.HasComponent<Transform>(player)) {
+            Vec2 playerPos = {
+                m_coord.GetComponent<Transform>(player).pos.x,
+                m_coord.GetComponent<Transform>(player).pos.y
+            };
+            UpdateSpatialAudio(playerPos, 500.0f);
         }
     }
 
@@ -651,6 +662,40 @@ namespace NightSnack {
         int variant = dist(gen);
         std::string soundKey = baseKey + "_" + std::to_string(variant);
         PlaySFX(soundKey);
+    }
+
+    void AudioSystem::UpdateSpatialAudio(Vec2 const& playerPos, float maxDistance)
+    {
+        for (Entity e : m_entities) {
+            if (!m_coord.HasComponent<Audio>(e)) continue;
+            if (!m_coord.HasComponent<Transform>(e)) continue;
+
+            Audio const& a = m_coord.GetComponent<Audio>(e);
+            if (!a.spatial) continue; // only process spatial audio entities
+
+            Transform const& t = m_coord.GetComponent<Transform>(e);
+            Vec2 entityPos = { t.pos.x, t.pos.y };
+
+            // Calculate distance between entity and player
+            float dx = entityPos.x - playerPos.x;
+            float dy = entityPos.y - playerPos.y;
+            float distance = std::sqrt(dx * dx + dy * dy);
+
+            // If out of range, stop/mute the audio
+            auto channelIt = m_entityChannels.find(e);
+            if (channelIt == m_entityChannels.end()) continue;
+
+            if (distance >= maxDistance) {
+                channelIt->second->setVolume(0.0f);
+            }
+            else {
+                // Linear falloff: 1.0 at distance 0, 0.0 at maxDistance
+                float fallOff = 1.0f - (distance / maxDistance);
+                // Smooth the falloff with a squared curve
+                float spatialVolume = fallOff * fallOff * a.volume * m_masterVolume;
+                channelIt->second->setVolume(spatialVolume);
+            }
+        }
     }
 
     Signature AudioSystem::GetSignature() const

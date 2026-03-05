@@ -694,6 +694,8 @@ namespace NightSnack {
 		if (ButtonAction::NOACTION == b.action) j["action"] = std::string{ "NoAction"};
 		if (ButtonAction::EXIT == b.action) j["action"] = std::string{ "ExitGame" };
 		if (ButtonAction::TOGGLEFULLSCREEN == b.action) j["action"] = std::string{ "ToggleFullscreen" };
+		if (ButtonAction::VOLUMESLIDER == b.action)      j["action"] = std::string{ "VolumeSlider" };
+
 
 		if (ButtonType::SLIDER == b.type) j["type"] = std::string{ "Slider" };
 		if (ButtonType::CLICKER == b.type) j["type"] = std::string{ "Clicker" };
@@ -702,6 +704,12 @@ namespace NightSnack {
 		j["defaultTex"] = b.defaultTex;
 		j["hoverTex"] = b.hoverTex;
 		j["clickTex"] = b.clickTex;
+
+		if (ButtonType::SLIDER == b.type) 
+		{
+			j["sliderMinX"] = b.sliderMinX;
+			j["sliderMaxX"] = b.sliderMaxX;
+		}
 	}
 	void from_json(json const& j, ButtonInfo& b) {
 		try {
@@ -713,6 +721,8 @@ namespace NightSnack {
 			if (j["action"] == "NoAction") { b.action = ButtonAction::NOACTION; }
 			if (j["action"] == "ExitGame") { b.action = ButtonAction::EXIT; }
 			if (j["action"] == "ToggleFullscreen") { b.action = ButtonAction::TOGGLEFULLSCREEN; }
+			if (j["action"] == "VolumeSlider") { b.action = ButtonAction::VOLUMESLIDER; }
+
 			// Button type
 			if (j["type"] == "Slider") { b.type = ButtonType::SLIDER; }
 			if (j["type"] == "Clicker") { b.type = ButtonType::CLICKER; }
@@ -722,6 +732,8 @@ namespace NightSnack {
 			if (j.contains("defaultTex")) { b.defaultTex = j["defaultTex"]; }
 			if (j.contains("hoverTex")) { b.hoverTex = j["hoverTex"]; }
 			if (j.contains("clickTex")) { b.clickTex = j["clickTex"]; }
+			if (j.contains("sliderMinX")) b.sliderMinX = j["sliderMinX"];
+			if (j.contains("sliderMaxX")) b.sliderMaxX = j["sliderMaxX"];
 		}
 		catch(std::exception const& e) {
 			std::cerr << "Invalid JSON format " << e.what() << '\n';

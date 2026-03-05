@@ -210,6 +210,13 @@ namespace NightSnack {
          */
         void PlayRandomVariant(const std::string& baseKey, int numVariants);
 
+        /**
+		 * @brief plays spatial audio based on player position and max distance
+		 * @param playerPos position of the player in the game world
+		 * @param maxDistance maximum distance at which audio can be heard
+         */
+        void UpdateSpatialAudio(Vec2 const& playerPos, float maxDistance);
+
         // ISystem overrides
 
         /**

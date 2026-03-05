@@ -159,6 +159,24 @@ namespace NightSnack::Scene {
 			});
 		m_buttons.emplace(ButtonAction::TOGGLEFULLSCREEN, fullscreenButton);
 
+		Button sliderButton(ButtonAction::VOLUMESLIDER, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)s;
+			auto scene = c.GetSystem<Scene::SceneManager>();
+			Entity knob = scene->GetSliderKnob();
+
+			ButtonInfo const& b = c.GetComponent<ButtonInfo>(e);
+			float mx = c.GetSystem<InputSystem>()->GetMouseWorldPosX();
+			float clamped = std::clamp(mx, b.sliderMinX, b.sliderMaxX);
+			float t = (clamped - b.sliderMinX) / (b.sliderMaxX - b.sliderMinX);
+
+			c.GetSystem<AudioSystem>()->SetMasterVolume(t);
+
+			if (knob != INVALID_ENTITY) {
+				c.ModifyComponent<Transform>(knob).pos.x = clamped;
+			}
+			});
+		m_buttons.emplace(ButtonAction::VOLUMESLIDER, sliderButton);
+
 		// exit button
 		Button exitButton(ButtonAction::EXIT, [](Coordinator& c, std::string const& s, Entity e) {
 			(void)s;
@@ -217,7 +235,22 @@ namespace NightSnack::Scene {
 			if (m_hoveredEntity != e) 
 			{
 				m_hoveredEntity = e;
-				m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("buttonHover", 2);
+				m_coord.GetSystem<AudioSystem>()->PlaySFX("buttonHover_1");
+			}
+
+			// After the existing hover check, add slider drag handling:
+			if (b.action == ButtonAction::VOLUMESLIDER) {
+				// Sliders drag while mouse is held down, not just on click
+				if (m_mouseHeld) {
+					auto& mat = m_coord.ModifyComponent<Renderable>(e).materialName;
+					mat = b.clickTex;
+
+					auto it = m_buttons.find(b.action);
+					if (it != m_buttons.end()) {
+						it->second(m_coord, b.target, e);
+					}
+				}
+				continue; // skip normal click logic for sliders
 			}
 
 			if (m_mouseClick) {
@@ -908,6 +941,42 @@ namespace NightSnack::Scene {
 				}
 			}
 			m_menus.push(menuname);
+
+			// slider knob entities by name-matching
+			Entity sliderBar = INVALID_ENTITY, sliderKnob = INVALID_ENTITY;
+
+			for (Entity e : m_menuEntities) {
+				if (!m_coord.HasComponent<Transform>(e)) continue;
+				std::string const& name = m_coord.GetComponent<Transform>(e).name;
+				if (name == "AudioSlider") sliderBar = e;
+				if (name == "AudioKnob")   sliderKnob = e;
+			}
+
+			if (sliderBar != INVALID_ENTITY && sliderKnob != INVALID_ENTITY) 
+			{
+				m_sliderBarEntity = sliderBar;
+				m_sliderKnobEntity = sliderKnob;
+
+				// Compute min/max from the bar's actual world position and scale
+				ButtonInfo& b = m_coord.ModifyComponent<ButtonInfo>(sliderBar);
+				Transform const& barT = m_coord.GetComponent<Transform>(sliderBar);
+				b.sliderMinX = barT.pos.x - (barT.scale.x * 0.5f);
+				b.sliderMaxX = barT.pos.x + (barT.scale.x * 0.5f);
+
+				float volume = m_coord.GetSystem<AudioSystem>()->GetMasterVolume();
+				float knobX = b.sliderMinX + volume * (b.sliderMaxX - b.sliderMinX);
+				m_coord.ModifyComponent<Transform>(sliderKnob).pos.x = knobX;
+
+				std::cerr << "[SceneManager] Wired VolumeKnob to VolumeSlider"
+					<< " range [" << b.sliderMinX << ", " << b.sliderMaxX << "]\n";
+			}
+			else 
+			{
+				if (sliderBar == INVALID_ENTITY && sliderKnob == INVALID_ENTITY) 
+				{
+					std::cerr << "[SceneManager] No volume slider found in menu: " << menuname << "\n";
+				}
+			}
 		}
 		m_menuOpen = true;
 
@@ -953,6 +1022,8 @@ namespace NightSnack::Scene {
 						InputEvent::InputActionState::Pressed));
 			}
 			//std::cerr << "[SceneManager] Game unpaused\n";
+			m_sliderBarEntity = INVALID_ENTITY;
+			m_sliderKnobEntity = INVALID_ENTITY;
 			m_menuOpen = false;
 		}
 	}
