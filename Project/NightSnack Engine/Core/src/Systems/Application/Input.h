@@ -38,6 +38,7 @@ namespace NightSnack {
 			D,
 			H,
 			SPACE,
+			ENTER,
 			ESC,
 
 			RIGHT_ARROW,

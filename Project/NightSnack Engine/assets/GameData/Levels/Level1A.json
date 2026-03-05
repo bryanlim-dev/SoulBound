@@ -1127,7 +1127,8 @@
                                 "b": 1.0,
                                 "g": 1.0,
                                 "r": 1.0
-                            }
+                            },
+                            "textWrapWidth": 0.0
                         },
                         "Renderable": {
                             "isWireframe": false,
@@ -3325,7 +3326,8 @@
                                 "b": 1.0,
                                 "g": 1.0,
                                 "r": 1.0
-                            }
+                            },
+                            "textWrapWidth": 0.0
                         },
                         "Renderable": {
                             "isWireframe": false,
@@ -3408,7 +3410,8 @@
                                 "b": 1.0,
                                 "g": 1.0,
                                 "r": 1.0
-                            }
+                            },
+                            "textWrapWidth": 0.0
                         },
                         "Renderable": {
                             "isWireframe": false,
@@ -4139,7 +4142,8 @@
                                 "b": 1.0,
                                 "g": 1.0,
                                 "r": 1.0
-                            }
+                            },
+                            "textWrapWidth": 0.0
                         },
                         "Renderable": {
                             "isWireframe": false,
@@ -5444,7 +5448,7 @@
                                 "Position": {
                                     "x": -1050.0,
                                     "y": 1050.0,
-                                    "z": 0.0
+                                    "z": 3.0
                                 },
                                 "Rotation": 180.0,
                                 "Scale": {
@@ -5970,7 +5974,7 @@
                                 "Position": {
                                     "x": -1150.0,
                                     "y": 1050.0,
-                                    "z": 0.0
+                                    "z": 3.0
                                 },
                                 "Rotation": 180.0,
                                 "Scale": {
@@ -6276,7 +6280,8 @@
                                 "b": 1.0,
                                 "g": 1.0,
                                 "r": 1.0
-                            }
+                            },
+                            "textWrapWidth": 0.0
                         },
                         "Renderable": {
                             "isWireframe": false,
@@ -8468,7 +8473,7 @@
                                 "Position": {
                                     "x": -2247.3515625,
                                     "y": 2000.4256591796875,
-                                    "z": 0.0
+                                    "z": 1.0
                                 },
                                 "Rotation": 90.0,
                                 "Scale": {
@@ -8557,7 +8562,7 @@
                                 "Position": {
                                     "x": -2246.987548828125,
                                     "y": 2100.42578125,
-                                    "z": 0.0
+                                    "z": 1.0
                                 },
                                 "Rotation": 90.0,
                                 "Scale": {
@@ -9049,7 +9054,8 @@
                                 "b": 1.0,
                                 "g": 1.0,
                                 "r": 1.0
-                            }
+                            },
+                            "textWrapWidth": 0.0
                         },
                         "Renderable": {
                             "isWireframe": false,
@@ -9342,22 +9348,16 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 25.0,
+                                    "height": 100.0,
                                     "isStatic": true,
-                                    "radius": 50.0,
+                                    "radius": 250.0,
                                     "shape": "AABB",
                                     "type": "Solid",
-                                    "width": 100.0
-                                },
-                                "Color": {
-                                    "a": 0.0,
-                                    "b": 0.0,
-                                    "g": 0.0,
-                                    "r": 0.0
+                                    "width": 400.0
                                 },
                                 "Renderable": {
                                     "isWireframe": false,
-                                    "materialName": "InvisMat",
+                                    "materialName": "PlatformTile1",
                                     "meshName": "square"
                                 },
                                 "RigidBody": {
@@ -9367,19 +9367,25 @@
                                     "useGravity": true,
                                     "useRotate": false
                                 },
+                                "Script": {
+                                    "name": [
+                                        "FallingPlatformScript",
+                                        "WiggleScript"
+                                    ]
+                                },
                                 "modified": true
                             },
                             "Transform": {
                                 "Layer": "GameLayer",
-                                "Name": "Collider",
+                                "Name": "Sprite-PlatformTile1",
                                 "Position": {
-                                    "x": -250.0,
-                                    "y": 2287.5,
-                                    "z": 1.0
+                                    "x": 700.0,
+                                    "y": 2500.0,
+                                    "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 100.0,
+                                    "x": 400.0,
                                     "y": 100.0
                                 },
                                 "UIBasePosition": {
@@ -9414,6 +9420,95 @@
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 200.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Collider": {
+                                    "height": 50.0,
+                                    "isStatic": true,
+                                    "radius": 50.0,
+                                    "shape": "AABB",
+                                    "type": "Solid",
+                                    "width": 100.0
+                                },
+                                "Color": {
+                                    "a": 0.0,
+                                    "b": 0.0,
+                                    "g": 0.0,
+                                    "r": 0.0
+                                },
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "InvisMat",
+                                    "meshName": "square"
+                                },
+                                "RigidBody": {
+                                    "gravityMult": 1.0,
+                                    "mass": 1.0,
+                                    "restitution": 0.0,
+                                    "useGravity": true,
+                                    "useRotate": false
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Collider",
+                                "Position": {
+                                    "x": -450.0,
+                                    "y": 2175.0,
+                                    "z": 1.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "PlatformTile1",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Sprite-PlatformTile1",
+                                "Position": {
+                                    "x": -450.0,
+                                    "y": 2350.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
                                     "y": 100.0
                                 },
                                 "UIBasePosition": {
@@ -9465,12 +9560,12 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 50.0,
+                                    "height": 25.0,
                                     "isStatic": true,
                                     "radius": 50.0,
                                     "shape": "AABB",
                                     "type": "Solid",
-                                    "width": 400.0
+                                    "width": 100.0
                                 },
                                 "Color": {
                                     "a": 0.0,
@@ -9496,8 +9591,63 @@
                                 "Layer": "GameLayer",
                                 "Name": "Collider",
                                 "Position": {
-                                    "x": 1800.0,
-                                    "y": 2325.0,
+                                    "x": -250.0,
+                                    "y": 2537.5,
+                                    "z": 1.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Collider": {
+                                    "height": 50.0,
+                                    "isStatic": true,
+                                    "radius": 50.0,
+                                    "shape": "AABB",
+                                    "type": "Solid",
+                                    "width": 300.0
+                                },
+                                "Color": {
+                                    "a": 0.0,
+                                    "b": 0.0,
+                                    "g": 0.0,
+                                    "r": 0.0
+                                },
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "InvisMat",
+                                    "meshName": "square"
+                                },
+                                "RigidBody": {
+                                    "gravityMult": 1.0,
+                                    "mass": 1.0,
+                                    "restitution": 0.0,
+                                    "useGravity": true,
+                                    "useRotate": false
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Collider",
+                                "Position": {
+                                    "x": 250.0,
+                                    "y": 2175.0,
                                     "z": 1.0
                                 },
                                 "Rotation": 0.0,
@@ -9609,218 +9759,6 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 50.0,
-                                    "isStatic": true,
-                                    "radius": 50.0,
-                                    "shape": "AABB",
-                                    "type": "Solid",
-                                    "width": 300.0
-                                },
-                                "Color": {
-                                    "a": 0.0,
-                                    "b": 0.0,
-                                    "g": 0.0,
-                                    "r": 0.0
-                                },
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "InvisMat",
-                                    "meshName": "square"
-                                },
-                                "RigidBody": {
-                                    "gravityMult": 1.0,
-                                    "mass": 1.0,
-                                    "restitution": 0.0,
-                                    "useGravity": true,
-                                    "useRotate": false
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Collider",
-                                "Position": {
-                                    "x": 250.0,
-                                    "y": 2175.0,
-                                    "z": 1.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Collider": {
-                                    "height": 50.0,
-                                    "isStatic": true,
-                                    "radius": 50.0,
-                                    "shape": "AABB",
-                                    "type": "Solid",
-                                    "width": 100.0
-                                },
-                                "Color": {
-                                    "a": 0.0,
-                                    "b": 0.0,
-                                    "g": 0.0,
-                                    "r": 0.0
-                                },
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "InvisMat",
-                                    "meshName": "square"
-                                },
-                                "RigidBody": {
-                                    "gravityMult": 1.0,
-                                    "mass": 1.0,
-                                    "restitution": 0.0,
-                                    "useGravity": true,
-                                    "useRotate": false
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Collider",
-                                "Position": {
-                                    "x": -450.0,
-                                    "y": 2175.0,
-                                    "z": 1.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "PlatformTile1",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Sprite-PlatformTile1",
-                                "Position": {
-                                    "x": -450.0,
-                                    "y": 2150.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "PlatformTile1",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Sprite-PlatformTile1",
-                                "Position": {
-                                    "x": -250.0,
-                                    "y": 2250.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "PlatformTile1",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Sprite-PlatformTile1",
-                                "Position": {
-                                    "x": -450.0,
-                                    "y": 2350.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Collider": {
                                     "height": 25.0,
                                     "isStatic": true,
                                     "radius": 50.0,
@@ -9853,7 +9791,7 @@
                                 "Name": "Collider",
                                 "Position": {
                                     "x": -250.0,
-                                    "y": 2537.5,
+                                    "y": 2287.5,
                                     "z": 1.0
                                 },
                                 "Rotation": 0.0,
@@ -9909,17 +9847,57 @@
                         },
                         {
                             "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "PlatformTile1",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Sprite-PlatformTile1",
+                                "Position": {
+                                    "x": -450.0,
+                                    "y": 2150.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
                                 "Collider": {
-                                    "height": 100.0,
+                                    "height": 50.0,
                                     "isStatic": true,
-                                    "radius": 250.0,
+                                    "radius": 50.0,
                                     "shape": "AABB",
                                     "type": "Solid",
                                     "width": 400.0
                                 },
+                                "Color": {
+                                    "a": 0.0,
+                                    "b": 0.0,
+                                    "g": 0.0,
+                                    "r": 0.0
+                                },
                                 "Renderable": {
                                     "isWireframe": false,
-                                    "materialName": "PlatformTile1",
+                                    "materialName": "InvisMat",
                                     "meshName": "square"
                                 },
                                 "RigidBody": {
@@ -9929,11 +9907,39 @@
                                     "useGravity": true,
                                     "useRotate": false
                                 },
-                                "Script": {
-                                    "name": [
-                                        "FallingPlatformScript",
-                                        "WiggleScript"
-                                    ]
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Collider",
+                                "Position": {
+                                    "x": 1800.0,
+                                    "y": 2325.0,
+                                    "z": 1.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "PlatformTile1",
+                                    "meshName": "square"
                                 },
                                 "modified": true
                             },
@@ -9941,13 +9947,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "Sprite-PlatformTile1",
                                 "Position": {
-                                    "x": 700.0,
-                                    "y": 2500.0,
+                                    "x": -250.0,
+                                    "y": 2250.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 400.0,
+                                    "x": 100.0,
                                     "y": 100.0
                                 },
                                 "UIBasePosition": {
@@ -10040,6 +10046,95 @@
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 800.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Collider": {
+                                    "height": 100.0,
+                                    "isStatic": true,
+                                    "radius": 50.0,
+                                    "shape": "AABB",
+                                    "type": "Solid",
+                                    "width": 1700.0
+                                },
+                                "Color": {
+                                    "a": 0.0,
+                                    "b": 0.0,
+                                    "g": 0.0,
+                                    "r": 0.0
+                                },
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "InvisMat",
+                                    "meshName": "square"
+                                },
+                                "RigidBody": {
+                                    "gravityMult": 1.0,
+                                    "mass": 1.0,
+                                    "restitution": 0.0,
+                                    "useGravity": true,
+                                    "useRotate": false
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Collider",
+                                "Position": {
+                                    "x": -150.0,
+                                    "y": 1950.0,
+                                    "z": 1.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "GroundTile",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Sprite-GroundTile",
+                                "Position": {
+                                    "x": 500.0,
+                                    "y": 2900.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 2000.0,
                                     "y": 100.0
                                 },
                                 "UIBasePosition": {
@@ -10167,6 +10262,61 @@
                         {
                             "Components": {
                                 "Collider": {
+                                    "height": 100.0,
+                                    "isStatic": true,
+                                    "radius": 50.0,
+                                    "shape": "AABB",
+                                    "type": "Solid",
+                                    "width": 2000.0
+                                },
+                                "Color": {
+                                    "a": 0.0,
+                                    "b": 0.0,
+                                    "g": 0.0,
+                                    "r": 0.0
+                                },
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "InvisMat",
+                                    "meshName": "square"
+                                },
+                                "RigidBody": {
+                                    "gravityMult": 1.0,
+                                    "mass": 1.0,
+                                    "restitution": 0.0,
+                                    "useGravity": true,
+                                    "useRotate": false
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Collider",
+                                "Position": {
+                                    "x": 2500.0,
+                                    "y": 2900.0,
+                                    "z": 1.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Collider": {
                                     "height": 350.0,
                                     "isStatic": true,
                                     "radius": 50.0,
@@ -10240,260 +10390,6 @@
                                 "Scale": {
                                     "x": 100.0,
                                     "y": 1050.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Collider": {
-                                    "height": 400.0,
-                                    "isStatic": true,
-                                    "radius": 50.0,
-                                    "shape": "AABB",
-                                    "type": "Solid",
-                                    "width": 1200.0
-                                },
-                                "Color": {
-                                    "a": 0.0,
-                                    "b": 0.0,
-                                    "g": 0.0,
-                                    "r": 0.0
-                                },
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "InvisMat",
-                                    "meshName": "square"
-                                },
-                                "RigidBody": {
-                                    "gravityMult": 1.0,
-                                    "mass": 1.0,
-                                    "restitution": 0.0,
-                                    "useGravity": true,
-                                    "useRotate": false
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Collider",
-                                "Position": {
-                                    "x": 3800.0,
-                                    "y": 2100.0,
-                                    "z": 1.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Collider": {
-                                    "height": 100.0,
-                                    "isStatic": true,
-                                    "radius": 50.0,
-                                    "shape": "AABB",
-                                    "type": "Solid",
-                                    "width": 1700.0
-                                },
-                                "Color": {
-                                    "a": 0.0,
-                                    "b": 0.0,
-                                    "g": 0.0,
-                                    "r": 0.0
-                                },
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "InvisMat",
-                                    "meshName": "square"
-                                },
-                                "RigidBody": {
-                                    "gravityMult": 1.0,
-                                    "mass": 1.0,
-                                    "restitution": 0.0,
-                                    "useGravity": true,
-                                    "useRotate": false
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Collider",
-                                "Position": {
-                                    "x": -150.0,
-                                    "y": 1950.0,
-                                    "z": 1.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "GroundTile",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Sprite-GroundTile",
-                                "Position": {
-                                    "x": 500.0,
-                                    "y": 2900.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 2000.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Collider": {
-                                    "height": 100.0,
-                                    "isStatic": true,
-                                    "radius": 50.0,
-                                    "shape": "AABB",
-                                    "type": "Solid",
-                                    "width": 100.0
-                                },
-                                "Color": {
-                                    "a": 0.0,
-                                    "b": 0.0,
-                                    "g": 0.0,
-                                    "r": 0.0
-                                },
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "InvisMat",
-                                    "meshName": "square"
-                                },
-                                "RigidBody": {
-                                    "gravityMult": 1.0,
-                                    "mass": 1.0,
-                                    "restitution": 0.0,
-                                    "useGravity": true,
-                                    "useRotate": false
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Collider",
-                                "Position": {
-                                    "x": -650.0,
-                                    "y": 2050.0,
-                                    "z": 1.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Collider": {
-                                    "height": 100.0,
-                                    "isStatic": true,
-                                    "radius": 50.0,
-                                    "shape": "AABB",
-                                    "type": "Solid",
-                                    "width": 2000.0
-                                },
-                                "Color": {
-                                    "a": 0.0,
-                                    "b": 0.0,
-                                    "g": 0.0,
-                                    "r": 0.0
-                                },
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "InvisMat",
-                                    "meshName": "square"
-                                },
-                                "RigidBody": {
-                                    "gravityMult": 1.0,
-                                    "mass": 1.0,
-                                    "restitution": 0.0,
-                                    "useGravity": true,
-                                    "useRotate": false
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Collider",
-                                "Position": {
-                                    "x": 2500.0,
-                                    "y": 2900.0,
-                                    "z": 1.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
                                 },
                                 "UIBasePosition": {
                                     "x": 0.0,
@@ -10588,6 +10484,116 @@
                                 "Scale": {
                                     "x": 100.0,
                                     "y": 300.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Collider": {
+                                    "height": 400.0,
+                                    "isStatic": true,
+                                    "radius": 50.0,
+                                    "shape": "AABB",
+                                    "type": "Solid",
+                                    "width": 1200.0
+                                },
+                                "Color": {
+                                    "a": 0.0,
+                                    "b": 0.0,
+                                    "g": 0.0,
+                                    "r": 0.0
+                                },
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "InvisMat",
+                                    "meshName": "square"
+                                },
+                                "RigidBody": {
+                                    "gravityMult": 1.0,
+                                    "mass": 1.0,
+                                    "restitution": 0.0,
+                                    "useGravity": true,
+                                    "useRotate": false
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Collider",
+                                "Position": {
+                                    "x": 3800.0,
+                                    "y": 2100.0,
+                                    "z": 1.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Collider": {
+                                    "height": 100.0,
+                                    "isStatic": true,
+                                    "radius": 50.0,
+                                    "shape": "AABB",
+                                    "type": "Solid",
+                                    "width": 100.0
+                                },
+                                "Color": {
+                                    "a": 0.0,
+                                    "b": 0.0,
+                                    "g": 0.0,
+                                    "r": 0.0
+                                },
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "InvisMat",
+                                    "meshName": "square"
+                                },
+                                "RigidBody": {
+                                    "gravityMult": 1.0,
+                                    "mass": 1.0,
+                                    "restitution": 0.0,
+                                    "useGravity": true,
+                                    "useRotate": false
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Collider",
+                                "Position": {
+                                    "x": -650.0,
+                                    "y": 2050.0,
+                                    "z": 1.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
                                 },
                                 "UIBasePosition": {
                                     "x": 0.0,
@@ -15167,7 +15173,7 @@
                 "Position": {
                     "x": -2556.627197265625,
                     "y": 965.3771362304688,
-                    "z": 2.0
+                    "z": 0.5
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -17441,14 +17447,14 @@
                 "Layer": "GameUI",
                 "Name": "FlameIcon1",
                 "Position": {
-                    "x": 120.0,
-                    "y": 120.0,
+                    "x": 100.0,
+                    "y": 100.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 120.0,
-                    "y": 120.0
+                    "x": 100.0,
+                    "y": 100.0
                 },
                 "UIBasePosition": {
                     "x": 100.0,
@@ -17487,14 +17493,14 @@
                 "Layer": "GameUI",
                 "Name": "FlameIcon2",
                 "Position": {
-                    "x": 300.0,
-                    "y": 120.0,
+                    "x": 250.0,
+                    "y": 100.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 120.0,
-                    "y": 120.0
+                    "x": 100.0,
+                    "y": 100.0
                 },
                 "UIBasePosition": {
                     "x": 250.0,
@@ -17533,14 +17539,14 @@
                 "Layer": "GameUI",
                 "Name": "FlameIcon3",
                 "Position": {
-                    "x": 480.0,
-                    "y": 120.0,
+                    "x": 400.0,
+                    "y": 100.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 120.0,
-                    "y": 120.0
+                    "x": 100.0,
+                    "y": 100.0
                 },
                 "UIBasePosition": {
                     "x": 400.0,
@@ -17549,6 +17555,170 @@
                 },
                 "UIBaseScale": {
                     "x": 100.0,
+                    "y": 100.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "ColorMat",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameUI",
+                "Name": "DialogueBox",
+                "Position": {
+                    "x": 700.0,
+                    "y": 500.0000305175781,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 1000.0,
+                    "y": 300.0
+                },
+                "UIBasePosition": {
+                    "x": 700.0,
+                    "y": 500.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 1000.0,
+                    "y": 300.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Animator": {
+                    "isLooping": true,
+                    "isPlaying": true,
+                    "playbackSpeed": 1.0,
+                    "spriteSheetName": "Sprites\\FrogMove_4_1.png"
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "FrogMove_4_1",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameUI",
+                "Name": "DialoguePortrait",
+                "Position": {
+                    "x": 300.0,
+                    "y": 400.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 300.0,
+                    "y": 400.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 100.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Font": {
+                    "fontSize": 1.0,
+                    "fontType": "CaveatBrush-Regular",
+                    "offsetPosition": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "text": "",
+                    "textColor": {
+                        "b": 0.09913293272256851,
+                        "g": 0.09913293272256851,
+                        "r": 0.10931175947189331
+                    },
+                    "textWrapWidth": 200.0
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameUI",
+                "Name": "DialogueSpeakerName",
+                "Position": {
+                    "x": 300.0,
+                    "y": 500.0000305175781,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 200.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 300.0,
+                    "y": 500.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 200.0,
+                    "y": 100.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Font": {
+                    "fontSize": 1.0,
+                    "fontType": "CaveatBrush-Regular",
+                    "offsetPosition": {
+                        "x": 0.0,
+                        "y": 0.0,
+                        "z": 0.0
+                    },
+                    "text": "",
+                    "textColor": {
+                        "b": 0.18623483180999756,
+                        "g": 0.18623483180999756,
+                        "r": 1.0
+                    },
+                    "textWrapWidth": 400.0
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameUI",
+                "Name": "DialogueText",
+                "Position": {
+                    "x": 700.0,
+                    "y": 500.0000305175781,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 700.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 700.0,
+                    "y": 500.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 700.0,
                     "y": 100.0
                 }
             },

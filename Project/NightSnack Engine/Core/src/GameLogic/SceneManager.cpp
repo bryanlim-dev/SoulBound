@@ -18,6 +18,7 @@
 #include "Graphics/Camera.h"
 #include "Systems/ParticleSystem.h"
 #include "Systems/CollectibleSystem.h"
+#include "Systems/DialogueSystem.h"
 
 // Private helper function that checks mouse and button collision
 static bool ButtonCollisionCheck(float mx, float my, NightSnack::Transform const& t, NightSnack::Collider const& c) {
@@ -538,6 +539,7 @@ namespace NightSnack::Scene {
 		m_gameLoaded = true;
 		CacheLevel();
 
+		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
 		// Start the camera panning at the very start of the level
 		if (levelname == "LevelTutorial")
 			m_coord.GetSystem<CameraSystem>()->StartCamPan(false);
@@ -653,8 +655,9 @@ namespace NightSnack::Scene {
 		m_gameLoaded = true;
 		winScreenOn = false;
 
+		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
 		// Start the camera panning at the very start of the level
-		m_coord.GetSystem<CameraSystem>()->StartCamPan();
+		m_coord.GetSystem<CameraSystem>()->StartCamPan(true);
 	}
 
 	// Saves information required for levels, including entity information, BGM and name
@@ -801,6 +804,10 @@ namespace NightSnack::Scene {
 
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();
 		script->RefreshScripts(); //	
+
+		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
+		// Do not pam the camera when entering the level editor
+		m_coord.GetSystem<CameraSystem>()->StartCamPan(false);
 
 		std::cerr << "[SceneManager] Level restored\n";
 	}
