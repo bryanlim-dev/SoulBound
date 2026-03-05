@@ -1,5 +1,5 @@
 /******************************************************************************
- * File:        PlayerController.h
+ * File:        PlayerController.cpp
  * Project:     NightSnack
  * Author(s):   Chewn Thing Kwan (Primary, 90%)
  *              Bryan Lim Jun Jie (Secondary, 10%)
@@ -25,15 +25,20 @@ namespace NightSnack {
             if (!c.HasComponent<RigidBody>(target)) return;
 
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
-            if (vel.y <= -50.f) vel.y = -50.f;
 
-            //// Only play if not already playing
-            //if (!m_flags.isGlideSoundPlaying) {
-            //    c.GetSystem<AudioSystem>()->PlaySFX("playerGlide");
-            //    m_flags.isGlideSoundPlaying = true;
-            //}
+            // only glide if not grounded
+            if (!m_flags.isGrounded) 
+            {
+                if (vel.y <= -50.f) vel.y = -50.f;
 
-            });
+                // play glide sound only once when starting to glide
+                if (!m_flags.isGliding) 
+                {
+                    c.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerGlide", 0.05f);
+                    m_flags.isGliding = true;
+                }
+            }
+        });
         m_abilities.insert({ abilityName, GlideAbility });
 
         abilityName = "DoubleJump";
@@ -46,7 +51,8 @@ namespace NightSnack {
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
             vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
 
-            c.GetSystem<AudioSystem>()->PlaySFX("playerJump");
+            c.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerJump", 0.4f);
+
 
             // Start the emitter to spawn particles
             // These particles spawn position will be based on the updated player position
@@ -298,7 +304,7 @@ namespace NightSnack {
             vel.y = pcont.jumpSpeed;
             t.pos.y += 0.5f;
             m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
-            m_coord.GetSystem<AudioSystem>()->PlaySFX("playerJump");
+            m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerJump", 0.4f);
 
             //m_storedJump = false;
             m_flags.justJumped = true;

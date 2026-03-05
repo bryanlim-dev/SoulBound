@@ -63,7 +63,7 @@ namespace NightSnack::Scene {
 				LoadLevel(m_scheduledLevelName);
 
 				// Fade in the new BGM
-				m_coord.GetSystem<AudioSystem>()->FadeToVolume(0.2f, 1.0f); // 0.2f is bgm volume
+				//m_coord.GetSystem<AudioSystem>()->FadeToVolume(0.2f, 1.0f); // 0.2f is bgm volume
 
 				// Reset scheduled load
 				m_scheduledLevelLoad = false;
@@ -114,7 +114,7 @@ namespace NightSnack::Scene {
 			// 
 			// loads level with fade, 1.5s fade out, 1.0s fade in
 			c.Unpause();
-			c.GetSystem<Scene::SceneManager>()->LoadLevelWithFade(s, 1.5f, 1.0f);
+			c.GetSystem<Scene::SceneManager>()->LoadLevelWithFade(s, 1.1f, 1.0f);
 		});
 		m_buttons.emplace(ButtonAction::LOADLEVEL, loadButton);
 
@@ -160,15 +160,33 @@ namespace NightSnack::Scene {
 			});
 		m_buttons.emplace(ButtonAction::TOGGLEFULLSCREEN, fullscreenButton);
 
+		Button sliderButton(ButtonAction::VOLUMESLIDER, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)s;
+			auto scene = c.GetSystem<Scene::SceneManager>();
+			Entity knob = scene->GetSliderKnob();
+
+			ButtonInfo const& b = c.GetComponent<ButtonInfo>(e);
+			float mx = c.GetSystem<InputSystem>()->GetMouseWorldPosX();
+			float clamped = std::clamp(mx, b.sliderMinX, b.sliderMaxX);
+			float t = (clamped - b.sliderMinX) / (b.sliderMaxX - b.sliderMinX);
+
+			c.GetSystem<AudioSystem>()->SetMasterVolume(t);
+
+			if (knob != INVALID_ENTITY) {
+				c.ModifyComponent<Transform>(knob).pos.x = clamped;
+			}
+			});
+		m_buttons.emplace(ButtonAction::VOLUMESLIDER, sliderButton);
+
 		// exit button
 		Button exitButton(ButtonAction::EXIT, [](Coordinator& c, std::string const& s, Entity e) {
 			(void)s;
 			(void)e;
 			// Fade out audio and schedule exit
 			auto audio = c.GetSystem<AudioSystem>();
-			audio->FadeToVolume(0.0f, 0.5f); // Fade out over 0.5s
+			audio->FadeToVolume(0.0f, 0.2f); // Fade out over 0.2s
 
-			c.GetSystem<Scene::SceneManager>()->ScheduleExit(0.5f); // Exit after fade
+			c.GetSystem<Scene::SceneManager>()->ScheduleExit(0.3f); // Exit after fade
 			});
 		m_buttons.emplace(ButtonAction::EXIT, exitButton);
 	}
@@ -203,11 +221,38 @@ namespace NightSnack::Scene {
 			// Check collision with mouse
 			if (!ButtonCollisionCheck(mx, my, t, c)) {
 				m_coord.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
+
+				// clear hover state if mouse left this button
+				if (m_hoveredEntity == e) 
+				{
+					m_hoveredEntity = INVALID_ENTITY;
+				}
 				continue;
 			}
 			auto& m = m_coord.ModifyComponent<Renderable>(e).materialName;
 			m = b.hoverTex;
 			//std::cout << "changed texture of button: " << e << " to " << b.hoverTex << '\n';
+			// only play hover sound when first entering the button
+			if (m_hoveredEntity != e) 
+			{
+				m_hoveredEntity = e;
+				m_coord.GetSystem<AudioSystem>()->PlaySFX("buttonHover_1");
+			}
+
+			// add slider drag handling
+			if (b.action == ButtonAction::VOLUMESLIDER) {
+				// Sliders drag while mouse is held down
+				if (m_mouseHeld) {
+					auto& mat = m_coord.ModifyComponent<Renderable>(e).materialName;
+					mat = b.clickTex;
+
+					auto it = m_buttons.find(b.action);
+					if (it != m_buttons.end()) {
+						it->second(m_coord, b.target, e);
+					}
+				}
+				continue; // skip normal click logic for sliders
+			}
 
 			if (m_mouseClick) {
 				m = b.clickTex;
@@ -459,8 +504,33 @@ namespace NightSnack::Scene {
 
 		// Play Background Music
 		auto audio = m_coord.GetSystem<AudioSystem>();
-		if (level.contains("BGM")) audio->PlayBGM(level["BGM"]);
-		else audio->StopBGM();
+
+		audio->StopBGM(); // stop previous bgm
+		audio->SetBGMVolume(0.0f); // start silent for fade-in
+
+		if (level.contains("BGM"))
+		{
+			if (level["BGM"].is_array())
+			{
+				// Multiple BGMs
+				for (const auto& bgm : level["BGM"])
+				{
+					audio->PlayBGM(bgm.get<std::string>());
+				}
+			}
+			else
+			{
+				// Single BGM
+				audio->PlayBGM(level["BGM"].get<std::string>());
+			}
+		}
+		else
+		{
+			audio->StopBGM();
+		}
+
+		// Fade BGM volume back in
+		audio->FadeToVolume(0.2f, 1.5f);
 
 		// Refresh Scripts for loaded level
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();
@@ -878,6 +948,42 @@ namespace NightSnack::Scene {
 				}
 			}
 			m_menus.push(menuname);
+
+			// slider knob entities by name-matching
+			Entity sliderBar = INVALID_ENTITY, sliderKnob = INVALID_ENTITY;
+
+			for (Entity e : m_menuEntities) {
+				if (!m_coord.HasComponent<Transform>(e)) continue;
+				std::string const& name = m_coord.GetComponent<Transform>(e).name;
+				if (name == "AudioSlider") sliderBar = e;
+				if (name == "AudioKnob")   sliderKnob = e;
+			}
+
+			if (sliderBar != INVALID_ENTITY && sliderKnob != INVALID_ENTITY) 
+			{
+				m_sliderBarEntity = sliderBar;
+				m_sliderKnobEntity = sliderKnob;
+
+				// Compute min/max from the bar's actual world position and scale
+				ButtonInfo& b = m_coord.ModifyComponent<ButtonInfo>(sliderBar);
+				Transform const& barT = m_coord.GetComponent<Transform>(sliderBar);
+				b.sliderMinX = barT.pos.x - (barT.scale.x * 0.5f);
+				b.sliderMaxX = barT.pos.x + (barT.scale.x * 0.5f);
+
+				float volume = m_coord.GetSystem<AudioSystem>()->GetMasterVolume();
+				float knobX = b.sliderMinX + volume * (b.sliderMaxX - b.sliderMinX);
+				m_coord.ModifyComponent<Transform>(sliderKnob).pos.x = knobX;
+
+				std::cerr << "[SceneManager] Wired VolumeKnob to VolumeSlider"
+					<< " range [" << b.sliderMinX << ", " << b.sliderMaxX << "]\n";
+			}
+			else 
+			{
+				if (sliderBar == INVALID_ENTITY && sliderKnob == INVALID_ENTITY) 
+				{
+					std::cerr << "[SceneManager] No volume slider found in menu: " << menuname << "\n";
+				}
+			}
 		}
 		m_menuOpen = true;
 
@@ -923,6 +1029,8 @@ namespace NightSnack::Scene {
 						InputEvent::InputActionState::Pressed));
 			}
 			//std::cerr << "[SceneManager] Game unpaused\n";
+			m_sliderBarEntity = INVALID_ENTITY;
+			m_sliderKnobEntity = INVALID_ENTITY;
 			m_menuOpen = false;
 		}
 	}
