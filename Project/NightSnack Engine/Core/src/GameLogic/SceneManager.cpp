@@ -113,7 +113,7 @@ namespace NightSnack::Scene {
 			// 
 			// loads level with fade, 1.5s fade out, 1.0s fade in
 			c.Unpause();
-			c.GetSystem<Scene::SceneManager>()->LoadLevelWithFade(s, 1.5f, 1.0f);
+			c.GetSystem<Scene::SceneManager>()->LoadLevelWithFade(s, 1.1f, 1.0f);
 		});
 		m_buttons.emplace(ButtonAction::LOADLEVEL, loadButton);
 
@@ -183,9 +183,9 @@ namespace NightSnack::Scene {
 			(void)e;
 			// Fade out audio and schedule exit
 			auto audio = c.GetSystem<AudioSystem>();
-			audio->FadeToVolume(0.0f, 0.5f); // Fade out over 0.5s
+			audio->FadeToVolume(0.0f, 0.2f); // Fade out over 0.2s
 
-			c.GetSystem<Scene::SceneManager>()->ScheduleExit(0.5f); // Exit after fade
+			c.GetSystem<Scene::SceneManager>()->ScheduleExit(0.3f); // Exit after fade
 			});
 		m_buttons.emplace(ButtonAction::EXIT, exitButton);
 	}
