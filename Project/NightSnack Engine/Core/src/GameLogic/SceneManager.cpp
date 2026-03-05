@@ -343,6 +343,14 @@ namespace NightSnack::Scene {
 		}
 		return result;
 	}
+	void SceneManager::UpdateCameraKeyframes(std::vector<std::pair<Entity, json>> keyframes)
+	{
+		m_camFrames.clear();
+		for (const auto& [entity, bounds] : keyframes)
+		{
+			m_camFrames[entity] = bounds;
+		}
+	}
 
 	Entity SceneManager::CreateCamTrigger(const Vec3& pos, const Vec2& scale, const json& bounds)
 	{
@@ -462,7 +470,11 @@ namespace NightSnack::Scene {
 		CacheLevel();
 
 		// Start the camera panning at the very start of the level
-		m_coord.GetSystem<CameraSystem>()->StartCamPan();
+		if (levelname == "LevelTutorial")
+			m_coord.GetSystem<CameraSystem>()->StartCamPan(false);
+		else
+			m_coord.GetSystem<CameraSystem>()->StartCamPan(true);
+
 	}
 
 	void SceneManager::LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration) {

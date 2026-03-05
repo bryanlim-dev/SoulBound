@@ -151,6 +151,8 @@ namespace NightSnack {
 			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::PhysicsDebugMode : InputEvent::InputAction::PhysicsDebugStep;
 		case GLFW_KEY_Z: // (CTRL+Z)
 			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::UndoStep : InputEvent::InputAction::NumTotalInputAction;
+		case GLFW_KEY_Y: // (CTRL+Y)
+			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::RedoStep : InputEvent::InputAction::NumTotalInputAction;
 
 		default: return InputEvent::InputAction::NumTotalInputAction;
 		}

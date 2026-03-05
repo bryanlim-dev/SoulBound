@@ -58,7 +58,9 @@ namespace NightSnack
                 "Renderer",
                 "Scripting",
                 "Animator",
+                "Audio",
                 "Font",
+                "Button",
                 "Hierarchy",
                 "Character",
                 "Collectible"
@@ -100,7 +102,9 @@ namespace NightSnack
                     if (compName == "Renderer")  { hasComponent = m_coord.HasComponent<Renderable>(*m_selectedEntity); }
 					if (compName == "Scripting") { hasComponent = m_coord.HasComponent<Script>(*m_selectedEntity); }
                     if (compName == "Animator")  { hasComponent = m_coord.HasComponent<Animator>(*m_selectedEntity); }
+					if (compName == "Audio")     { hasComponent = m_coord.HasComponent<Audio>(*m_selectedEntity); }
                     if (compName == "Font")      { hasComponent = m_coord.HasComponent<Font>(*m_selectedEntity); }
+                    if (compName == "Button")    { hasComponent = m_coord.HasComponent<ButtonInfo>(*m_selectedEntity); }
                     if (compName == "Hierarchy") { hasComponent = m_coord.HasComponent<Hierarchy>(*m_selectedEntity); }
                     if (compName == "Character") { hasComponent = m_coord.HasComponent<Character>(*m_selectedEntity); }
                     if (compName == "Collectible") { hasComponent = m_coord.HasComponent<Collectible>(*m_selectedEntity); }
@@ -152,7 +156,9 @@ namespace NightSnack
                             if (compName == "Renderer")  { RendererComponent(); }
 							if (compName == "Scripting") { ScriptingComponent(); }
                             if (compName == "Animator")  { AnimatorComponent(); }
+							if (compName == "Audio")     { AudioComponent(); }
                             if (compName == "Font")      { FontComponent(); }
+                            if (compName == "Button")    { ButtonComponent(); }
                             if (compName == "Hierarchy") { HierarchyComponent(); }
                             if (compName == "Character") { CharacterComponent(); }
                             if (compName == "Collectible") { CollectibleComponent(); }
@@ -289,11 +295,29 @@ namespace NightSnack
         /************************************************************************/
         /*!
         \brief
+			Draws Audio component details which includes audio clip, volume, and
+			other audio-related properties.
+        */
+        /************************************************************************/
+        void AudioComponent();
+
+        /************************************************************************/
+        /*!
+        \brief
             Draws Font component details which includes font size, type, and
             other font-related properties.
         */
         /************************************************************************/
         void FontComponent();
+
+        /************************************************************************/
+        /*!
+        \brief
+			Draws Button component details which includes button type, action, 
+            and other button-related properties.
+        */
+        /************************************************************************/
+        void ButtonComponent();
 
         /************************************************************************/
         /*!
@@ -1297,6 +1321,143 @@ namespace NightSnack
         }
     }
 
+	// Draws Audio component details which includes audio clip, volume, and other audio-related properties.
+    inline void InspectorPanel::AudioComponent()
+    {
+        if (!m_coord.HasComponent<Audio>(*m_selectedEntity))
+            return;
+
+        auto& audio = m_coord.ModifyComponent<Audio>(*m_selectedEntity);
+
+        if (ImGui::BeginTable("AudioTable", 2, ImGuiTableFlags_SizingFixedFit))
+        {
+            ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+            // Audio Key (drag-and-drop)
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Audio Key");
+            ImGui::TableSetColumnIndex(1);
+
+            if (!audio.audioKey.empty())
+            {
+				// Drag-drop target for existing audio key
+                ImGui::TextColored(ImVec4(0.2f, 0.6f, 1.0f, 1.0f), "%s", audio.audioKey.c_str());
+                ImVec2 rect_min = ImGui::GetItemRectMin();
+                ImVec2 rect_max = ImGui::GetItemRectMax();
+                if (ImGui::BeginDragDropTarget())
+                {
+                    NightSnack::UndoSystem::Instance().Push(
+                        NightSnack::AudioSnapshot{ *m_selectedEntity, audio }
+					);
+
+                    ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 80));
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_AUDIO"))
+                    {
+                        const char* droppedPath = static_cast<const char*>(payload->Data);
+                        std::filesystem::path p(droppedPath);
+                        audio.audioKey = p.stem().string();
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+            }
+            else
+            {
+                // Show a drop target if field is empty
+                ImGui::InvisibleButton("##DropAudioTarget", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetTextLineHeight()));
+                ImVec2 rect_min = ImGui::GetItemRectMin();
+                ImVec2 rect_max = ImGui::GetItemRectMax();
+                ImGui::GetWindowDrawList()->AddRect(rect_min, rect_max, IM_COL32(50, 150, 255, 80));
+                if (ImGui::IsItemHovered())
+                    ImGui::SetTooltip("Drop a .wav audio file here");
+                if (ImGui::BeginDragDropTarget())
+                {
+                    NightSnack::UndoSystem::Instance().Push(
+                        NightSnack::AudioSnapshot{ *m_selectedEntity, audio }
+					);
+
+                    ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 40));
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_AUDIO"))
+                    {
+                        const char* droppedPath = static_cast<const char*>(payload->Data);
+                        std::filesystem::path p(droppedPath);
+                        audio.audioKey = p.stem().string();
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+            }
+
+            // Use Variants
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Use Variants");
+            ImGui::TableSetColumnIndex(1);
+            if (ImGui::Checkbox("##UseVariants", &audio.useVariants))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::AudioSnapshot{ *m_selectedEntity, audio }
+				);
+            }
+
+            // Num Variants
+            if (audio.useVariants)
+            {
+                ImGui::TableNextRow();
+                ImGui::TableSetColumnIndex(0); ImGui::Text("Num Variants");
+                ImGui::TableSetColumnIndex(1);
+                ImGui::SetNextItemWidth(-FLT_MIN);
+                if (ImGui::InputInt("##NumVariants", &audio.numVariants))
+                {
+                    NightSnack::UndoSystem::Instance().Push(
+                        NightSnack::AudioSnapshot{ *m_selectedEntity, audio }
+                    );
+                }
+                if (audio.numVariants < 1) audio.numVariants = 1;
+            }
+
+            // Volume
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Volume");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::SliderFloat("##Volume", &audio.volume, 0.0f, 1.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::AudioSnapshot{ *m_selectedEntity, audio }
+                );
+			}
+
+            // Loop
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Loop");
+            ImGui::TableSetColumnIndex(1);
+            if (ImGui::Checkbox("##Loop", &audio.loop))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::AudioSnapshot{ *m_selectedEntity, audio }
+                );
+			}
+
+            // Play On Start
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Play On Start");
+            ImGui::TableSetColumnIndex(1);
+            if (ImGui::Checkbox("##PlayOnStart", &audio.playOnStart))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::AudioSnapshot{ *m_selectedEntity, audio }
+                );
+            }
+
+            // Is Playing (read-only)
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Is Playing");
+            ImGui::TableSetColumnIndex(1);
+            ImGui::Text("%s", audio.isPlaying ? "True" : "False");
+
+            ImGui::EndTable();
+        }
+    }
+
 	// Draws Font component details which includes font size, type, and other font-related properties.
     inline void InspectorPanel::FontComponent()
     {
@@ -1386,6 +1547,108 @@ namespace NightSnack
             if (isEditingColor && ImGui::IsItemDeactivatedAfterEdit())
             {
                 isEditingColor = false;
+            }
+
+            ImGui::EndTable();
+        }
+    }
+
+    inline void InspectorPanel::ButtonComponent()
+    {
+        if (!m_coord.HasComponent<ButtonInfo>(*m_selectedEntity))
+            return;
+
+		auto& button = m_coord.ModifyComponent<ButtonInfo>(*m_selectedEntity);
+        
+        if (ImGui::BeginTable("ButtonInfoTable", 2, ImGuiTableFlags_SizingFixedFit))
+        {
+            ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+            ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+
+            // Action
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Action");
+            ImGui::TableSetColumnIndex(1);
+            const char* actionNames[] = {
+                "PLAYAUDIO", "PLAYAUDIO2", "PLAYAUDIO3",
+                "LOADLEVEL", "OPENMENU", "CLOSEMENU", "NOACTION", "EXIT"
+            };
+            int actionIndex = static_cast<int>(button.action);
+            if (ImGui::Combo("##ButtonAction", &actionIndex, actionNames, IM_ARRAYSIZE(actionNames)))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::ButtonSnapshot{ *m_selectedEntity, button }
+				);
+
+                button.action = static_cast<ButtonAction>(actionIndex);
+            }
+
+            // Type
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Type");
+            ImGui::TableSetColumnIndex(1);
+            const char* typeNames[] = { "CLICKER", "SLIDER", "INVALID_BUTTON" };
+            int typeIndex = static_cast<int>(button.type);
+            if (ImGui::Combo("##ButtonType", &typeIndex, typeNames, IM_ARRAYSIZE(typeNames)))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::ButtonSnapshot{ *m_selectedEntity, button }
+				);
+
+                button.type = static_cast<ButtonType>(typeIndex);
+            }
+
+            // Target (drag-and-drop)
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Target");
+            ImGui::TableSetColumnIndex(1);
+
+            if (!button.target.empty())
+            {
+                // Drag-Drop if target has initial value
+                ImGui::TextColored(ImVec4(0.2f, 0.6f, 1.0f, 1.0f), "%s", button.target.c_str());
+                ImVec2 rect_min = ImGui::GetItemRectMin();
+                ImVec2 rect_max = ImGui::GetItemRectMax();
+                if (ImGui::BeginDragDropTarget())
+                {
+                    NightSnack::UndoSystem::Instance().Push(
+						NightSnack::ButtonSnapshot{ *m_selectedEntity, button }
+					);
+
+                    ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 80));
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_PREFAB"))
+                    {
+                        const char* droppedPath = static_cast<const char*>(payload->Data);
+                        std::filesystem::path p(droppedPath);
+                        button.target = p.stem().string();
+                    }
+                    ImGui::EndDragDropTarget();
+                }
+            }
+            else
+            {
+				// Show a drop target if field is empty
+                ImGui::InvisibleButton("##DropTarget", ImVec2(ImGui::GetContentRegionAvail().x, ImGui::GetTextLineHeight()));
+                ImVec2 rect_min = ImGui::GetItemRectMin();
+                ImVec2 rect_max = ImGui::GetItemRectMax();
+                ImGui::GetWindowDrawList()->AddRect(rect_min, rect_max, IM_COL32(50, 150, 255, 80));
+                if (ImGui::IsItemHovered())
+                    ImGui::SetTooltip("Drop a level prefab here");
+                if (ImGui::BeginDragDropTarget())
+                {
+					NightSnack::UndoSystem::Instance().Push(
+						NightSnack::ButtonSnapshot{ *m_selectedEntity, button }
+					);
+
+                    ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 40));
+                    if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_PREFAB"))
+                    {
+                        const char* droppedPath = static_cast<const char*>(payload->Data);
+                        std::filesystem::path p(droppedPath);
+                        button.target = p.stem().string();
+                    }
+                    ImGui::EndDragDropTarget();
+                }
             }
 
             ImGui::EndTable();
@@ -1689,6 +1952,7 @@ namespace NightSnack
             }
 
             ImGui::EndTable();
+			ImGui::Unindent(10.0f);
         } //End entire script table
     }
 
@@ -1883,16 +2147,18 @@ namespace NightSnack
         struct CompInfo { const char* name; bool has; std::function<void()> add; };
         std::vector<CompInfo> missing;
         Entity e = *m_selectedEntity;
-        if (!m_coord.HasComponent<Transform>(e))   missing.push_back({ "Transform", false, [this, e] { m_coord.AddComponent<Transform>(e, Transform{}); } });
+        if (!m_coord.HasComponent<Transform>(e))        missing.push_back({ "Transform", false, [this, e] { m_coord.AddComponent<Transform>(e, Transform{}); } });
 		if (!m_coord.HasComponent<PlayerController>(e)) missing.push_back({ "PlayerController", false, [this, e] { m_coord.AddComponent<PlayerController>(e, PlayerController{}); } });
-        if (!m_coord.HasComponent<RigidBody>(e))   missing.push_back({ "Rigidbody", false, [this, e] { m_coord.AddComponent<RigidBody>(e, RigidBody{}); } });
-        if (!m_coord.HasComponent<Collider>(e))    missing.push_back({ "Collider", false, [this, e] { m_coord.AddComponent(e, Collider{}); } });
-        if (!m_coord.HasComponent<Renderable>(e))  missing.push_back({ "Renderer", false, [this, e] { m_coord.AddComponent<Renderable>(e, Renderable{}); } });
-		if (!m_coord.HasComponent<Script>(e))      missing.push_back({ "Scripting", false, [this, e] { m_coord.AddComponent<Script>(e, Script{}); } });
-        if (!m_coord.HasComponent<Animator>(e))    missing.push_back({ "Animator", false, [this, e] { m_coord.AddComponent<Animator>(e, Animator{}); } });
-        if (!m_coord.HasComponent<Font>(e))        missing.push_back({ "Font", false, [this, e] { m_coord.AddComponent<Font>(e, Font{}); } });
-        if (!m_coord.HasComponent<Character>(e))   missing.push_back({ "Character", false, [this, e] { m_coord.AddComponent<Character>(e, Character{}); } });
-        if (!m_coord.HasComponent<Collectible>(e))   missing.push_back({ "Collectible", false, [this, e] { m_coord.AddComponent<Collectible>(e, Collectible{}); } });
+        if (!m_coord.HasComponent<RigidBody>(e))        missing.push_back({ "Rigidbody", false, [this, e] { m_coord.AddComponent<RigidBody>(e, RigidBody{}); } });
+        if (!m_coord.HasComponent<Collider>(e))         missing.push_back({ "Collider", false, [this, e] { m_coord.AddComponent(e, Collider{}); } });
+        if (!m_coord.HasComponent<Renderable>(e))       missing.push_back({ "Renderer", false, [this, e] { m_coord.AddComponent<Renderable>(e, Renderable{}); } });
+		if (!m_coord.HasComponent<Script>(e))           missing.push_back({ "Scripting", false, [this, e] { m_coord.AddComponent<Script>(e, Script{}); } });
+        if (!m_coord.HasComponent<Animator>(e))         missing.push_back({ "Animator", false, [this, e] { m_coord.AddComponent<Animator>(e, Animator{}); } });
+		if (!m_coord.HasComponent<Audio>(e))            missing.push_back({ "Audio", false, [this, e] { m_coord.AddComponent<Audio>(e, Audio{}); } });
+        if (!m_coord.HasComponent<Font>(e))             missing.push_back({ "Font", false, [this, e] { m_coord.AddComponent<Font>(e, Font{}); } });
+		if (!m_coord.HasComponent<ButtonInfo>(e))       missing.push_back({ "Button", false, [this, e] { m_coord.AddComponent<ButtonInfo>(e, ButtonInfo{}); } });
+        if (!m_coord.HasComponent<Character>(e))        missing.push_back({ "Character", false, [this, e] { m_coord.AddComponent<Character>(e, Character{}); } });
+        if (!m_coord.HasComponent<Collectible>(e))      missing.push_back({ "Collectible", false, [this, e] { m_coord.AddComponent<Collectible>(e, Collectible{}); } });
 
         // Disable button if no components left to add
         if (missing.empty())
@@ -1944,7 +2210,9 @@ namespace NightSnack
             addMenuItem("Renderer", [this, e] { m_coord.AddComponent<Renderable>(e, Renderable{}); }, m_coord.HasComponent<Renderable>(e));
             addMenuItem("Scripting", [this, e] { m_coord.AddComponent<Script>(e, Script{}); }, m_coord.HasComponent<Script>(e));
             addMenuItem("Animator", [this, e] { m_coord.AddComponent<Animator>(e, Animator{}); }, m_coord.HasComponent<Animator>(e));
+			addMenuItem("Audio", [this, e] { m_coord.AddComponent<Audio>(e, Audio{}); }, m_coord.HasComponent<Audio>(e));
             addMenuItem("Font", [this, e] { m_coord.AddComponent<Font>(e, Font{}); }, m_coord.HasComponent<Font>(e));
+			addMenuItem("Button", [this, e] { m_coord.AddComponent<ButtonInfo>(e, ButtonInfo{}); }, m_coord.HasComponent<ButtonInfo>(e));
             addMenuItem("Character", [this, e] { m_coord.AddComponent<Character>(e, Character{}); }, m_coord.HasComponent<Character>(e));
             addMenuItem("Collectible", [this, e] { m_coord.AddComponent<Collectible>(e, Collectible{}); }, m_coord.HasComponent<Collectible>(e));
             ImGui::EndPopup();
@@ -1969,9 +2237,11 @@ namespace NightSnack
         if (m_coord.HasComponent<Renderable>(e))       removable.push_back({ "Renderer", true, [this, e] { m_coord.RemoveComponent<Renderable>(e); } });
         if (m_coord.HasComponent<Script>(e))           removable.push_back({ "Scripting", true, [this, e] { m_coord.RemoveComponent<Script>(e); } });
         if (m_coord.HasComponent<Animator>(e))         removable.push_back({ "Animator", true, [this, e] { m_coord.RemoveComponent<Animator>(e); } });
+		if (m_coord.HasComponent<Audio>(e))            removable.push_back({ "Audio", true, [this, e] { m_coord.RemoveComponent<Audio>(e); } });
         if (m_coord.HasComponent<Font>(e))             removable.push_back({ "Font", true, [this, e] { m_coord.RemoveComponent<Font>(e); } });
+		if (m_coord.HasComponent<ButtonInfo>(e))       removable.push_back({ "Button", true, [this, e] { m_coord.RemoveComponent<ButtonInfo>(e); } });
         if (m_coord.HasComponent<Character>(e))        removable.push_back({ "Character", true, [this, e] { m_coord.RemoveComponent<Character>(e); } });
-        if (m_coord.HasComponent<Collectible>(e))        removable.push_back({ "Collectible", true, [this, e] { m_coord.RemoveComponent<Collectible>(e); } });
+        if (m_coord.HasComponent<Collectible>(e))      removable.push_back({ "Collectible", true, [this, e] { m_coord.RemoveComponent<Collectible>(e); } });
 
         // Disable button if no components left to remove
         if (removable.empty())

@@ -57,6 +57,8 @@ namespace NightSnack {
 		Transform FollowPlayer();
 		void CenterCameraWhenIdle();
 		void UpdateCamBounds(json const&);
+		//isPannningEnabled - Sets if start pan or not
+		void StartCamPan(bool isPannningEnabled);
 		void StartCamPan();
 
 		/**
@@ -94,6 +96,7 @@ namespace NightSnack {
 		Vec2 m_targetCamPos;
 		Vec2 m_originalCamPos;
 		//bool m_isLerping = false;
+		bool m_panEnabled = false;
 		bool m_panComplete = false;
 		bool m_zoomComplete = false;
 		const float m_camTriggerLerpSpeed = 8.0f; // Used for moving to a new area

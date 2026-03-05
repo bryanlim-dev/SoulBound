@@ -114,11 +114,7 @@ namespace ManagedScripts
                     break;
 
                 case State.Respawning:
-                    stateTimer += DeltaTime;
-                    if (stateTimer >= respawnDelay)
-                    {
-                        ResetPlatform();
-                    }
+                    ResetPlatform();
                     break;
             }
         }
