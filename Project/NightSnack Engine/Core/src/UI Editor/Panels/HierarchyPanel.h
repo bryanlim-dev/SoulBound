@@ -143,13 +143,16 @@ namespace NightSnack
                     auto keyframesCopy = sceneManager->GetCameraKeyframes();
                     static int selectedKeyframe = 0;
 
-                    ImGui::Text("Select Keyframe for CamTrigger:");
+                    ImGui::Text("Keyframes for CamTrigger:");
                     for (int i = 0; i < keyframesCopy.size(); ++i)
                     {
-                        float minX = keyframesCopy[i].second["minX"];
                         float maxX = keyframesCopy[i].second["maxX"];
-                        char label[64];
-                        sprintf(label, "Keyframe %d (minX: %.1f, maxX: %.1f)", i, minX, maxX);
+                        float maxY = keyframesCopy[i].second["maxY"];
+                        float minX = keyframesCopy[i].second["minX"];
+                        float minY = keyframesCopy[i].second["minY"];
+                        
+                        char label[128];
+                        snprintf(label, sizeof(label), "Keyframe %d \n[minX: %.1f, maxX: %.1f] \n[minY: %.1f, maxY: %.1f]", i, minX, maxX, minY, maxY);
                         if (ImGui::Selectable(label, selectedKeyframe == i))
                         {
                             selectedKeyframe = i;
@@ -160,9 +163,26 @@ namespace NightSnack
                         Entity sceneCam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
                         Vec3 camPos = m_coord.GetComponent<Transform>(sceneCam).pos;
                         Vec2 scale = Vec2{ 100.f, 100.f };
-                        json bounds = keyframesCopy[selectedKeyframe].second;
+                        json bounds;
+                        if (!keyframesCopy.empty() && (selectedKeyframe >= 0 && selectedKeyframe < keyframesCopy.size()))
+                        {
+							camPos = keyframesCopy[selectedKeyframe].second["pos"];
+							scale = keyframesCopy[selectedKeyframe].second["scale"];
+                            bounds = keyframesCopy[selectedKeyframe].second;
+                        }
+                        else
+                        {
+                            bounds["minX"] = 0.f;
+                            bounds["maxX"] = 0.f;
+                            bounds["minY"] = 0.f;
+                            bounds["maxY"] = 0.f;
+							bounds["zoom"] = 1.f;
+                            bounds["pos"] = { {"x", camPos.x}, {"y", camPos.y}, {"z", camPos.z} };
+                            bounds["scale"] = { {"x", scale.x}, {"y", scale.y} };
+                        }
                         sceneManager->CreateCamTrigger(camPos, scale, bounds);
                     }
+                    keyframesCopy = sceneManager->GetCameraKeyframes();
                     ImGui::Separator();
                     ImGui::Text("Existing CamTriggers:");
                     for (int i = 0; i < keyframesCopy.size(); ++i)
@@ -170,8 +190,13 @@ namespace NightSnack
                         ImGui::PushID(i);
                         Entity camTriggerEntity = keyframesCopy[i].first;
                         json& bounds = keyframesCopy[i].second;
+                        float minX = bounds["minX"];
+                        float maxX = bounds["maxX"];
+                        float minY = bounds["minY"];
+                        float maxY = bounds["maxY"];
+                        float zoom = bounds["zoom"];
 
-                        ImGui::Text("CamTrigger %d: minX=%.1f, maxX=%.1f, zoom=%.2f", i, bounds["minX"], bounds["maxX"], bounds["zoom"]);
+                        ImGui::Text("CamTrigger %d: \nminX=%.1f, maxX=%.1f, \nminY=%.1f, maxY=%.1f, \nzoom=%.2f", i, minX, maxX, minY, maxY, zoom);
                         Transform& t = m_coord.ModifyComponent<Transform>(camTriggerEntity);
                         Collider& c = m_coord.ModifyComponent<Collider>(camTriggerEntity);
 
@@ -198,11 +223,10 @@ namespace NightSnack
                         }
 
 						// Bounds
-                        float minX = bounds["minX"];
-                        float maxX = bounds["maxX"];
-                        float zoom = bounds["zoom"];
                         if (ImGui::InputFloat("minX", &minX)) bounds["minX"] = minX;
                         if (ImGui::InputFloat("maxX", &maxX)) bounds["maxX"] = maxX;
+                        if (ImGui::InputFloat("minY", &minY)) bounds["minY"] = minY;
+                        if (ImGui::InputFloat("maxY", &maxY)) bounds["maxY"] = maxY;
                         if (ImGui::InputFloat("zoom", &zoom)) bounds["zoom"] = zoom;
 
                         if (ImGui::Button("Delete CamTrigger"))
@@ -212,6 +236,7 @@ namespace NightSnack
                         ImGui::PopID();
                         ImGui::Separator();
                     }
+					sceneManager->UpdateCameraKeyframes(keyframesCopy);
                     ImGui::EndTabItem();
                 }
 

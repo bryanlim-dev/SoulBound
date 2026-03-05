@@ -32,6 +32,7 @@ namespace NightSnack
 			return false;
 
 		Vec3 ownerPos = coord.GetComponent<Transform>(m_owner).pos;
+		Vec2 ownerScale = coord.GetComponent<Transform>(m_owner).scale;
 
 		Entity cloestGrappable = INVALID_ENTITY;
 		float closestDist = FLT_MAX;
@@ -43,14 +44,20 @@ namespace NightSnack
 			if (!coord.HasComponent<Transform>(enCheck))
 				continue;
 
-			float distance = (coord.GetComponent<Transform>(enCheck).pos - ownerPos).magnitude();
+			Vec3 enPos = coord.GetComponent<Transform>(enCheck).pos;
+			float distance = (enPos - ownerPos).magnitude();
 			if (distance < 0)
 				distance = -distance;
 
 			if (distance <= m_tongueLengthMax && distance < closestDist)
 			{
-				cloestGrappable = enCheck;
-				closestDist = distance;
+				//Grappble point CANNOT be above the entity
+				//with some leway
+				if (enPos.y + (ownerScale.y /2) >= ownerPos.y)
+				{
+					cloestGrappable = enCheck;
+					closestDist = distance;
+				}
 			}
 		}
 

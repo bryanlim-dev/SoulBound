@@ -151,6 +151,11 @@ namespace NightSnack::Scene {
 		 * @return Vector of pairs containing entity IDs and their corresponding keyframe JSON data.
 		 */
 		std::vector<std::pair<Entity, json>> GetCameraKeyframes() const;
+		/**
+		 * @brief Updates the camera keyframes.
+		 * @param keyframes Vector of pairs containing entity IDs and their corresponding keyframe JSON data to update.
+		 */
+		void UpdateCameraKeyframes(std::vector<std::pair<Entity, json>> keyframes);
 
 		/**
 		 * @brief Creates a camera trigger entity.
