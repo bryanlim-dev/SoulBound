@@ -87,7 +87,7 @@ namespace NightSnack {
                 //Do distance check to nearest grabbling spot/enemy
                 if (tongue.Start(c))
                 {
-                    c.GetSystem<AudioSystem>()->PlayRandomVariant("frogTongue", 7, 0.8f);
+                    c.GetSystem<AudioSystem>()->PlayRandomVariant("frogTongue", 7, 0.75f);
                     //Valid target
                     m_flags.grappling = true;
 
