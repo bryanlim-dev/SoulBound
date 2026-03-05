@@ -34,7 +34,7 @@ namespace NightSnack {
                 // play glide sound only once when starting to glide
                 if (!m_flags.isGliding) 
                 {
-                    c.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerGlide", 0.05f);
+                    c.GetSystem<AudioSystem>()->PlayRandomVariant("ghostGlide", 3, 0.1f);
                     m_flags.isGliding = true;
                 }
             }
@@ -51,7 +51,7 @@ namespace NightSnack {
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
             vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
 
-            c.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerJump", 0.4f);
+            c.GetSystem<AudioSystem>()->PlayRandomVariant("ghostJump", 3, 0.4f);
 
 
             // Start the emitter to spawn particles
@@ -87,7 +87,7 @@ namespace NightSnack {
                 //Do distance check to nearest grabbling spot/enemy
                 if (tongue.Start(c))
                 {
-                    c.GetSystem<AudioSystem>()->PlayRandomVariant("frogTongue", 7, 1.0f);
+                    c.GetSystem<AudioSystem>()->PlayRandomVariant("frogTongue", 7, 0.8f);
                     //Valid target
                     m_flags.grappling = true;
 
@@ -304,7 +304,7 @@ namespace NightSnack {
             vel.y = pcont.jumpSpeed;
             t.pos.y += 0.5f;
             m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
-            m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerJump", 0.4f);
+            m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("ghostJump", 3, 0.4f);
 
             //m_storedJump = false;
             m_flags.justJumped = true;
