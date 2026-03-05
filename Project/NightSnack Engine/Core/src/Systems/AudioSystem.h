@@ -107,6 +107,9 @@ namespace NightSnack {
          */
         void StopBGM();
 
+        void StopBGM(const std::string& bgmKey);
+
+
         /**
          * @brief pauses the currently playing background music
          */
@@ -207,6 +210,13 @@ namespace NightSnack {
          */
         void PlayRandomVariant(const std::string& baseKey, int numVariants);
 
+        /**
+		 * @brief plays spatial audio based on player position and max distance
+		 * @param playerPos position of the player in the game world
+		 * @param maxDistance maximum distance at which audio can be heard
+         */
+        void UpdateSpatialAudio(Vec2 const& playerPos, float maxDistance);
+
         // ISystem overrides
 
         /**
@@ -256,6 +266,7 @@ namespace NightSnack {
 
         // CurrentBGM
         std::string m_currentKeyBGM;
+        std::unordered_map<std::string, FMOD::Channel*> m_bgmChannels;  // Map of BGM key to channel
 
         // Volume levels
         float m_masterVolume;
