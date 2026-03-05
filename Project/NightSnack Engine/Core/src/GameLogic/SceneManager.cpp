@@ -58,9 +58,7 @@ namespace NightSnack::Scene {
 			m_levelLoadTimer -= (1.0f / 60.0f); // to use actual deltaTime if available
 
 			if (m_levelLoadTimer <= 0.0f) {
-				// Load the new level
 				LoadLevel(m_scheduledLevelName);
-				CloseMenu();
 
 				// Fade in the new BGM
 				m_coord.GetSystem<AudioSystem>()->FadeToVolume(0.2f, 1.0f); // 0.2f is bgm volume
@@ -132,6 +130,14 @@ namespace NightSnack::Scene {
 			c.GetSystem<Scene::SceneManager>()->OpenMenu(s);
 			});
 		m_buttons.emplace(ButtonAction::OPENMENU, menuButton);
+
+		// open menu button
+		Button restartButton(ButtonAction::RESTARTLEVEL, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)e;
+			(void)s;
+			c.GetSystem<Scene::SceneManager>()->m_restart = true;
+			});
+		m_buttons.emplace(ButtonAction::RESTARTLEVEL, restartButton);
 
 		// close menu button
 		Button closeButton(ButtonAction::CLOSEMENU, [](Coordinator& c, std::string const& s, Entity e) {
@@ -440,6 +446,11 @@ namespace NightSnack::Scene {
 		m_currentLevelKey = key;
 		//std::cout << "Curr level key: " << key << std::endl;
 
+		// Reset menus
+		m_menuEntities.clear();
+		while (!m_menus.empty()) { m_menus.pop(); }
+		m_menuOpen = false;
+
 		// Unload everything first
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
@@ -548,11 +559,10 @@ namespace NightSnack::Scene {
 
 	void SceneManager::RestartLevel() {
 
-		//// close all menus
-		//if (m_menuOpen) {
-		//	std::cerr << "[SceneManager] Closing menu before restart\n";
-		//	CloseMenu();
-		//}
+		// Reset menus
+		m_menuEntities.clear();
+		while (!m_menus.empty()) { m_menus.pop(); }
+		m_menuOpen = false;
 
 		json const& level = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelKey);
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
@@ -601,6 +611,11 @@ namespace NightSnack::Scene {
 			std::cout << "There already exists a level named '" << levelname << "' at '" << "GameData/Levels" << '\n';
 			return false;
 		}
+		// close all menus
+		if (m_menuOpen) {
+			std::cerr << "[SceneManager] Closing menu before restart\n";
+			CloseAllMenus();
+		}
 
 		// Output json object
 		json level;
@@ -647,41 +662,6 @@ namespace NightSnack::Scene {
 		return true;
 	}
 
-	//// Currently Overlay Menus are unused and planned to be implemented in future milestones.
-	//// Spawn a menu that overlays current game
-	//void SceneManager::CreateOverlayMenu() {
-
-	//	if (m_overlayMenu.empty()) { return; }
-	//	if (overlayOn) { return; }
-
-	//	// Create Entities for overlay menu
-	//	auto const& factory = m_coord.GetSystem<EntityFactory>();
-
-	//	for (auto const& unit : m_overlayMenu) {
-	//		Entity e = factory->Create(unit.first, unit.second);
-	//		m_overlayEntites.push_back(e);
-	//	}
-	//	overlayOn = true;
-	//}
-	//// Destroy entities of overlay menu
-	//void SceneManager::RemoveOverlayMenu() {
-
-	//	if (!overlayOn) { return; }
-
-	//	// Set overlay Entities to be destroyed at the end of frame
-	//	auto const& factory = m_coord.GetSystem<EntityFactory>();
-
-	//	for (Entity e : m_overlayEntites) {
-	//		factory->RemoveEntity(e);
-	//	}
-	//	m_overlayEntites.clear();
-	//	overlayOn = false;
-	//}
-
-	//void SceneManager::SetOverlayMenu(std::string const& filename) {
-
-	//}
-
 	// Take snapshot of current world -> cache when Play simulation in Editor
 	void SceneManager::CacheLevel() {
 
@@ -706,6 +686,7 @@ namespace NightSnack::Scene {
 		if (m_levelCache.empty()) { return; }
 		// Reset menus
 		m_menuEntities.clear();
+		while (!m_menus.empty()) { m_menus.pop(); }
 		m_menuOpen = false;
 		//m_currentMenu.clear();
 		winScreenOn = false;
@@ -918,6 +899,13 @@ namespace NightSnack::Scene {
 			}
 			//std::cerr << "[SceneManager] Game unpaused\n";
 			m_menuOpen = false;
+		}
+	}
+
+
+	void SceneManager::CloseAllMenus() {
+		while (!m_menus.empty()) {
+			CloseMenu();
 		}
 	}
 

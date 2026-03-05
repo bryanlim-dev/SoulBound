@@ -297,6 +297,7 @@ namespace NightSnack {
         PLAYAUDIO3,
 
         LOADLEVEL,
+        RESTARTLEVEL,
         OPENMENU,
         CLOSEMENU,
         NOACTION,

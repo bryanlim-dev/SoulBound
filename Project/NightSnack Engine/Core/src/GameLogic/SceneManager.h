@@ -243,6 +243,11 @@ namespace NightSnack::Scene {
 		void CloseMenu(bool o = false);
 
 		/**
+		 * @brief Closes all currently opened menus.
+		 */
+		void CloseAllMenus();
+
+		/**
 		 * @brief Checks if a menu is currently open.
 		 * @return True if a menu is open.
 		 */
