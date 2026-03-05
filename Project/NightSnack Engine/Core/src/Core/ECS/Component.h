@@ -207,6 +207,7 @@ namespace NightSnack {
         std::string fontType;
         std::string text;
         float fontSize{ 1.f };
+        float textWrapWidth{ 0.f }; // measured in pixels
         Vec3 textColor{ 1.f, 1.f, 1.f };
         Vec3 offsetPosition{ 0.f, 0.f, 0.f };
     };
@@ -283,6 +284,7 @@ namespace NightSnack {
         //bool is3D = false;
         bool isPlaying = false;
         //bool stop = false;
+        bool spatial = false;
     };
 
     enum ButtonType {
@@ -301,6 +303,7 @@ namespace NightSnack {
         CLOSEMENU,
         NOACTION,
         TOGGLEFULLSCREEN,
+        VOLUMESLIDER,
         EXIT
     };
     struct ButtonInfo {
@@ -311,6 +314,10 @@ namespace NightSnack {
         std::string defaultTex;
         std::string hoverTex;
         std::string clickTex;
+
+        float sliderMinX = 0.f;
+        float sliderMaxX = 0.f;
+        //Entity knobEntity{};
     };
 
 

@@ -1347,6 +1347,10 @@ namespace NightSnack
                 ImVec2 rect_max = ImGui::GetItemRectMax();
                 if (ImGui::BeginDragDropTarget())
                 {
+                    NightSnack::UndoSystem::Instance().Push(
+                        NightSnack::AudioSnapshot{ *m_selectedEntity, audio }
+					);
+
                     ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 80));
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_AUDIO"))
                     {
@@ -1368,6 +1372,10 @@ namespace NightSnack
                     ImGui::SetTooltip("Drop a .wav audio file here");
                 if (ImGui::BeginDragDropTarget())
                 {
+                    NightSnack::UndoSystem::Instance().Push(
+                        NightSnack::AudioSnapshot{ *m_selectedEntity, audio }
+					);
+
                     ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 40));
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_AUDIO"))
                     {
@@ -1383,7 +1391,12 @@ namespace NightSnack
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Use Variants");
             ImGui::TableSetColumnIndex(1);
-            ImGui::Checkbox("##UseVariants", &audio.useVariants);
+            if (ImGui::Checkbox("##UseVariants", &audio.useVariants))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::AudioSnapshot{ *m_selectedEntity, audio }
+				);
+            }
 
             // Num Variants
             if (audio.useVariants)
@@ -1392,7 +1405,12 @@ namespace NightSnack
                 ImGui::TableSetColumnIndex(0); ImGui::Text("Num Variants");
                 ImGui::TableSetColumnIndex(1);
                 ImGui::SetNextItemWidth(-FLT_MIN);
-                ImGui::InputInt("##NumVariants", &audio.numVariants);
+                if (ImGui::InputInt("##NumVariants", &audio.numVariants))
+                {
+                    NightSnack::UndoSystem::Instance().Push(
+                        NightSnack::AudioSnapshot{ *m_selectedEntity, audio }
+                    );
+                }
                 if (audio.numVariants < 1) audio.numVariants = 1;
             }
 
@@ -1401,19 +1419,34 @@ namespace NightSnack
             ImGui::TableSetColumnIndex(0); ImGui::Text("Volume");
             ImGui::TableSetColumnIndex(1);
             ImGui::SetNextItemWidth(-FLT_MIN);
-            ImGui::SliderFloat("##Volume", &audio.volume, 0.0f, 1.0f, "%.2f");
+            if (ImGui::SliderFloat("##Volume", &audio.volume, 0.0f, 1.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::AudioSnapshot{ *m_selectedEntity, audio }
+                );
+			}
 
             // Loop
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Loop");
             ImGui::TableSetColumnIndex(1);
-            ImGui::Checkbox("##Loop", &audio.loop);
+            if (ImGui::Checkbox("##Loop", &audio.loop))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::AudioSnapshot{ *m_selectedEntity, audio }
+                );
+			}
 
             // Play On Start
             ImGui::TableNextRow();
             ImGui::TableSetColumnIndex(0); ImGui::Text("Play On Start");
             ImGui::TableSetColumnIndex(1);
-            ImGui::Checkbox("##PlayOnStart", &audio.playOnStart);
+            if (ImGui::Checkbox("##PlayOnStart", &audio.playOnStart))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::AudioSnapshot{ *m_selectedEntity, audio }
+                );
+            }
 
             // Is Playing (read-only)
             ImGui::TableNextRow();
@@ -1472,6 +1505,19 @@ namespace NightSnack
 				);
                 fontComp.fontSize = fontSize;
 			}
+
+            // Text Wrap Width
+            float wrapWidth = fontComp.textWrapWidth;
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Text Wrap Width");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::InputFloat("##WrapWidth", &wrapWidth, 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::FontSnapshot{ *m_selectedEntity, fontComp }
+                );
+                fontComp.textWrapWidth = wrapWidth;
+            }
 
 			// Text Offset Position
 			float fontoffset[2] = { fontComp.offsetPosition.x, fontComp.offsetPosition.y };
@@ -1543,6 +1589,10 @@ namespace NightSnack
             int actionIndex = static_cast<int>(button.action);
             if (ImGui::Combo("##ButtonAction", &actionIndex, actionNames, IM_ARRAYSIZE(actionNames)))
             {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::ButtonSnapshot{ *m_selectedEntity, button }
+				);
+
                 button.action = static_cast<ButtonAction>(actionIndex);
             }
 
@@ -1554,6 +1604,10 @@ namespace NightSnack
             int typeIndex = static_cast<int>(button.type);
             if (ImGui::Combo("##ButtonType", &typeIndex, typeNames, IM_ARRAYSIZE(typeNames)))
             {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::ButtonSnapshot{ *m_selectedEntity, button }
+				);
+
                 button.type = static_cast<ButtonType>(typeIndex);
             }
 
@@ -1570,6 +1624,10 @@ namespace NightSnack
                 ImVec2 rect_max = ImGui::GetItemRectMax();
                 if (ImGui::BeginDragDropTarget())
                 {
+                    NightSnack::UndoSystem::Instance().Push(
+						NightSnack::ButtonSnapshot{ *m_selectedEntity, button }
+					);
+
                     ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 80));
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_PREFAB"))
                     {
@@ -1591,6 +1649,10 @@ namespace NightSnack
                     ImGui::SetTooltip("Drop a level prefab here");
                 if (ImGui::BeginDragDropTarget())
                 {
+					NightSnack::UndoSystem::Instance().Push(
+						NightSnack::ButtonSnapshot{ *m_selectedEntity, button }
+					);
+
                     ImGui::GetWindowDrawList()->AddRectFilled(rect_min, rect_max, IM_COL32(50, 150, 255, 40));
                     if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_PREFAB"))
                     {

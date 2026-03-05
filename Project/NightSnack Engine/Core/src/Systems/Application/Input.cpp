@@ -95,6 +95,7 @@ namespace NightSnack {
 		case GLFW_KEY_D: return KeyboardKeys::D;
 		case GLFW_KEY_H: return KeyboardKeys::H;
 		case GLFW_KEY_SPACE: return KeyboardKeys::SPACE;
+		case GLFW_KEY_ENTER: return KeyboardKeys::ENTER;
 		case GLFW_KEY_RIGHT: return KeyboardKeys::RIGHT_ARROW;
 		case GLFW_KEY_LEFT: return KeyboardKeys::LEFT_ARROW;
 		case GLFW_KEY_UP: return KeyboardKeys::UP_ARROW;
@@ -124,6 +125,7 @@ namespace NightSnack {
 		case GLFW_KEY_S: return InputEvent::InputAction::PlayerPossess;
 		case GLFW_KEY_D: return InputEvent::InputAction::PlayerUnPossess;
 
+		case GLFW_KEY_ENTER: return InputEvent::InputAction::SkipDialogue;
 		case GLFW_KEY_1: return InputEvent::InputAction::Ability1;
 		case GLFW_KEY_2: return InputEvent::InputAction::Ability2;
 		case GLFW_KEY_3: return InputEvent::InputAction::Ability3;
@@ -151,6 +153,8 @@ namespace NightSnack {
 			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::PhysicsDebugMode : InputEvent::InputAction::PhysicsDebugStep;
 		case GLFW_KEY_Z: // (CTRL+Z)
 			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::UndoStep : InputEvent::InputAction::NumTotalInputAction;
+		case GLFW_KEY_Y: // (CTRL+Y)
+			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::RedoStep : InputEvent::InputAction::NumTotalInputAction;
 
 		default: return InputEvent::InputAction::NumTotalInputAction;
 		}
