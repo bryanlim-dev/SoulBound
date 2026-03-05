@@ -39,7 +39,11 @@ namespace NightSnack
 		{
 			m_ownerInitalRestitution = coord.GetComponent<RigidBody>(m_owner).restitution;
 			coord.ModifyComponent<RigidBody>(m_owner).restitution = 1;
+			coord.ModifyComponent<RigidBody>(m_owner).vel = Vec2();
 		}
+
+
+		CreateDisplay(coord);
 
 		return true;
 	}
@@ -71,6 +75,8 @@ namespace NightSnack
 					m_chargeTime = 0;
 				}
 			}
+
+			UpdateDisplays(coord);
 
 			std::cout << "Bounce! Charge Time = " << m_chargeTime << "/" << m_maxChargeTime << std::endl;
 			std::cout << "Bounce! Angle = " << m_launchAngle << std::endl;
@@ -136,7 +142,7 @@ namespace NightSnack
 
 	void Bounce::Launch(Coordinator& coord)
 	{
-		if (m_currState != BOUNCE_CHARGING)
+		if (!m_active || m_currState != BOUNCE_CHARGING)
 			return;
 
 		std::cout << "Bounce! LAUNCH!" << std::endl;
@@ -150,11 +156,12 @@ namespace NightSnack
 		{
 			//Launch force based on how long its charged
 			float launchPower = m_maxLaunchForce / m_maxChargeTime * m_chargeTime;
+			//float launchPower = m_maxLaunchForce; //For testing
 
 			int dir = m_facingRight ? 1 : -1;
 
-			coord.ModifyComponent<RigidBody>(m_owner).vel.x += launchPower * cos(m_launchAngle * PI/180) * dir;
-			coord.ModifyComponent<RigidBody>(m_owner).vel.y += launchPower * sin(m_launchAngle * PI/180);
+			coord.ModifyComponent<RigidBody>(m_owner).vel.x = launchPower * (float)cos(m_launchAngle * PI/180) * dir;
+			coord.ModifyComponent<RigidBody>(m_owner).vel.y = launchPower * (float)sin(m_launchAngle * PI/180);
 			std::cout << "Bounce Launch! X Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.x << ", " 
 				<< "Y Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.y << std::endl;
 
@@ -174,20 +181,162 @@ namespace NightSnack
 		m_launchAngle = std::clamp(m_launchAngle, 0.0f, m_maxLaunchAngle);
 	}
 
+	void Bounce::CreateDisplay(Coordinator& coord)
+	{
+		for (int x = 0; x < m_guideDotnum; ++x)
+		{
+			Entity dot = coord.GetSystem<EntityFactory>()->Create(m_guideDotPrefab);
+			Transform& dotTrans = coord.ModifyComponent<Transform>(dot);
+			dotTrans.scale = Vec2(m_guideDotSize, m_guideDotSize);
+
+			if (coord.HasComponent<Collider>(dot))
+			{
+				coord.ModifyComponent<Collider>(dot).width = m_guideDotSize;
+				coord.ModifyComponent<Collider>(dot).height = m_guideDotSize;
+				coord.ModifyComponent<Collider>(dot).radius = m_guideDotSize;
+			}
+
+			m_guideDots.push_back(dot);
+		}
+
+		if (m_guideDots.size() > 0)
+			if (coord.HasComponent<Color>(m_guideDots[0]))
+				m_guideDotAlpha = coord.GetComponent<Color>(m_guideDots[0]).a;
+
+		//Create Power Bar
+		m_powerBar = coord.GetSystem<EntityFactory>()->Create(m_guideDotPrefab);
+		Transform& powerTrans = coord.ModifyComponent<Transform>(m_powerBar);
+		powerTrans.scale = m_powerBarScale;
+		powerTrans.pos = coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos;
+
+		UpdateDisplays(coord);
+	}
+
 	void Bounce::UpdateDisplays(Coordinator& coord)
 	{
+		float chargeRatio = m_chargeTime / m_maxChargeTime;
+		//Update power bar
+		//Change scale to x if horziontal bar
+		float newScale = ((m_powerBarScale.y - m_minPowerBarScale) * chargeRatio) + m_minPowerBarScale; 
+		coord.ModifyComponent<Transform>(m_powerBar).scale.y = newScale;
+		coord.ModifyComponent<Transform>(m_powerBar).pos.y = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).y + (newScale/2);
+		;
+
+
+		//Update dots
+		Vec3 playerPos = coord.GetComponent<Transform>(m_owner).pos;
+		RigidBody& rb = coord.ModifyComponent<RigidBody>(m_owner);
+
+		int dir = m_facingRight ? 1 : -1;
+
+		float rad = m_launchAngle * PI / 180.0f;
+
+		// Compute initial launch velocity (same as Launch())
+		float launchPower = m_maxLaunchForce * chargeRatio;
+		//float launchPower = m_maxLaunchForce ;
+
+		Vec2 simVel;
+		simVel.x = launchPower * cos(rad) * dir;
+		simVel.y = launchPower * sin(rad);
+
+		Vec2 simPos = { playerPos.x, playerPos.y };
+
+		float dt = coord.GetSystem<ApplicationSystem>()->GetDT(); 
+		Vec2 gravity = { 0.0f, coord.GetSystem<PhysicsSystem>()->GetGravity() * rb.gravitymult };
+		
+		Collider c1;
+		c1 = coord.GetComponent<Collider>(m_owner);
+		c1.width = m_guideDotSize;
+		c1.height = m_guideDotSize;
+		c1.radius = m_guideDotSize;
+
+		for (int i = 0; i < m_guideDots.size(); ++i)
+		{
+			if (coord.HasComponent<Collider>(m_guideDots[i]))
+			{
+				c1 = coord.GetComponent<Collider>(m_guideDots[i]);
+			}
+
+			// Apply gravity
+			simVel += gravity * dt;
+
+			// Move
+			simPos += simVel * dt;
+
+			bool collided = false;
+
+			for (Entity e : coord.GetLivingEntities())
+			{
+				if (e == INVALID_ENTITY)
+					break;
+
+				if (e == m_owner || !coord.HasComponent<Collider>(e) || coord.GetComponent<Collider>(e).type == ColliderType::Trigger) continue;
+
+				Transform& t2 = coord.ModifyComponent<Transform>(e);
+				Collider& c2 = coord.ModifyComponent<Collider>(e);
+
+
+				Transform fakeT1;
+				fakeT1.pos = Vec3(simPos.x, simPos.y, 0);
+
+				Vec2 normal;
+				float depth;
+
+
+				if (coord.GetSystem<PhysicsSystem>()->CheckCollision(fakeT1, t2, c1, c2, normal, depth))
+				{
+					collided = true;
+					break;
+
+					//simPos += normal * (depth + 0.5f);
+					//
+					//Transform& dotTrans = coord.ModifyComponent<Transform>(m_guideDots[i]);
+					//dotTrans.pos = Vec3(simPos.x, simPos.y, 11);
+				}
+			}
+
+			if (collided)
+			{
+				// Hide remaining dots
+				for (int j = i; j < m_guideDots.size(); ++j)
+					if (coord.HasComponent<Color>(m_guideDots[j]))
+					{
+						coord.ModifyComponent<Color>(m_guideDots[j]).a = 0;
+						coord.ModifyComponent<Transform>(m_guideDots[j]).pos.z = -1000;
+					}
+
+				break;
+			}
+
+			// Place normal dot
+			Transform& dotTrans = coord.ModifyComponent<Transform>(m_guideDots[i]);
+			dotTrans.pos = Vec3(simPos.x, simPos.y, 11);
+
+			if (coord.HasComponent<Color>(m_guideDots[i]))
+			{
+				coord.ModifyComponent<Color>(m_guideDots[i]).a = m_guideDotAlpha;
+				coord.ModifyComponent<Transform>(m_guideDots[i]).pos.z = 11;
+
+			}
+		}
 	}
 
 	void Bounce::DeleteDisplay(Coordinator& coord)
 	{
-		if (m_targetLine != INVALID_ENTITY)
-			coord.DestroyEntity(m_targetLine);
+		if (!m_guideDots.empty())
+		{
+			for (Entity dot : m_guideDots)
+			{
+				coord.DestroyEntity(dot);
+			}
 
-		if (m_chargeBar != INVALID_ENTITY)
-			coord.DestroyEntity(m_chargeBar);
+			m_guideDots.clear();
+		}
 
-		m_targetLine = INVALID_ENTITY;
-		m_chargeBar = INVALID_ENTITY;
+		if (m_powerBar != INVALID_ENTITY)
+			coord.DestroyEntity(m_powerBar);
+
+		m_powerBar = INVALID_ENTITY;
 	}
 	void Bounce::Collided(Coordinator& coord, Entity other)
 	{

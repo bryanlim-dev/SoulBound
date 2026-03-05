@@ -27,14 +27,27 @@ namespace NightSnack {
 			BOUNCE_END
 		};
 
+		bool m_active = false;
+
 		BounceState m_currState = BOUNCE_END;
 
 		Entity m_owner = INVALID_ENTITY;
-		Entity m_targetLine = INVALID_ENTITY;
-		Entity m_chargeBar = INVALID_ENTITY;
+		std::vector<Entity> m_guideDots;
+		Entity m_powerBar = INVALID_ENTITY;
 
-		bool m_active = false;
+		std::string m_guideDotPrefab = "BounceGuideDot";
+		const int m_guideDotnum = 30;
+		const float m_distBetweenDots = 0.25;
+		const float m_guideDotSize = 10;
+		float m_guideDotAlpha = 1; //Updates from prefab when making dots
 
+		std::string m_powerBarPrefab = "BouncePowerBar";
+		const Vec2 m_powerBarScale = Vec2{ 25, 75 };
+		const Vec3 m_powerBarOffsetPos = Vec3{ 25, 25, 12 };
+		const float m_minPowerBarScale = 5;
+
+
+		//Charge
 		float m_chargeTime = 0.0f;
 		const float m_maxChargeTime = 2.5f;
 		
@@ -45,17 +58,19 @@ namespace NightSnack {
 		float m_launchAngle = 45.0f;
 		//In degrees
 		const float m_maxLaunchAngle = 90.0f;
-		const float m_angleChangeSpeed = 25.0f;
+		//Also in degrees
+		const float m_angleChangeSpeed = 45.0f;
 		bool m_facingRight = true;
 
 		const float m_maxLaunchForce = 2500.0f;
-		const float m_minVel = 20.0f;
+		//const float m_minVel = 20.0f;
 
 		//How long until start checking for grounded during launch state
 		float m_bounceDelayTime = 0;
 		const float m_maxGroundedDelayTime = 0.15f;
 
 		float m_ownerInitalRestitution = 0;
+
 
 	public:
 		Bounce(){}
@@ -65,7 +80,7 @@ namespace NightSnack {
 			disp.Subscribe<CollisionEvent>([this, &coord](const CollisionEvent& event)
 				{
 					//If not active or either entity is 
-					if (!m_active || !(event.entityA == this->m_owner || event.entityB == m_owner))
+					if (!m_active || !((Entity)event.entityA == this->m_owner || (Entity)event.entityB == m_owner))
 						return;
 
 					Entity other = INVALID_ENTITY;
@@ -85,19 +100,12 @@ namespace NightSnack {
 					//Flip launch direction to left
 					switch (event.inputAction) {
 						case InputEvent::InputAction::PlayerMoveLeft:
-							if (event.pressed == InputEvent::InputActionState::Pressed ||
-								event.pressed == InputEvent::InputActionState::Repeat) {
-								//this->SwingActivated(coord, false);
-								m_facingRight = false;
-							}
+							
+							m_facingRight = false;
 							break;
 					//Flip launch direction to right
 						case InputEvent::InputAction::PlayerMoveRight:
-							if (event.pressed == InputEvent::InputActionState::Pressed ||
-								event.pressed == InputEvent::InputActionState::Repeat) {
-								//this->SwingActivated(coord, true);
-								m_facingRight = true;
-							}
+							m_facingRight = true;
 							break;
 					case InputEvent::InputAction::PlayerJump:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
@@ -144,6 +152,9 @@ namespace NightSnack {
 		}
 		
 	private:
+
+		void CreateDisplay(Coordinator& coord);
+
 		//Updates power bar and target line
 		void UpdateDisplays(Coordinator& coord);
 

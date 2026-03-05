@@ -204,8 +204,8 @@ namespace NightSnack
         //Tangent direction (perpendicular)
         Vec2 tangent(-n.y, n.x);
 
-        // How vertical the rope is (1 = vertical, 0 = horizontal)
-        float gravityFactor = fabs(n.y);
+        //How vertical the rope is (1 = vertical, 0 = horizontal)
+        //float gravityFactor = fabs(n.y);
 
         forceMagnitude *= (0.3f + 0.7f * fabs(n.y));
 
