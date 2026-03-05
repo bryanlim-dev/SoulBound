@@ -27,6 +27,7 @@
 struct PlayerFlags {
     bool movingLeft = false;
     bool movingRight = false;
+    bool facingRight = true;
 
     bool jumpRequested = false;
     bool justJumped{};
@@ -103,6 +104,7 @@ namespace NightSnack {
                         if (event.pressed == InputEvent::InputActionState::Pressed ||
                             event.pressed == InputEvent::InputActionState::Repeat) {
                             m_flags.movingLeft = true;
+                            m_flags.facingRight = false;
                         }
                         else if (event.pressed == InputEvent::InputActionState::Released) {
                             m_flags.movingLeft = false;
@@ -112,6 +114,7 @@ namespace NightSnack {
                         if (event.pressed == InputEvent::InputActionState::Pressed ||
                             event.pressed == InputEvent::InputActionState::Repeat) {
                             m_flags.movingRight = true;
+                            m_flags.facingRight = true;
                         }
                         else if (event.pressed == InputEvent::InputActionState::Released) {
                             m_flags.movingRight = false;

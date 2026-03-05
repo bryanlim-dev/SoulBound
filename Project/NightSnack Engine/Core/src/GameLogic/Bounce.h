@@ -59,10 +59,11 @@ namespace NightSnack {
 		//In degrees
 		const float m_maxLaunchAngle = 90.0f;
 		//Also in degrees
-		const float m_angleChangeSpeed = 45.0f;
+		const float m_angleChangeSpeed = 75.0f;
 		bool m_facingRight = true;
 
 		const float m_maxLaunchForce = 2500.0f;
+		const float m_minLaunchForce = 500.0f;
 		//const float m_minVel = 20.0f;
 
 		//How long until start checking for grounded during launch state
@@ -152,6 +153,8 @@ namespace NightSnack {
 		}
 		
 	private:
+		float GetLaunchPowerRatio();
+		float GetLaunchPower();
 
 		void CreateDisplay(Coordinator& coord);
 

@@ -8,7 +8,7 @@
  * When triggered it begins targeting power and when released it send the
  * entity flying and allows them to bounce off walls
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -24,11 +24,12 @@ namespace NightSnack
 		if (!coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().isGrounded)
 			return false;
 
+
 		m_currState = BOUNCE_CHARGING;
 		m_chargeTime = 0.0f;
 		m_powerIncreasing = true;
 		
-		m_facingRight = true;
+		m_facingRight = coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().facingRight;
 		m_launchAngle = 45.0f;
 
 		m_active = true;
@@ -155,7 +156,7 @@ namespace NightSnack
 		if (coord.HasComponent<RigidBody>(m_owner))
 		{
 			//Launch force based on how long its charged
-			float launchPower = m_maxLaunchForce / m_maxChargeTime * m_chargeTime;
+			float launchPower = GetLaunchPower();
 			//float launchPower = m_maxLaunchForce; //For testing
 
 			int dir = m_facingRight ? 1 : -1;
@@ -179,6 +180,16 @@ namespace NightSnack
 			m_launchAngle -= m_angleChangeSpeed * coord.GetSystem<ApplicationSystem>()->GetDT();
 
 		m_launchAngle = std::clamp(m_launchAngle, 0.0f, m_maxLaunchAngle);
+	}
+
+	float Bounce::GetLaunchPowerRatio()
+	{
+		return m_chargeTime/m_maxChargeTime;
+	}
+
+	float Bounce::GetLaunchPower()
+	{
+		return ((m_maxLaunchForce - m_minLaunchForce) * GetLaunchPowerRatio()) + m_minLaunchForce;
 	}
 
 	void Bounce::CreateDisplay(Coordinator& coord)
@@ -214,10 +225,9 @@ namespace NightSnack
 
 	void Bounce::UpdateDisplays(Coordinator& coord)
 	{
-		float chargeRatio = m_chargeTime / m_maxChargeTime;
 		//Update power bar
 		//Change scale to x if horziontal bar
-		float newScale = ((m_powerBarScale.y - m_minPowerBarScale) * chargeRatio) + m_minPowerBarScale; 
+		float newScale = ((m_powerBarScale.y - m_minPowerBarScale) * GetLaunchPowerRatio()) + m_minPowerBarScale; 
 		coord.ModifyComponent<Transform>(m_powerBar).scale.y = newScale;
 		coord.ModifyComponent<Transform>(m_powerBar).pos.y = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).y + (newScale/2);
 		;
@@ -232,7 +242,7 @@ namespace NightSnack
 		float rad = m_launchAngle * PI / 180.0f;
 
 		// Compute initial launch velocity (same as Launch())
-		float launchPower = m_maxLaunchForce * chargeRatio;
+		float launchPower = GetLaunchPower();
 		//float launchPower = m_maxLaunchForce ;
 
 		Vec2 simVel;
@@ -241,7 +251,7 @@ namespace NightSnack
 
 		Vec2 simPos = { playerPos.x, playerPos.y };
 
-		float dt = coord.GetSystem<ApplicationSystem>()->GetDT(); 
+		float dt = 0.016f; 
 		Vec2 gravity = { 0.0f, coord.GetSystem<PhysicsSystem>()->GetGravity() * rb.gravitymult };
 		
 		Collider c1;
