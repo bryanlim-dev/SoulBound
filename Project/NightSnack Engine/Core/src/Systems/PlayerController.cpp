@@ -81,6 +81,7 @@ namespace NightSnack {
             if (!c.HasComponent<PlayerController>(target)) return;
 
             FrogTongue& tongue = c.GetSystem<PlayerControllerSystem>()->GetFrogTongue();
+            tongue.UpdateOwner(c.GetSystem<PlayerControllerSystem>()->GetPlayer());
             if (m_flags.grappling == false)
             {
                 //std::cout << "[Frog Grapple] Grappble Looking!" << std::endl;
@@ -112,6 +113,27 @@ namespace NightSnack {
         });
         m_abilities.insert({ abilityName, GrapplingTongue });
 
+        abilityName = "Bounce";
+        //abilityName = "Grapple";
+        Gameplay::Ability Bounce(abilityName, [](Coordinator& c, Entity target, PlayerFlags& m_flags) {
+            //if (target == INVALID_ENTITY) return;
+            if (!c.HasComponent<RigidBody>(target)) return;
+            if (!c.HasComponent<PlayerController>(target)) return;
+            c.GetSystem<PlayerControllerSystem>()->GetBounce().UpdateOwner(c.GetSystem<PlayerControllerSystem>()->GetPlayer());
+
+            //c.GetSystem<AudioSystem>()->PlayRandomVariant("frogTongue", 7);
+                    //c.GetSystem<AudioSystem>()->PlaySFX("frogAttach");
+            if (!m_flags.bouncing)
+            {
+                if (c.GetSystem<PlayerControllerSystem>()->GetBounce().Start(c))
+                {
+                    m_flags.bouncing = true;
+                    m_flags.disableMovement = true;
+                }
+            }
+        });
+        m_abilities.insert({ abilityName, Bounce });
+
     }
 
     bool PlayerControllerSystem::AttachAbility() {
@@ -130,6 +152,11 @@ namespace NightSnack {
         if (m_flags.grappling)
         {
             m_frogTongue.End(m_coord);
+        }
+
+        if (m_flags.bouncing)
+        {
+            m_bounce.End(m_coord);
         }
 
         m_coord.ModifyComponent<Transform>(m_player).pos = m_coord.GetComponent<Transform>(m_prevCheckpoint).pos;
