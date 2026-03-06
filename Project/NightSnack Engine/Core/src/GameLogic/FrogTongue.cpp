@@ -16,7 +16,6 @@
 #include <Factory/EntityFactory.h>
 #include <Systems/CharacterSystem.h>
 #include <Systems/PlayerController.h>
-#include "Bounce.h"
 
 namespace NightSnack
 {
