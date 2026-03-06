@@ -435,8 +435,8 @@ namespace NightSnack {
             m_timeSinceGrounded = 0;
         }
 
-        std::cout << "Player Just Jumped : " << m_flags.justJumped << std::endl;
-        std::cout << "Player Time since Grounded : " << m_timeSinceGrounded << "/" << m_groundedThreshhold << std::endl;
+        //std::cout << "Player Just Jumped : " << m_flags.justJumped << std::endl;
+        //std::cout << "Player Time since Grounded : " << m_timeSinceGrounded << "/" << m_groundedThreshhold << std::endl;
 
         if (m_flags.jumpRequested) {
             // allow jump if pressed right after being off ground
