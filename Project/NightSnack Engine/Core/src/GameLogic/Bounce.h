@@ -108,7 +108,7 @@ namespace NightSnack {
 						case InputEvent::InputAction::PlayerMoveRight:
 							m_facingRight = true;
 							break;
-					case InputEvent::InputAction::PlayerJump:
+					case InputEvent::InputAction::PlayerUp:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
 							this->ChangeAngle(coord, true);
@@ -121,7 +121,7 @@ namespace NightSnack {
 							//this->ExtendRetractTongue(coord, true);
 						}
 						break;
-					case InputEvent::InputAction::PlayerSpecialAbility:
+					case InputEvent::InputAction::PlayerJumpAbility:
 						if (event.pressed == InputEvent::InputActionState::Released)
 						{
 							this->Launch(coord);

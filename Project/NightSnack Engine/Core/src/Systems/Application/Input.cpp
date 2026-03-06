@@ -94,6 +94,7 @@ namespace NightSnack {
 		case GLFW_KEY_S: return KeyboardKeys::S;
 		case GLFW_KEY_D: return KeyboardKeys::D;
 		case GLFW_KEY_H: return KeyboardKeys::H;
+		case GLFW_KEY_J: return KeyboardKeys::J;
 		case GLFW_KEY_SPACE: return KeyboardKeys::SPACE;
 		case GLFW_KEY_ENTER: return KeyboardKeys::ENTER;
 		case GLFW_KEY_RIGHT: return KeyboardKeys::RIGHT_ARROW;
@@ -117,13 +118,21 @@ namespace NightSnack {
 			// Map every single key/mouse press to their relevant input events
 			// 
 			// Player movement
-		case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
-		case GLFW_KEY_RIGHT: return InputEvent::InputAction::PlayerMoveRight;
-		case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJump;
-		case GLFW_KEY_DOWN: return InputEvent::InputAction::PlayerDown;
-		case GLFW_KEY_A: return InputEvent::InputAction::PlayerSpecialAbility;
-		case GLFW_KEY_S: return InputEvent::InputAction::PlayerPossess;
-		case GLFW_KEY_D: return InputEvent::InputAction::PlayerUnPossess;
+		case GLFW_KEY_A: return InputEvent::InputAction::PlayerMoveLeft;
+		case GLFW_KEY_D: return InputEvent::InputAction::PlayerMoveRight;
+		case GLFW_KEY_SPACE: return InputEvent::InputAction::PlayerJumpAbility;
+
+		case GLFW_KEY_W: return InputEvent::InputAction::PlayerUp;
+		case GLFW_KEY_S: return InputEvent::InputAction::PlayerDown;
+
+		case GLFW_KEY_J: return InputEvent::InputAction::PlayerPossess;
+		//case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
+		//case GLFW_KEY_RIGHT: return InputEvent::InputAction::PlayerMoveRight;
+		//case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJumpAbility;
+		//case GLFW_KEY_DOWN: return InputEvent::InputAction::PlayerDown;
+		//case GLFW_KEY_A: return InputEvent::InputAction::PlayerSpecialAbility;
+		//case GLFW_KEY_S: return InputEvent::InputAction::PlayerPossess;
+		//case GLFW_KEY_D: return InputEvent::InputAction::PlayerUnPossess;
 
 		case GLFW_KEY_ENTER: return InputEvent::InputAction::SkipDialogue;
 		case GLFW_KEY_1: return InputEvent::InputAction::Ability1;

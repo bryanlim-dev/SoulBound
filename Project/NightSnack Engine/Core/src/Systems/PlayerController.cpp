@@ -3,6 +3,7 @@
  * Project:     NightSnack
  * Author(s):   Chewn Thing Kwan (Primary, 90%)
  *              Bryan Lim Jun Jie (Secondary, 10%)
+ *              Clement Ang Yang Ying (Secondary, 10%) - Added coyote time, remapped controls and possession behaviour
  *
  * Description:
  * Controls the Player Entity and sets their Velocity component when key inputs
@@ -172,6 +173,135 @@ namespace NightSnack {
 
     }
 
+    void PlayerControllerSystem::HandleJumpAbilityInput(const InputEvent& event)
+    {
+        //Only abilities when grounded (or if is bounc, bounce cant jump)
+
+        if (event.pressed == InputEvent::InputActionState::Released) {
+            m_flags.jumpRequested = false;
+
+            m_flags.abilityKeyRelease = true;
+            m_flags.useAbility = false;
+        }
+
+        if (m_flags.isGrounded && curr_ability != "Bounce")
+        {
+            if (event.pressed == InputEvent::InputActionState::Pressed ||
+                event.pressed == InputEvent::InputActionState::Repeat) {
+                if (!m_flags.justJumped)
+                    m_flags.jumpRequested = true;
+            }
+        }
+        else
+        {
+            if (event.pressed == InputEvent::InputActionState::Pressed ||
+                event.pressed == InputEvent::InputActionState::Repeat) {
+                m_flags.useAbility = true;
+            }
+            else if (event.pressed == InputEvent::InputActionState::Released) {
+                m_flags.abilityKeyRelease = true;
+                m_flags.useAbility = false;
+            }
+            else {
+                m_flags.useAbility = false;
+            }
+        }
+    }
+
+    void PlayerControllerSystem::HandlePossessUnpossess()
+    {
+        Renderable& r = m_coord.ModifyComponent<Renderable>(m_player);
+
+        //Lamda function to try to possess
+        auto tryPossess = [&]() {
+            // Collision detection between both the entities 
+            for (Entity e : m_coord.GetLivingEntities()) {
+                auto& et = m_coord.GetComponent<Transform>(e);
+                if (!et.isActive) { continue; }
+
+                if (et.name == "Frog" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
+                    r.materialName = "FrogIdle_1_1"; // depends on the texture name
+                    curr_ability = "Grapple";
+                    //m_flags.tryPossess = false;
+                    m_flags.isPossessing = true;
+                    m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
+                    break;
+
+                }
+                else if (et.name == "Ghost" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
+                    r.materialName = "EyeMove_4_1"; // depends on the texture name
+                    curr_ability = "DoubleJump";
+                    //m_flags.tryPossess = false;
+                    m_flags.isPossessing = true;
+                    m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
+                    break;
+                }
+                else if (et.name == "Bouncer" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
+                    r.materialName = "FrogIdle_1_1"; // depends on the texture name
+                    curr_ability = "Bounce";
+                    //m_flags.tryPossess = false;
+                    m_flags.isPossessing = true;
+                    break;
+                }
+                else
+                {
+                    m_flags.isPossessing = false;
+                }
+            }
+            // If no collision with any entities, still reset it to false
+            // m_flags.tryPossess = false; //Is now set outside
+        }; //End tryPossess lamda function
+
+        auto tryUnpossess = [&]() {
+            // Switch back to the Rain Charm (original player) if it is not in the first place
+            if (r.materialName != "SpiritMove_4_1") {
+                r.materialName = "SpiritMove_4_1";
+                curr_ability = "Glide";
+                m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
+            }
+            //// Reset it back anyways
+            //m_flags.tryUnPossess = false;
+            //m_flags.isPossessing = false;
+
+            if (m_flags.grappling)
+            {
+                m_frogTongue.End(m_coord);
+                m_flags.grappling = false;
+            }
+
+            if (m_flags.bouncing)
+            {
+                m_bounce.End(m_coord);
+                m_flags.bouncing = false;
+            }
+        };//End tryUnpossess lamda function
+
+
+        //Try to possess first, if fails to find a possessable, unpossess instead
+        if (m_flags.possessUnposessActivated)
+        {
+            tryPossess();
+            if (!m_flags.isPossessing) //Failed to possess
+                tryUnpossess();
+
+            m_flags.possessUnposessActivated = false;
+        }
+
+        //Trying to ONLY possess
+        // Player tries to possess an enemy entity
+        if (m_flags.tryPossess) {
+            tryPossess();
+            m_flags.tryPossess = false;
+        }
+
+        //Trying to ONLY unpossess
+        // Player tries to unpossess and go back to its original form
+        if (m_flags.tryUnPossess) {
+            tryUnpossess();
+            m_flags.tryUnPossess = false;
+        }
+    }
+
     bool PlayerControllerSystem::UseSpecialAbility() {
 
         std::unordered_map<std::string, Gameplay::Ability>::iterator it = m_abilities.find(curr_ability);
@@ -294,24 +424,27 @@ namespace NightSnack {
     void PlayerControllerSystem::Jump(Transform& t, Vec2& vel, PlayerController pcont, bool isGrounded) {
 
         bool jump = false;
+
         m_timeSinceGrounded += FixedDT;
-        m_groundedTime += FixedDT;
-        if (m_groundedTime > m_repeatJumpThreshhold)
+
+        if (m_timeSinceGrounded < m_groundedThreshhold)
             m_flags.justJumped = false;
+
         if (isGrounded)
         {
             m_timeSinceGrounded = 0;
-
         }
 
+        std::cout << "Player Just Jumped : " << m_flags.justJumped << std::endl;
+        std::cout << "Player Time since Grounded : " << m_timeSinceGrounded << "/" << m_groundedThreshhold << std::endl;
+
         if (m_flags.jumpRequested) {
-            // allow jump if isgrounded
-            if (isGrounded && m_groundedTime > m_repeatJumpThreshhold) {
-                jump = true;
-            }
             // allow jump if pressed right after being off ground
-            if (!isGrounded && m_timeSinceGrounded < m_groundedThreshhold && !m_flags.justJumped)
+            if (isGrounded || m_timeSinceGrounded < m_groundedThreshhold)
+            {
                 jump = true;
+                m_flags.jumpRequested = false;
+            }
         }
 
         //// allow jump if pressed right before being grounded
@@ -335,7 +468,7 @@ namespace NightSnack {
 
             //m_storedJump = false;
             m_flags.justJumped = true;
-            m_groundedTime = 0.f;
+            //m_groundedTime = 0.f;
 
             // Start the emitter to spawn particles
             // These particles spawn position will be based on the updated player position

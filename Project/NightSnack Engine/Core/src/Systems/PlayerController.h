@@ -1,9 +1,10 @@
 /******************************************************************************
  * File:        PlayerController.h
  * Project:     NightSnack
- * Author(s):   Chewn Thing Kwan (Primary, 80%)
+ * Author(s):   Chewn Thing Kwan (Primary, 70%)
  *              Bryan Lim Jun Jie (Secondary, 10%)    
  *              Goh Bei Lai (Secondary, 10%) - Added player possession mechanic 
+ *              Clement Ang Yang Ying (Secondary, 10%) - Added coyote time, remapped controls and possession behaviour
  *
  * Description:
  * Controls the Player Entity and sets their Velocity component when key inputs
@@ -42,14 +43,16 @@ struct PlayerFlags {
 
     bool grappling = false;
     bool bouncing = false;
+
     bool canDoubleJump = true;
     bool abilityKeyRelease = false;
     float timeSinceLastDoubleJump = 0.f;
 
     NightSnack::Entity m_playerID;
 
-    bool tryPossess = false;
-    bool tryUnPossess = false;
+    bool possessUnposessActivated = false; //Player pressed possess/unpossess buttton
+    bool tryPossess = false;               //Trying to ONLY possess
+    bool tryUnPossess = false;             //Trying to ONLY unpossess 
     // add more flags if needed
 
     bool isGlideSoundPlaying = false;
@@ -120,34 +123,27 @@ namespace NightSnack {
                             m_flags.movingRight = false;
                         }
                         break;
-                    case InputEvent::InputAction::PlayerJump:
-                        if (event.pressed == InputEvent::InputActionState::Pressed ||
-                            event.pressed == InputEvent::InputActionState::Repeat) {
-                            if (!m_flags.justJumped)
-                                m_flags.jumpRequested = true;
-                        }
-                        else {
-                            m_flags.jumpRequested = false;
-                        }
+                    case InputEvent::InputAction::PlayerJumpAbility:
+                         HandleJumpAbilityInput(event);
                         break;
-                    case InputEvent::InputAction::PlayerSpecialAbility:
-                        if (event.pressed == InputEvent::InputActionState::Pressed ||
-                            event.pressed == InputEvent::InputActionState::Repeat) {
-                            m_flags.useAbility = true;
-                        }
-                        else if (event.pressed == InputEvent::InputActionState::Released) {
-                            m_flags.abilityKeyRelease = true;
-                            m_flags.useAbility = false;
-                        }
-                        else {
-                            m_flags.useAbility = false;
-                        }
-                        break;
-                    case InputEvent::InputAction::PlayerUnPossess:
-                        if (event.pressed == InputEvent::InputActionState::Pressed) {
-                            m_flags.tryUnPossess = true;
-                            curr_ability = "Glide";
-                        }
+                    //case InputEvent::InputAction::PlayerSpecialAbility:
+                    //    if (event.pressed == InputEvent::InputActionState::Pressed ||
+                    //        event.pressed == InputEvent::InputActionState::Repeat) {
+                    //        m_flags.useAbility = true;
+                    //    }
+                    //    else if (event.pressed == InputEvent::InputActionState::Released) {
+                    //        m_flags.abilityKeyRelease = true;
+                    //        m_flags.useAbility = false;
+                    //    }
+                    //    else {
+                    //        m_flags.useAbility = false;
+                    //    }
+                    //    break;
+                    //case InputEvent::InputAction::PlayerUnPossess:
+                    //    if (event.pressed == InputEvent::InputActionState::Pressed) {
+                    //        m_flags.tryUnPossess = true;
+                    //        curr_ability = "Glide";
+                    //    }
                     /*case InputEvent::InputAction::Ability1:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
                             curr_ability = "Glide";
@@ -166,7 +162,11 @@ namespace NightSnack {
                         break;
                     case InputEvent::InputAction::PlayerPossess:
                         if (event.pressed == InputEvent::InputActionState::Pressed) {
-                            m_flags.tryPossess = true;
+                            m_flags.possessUnposessActivated = true;
+                            /*if (!m_flags.isPossessing)
+                                m_flags.tryPossess = true;
+                            else
+                                m_flags.tryUnPossess = true;*/
                         }
                         break;
                     }
@@ -286,7 +286,7 @@ namespace NightSnack {
                 c.isGrounded = true;
                 time = 0.f;
             }
-            bool isGrounded = m_flags.isGrounded = c.isGrounded;
+            bool isGrounded = m_flags.isGrounded = c.isGrounded || m_timeSinceGrounded < m_groundedThreshhold;
 
 			// reset glide when grounded
             if (isGrounded && m_flags.isGliding) 
@@ -330,53 +330,9 @@ namespace NightSnack {
                 m_flags.isWalking = false;
             }
 
-            // Player tries to possess an enemy entity
-            if (m_flags.tryPossess) {
-                // Collision detection between both the entities 
-                for (Entity e : m_coord.GetLivingEntities()) {
-                    auto& et = m_coord.GetComponent<Transform>(e);
-                    if (!et.isActive) { continue; }
-                    
-                    if (et.name == "Frog" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                        r.materialName = "FrogIdle_1_1"; // depends on the texture name
-                        curr_ability = "Grapple";
-                        m_flags.tryPossess = false;
-                        m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
-                        break;
+            HandlePossessUnpossess();
 
-                    } else if (et.name == "Ghost" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                        r.materialName = "EyeMove_4_1"; // depends on the texture name
-                        curr_ability = "DoubleJump";
-                        m_flags.tryPossess = false;
-                        m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
-                        break;
-                    } else if (et.name == "Bouncer" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                        r.materialName = "FrogIdle_1_1"; // depends on the texture name
-                        curr_ability = "Bounce";
-                        m_flags.tryPossess = false;
-                        break;
-                    }
-                }
-                // If no collision with any entities, still reset it to false
-                m_flags.tryPossess = false;
-            } 
-            // Player tries to unpossess and go back to its original form
-            if (m_flags.tryUnPossess) {
-                // Switch back to the Rain Charm (original player) if it is not in the first place
-                if (r.materialName != "SpiritMove_4_1") {
-                    r.materialName = "SpiritMove_4_1";
-                    curr_ability = "Glide";
-                    m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
-                }
-                // Reset it back anyways
-                m_flags.tryUnPossess = false;
-
-                if (m_flags.grappling)
-                {
-                    m_frogTongue.End(m_coord);
-                    m_flags.grappling = false;
-                }
-            }
+            
 
             // Special Abilities --------------------------
             if (curr_ability == "DoubleJump") {
@@ -528,6 +484,25 @@ namespace NightSnack {
         bool loadBackMainMenu{ false };
 
     private:
+        /************************************************************************/
+        /*!
+        \brief
+        Handles logic when jump/use ability button is pressed
+        
+        \param event
+        Input event of the button pressed
+        */
+        /************************************************************************/
+        void HandleJumpAbilityInput(const InputEvent& event);
+
+        /************************************************************************/
+        /*!
+        \brief
+        Handles logic when trying to possess/unpossess
+        */
+        /************************************************************************/
+        void HandlePossessUnpossess();
+
         Signature m_systemSignature{};
         EventDispatcher* m_dispatcher = nullptr;
         Coordinator& m_coord;
@@ -539,11 +514,11 @@ namespace NightSnack {
         // Accumulates states
         PlayerFlags m_flags{};
 
-        //Cyote time
+        //Coyote time
         float m_timeSinceGrounded{}; //Time since last grounded
-        const float m_groundedThreshhold = 0.1f;
-        float m_groundedTime{};
-        const float m_repeatJumpThreshhold = 0.1f;
+        const float m_groundedThreshhold = 0.15f; //Time to be considered grounded
+        //float m_groundedTime{};
+        //const float m_repeatJumpThreshhold = 0.1f;
 
         float m_timeSinceAbility{};
 
