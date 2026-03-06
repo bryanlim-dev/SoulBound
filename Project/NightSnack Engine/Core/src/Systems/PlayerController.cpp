@@ -105,10 +105,10 @@ namespace NightSnack {
             }
 
         });
-        //m_abilities.insert({ abilityName, GrapplingTongue });
+        m_abilities.insert({ abilityName, GrapplingTongue });
 
         abilityName = "Bounce";
-        abilityName = "Grapple";
+        //abilityName = "Grapple";
         Gameplay::Ability Bounce(abilityName, [](Coordinator& c, Entity target, PlayerFlags& m_flags) {
             //if (target == INVALID_ENTITY) return;
             if (!c.HasComponent<RigidBody>(target)) return;

@@ -337,6 +337,11 @@ namespace NightSnack {
                         curr_ability = "DoubleJump";
                         m_flags.tryPossess = false;
                         break;
+                    } else if (et.name == "Bouncer" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
+                        r.materialName = "FrogIdle_1_1"; // depends on the texture name
+                        curr_ability = "Bounce";
+                        m_flags.tryPossess = false;
+                        break;
                     }
                 }
                 // If no collision with any entities, still reset it to false

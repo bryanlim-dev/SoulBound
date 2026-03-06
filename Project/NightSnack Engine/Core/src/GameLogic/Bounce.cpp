@@ -54,6 +54,8 @@ namespace NightSnack
 		if (!m_active)
 			return false;
 
+
+
 		switch (m_currState)
 		{
 		case BOUNCE_CHARGING:
@@ -79,8 +81,8 @@ namespace NightSnack
 
 			UpdateDisplays(coord);
 
-			std::cout << "Bounce! Charge Time = " << m_chargeTime << "/" << m_maxChargeTime << std::endl;
-			std::cout << "Bounce! Angle = " << m_launchAngle << std::endl;
+			//std::cout << "Bounce! Charge Time = " << m_chargeTime << "/" << m_maxChargeTime << std::endl;
+			//std::cout << "Bounce! Angle = " << m_launchAngle << std::endl;
 
 			break;
 		}
@@ -97,7 +99,7 @@ namespace NightSnack
 					coord.ModifyComponent<RigidBody>(m_owner).vel = Vec2();
 					coord.ModifyComponent<RigidBody>(m_owner).force.isActive = false;
 					coord.ModifyComponent<RigidBody>(m_owner).restitution = m_ownerInitalRestitution;
-					std::cout << "Grounded!" << std::endl;
+					//std::cout << "Grounded!" << std::endl;
 					return false;
 				}
 				else if (col.colliding)
@@ -111,15 +113,20 @@ namespace NightSnack
 					Collided(coord, other);
 					m_bounceDelayTime = 0;
 				}
+
+				if (coord.HasComponent<RigidBody>(m_owner))
+					coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().facingRight = m_facingRight = coord.GetComponent<RigidBody>(m_owner).vel.x > 0 ? true : false;
 			}
 			else
 			{
-				std::cout << "Bounce CD" << std::endl;
+				//std::cout << "Bounce CD" << std::endl;
 			}
 
 			break;
 		}
 		}
+
+		
 
 		return true;
 	}
@@ -146,7 +153,7 @@ namespace NightSnack
 		if (!m_active || m_currState != BOUNCE_CHARGING)
 			return;
 
-		std::cout << "Bounce! LAUNCH!" << std::endl;
+		//std::cout << "Bounce! LAUNCH!" << std::endl;
 
 		m_currState = BOUNCE_RELEASED;
 
@@ -163,8 +170,8 @@ namespace NightSnack
 
 			coord.ModifyComponent<RigidBody>(m_owner).vel.x = launchPower * (float)cos(m_launchAngle * PI/180) * dir;
 			coord.ModifyComponent<RigidBody>(m_owner).vel.y = launchPower * (float)sin(m_launchAngle * PI/180);
-			std::cout << "Bounce Launch! X Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.x << ", " 
-				<< "Y Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.y << std::endl;
+			//std::cout << "Bounce Launch! X Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.x << ", " 
+			//	<< "Y Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.y << std::endl;
 
 		}
 	}
@@ -373,8 +380,8 @@ namespace NightSnack
 			Transform& tra = coord.ModifyComponent<Transform>(m_owner);
 			Transform& traWall = coord.ModifyComponent<Transform>(other);
 			RigidBody& bod = coord.ModifyComponent<RigidBody>(m_owner);
-			std::cout << "BOING! Entity pos: " << tra.pos << ", Wall/Floor Pos: " << traWall.pos 
-				<< ", Entity Vel: " << bod.vel << ", Entity Force Mag: " << bod.force.magnitude << ", Entity Force Dir: " << bod.force.direction << std::endl;
+			//std::cout << "BOING! Entity pos: " << tra.pos << ", Wall/Floor Pos: " << traWall.pos 
+			//	<< ", Entity Vel: " << bod.vel << ", Entity Force Mag: " << bod.force.magnitude << ", Entity Force Dir: " << bod.force.direction << std::endl;
 		}
 	}
 }
