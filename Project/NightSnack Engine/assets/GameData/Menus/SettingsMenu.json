@@ -56,7 +56,7 @@
                 "Rotation": 0.0,
                 "Scale": {
                     "x": 900.0,
-                    "y": 440.0
+                    "y": 600.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -84,7 +84,7 @@
                 "Name": "Frame-Header",
                 "Position": {
                     "x": 0.0,
-                    "y": 202.5,
+                    "y": 275.5,
                     "z": 0.5
                 },
                 "Rotation": 0.0,
@@ -134,7 +134,7 @@
                 "Name": "AudioSlider",
                 "Position": {
                     "x": 100.0,
-                    "y": 62.5,
+                    "y": 150.0,
                     "z": 0.6
                 },
                 "Rotation": 0.0,
@@ -168,7 +168,7 @@
                 "Name": "AudioKnob",
                 "Position": {
                     "x": 87.5,
-                    "y": 62.5,
+                    "y": 150.0,
                     "z": 0.8
                 },
                 "Rotation": 0.0,
@@ -202,13 +202,181 @@
                 "Name": "audio",
                 "Position": {
                     "x": -300.0,
-                    "y": 62.5,
+                    "y": 150.0,
                     "z": 1.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
                     "x": 512.0,
                     "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "ButtonInfo": {
+                    "action": "SFXSlider",
+                    "type": "Slider",
+                    "target": "",
+                    "defaultTex": "UIMenu-Frame",
+                    "hoverTex": "UIMenu-Frame",
+                    "clickTex": "UIMenu-Frame"
+                },
+                "Collider": {
+                    "height": 100.0,
+                    "isStatic": true,
+                    "radius": 50.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 512.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "UIMenu-Frame",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "SFXSlider",
+                "Position": {
+                    "x": 100.0,
+                    "y": 50.0,
+                    "z": 0.6
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 12.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Menu-SliderKnob",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "SFXKnob",
+                "Position": {
+                    "x": 87.5,
+                    "y": 50.0,
+                    "z": 0.8
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "ButtonInfo": {
+                    "action": "BGMSlider",
+                    "type": "Slider",
+                    "target": "",
+                    "defaultTex": "UIMenu-Frame",
+                    "hoverTex": "UIMenu-Frame",
+                    "clickTex": "UIMenu-Frame"
+                },
+                "Collider": {
+                    "height": 100.0,
+                    "isStatic": true,
+                    "radius": 50.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 512.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "UIMenu-Frame",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "BGMSlider",
+                "Position": {
+                    "x": 100.0,
+                    "y": -50.0,
+                    "z": 0.6
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 12.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Menu-SliderKnob",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "BGMKnob",
+                "Position": {
+                    "x": 87.5,
+                    "y": -50.0,
+                    "z": 0.8
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -236,7 +404,7 @@
                 "Name": "Frame-Mode",
                 "Position": {
                     "x": 100.0,
-                    "y": -87.5,
+                    "y": -150.0,
                     "z": 0.6
                 },
                 "Rotation": 0.0,
@@ -270,7 +438,7 @@
                 "Name": "ModeArrowLeft",
                 "Position": {
                     "x": -137.5,
-                    "y": -87.5,
+                    "y": -150.0,
                     "z": 0.8
                 },
                 "Rotation": 0.0,
@@ -304,7 +472,7 @@
                 "Name": "ModeArrowRight",
                 "Position": {
                     "x": 337.5,
-                    "y": -87.5,
+                    "y": -150.0,
                     "z": 0.8
                 },
                 "Rotation": 0.0,
@@ -338,7 +506,7 @@
                 "Name": "mode",
                 "Position": {
                     "x": -300.0,
-                    "y": -87.5,
+                    "y": -150.0,
                     "z": 1.0
                 },
                 "Rotation": 0.0,
@@ -396,7 +564,7 @@
                 "Name": "fullscreen",
                 "Position": {
                     "x": 100.0,
-                    "y": -87.5,
+                    "y": -150.0,
                     "z": 1.0
                 },
                 "Rotation": 0.0,
@@ -430,7 +598,7 @@
                 "Name": "Options",
                 "Position": {
                     "x": 0.0,
-                    "y": 202.5,
+                    "y": 275.5,
                     "z": 1.0
                 },
                 "Rotation": 0.0,
@@ -488,7 +656,7 @@
                 "Name": "Frame-Close",
                 "Position": {
                     "x": 437.5,
-                    "y": 202.5,
+                    "y": 275.5,
                     "z": 0.8
                 },
                 "Rotation": 0.0,
@@ -522,7 +690,7 @@
                 "Name": "CloseCross",
                 "Position": {
                     "x": 437.5,
-                    "y": 202.5,
+                    "y": 275.5,
                     "z": 1.0
                 },
                 "Rotation": 0.0,

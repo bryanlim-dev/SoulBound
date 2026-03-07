@@ -274,6 +274,9 @@ namespace NightSnack {
         float m_bgmVolume;
         float m_sfxVolume;
 
+        // user-set bgmvolume
+        float m_userBGMVolume = 0.2f;
+
         // for transition audio
         bool m_isFading;
         float m_fadeTimer;

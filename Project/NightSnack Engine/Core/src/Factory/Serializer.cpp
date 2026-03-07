@@ -696,8 +696,9 @@ namespace NightSnack {
 		if (ButtonAction::NOACTION == b.action) j["action"] = std::string{ "NoAction"};
 		if (ButtonAction::EXIT == b.action) j["action"] = std::string{ "ExitGame" };
 		if (ButtonAction::TOGGLEFULLSCREEN == b.action) j["action"] = std::string{ "ToggleFullscreen" };
-		if (ButtonAction::VOLUMESLIDER == b.action)      j["action"] = std::string{ "VolumeSlider" };
-
+		if (ButtonAction::VOLUMESLIDER == b.action) j["action"] = std::string{ "VolumeSlider" };
+		if (ButtonAction::SFXSLIDER == b.action) j["action"] = std::string{ "SFXSlider" };
+		if (ButtonAction::BGMSLIDER == b.action) j["action"] = std::string{ "BGMSlider" };
 
 		if (ButtonType::SLIDER == b.type) j["type"] = std::string{ "Slider" };
 		if (ButtonType::CLICKER == b.type) j["type"] = std::string{ "Clicker" };
@@ -724,6 +725,9 @@ namespace NightSnack {
 			if (j["action"] == "ExitGame") { b.action = ButtonAction::EXIT; }
 			if (j["action"] == "ToggleFullscreen") { b.action = ButtonAction::TOGGLEFULLSCREEN; }
 			if (j["action"] == "VolumeSlider") { b.action = ButtonAction::VOLUMESLIDER; }
+			if (j["action"] == "SFXSlider") b.action = ButtonAction::SFXSLIDER;
+			if (j["action"] == "BGMSlider") b.action = ButtonAction::BGMSLIDER;
+
 
 			// Button type
 			if (j["type"] == "Slider") { b.type = ButtonType::SLIDER; }

@@ -315,10 +315,17 @@ namespace NightSnack::Scene {
 		json CacheWinCollider();
 		void CreateWinScreen();
 
+		// entity for menu sliders
 		Entity m_sliderBarEntity = INVALID_ENTITY;
 		Entity m_sliderKnobEntity = INVALID_ENTITY;
+		Entity m_sfxBarEntity = INVALID_ENTITY;
+		Entity m_sfxKnobEntity = INVALID_ENTITY;
+		Entity m_bgmBarEntity = INVALID_ENTITY;
+		Entity m_bgmKnobEntity = INVALID_ENTITY;
 
 		Entity GetSliderKnob() const { return m_sliderKnobEntity; }
+		Entity GetSFXKnob() const { return m_sfxKnobEntity; }
+		Entity GetBGMKnob() const { return m_bgmKnobEntity; }
 
 	};
 
