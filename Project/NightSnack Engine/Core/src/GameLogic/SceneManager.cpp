@@ -96,7 +96,7 @@ namespace NightSnack::Scene {
 			if (m_coord.GetComponent<Collider>(m_winCollider).colliding && !winScreenOn) {
 				if (physics->EntitiesAreColliding(m_winCollider, m_player)) {
 					CreateWinScreen();
-					m_coord.GetSystem<AudioSystem>()->PlaySFX("playerWin");
+					m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerWin", 0.85f);
 					m_coord.GetSystem<CollectibleSystem>()->ToggleCollectibleIcons(false);
 					winScreenOn = true;
 				}
