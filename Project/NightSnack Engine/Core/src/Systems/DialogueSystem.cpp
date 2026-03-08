@@ -54,16 +54,18 @@ namespace NightSnack {
             else if (t.name == "DialogueSpeakerName") m_speakerNameEntity = e;
             else if (t.name == "DialogueText") m_dialogueTextEntity = e;
             else if (t.name == "DialoguePortrait") m_portraitEntity = e;
+            else if (t.name == "DialogueHintText") m_hintTextEntity = e;
         }
 
         if (m_dialogueBoxEntity == INVALID_ENTITY || m_speakerNameEntity == INVALID_ENTITY ||
-            m_dialogueTextEntity == INVALID_ENTITY || m_portraitEntity == INVALID_ENTITY) {
+            m_dialogueTextEntity == INVALID_ENTITY || m_portraitEntity == INVALID_ENTITY || 
+            m_hintTextEntity == INVALID_ENTITY) {
             //std::cerr << "[DialogueSystem] Missing UI entities in scene\n";
             return;
         }
 
         m_foundUIEntities = true;
-        ToggleUIEntities(false);
+        //ToggleUIEntities(false);
     }
 
 	void DialogueSystem::Update() {
@@ -74,11 +76,13 @@ namespace NightSnack {
 
         // TESTING CODE TO START DIALOGUE 
         if (m_testDialogue && m_dialogueBoxEntity != INVALID_ENTITY) {
-            StartDialogue("guard_intro");
+            StartDialogue("test_dialogue1");
             m_testDialogue = false;
         }
 
-        if (m_dialogueState == DialogueState::INACTIVE) return;
+        if (m_dialogueState == DialogueState::INACTIVE) {
+            return;
+        }
 
         if (m_dialogueState == DialogueState::TYPING) {
             // Advance the typewriter timer each frame
@@ -87,9 +91,9 @@ namespace NightSnack {
             // Reveal characters one at a time based on the timer
             // Uses a while loop instead of an if statement so that it will reveal multiple characters 
             // to catch up if needed
-            while (m_typingTimer >= m_typingSpeed && m_visibleCharCount < static_cast<int>(m_fullText.size())) {
+            while (m_typingTimer >= m_charDelay && m_visibleCharCount < static_cast<int>(m_fullText.size())) {
                 ++m_visibleCharCount;
-                m_typingTimer -= m_typingSpeed;
+                m_typingTimer -= m_charDelay;
             }
 
             m_visibleText = m_fullText.substr(0, m_visibleCharCount);
@@ -97,6 +101,17 @@ namespace NightSnack {
             // Check if the full line has been revealed
             if (m_visibleCharCount >= static_cast<int>(m_fullText.size())) {
                 m_dialogueState = DialogueState::WAITING_INPUT;
+            }
+        }
+
+        if (m_hintTextEntity != INVALID_ENTITY) {
+            if (m_dialogueState == DialogueState::WAITING_INPUT) {
+                // Dialogue System is currently waiting for user key press to advance to the next line
+                // Show the Hint Text for player to advance
+                m_coord.ModifyComponent<Transform>(m_hintTextEntity).isActive = true;
+            } else {
+                // Hide the Hint Text 
+                m_coord.ModifyComponent<Transform>(m_hintTextEntity).isActive = false;
             }
         }
 
@@ -127,13 +142,14 @@ namespace NightSnack {
 
         // When the dialogue is waiting for input, move on to the next line
         if (m_dialogueState == DialogueState::WAITING_INPUT) {
-            auto it = m_currentSequence.lines.find(m_currentLineID);
-            if (it == m_currentSequence.lines.end()) {
+            DialogueLine* line = m_currentSequence.FindLine(m_currentLineID);
+            if (!line) {
                 StopDialogue();
                 return;
             }
 
-            const std::string& nextID = it->second.nextID;
+            //const std::string& nextID = it->second.nextID;
+            const std::string& nextID = line->nextID;
             if (nextID.empty()) {
                 // There is no next line, whole dialogue sequence is over
                 StopDialogue();
@@ -168,20 +184,21 @@ namespace NightSnack {
 
     // Switch to a new line by ID and reset typewriter state
     void DialogueSystem::LoadLine(const std::string& lineID) {
-        auto it = m_currentSequence.lines.find(lineID);
-        if (it == m_currentSequence.lines.end()) {
+        DialogueLine* line = m_currentSequence.FindLine(lineID);
+        if (!line) {
             std::cerr << "[DialogueSystem] Line ID not found: " << lineID << std::endl;
             StopDialogue();
             return;
         }
 
-        DialogueLine const& line = it->second;
-
         m_currentLineID = lineID;
-        m_fullText = line.text;
-        m_currentSpeaker = line.speaker;
-        m_currentSpeakerMaterial = line.speakerMaterial;
-        m_typingSpeed = line.typingSpeed;
+        m_fullText = line->text;
+        // Normalize line endings for all platforms, since it might store new lines as \r\n
+        m_fullText.erase(std::remove(m_fullText.begin(), m_fullText.end(), '\r'), m_fullText.end());
+
+        m_currentSpeaker = line->speaker;
+        m_currentSpeakerMaterial = line->speakerMaterial;
+        m_charDelay = line->charDelay;
 
         // Reset typewriter
         m_visibleCharCount = 0;
@@ -222,6 +239,8 @@ namespace NightSnack {
     }
 
     void DialogueSystem::ToggleUIEntities(bool active) {
+        // This function is used to toggle the visibility of UI entities 
+
         if (m_dialogueBoxEntity != INVALID_ENTITY)
             m_coord.ModifyComponent<Transform>(m_dialogueBoxEntity).isActive = active;
         if (m_speakerNameEntity != INVALID_ENTITY)
@@ -230,6 +249,12 @@ namespace NightSnack {
             m_coord.ModifyComponent<Transform>(m_dialogueTextEntity).isActive = active;
         if (m_portraitEntity != INVALID_ENTITY)
             m_coord.ModifyComponent<Transform>(m_portraitEntity).isActive = active;
+
+        // Only toggle the hint text entity off here since its visibility is determined by
+        // whether the current dialogue line is complete or not
+        if (!active && m_hintTextEntity != INVALID_ENTITY) {
+            m_coord.ModifyComponent<Transform>(m_hintTextEntity).isActive = active;
+        }
     }
 
     void DialogueSystem::UpdateUIText() {
@@ -260,4 +285,119 @@ namespace NightSnack {
         m_coord.ModifyComponent<Transform>(m_portraitEntity).isActive = true;
         r.materialName = m_currentSpeakerMaterial;
     }
+
+    bool DialogueSystem::CreateSequence(const std::string& sequenceID) {
+        if (m_dialogueLibrary.count(sequenceID)) {
+            std::cerr << "[DialogueSystem] Sequence already exists: " << sequenceID << std::endl;
+            return false;
+        }
+
+        DialogueSequence seq;
+        seq.sequenceID = sequenceID;
+        seq.startID = "";
+        m_dialogueLibrary[sequenceID] = seq;
+        SaveSequence(sequenceID);  // create the json file immediately
+        return true;
+    }
+
+    bool DialogueSystem::DeleteSequence(const std::string& sequenceID) {
+        m_dialogueLibrary.erase(sequenceID);
+
+        std::filesystem::path filePath = std::filesystem::path(RESOURCE_PATH) / "Dialogue" / (sequenceID + ".json");
+        if (std::filesystem::exists(filePath)) {
+            std::filesystem::remove(filePath);
+        }
+
+        return true;
+    }
+
+    bool DialogueSystem::RenameSequence(const std::string& oldID, const std::string& newID) {
+        if (m_dialogueLibrary.count(newID)) {
+            std::cerr << "[DialogueSystem] Sequence ID already taken: " << newID << std::endl;
+            return false;
+        }
+
+        auto node = m_dialogueLibrary.extract(oldID);
+        if (node.empty()) {
+            return false;
+        }
+
+        node.key() = newID;
+        node.mapped().sequenceID = newID;
+        m_dialogueLibrary.insert(std::move(node));
+
+        // Rename file on disk
+        std::filesystem::path oldPath = std::filesystem::path(RESOURCE_PATH) / "Dialogue" / (oldID + ".json");
+        std::filesystem::path newPath = std::filesystem::path(RESOURCE_PATH) / "Dialogue" / (newID + ".json");
+
+        if (std::filesystem::exists(oldPath)) {
+            std::filesystem::rename(oldPath, newPath);
+        }
+
+        SaveSequence(newID);
+        return true;
+    }
+
+    void DialogueSystem::SaveSequence(const std::string& sequenceID) {
+        auto it = m_dialogueLibrary.find(sequenceID);
+        if (it == m_dialogueLibrary.end()) {
+            return;
+        }
+
+        std::filesystem::path filePath = std::filesystem::path(RESOURCE_PATH) / "Dialogue" / (sequenceID + ".json");
+
+        std::ofstream file(filePath);
+        if (!file.is_open()) {
+            std::cerr << "[DialogueSystem] Could not write: " << filePath << '\n';
+            return;
+        }
+
+        json j = it->second;
+        file << j.dump(4); // pretty print with 4 space indent
+        std::cout << "[DialogueSystem] Saved: " << filePath << '\n';
+    }
+
+    void DialogueSystem::AddLine(const std::string& sequenceID, const DialogueLine& line) {
+        auto it = m_dialogueLibrary.find(sequenceID);
+        if (it == m_dialogueLibrary.end()) return;
+
+        DialogueSequence& seq = it->second;
+        seq.lines.push_back({ line.ID, line });
+
+        // If this is the first line, make it the start
+        if (seq.lines.size() == 1)
+            seq.startID = line.ID;
+    }
+
+    void DialogueSystem::DeleteLine(const std::string& sequenceID, const std::string& lineID) {
+        auto it = m_dialogueLibrary.find(sequenceID);
+        if (it == m_dialogueLibrary.end()) return;
+
+        auto& lines = it->second.lines;
+        lines.erase(std::remove_if(lines.begin(), lines.end(),
+            [&](auto const& pair) { return pair.first == lineID; }), lines.end());
+
+        // Update startID if the deleted line was the start
+        if (it->second.startID == lineID)
+            it->second.startID = lines.empty() ? "" : lines.front().first;
+    }
+
+    void DialogueSystem::UpdateLine(const std::string& sequenceID, const std::string& oldLineID, const DialogueLine& updated) {
+        auto it = m_dialogueLibrary.find(sequenceID);
+        if (it == m_dialogueLibrary.end()) return;
+
+        auto& lines = it->second.lines;
+        for (auto& [ID, line] : lines) {
+            if (ID == oldLineID) {
+                ID = updated.ID;   // update the key too if ID changed
+                line = updated;
+                break;
+            }
+        }
+
+        // Update startID if the first line's ID changed
+        if (!lines.empty() && it->second.startID == oldLineID)
+            it->second.startID = updated.ID;
+    }
+
 }
