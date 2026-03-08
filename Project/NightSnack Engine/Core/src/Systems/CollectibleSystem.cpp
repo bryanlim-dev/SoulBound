@@ -70,7 +70,7 @@ namespace NightSnack {
 			// Currently active collectibles
 			if (m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(m_player, e)) {
 
-				m_coord.GetSystem<AudioSystem>()->PlaySFX("playerCollect");
+				m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerCollect", 0.2f);
 				// Let the player be able to jump one more time
 				if (m_coord.GetComponent<Collectible>(e).type == COLLECTIBLE_TYPE::DOUBLE_JUMP) {
 					m_coord.GetSystem<PlayerControllerSystem>()->EnableDoubleJumpFlag();
