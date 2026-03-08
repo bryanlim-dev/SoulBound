@@ -252,6 +252,7 @@ namespace NightSnack {
 
             if (m_pauseInputs) return;
 
+            UpdateCloseGroundedHitBox();
 
             PlayerController const& pcont = m_coord.GetComponent<PlayerController>(m_player);
             Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
