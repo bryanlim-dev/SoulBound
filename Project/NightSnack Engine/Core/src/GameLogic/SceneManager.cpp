@@ -247,7 +247,7 @@ namespace NightSnack::Scene {
 			}
 
 			// add slider drag handling
-			if (b.action == ButtonAction::VOLUMESLIDER) {
+			if (m_menuOpen && b.action == ButtonAction::VOLUMESLIDER) {
 				// Sliders drag while mouse is held down
 				if (m_mouseHeld) {
 					auto& mat = m_coord.ModifyComponent<Renderable>(e).materialName;
