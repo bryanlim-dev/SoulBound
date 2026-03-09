@@ -266,7 +266,7 @@ namespace NightSnack::Scene {
 			if (m_hoveredEntity != e) 
 			{
 				m_hoveredEntity = e;
-				m_coord.GetSystem<AudioSystem>()->PlaySFX("buttonHover_1");
+				m_coord.GetSystem<AudioSystem>()->PlaySFX("buttonHover");
 			}
 
 			// add slider drag handling

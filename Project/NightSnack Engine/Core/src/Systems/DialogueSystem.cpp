@@ -90,6 +90,13 @@ namespace NightSnack {
             while (m_typingTimer >= m_typingSpeed && m_visibleCharCount < static_cast<int>(m_fullText.size())) {
                 ++m_visibleCharCount;
                 m_typingTimer -= m_typingSpeed;
+
+                // play typewriter tick per character, skip spaces
+                char c = m_fullText[m_visibleCharCount - 1];
+                if (c != ' ' && c != '\n') 
+                {
+                    m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("typewriterClack", 0.15f);
+                }
             }
 
             m_visibleText = m_fullText.substr(0, m_visibleCharCount);
