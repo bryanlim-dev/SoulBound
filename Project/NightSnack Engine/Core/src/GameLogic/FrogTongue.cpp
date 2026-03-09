@@ -118,11 +118,15 @@ namespace NightSnack
 
 	void FrogTongue::End(Coordinator& coord)
 	{
+		Entity player = coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
 
-		if (m_owner == coord.GetSystem<PlayerControllerSystem>()->GetPlayer())
+		if (m_owner == player)
 		{
 			coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().disableMovement = false;
 		}
+
+		coord.ModifyComponent<Renderable>(player).materialName = "FrogIdle_4_1";
+
 
 		m_distanceJoint.SetActive(false);
 		coord.DestroyEntity(m_tongue);
@@ -192,6 +196,7 @@ namespace NightSnack
 
 		//==Set Transform==
 		trans.pos = (ownerPt + anchorPt) / 2;
+		trans.pos.z = ownerPt.z - 0.1f;
 
 		//std::cout << "Tongue Length: " << DistanceToAnchor(ownerPt, anchorPt) << std::endl;
 	}

@@ -82,7 +82,10 @@ namespace NightSnack {
             if (!c.HasComponent<PlayerController>(target)) return;
 
             FrogTongue& tongue = c.GetSystem<PlayerControllerSystem>()->GetFrogTongue();
-            tongue.UpdateOwner(c.GetSystem<PlayerControllerSystem>()->GetPlayer());
+            Entity player = c.GetSystem<PlayerControllerSystem>()->GetPlayer();
+            tongue.UpdateOwner(player);
+            c.ModifyComponent<Renderable>(player).materialName = "FrogAbility_4_1";
+
             if (m_flags.grappling == false)
             {
                 //std::cout << "[Frog Grapple] Grappble Looking!" << std::endl;
@@ -447,9 +450,15 @@ namespace NightSnack {
                     vel.x += pcont.moveSpeed * m_coord.GetSystem<ApplicationSystem>()->GetDT();
             }
 
-            if (curr_ability == "Grapple") {
-                m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogMove_4_1";
-                m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+            if (curr_ability == "Grapple" && !m_flags.grappling) {
+                if (m_flags.isGrounded) {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogMove_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
+                else {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogFall_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
             }
         }
         else if (m_flags.movingLeft && !m_flags.movingRight) {
@@ -476,9 +485,15 @@ namespace NightSnack {
             }
 
 
-            if (curr_ability == "Grapple") {
-                m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogMove_4_1";
-                m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+            if (curr_ability == "Grapple" && !m_flags.grappling) {
+                if (m_flags.isGrounded) {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogMove_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
+                else {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogFall_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
             }
         }
         else if (!m_flags.movingLeft && !m_flags.movingRight) {
@@ -491,8 +506,14 @@ namespace NightSnack {
             }
 
             if (curr_ability == "Grapple") {
-                m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogIdle_4_1";
-                m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
+                if (m_flags.isGrounded) {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogIdle_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
+                }
+                else {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogFall_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
             }
         }
         else if (m_flags.movingLeft && m_flags.movingRight) {

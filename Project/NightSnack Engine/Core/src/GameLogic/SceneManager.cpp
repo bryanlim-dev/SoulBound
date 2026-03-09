@@ -497,6 +497,12 @@ namespace NightSnack::Scene {
 		while (!m_menus.empty()) { m_menus.pop(); }
 		m_menuOpen = false;
 
+		Entity m_sliderBarEntity = INVALID_ENTITY;
+		Entity m_sliderKnobEntity = INVALID_ENTITY;
+		Entity m_player = INVALID_ENTITY;
+		Entity m_camIndex = INVALID_ENTITY;
+		Entity m_hoveredEntity = INVALID_ENTITY;
+
 		// Unload everything first
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
@@ -630,6 +636,12 @@ namespace NightSnack::Scene {
 	}
 
 	void SceneManager::RestartLevel() {
+
+		Entity m_sliderBarEntity = INVALID_ENTITY;
+		Entity m_sliderKnobEntity = INVALID_ENTITY;
+		Entity m_player = INVALID_ENTITY;
+		Entity m_camIndex = INVALID_ENTITY;
+		Entity m_hoveredEntity = INVALID_ENTITY;
 
 		// Reset menus
 		m_menuEntities.clear();
