@@ -1506,6 +1506,19 @@ namespace NightSnack
                 fontComp.fontSize = fontSize;
 			}
 
+            // Text Wrap Ratio
+            float wrapRatio = fontComp.textWrapRatio;
+            ImGui::TableNextRow();
+            ImGui::TableSetColumnIndex(0); ImGui::Text("Text Wrap Ratio");
+            ImGui::TableSetColumnIndex(1); ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::InputFloat("##WrapRatio", &wrapRatio, 0.0f, 0.0f, "%.2f"))
+            {
+                NightSnack::UndoSystem::Instance().Push(
+                    NightSnack::FontSnapshot{ *m_selectedEntity, fontComp }
+                );
+                fontComp.textWrapRatio = wrapRatio;
+            }
+
 			// Text Offset Position
 			float fontoffset[2] = { fontComp.offsetPosition.x, fontComp.offsetPosition.y };
 			ImGui::TableNextRow();

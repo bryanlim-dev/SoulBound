@@ -5,7 +5,7 @@
  *              overloads for reading components
  *				Goh Bei Lai (Secondary, 15%) - Created Graphics components (RenderLayer, Renderable, Camera), Particle component, Collectible component
  *              Bryan Lim Jun Jie (Secondary, 5%) - Created Button components (ButtonType, ButtonAction, ButtonInfo)
- *              Clement Ang Yang Ying (Secondary, 5%) - Create States component
+ *              Clement Ang Yang Ying (Secondary, 5%) - Create Character, States component
  *
  * Description:
  * This file defines all components for this project, it also defines a specific
@@ -21,7 +21,11 @@
 #include <json.hpp>
 #include "MathLibrary/Math.h"
 #include <variant>
+#include <deque>
+
 namespace NightSnack {
+    using Entity = std::uint32_t;
+    constexpr Entity INVALID_ENTITY = UINT32_MAX;
 
     constexpr float FixedDT = 1.f / 60.f;
 
@@ -148,6 +152,12 @@ namespace NightSnack {
         // Collision state
         bool isGrounded{ false };
         bool colliding{ false };
+
+
+        std::deque<Entity> collidedEntities;
+        int collidedSolidCount      = 0;
+        int collidedGroundCount     = 0;
+        int collidedTriggerCount    = 0;
     };
 
     struct Sprite {
@@ -207,6 +217,7 @@ namespace NightSnack {
         std::string fontType;
         std::string text;
         float fontSize{ 1.f };
+        float textWrapRatio{ 0.f }; // 0 is disabled, 0.8 is 80% of screen width
         Vec3 textColor{ 1.f, 1.f, 1.f };
         Vec3 offsetPosition{ 0.f, 0.f, 0.f };
     };
@@ -283,6 +294,7 @@ namespace NightSnack {
         //bool is3D = false;
         bool isPlaying = false;
         //bool stop = false;
+        bool spatial = false;
     };
 
     enum ButtonType {
@@ -301,6 +313,7 @@ namespace NightSnack {
         CLOSEMENU,
         NOACTION,
         TOGGLEFULLSCREEN,
+        VOLUMESLIDER,
         EXIT
     };
     struct ButtonInfo {
@@ -311,6 +324,10 @@ namespace NightSnack {
         std::string defaultTex;
         std::string hoverTex;
         std::string clickTex;
+
+        float sliderMinX = 0.f;
+        float sliderMaxX = 0.f;
+        //Entity knobEntity{};
     };
 
 
