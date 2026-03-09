@@ -79,17 +79,17 @@
                 "modified": true
             },
             "Transform": {
-                "Layer": "GameUI",
+                "Layer": "Foreground",
                 "Name": "Banner",
                 "Position": {
-                    "x": 960.0,
-                    "y": 468.0,
+                    "x": 0.0,
+                    "y": 37.5,
                     "z": 6.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 739.199951171875,
-                    "y": -48.0
+                    "x": 616.0,
+                    "y": 40.0
                 },
                 "UIBasePosition": {
                     "x": 800.0,
@@ -98,7 +98,7 @@
                 },
                 "UIBaseScale": {
                     "x": 616.0,
-                    "y": -40.0
+                    "y": 64.0
                 }
             },
             "isPrefab": false
@@ -154,6 +154,9 @@
                 },
                 "ButtonInfo": {
                     "action": "LoadLevel",
+                    "clickTex": "WinScreen-Restart",
+                    "defaultTex": "WinScreen-Restart",
+                    "hoverTex": "WinScreen-RestartHover",
                     "target": "Level1A",
                     "type": "Clicker"
                 },
@@ -167,7 +170,7 @@
                 },
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "Win-RestartButton",
+                    "materialName": "WinScreen-Restart",
                     "meshName": "square"
                 },
                 "modified": true
@@ -182,8 +185,8 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 220.0,
-                    "y": 48.0
+                    "x": 512.0,
+                    "y": 64.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -208,6 +211,9 @@
                 },
                 "ButtonInfo": {
                     "action": "LoadLevel",
+                    "clickTex": "WinScreen-MainMenu",
+                    "defaultTex": "WinScreen-MainMenu",
+                    "hoverTex": "WinScreen-MainMenuHover",
                     "target": "MainMenu",
                     "type": "Clicker"
                 },
@@ -221,7 +227,7 @@
                 },
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "Win-MenuButton",
+                    "materialName": "WinScreen-MainMenu",
                     "meshName": "square"
                 },
                 "modified": true
@@ -236,8 +242,8 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 312.0,
-                    "y": 48.0
+                    "x": 512.0,
+                    "y": 64.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
