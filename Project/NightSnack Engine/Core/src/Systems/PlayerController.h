@@ -24,7 +24,6 @@
 #include "Systems/ParticleSystem.h"
 #include "Systems/Physics/Physics.h"
 #include <GameLogic/Bounce.h>
-#include "Systems/DialogueSystem.h"
 
 struct PlayerFlags {
     bool movingLeft = false;
@@ -239,13 +238,6 @@ namespace NightSnack {
 
             // Skip Player Update if camera is currently in a panning animation
             if (m_coord.GetSystem<CameraSystem>()->GetCameraIsPanning()) {
-                return;
-            }
-
-            // Skip Player Update if dialogue system is active
-            if (m_coord.GetSystem<DialogueSystem>()->IsActive()) {
-                // Reset player velocity if it was moving right before a dialogue system started
-                m_coord.ModifyComponent<RigidBody>(m_player).vel = {};
                 return;
             }
 

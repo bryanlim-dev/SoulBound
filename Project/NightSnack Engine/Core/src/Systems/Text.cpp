@@ -174,40 +174,36 @@ namespace NightSnack {
 				if (e == INVALID_ENTITY) { break; }
 				if (!m_coord.GetComponent<Transform>(e).isActive) { continue; }
 
-				// Check whether the player is colliding with a Signboard entity (it has collider + font components)
-				if (m_coord.HasComponent<Collider>(e) && m_coord.GetComponent<Transform>(e).name.find("Signboard") != std::string::npos) {
-					//std::cout << "This entity is: " << m_coord.GetComponent<Transform>(e).name << std::endl;
+				// Check whether the player is colliding with an entity that is specifically used to 
+				// render text when collided upon (CURRENTLY NOT USED, WOULD NEED TWEAKS AFTERWARDS TOO)
+				//if (m_coord.HasComponent<Collider>(e)) {
+				//	// This current entity shall not be the player to avoid own checks
+				//	if (m_coord.GetSystem<EntityFactory>()->GetEntityPrefabName(e) != "Player") {
+				//		// Collider must be TRIGGER type
+				//		if (m_coord.GetComponent<Collider>(e).type == ColliderType::Trigger) {
 
-					// Collider must be TRIGGER type
-					if (m_coord.GetComponent<Collider>(e).type == ColliderType::Trigger) {
+				//			Entity player = m_coord.GetSystem<PlayerControllerSystem>()->FindPlayer(m_coord);
+				//			if (!m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, player)) {
+				//				// Player is not colliding with the trigger collider, do not render the text
+				//				// Skip this entity to render
 
-						Entity player = m_coord.GetSystem<PlayerControllerSystem>()->FindPlayer(m_coord);
+				//				// Reset the material name here so that the texture will not be rendered
+				//				// when the player is not colliding 
+				//				if (m_coord.HasComponent<Renderable>(e)) {
+				//					m_coord.ModifyComponent<Renderable>(e).materialName = "ColorMat";
+				//				}
 
-						// Player is colliding with this Signboard entity
-						if (m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, player)) {
-							//std::cout << "Collided with: " << m_coord.GetComponent<Transform>(e).name << std::endl;
+				//				continue;
+				//			}
 
-							// Make the child Signboard Message entity active
-							// Modify the first child with a Transform component
-							auto result = m_coord.ModifyComponentInChild<Transform>(e);
-							if (result) {
-								auto& [transform, childEntity] = result.value();
-								transform.isActive = true;
-								//std::cout << "Made active: " << m_coord.GetComponent<Transform>(childEntity).name << std::endl;
-							}
-						} else {
-							// Player is not colliding with this Signboard entity
-							// Make the child Signboard Message entity inactive
-							auto result = m_coord.ModifyComponentInChild<Transform>(e);
-							if (result) {
-								auto& [transform, childEntity] = result.value();
-								transform.isActive = false;;
-								//std::cout << "Made inactive: " << m_coord.GetComponent<Transform>(childEntity).name << std::endl;
-							}
-						}
-
-					}
-				}
+				//			// Change the material name to the texture you want 
+				//			// so that it will be rendered when player is colliding
+				//			if (m_coord.HasComponent<Renderable>(e)) {
+				//				m_coord.ModifyComponent<Renderable>(e).materialName = "Tunnel1";
+				//			}
+				//		}
+				//	}
+				//}
 
 				bool isUILayer = (l.Type() == LayerType::GAMEUI);
 				// Flip the y axis for orthographic proj if using UI Layer (screen coords)
@@ -242,35 +238,30 @@ namespace NightSnack {
 				float finalPosX = pos.x + txt.offsetPosition.x;
 				finalPosY += txt.offsetPosition.y;
 
-				// Calculate the effective wrap width of the text
-				txt.textWrapRatio = std::clamp(txt.textWrapRatio, 0.f, 1.f);
-				float effectiveWrapWidth = txt.textWrapRatio * screenW; // initial wrap width in relation to the current screen width
-				float totalTextWidth = effectiveWrapWidth + finalPosX; // total text width consisting of x position and original wrap width
-				// Total text width exceeds the screen, trim the initial wrap width accordingly to fit in the screen
-				if (totalTextWidth > screenW) {
-					effectiveWrapWidth -= totalTextWidth - screenW;
-				}
-
 				// If it is empty, make it use the default font, which is the first font in the map
 				if (txt.fontType.empty()) {
 					txt.fontType = m_fontCharacters.begin()->first;
 				}
 
 				// Render the actual text string
-				RenderText(txt.text, finalPosX, finalPosY, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType, effectiveWrapWidth);
+				RenderText(txt.text, finalPosX, finalPosY, txt.fontSize, glm::vec3{ txt.textColor.x, txt.textColor.y, txt.textColor.z }, projToUse, viewToUse, txt.fontType, txt.textWrapWidth);
 			}
 		}
 		glDisable(GL_BLEND);
 	}
 
 	std::vector<std::string> TextSystem::WrapText(const std::string& text, const std::string& fontName, float maxWidth, float scale) {
-		std::vector<std::string> result;
+		std::vector<std::string> lines;
 		if (m_fontCharacters.find(fontName) == m_fontCharacters.end()) {
-			return result;
+			return lines;
 		}
 
 		auto& chars = m_fontCharacters[fontName];
-		float spaceWidth = (chars[' '].advance >> 6) * scale;
+
+		std::istringstream wordStream(text);
+		std::string word;
+		std::string currentLine;
+		float currentLineWidth = 0.f;
 
 		auto MeasureWord = [&](const std::string& w) -> float {
 			float width = 0.f;
@@ -278,55 +269,35 @@ namespace NightSnack {
 				width += (chars[c].advance >> 6) * scale;
 			}
 			return width;
-			};
+		};
 
-		// First, split the full text on \n to follow intentional line breaks
-		std::vector<std::string> hardLines;
-		std::istringstream lineStream(text);
-		std::string hardLine;
-		while (std::getline(lineStream, hardLine)) {
-			hardLines.push_back(hardLine);
-		}
+		float spaceWidth = (chars[' '].advance >> 6) * scale;
 
-		// Word wrap each hard line separately
-		for (const std::string& segment : hardLines) {
-			// Empty line (designed pressed Enter twice) - preserve as blank line
-			if (segment.empty()) {
-				result.push_back("");
-				continue;
-			}
+		while (wordStream >> word) {
+			float wordWidth = MeasureWord(word);
 
-			std::istringstream wordStream(segment);
-			std::string word;
-			std::string currentLine;
-			float currentLineWidth = 0.f;
-
-			while (wordStream >> word) {
-				float wordWidth = MeasureWord(word);
-
-				if (currentLine.empty()) {
-					// First word on this line, always place it regardless of width
-					currentLine = word;
-					currentLineWidth = wordWidth;
-				} else if (currentLineWidth + spaceWidth + wordWidth <= maxWidth) {
-					// Word fits on the current line
-					currentLine += " " + word;
-					currentLineWidth += spaceWidth + wordWidth;
-				} else {
-					// Word doesnt fit, push the current line and start a new line
-					result.push_back(currentLine);
-					currentLine = word;
-					currentLineWidth = wordWidth;
-				}
-			}
-
-			// Push in the last line
-			if (!currentLine.empty()) {
-				result.push_back(currentLine);
+			if (currentLine.empty()) {
+				// First word on this line, always place it regardless of width
+				currentLine = word;
+				currentLineWidth = wordWidth;
+			} else if (currentLineWidth + spaceWidth + wordWidth <= maxWidth) {
+				// Word fits on the current line
+				currentLine += " " + word;
+				currentLineWidth += spaceWidth + wordWidth;
+			} else {
+				// Word doesnt fit, push the current line and start a new line
+				lines.push_back(currentLine);
+				currentLine = word;
+				currentLineWidth = wordWidth;
 			}
 		}
 
-		return result;
+		// Push in the last line
+		if (!currentLine.empty()) {
+			lines.push_back(currentLine);
+		}
+
+		return lines;
 	}
 
 	void TextSystem::RenderText(std::string text, float x, float y, float scale, glm::vec3 color, const glm::mat4& proj, const glm::mat4& view, const std::string& fontName, float maxWidth)
@@ -346,22 +317,12 @@ namespace NightSnack {
 		glActiveTexture(GL_TEXTURE0);
 		glBindVertexArray(m_vao);
 
-		// Start x position of text is left-anchored by default (wrap text mode for dialogue)
-		float cursorX = x;
-
 		// Split into wrapped lines if maxWidth is set
 		std::vector<std::string> lines;
 		if (maxWidth > 0.f) {
 			lines = WrapText(text, fontName, maxWidth, scale);
 		} else {
 			lines.push_back(text); // a single line
-
-			float textWidth{};
-			for (char c : text) {
-				auto& ch = chars[c];
-				textWidth += (ch.advance >> 6) * scale;
-			}
-			cursorX = x - (textWidth * 0.5f); // centers the whole string if there is no wrap text
 		}
 
 		// Line height = glyph size * scale * leading
@@ -369,15 +330,10 @@ namespace NightSnack {
 
 		float startY = y;
 
-		// Render each line one by one
 		for (const std::string& line : lines) {
-			// If there are multiple lines, for every line, reset the starting x position to the initial value
-			if (maxWidth > 0.f) {
-				cursorX = x;
-			}
+			float cursorX = x;
 			float cursorY = startY;
 
-			// Render each character in the line
 			for (char c : line) {
 				auto& ch = chars[c];
 
@@ -412,6 +368,54 @@ namespace NightSnack {
 
 		glBindVertexArray(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+
+		// Get the width and height of the string of text, not the entity
+		// So that we can offset the position of the string of text, to be at the center of the entity position by default
+		//float textWidth{};
+		//float maxY{}, minY{};
+		//for (char c : text) {
+		//	auto& ch = chars[c];
+		//	textWidth += (ch.advance >> 6) * scale;
+		//	maxY = std::max(maxY, ch.bearing.y * scale);
+		//	minY = std::max(minY, (ch.size.y - ch.bearing.y) * scale);
+		//}
+		//float textHeight = maxY - minY;
+		////float cursorX = x - (textWidth * 0.5f); // centers the whole string
+		//float cursorX = x; // left anchored, text grows to the right
+		//float cursorY = y - (textHeight * 0.5f);
+
+		//// Render each character in the string
+		//for (char c : text) {
+		//	auto& ch = chars[c];
+
+		//	float xpos = cursorX + ch.bearing.x * scale;
+		//	float ypos = cursorY - (ch.size.y - ch.bearing.y) * scale;
+		//	float w = ch.size.x * scale;
+		//	float h = ch.size.y * scale;
+
+		//	// Define vertices for the character quad
+		//	float vertices[6][4] = {
+		//		{ xpos,     ypos + h,   0.f, 0.f },
+		//		{ xpos,     ypos,       0.f, 1.f },
+		//		{ xpos + w, ypos,       1.f, 1.f },
+
+		//		{ xpos,     ypos + h,   0.f, 0.f },
+		//		{ xpos + w, ypos,       1.f, 1.f },
+		//		{ xpos + w, ypos + h,   1.f, 0.f }
+		//	};
+		//	// Bind the glyph texture and update the VBO
+		//	glBindTexture(GL_TEXTURE_2D, ch.textureID);
+		//	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+		//	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // use glBufferSubData and not glBufferData
+		//	glBindBuffer(GL_ARRAY_BUFFER, 0);
+		//	// Draw quad
+		//	glDrawArrays(GL_TRIANGLES, 0, 6);
+		//	// Advance cursors for next glyph (note that advance is number of 1/64 pixels)
+		//	cursorX += (ch.advance >> 6) * scale; // bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+		//}
+		//glBindVertexArray(0);
+		//glBindTexture(GL_TEXTURE_2D, 0);
 	}
 
 }

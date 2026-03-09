@@ -217,7 +217,7 @@ namespace NightSnack {
         std::string fontType;
         std::string text;
         float fontSize{ 1.f };
-        float textWrapRatio{ 0.f }; // 0 is disabled, 0.8 is 80% of screen width
+        float textWrapWidth{ 0.f }; // measured in pixels
         Vec3 textColor{ 1.f, 1.f, 1.f };
         Vec3 offsetPosition{ 0.f, 0.f, 0.f };
     };
