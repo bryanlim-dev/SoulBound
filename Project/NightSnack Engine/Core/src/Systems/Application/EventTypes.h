@@ -32,13 +32,14 @@ namespace NightSnack {
         enum class InputAction {
 
             // Player movement
-            PlayerMoveLeft,     // LEFT ARROW
-            PlayerMoveRight,    // RIGHT ARROW
-            PlayerJump,         // UP ARROW
-            PlayerDown,         // DOWN ARROW
-            PlayerPossess,          // S KEY
-            PlayerSpecialAbility,   // A KEY
-            PlayerUnPossess,        // D KEY
+            PlayerMoveLeft,     // A
+            PlayerMoveRight,    // D
+            PlayerJumpAbility,  // SPACE
+            PlayerUp,           // W
+            PlayerDown,         // S
+            PlayerPossess,          // J KEY
+            //PlayerSpecialAbility,   // A KEY
+            //PlayerUnPossess,        // D KEY
 
             SkipDialogue,       // ENTER key
             Ability1,
