@@ -177,25 +177,14 @@ namespace NightSnack {
     {
         //Only abilities when grounded (or if is bounc, bounce cant jump)
 
-        //Ability 1 (Glide)
-        //Only in midair
-        //Not too close to ground
-
-        //Ability 2 (Grapple)
-        //Only in midair
-
-        //Ability 3 (Bounce)
-        //Only when groundedd0d 
-
         if (event.pressed == InputEvent::InputActionState::Released) {
             m_flags.jumpRequested = false;
 
             m_flags.abilityKeyRelease = true;
             m_flags.useAbility = false;
-            return;
         }
 
-        if ((m_flags.isGrounded && curr_ability != "Bounce") || (CloseToGrounded() && curr_ability == "Glide"))
+        if (m_flags.isGrounded && curr_ability != "Bounce")
         {
             if (event.pressed == InputEvent::InputActionState::Pressed ||
                 event.pressed == InputEvent::InputActionState::Repeat) {
@@ -208,6 +197,10 @@ namespace NightSnack {
             if (event.pressed == InputEvent::InputActionState::Pressed ||
                 event.pressed == InputEvent::InputActionState::Repeat) {
                 m_flags.useAbility = true;
+            }
+            else if (event.pressed == InputEvent::InputActionState::Released) {
+                m_flags.abilityKeyRelease = true;
+                m_flags.useAbility = false;
             }
             else {
                 m_flags.useAbility = false;
@@ -308,86 +301,6 @@ namespace NightSnack {
             m_flags.tryUnPossess = false;
         }
     }
-
-    void PlayerControllerSystem::CreateGroundedHitbox()
-    {
-        if (m_closeGroundedHitBox != INVALID_ENTITY)
-        {
-            m_coord.DestroyEntity(m_closeGroundedHitBox);
-            m_closeGroundedHitBox = INVALID_ENTITY;
-        }
-
-        m_closeGroundedHitBox = m_coord.CreateEntity();
-
-        if (!m_coord.HasComponent<Transform>(m_closeGroundedHitBox))
-            m_coord.AddComponent(m_closeGroundedHitBox, Transform());
-
-        Transform& trans = m_coord.ModifyComponent<Transform>(m_closeGroundedHitBox);
-        Transform& playerTrans = m_coord.ModifyComponent<Transform>(m_player);
-        trans.name = "CloseToGroundedHitbox";
-        trans.scale.x = playerTrans.scale.x / 2;
-        trans.scale.y = m_closeGroundedHitBoxHeightOffset;
-        trans.pos.y -= m_closeGroundedHitBoxHeightOffset/2;
-
-        m_coord.AddComponent(m_closeGroundedHitBox, Collider{});
-        m_coord.AddComponent(m_closeGroundedHitBox, RigidBody{});
-        //m_coord.AddComponent(m_closeGroundedHitBox, Renderable{}); //For debug
-        m_coord.AddComponent(m_closeGroundedHitBox, Hierarchy{});
-
-        m_coord.AddChildToEntity(m_player, m_closeGroundedHitBox);
-
-        Collider& col = m_coord.ModifyComponent<Collider>(m_closeGroundedHitBox);
-
-        Collider& playerCol = m_coord.ModifyComponent<Collider>(m_player);
-
-        col.type = ColliderType::Trigger;
-        col.width = playerCol.width / 2;
-        col.height = m_closeGroundedHitBoxHeightOffset;
-        col.isStatic = false;
-        col.shape = ShapeType::AABB;
-
-        RigidBody& bod = m_coord.ModifyComponent<RigidBody>(m_closeGroundedHitBox);
-        bod.useGravity = false;
-    }
-
-    void PlayerControllerSystem::UpdateCloseGroundedHitBox()
-    {
-        if (m_closeGroundedHitBox == INVALID_ENTITY ||
-            !m_coord.HasComponent<Transform>(m_closeGroundedHitBox))
-            return;
-
-        Transform& trans = m_coord.ModifyComponent<Transform>(m_closeGroundedHitBox);
-        
-        Vec3 pos = m_coord.GetComponent<Transform>(m_player).pos;
-        pos.y -= m_coord.GetComponent<Transform>(m_player).scale.y / 2 + (m_closeGroundedHitBoxHeightOffset/2);
-        
-        trans.pos = pos;
-
-        Collider& col = m_coord.ModifyComponent<Collider>(m_closeGroundedHitBox);
-        std::cout << "HitBox Colliding Count: " << col.collidedEntities.size() << std::endl;
-    }   
-
-    bool PlayerControllerSystem::CloseToGrounded()
-    {
-        if (m_closeGroundedHitBox == INVALID_ENTITY ||
-            !m_coord.HasComponent<Collider>(m_closeGroundedHitBox))
-            return false;
-
-        Collider& col = m_coord.ModifyComponent<Collider>(m_closeGroundedHitBox);
-        if (col.collidedEntities.size() >= 1)
-        {
-            for (Entity other : col.collidedEntities)
-            {
-                if (other == m_player || !m_coord.HasComponent<Collider>(other) || m_coord.GetComponent<Collider>(other).type == ColliderType::Trigger)
-                    continue;
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
 
     bool PlayerControllerSystem::UseSpecialAbility() {
 

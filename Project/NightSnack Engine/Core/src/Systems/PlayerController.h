@@ -254,13 +254,8 @@ namespace NightSnack {
                 m_flags = PlayerFlags{};
                 reset = false;
                 m_pauseInputs = false;
-
-                CreateGroundedHitbox();
             }
-
             if (m_pauseInputs) return;
-
-            UpdateCloseGroundedHitBox();
 
             PlayerController const& pcont = m_coord.GetComponent<PlayerController>(m_player);
             Vec2& vel = m_coord.ModifyComponent<RigidBody>(m_player).vel;
@@ -494,14 +489,6 @@ namespace NightSnack {
         void Reset() { reset = true; }
         void PauseInputs() { m_pauseInputs = true; }
 
-        /************************************************************************/
-        /*!
-        \brief
-        Creates the hitbox that checks for close to grounded state
-        */
-        /************************************************************************/
-        bool CloseToGrounded();
-
         bool loadBackMainMenu{ false };
 
     private:
@@ -523,25 +510,6 @@ namespace NightSnack {
         */
         /************************************************************************/
         void HandlePossessUnpossess();
-
-        /************************************************************************/
-        /*!
-        \brief
-        Creates the hitbox that checks for close to grounded state
-        */
-        /************************************************************************/
-        void CreateGroundedHitbox();
-
-
-        /************************************************************************/
-        /*!
-        \brief
-        Creates the hitbox that checks for close to grounded state
-        */
-        /************************************************************************/
-        void UpdateCloseGroundedHitBox();
-
-
 
         Signature m_systemSignature{};
         EventDispatcher* m_dispatcher = nullptr;
@@ -565,9 +533,7 @@ namespace NightSnack {
         FrogTongue m_frogTongue;
         Bounce m_bounce;
 
-        Entity m_prevCheckpoint = INVALID_ENTITY; //Tracks the prev checkpoint touched
-        Entity m_closeGroundedHitBox = INVALID_ENTITY; //Tracks the hitbox to considered close to grounded, (e.g. prevent float from being used too close to ground)
-        float m_closeGroundedHitBoxHeightOffset = 25; //How many units to add to player col to be considered close to grounded
+        Entity m_prevCheckpoint = INVALID_ENTITY;
 
         //bool m_midAir{}; //Is the player midair (used to help track if player jumped)
         //If spacebar is pressed right before landing allow 

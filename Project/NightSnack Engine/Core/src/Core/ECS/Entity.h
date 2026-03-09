@@ -17,8 +17,6 @@
 #include <bitset>
 #include <unordered_set>
 
-#include "Component.h"
-
 namespace NightSnack {
 
 	// Maximum number of entities in the system;
@@ -27,7 +25,7 @@ namespace NightSnack {
 	constexpr size_t MAX_COMPONENTS = 32;
 
 	// Unique IDs;
-	//using Entity = std::uint32_t;
+	using Entity = std::uint32_t;
 	using SystemID = std::uint8_t;
 	using ComponentType = std::uint8_t;
 
@@ -37,7 +35,7 @@ namespace NightSnack {
 	// Entity Manager, Coordinator and System Manager will each maintain and compare Signatures;
 	using Signature = std::bitset<MAX_COMPONENTS>;
 
-	//constexpr Entity INVALID_ENTITY = UINT32_MAX;
+	constexpr Entity INVALID_ENTITY = UINT32_MAX;
 
 	// Entity Parenting component
 	struct Hierarchy {

@@ -142,10 +142,9 @@ namespace NightSnack {
 					col.isGrounded = false;
 					col.colliding = false;
 
-					col.collidedEntities.clear();
-					col.collidedGroundCount = 0;
-					col.collidedSolidCount = 0;
-					col.collidedTriggerCount = 0;
+					col.collidedGround = INVALID_ENTITY;
+					col.collidedSolid = INVALID_ENTITY;
+					col.collidedTrigger = INVALID_ENTITY;
 				}
 				ResolveCollisions();
 			}
@@ -256,32 +255,29 @@ namespace NightSnack {
 						if (!CheckCollision(t1, t2, c1, c2, normal, depth)) { continue; }
 						c1.colliding = c2.colliding = true;
 
-						c1.collidedEntities.push_back(e2);
-						c2.collidedEntities.push_back(e1);
-
 						switch (c1.type)
 						{
 						case ColliderType::Trigger:
-							c2.collidedTriggerCount++;
+							c2.collidedTrigger = e1;
 							break;
 						case ColliderType::Solid:
-							c2.collidedSolidCount++;
+							c2.collidedSolid = e1;
 							break;
 						case ColliderType::Ground:
-							c2.collidedGroundCount++;
+							c2.collidedGround = e1;
 							break;
 						}
 
 						switch (c2.type)
 						{
 						case ColliderType::Trigger:
-							c1.collidedTriggerCount++;
+							c1.collidedTrigger = e2;
 							break;
 						case ColliderType::Solid:
-							c1.collidedSolidCount++;
+							c1.collidedSolid = e2;
 							break;
 						case ColliderType::Ground:
-							c1.collidedGroundCount++;
+							c1.collidedGround = e2;
 							break;
 						}
 

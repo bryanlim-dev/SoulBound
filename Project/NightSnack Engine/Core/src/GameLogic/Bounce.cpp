@@ -91,13 +91,6 @@ namespace NightSnack
 			m_bounceDelayTime += coord.GetSystem<ApplicationSystem>()->GetDT();
 			if (m_bounceDelayTime >= m_maxGroundedDelayTime)
 			{
-				if (!coord.HasComponent<Transform>(m_owner) ||
-					!coord.HasComponent<RigidBody>(m_owner) ||
-					!coord.HasComponent<Collider>(m_owner))
-				{
-					break;
-				}
-
 				Collider& col = coord.ModifyComponent<Collider>(m_owner);
 				//Check if gounded, end bounce
 				if (coord.GetComponent<Collider>(m_owner).isGrounded)
@@ -109,16 +102,15 @@ namespace NightSnack
 					//std::cout << "Grounded!" << std::endl;
 					return false;
 				}
-				else if (col.colliding && (col.collidedGroundCount > 0 || col.collidedSolidCount > 0))
+				else if (col.colliding)
 				{
-					  for (Entity other : col.collidedEntities)
-					{
-						if (other == INVALID_ENTITY || !coord.HasComponent<Collider>(other))
-							continue;
+					Entity other = INVALID_ENTITY;
+					if (col.collidedGround != INVALID_ENTITY)
+						other = col.collidedGround;
+					else
+						other = col.collidedSolid;
 
-						Collided(coord, other);
-					}
-
+					Collided(coord, other);
 					m_bounceDelayTime = 0;
 				}
 
@@ -368,10 +360,12 @@ namespace NightSnack
 		if (!m_active || other == INVALID_ENTITY)
 			return;
 
-		if (coord.HasComponent<Collider>(other)									&&
-			coord.GetComponent<Collider>(other).type != ColliderType::Trigger	&&
-			coord.HasComponent<Transform>(other)								&&
-			coord.HasComponent<RigidBody>(other))
+		if (coord.HasComponent<Transform>(m_owner) &&
+			coord.HasComponent<RigidBody>(m_owner) &&
+			coord.HasComponent<Collider>(m_owner) &&
+			coord.HasComponent<Transform>(other) &&
+			coord.HasComponent<RigidBody>(other) &&
+			coord.HasComponent<Collider>(other))
 		{
 			coord.ModifyComponent<RigidBody>(m_owner).force.isActive = true;
 
@@ -383,9 +377,9 @@ namespace NightSnack
 				coord.ModifyComponent<Collider>(m_owner),
 				coord.ModifyComponent<Collider>(other)
 			);
-			//Transform& tra = coord.ModifyComponent<Transform>(m_owner);
-			//Transform& traWall = coord.ModifyComponent<Transform>(other);
-			//RigidBody& bod = coord.ModifyComponent<RigidBody>(m_owner);
+			Transform& tra = coord.ModifyComponent<Transform>(m_owner);
+			Transform& traWall = coord.ModifyComponent<Transform>(other);
+			RigidBody& bod = coord.ModifyComponent<RigidBody>(m_owner);
 			//std::cout << "BOING! Entity pos: " << tra.pos << ", Wall/Floor Pos: " << traWall.pos 
 			//	<< ", Entity Vel: " << bod.vel << ", Entity Force Mag: " << bod.force.magnitude << ", Entity Force Dir: " << bod.force.direction << std::endl;
 		}

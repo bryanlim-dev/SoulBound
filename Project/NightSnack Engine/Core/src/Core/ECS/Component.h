@@ -21,11 +21,11 @@
 #include <json.hpp>
 #include "MathLibrary/Math.h"
 #include <variant>
-#include <deque>
+
+using Entity = std::uint32_t;
+constexpr Entity INVALID_ENTITY = UINT32_MAX;
 
 namespace NightSnack {
-    using Entity = std::uint32_t;
-    constexpr Entity INVALID_ENTITY = UINT32_MAX;
 
     constexpr float FixedDT = 1.f / 60.f;
 
@@ -153,11 +153,9 @@ namespace NightSnack {
         bool isGrounded{ false };
         bool colliding{ false };
 
-
-        std::deque<Entity> collidedEntities;
-        int collidedSolidCount      = 0;
-        int collidedGroundCount     = 0;
-        int collidedTriggerCount    = 0;
+        Entity collidedSolid   {INVALID_ENTITY};
+        Entity collidedGround  {INVALID_ENTITY};
+        Entity collidedTrigger {INVALID_ENTITY};
     };
 
     struct Sprite {

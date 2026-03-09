@@ -163,20 +163,6 @@ namespace NightSnack {
 
 		void DeleteDisplay(Coordinator& coord);
 
-
-		/************************************************************************/
-		/*!
-		\brief
-		Performas logic to bounce the entity off the collided entity
-		Also filters collided entity of type trigger out
-
-		/param coord
-		Refrence to coordinator
-
-		/param collidedEntity
-		Entity it collided with, if the collider is of type trigger it is ignored
-		*/
-		/************************************************************************/
 		void Collided(Coordinator& coord, Entity collidedEntity);
 
 	};
