@@ -385,8 +385,6 @@ namespace NightSnack {
 
     void CameraSystem::StartCamPan(bool isPannningEnabled)
     {
-        ResetCameraPanProperties();
-
         m_panEnabled = isPannningEnabled;
         if (m_panEnabled)
             StartCamPan();
@@ -593,12 +591,5 @@ namespace NightSnack {
             m_cameraState == CAMERASTATE::PAN_ROOM_ZOOM_OUT ||
             m_cameraState == CAMERASTATE::PAN_ROOM_ZOOM_IN ||
             m_cameraState == CAMERASTATE::PAN_ROOM_TO_PLAYER);
-    }
-
-    void CameraSystem::ResetCameraPanProperties() {
-        m_cameraState = CAMERASTATE::FOLLOW_PLAYER;
-        m_currCamPanTimer = 0.f;
-        LimitWithinBounds(m_coord.ModifyComponent<Transform>(m_mainCamera));
-        StoreCameraPanningTargets();
     }
 }

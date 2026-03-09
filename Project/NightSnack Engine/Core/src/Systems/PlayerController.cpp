@@ -1,9 +1,8 @@
 /******************************************************************************
- * File:        PlayerController.cpp
+ * File:        PlayerController.h
  * Project:     NightSnack
  * Author(s):   Chewn Thing Kwan (Primary, 90%)
  *              Bryan Lim Jun Jie (Secondary, 10%)
- *              Clement Ang Yang Ying (Secondary, 10%) - Added coyote time, remapped controls and possession behaviour
  *
  * Description:
  * Controls the Player Entity and sets their Velocity component when key inputs
@@ -26,20 +25,15 @@ namespace NightSnack {
             if (!c.HasComponent<RigidBody>(target)) return;
 
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
+            if (vel.y <= -50.f) vel.y = -50.f;
 
-            // only glide if not grounded
-            if (!m_flags.isGrounded) 
-            {
-                if (vel.y <= -50.f) vel.y = -50.f;
+            //// Only play if not already playing
+            //if (!m_flags.isGlideSoundPlaying) {
+            //    c.GetSystem<AudioSystem>()->PlaySFX("playerGlide");
+            //    m_flags.isGlideSoundPlaying = true;
+            //}
 
-                // play glide sound only once when starting to glide
-                if (!m_flags.isGliding) 
-                {
-                    c.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerGlide", 0.05f);
-                    m_flags.isGliding = true;
-                }
-            }
-        });
+            });
         m_abilities.insert({ abilityName, GlideAbility });
 
         abilityName = "DoubleJump";
@@ -52,8 +46,7 @@ namespace NightSnack {
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
             vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
 
-            c.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerJump", 0.4f);
-
+            c.GetSystem<AudioSystem>()->PlaySFX("playerJump");
 
             // Start the emitter to spawn particles
             // These particles spawn position will be based on the updated player position
@@ -82,7 +75,6 @@ namespace NightSnack {
             if (!c.HasComponent<PlayerController>(target)) return;
 
             FrogTongue& tongue = c.GetSystem<PlayerControllerSystem>()->GetFrogTongue();
-            tongue.UpdateOwner(c.GetSystem<PlayerControllerSystem>()->GetPlayer());
             if (m_flags.grappling == false)
             {
                 //std::cout << "[Frog Grapple] Grappble Looking!" << std::endl;
@@ -114,27 +106,6 @@ namespace NightSnack {
         });
         m_abilities.insert({ abilityName, GrapplingTongue });
 
-        abilityName = "Bounce";
-        //abilityName = "Grapple";
-        Gameplay::Ability Bounce(abilityName, [](Coordinator& c, Entity target, PlayerFlags& m_flags) {
-            //if (target == INVALID_ENTITY) return;
-            if (!c.HasComponent<RigidBody>(target)) return;
-            if (!c.HasComponent<PlayerController>(target)) return;
-            c.GetSystem<PlayerControllerSystem>()->GetBounce().UpdateOwner(c.GetSystem<PlayerControllerSystem>()->GetPlayer());
-
-            //c.GetSystem<AudioSystem>()->PlayRandomVariant("frogTongue", 7);
-                    //c.GetSystem<AudioSystem>()->PlaySFX("frogAttach");
-            if (!m_flags.bouncing)
-            {
-                if (c.GetSystem<PlayerControllerSystem>()->GetBounce().Start(c))
-                {
-                    m_flags.bouncing = true;
-                    m_flags.disableMovement = true;
-                }
-            }
-        });
-        m_abilities.insert({ abilityName, Bounce });
-
     }
 
     bool PlayerControllerSystem::AttachAbility() {
@@ -155,11 +126,6 @@ namespace NightSnack {
             m_frogTongue.End(m_coord);
         }
 
-        if (m_flags.bouncing)
-        {
-            m_bounce.End(m_coord);
-        }
-
         m_coord.ModifyComponent<Transform>(m_player).pos = m_coord.GetComponent<Transform>(m_prevCheckpoint).pos;
 
 
@@ -172,222 +138,6 @@ namespace NightSnack {
         }
 
     }
-
-    void PlayerControllerSystem::HandleJumpAbilityInput(const InputEvent& event)
-    {
-        //Only abilities when grounded (or if is bounc, bounce cant jump)
-
-        //Ability 1 (Glide)
-        //Only in midair
-        //Not too close to ground
-
-        //Ability 2 (Grapple)
-        //Only in midair
-
-        //Ability 3 (Bounce)
-        //Only when groundedd0d 
-
-        if (event.pressed == InputEvent::InputActionState::Released) {
-            m_flags.jumpRequested = false;
-
-            m_flags.abilityKeyRelease = true;
-            m_flags.useAbility = false;
-            return;
-        }
-
-        if ((m_flags.isGrounded && curr_ability != "Bounce") || (CloseToGrounded() && curr_ability == "Glide"))
-        {
-            if (event.pressed == InputEvent::InputActionState::Pressed ||
-                event.pressed == InputEvent::InputActionState::Repeat) {
-                if (!m_flags.justJumped)
-                    m_flags.jumpRequested = true;
-            }
-        }
-        else
-        {
-            if (event.pressed == InputEvent::InputActionState::Pressed ||
-                event.pressed == InputEvent::InputActionState::Repeat) {
-                m_flags.useAbility = true;
-            }
-            else {
-                m_flags.useAbility = false;
-            }
-        }
-    }
-
-    void PlayerControllerSystem::HandlePossessUnpossess()
-    {
-        Renderable& r = m_coord.ModifyComponent<Renderable>(m_player);
-
-        //Lamda function to try to possess
-        auto tryPossess = [&]() {
-            // Collision detection between both the entities 
-            for (Entity e : m_coord.GetLivingEntities()) {
-                auto& et = m_coord.GetComponent<Transform>(e);
-                if (!et.isActive) { continue; }
-
-                if (et.name == "Frog" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                    r.materialName = "FrogIdle_1_1"; // depends on the texture name
-                    curr_ability = "Grapple";
-                    //m_flags.tryPossess = false;
-                    m_flags.isPossessing = true;
-                    m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
-                    break;
-
-                }
-                else if (et.name == "Ghost" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                    r.materialName = "EyeMove_4_1"; // depends on the texture name
-                    curr_ability = "DoubleJump";
-                    //m_flags.tryPossess = false;
-                    m_flags.isPossessing = true;
-                    m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
-                    break;
-                }
-                else if (et.name == "Bouncer" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                    r.materialName = "FrogIdle_1_1"; // depends on the texture name
-                    curr_ability = "Bounce";
-                    //m_flags.tryPossess = false;
-                    m_flags.isPossessing = true;
-                    break;
-                }
-                else
-                {
-                    m_flags.isPossessing = false;
-                }
-            }
-            // If no collision with any entities, still reset it to false
-            // m_flags.tryPossess = false; //Is now set outside
-        }; //End tryPossess lamda function
-
-        auto tryUnpossess = [&]() {
-            // Switch back to the Rain Charm (original player) if it is not in the first place
-            if (r.materialName != "SpiritMove_4_1") {
-                r.materialName = "SpiritMove_4_1";
-                curr_ability = "Glide";
-                m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
-            }
-            //// Reset it back anyways
-            //m_flags.tryUnPossess = false;
-            //m_flags.isPossessing = false;
-
-            if (m_flags.grappling)
-            {
-                m_frogTongue.End(m_coord);
-                m_flags.grappling = false;
-            }
-
-            if (m_flags.bouncing)
-            {
-                m_bounce.End(m_coord);
-                m_flags.bouncing = false;
-            }
-        };//End tryUnpossess lamda function
-
-
-        //Try to possess first, if fails to find a possessable, unpossess instead
-        if (m_flags.possessUnposessActivated)
-        {
-            tryPossess();
-            if (!m_flags.isPossessing) //Failed to possess
-                tryUnpossess();
-
-            m_flags.possessUnposessActivated = false;
-        }
-
-        //Trying to ONLY possess
-        // Player tries to possess an enemy entity
-        if (m_flags.tryPossess) {
-            tryPossess();
-            m_flags.tryPossess = false;
-        }
-
-        //Trying to ONLY unpossess
-        // Player tries to unpossess and go back to its original form
-        if (m_flags.tryUnPossess) {
-            tryUnpossess();
-            m_flags.tryUnPossess = false;
-        }
-    }
-
-    void PlayerControllerSystem::CreateGroundedHitbox()
-    {
-        if (m_closeGroundedHitBox != INVALID_ENTITY)
-        {
-            m_coord.DestroyEntity(m_closeGroundedHitBox);
-            m_closeGroundedHitBox = INVALID_ENTITY;
-        }
-
-        m_closeGroundedHitBox = m_coord.CreateEntity();
-
-        if (!m_coord.HasComponent<Transform>(m_closeGroundedHitBox))
-            m_coord.AddComponent(m_closeGroundedHitBox, Transform());
-
-        Transform& trans = m_coord.ModifyComponent<Transform>(m_closeGroundedHitBox);
-        Transform& playerTrans = m_coord.ModifyComponent<Transform>(m_player);
-        trans.name = "CloseToGroundedHitbox";
-        trans.scale.x = playerTrans.scale.x / 2;
-        trans.scale.y = m_closeGroundedHitBoxHeightOffset;
-        trans.pos.y -= m_closeGroundedHitBoxHeightOffset/2;
-
-        m_coord.AddComponent(m_closeGroundedHitBox, Collider{});
-        m_coord.AddComponent(m_closeGroundedHitBox, RigidBody{});
-        //m_coord.AddComponent(m_closeGroundedHitBox, Renderable{}); //For debug
-        m_coord.AddComponent(m_closeGroundedHitBox, Hierarchy{});
-
-        m_coord.AddChildToEntity(m_player, m_closeGroundedHitBox);
-
-        Collider& col = m_coord.ModifyComponent<Collider>(m_closeGroundedHitBox);
-
-        Collider& playerCol = m_coord.ModifyComponent<Collider>(m_player);
-
-        col.type = ColliderType::Trigger;
-        col.width = playerCol.width / 2;
-        col.height = m_closeGroundedHitBoxHeightOffset;
-        col.isStatic = false;
-        col.shape = ShapeType::AABB;
-
-        RigidBody& bod = m_coord.ModifyComponent<RigidBody>(m_closeGroundedHitBox);
-        bod.useGravity = false;
-    }
-
-    void PlayerControllerSystem::UpdateCloseGroundedHitBox()
-    {
-        if (m_closeGroundedHitBox == INVALID_ENTITY ||
-            !m_coord.HasComponent<Transform>(m_closeGroundedHitBox))
-            return;
-
-        Transform& trans = m_coord.ModifyComponent<Transform>(m_closeGroundedHitBox);
-        
-        Vec3 pos = m_coord.GetComponent<Transform>(m_player).pos;
-        pos.y -= m_coord.GetComponent<Transform>(m_player).scale.y / 2 + (m_closeGroundedHitBoxHeightOffset/2);
-        
-        trans.pos = pos;
-
-        Collider& col = m_coord.ModifyComponent<Collider>(m_closeGroundedHitBox);
-        std::cout << "HitBox Colliding Count: " << col.collidedEntities.size() << std::endl;
-    }   
-
-    bool PlayerControllerSystem::CloseToGrounded()
-    {
-        if (m_closeGroundedHitBox == INVALID_ENTITY ||
-            !m_coord.HasComponent<Collider>(m_closeGroundedHitBox))
-            return false;
-
-        Collider& col = m_coord.ModifyComponent<Collider>(m_closeGroundedHitBox);
-        if (col.collidedEntities.size() >= 1)
-        {
-            for (Entity other : col.collidedEntities)
-            {
-                if (other == m_player || !m_coord.HasComponent<Collider>(other) || m_coord.GetComponent<Collider>(other).type == ColliderType::Trigger)
-                    continue;
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
 
     bool PlayerControllerSystem::UseSpecialAbility() {
 
@@ -511,27 +261,24 @@ namespace NightSnack {
     void PlayerControllerSystem::Jump(Transform& t, Vec2& vel, PlayerController pcont, bool isGrounded) {
 
         bool jump = false;
-
         m_timeSinceGrounded += FixedDT;
-
-        if (m_timeSinceGrounded < m_groundedThreshhold)
+        m_groundedTime += FixedDT;
+        if (m_groundedTime > m_repeatJumpThreshhold)
             m_flags.justJumped = false;
-
         if (isGrounded)
         {
             m_timeSinceGrounded = 0;
+
         }
 
-        //std::cout << "Player Just Jumped : " << m_flags.justJumped << std::endl;
-        //std::cout << "Player Time since Grounded : " << m_timeSinceGrounded << "/" << m_groundedThreshhold << std::endl;
-
         if (m_flags.jumpRequested) {
-            // allow jump if pressed right after being off ground
-            if (isGrounded || m_timeSinceGrounded < m_groundedThreshhold)
-            {
+            // allow jump if isgrounded
+            if (isGrounded && m_groundedTime > m_repeatJumpThreshhold) {
                 jump = true;
-                m_flags.jumpRequested = false;
             }
+            // allow jump if pressed right after being off ground
+            if (!isGrounded && m_timeSinceGrounded < m_groundedThreshhold && !m_flags.justJumped)
+                jump = true;
         }
 
         //// allow jump if pressed right before being grounded
@@ -551,11 +298,11 @@ namespace NightSnack {
             vel.y = pcont.jumpSpeed;
             t.pos.y += 0.5f;
             m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
-            m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerJump", 0.4f);
+            m_coord.GetSystem<AudioSystem>()->PlaySFX("playerJump");
 
             //m_storedJump = false;
             m_flags.justJumped = true;
-            //m_groundedTime = 0.f;
+            m_groundedTime = 0.f;
 
             // Start the emitter to spawn particles
             // These particles spawn position will be based on the updated player position

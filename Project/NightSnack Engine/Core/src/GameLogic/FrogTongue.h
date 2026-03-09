@@ -24,9 +24,9 @@ namespace NightSnack {
 
 		DistanceJoint2D m_distanceJoint;
 
-		const float m_tongueLengthMax = 550.0f;
-		const float m_tongueWidth = 5.f;
-		const float m_swingForce = 750.0f;
+		float m_tongueLengthMax = 550.0f;
+		float m_tongueWidth = 5.f;
+		float m_swingForce = 750.0f;
 
 		bool m_active = false;
 
@@ -55,7 +55,7 @@ namespace NightSnack {
 							this->SwingActivated(coord, true);
 						}
 						break;
-					case InputEvent::InputAction::PlayerUp:
+					case InputEvent::InputAction::PlayerJump:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
 							this->ExtendRetractTongue(coord, false);

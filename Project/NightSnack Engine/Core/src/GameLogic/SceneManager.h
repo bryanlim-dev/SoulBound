@@ -84,42 +84,34 @@ namespace NightSnack::Scene {
 			m_systemSignature.set(GetComponentTypeID<Collider>());
 
 			m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event) {
-				// Handle ClickLMB outside the Pressed-only block
-				if (event.inputAction == InputEvent::InputAction::ClickLMB) {
-					if (m_coord.IsPaused()) return;
-					if (event.pressed == InputEvent::InputActionState::Pressed) {
-						m_mouseClick = true;
-						m_mouseHeld = true;
-					}
-					else if (event.pressed == InputEvent::InputActionState::Released) {
-						m_mouseHeld = false;
-					}
-					return;
-				}
-
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
+					// Pause toggle
 					case InputEvent::InputAction::PauseGame:
 						if (!overlayOn) {
 							//CreateOverlayMenu();
 							overlayOn = true;
 							m_coord.Pause();
 						}
-						else if (overlayOn) {
+						else if (overlayOn) { 
 							//RemoveOverlayMenu();
 							overlayOn = false;
 							m_coord.Unpause();
 						}
 						break;
-						break;
+					// Restart current level
 					case InputEvent::InputAction::RestartGame:
 						m_restart = true;
 						std::cerr << "[SceneManager] Queuing restart\n";
 						break;
+					// Used to signal a mouse press event
+					case InputEvent::InputAction::ClickLMB:
+						if (m_coord.IsPaused()) return;
+						m_mouseClick = true;
+						break;
 					}
 				}
 			});
-
 			// Reads level files
 			ReloadLevels();
 			// Register buttons
@@ -294,7 +286,6 @@ namespace NightSnack::Scene {
 		bool overlayOn = false;
 		bool m_mouseClick = false;
 		bool m_restart = false;
-		bool m_mouseHeld = false;
 
 		bool m_menuOpen = false;
 		std::set<Entity> m_menuEntities;
@@ -309,7 +300,6 @@ namespace NightSnack::Scene {
 		float m_exitTimer;
 		Entity m_player = INVALID_ENTITY;
 		Entity m_camIndex = INVALID_ENTITY;
-		Entity m_hoveredEntity = INVALID_ENTITY;
 
 		// Winzone
 		Entity m_winCollider;
@@ -319,12 +309,6 @@ namespace NightSnack::Scene {
 		void CreateWinCollider(json const& level);
 		json CacheWinCollider();
 		void CreateWinScreen();
-
-		Entity m_sliderBarEntity = INVALID_ENTITY;
-		Entity m_sliderKnobEntity = INVALID_ENTITY;
-
-		Entity GetSliderKnob() const { return m_sliderKnobEntity; }
-
 	};
 
 }	// NightSnack::Scene

@@ -200,8 +200,6 @@ namespace NightSnack
 		m_owner = e;
 	}
 
-
-
 	float FrogTongue::DistanceToAnchor(Vec3 ownerPos, Vec3 anchorPos)
 	{
 		Vec3 dirVec = (anchorPos - ownerPos);

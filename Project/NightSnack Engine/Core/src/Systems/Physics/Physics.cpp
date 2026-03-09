@@ -17,7 +17,6 @@
 #include "Physics.h"
 #include "Systems/Graphics.h"
 #include "Collision.h"
-#include "Systems/DialogueSystem.h"
 
 namespace {
 	using namespace NightSnack;
@@ -83,11 +82,6 @@ namespace NightSnack {
 			return;
 		}
 
-		// Skip Physics if dialogue system is active
-		if (m_coord.GetSystem<DialogueSystem>()->IsActive()) {
-			return;
-		}
-
 		for (int s{}; s < m_coord.steps; ++s) {
 
 			Entity cam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
@@ -141,11 +135,6 @@ namespace NightSnack {
 					// Reset colliders for this frame;
 					col.isGrounded = false;
 					col.colliding = false;
-
-					col.collidedEntities.clear();
-					col.collidedGroundCount = 0;
-					col.collidedSolidCount = 0;
-					col.collidedTriggerCount = 0;
 				}
 				ResolveCollisions();
 			}
@@ -255,35 +244,6 @@ namespace NightSnack {
 						Vec2 normal; float depth;
 						if (!CheckCollision(t1, t2, c1, c2, normal, depth)) { continue; }
 						c1.colliding = c2.colliding = true;
-
-						c1.collidedEntities.push_back(e2);
-						c2.collidedEntities.push_back(e1);
-
-						switch (c1.type)
-						{
-						case ColliderType::Trigger:
-							c2.collidedTriggerCount++;
-							break;
-						case ColliderType::Solid:
-							c2.collidedSolidCount++;
-							break;
-						case ColliderType::Ground:
-							c2.collidedGroundCount++;
-							break;
-						}
-
-						switch (c2.type)
-						{
-						case ColliderType::Trigger:
-							c1.collidedTriggerCount++;
-							break;
-						case ColliderType::Solid:
-							c1.collidedSolidCount++;
-							break;
-						case ColliderType::Ground:
-							c1.collidedGroundCount++;
-							break;
-						}
 
 						//if (!CheckCollision(t1, t2, c1, c2) && !CheckTunneling(t1, t2, r1) && !CheckTunneling(t2, t1, r2)) { continue; }
 
@@ -547,70 +507,32 @@ namespace NightSnack {
 			ResetForce(rig.force);
 		}
 	}
-	void PhysicsSystem::TransferForce(Transform const& t1, Transform const& t2,
-		RigidBody& r1, RigidBody& r2,
-		Collider& c1, Collider& c2)
-	{
+	void PhysicsSystem::TransferForce(Transform const& t1, Transform const& t2, RigidBody& r1, RigidBody& r2, Collider& c1, Collider& c2) {
+		
 		if (!r1.force.isActive) { return; }
 
+		// Vector from e1 to e2;
 		Vec3 dir = t2.pos - t1.pos;
 		if (dir.magnitude() != 0.f) { dir.normalize(); }
 
-		//Apply force to collide target
+		// Apply force to collide target ----------------------------
 		r2.force.direction.x = dir.x;
 		r2.force.direction.y = dir.y;
-		r2.force.magnitude = (r2.force.magnitude * (1.f - r1.restitution)
-			+ r1.force.magnitude * r2.restitution);
+		r2.force.magnitude = (r2.force.magnitude * (1.f - r1.restitution) + r1.force.magnitude * r2.restitution);
 
+		// Update this entity's force -------------------------------
 		r1.force.direction.x = -dir.x;
 		r1.force.direction.y = -dir.y;
 		r1.force.magnitude = (r1.force.magnitude * (1.f - r2.restitution) + r2.force.magnitude * r1.restitution);
 
-		if (!c1.isStatic)
-		{
-			Vec2 normal;
-
-			//Reconstruct AABB normal
-			if (c1.shape == ShapeType::AABB && c2.shape == ShapeType::AABB)
-			{
-				Vec2 delta = t2.pos - t1.pos;
-
-				Vec2 h1 = { c1.width * 0.5f, c1.height * 0.5f };
-				Vec2 h2 = { c2.width * 0.5f, c2.height * 0.5f };
-
-				float overlapX = (h1.x + h2.x) - std::abs(delta.x);
-				float overlapY = (h1.y + h2.y) - std::abs(delta.y);
-
-				if (overlapX < overlapY)
-				{
-					normal = Vec2{ delta.x > 0 ? 1.0f : -1.0f, 0.0f };
-				}
-				else
-				{
-					normal = Vec2{ 0.0f, delta.y > 0 ? 1.0f : -1.0f };
-				}
-			}
-			else
-			{
-				// Fallback (circles etc)
-				Vec2 delta = t2.pos - t1.pos;
-				if (delta.magnitude() != 0.f)
-					normal = delta.normalized();
-				else
-					normal = Vec2{ 1.0f, 0.0f };
-			}
-
-			Vec2 v = r1.vel;
-			float dot = v.dot(normal);
-
-			Vec2 reflected = v - normal * (2.0f * dot);
-
-			r1.vel = reflected * r1.restitution;
+		// Update Velocities ----------------------------------------
+		float mag = 0.f;
+		if (!c1.isStatic) {
+			mag = r1.vel.magnitude();
+			r1.vel = r1.force.direction * mag * 0.8f;
 		}
-
-		if (!c2.isStatic)
-		{
-			float mag = r2.vel.magnitude();
+		if (!c2.isStatic) {
+			mag = r2.vel.magnitude();
 			r2.vel = r2.force.direction * mag * 0.8f;
 		}
 	}

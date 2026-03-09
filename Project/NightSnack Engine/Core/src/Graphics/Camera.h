@@ -141,6 +141,5 @@ namespace NightSnack {
 		bool ConstantPanCameraPosition(Transform& camT);
 		bool LerpZoom();
 		void StoreCameraPanningTargets();
-		void ResetCameraPanProperties();
 	};
 }

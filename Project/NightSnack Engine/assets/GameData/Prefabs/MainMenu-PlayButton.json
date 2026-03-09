@@ -1,0 +1,27 @@
+{
+    "ButtonInfo": {
+        "action": "LoadLevel",
+        "target": "Level1",
+        "type": "Clicker"
+    },
+    "Collider": {
+        "height": 100.0,
+        "isStatic": true,
+        "radius": 0.0,
+        "shape": "AABB",
+        "type": "Trigger",
+        "width": 265.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "FrogIdle_1_1",
+        "meshName": "square"
+    },
+    "Audio": {
+        "audioKey": "buttonSelect",
+        "volume": 1.0,
+        "loop": false,
+        "playOnStart": false,
+        "isPlaying": false
+    }
+}

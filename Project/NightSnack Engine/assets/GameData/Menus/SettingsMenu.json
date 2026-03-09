@@ -104,24 +104,8 @@
             },
             "isPrefab": false
         },
-       {
+        {
             "Components": {
-                "ButtonInfo": {
-                    "action": "VolumeSlider",
-                    "type": "Slider",
-                    "target": "",
-                    "defaultTex": "UIMenu-Frame",
-                    "hoverTex": "UIMenu-Frame",
-                    "clickTex": "UIMenu-Frame"
-                },
-                "Collider": {
-                    "height": 100.0,
-                    "isStatic": true,
-                    "radius": 50.0,
-                    "shape": "AABB",
-                    "type": "Trigger",
-                    "width": 512.0
-                },
                 "Renderable": {
                     "isWireframe": false,
                     "materialName": "UIMenu-Frame",

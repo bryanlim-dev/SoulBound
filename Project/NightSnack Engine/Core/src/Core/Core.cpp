@@ -113,7 +113,6 @@ namespace NightSnack {
 		AddSystem<Scripting::ScriptManager>(m_coord, core_dispatcher);
 		AddSystem<FiniteStateMachine>(m_coord);
 		AddSystem<CharacterSystem>(m_coord, core_dispatcher);
-		AddSystem<DialogueSystem>(m_coord, core_dispatcher);
 
 #ifdef EDITOR
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);
