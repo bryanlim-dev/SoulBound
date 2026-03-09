@@ -217,6 +217,9 @@ namespace NightSnack {
 		template <>
 		Renderable& ModifyComponent<Renderable>(Entity e);
 
+		template <typename T>
+		std::optional<std::pair<T&, Entity>> ModifyComponentInChild(Entity e);
+
 		/************************************************************************/
 		/*!
 		\brief
@@ -525,6 +528,41 @@ namespace NightSnack {
 		// To enable GraphicsSystem to know that RenderCache must be updated
 		r.wasModified = true;
 		return r;
+	}
+
+	template <typename T>
+	std::optional<std::pair<T&, Entity>> Coordinator::ModifyComponentInChild(Entity e) {
+
+		// Edge case: entity has no Hierarchy component to traverse
+		if (!HasComponent<Hierarchy>(e)) {
+			std::cerr << "[Coordinator] Error: Entity " << e
+				<< " does not have Hierarchy Component, unable to modify Child component.\n";
+			return std::nullopt;
+		}
+
+		// Do not check itself, only strictly return its children
+
+		// If the entity itself has the component, return it directly
+		//if (HasComponent<T>(e))
+		//	return std::optional(std::make_pair(std::ref(ModifyComponent<T>(e)), e));
+
+		// Search through children for the first one that has the component
+		Hierarchy const& h = GetComponent<Hierarchy>(e);
+		if (h.children.empty()) {
+			std::cerr << "[Coordinator] Error: Entity " << e
+				<< " does not have any Children.\n";
+			return std::nullopt;
+		}
+
+		for (Entity c : h.children) {
+			if (!HasComponent<T>(c)) continue;
+			return std::optional(std::make_pair(std::ref(ModifyComponent<T>(c)), c));
+		}
+
+		// No child has the requested component
+		std::cerr << "[Coordinator] Error: Entity " << e
+			<< " does not have Children with requested component.\n";
+		return std::nullopt;
 	}
 
 	template <typename T, typename... Args>

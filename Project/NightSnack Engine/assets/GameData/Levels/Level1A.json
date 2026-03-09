@@ -1,5 +1,5 @@
 {
-    "BGM": "GameLevelMusic",
+    "BGM": "WindBlow",
     "Entities": [
         {
             "Prefab": "Player",
@@ -9,7 +9,7 @@
                 "Position": {
                     "x": -750.0,
                     "y": -160.00999450683594,
-                    "z": 0.0
+                    "z": 5.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -31,75 +31,67 @@
         {
             "Children": [
                 {
-                    "Components": {
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "GroundTile",
-                            "meshName": "square"
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "Sprite-GroundTileTop",
-                        "Position": {
-                            "x": 1250.0,
-                            "y": -400.0,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 1300.0,
-                            "y": 100.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
+                    "Children": [
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "Message1",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "SignboardMessage1",
+                                "Position": {
+                                    "x": 452.9383544921875,
+                                    "y": 192.1697998046875,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 150.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
                         }
-                    },
-                    "isPrefab": false
-                },
-                {
+                    ],
                     "Components": {
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "GroundTile",
-                            "meshName": "square"
+                        "Collider": {
+                            "height": 50.0,
+                            "isStatic": true,
+                            "radius": 50.0,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 50.0
                         },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "Sprite-GroundTile",
-                        "Position": {
-                            "x": 1950.0,
-                            "y": 525.0,
-                            "z": 0.0
+                        "Font": {
+                            "fontSize": 1.0,
+                            "fontType": "buggy-font",
+                            "offsetPosition": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0
+                            },
+                            "text": "",
+                            "textColor": {
+                                "b": 1.0,
+                                "g": 1.0,
+                                "r": 1.0
+                            },
+                            "textWrapRatio": 0.0
                         },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 1850.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Components": {
                         "Renderable": {
                             "isWireframe": false,
                             "materialName": "SignBoard",
@@ -119,61 +111,6 @@
                         "Scale": {
                             "x": 50.0,
                             "y": 50.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Components": {
-                        "Collider": {
-                            "height": 1850.0,
-                            "isStatic": true,
-                            "radius": 50.0,
-                            "shape": "AABB",
-                            "type": "Solid",
-                            "width": 100.0
-                        },
-                        "Color": {
-                            "a": 0.0,
-                            "b": 0.0,
-                            "g": 0.0,
-                            "r": 0.0
-                        },
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "InvisMat",
-                            "meshName": "square"
-                        },
-                        "RigidBody": {
-                            "gravityMult": 1.0,
-                            "mass": 1.0,
-                            "restitution": 0.0,
-                            "useGravity": true,
-                            "useRotate": false
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "Collider",
-                        "Position": {
-                            "x": 1950.0,
-                            "y": 525.0,
-                            "z": 1.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -232,6 +169,40 @@
                         "Scale": {
                             "x": 50.0,
                             "y": 50.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "GroundTile",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "Sprite-GroundTileTop",
+                        "Position": {
+                            "x": 1250.0,
+                            "y": -400.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 1300.0,
+                            "y": 100.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -566,6 +537,95 @@
                         "Scale": {
                             "x": 100.0,
                             "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 1850.0,
+                            "isStatic": true,
+                            "radius": 50.0,
+                            "shape": "AABB",
+                            "type": "Solid",
+                            "width": 100.0
+                        },
+                        "Color": {
+                            "a": 0.0,
+                            "b": 0.0,
+                            "g": 0.0,
+                            "r": 0.0
+                        },
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "InvisMat",
+                            "meshName": "square"
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": true,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "Collider",
+                        "Position": {
+                            "x": 1950.0,
+                            "y": 525.0,
+                            "z": 1.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "GroundTile",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "Sprite-GroundTile",
+                        "Position": {
+                            "x": 1950.0,
+                            "y": 525.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 1850.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -1099,55 +1159,6 @@
                         "Scale": {
                             "x": 50.0,
                             "y": 50.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Components": {
-                        "Font": {
-                            "fontSize": 1.0,
-                            "fontType": "buggy-font",
-                            "offsetPosition": {
-                                "x": 0.0,
-                                "y": 0.0,
-                                "z": 0.0
-                            },
-                            "text": "",
-                            "textColor": {
-                                "b": 1.0,
-                                "g": 1.0,
-                                "r": 1.0
-                            }
-                        },
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "Message1",
-                            "meshName": "square"
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "SignboardMessage1",
-                        "Position": {
-                            "x": 452.9383544921875,
-                            "y": 192.1697998046875,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -3277,7 +3288,67 @@
                     "isPrefab": false
                 },
                 {
+                    "Children": [
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "Message2",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "SignboardMessage2",
+                                "Position": {
+                                    "x": 1815.367919921875,
+                                    "y": 803.4155883789063,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 150.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        }
+                    ],
                     "Components": {
+                        "Collider": {
+                            "height": 50.0,
+                            "isStatic": true,
+                            "radius": 50.0,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 50.0
+                        },
+                        "Font": {
+                            "fontSize": 1.0,
+                            "fontType": "buggy-font",
+                            "offsetPosition": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0
+                            },
+                            "text": "",
+                            "textColor": {
+                                "b": 1.0,
+                                "g": 1.0,
+                                "r": 1.0
+                            },
+                            "textWrapRatio": 0.0
+                        },
                         "Renderable": {
                             "isWireframe": false,
                             "materialName": "SignBoard",
@@ -3311,7 +3382,51 @@
                     "isPrefab": false
                 },
                 {
+                    "Children": [
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "Message3",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "SignboardMessage3",
+                                "Position": {
+                                    "x": 1380.40283203125,
+                                    "y": 941.64990234375,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 150.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        }
+                    ],
                     "Components": {
+                        "Collider": {
+                            "height": 50.0,
+                            "isStatic": true,
+                            "radius": 50.0,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 50.0
+                        },
                         "Font": {
                             "fontSize": 1.0,
                             "fontType": "buggy-font",
@@ -3325,42 +3440,9 @@
                                 "b": 1.0,
                                 "g": 1.0,
                                 "r": 1.0
-                            }
+                            },
+                            "textWrapRatio": 0.0
                         },
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "Message2",
-                            "meshName": "square"
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "SignboardMessage2",
-                        "Position": {
-                            "x": 1815.367919921875,
-                            "y": 803.4155883789063,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Components": {
                         "Renderable": {
                             "isWireframe": false,
                             "materialName": "SignBoard",
@@ -3380,55 +3462,6 @@
                         "Scale": {
                             "x": 50.0,
                             "y": 50.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Components": {
-                        "Font": {
-                            "fontSize": 1.0,
-                            "fontType": "buggy-font",
-                            "offsetPosition": {
-                                "x": 0.0,
-                                "y": 0.0,
-                                "z": 0.0
-                            },
-                            "text": "",
-                            "textColor": {
-                                "b": 1.0,
-                                "g": 1.0,
-                                "r": 1.0
-                            }
-                        },
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "Message3",
-                            "meshName": "square"
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "SignboardMessage3",
-                        "Position": {
-                            "x": 1380.40283203125,
-                            "y": 941.64990234375,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4126,55 +4159,6 @@
                 },
                 {
                     "Components": {
-                        "Font": {
-                            "fontSize": 1.0,
-                            "fontType": "buggy-font",
-                            "offsetPosition": {
-                                "x": 0.0,
-                                "y": 0.0,
-                                "z": 0.0
-                            },
-                            "text": "",
-                            "textColor": {
-                                "b": 1.0,
-                                "g": 1.0,
-                                "r": 1.0
-                            }
-                        },
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "Message4",
-                            "meshName": "square"
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "SignboardMessage4",
-                        "Position": {
-                            "x": -2512.5,
-                            "y": 1050.0,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Components": {
                         "Renderable": {
                             "isWireframe": false,
                             "materialName": "PlatformTile1",
@@ -4386,7 +4370,67 @@
                     "isPrefab": false
                 },
                 {
+                    "Children": [
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "Message4",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "SignboardMessage4",
+                                "Position": {
+                                    "x": -2512.5,
+                                    "y": 1050.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 150.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        }
+                    ],
                     "Components": {
+                        "Collider": {
+                            "height": 50.0,
+                            "isStatic": true,
+                            "radius": 50.0,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 50.0
+                        },
+                        "Font": {
+                            "fontSize": 1.0,
+                            "fontType": "buggy-font",
+                            "offsetPosition": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0
+                            },
+                            "text": "",
+                            "textColor": {
+                                "b": 1.0,
+                                "g": 1.0,
+                                "r": 1.0
+                            },
+                            "textWrapRatio": 0.0
+                        },
                         "Renderable": {
                             "isWireframe": false,
                             "materialName": "SignBoard",
@@ -5444,7 +5488,7 @@
                                 "Position": {
                                     "x": -1050.0,
                                     "y": 1050.0,
-                                    "z": 0.0
+                                    "z": 3.0
                                 },
                                 "Rotation": 180.0,
                                 "Scale": {
@@ -5970,7 +6014,7 @@
                                 "Position": {
                                     "x": -1150.0,
                                     "y": 1050.0,
-                                    "z": 0.0
+                                    "z": 3.0
                                 },
                                 "Rotation": 180.0,
                                 "Scale": {
@@ -6248,55 +6292,6 @@
                         "Scale": {
                             "x": 200.0,
                             "y": 200.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Components": {
-                        "Font": {
-                            "fontSize": 1.0,
-                            "fontType": "buggy-font",
-                            "offsetPosition": {
-                                "x": 0.0,
-                                "y": 0.0,
-                                "z": 0.0
-                            },
-                            "text": "",
-                            "textColor": {
-                                "b": 1.0,
-                                "g": 1.0,
-                                "r": 1.0
-                            }
-                        },
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "Message5",
-                            "meshName": "square"
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "SignboardMessage5",
-                        "Position": {
-                            "x": -3071.794189453125,
-                            "y": 1139.79443359375,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -7592,7 +7587,67 @@
                     "isPrefab": false
                 },
                 {
+                    "Children": [
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "Message5",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "SignboardMessage5",
+                                "Position": {
+                                    "x": -3071.794189453125,
+                                    "y": 1139.79443359375,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 150.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        }
+                    ],
                     "Components": {
+                        "Collider": {
+                            "height": 50.0,
+                            "isStatic": true,
+                            "radius": 50.0,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 50.0
+                        },
+                        "Font": {
+                            "fontSize": 1.0,
+                            "fontType": "buggy-font",
+                            "offsetPosition": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0
+                            },
+                            "text": "",
+                            "textColor": {
+                                "b": 1.0,
+                                "g": 1.0,
+                                "r": 1.0
+                            },
+                            "textWrapRatio": 0.0
+                        },
                         "Renderable": {
                             "isWireframe": false,
                             "materialName": "SignBoard",
@@ -8468,7 +8523,7 @@
                                 "Position": {
                                     "x": -2247.3515625,
                                     "y": 2000.4256591796875,
-                                    "z": 0.0
+                                    "z": 1.0
                                 },
                                 "Rotation": 90.0,
                                 "Scale": {
@@ -8557,7 +8612,7 @@
                                 "Position": {
                                     "x": -2246.987548828125,
                                     "y": 2100.42578125,
-                                    "z": 0.0
+                                    "z": 1.0
                                 },
                                 "Rotation": 90.0,
                                 "Scale": {
@@ -9001,7 +9056,67 @@
                     "isPrefab": false
                 },
                 {
+                    "Children": [
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "Message6",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "SignboardMessage6",
+                                "Position": {
+                                    "x": -135.05703735351563,
+                                    "y": 2741.556396484375,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 150.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        }
+                    ],
                     "Components": {
+                        "Collider": {
+                            "height": 50.0,
+                            "isStatic": true,
+                            "radius": 50.0,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 50.0
+                        },
+                        "Font": {
+                            "fontSize": 1.0,
+                            "fontType": "buggy-font",
+                            "offsetPosition": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0
+                            },
+                            "text": "",
+                            "textColor": {
+                                "b": 1.0,
+                                "g": 1.0,
+                                "r": 1.0
+                            },
+                            "textWrapRatio": 0.0
+                        },
                         "Renderable": {
                             "isWireframe": false,
                             "materialName": "SignBoard",
@@ -9021,55 +9136,6 @@
                         "Scale": {
                             "x": 50.0,
                             "y": 50.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Components": {
-                        "Font": {
-                            "fontSize": 1.0,
-                            "fontType": "buggy-font",
-                            "offsetPosition": {
-                                "x": 0.0,
-                                "y": 0.0,
-                                "z": 0.0
-                            },
-                            "text": "",
-                            "textColor": {
-                                "b": 1.0,
-                                "g": 1.0,
-                                "r": 1.0
-                            }
-                        },
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "Message6",
-                            "meshName": "square"
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "SignboardMessage6",
-                        "Position": {
-                            "x": -135.05703735351563,
-                            "y": 2741.556396484375,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -9182,6 +9248,62 @@
                 },
                 {
                     "Components": {
+                        "modified": false
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "Checkpoints",
+                        "Position": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 50.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Prefab": "Collectible-Key",
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "NoName",
+                        "Position": {
+                            "x": 548.4413452148438,
+                            "y": 2643.813720703125,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": true
+                },
+                {
+                    "Components": {
                         "Renderable": {
                             "isWireframe": false,
                             "materialName": "GroundTileTop",
@@ -9201,74 +9323,6 @@
                         "Scale": {
                             "x": 100.0,
                             "y": 100.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Components": {
-                        "Character": {
-                            "Propertities": [
-                                "GRAPPLEABLE"
-                            ]
-                        },
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "GroundTile",
-                            "meshName": "square"
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "Sprite-GrapTarg",
-                        "Position": {
-                            "x": 2350.0,
-                            "y": 2650.0,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 50.0,
-                            "y": 50.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Components": {
-                        "modified": false
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "Checkpoints",
-                        "Position": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 50.0,
-                            "y": 50.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -9992,19 +10046,31 @@
                     "isPrefab": false
                 },
                 {
-                    "Prefab": "Collectible-Key",
+                    "Components": {
+                        "Character": {
+                            "Propertities": [
+                                "GRAPPLEABLE"
+                            ]
+                        },
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "GroundTile",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
                     "Transform": {
                         "Layer": "GameLayer",
-                        "Name": "NoName",
+                        "Name": "Sprite-GrapTarg",
                         "Position": {
-                            "x": 548.4413452148438,
-                            "y": 2643.813720703125,
+                            "x": 2350.0,
+                            "y": 2650.0,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
+                            "x": 50.0,
+                            "y": 50.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -10016,7 +10082,7 @@
                             "y": 0.0
                         }
                     },
-                    "isPrefab": true
+                    "isPrefab": false
                 },
                 {
                     "Children": [
@@ -10256,12 +10322,12 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 400.0,
+                                    "height": 100.0,
                                     "isStatic": true,
                                     "radius": 50.0,
                                     "shape": "AABB",
                                     "type": "Solid",
-                                    "width": 1200.0
+                                    "width": 2000.0
                                 },
                                 "Color": {
                                     "a": 0.0,
@@ -10287,8 +10353,8 @@
                                 "Layer": "GameLayer",
                                 "Name": "Collider",
                                 "Position": {
-                                    "x": 3800.0,
-                                    "y": 2100.0,
+                                    "x": 2500.0,
+                                    "y": 2900.0,
                                     "z": 1.0
                                 },
                                 "Rotation": 0.0,
@@ -10400,116 +10466,6 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 100.0,
-                                    "isStatic": true,
-                                    "radius": 50.0,
-                                    "shape": "AABB",
-                                    "type": "Solid",
-                                    "width": 100.0
-                                },
-                                "Color": {
-                                    "a": 0.0,
-                                    "b": 0.0,
-                                    "g": 0.0,
-                                    "r": 0.0
-                                },
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "InvisMat",
-                                    "meshName": "square"
-                                },
-                                "RigidBody": {
-                                    "gravityMult": 1.0,
-                                    "mass": 1.0,
-                                    "restitution": 0.0,
-                                    "useGravity": true,
-                                    "useRotate": false
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Collider",
-                                "Position": {
-                                    "x": -650.0,
-                                    "y": 2050.0,
-                                    "z": 1.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Collider": {
-                                    "height": 100.0,
-                                    "isStatic": true,
-                                    "radius": 50.0,
-                                    "shape": "AABB",
-                                    "type": "Solid",
-                                    "width": 2000.0
-                                },
-                                "Color": {
-                                    "a": 0.0,
-                                    "b": 0.0,
-                                    "g": 0.0,
-                                    "r": 0.0
-                                },
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "InvisMat",
-                                    "meshName": "square"
-                                },
-                                "RigidBody": {
-                                    "gravityMult": 1.0,
-                                    "mass": 1.0,
-                                    "restitution": 0.0,
-                                    "useGravity": true,
-                                    "useRotate": false
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Collider",
-                                "Position": {
-                                    "x": 2500.0,
-                                    "y": 2900.0,
-                                    "z": 1.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Collider": {
                                     "height": 350.0,
                                     "isStatic": true,
                                     "radius": 50.0,
@@ -10588,6 +10544,116 @@
                                 "Scale": {
                                     "x": 100.0,
                                     "y": 300.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Collider": {
+                                    "height": 400.0,
+                                    "isStatic": true,
+                                    "radius": 50.0,
+                                    "shape": "AABB",
+                                    "type": "Solid",
+                                    "width": 1200.0
+                                },
+                                "Color": {
+                                    "a": 0.0,
+                                    "b": 0.0,
+                                    "g": 0.0,
+                                    "r": 0.0
+                                },
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "InvisMat",
+                                    "meshName": "square"
+                                },
+                                "RigidBody": {
+                                    "gravityMult": 1.0,
+                                    "mass": 1.0,
+                                    "restitution": 0.0,
+                                    "useGravity": true,
+                                    "useRotate": false
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Collider",
+                                "Position": {
+                                    "x": 3800.0,
+                                    "y": 2100.0,
+                                    "z": 1.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Collider": {
+                                    "height": 100.0,
+                                    "isStatic": true,
+                                    "radius": 50.0,
+                                    "shape": "AABB",
+                                    "type": "Solid",
+                                    "width": 100.0
+                                },
+                                "Color": {
+                                    "a": 0.0,
+                                    "b": 0.0,
+                                    "g": 0.0,
+                                    "r": 0.0
+                                },
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "InvisMat",
+                                    "meshName": "square"
+                                },
+                                "RigidBody": {
+                                    "gravityMult": 1.0,
+                                    "mass": 1.0,
+                                    "restitution": 0.0,
+                                    "useGravity": true,
+                                    "useRotate": false
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Collider",
+                                "Position": {
+                                    "x": -650.0,
+                                    "y": 2050.0,
+                                    "z": 1.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 100.0
                                 },
                                 "UIBasePosition": {
                                     "x": 0.0,
@@ -15167,7 +15233,7 @@
                 "Position": {
                     "x": -2556.627197265625,
                     "y": 965.3771362304688,
-                    "z": 2.0
+                    "z": 0.5
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -17441,14 +17507,14 @@
                 "Layer": "GameUI",
                 "Name": "FlameIcon1",
                 "Position": {
-                    "x": 120.0,
-                    "y": 120.0,
+                    "x": 100.0,
+                    "y": 100.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 120.0,
-                    "y": 120.0
+                    "x": 100.0,
+                    "y": 100.0
                 },
                 "UIBasePosition": {
                     "x": 100.0,
@@ -17487,14 +17553,14 @@
                 "Layer": "GameUI",
                 "Name": "FlameIcon2",
                 "Position": {
-                    "x": 300.0,
-                    "y": 120.0,
+                    "x": 250.0,
+                    "y": 100.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 120.0,
-                    "y": 120.0
+                    "x": 100.0,
+                    "y": 100.0
                 },
                 "UIBasePosition": {
                     "x": 250.0,
@@ -17533,14 +17599,14 @@
                 "Layer": "GameUI",
                 "Name": "FlameIcon3",
                 "Position": {
-                    "x": 480.0,
-                    "y": 120.0,
+                    "x": 400.0,
+                    "y": 100.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 120.0,
-                    "y": 120.0
+                    "x": 100.0,
+                    "y": 100.0
                 },
                 "UIBasePosition": {
                     "x": 400.0,
@@ -17550,6 +17616,246 @@
                 "UIBaseScale": {
                     "x": 100.0,
                     "y": 100.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Children": [
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "UIMenu-Backdrop",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "DialogueBox",
+                        "Position": {
+                            "x": 800.0,
+                            "y": 750.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 1600.0,
+                            "y": 300.0
+                        },
+                        "UIBasePosition": {
+                            "x": 800.0,
+                            "y": 750.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 1600.0,
+                            "y": 300.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Animator": {
+                            "isLooping": true,
+                            "isPlaying": true,
+                            "playbackSpeed": 1.0,
+                            "spriteSheetName": "Sprites\\FrogMove_4_1.png"
+                        },
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "FrogMove_4_1",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "DialoguePortrait",
+                        "Position": {
+                            "x": 200.0,
+                            "y": 700.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 200.0,
+                            "y": 200.0
+                        },
+                        "UIBasePosition": {
+                            "x": 200.0,
+                            "y": 700.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 200.0,
+                            "y": 200.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Font": {
+                            "fontSize": 0.800000011920929,
+                            "fontType": "CaveatBrush-Regular",
+                            "offsetPosition": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0
+                            },
+                            "text": "This is a very long text sentence because I need to test what is the maximum length for each sentence in the scene. You might need that I have already achieved this goal but the truth is, I need to keep on going because I want to see how long more I can -",
+                            "textColor": {
+                                "b": 0.18623483180999756,
+                                "g": 0.18623483180999756,
+                                "r": 1.0
+                            },
+                            "textWrapRatio": 0.800000011920929
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "DialogueText",
+                        "Position": {
+                            "x": 500.0,
+                            "y": 680.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 1000.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 500.0,
+                            "y": 680.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 1000.0,
+                            "y": 100.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Font": {
+                            "fontSize": 0.6000000238418579,
+                            "fontType": "CaveatBrush-Regular",
+                            "offsetPosition": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0
+                            },
+                            "text": "Press [ENTER] or LMB to continue ...",
+                            "textColor": {
+                                "b": 1.0,
+                                "g": 1.0,
+                                "r": 1.0
+                            },
+                            "textWrapRatio": 0.0
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "DialogueHintText",
+                        "Position": {
+                            "x": 1000.0,
+                            "y": 830.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 1000.0,
+                            "y": 830.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Font": {
+                            "fontSize": 1.0,
+                            "fontType": "CaveatBrush-Regular",
+                            "offsetPosition": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0
+                            },
+                            "text": "speaker name",
+                            "textColor": {
+                                "b": 1.0,
+                                "g": 1.0,
+                                "r": 1.0
+                            },
+                            "textWrapRatio": 0.0
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "DialogueSpeakerName",
+                        "Position": {
+                            "x": 200.0,
+                            "y": 840.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 200.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 200.0,
+                            "y": 840.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 200.0,
+                            "y": 100.0
+                        }
+                    },
+                    "isPrefab": false
+                }
+            ],
+            "Components": {
+                "modified": false
+            },
+            "Transform": {
+                "Layer": "GameUI",
+                "Name": "DialogueUIEntities",
+                "Position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 50.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 50.0,
+                    "y": 50.0
                 }
             },
             "isPrefab": false
