@@ -63,7 +63,7 @@ namespace NightSnack {
         }
 
         m_foundUIEntities = true;
-        ToggleUIEntities(false);
+        //ToggleUIEntities(false);
     }
 
 	void DialogueSystem::Update() {
