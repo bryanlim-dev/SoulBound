@@ -300,6 +300,7 @@ namespace NightSnack {
     enum ButtonType {
         CLICKER,
         SLIDER,
+        SLIDERKNOB,
 
         INVALID_BUTTON
     };

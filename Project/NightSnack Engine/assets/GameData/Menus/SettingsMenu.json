@@ -156,6 +156,14 @@
         },
         {
             "Components": {
+                "ButtonInfo": {
+                    "action": "VolumeSlider",
+                    "type": "SliderKnob",
+                    "target": "",
+                    "defaultTex": "Menu-SliderKnob",
+                    "hoverTex": "Menu-SliderKnob",
+                    "clickTex": "Menu-SliderKnob"
+                },
                 "Renderable": {
                     "isWireframe": false,
                     "materialName": "Menu-SliderKnob",

@@ -935,10 +935,10 @@ namespace NightSnack::Scene {
 			Entity sliderBar = INVALID_ENTITY, sliderKnob = INVALID_ENTITY;
 
 			for (Entity e : m_menuEntities) {
-				if (!m_coord.HasComponent<Transform>(e)) continue;
-				std::string const& name = m_coord.GetComponent<Transform>(e).name;
-				if (name == "AudioSlider") sliderBar = e;
-				if (name == "AudioKnob")   sliderKnob = e;
+				if (!m_coord.HasComponent<ButtonInfo>(e)) continue;
+				ButtonType type = m_coord.GetComponent<ButtonInfo>(e).type;
+				if (type == ButtonType::SLIDER) sliderBar = e;
+				if (type == ButtonType::SLIDERKNOB) sliderKnob = e;
 			}
 
 			if (sliderBar != INVALID_ENTITY && sliderKnob != INVALID_ENTITY) 
@@ -993,6 +993,10 @@ namespace NightSnack::Scene {
 			factory->RemoveEntity(e);
 		}
 		m_menuEntities.clear();
+
+		m_sliderBarEntity = INVALID_ENTITY;
+		m_sliderKnobEntity = INVALID_ENTITY;
+
 		// --------------------------------------------------------------------------
 		if (!opening) {
 			if (!m_menus.empty()) {
@@ -1003,6 +1007,7 @@ namespace NightSnack::Scene {
 				}
 			}
 		}
+		
 		if (m_menuEntities.empty()) {
 			if (m_dispatcher)
 			{
@@ -1011,8 +1016,6 @@ namespace NightSnack::Scene {
 						InputEvent::InputActionState::Pressed));
 			}
 			//std::cerr << "[SceneManager] Game unpaused\n";
-			m_sliderBarEntity = INVALID_ENTITY;
-			m_sliderKnobEntity = INVALID_ENTITY;
 			m_menuOpen = false;
 		}
 	}

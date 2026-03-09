@@ -702,6 +702,7 @@ namespace NightSnack {
 
 		if (ButtonType::SLIDER == b.type) j["type"] = std::string{ "Slider" };
 		if (ButtonType::CLICKER == b.type) j["type"] = std::string{ "Clicker" };
+		if (ButtonType::SLIDERKNOB == b.type) j["type"] = std::string{ "SliderKnob" };
 
 		j["target"] = b.target;
 		j["defaultTex"] = b.defaultTex;
@@ -729,6 +730,7 @@ namespace NightSnack {
 
 			// Button type
 			if (j["type"] == "Slider") { b.type = ButtonType::SLIDER; }
+			if (j["type"] == "SliderKnob") { b.type = ButtonType::SLIDERKNOB; }
 			if (j["type"] == "Clicker") { b.type = ButtonType::CLICKER; }
 
 			b.target = j["target"];
