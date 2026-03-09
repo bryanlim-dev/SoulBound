@@ -130,6 +130,36 @@ namespace NightSnack {
         }
     }
 
+    bool CheckEntityCollision(const Vec3& aPos, const Collider& aCol, const Vec3& bPos, const Collider& bCol)
+    {
+
+        int circleCount = 0;
+        bool aColIsCircle = false;
+
+        if (aCol.shape == ShapeType::Circle)
+        {
+            circleCount++;
+            aColIsCircle = true;
+        }
+        if (bCol.shape == ShapeType::Circle)
+            circleCount++;
+
+        bool colliding = false;
+        if (circleCount == 0) //Both AABB
+            colliding = CheckAABBvsAABB(aPos, aCol, bPos, bCol);
+        else if (circleCount == 1) //1 is circle 1 is AABB
+        {
+            if (aColIsCircle)
+                colliding = CheckCirclevsAABB(aPos, aCol, bPos, bCol);
+            else
+                colliding = CheckCirclevsAABB(bPos, bCol, aPos, aCol);
+        }
+        else //Both is circle
+            colliding = CheckCirclevsCircle(aPos, aCol, bPos, bCol);
+
+        return colliding;
+    }
+
     // Helper Functions
 
     // Axis-Aligned Bounding Box vs AABB

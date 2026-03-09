@@ -82,6 +82,8 @@ namespace NightSnack {
 		/************************************************************************/
 		void ResetGame();
 
+		ScenePanel& GetScenePanel() { return *m_scenePanel; }
+
 		// Required by ISystem base class.
 		Signature GetSignature() const override { return m_systemSignature; }
 		std::string GetName() const override { return "ImguiSystem"; }
@@ -92,7 +94,7 @@ namespace NightSnack {
 		EventDispatcher* m_dispatcher = nullptr;
 
 		// Editor state
-		bool m_toggleEditor = true;
+		bool m_toggleEditor = false;
 		bool m_isPlaying = false;
 
 		Tilemap m_tilemap;
@@ -107,6 +109,7 @@ namespace NightSnack {
 		std::unique_ptr<OptionsPanel> m_optionsPanel;
 		std::unique_ptr<AssetsPanel> m_assetsPanel;
 		std::unique_ptr<AnimationPanel> m_animationPanel;
+		std::unique_ptr<DialoguePanel> m_dialoguePanel;
 
 		// Panel visibility toggles
 		bool m_showHierarchy = true;
@@ -115,6 +118,7 @@ namespace NightSnack {
 		bool m_showOptions = true;
 		bool m_showAssets = true;
 		bool m_showAnimation = true;
+		bool m_showDialogue = true;
 
 		/************************************************************************/
 		/*!
@@ -172,6 +176,8 @@ namespace NightSnack {
 		// Check for UI toggle input event
 		m_dispatcher->Subscribe<InputEvent>([this](const InputEvent& event)
 			{
+				auto factory = m_coord.GetSystem<EntityFactory>();
+
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
 					case InputEvent::InputAction::ToggleUIEditor:
@@ -185,10 +191,22 @@ namespace NightSnack {
 						break;
 
 					case InputEvent::InputAction::UndoStep:
-						auto factory = m_coord.GetSystem<EntityFactory>();
+						
 						if (factory)
 						{
 							NightSnack::UndoSystem::Instance().PerformUndo(m_coord, *factory);
+						}
+						break;
+					case InputEvent::InputAction::RedoStep:
+						if (factory)
+						{
+							NightSnack::UndoSystem::Instance().PerformRedo(m_coord, *factory);
+						}
+						break;
+					case InputEvent::InputAction::Copy:
+						if (event.pressed == InputEvent::InputActionState::Pressed) {
+							Vec2 p = m_coord.GetComponent<Transform>(m_scenePanel->GetEditorCamera()).pos;
+							factory->Clone(*m_selectedEntity, p);
 						}
 						break;
 					}
@@ -232,6 +250,7 @@ namespace NightSnack {
 		m_optionsPanel	 = std::make_unique<OptionsPanel>(m_coord);
 		m_assetsPanel	 = std::make_unique<AssetsPanel>(m_coord);
 		m_animationPanel = std::make_unique<AnimationPanel>(m_coord, m_selectedEntity);
+		m_dialoguePanel = std::make_unique<DialoguePanel>(m_coord);
 	}	
 
 	// Sets up and draws UI panels
@@ -255,6 +274,7 @@ namespace NightSnack {
 		if (m_showOptions && m_optionsPanel)	 m_optionsPanel->Draw();
 		if (m_showAssets && m_assetsPanel)		 m_assetsPanel->Draw();
 		if (m_showAnimation && m_animationPanel) m_animationPanel->Draw();
+		if (m_showDialogue && m_dialoguePanel)	 m_dialoguePanel->Draw();
 
 		// render
 		ImGui::Render();
@@ -284,6 +304,7 @@ namespace NightSnack {
 		m_optionsPanel.reset();
 		m_assetsPanel.reset();
 		m_animationPanel.reset();
+		m_dialoguePanel.reset();
 		m_selectedEntity.reset();
 		m_uiNames.reset();
 
@@ -353,6 +374,7 @@ namespace NightSnack {
 			ImGui::DockBuilderDockWindow("Scene", dock_id_center);
 			ImGui::DockBuilderDockWindow("Assets", dock_id_bottom);
 			ImGui::DockBuilderDockWindow("Animation", dock_id_bottom);
+			ImGui::DockBuilderDockWindow("Dialogue", dock_id_bottom);
 			ImGui::DockBuilderDockWindow("Asset Properties", dock_id_right_top);
 			ImGui::DockBuilderDockWindow("Tile Editor", dock_id_right_bottom);
 			ImGui::DockBuilderDockWindow("Properties:", dock_id_bottom_right);
@@ -377,7 +399,7 @@ namespace NightSnack {
 				auto factory = m_coord.GetSystem<EntityFactory>();
 
 				// Save current level
-				static char levelName[128] = "MyLevel1";
+				static char levelName[128] = "NewLevel";
 				ImGui::InputText("Level Name", levelName, IM_ARRAYSIZE(levelName));
 				ImGui::SameLine();
 				static bool overwrite = true;
@@ -397,7 +419,7 @@ namespace NightSnack {
 				}
 
 				// Load level by name
-				static char loadLevelName[128] = "DefaultLevel";
+				static char loadLevelName[128] = "Level1";
 				ImGui::InputText("Load Level", loadLevelName, IM_ARRAYSIZE(loadLevelName));
 				ImGui::SameLine();
 				if (ImGui::Button("Load")) {
@@ -483,6 +505,7 @@ namespace NightSnack {
 				ImGui::MenuItem("Scene", nullptr, &m_showScene);
 				ImGui::MenuItem("Assets", nullptr, &m_showAssets);
 				ImGui::MenuItem("Animation", nullptr, &m_showAnimation);
+				ImGui::MenuItem("Dialogue", nullptr, &m_showDialogue);
 
 				ImGui::EndMenu();
 			}

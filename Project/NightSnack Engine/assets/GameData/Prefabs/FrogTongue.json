@@ -1,0 +1,13 @@
+{
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "ColorMat",
+        "meshName": "square"
+    },
+    "Color": {
+        "a": 1.0,
+        "b": 0.4509803921568627,
+        "g": 0.4980392156862745,
+        "r": 0.7725490196078431
+    }
+}

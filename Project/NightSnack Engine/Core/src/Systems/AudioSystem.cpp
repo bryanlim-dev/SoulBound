@@ -14,9 +14,11 @@
  ******************************************************************************/
 
 #include "AudioSystem.h"
+#include "Systems/PlayerController.h"
 #include <iostream>
 #include <algorithm>
 #include <filesystem>
+#include <random>
 
 namespace NightSnack {
 
@@ -33,7 +35,11 @@ namespace NightSnack {
         m_bgmPaused(false),
         m_masterVolume(0.5f),
         m_bgmVolume(0.2f),
-        m_sfxVolume(0.4f)
+        m_sfxVolume(0.4f),
+        m_isFading(false),     
+        m_fadeTimer(0.0f),      
+        m_fadeDuration(0.0f),   
+        m_fadeTargetVolume(0.0f)
     {
         m_systemSignature.set(GetComponentTypeID<Audio>());
 
@@ -119,6 +125,8 @@ namespace NightSnack {
             }
         }
 
+        ControlFade(1.0f / 60.0f);
+
         if (!m_fmodSystem.expired())
             m_fmodSystem.lock()->update();
 
@@ -170,6 +178,16 @@ namespace NightSnack {
 				m_entityChannels[e]->setMode(FMOD_LOOP_OFF);
 				m_entityChannels[e]->setLoopCount(0);
             }
+        }
+
+        Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+
+        if (player != INVALID_ENTITY && m_coord.HasComponent<Transform>(player)) {
+            Vec2 playerPos = {
+                m_coord.GetComponent<Transform>(player).pos.x,
+                m_coord.GetComponent<Transform>(player).pos.y
+            };
+            UpdateSpatialAudio(playerPos, 500.0f);
         }
     }
 
@@ -364,82 +382,112 @@ namespace NightSnack {
             return;
 
         auto it = m_loadedBGM.find(bgmKey);
-        if (it == m_loadedBGM.end()) {
+        if (it == m_loadedBGM.end())
+        {
             std::cerr << "[AudioSystem] BGM not found: " << bgmKey << "\n";
             return;
         }
 
-        FMOD::Sound* bgm = it->second;
-
-        if (m_bgmChannel)
+        // Check if this BGM is already playing
+        auto channelIt = m_bgmChannels.find(bgmKey);
+        if (channelIt != m_bgmChannels.end())
         {
             bool isPlaying = false;
-            m_bgmChannel->isPlaying(&isPlaying);
+            channelIt->second->isPlaying(&isPlaying);
             if (isPlaying)
-                m_bgmChannel->stop();
+            {
+                //std::cout << "[AudioSystem] Already playing " << bgmKey << ", continuing...\n";
+                return;
+            }
         }
 
-        m_fmodSystem.lock()->playSound(bgm, nullptr, false, &m_bgmChannel);
+        // Play the new BGM
+        FMOD::Sound* bgm = it->second;
+        FMOD::Channel* newChannel = nullptr;
 
-        if (m_bgmChannel)
+        m_fmodSystem.lock()->playSound(bgm, nullptr, false, &newChannel);
+
+        if (newChannel)
         {
-            m_bgmChannel->setVolume(m_bgmVolume * m_masterVolume);
+            newChannel->setVolume(m_bgmVolume * m_masterVolume);
+            m_bgmChannels[bgmKey] = newChannel;  // Store in map
         }
 
         m_bgmPaused = false;
-        m_currentKeyBGM = bgmKey;
+        m_currentKeyBGM = bgmKey;  // Track most recent for backwards compatibility
         //std::cout << "[AudioSystem] Playing BGM: " << bgmKey << "\n";
     }
 
-    // stops the currently playing background music
+    // Stop specific BGM
+    void AudioSystem::StopBGM(const std::string& bgmKey)
+    {
+        auto it = m_bgmChannels.find(bgmKey);
+        if (it != m_bgmChannels.end())
+        {
+            if (it->second)
+                it->second->stop();
+            m_bgmChannels.erase(it);
+
+            if (m_currentKeyBGM == bgmKey)
+                m_currentKeyBGM = "";
+        }
+    }
+
+    // Stop all BGM
     void AudioSystem::StopBGM()
     {
-        if (m_bgmChannel)
+        for (auto& [key, channel] : m_bgmChannels)
         {
-            bool isPlaying = false;
-            m_bgmChannel->isPlaying(&isPlaying);
-            if (isPlaying)
-            {
-                m_bgmChannel->stop();
-            }
+            if (channel)
+                channel->stop();
         }
-        m_bgmPaused = false;
+        m_bgmChannels.clear();
         m_currentKeyBGM = "";
+        m_bgmPaused = false;
     }
 
     // pauses the currently playing background music
     void AudioSystem::PauseBGM()
     {
-        if (m_bgmChannel && !m_bgmPaused)
+        for (auto& [key, channel] : m_bgmChannels)
         {
-            bool isPlaying = false;
-            m_bgmChannel->isPlaying(&isPlaying);
-            if (isPlaying)
+            if (channel && !m_bgmPaused)
             {
-                m_bgmChannel->setPaused(true);
-                m_bgmPaused = true;
+                bool isPlaying = false;
+                channel->isPlaying(&isPlaying);
+                if (isPlaying)
+                {
+                    channel->setPaused(true);
+                }
             }
         }
+        m_bgmPaused = true;
     }
 
-    // resumes the paused background music
     void AudioSystem::ResumeBGM()
     {
-        if (m_bgmChannel && m_bgmPaused)
+        for (auto& [key, channel] : m_bgmChannels)
         {
-            m_bgmChannel->setPaused(false);
-            m_bgmPaused = false;
+            if (channel && m_bgmPaused)
+            {
+                channel->setPaused(false);
+            }
         }
+        m_bgmPaused = false;
     }
 
     // checks if background music is currently playing
     bool AudioSystem::IsBGMPlaying() const
     {
-        if (m_bgmChannel)
+        for (const auto& [key, channel] : m_bgmChannels)
         {
-            bool isPlaying = false;
-            m_bgmChannel->isPlaying(&isPlaying);
-            return isPlaying && !m_bgmPaused;
+            if (channel)
+            {
+                bool isPlaying = false;
+                channel->isPlaying(&isPlaying);
+                if (isPlaying && !m_bgmPaused)
+                    return true;
+            }
         }
         return false;
     }
@@ -449,20 +497,24 @@ namespace NightSnack {
     {
         m_masterVolume = std::clamp(volume, 0.0f, 1.0f);
 
-        if (m_bgmChannel)
+        // Update all BGM channels
+        for (auto& [key, channel] : m_bgmChannels)
         {
-            m_bgmChannel->setVolume(m_bgmVolume * m_masterVolume);
+            if (channel)
+                channel->setVolume(m_bgmVolume * m_masterVolume);
         }
     }
 
-    // sets the volume for background music
+    // sets the bgm volume
     void AudioSystem::SetBGMVolume(float volume)
     {
         m_bgmVolume = std::clamp(volume, 0.0f, 1.0f);
 
-        if (m_bgmChannel)
+        // Update all BGM channels
+        for (auto& [key, channel] : m_bgmChannels)
         {
-            m_bgmChannel->setVolume(m_bgmVolume * m_masterVolume);
+            if (channel)
+                channel->setVolume(m_bgmVolume * m_masterVolume);
         }
     }
 
@@ -502,7 +554,19 @@ namespace NightSnack {
     {
         FMOD::Channel* channel = nullptr;
 
-        size_t id = m_keyToID[audio.audioKey];
+        // Determine which sound to play
+        std::string keyToPlay = audio.audioKey;
+
+        // If using variants, pick randomly
+        if (audio.useVariants && audio.numVariants > 1) {
+            static std::random_device rd;
+            static std::mt19937 gen(rd());
+            std::uniform_int_distribution<> dist(1, audio.numVariants);
+            int variant = dist(gen);
+            keyToPlay = audio.audioKey + "_" + std::to_string(variant);
+        }
+
+        size_t id = m_keyToID[keyToPlay];
         FMOD::Sound* sound = m_resourceMgr.lock()->GetSound(id);
         if (!sound) return;
 
@@ -517,29 +581,23 @@ namespace NightSnack {
         FMOD_RESULT result = m_fmodSystem.lock()->playSound(sound, nullptr, false, &channel);
 
         if (result != FMOD_OK || !channel) {
-            std::cerr << "[AudioSystem] Failed to play sound: " << audio.audioKey << std::endl;
+            std::cerr << "[AudioSystem] Failed to play sound: " << keyToPlay << std::endl;
             return;
         }
 
         // set loop properties on the channel
         if (audio.loop) {
             channel->setMode(FMOD_LOOP_NORMAL);
-            channel->setLoopCount(-1); // infinite loops
-            std::cout << "[AudioSystem] Set to LOOP: " << audio.audioKey << std::endl;
+            channel->setLoopCount(-1);
         }
         else {
             channel->setMode(FMOD_LOOP_OFF);
-            channel->setLoopCount(0); // no looping
-            std::cout << "[AudioSystem] Set to NO LOOP: " << audio.audioKey << std::endl;
+            channel->setLoopCount(0);
         }
 
         // set volume and store channel
         channel->setVolume(audio.volume * m_masterVolume);
         m_entityChannels[entity] = channel;
-
-        /*std::cout << "[AudioSystem] Playing: " << audio.audioKey
-            << " (loop: " << audio.loop
-            << ", entity: " << entity << ")" << std::endl;*/
     }
 
     // getter for audio keys to edit in prefab panel
@@ -555,6 +613,89 @@ namespace NightSnack {
             keys.push_back(key);
         }
         return keys;
+    }
+
+    void AudioSystem::FadeToVolume(float targetVolume, float duration)
+    {
+        m_isFading = true;
+        m_fadeTimer = 0.0f;
+        m_fadeDuration = duration;
+        m_fadeTargetVolume = targetVolume;
+    }
+
+    void AudioSystem::ControlFade(float deltaTime)
+    {
+        if (!m_isFading) return;
+
+        m_fadeTimer += deltaTime;
+        float t = std::min(m_fadeTimer / m_fadeDuration, 1.0f);
+
+        // Calculate current volume
+        float startVolume = m_bgmVolume - (m_fadeTargetVolume - m_bgmVolume) * (m_fadeTimer - deltaTime) / m_fadeDuration;
+        float currentVolume = startVolume + (m_fadeTargetVolume - startVolume) * t;
+
+        // Apply to ALL BGM channels
+        for (auto& [key, channel] : m_bgmChannels)
+        {
+            if (channel)
+                channel->setVolume(currentVolume * m_masterVolume);
+        }
+
+        if (t >= 1.0f) {
+            m_isFading = false;
+            m_bgmVolume = m_fadeTargetVolume;
+        }
+    }
+
+    void AudioSystem::PlayRandomVariant(const std::string& baseKey, int numVariants)
+    {
+        if (numVariants <= 0) {
+            PlaySFX(baseKey);
+            return;
+        }
+
+        // generate random number between 1 and numVariants
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dist(1, numVariants);
+
+        int variant = dist(gen);
+        std::string soundKey = baseKey + "_" + std::to_string(variant);
+        PlaySFX(soundKey);
+    }
+
+    void AudioSystem::UpdateSpatialAudio(Vec2 const& playerPos, float maxDistance)
+    {
+        for (Entity e : m_entities) {
+            if (!m_coord.HasComponent<Audio>(e)) continue;
+            if (!m_coord.HasComponent<Transform>(e)) continue;
+
+            Audio const& a = m_coord.GetComponent<Audio>(e);
+            if (!a.spatial) continue; // only process spatial audio entities
+
+            Transform const& t = m_coord.GetComponent<Transform>(e);
+            Vec2 entityPos = { t.pos.x, t.pos.y };
+
+            // Calculate distance between entity and player
+            float dx = entityPos.x - playerPos.x;
+            float dy = entityPos.y - playerPos.y;
+            float distance = std::sqrt(dx * dx + dy * dy);
+
+            // If out of range, stop/mute the audio
+            auto channelIt = m_entityChannels.find(e);
+            if (channelIt == m_entityChannels.end()) continue;
+
+            if (distance >= maxDistance) {
+                channelIt->second->setVolume(0.0f);
+            }
+            else {
+                // Linear falloff: 1.0 at distance 0, 0.0 at maxDistance
+                float fallOff = 1.0f - (distance / maxDistance);
+                // Smooth the falloff with a squared curve
+                float spatialVolume = fallOff * fallOff * a.volume * m_masterVolume;
+                channelIt->second->setVolume(spatialVolume);
+            }
+        }
     }
 
     Signature AudioSystem::GetSignature() const

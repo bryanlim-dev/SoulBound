@@ -20,6 +20,8 @@ namespace ManagedScripts
     public class RotatorScript : Script
     {
         [SerializeField]
+        public int testInt = 0;
+        [SerializeField]
         public  float rotationSpeed = 50.0f; // degrees per second
         [SerializeField]
         public bool testBool = false;
@@ -64,11 +66,11 @@ namespace ManagedScripts
             //Log($"Has Script: {Engine.HasScript(EntityId, "RotatorScript")}");
 
 
-            Vector3 pos;
-            pos.X = 100;
-            pos.Y = 100;
-            pos.Z = 0;
-            uint id1 = Engine.CreateEntityArchetype("BlueBallScripting", pos);
+            //Vector3 pos;
+            //pos.X = 100;
+            //pos.Y = 100;
+            //pos.Z = 0;
+            //uint id1 = Engine.CreateEntityArchetype("BlueBallScripting", pos);
             //pos.X = 200;
             //uint id2 = Engine.CreateEntityArchetype("BlueBallScripting2", pos);
             //pos.X = 300;
@@ -167,6 +169,11 @@ namespace ManagedScripts
             //if ((int)rotation % 45 == 0 && rotation > 0)
             //{
             //    Log($"Current rotation: {rotation:F1} degrees");
+            //}
+
+            //if (Engine.IsKeyDown(KeyboardKeys.W))
+            //{
+            //    Engine.Log("Test Vec3: " + testVec3.X + " , " + testVec3.Y + " , " + testVec3.Z);
             //}
 
             //if (Engine.IsKeyDown(KeyboardKeys.W))

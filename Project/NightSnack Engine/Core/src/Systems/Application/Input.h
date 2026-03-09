@@ -30,19 +30,22 @@ namespace NightSnack {
 	public:
 
 		// Specific keyboard keys to check for input state
-		//When updating this update the one in Engine.cs
+		//When updating this REMEMBER to update the one in Engine.cs
 		enum KeyboardKeys {
 			W = 0,
 			A,
 			S,
 			D,
 			H,
+			J,
 			SPACE,
+			ENTER,
 			ESC,
 
 			RIGHT_ARROW,
 			LEFT_ARROW,
 			UP_ARROW,
+			DOWN_ARROW,
 
 			NUM_TOTAL_KEYBOARD_KEY	// MUST BE THE LAST
 		};

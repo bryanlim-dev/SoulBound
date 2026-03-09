@@ -1,0 +1,37 @@
+{
+    "lines": [
+        {
+            "ID": "boss_01",
+            "nextID": "player_01",
+            "speaker": "Boss",
+            "speakerMaterial": "FrogIdle_4_1",
+            "text": "Welcome to the game greenie, hope you are prepared for what's gonna happen ... cuh",
+            "charDelay": 0.05000000074505806
+        },
+        {
+            "ID": "player_01",
+            "nextID": "boss_02",
+            "speaker": "Player",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": "Oh you bet! I have been training for years ... 6-7 years ... FOOL!!!\n\nAlso, this is just an extra random sentence cause why not?",
+            "charDelay": 0.14800000190734863
+        },
+        {
+            "ID": "boss_02",
+            "nextID": "player_02",
+            "speaker": "Boss",
+            "speakerMaterial": "FrogIdle_4_1",
+            "text": "FAAAAA ... ... ... YOU BETTER WATCH YOUR SIX!!!",
+            "charDelay": 0.05000000074505806
+        },
+        {
+            "ID": "player_02",
+            "nextID": "",
+            "speaker": "Player",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": "SEVEN!!!!!",
+            "charDelay": 0.03999999910593033
+        }
+    ],
+    "startID": "boss_01"
+}

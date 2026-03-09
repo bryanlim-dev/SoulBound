@@ -34,8 +34,17 @@ namespace NightSnack {
             // Player movement
             PlayerMoveLeft,     // A
             PlayerMoveRight,    // D
-            PlayerJump,         // W
-            ChangePlayer,      // Down arrow;
+            PlayerJumpAbility,  // SPACE
+            PlayerUp,           // W
+            PlayerDown,         // S
+            PlayerPossess,          // J KEY
+            //PlayerSpecialAbility,   // A KEY
+            //PlayerUnPossess,        // D KEY
+
+            SkipDialogue,       // ENTER key
+            Ability1,
+            Ability2,
+            Ability3,
 
             ChangeAnimation,    // X
 
@@ -45,7 +54,7 @@ namespace NightSnack {
 
             // Window events
 			DisplayFPS,         // F1
-            ToggleFullscreen,   // F11
+            ToggleFullscreen,   // F4
             PauseGame,          // Escape
             RestartGame,
 
@@ -53,9 +62,12 @@ namespace NightSnack {
             ClickLMB,           // LMB
 
             // Modifier events
-            Save,               // CTRL + S
+            Copy,               // CTRL + C
+            Paste,              // CTRL + V
+
             PhysicsDebugMode,   // CTRL + P
 			UndoStep,           // CTRL + Z
+			RedoStep,           // CTRL + Y
 			ToggleUIEditor,     // Backslash ( \ )
 
             NumTotalInputAction

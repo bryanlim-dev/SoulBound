@@ -3,9 +3,9 @@
  * Project:     NightSnack
  * Author(s):	Chewn Thing Kwan (Primary) - Created basic components | Defined json 
  *              overloads for reading components
- *				Goh Bei Lai (Secondary, 15%) - Created Graphics components (RenderLayer, Renderable, Camera)
+ *				Goh Bei Lai (Secondary, 15%) - Created Graphics components (RenderLayer, Renderable, Camera), Particle component, Collectible component
  *              Bryan Lim Jun Jie (Secondary, 5%) - Created Button components (ButtonType, ButtonAction, ButtonInfo)
- *              Clement Ang Yang Ying (Secondary, 5%) - Create States component
+ *              Clement Ang Yang Ying (Secondary, 5%) - Create Character, States component
  *
  * Description:
  * This file defines all components for this project, it also defines a specific
@@ -20,7 +20,12 @@
 
 #include <json.hpp>
 #include "MathLibrary/Math.h"
+#include <variant>
+#include <deque>
+
 namespace NightSnack {
+    using Entity = std::uint32_t;
+    constexpr Entity INVALID_ENTITY = UINT32_MAX;
 
     constexpr float FixedDT = 1.f / 60.f;
 
@@ -30,28 +35,35 @@ namespace NightSnack {
     // ================================================================================================
     // COMPONENTS
     // ================================================================================================
-    //When updating this update the one in Engine.cs
+    // When updating this update the one in Engine.cs
     enum class LayerType : std::uint8_t {
-        _ENGINE,
-        BACKGROUND,
-        GAMELAYER,
-        FOREGROUND,
-        GAMEUI,
-        _ENGINE2
+        _ENGINE,        // 0.f
+        BACKGROUND,     // 1.f
+        GAMELAYER,      // 2.f
+        FOREGROUND,     // 3.f
+        GAMEUI,         // 4.f
+        _ENGINE2        // 5.f
     };
+
+    enum class CameraMode
+    {
+        RoomLerp,
+        OriginalWithOffset
+    };
+
     struct Transform {
         Vec3 pos;
         float rot{};
         Vec2 scale;
 
-        //Entity parent{ INVALID_ENTITY };
-        //std::vector<Entity> children{};
-
         Vec3 UIbasePos{ 0.f, 0.f, 0.f };
         Vec2 UIbaseScale{ 0.f, 0.f };
 
-        LayerType layer;
+        LayerType layer{ LayerType::GAMELAYER };
         bool prefabModified{ false };
+        bool isActive{ true };
+
+        std::string name{ "NoName" };
     };
 
     struct Force {
@@ -65,25 +77,59 @@ namespace NightSnack {
     };
 
     struct RigidBody {
-
-        Force force;
-        Vec2 vel;
-        Vec2 accel;
+        Force force{};
+        Vec2 vel{};
+        Vec2 accel{};
 
         float invMass = 1.f;
         float invInertia = 1.f;
 
         float restitution{};
-        float gravitymult;
+        float gravitymult = 1.f;
 
-        bool useGravity;
-        bool useRotate;
+        bool useGravity = true;
+        bool useRotate = false;
+    };
 
+    //Types of enums supported for scripting
+    enum struct MonoValueType
+    {
+        MONO_INT,
+        MONO_BOOL,
+        MONO_FLOAT,
+        MONO_STRING,
+        MONO_VECTOR2,
+        MONO_VECTOR3,
+        MONO_SCRIPT,
+        MONO_UNSUPPORTED
+    };
+
+
+    using ScriptValue = std::variant<
+        int,
+        float,
+        bool,
+        std::string,
+        Vec2,
+        Vec3,
+        std::vector<uint8_t>
+    >;
+
+
+    //Used to track what value has changed
+    struct ScriptModifiedValue
+    {
+        std::string scriptName;
+        std::string variableName;
+        MonoValueType valueType;
+        ScriptValue value;
     };
 
     struct Script {
         std::list<std::string> names;
-        //std::string name;
+
+        //Modidied data within script 
+        std::multimap<std::string, ScriptModifiedValue> modifiedValuesMap;
     };
 
     //When updating this update the one in Engine.cs
@@ -106,6 +152,12 @@ namespace NightSnack {
         // Collision state
         bool isGrounded{ false };
         bool colliding{ false };
+
+
+        std::deque<Entity> collidedEntities;
+        int collidedSolidCount      = 0;
+        int collidedGroundCount     = 0;
+        int collidedTriggerCount    = 0;
     };
 
     struct Sprite {
@@ -130,7 +182,7 @@ namespace NightSnack {
         std::shared_ptr<StateBase> currState = nullptr;
         //Is this the first time running any state?
         //(Used to detect and call Enter on first state)
-        bool isFirstState = true; 
+        bool isFirstState = false; 
     };
 
     // ================================================================================================
@@ -144,7 +196,6 @@ namespace NightSnack {
         std::string materialName{ "ColorMat" };
         bool isWireframe{ false };
         bool wasModified{ true };
-
     };
 
     // An entity will have 1 Animator, comprising of many animations
@@ -156,7 +207,7 @@ namespace NightSnack {
         float playbackSpeed{ 1.f };
         bool isPlaying{ true };
         bool isLooping{ true };
-        bool lastFacingRight{ false };
+        bool lastFacingRight{ true };
         // The active region of the texture to sample from
         Vec2 uvTopLeft{ 0.f, 0.f };
         Vec2 uvBottomRight{ 1.f, 1.f }; 
@@ -166,8 +217,54 @@ namespace NightSnack {
         std::string fontType;
         std::string text;
         float fontSize{ 1.f };
+        float textWrapRatio{ 0.f }; // 0 is disabled, 0.8 is 80% of screen width
         Vec3 textColor{ 1.f, 1.f, 1.f };
         Vec3 offsetPosition{ 0.f, 0.f, 0.f };
+    };
+
+    enum class PARTICLE_TYPE {
+        SMOKE,
+        GLOW_RISING,
+        GLOW_ORBIT,
+        GLOW_KEY, 
+        SOIL
+    };
+
+    struct Particle {
+        PARTICLE_TYPE type = PARTICLE_TYPE::SMOKE;
+        
+        // General shared data
+        Vec2 velocity{};
+        Vec2 acceleration{};
+        Vec2 startSize{ 50.f, 50.f };
+        Vec2 endSize{ 50.f, 50.f };
+        Vec2 centerPos{};
+
+        // Specific for glowing particles
+        float orbitRadius{};
+        float orbitSpeed{};
+        float orbitAngle{};
+        float angularVelocity{};
+        float glowIntensity{ 1.5 };
+        float glowFalloff{ 2.f };
+
+        int lifeTime{ 100 }; // int instead of float since we accumulate using m_coord.steps
+        int age{};
+
+        bool affectedByGravity{ true }; // can vary for different types of particles
+    };
+
+    enum class COLLECTIBLE_TYPE {
+        DOUBLE_JUMP = 0,
+        KEY,
+        ICON
+    };
+
+    struct Collectible {
+        COLLECTIBLE_TYPE type = COLLECTIBLE_TYPE::DOUBLE_JUMP;
+        int currTime{};
+        int respawnTimeSteps{};
+        bool willRespawn{ false };
     };
 
     // Only camera objects will have this component
@@ -177,21 +274,27 @@ namespace NightSnack {
         float width{ 1600.f };
         float height{ 900.f };
 
-        float minX, maxX;
-        float minY, maxY;
+        float minX{}, maxX{};
+        float minY{}, maxY{};
+        bool lock = false;
 
         Vec2 offset;
+
+		CameraMode mode{ CameraMode::OriginalWithOffset };
     };
 
 	// Audio component
     struct Audio {
         std::string audioKey;
+        bool useVariants = false;
+        int numVariants = 1;
         float volume = 1.0f;
         bool loop = false;
         bool playOnStart = false;
         //bool is3D = false;
         bool isPlaying = false;
         //bool stop = false;
+        bool spatial = false;
     };
 
     enum ButtonType {
@@ -207,265 +310,50 @@ namespace NightSnack {
 
         LOADLEVEL,
         OPENMENU,
+        CLOSEMENU,
         NOACTION,
-        EXIT,
+        TOGGLEFULLSCREEN,
+        VOLUMESLIDER,
+        EXIT
     };
     struct ButtonInfo {
-        ButtonAction action;
-        ButtonType type;
-        std::string target;
+        ButtonAction action{ ButtonAction::NOACTION };
+        ButtonType type{ ButtonType::INVALID_BUTTON };
+        std::string target{};
+        
+        std::string defaultTex;
+        std::string hoverTex;
+        std::string clickTex;
+
+        float sliderMinX = 0.f;
+        float sliderMaxX = 0.f;
+        //Entity knobEntity{};
+    };
+
+
+#define CHARACTER_PROPERTIES_LIST \
+    PROPERTY(START_PROPERTIES)    \
+    PROPERTY(GRAPPLEABLE)         \
+    PROPERTY(CHECKPOINT)         
+//Add any new PROPERTY enum above
+//The enum to string is in character system
+
+    enum CharacterProperties
+    {
+#define PROPERTY(name) name,
+        CHARACTER_PROPERTIES_LIST
+#undef PROPERTY
+
+        MAX_PROPERTIES //Max number of propertities, put any new ones before this
+    };
+
+    struct Character
+    {
+        std::vector<CharacterProperties> m_properties{};
     };
 
     // Add more Components here if necessary...
-    // Ensure to add a Json overload below for your component to allow for Archetype Loading...
-
-    // ================================================================================================
-    // COMPONENT JSON OVERLOADS
-    // ================================================================================================
-    // POSITION / ROTATION / SCALE / TRANSFORM ====================
-    inline void from_json(const json& j, Vec3& p) {
-        j.at("x").get_to(p.x);
-        j.at("y").get_to(p.y);
-        j.at("z").get_to(p.z);
-    }
-
-    inline void from_json(const json& j, Vec2& s) {
-        j.at("x").get_to(s.x);
-        j.at("y").get_to(s.y);
-    }
-
-    inline void from_json(json const& j, Transform& t) {
-        auto pos = j.at("Position");
-        auto scl = j.at("Scale");
-
-        if (j.contains("UIBasePosition"))
-        {
-			auto UIpos = j.at("UIBasePosition");
-            t.UIbasePos = { UIpos.value("x", 0.0f), UIpos.value("y", 0.0f), UIpos.value("z", 0.0f) };
-        }
-        if (j.contains("UIBaseScale"))
-		{
-			auto UIscale = j.at("UIBaseScale");
-            t.UIbaseScale = { UIscale.value("x", 0.0f), UIscale.value("y", 0.0f), UIscale.value("z", 0.0f) };
-        }
-
-        t.pos = { pos.value("x", 0.0f), pos.value("y", 0.0f), pos.value("z", 0.0f) };
-        t.rot = j.value("Rotation", 0.0f);
-        t.scale = { scl.value("x", 1.0f), scl.value("y", 1.0f) };
-
-        // entity layer
-        std::string l = j.value("Layer", "");
-        if (l == "_Engine") { t.layer = LayerType::_ENGINE; }
-        else if (l == "Background") { t.layer = LayerType::BACKGROUND; }
-        else if (l == "Foreground") { t.layer = LayerType::FOREGROUND; }
-        else if (l == "GameUI") { t.layer = LayerType::GAMEUI; }
-        else if (l == "_Engine2") { t.layer = LayerType::_ENGINE2; }
-        else { t.layer = LayerType::GAMELAYER; }
-    }
     
-    inline void from_json(const json& j, PlayerController& p) {
-        j.at("moveSpeed").get_to(p.moveSpeed);
-        j.at("jumpSpeed").get_to(p.jumpSpeed);
-    }
-
-    // PHYSICS ====================================================
-    inline void from_json(const json& j, RigidBody& r) {
-        float mass{ 1.f };
-        r.invMass = 1.f;
-
-        if (j.contains("mass")) {
-            j.at("mass").get_to(mass);
-            r.invMass = 1.f / mass;
-        }
-
-        float inertia{ mass };
-        if (j.contains("inertia")) {
-            j.at("inertia").get_to(inertia);
-        }
-        r.invInertia = 1.f / inertia;
-
-        r.restitution = 0.5f;
-        r.force = Force{};
-        r.accel = Vec2{};
-        r.vel = Vec2{};
-        r.useGravity = false;
-        j.at("useGravity").get_to(r.useGravity);
-    }
-
-    // GRAPHICS ===================================================
-    inline void from_json(const json& j, Sprite& s) {
-        j.at("textureName").get_to(s.textureName);
-    }
-
-    inline void from_json(const json& j, Color& c) {
-        j.at("r").get_to(c.r);
-        j.at("g").get_to(c.g);
-        j.at("b").get_to(c.b);
-        j.at("a").get_to(c.a);
-    }
-
-    // Renderable is tricky since Mesh* and Material* are runtime resources.
-    // Might instead serialize names/ids and resolve them later; Store meshes in an unorderedmap with std::string keys;
-    inline void from_json(const json& j, Renderable& r) {
-
-        j.at("meshName").get_to(r.meshName);
-        j.at("materialName").get_to(r.materialName);
-
-        if (j.contains("isWireframe"))
-            j.at("isWireframe").get_to(r.isWireframe);
-        else
-            r.isWireframe = false;
-
-        r.wasModified = true;
-
-    }
-
-    // Font =======================================================
-    inline void from_json(const json& j, Font& f) {
-        j.at("fontType").get_to(f.fontType);
-        j.at("text").get_to(f.text);
-        j.at("fontSize").get_to(f.fontSize);
-        auto clr = j.at("textColor");
-        f.textColor = { clr.value("r", 0.0f), clr.value("g", 0.0f), clr.value("b", 0.0f) };
-        auto offsetPos = j.at("offsetPosition");
-        f.offsetPosition = { offsetPos.value("x", 0.0f), offsetPos.value("y", 0.0f), offsetPos.value("z", 0.0f) };
-    }
-
-    // Animator ===================================================
-    inline void from_json(const json& j, Animator& a) {
-        j.at("spriteSheetName").get_to(a.spriteSheetName);
-        j.at("playbackSpeed").get_to(a.playbackSpeed);
-        j.at("isPlaying").get_to(a.isPlaying);
-        j.at("isLooping").get_to(a.isLooping);
-    }
-
-    // Camera =====================================================
-    inline void from_json(const json& j, Camera& c) {
-        j.at("isMainCam").get_to(c.isMainCam);
-        j.at("zoom").get_to(c.zoom);
-        j.at("width").get_to(c.width);
-        j.at("height").get_to(c.height);
-    }
-
-    inline void from_json(const json& j, ButtonInfo& b) {
-        if (!j.contains("action") 
-            || !j.contains("type") 
-            || !j.contains("target")) {
-            b.type = ButtonType::INVALID_BUTTON;
-            return;
-        }
-
-        if (j["action"] == "PlayAudio") {
-            b.action = ButtonAction::PLAYAUDIO;
-        }
-        if (j["action"] == "PlayAudio2") {
-            b.action = ButtonAction::PLAYAUDIO2;
-        }
-        if (j["action"] == "PlayAudio3") {
-            b.action = ButtonAction::PLAYAUDIO3;
-        }
-
-        // Menu actions
-        if (j["action"] == "LoadLevel") { b.action = ButtonAction::LOADLEVEL; }
-        if (j["action"] == "OpenMenu") { b.action = ButtonAction::OPENMENU; }
-        if (j["action"] == "NoAction") { b.action = ButtonAction::NOACTION; }
-        // Button type
-        if (j["type"] == "Slider") { b.type = ButtonType::SLIDER; }
-        if (j["type"] == "Clicker") { b.type = ButtonType::CLICKER; }
-
-        b.target = j["target"];
-    }
-
-    // COLLISION ==================================================
-    inline void from_json(const json& j, Collider& c) {
-        std::string shapeStr, typeStr;
-        j.at("shape").get_to(shapeStr);
-        j.at("type").get_to(typeStr);
-
-        if (shapeStr == "AABB") c.shape = ShapeType::AABB;
-        else if (shapeStr == "Circle") c.shape = ShapeType::Circle;
-
-        if (typeStr == "Solid") c.type = ColliderType::Solid;
-        //else if (typeStr == "Ground") c.type = ColliderType::Ground;
-        else if (typeStr == "Trigger") c.type = ColliderType::Trigger;
-
-        j.at("isStatic").get_to(c.isStatic);
-
-        //if (c.shape == ShapeType::AABB) {
-        //    j.at("width").get_to(c.width);
-        //    j.at("height").get_to(c.height);
-        //    c.radius = 0.5f;
-        //}
-        //else if (c.shape == ShapeType::Circle) {
-        //    j.at("radius").get_to(c.radius);
-        //    c.width = 1.f;
-        //    c.height = 1.f;
-        //}
-
-        c.width = c.height = c.radius = 0.f;
-        if (j.contains("width")) { j.at("width").get_to(c.width); }
-        if (j.contains("height")) { j.at("height").get_to(c.height); }
-        if (j.contains("radius")) { j.at("radius").get_to(c.radius); }
-
-        // Optional runtime-only flags (not usually in prefab JSON)
-        c.isGrounded = j.value("isGrounded", false);
-        c.colliding = j.value("colliding", false);
-    }
-
-    // Audio
-    inline void from_json(const json& j, Audio& a) {
-        j.at("audioKey").get_to(a.audioKey);
-
-        if (j.contains("volume"))
-        j.at("volume").get_to(a.volume);
-
-        j.at("loop").get_to(a.loop);
-        j.at("playOnStart").get_to(a.playOnStart);
-        // j.at("is3D").get_to(a.is3D);
-        j.at("isPlaying").get_to(a.isPlaying);
-
-    }
-    // STATES ==================================================
-    //States from_json function is within StateBase.h
-    
-    // SCRIPTING ==================================================
-    inline void from_json(const json& j, Script& s) {
-        //j.at("name").get_to(s.name);
-        for (const auto& names : j["name"])
-        {
-            s.names.push_back(names.get<std::string>());
-        }
-    }
-
-    // for converting string to enum
-    inline ButtonAction StringToEnumButtonAction(const std::string& str) {
-        if (str == "PLAYAUDIO") return ButtonAction::PLAYAUDIO;
-        if (str == "PLAYAUDIO2") return ButtonAction::PLAYAUDIO2;
-        if (str == "PLAYAUDIO3") return ButtonAction::PLAYAUDIO3;
-        if (str == "LOADLEVEL") return ButtonAction::LOADLEVEL;
-        if (str == "OPENMENU") return ButtonAction::OPENMENU;
-        if (str == "NOACTION") return ButtonAction::NOACTION;
-        if (str == "EXIT") return ButtonAction::EXIT;
-
-        // Default if string doesn't match
-        return ButtonAction::NOACTION;
-    }
-
-    // for converting enum to string
-	// can be used for debugging purposes
-    inline std::string EnumButtonActionToString(ButtonAction action) {
-        switch (action) {
-        case ButtonAction::PLAYAUDIO: return "PLAYAUDIO";
-        case ButtonAction::PLAYAUDIO2: return "PLAYAUDIO2";
-        case ButtonAction::PLAYAUDIO3: return "PLAYAUDIO3";
-        case ButtonAction::LOADLEVEL: return "LOADLEVEL";
-        case ButtonAction::OPENMENU: return "OPENMENU";
-        case ButtonAction::NOACTION: return "NOACTION";
-        case ButtonAction::EXIT: return "EXIT";
-        default: return "UNKNOWN";
-        }
-    }
-
 }   // NightSnack
 
 #endif // COMPONENT_HPP

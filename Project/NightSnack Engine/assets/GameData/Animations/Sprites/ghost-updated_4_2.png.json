@@ -1,0 +1,39 @@
+{
+    "clips": {
+        "Sprites\\ghost-updated_4_2.png_0": {
+            "frames": [
+                {
+                    "timeDelay": 32
+                },
+                {
+                    "timeDelay": 23
+                },
+                {
+                    "timeDelay": 66
+                },
+                {
+                    "timeDelay": 49
+                }
+            ],
+            "name": "bluespell"
+        },
+        "Sprites\\ghost-updated_4_2.png_1": {
+            "frames": [
+                {
+                    "timeDelay": 20
+                },
+                {
+                    "timeDelay": 11
+                },
+                {
+                    "timeDelay": 20
+                },
+                {
+                    "timeDelay": 5
+                }
+            ],
+            "name": "dead"
+        }
+    },
+    "spritesheet": "Sprites\\ghost-updated_4_2.png"
+}

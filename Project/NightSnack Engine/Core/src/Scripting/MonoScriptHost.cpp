@@ -1,7 +1,8 @@
 /******************************************************************************
- * File:        MonoScriptHost.cpp
+ * File:        MonoScriptHost.h
  * Project:     NightSnack
- * Author(s):	Chewn Thing Kwan
+ * Author(s):	Chewn Thing Kwan (Primary, 70%) - Added and implemeted base class
+ *              Clement Ang Yang Ying (Secondary, 30%) - Modified and added value changing
  *
  * Description:
  * This file defines the member functions of MonoScriptHost.
@@ -21,6 +22,9 @@
 #include <iostream>
 #include <algorithm>
 #include <Core/ECS/Entity.h>
+#include <Core/ECS/Component.h>
+#include "ScriptTypes.h"
+#include "MonoExposeBridge.h"
 
 namespace NightSnack::Scripting {
 
@@ -77,7 +81,7 @@ namespace NightSnack::Scripting {
         if (!m_initialized) return;
 
         // Clear script instances
-        m_scriptInstances.clear();
+        //m_scriptInstances.clear();
         m_classCache.clear();
 
         // Unload app domain
@@ -146,7 +150,7 @@ namespace NightSnack::Scripting {
         mono_runtime_object_init(instance);
 
         // Store instance
-        m_scriptInstances.push_back(instance);
+        //m_scriptInstances.push_back(instance);
 
         //Set the entity ID on the script
 
@@ -161,16 +165,16 @@ namespace NightSnack::Scripting {
     void MonoScriptHost::DestroyScriptInstance(void* instance) {
         if (!instance) return;
 
-        MonoObject* obj = static_cast<MonoObject*>(instance);
+        //MonoObject* obj = static_cast<MonoObject*>(instance);
 
         // Call OnDestroy
         CallMethod(instance, "OnDestroy");
 
         // Remove from active instances
-        auto it = std::find(m_scriptInstances.begin(), m_scriptInstances.end(), obj);
-        if (it != m_scriptInstances.end()) {
-            m_scriptInstances.erase(it);
-        }
+        //auto it = std::find(m_scriptInstances.begin(), m_scriptInstances.end(), obj);
+        //if (it != m_scriptInstances.end()) {
+        //    m_scriptInstances.erase(it);
+        //}
     }
 
     // Calls member functions of C# script classes. Name must match.
@@ -228,11 +232,25 @@ namespace NightSnack::Scripting {
         mono_field_set_value(obj, field, &objID);
     }
 
-    void MonoScriptHost::UpdateAllScripts() {
-        // Call OnUpdate on all active scripts
-        for (MonoObject* instance : m_scriptInstances) {
+    void MonoScriptHost::LoadScript(void* instance)
+    {
+        MonoObject* obj = static_cast<MonoObject*>(instance);
+        if (obj)
+            CallMethod(instance, "OnLoad");
+    }
+
+    void MonoScriptHost::StartScript(void* instance)
+    {
+        MonoObject* obj = static_cast<MonoObject*>(instance);
+        if (obj)
+            CallMethod(instance, "OnStart");
+    }
+
+    void MonoScriptHost::UpdateScript(void* instance) {
+        // Call OnUpdate on scripts
+        MonoObject* obj = static_cast<MonoObject*>(instance);
+        if (obj)
             CallMethod(instance, "OnUpdate");
-        }
     }
 
     std::string MonoScriptHost::GetScriptName(void* instance)
@@ -245,6 +263,72 @@ namespace NightSnack::Scripting {
         }
         else
             return "";
+    }
+
+    void MonoScriptHost::SetScriptValue(void* instance, ScriptModifiedValue val)
+    {
+        MonoObject* obj = static_cast<MonoObject*>(instance);
+        MonoClass* monoClass = mono_object_get_class(obj);
+        MonoClassField* field = mono_class_get_field_from_name(monoClass, val.variableName.c_str());
+        MonoDomain* domain = mono_domain_get();
+
+        //Check if the variable exists
+        MonoExposeBridge monoBridge;
+        monoBridge.LoadScriptExposedFields(instance);
+
+        if (!monoBridge.GetVariableMatchingType(instance, val.variableName, val.valueType)) //Check if the the variable exists and the type matches
+            return;
+
+        monoBridge.UnloadAll();
+
+        switch (val.valueType)
+        {
+        case MonoValueType::MONO_INT:
+        {
+            int vInt = std::get<int>(val.value);
+            mono_field_set_value(obj, field, &vInt);
+            break;
+        }
+        case MonoValueType::MONO_FLOAT:
+        {
+            float vFloat = std::get<float>(val.value);
+            mono_field_set_value(obj, field, &vFloat);
+            break;
+        }
+        case MonoValueType::MONO_BOOL:
+        {
+            bool vBool = std::get<bool>(val.value);
+            mono_field_set_value(obj, field, &vBool);
+            break;
+        }
+        case MonoValueType::MONO_STRING:
+        {
+            MonoString* str =
+                mono_string_new(domain, std::get<std::string>(val.value).c_str());
+            mono_field_set_value(obj, field, str);
+            break;
+        }
+        case MonoValueType::MONO_VECTOR2:
+        {
+            Vec2 v = std::get<Vec2>(val.value);
+            NightSnack::Scripting::vec2 vec{ v.x, v.y };
+
+            mono_field_set_value(obj, field, &v);
+            break;
+        }
+        case MonoValueType::MONO_VECTOR3:
+        {
+            Vec3 v = std::get<Vec3>(val.value);
+            NightSnack::Scripting::vec3 vec{ v.x, v.y, v.z };
+
+            mono_field_set_value(obj, field, &v);
+            break;
+        }
+        case MonoValueType::MONO_SCRIPT:
+        {
+            break;
+        }
+        }
     }
 
     // Helper functions ----------------------------------

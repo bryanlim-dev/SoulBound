@@ -8,7 +8,7 @@
  * It initializes the AnimationClips and AnimationFrames of every texture loaded, based on its number of columns and rows.
  * It manages the updating of UV coordinates of the current AnimationClip, which is used by the Graphics System.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2026 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -17,6 +17,7 @@
 #include "Core/ECS/Coordinator.h"
 #include "Systems/Application/IEvent.h"
 #include <Graphics/Texture.h>
+#include <json.hpp>
 
 namespace NightSnack {
 
@@ -118,35 +119,7 @@ namespace NightSnack {
 		The number of AnimationClips to slice.
 		*/
 		/************************************************************************/
-		void CreateAnimationClips(std::string textureName, Texture* tex, int cols, int rows);
-
-		/************************************************************************/
-		/*!
-		\brief
-		Get the names of all Animation Clip names, owned by a specific entity.
-
-		\param[in] e
-		The specified entity
-
-		\return 
-		A vector strings of all Animation Clip names that the entity owns. 
-		*/
-		/************************************************************************/
-		std::vector<std::string> GetSpritesheetAnimationClipsNames(Entity e);
-
-		/************************************************************************/
-		/*!
-		\brief
-		Set the current animation clip for an entity
-
-		\param[in] animationClipName
-		The animation clip name to be the current one
-
-		\param[in] e
-		The specified entity
-		*/
-		/************************************************************************/
-		void SetCurrentAnimationClip(const std::string& animationClipName, Entity e);
+		void CreateAnimationClips(std::string textureName, int cols, int rows);
 
 		/************************************************************************/
 		/*!
@@ -156,6 +129,202 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void ChangeAnimation();
+
+		/************************************************************************/
+		/*!
+		\brief
+		Save the current spritesheet to the disk using JSON
+
+		\param[in] spritesheet
+		The name of the spritesheet that is currently being saved
+		*/
+		/************************************************************************/
+		void SaveAnimationAsset(const std::string& spritesheet);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Load the current spritesheet from the disk using JSON
+
+		\param[in] spritesheet
+		The name of the spritesheet that is currently being loaded
+		*/
+		/************************************************************************/
+		void LoadAnimationAsset(const std::string& spritesheet);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Get the clip ID of an Animation Clip
+
+		\param[in] spritesheet
+		The name of the spritesheet that currently holds the Animation Clip you are finding
+
+		\param[in] name
+		The display name of the Animation Clip you are finding
+
+		\return
+		The clip ID of the Animation Clip (std::string)
+		*/
+		/************************************************************************/
+		std::string FindAnimationClipIDByName(const std::string& spritesheet, const std::string& name);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Helper function to play an Animation Clip
+
+		\param[in] e
+		The entity that will be playing the Animation Clip
+
+		\param[in] restart
+		Whether to restart the Animation Clip, if it was paused halfway only
+		*/
+		/************************************************************************/
+		void PlayAnimation(Entity e, bool restart);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Helper function to stop an Animation Clip
+
+		\param[in] e
+		The entity that is currently playing the Animation Clip
+
+		\param[in] restart
+		Whether to restart the Animation Clip, if it was paused halfway only
+		*/
+		/************************************************************************/
+		void StopAnimation(Entity e);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Getter function to whether the specific entity is currently playing an Animation Clip
+
+		\param[in] e
+		The entity that might be playing an Animation Clip
+
+		\return
+		Whether the specific entity is currently playing an Animation Clip
+		*/
+		/************************************************************************/
+		bool IsPlayingAnimation(Entity e) const;
+
+		/************************************************************************/
+		/*!
+		\brief
+		Getter function to whether the specific entity is currently looping an Animation Clip
+
+		\param[in] e
+		The entity that might be looping an Animation Clip
+
+		\return
+		Whether the specific entity is currently looping an Animation Clip
+		*/
+		/************************************************************************/
+		bool IsLoopingAnimation(Entity e) const;
+
+		/************************************************************************/
+		/*!
+		\brief
+		Setter function to set an Animation Clip's loop status 
+
+		\param[in] e
+		The entity holding the Animation clip
+
+		\param[in] loop
+		The updated loop status of the Animation Clip
+		*/
+		/************************************************************************/
+		void SetLoopingAnimation(Entity e, bool loop);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Set the current animation clip for an entity using the clip ID
+
+		\param[in] animationClipName
+		The name of the Animation Clip that should be the current one
+
+		\param[in] e
+		The specified entity
+		*/
+		/************************************************************************/
+		void SetCurrentAnimationClipByID(const std::string& animationClipName, Entity e);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Set the current animation clip for an entity using the clip's display name
+
+		\param[in] e
+		The specified entity
+
+		\param[in] clipName
+		The display name of the Animation Clip that should be the current one
+
+		\return
+		Success or not 
+		*/
+		/************************************************************************/
+		bool SetCurrentAnimationClipByName(Entity e, const std::string& clipName);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Getter function for the current animation clip display name
+
+		\param[in] e
+		The specified entity
+
+		\return
+		The display name of the current animation clip
+		*/
+		/************************************************************************/
+		std::string GetCurrentAnimationClipName(Entity e) const;
+
+		/************************************************************************/
+		/*!
+		\brief
+		Get the names of all Animation Clip display names, owned by a specific entity.
+
+		\param[in] e
+		The specified entity
+
+		\return
+		A vector strings of all Animation Clip display names that the entity owns.
+		*/
+		/************************************************************************/
+		std::vector<std::string> GetSpritesheetAnimationClipsNames(Entity e);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Set the entity's animator component playback speed accordingly
+
+		\param[in] e
+		The specified entity
+
+		\param[in] speed
+		The updated playback speed
+		*/
+		/************************************************************************/
+		void SetAnimationPlaybackSpeed(Entity e, float speed);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Get the entity's animator component playback speed
+
+		\param[in] e
+		The specified entity
+
+		\return
+		THe entity's animator component playback speed
+		*/
+		/************************************************************************/
+		float GetAnimationPlaybackSpeed(Entity e) const;
 
 		/************************************************************************/
 		/*!
@@ -185,12 +354,12 @@ namespace NightSnack {
 		struct AnimationFrame {
 			float U0{}, V0{}; // top left
 			float U1{}, V1{}; // bottom right
-			float timeDelay{}; // how long each frame will last in steps
+			int timeDelay{}; // how long each frame will last in steps
 		};
 
 		// A single animation, comprising of many single frames
 		struct AnimationClip {
-			Texture* texture = nullptr;
+			std::string name; // User can rename this
 			std::vector<AnimationFrame> frames;
 		};
 
@@ -207,5 +376,21 @@ namespace NightSnack {
 		// System event dispatcher
 		EventDispatcher* m_dispatcher = nullptr;
 	};
+
+	// AnimationFrame JSON helpers
+	inline void to_json(json& j, const AnimationSystem::AnimationFrame& f) {
+		j = { { "timeDelay", f.timeDelay } };
+	}
+	inline void from_json(const json& j, AnimationSystem::AnimationFrame& f) {
+		j.at("timeDelay").get_to(f.timeDelay);
+	}
+
+	// AnimationClip JSON helpers
+	inline void to_json(json& j, const AnimationSystem::AnimationClip& c) {
+		j = { { "frames", c.frames } };
+	}
+	inline void from_json(const json& j, AnimationSystem::AnimationClip& c) {
+		j.at("frames").get_to(c.frames);
+	}
 
 } // NightSnack

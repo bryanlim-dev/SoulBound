@@ -14,26 +14,33 @@
 // ============================================================
 // RotatorScript.cs - Moves object left/right continuously
 // ============================================================
+using System.Diagnostics;
+
 namespace ManagedScripts
 {
     public class HoverScript : Script
     {
+
+        [SerializeField]
+        public float testFloat = 0;
         [SerializeField]
         public float moveSpeed = 150.0f;
         [SerializeField]
         public float time = 0.0f;
 
-        [SerializeField]
-        RotatorScript rotate = null;
+        //[SerializeField]
+        //RotatorScript rotate = null;
 
         public Transform transform;
+
 
         public override void OnStart()
         {
             transform = new Transform(EntityId);
             //Log($"Player Script ID: {GetPlayerID()}");
             //Engine.CreateScript(EntityId, "RotatorScript");
-            rotate = Engine.GetScript<RotatorScript>(EntityId, "RotatorScript");
+            //rotate = Engine.GetScript<RotatorScript>(EntityId, "RotatorScript");
+
 
             //if (rotate != null){
             //    Log($"Script found!");
@@ -46,7 +53,9 @@ namespace ManagedScripts
             //Log("HoverScript started!");
             //Log($"Initial Position: {Position.X}, {Position.Y}");
             //Log($"Move speed: {moveSpeed}.f");
-            moveSpeed = 1000;
+            //moveSpeed = 1000;
+            //Engine.Log("Inital Move Speed: " + moveSpeed);
+
         }
 
         public override void OnUpdate()
@@ -85,6 +94,12 @@ namespace ManagedScripts
 
             // Set back to ECS
             transform.Position = pos;
+
+
+            //if (Engine.IsKeyReleased(KeyboardKeys.W))
+            //{
+            //    Engine.Log("Move Speed: " + moveSpeed);
+            //}
         }
 
         public override void OnDestroy()

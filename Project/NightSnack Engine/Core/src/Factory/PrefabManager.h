@@ -50,11 +50,14 @@ namespace NightSnack {
 			RegisterComponentLoader<Font>("Font");
 			RegisterComponentLoader<Camera>("Camera");
 			RegisterComponentLoader<Audio>("Audio");
+			RegisterComponentLoader<Particle>("Particle");
+			RegisterComponentLoader<Collectible>("Collectible");
 
 			RegisterComponentLoader<ButtonInfo>("ButtonInfo");
 
-			RegisterComponentLoader<States>("States");
+			//RegisterComponentLoader<States>("States");
 			RegisterComponentLoader<Script>("Script");
+			RegisterComponentLoader<Character>("Character");
 			RegisterComponentLoader<PlayerController>("PlayerController");
 		}
 
@@ -98,6 +101,7 @@ namespace NightSnack {
 			if (e == INVALID_ENTITY) { return e; }
 
 			m_coord.AddComponent<Transform>(e, Transform{});	// All entities should have a transform;
+			m_coord.AddComponent<Hierarchy>(e, Hierarchy{});
 			//std::cerr << "Added Transform to Entity\n";
 
 			// Adds all components from prefab definition;

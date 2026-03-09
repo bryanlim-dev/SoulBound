@@ -1,0 +1,28 @@
+{
+    "Collider": {
+        "height": 100.0,
+        "isStatic": true,
+        "radius": 125.0,
+        "shape": "AABB",
+        "type": "solid",
+        "width": 150.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "PlatformTile1",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "gravityMult": 1.0,
+        "mass": 1.0,
+        "restitution": 0.0,
+        "useGravity": true,
+        "useRotate": false
+    },
+    "Script": {
+        "name": [
+            "FallingPlatformScript",
+            "WiggleScript"
+        ]
+    }
+}

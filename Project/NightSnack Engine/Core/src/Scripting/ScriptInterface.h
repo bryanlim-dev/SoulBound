@@ -1,8 +1,8 @@
 /******************************************************************************
  * File:        ScriptInterface.h
  * Project:     NightSnack
- * Author(s):	Chewn Thing Kwan - (Primary, 30%) - Created base file and Transform/Input/Sound functions
-                Clement Ang Yang Ying - (Secondary, 70%) - Added other component and entity functions, orgnized functions
+ * Author(s):	Chewn Thing Kwan - (Primary, 20%) - Created base file and Transform/Input/Sound functions
+                Clement Ang Yang Ying - (Secondary, 80%) - Added other component and entity functions, orgnized functions
  *
  * Description:
  * This file declares class ScriptInterface which contain functions which can 
@@ -21,6 +21,8 @@
 
 #include <mono/metadata/object.h>
 #include <string>
+
+
 
 namespace NightSnack::Scripting {
 
@@ -190,6 +192,11 @@ namespace NightSnack::Scripting {
         bool GetColliderColliding(Entity e);
         //Sets Collider isCOlliding of entity
         void SetColliderColliding(Entity e, bool colliding);
+
+        //Checks collision with 2 entiies
+        //returns true if colliding
+        //return false if not or 1 or both entities do not have the required components
+        bool CheckCollision(Entity a, Entity b);
 #pragma endregion
 
 #pragma region Color
@@ -320,6 +327,8 @@ namespace NightSnack::Scripting {
         //Sets Camera of entity
         void SetCamera(Entity e, Cam cam);
 
+        Entity GetMainCamera();
+
         //Gets Camera isMain of entity
         bool GetCameraIsMain(Entity e);
         //Sets Camera isMain of entity
@@ -339,6 +348,11 @@ namespace NightSnack::Scripting {
         float GetCameraHeight(Entity e);
         //Sets Camera height of entity
         void SetCameraHeight(Entity e, float main);
+
+        //Gets Animator current animation UVTopLeft of entity
+        vec2 GetCameraOffset(Entity e);
+        //Sets Animator current animation UVTopLeft of entity
+        void SetCameraOffset(Entity e, vec2 offse);
 #pragma endregion
 
 #pragma region Audio
@@ -399,6 +413,16 @@ namespace NightSnack::Scripting {
         bool IsKeyReleased(int key);
 #pragma endregion
 
+        //Gets non-script component in self or children if not found in self
+        Entity GetComponentInChildren(Entity entity, std::string componentName);
+        //Gets script object in self or children if not found in self
+        MonoObject* GetScriptComponentInChildren(Entity entity, std::string scriptName);
+
+        //Gets non-script component in self or parent if not found in self
+        Entity GetComponentInParent(Entity entity, std::string componentName);
+        //Gets script object in self or parent if not found in self
+        MonoObject* GetScriptComponentInParent(Entity entity, std::string scriptName);
+
         // Audio play sound
         void PlaySound(const std::string& path);
 
@@ -411,9 +435,13 @@ namespace NightSnack::Scripting {
         //Create Entity
         Entity CreateEntityArchetype(std::string archeTypeName, vec3 pos);
 
+#pragma region player
         //Gets player ID
         Entity GetPlayerID();
 
+        //Respawns Player
+        void KillPlayer();
+#pragma endregion
         //Loads level based on a name
         void LoadLevel(std::string lvlName);
 
@@ -421,8 +449,10 @@ namespace NightSnack::Scripting {
         void RestartLevel();
 
     private:
-        //coordiator refrence
+        //coordiator refrence6
         Coordinator& m_coord;
+
+        //map of component name to component
     };
 
 } // namespace NightSnack::Scripting

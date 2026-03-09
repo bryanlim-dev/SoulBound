@@ -43,8 +43,8 @@ namespace NightSnack {
             m_shader->SetInt("uTex2d", 0);
         }
 
-        // Enable alpha blending for textures with .png format
-        if (m_enableAlphaBlending) {
+        // Enable alpha blending for textures with .png format, or for transparent objects like colliders
+        if (m_enableAlphaBlending || m_baseColor.a == 0.f) {
             glEnable(GL_BLEND);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

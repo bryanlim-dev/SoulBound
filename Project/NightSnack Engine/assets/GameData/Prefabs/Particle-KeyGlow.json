@@ -1,0 +1,30 @@
+{
+    "Color": {
+        "a": 1.0,
+        "b": 1.0,
+        "g": 1.0,
+        "r": 1.0
+    },
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "ColorMat",
+        "meshName": "square"
+    },
+    "Particle": {
+      "type": "GLOW_KEY",
+      "velocity": { "x": 0.0, "y": 25.0 },
+      "acceleration": { "x": 0.0, "y": 0.0 },
+      "startSize": { "x": 7.0, "y": 7.0 },
+      "endSize": { "x": 2.0, "y": 2.0 },
+      "centerPos": { "x": 0.0, "y": 0.0 },
+      "orbitRadius": 0.0,
+      "orbitSpeed": 0.0,
+      "orbitAngle": 0.0,
+      "angularVelocity": 45.0,
+      "glowIntensity": 1.6,
+      "glowFalloff": 2.2,
+      "lifeTime": 200,
+      "age": 0,
+      "affectedByGravity": false
+    }
+}

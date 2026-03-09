@@ -17,6 +17,7 @@
 
 #include "Input.h"
 #include "Systems/Graphics.h"
+#include <imgui.h>
 
 namespace NightSnack {
 
@@ -47,12 +48,27 @@ namespace NightSnack {
 	}
 
 	void InputSystem::Update() {
+		ResetInputStates();
+
 		// Find current mouse position (World)
 		float Hvp = static_cast<float>(m_coord.GetWindowHeight());
 		float Wvp = static_cast<float>(m_coord.GetWindowWidth());
 		Entity cam = m_coord.GetSystem<GraphicsSystem>()->FindCamera();
-		m_mouseWorldPosX = (-Wvp / 2.f) + m_mousePosX + m_coord.GetComponent<Transform>(cam).pos.x;
-		m_mouseWorldPosY = (Hvp / 2.f) - m_mousePosY + m_coord.GetComponent<Transform>(cam).pos.y;
+
+		auto& camTransform = m_coord.GetComponent<Transform>(cam);
+		auto& camera = m_coord.GetComponent<Camera>(cam);
+		float zoom = camera.zoom;
+		float halfCamWidth = (camera.width * 0.5f) / zoom;
+		float halfCamHeight = (camera.height * 0.5f) / zoom;
+
+		// Convert screen-space mouse [0, Wvp] x [0, Hvp] to normalized [-1, 1] x [-1, 1]
+		float normalizedX = (m_mousePosX / Wvp) * 2.0f - 1.0f;
+		float normalizedY = 1.0f - (m_mousePosY / Hvp) * 2.0f;  // Flip Y axis
+
+		// Scale to camera world space and add camera position
+		m_mouseWorldPosX = (normalizedX * halfCamWidth) + camTransform.pos.x;
+		m_mouseWorldPosY = (normalizedY * halfCamHeight) + camTransform.pos.y;
+
 		// Compute mouse delta - the relative movement since the last frame
 		m_deltaWorldPosX = m_mouseWorldPosX - m_prevMouseWorldPosX;
 		m_deltaWorldPosY = m_mouseWorldPosY - m_prevMouseWorldPosY;
@@ -78,10 +94,13 @@ namespace NightSnack {
 		case GLFW_KEY_S: return KeyboardKeys::S;
 		case GLFW_KEY_D: return KeyboardKeys::D;
 		case GLFW_KEY_H: return KeyboardKeys::H;
+		case GLFW_KEY_J: return KeyboardKeys::J;
 		case GLFW_KEY_SPACE: return KeyboardKeys::SPACE;
+		case GLFW_KEY_ENTER: return KeyboardKeys::ENTER;
 		case GLFW_KEY_RIGHT: return KeyboardKeys::RIGHT_ARROW;
 		case GLFW_KEY_LEFT: return KeyboardKeys::LEFT_ARROW;
 		case GLFW_KEY_UP: return KeyboardKeys::UP_ARROW;
+		case GLFW_KEY_DOWN: return KeyboardKeys::DOWN_ARROW;
 		default: return KeyboardKeys::NUM_TOTAL_KEYBOARD_KEY;
 		}
 	}
@@ -101,11 +120,28 @@ namespace NightSnack {
 			// Player movement
 		case GLFW_KEY_A: return InputEvent::InputAction::PlayerMoveLeft;
 		case GLFW_KEY_D: return InputEvent::InputAction::PlayerMoveRight;
-		case GLFW_KEY_W: return InputEvent::InputAction::PlayerJump;
+		case GLFW_KEY_SPACE: return InputEvent::InputAction::PlayerJumpAbility;
+
+		case GLFW_KEY_W: return InputEvent::InputAction::PlayerUp;
+		case GLFW_KEY_S: return InputEvent::InputAction::PlayerDown;
+
+		case GLFW_KEY_J: return InputEvent::InputAction::PlayerPossess;
+		//case GLFW_KEY_LEFT: return InputEvent::InputAction::PlayerMoveLeft;
+		//case GLFW_KEY_RIGHT: return InputEvent::InputAction::PlayerMoveRight;
+		//case GLFW_KEY_UP: return InputEvent::InputAction::PlayerJumpAbility;
+		//case GLFW_KEY_DOWN: return InputEvent::InputAction::PlayerDown;
+		//case GLFW_KEY_A: return InputEvent::InputAction::PlayerSpecialAbility;
+		//case GLFW_KEY_S: return InputEvent::InputAction::PlayerPossess;
+		//case GLFW_KEY_D: return InputEvent::InputAction::PlayerUnPossess;
+
+		case GLFW_KEY_ENTER: return InputEvent::InputAction::SkipDialogue;
+		case GLFW_KEY_1: return InputEvent::InputAction::Ability1;
+		case GLFW_KEY_2: return InputEvent::InputAction::Ability2;
+		case GLFW_KEY_3: return InputEvent::InputAction::Ability3;
 
 			// Window tests
 		case GLFW_KEY_F1: return InputEvent::InputAction::DisplayFPS;
-		case GLFW_KEY_F11: return InputEvent::InputAction::ToggleFullscreen;
+		case GLFW_KEY_F4: return InputEvent::InputAction::ToggleFullscreen;
 		case GLFW_KEY_ESCAPE: return InputEvent::InputAction::PauseGame;
 		case GLFW_KEY_F5: return InputEvent::InputAction::RestartGame;
 
@@ -118,12 +154,16 @@ namespace NightSnack {
 		case GLFW_MOUSE_BUTTON_LEFT: return InputEvent::InputAction::ClickLMB;
 
 			// Modifier events
-		case GLFW_KEY_S: // (CTRL+S)
-			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::Save : InputEvent::InputAction::NumTotalInputAction;
+		case GLFW_KEY_C: // (CTRL+C)
+			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::Copy : InputEvent::InputAction::NumTotalInputAction;
+		case GLFW_KEY_V: // (CTRL+C)
+			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::Paste : InputEvent::InputAction::NumTotalInputAction;
 		case GLFW_KEY_P: // (CTRL+P)
 			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::PhysicsDebugMode : InputEvent::InputAction::PhysicsDebugStep;
 		case GLFW_KEY_Z: // (CTRL+Z)
 			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::UndoStep : InputEvent::InputAction::NumTotalInputAction;
+		case GLFW_KEY_Y: // (CTRL+Y)
+			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::RedoStep : InputEvent::InputAction::NumTotalInputAction;
 
 		default: return InputEvent::InputAction::NumTotalInputAction;
 		}
@@ -153,9 +193,17 @@ namespace NightSnack {
 
 		InputEvent::InputActionState mappedActionState = TranslateGLFWKeyStateToAction(action);
 
-		// Dispatch InputEvent when key is pressed
+		// Dispatch InputEvent when key is pressed, and if user is not typing in an ImGui text field
 		if (m_dispatcher)
 		{
+			// Check whether the ImGui context exists first
+			if (ImGui::GetCurrentContext()) {
+				ImGuiIO& io = ImGui::GetIO();
+				// Do not queue any events if the user is in a ImGui text field
+				if (io.WantCaptureKeyboard) {
+					return;
+				}
+			}
 			m_dispatcher->QueueEvent(std::make_unique<InputEvent>(mappedAction, mappedActionState));
 		}
 

@@ -1,18 +1,281 @@
 {
-    "BGM": "mainMenu",
+    "BGM": "MainMenu",
     "Entities": [
         {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonSelect",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "LoadLevel",
+                    "target": "Level1A",
+                    "type": "Clicker",
+                    "defaultTex": "MainMenu-Play",
+                    "hoverTex": "MainMenu-PlayHover",
+                    "clickTex": "MainMenu-Play"
+                },
+                "Collider": {
+                    "height": 64.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "MainMenu-Play",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "name": [
+                        "WiggleScript"
+                    ]
+                },
+                "modified": true
+            },
             "Transform": {
-                "Layer": "GameUI",
+                "Layer": "GameLayer",
+                "Name": "Play-Button",
+                "Position": {
+                    "x": 0.0,
+                    "y": -87.5,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonSelect",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "OpenMenu",
+                    "target": "SettingsMenu",
+                    "type": "Clicker",
+                    "defaultTex": "MainMenu-Options",
+                    "hoverTex": "MainMenu-OptionsHover",
+                    "clickTex": "MainMenu-Options"
+                },
+                "Collider": {
+                    "height": 64.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "MainMenu-Options",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "Settings-Button",
+                "Position": {
+                    "x": 0.0,
+                    "y": -162.5,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonQuit",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "ExitGame",
+                    "target": "",
+                    "type": "Clicker",
+                    "defaultTex": "MainMenu-Quit",
+                    "hoverTex": "MainMenu-QuitHover",
+                    "clickTex": "MainMenu-Quit"
+                },
+                "Collider": {
+                    "height": 64.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "MainMenu-Quit",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "Quit-Button",
+                "Position": {
+                    "x": 0.0,
+                    "y": -312.5,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "TitleScreenBackground",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "BackgroundImage",
                 "Position": {
                     "x": 0.0,
                     "y": 0.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 1920.0,
+                    "y": 1080.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "MainMenuTitle",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "name": [
+                        "BobberScript"
+                    ]
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "GameTitle",
+                "Position": {
+                    "x": 0.0,
+                    "y": 180.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 996.0,
+                    "y": 204.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "MenuTitleBanner",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "name": [
+                        "BobberScript"
+                    ]
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "TitleFrame",
+                "Position": {
+                    "x": 0.0,
+                    "y": 83.94999694824219,
                     "z": 2.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 0.0,
-                    "y": 0.0
+                    "x": 780.0,
+                    "y": 132.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -24,45 +287,40 @@
                     "y": 0.0
                 }
             },
-            "prefab": "Cam"
+            "isPrefab": false
         },
         {
-            "Transform": {
-                "Layer": "Background",
-                "Position": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
+            "Components": {
+                "Animator": {
+                    "isLooping": true,
+                    "isPlaying": true,
+                    "playbackSpeed": 1.5,
+                    "spriteSheetName": "Sprites\\UI\\MainMenu\\TitleFireAnim_4_1.png"
                 },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 1612.3499755859375,
-                    "y": 912.7325439453125
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "TitleFireAnim_4_1",
+                    "meshName": "square"
                 },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
+                "Script": {
+                    "name": [
+                        "BobberScript"
+                    ]
                 },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
+                "modified": true
             },
-            "prefab": "MainMenu-Background"
-        },
-        {
             "Transform": {
                 "Layer": "GameLayer",
+                "Name": "TitleFire",
                 "Position": {
-                    "x": -12.0,
-                    "y": -84.0,
-                    "z": 0.0
+                    "x": -6.033731460571289,
+                    "y": 102.0199966430664,
+                    "z": 4.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 265.0,
-                    "y": 100.0
+                    "x": 192.0,
+                    "y": 192.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -74,20 +332,52 @@
                     "y": 0.0
                 }
             },
-            "prefab": "MainMenu-CreditButton"
+            "isPrefab": false
         },
         {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonSelect",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "OpenMenu",
+                    "target": "SettingsMenu",
+                    "type": "Clicker",
+                    "defaultTex": "MainMenu-Credits",
+                    "hoverTex": "MainMenu-CreditsHover",
+                    "clickTex": "MainMenu-Credits"
+                },
+                "Collider": {
+                    "height": 64.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "MainMenu-Credits",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
             "Transform": {
                 "Layer": "GameLayer",
+                "Name": "Settings-Button",
                 "Position": {
-                    "x": -12.0,
-                    "y": 36.0,
+                    "x": 0.0,
+                    "y": -237.5,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 265.0,
-                    "y": 100.0
+                    "x": 512.0,
+                    "y": 64.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -99,83 +389,49 @@
                     "y": 0.0
                 }
             },
-            "prefab": "MainMenu-PlayButton"
-        },
-        {
-            "Transform": {
-                "Layer": "GameLayer",
-                "Position": {
-                    "x": -12.0,
-                    "y": -204.0,
-                    "z": 0.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 265.0,
-                    "y": 100.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "prefab": "MainMenu-SettingButton"
-        },
-        {
-            "Transform": {
-                "Layer": "GameLayer",
-                "Position": {
-                    "x": -12.0,
-                    "y": -324.0,
-                    "z": 0.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 265.0,
-                    "y": 100.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "prefab": "MainMenu-Exitbutton"
-        },
-        {
-            "Transform": {
-                "Layer": "GameLayer",
-                "Position": {
-                    "x": 10.0,
-                    "y": 204.0,
-                    "z": 0.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 1000.0,
-                    "y": 200.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "prefab": "MainMenu-Title"
+            "isPrefab": false
         }
     ],
-    "Name": "MainMenu"
+    "MainCamera": {
+        "KeyFrames": [
+            {
+                "maxX": 0.0,
+                "maxY": 0.0,
+                "minX": 0.0,
+                "minY": 0.0,
+                "pos": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0
+                },
+                "scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "zoom": 1.0
+            }
+        ],
+        "cameraLock": false,
+        "height": 900.0,
+        "isMainCam": true,
+        "offsetX": 0.0,
+        "offsetY": 0.0,
+        "posX": 0.0,
+        "posY": 0.0,
+        "posZ": 20.0,
+        "width": 1600.0,
+        "zoom": 1.0
+    },
+    "Name": "MainMenu",
+    "WinZone": {
+        "ConfigFile": "",
+        "Position": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "Scale": {
+            "x": 100.0,
+            "y": 100.0
+        }
+    }
 }

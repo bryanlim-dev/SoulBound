@@ -143,6 +143,8 @@ namespace NightSnack {
         /************************************************************************/
         void Draw(Entity camera, bool isGameCamera);
 
+        std::vector<std::string> WrapText(const std::string& text, const std::string& fontName, float maxWidth, float scale);
+
         /************************************************************************/
         /*!
         \brief
@@ -175,7 +177,7 @@ namespace NightSnack {
         */
         /************************************************************************/
         void RenderText(std::string text, float x, float y, float scale, glm::vec3 color, 
-            const glm::mat4& proj, const glm::mat4& view, const std::string& fontName);
+            const glm::mat4& proj, const glm::mat4& view, const std::string& fontName, float maxWidth = 0.f);
 
         // Required by ISystem
         std::string GetName() const override { return "FontSystem"; }
