@@ -17,6 +17,7 @@
 #include "Physics.h"
 #include "Systems/Graphics.h"
 #include "Collision.h"
+#include "Systems/DialogueSystem.h"
 
 namespace {
 	using namespace NightSnack;
@@ -79,6 +80,11 @@ namespace NightSnack {
 		// Skip Physics if camera is currently in a panning animation
 		// This is because of collision grids being based on the camera position
 		if (m_coord.GetSystem<CameraSystem>()->GetCameraIsPanning()) {
+			return;
+		}
+
+		// Skip Physics if dialogue system is active
+		if (m_coord.GetSystem<DialogueSystem>()->IsActive()) {
 			return;
 		}
 
