@@ -357,6 +357,9 @@ namespace NightSnack {
 			m_indexToEntity[indexOfRemoved] = entityOfLast;
 		}
 
+		// Reset Component
+		m_components[indexOfLast] = T{};
+
 		// Erase mappings for removed entity
 		m_entityToIndex.erase(e);
 		m_indexToEntity.erase(indexOfLast);

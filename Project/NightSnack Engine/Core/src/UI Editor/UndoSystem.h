@@ -458,6 +458,7 @@ namespace NightSnack {
         // Redo operation
         void PerformRedo(Coordinator& coord, EntityFactory& factory)
         {
+            (void)factory;
             if (redoStack.empty()) return;
             auto action = redoStack.back();
             redoStack.pop_back();

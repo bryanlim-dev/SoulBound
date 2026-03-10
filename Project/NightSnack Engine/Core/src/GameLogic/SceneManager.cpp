@@ -496,12 +496,14 @@ namespace NightSnack::Scene {
 		m_menuEntities.clear();
 		while (!m_menus.empty()) { m_menus.pop(); }
 		m_menuOpen = false;
+		//m_currentMenu.clear();
+		winScreenOn = false;
 
-		Entity m_sliderBarEntity = INVALID_ENTITY;
-		Entity m_sliderKnobEntity = INVALID_ENTITY;
-		Entity m_player = INVALID_ENTITY;
-		Entity m_camIndex = INVALID_ENTITY;
-		Entity m_hoveredEntity = INVALID_ENTITY;
+		m_sliderBarEntity = INVALID_ENTITY;
+		m_sliderKnobEntity = INVALID_ENTITY;
+		m_player = INVALID_ENTITY;
+		m_camIndex = INVALID_ENTITY;
+		m_hoveredEntity = INVALID_ENTITY;
 
 		// Unload everything first
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
@@ -610,6 +612,7 @@ namespace NightSnack::Scene {
 		t.pos.x = t.pos.y = 0.f;
 		t.pos.z = m_camDepth;
 		t.layer = LayerType::GAMEUI;
+		t.name = "Camera";
 
 		m_coord.AddComponent<Transform>(e, t);
 		m_coord.AddComponent<Hierarchy>(e, Hierarchy{});
@@ -637,16 +640,19 @@ namespace NightSnack::Scene {
 
 	void SceneManager::RestartLevel() {
 
-		Entity m_sliderBarEntity = INVALID_ENTITY;
-		Entity m_sliderKnobEntity = INVALID_ENTITY;
-		Entity m_player = INVALID_ENTITY;
-		Entity m_camIndex = INVALID_ENTITY;
-		Entity m_hoveredEntity = INVALID_ENTITY;
+		m_sliderBarEntity = INVALID_ENTITY;
+		m_sliderKnobEntity = INVALID_ENTITY;
+		m_player = INVALID_ENTITY;
+		m_camIndex = INVALID_ENTITY;
+		m_hoveredEntity = INVALID_ENTITY;
 
+		// Reset menus
 		// Reset menus
 		m_menuEntities.clear();
 		while (!m_menus.empty()) { m_menus.pop(); }
 		m_menuOpen = false;
+		//m_currentMenu.clear();
+		winScreenOn = false;
 
 		json const& level = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelKey);
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
@@ -915,8 +921,11 @@ namespace NightSnack::Scene {
 				}
 				else if (entityData.contains("Components")) {
 					//std::cerr << "[Open Menu] Check 3\n";
-					e = factory->Create();
 					Transform t = entityData["Transform"];
+					//if (t.name == "AudioSlider") continue;
+
+					std::cerr << "[Open Menu] Creating " << t.name << '\n';
+					e = factory->Create();
 					t.pos += { camX, camY, 0.f };
 					t.pos.z += (float)m_menus.size() * 2.f;
 					// Divide by zoom to make menu appear same size on screen
@@ -957,6 +966,8 @@ namespace NightSnack::Scene {
 			{
 				m_sliderBarEntity = sliderBar;
 				m_sliderKnobEntity = sliderKnob;
+
+				std::cout << "[SceneManager] SliderBar: " << m_sliderBarEntity << ", SliderKnob: " << m_sliderKnobEntity << '\n';
 
 				// Compute min/max from the bar's actual world position and scale
 				ButtonInfo& b = m_coord.ModifyComponent<ButtonInfo>(sliderBar);

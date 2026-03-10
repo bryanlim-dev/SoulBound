@@ -661,7 +661,7 @@
             },
             "Transform": {
                 "Layer": "Foreground",
-                "Name": "AudioKnob",
+                "Name": "CornerKnob",
                 "Position": {
                     "x": -450.0,
                     "y": 200.0,
@@ -695,7 +695,7 @@
             },
             "Transform": {
                 "Layer": "Foreground",
-                "Name": "AudioKnob",
+                "Name": "CornerKnob",
                 "Position": {
                     "x": -450.0,
                     "y": -242.57630920410156,
@@ -729,7 +729,7 @@
             },
             "Transform": {
                 "Layer": "Foreground",
-                "Name": "AudioKnob",
+                "Name": "CornerKnob",
                 "Position": {
                     "x": 450.0,
                     "y": -240.8677978515625,

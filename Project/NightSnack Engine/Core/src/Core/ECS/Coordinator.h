@@ -335,12 +335,21 @@ namespace NightSnack {
 		m_componentManager->RegisterComponent<T>();
 	}
 
+#if 0
+#include <typeinfo>
+	template <typename T>
+	void printType() {
+		std::cout << "Type: " << typeid(T).name() << std::endl;
+	}
+#endif
+
 	// Add a Component of type T to and Entity, updates the Entity's signature,
 	// making sure to also inform the ComponentManager and SystemManager;
 	template <typename T>
 	void Coordinator::AddComponent(Entity e, T component) {
 
 		if (HasComponent<T>(e)) {
+			//printType<T>();
 			std::cerr << "Error: Entity " << e << " already has this component!!\n";
 			return;
 		}

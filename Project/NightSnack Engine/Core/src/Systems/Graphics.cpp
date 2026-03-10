@@ -81,6 +81,13 @@ namespace NightSnack {
 
 		// Camera stuff...
 		Entity mainCam = FindCamera();
+		//static float time = 0.f;
+		//if (time > 1.0f) {
+		//	std::cout << "Main Camera => " << mainCam << std::endl;
+		//	time = 0.f;
+		//}
+		//time += FixedDT;
+
 		if (mainCam == INVALID_ENTITY) return;
 
 		if (ScreenSizeChanged()) {

@@ -254,7 +254,7 @@ namespace NightSnack
 
 		int dir = m_facingRight ? 1 : -1;
 
-		float rad = m_launchAngle * PI / 180.0f;
+		float rad = m_launchAngle * (float)PI / 180.0f;
 
 		// Compute initial launch velocity (same as Launch())
 		float launchPower = GetLaunchPower();
