@@ -1,5 +1,5 @@
 {
-    "BGM": "WindBlow",
+    "BGM": ["GameLevelMusic", "NightForest", "FrogAmbience", "WindBlow"],
     "Entities": [
         {
             "Prefab": "Player",
