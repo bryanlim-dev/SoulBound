@@ -2,6 +2,7 @@
 
 #include "Core/ECS/Coordinator.h"
 #include "Systems/AudioSystem.h"
+#include <unordered_map>
 
 namespace NightSnack {
 
@@ -113,6 +114,9 @@ namespace NightSnack {
         void UpdateLine(const std::string& sequenceID, const std::string& oldLineID, const DialogueLine& updated);
 
         std::unordered_map<std::string, DialogueSequence>& GetDialogueLibrary() { return m_dialogueLibrary; }
+
+        // for dialogue played
+        std::unordered_set<std::string> m_playedSequences;
 
         bool IsActive() const { return m_dialogueState != DialogueState::INACTIVE; }
 
