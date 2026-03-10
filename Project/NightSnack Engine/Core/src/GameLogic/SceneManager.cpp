@@ -501,9 +501,6 @@ namespace NightSnack::Scene {
 
 		m_sliderBarEntity = INVALID_ENTITY;
 		m_sliderKnobEntity = INVALID_ENTITY;
-		m_player = INVALID_ENTITY;
-		m_camIndex = INVALID_ENTITY;
-		m_hoveredEntity = INVALID_ENTITY;
 
 		// Unload everything first
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
@@ -521,6 +518,8 @@ namespace NightSnack::Scene {
 
 		// Create new level entities
 		factory->CreateLevelEntities(level);
+		m_player = m_coord.GetSystem<PlayerControllerSystem>()->FindPlayer(m_coord);
+		m_camIndex = 0;
 
 		// Play Background Music
 		auto audio = m_coord.GetSystem<AudioSystem>();
@@ -558,6 +557,7 @@ namespace NightSnack::Scene {
 
 		m_gameLoaded = true;
 		CacheLevel();
+		RestoreLevel();
 
 		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
 		// Start the camera panning at the very start of the level
@@ -642,11 +642,7 @@ namespace NightSnack::Scene {
 
 		m_sliderBarEntity = INVALID_ENTITY;
 		m_sliderKnobEntity = INVALID_ENTITY;
-		m_player = INVALID_ENTITY;
-		m_camIndex = INVALID_ENTITY;
-		m_hoveredEntity = INVALID_ENTITY;
 
-		// Reset menus
 		// Reset menus
 		m_menuEntities.clear();
 		while (!m_menus.empty()) { m_menus.pop(); }
@@ -654,7 +650,7 @@ namespace NightSnack::Scene {
 		//m_currentMenu.clear();
 		winScreenOn = false;
 
-		json const& level = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(m_currentLevelKey);
+		json const& level = m_levelCache;
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
 		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
@@ -669,6 +665,8 @@ namespace NightSnack::Scene {
 
 		// Create all Entities
 		factory->CreateLevelEntities(level);
+		m_player = m_coord.GetSystem<PlayerControllerSystem>()->FindPlayer(m_coord);
+		m_camIndex = 0;
 
 		// Play Background Music
 		//auto audio = m_coord.GetSystem<AudioSystem>();
@@ -875,7 +873,8 @@ namespace NightSnack::Scene {
 
 		// get camera position and scale to center
 		Entity mainCam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
-		auto& camTransform = m_coord.GetComponent<Transform>(mainCam);
+		auto& camTransform = m_coord.ModifyComponent<Transform>(mainCam);
+		//Transform tCache = camTransform;
 		auto& camera = m_coord.GetComponent<Camera>(mainCam);
 
 		float camX = camTransform.pos.x;
@@ -938,17 +937,8 @@ namespace NightSnack::Scene {
 					factory->UnpackEntityComponents(e, entityData["Components"]);
 				}
 
-				if (e != INVALID_ENTITY) {
-					m_menuEntities.insert(e);
-
-					// Check if entity is a button and add to system
-					if (m_coord.HasComponent<ButtonInfo>(e) &&
-						m_coord.HasComponent<Transform>(e) &&
-						m_coord.HasComponent<Collider>(e)) {
-						//m_entities.insert(e);
-						std::cerr << "[SceneManager] Added button entity " << e << " to system\n";
-					}
-				}
+				m_menuEntities.insert(e);
+				std::cerr << "[SceneManager] Added button entity " << e << " to system\n";
 			}
 			m_menus.push(menuname);
 
@@ -991,6 +981,7 @@ namespace NightSnack::Scene {
 			}
 		}
 		m_menuOpen = true;
+		//camTransform = tCache;
 
 		// pause for in game menus
 		if (m_dispatcher)

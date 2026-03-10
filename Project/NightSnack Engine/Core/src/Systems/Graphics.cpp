@@ -81,12 +81,16 @@ namespace NightSnack {
 
 		// Camera stuff...
 		Entity mainCam = FindCamera();
-		//static float time = 0.f;
-		//if (time > 1.0f) {
-		//	std::cout << "Main Camera => " << mainCam << std::endl;
-		//	time = 0.f;
-		//}
-		//time += FixedDT;
+		static float time = 0.f;
+		if (time > 1.0f) {
+			std::cout << "Main Camera => " << mainCam << std::endl;
+			
+			Transform t = m_coord.GetComponent<Transform>(mainCam);
+			std::cout << "Position <" << t.pos.x << ", " << t.pos.y << ", " << t.pos.z << ">\n";
+
+			time = 0.f;
+		}
+		time += FixedDT;
 
 		if (mainCam == INVALID_ENTITY) return;
 
