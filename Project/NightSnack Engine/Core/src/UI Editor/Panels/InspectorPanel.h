@@ -1583,8 +1583,8 @@ namespace NightSnack
             ImGui::TableSetColumnIndex(0); ImGui::Text("Action");
             ImGui::TableSetColumnIndex(1);
             const char* actionNames[] = {
-                "PLAYAUDIO", "PLAYAUDIO2", "PLAYAUDIO3",
-                "LOADLEVEL", "OPENMENU", "CLOSEMENU", "NOACTION", "EXIT"
+                "PLAYAUDIO", "PLAYAUDIO2", "PLAYAUDIO3", "VOLUMESLIDER", "SFXSLIDER",
+                "BGMSLIDER", "LOADLEVEL", "OPENMENU", "CLOSEMENU", "NOACTION", "TOGGLEFULLSCREEN", "EXIT"
             };
             int actionIndex = static_cast<int>(button.action);
             if (ImGui::Combo("##ButtonAction", &actionIndex, actionNames, IM_ARRAYSIZE(actionNames)))
