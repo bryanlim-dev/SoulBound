@@ -17,6 +17,7 @@
 #include "Physics.h"
 #include "Systems/Graphics.h"
 #include "Collision.h"
+#include "Systems/DialogueSystem.h"
 
 namespace {
 	using namespace NightSnack;
@@ -82,6 +83,11 @@ namespace NightSnack {
 			return;
 		}
 
+		// Skip Physics if dialogue system is active
+		if (m_coord.GetSystem<DialogueSystem>()->IsActive()) {
+			return;
+		}
+
 		for (int s{}; s < m_coord.steps; ++s) {
 
 			Entity cam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
@@ -136,9 +142,10 @@ namespace NightSnack {
 					col.isGrounded = false;
 					col.colliding = false;
 
-					col.collidedGround = INVALID_ENTITY;
-					col.collidedSolid = INVALID_ENTITY;
-					col.collidedTrigger = INVALID_ENTITY;
+					col.collidedEntities.clear();
+					col.collidedGroundCount = 0;
+					col.collidedSolidCount = 0;
+					col.collidedTriggerCount = 0;
 				}
 				ResolveCollisions();
 			}
@@ -249,29 +256,32 @@ namespace NightSnack {
 						if (!CheckCollision(t1, t2, c1, c2, normal, depth)) { continue; }
 						c1.colliding = c2.colliding = true;
 
+						c1.collidedEntities.push_back(e2);
+						c2.collidedEntities.push_back(e1);
+
 						switch (c1.type)
 						{
 						case ColliderType::Trigger:
-							c2.collidedTrigger = e1;
+							c2.collidedTriggerCount++;
 							break;
 						case ColliderType::Solid:
-							c2.collidedSolid = e1;
+							c2.collidedSolidCount++;
 							break;
 						case ColliderType::Ground:
-							c2.collidedGround = e1;
+							c2.collidedGroundCount++;
 							break;
 						}
 
 						switch (c2.type)
 						{
 						case ColliderType::Trigger:
-							c1.collidedTrigger = e2;
+							c1.collidedTriggerCount++;
 							break;
 						case ColliderType::Solid:
-							c1.collidedSolid = e2;
+							c1.collidedSolidCount++;
 							break;
 						case ColliderType::Ground:
-							c1.collidedGround = e2;
+							c1.collidedGroundCount++;
 							break;
 						}
 

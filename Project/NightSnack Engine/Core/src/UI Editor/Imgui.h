@@ -109,6 +109,7 @@ namespace NightSnack {
 		std::unique_ptr<OptionsPanel> m_optionsPanel;
 		std::unique_ptr<AssetsPanel> m_assetsPanel;
 		std::unique_ptr<AnimationPanel> m_animationPanel;
+		std::unique_ptr<DialoguePanel> m_dialoguePanel;
 
 		// Panel visibility toggles
 		bool m_showHierarchy = true;
@@ -117,6 +118,7 @@ namespace NightSnack {
 		bool m_showOptions = true;
 		bool m_showAssets = true;
 		bool m_showAnimation = true;
+		bool m_showDialogue = true;
 
 		/************************************************************************/
 		/*!
@@ -248,6 +250,7 @@ namespace NightSnack {
 		m_optionsPanel	 = std::make_unique<OptionsPanel>(m_coord);
 		m_assetsPanel	 = std::make_unique<AssetsPanel>(m_coord);
 		m_animationPanel = std::make_unique<AnimationPanel>(m_coord, m_selectedEntity);
+		m_dialoguePanel = std::make_unique<DialoguePanel>(m_coord);
 	}	
 
 	// Sets up and draws UI panels
@@ -271,6 +274,7 @@ namespace NightSnack {
 		if (m_showOptions && m_optionsPanel)	 m_optionsPanel->Draw();
 		if (m_showAssets && m_assetsPanel)		 m_assetsPanel->Draw();
 		if (m_showAnimation && m_animationPanel) m_animationPanel->Draw();
+		if (m_showDialogue && m_dialoguePanel)	 m_dialoguePanel->Draw();
 
 		// render
 		ImGui::Render();
@@ -300,6 +304,7 @@ namespace NightSnack {
 		m_optionsPanel.reset();
 		m_assetsPanel.reset();
 		m_animationPanel.reset();
+		m_dialoguePanel.reset();
 		m_selectedEntity.reset();
 		m_uiNames.reset();
 
@@ -369,6 +374,7 @@ namespace NightSnack {
 			ImGui::DockBuilderDockWindow("Scene", dock_id_center);
 			ImGui::DockBuilderDockWindow("Assets", dock_id_bottom);
 			ImGui::DockBuilderDockWindow("Animation", dock_id_bottom);
+			ImGui::DockBuilderDockWindow("Dialogue", dock_id_bottom);
 			ImGui::DockBuilderDockWindow("Asset Properties", dock_id_right_top);
 			ImGui::DockBuilderDockWindow("Tile Editor", dock_id_right_bottom);
 			ImGui::DockBuilderDockWindow("Properties:", dock_id_bottom_right);
@@ -499,6 +505,7 @@ namespace NightSnack {
 				ImGui::MenuItem("Scene", nullptr, &m_showScene);
 				ImGui::MenuItem("Assets", nullptr, &m_showAssets);
 				ImGui::MenuItem("Animation", nullptr, &m_showAnimation);
+				ImGui::MenuItem("Dialogue", nullptr, &m_showDialogue);
 
 				ImGui::EndMenu();
 			}
@@ -539,7 +546,7 @@ namespace NightSnack {
 					{
 						//m_isPlaying = false;
 						//SetSimulationPaused(true);
-						m_coord.Pause();
+						m_coord.TogglePause();
 					}
 				}
 				else

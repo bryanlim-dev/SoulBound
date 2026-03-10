@@ -21,11 +21,11 @@
 #include <json.hpp>
 #include "MathLibrary/Math.h"
 #include <variant>
-
-using Entity = std::uint32_t;
-constexpr Entity INVALID_ENTITY = UINT32_MAX;
+#include <deque>
 
 namespace NightSnack {
+    using Entity = std::uint32_t;
+    constexpr Entity INVALID_ENTITY = UINT32_MAX;
 
     constexpr float FixedDT = 1.f / 60.f;
 
@@ -153,9 +153,11 @@ namespace NightSnack {
         bool isGrounded{ false };
         bool colliding{ false };
 
-        Entity collidedSolid   {INVALID_ENTITY};
-        Entity collidedGround  {INVALID_ENTITY};
-        Entity collidedTrigger {INVALID_ENTITY};
+
+        std::deque<Entity> collidedEntities;
+        int collidedSolidCount      = 0;
+        int collidedGroundCount     = 0;
+        int collidedTriggerCount    = 0;
     };
 
     struct Sprite {
@@ -215,7 +217,7 @@ namespace NightSnack {
         std::string fontType;
         std::string text;
         float fontSize{ 1.f };
-        float textWrapWidth{ 0.f }; // measured in pixels
+        float textWrapRatio{ 0.f }; // 0 is disabled, 0.8 is 80% of screen width
         Vec3 textColor{ 1.f, 1.f, 1.f };
         Vec3 offsetPosition{ 0.f, 0.f, 0.f };
     };
