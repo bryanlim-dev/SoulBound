@@ -225,7 +225,7 @@
         {
             "Components": {
                 "ButtonInfo": {
-                    "action": "SFXSlider",
+                    "action": "BGMSlider",
                     "type": "Slider",
                     "target": "",
                     "defaultTex": "UIMenu-Frame",
@@ -249,7 +249,7 @@
             },
             "Transform": {
                 "Layer": "Foreground",
-                "Name": "SFXSlider",
+                "Name": "BGMSlider",
                 "Position": {
                     "x": 100.0,
                     "y": 50.0,
@@ -283,7 +283,7 @@
             },
             "Transform": {
                 "Layer": "Foreground",
-                "Name": "SFXKnob",
+                "Name": "BGMKnob",
                 "Position": {
                     "x": 87.5,
                     "y": 50.0,
@@ -306,10 +306,10 @@
             },
             "isPrefab": false
         },
-        {
+         {
             "Components": {
                 "ButtonInfo": {
-                    "action": "BGMSlider",
+                    "action": "SFXSlider",
                     "type": "Slider",
                     "target": "",
                     "defaultTex": "UIMenu-Frame",
@@ -333,7 +333,7 @@
             },
             "Transform": {
                 "Layer": "Foreground",
-                "Name": "BGMSlider",
+                "Name": "SFXSlider",
                 "Position": {
                     "x": 100.0,
                     "y": -50.0,
@@ -367,7 +367,7 @@
             },
             "Transform": {
                 "Layer": "Foreground",
-                "Name": "BGMKnob",
+                "Name": "SFXKnob",
                 "Position": {
                     "x": 87.5,
                     "y": -50.0,
