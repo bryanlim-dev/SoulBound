@@ -562,12 +562,9 @@ namespace NightSnack {
             return false;
         }
 
-        // Sort the keys starting from shortest distance from the end of level first 
-        const auto& winZonePos = m_coord.GetComponent<Transform>(winZone).pos;
-        std::sort(keys.begin(), keys.end(), [this, winZonePos](Entity a, Entity b) {
-                float distA = (m_coord.GetComponent<Transform>(a).pos - winZonePos).magnitude();
-                float distB = (m_coord.GetComponent<Transform>(b).pos - winZonePos).magnitude();
-                return distA < distB;
+        // Sort the keys according to camera pan order (eg 1, then 2, then 3)
+        std::sort(keys.begin(), keys.end(), [&](Entity a, Entity b) {
+            return m_coord.GetComponent<Collectible>(a).cameraPanOrder < m_coord.GetComponent<Collectible>(b).cameraPanOrder;
         });
 
         for (Entity key : keys) {

@@ -616,6 +616,7 @@ namespace NightSnack {
 		j = {
 			{ "type", typeStr },
 			{ "currTime", c.currTime },
+			{ "cameraPanOrder", c.cameraPanOrder },
 			{ "respawnTimeSteps", c.respawnTimeSteps },
 			{ "willRespawn", c.willRespawn }
 		};
@@ -637,6 +638,8 @@ namespace NightSnack {
 			// Timers
 			c.currTime = j.value("currTime", 0);
 			c.respawnTimeSteps = j.value("respawnTimeSteps", 0);
+
+			c.cameraPanOrder = j.value("cameraPanOrder", 0);
 
 			// Respawn flag
 			c.willRespawn = j.value("willRespawn", false);

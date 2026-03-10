@@ -263,6 +263,7 @@ namespace NightSnack {
     struct Collectible {
         COLLECTIBLE_TYPE type = COLLECTIBLE_TYPE::DOUBLE_JUMP;
         int currTime{};
+        int cameraPanOrder{};
         int respawnTimeSteps{};
         bool willRespawn{ false };
     };

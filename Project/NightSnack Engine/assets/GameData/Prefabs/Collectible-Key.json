@@ -28,6 +28,7 @@
     "Collectible": {
         "type": "KEY",
         "currTime": 0,
+        "cameraPanOrder": 0,
         "respawnTimeSteps": 0,
         "willRespawn": false
     }

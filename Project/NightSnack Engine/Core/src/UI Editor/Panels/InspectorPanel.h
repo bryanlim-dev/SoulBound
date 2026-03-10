@@ -2144,6 +2144,18 @@ namespace NightSnack
                         c.respawnTimeSteps = 0;
                 }
             }
+
+            // Camera Pan Order
+            ImGui::TableNextRow();
+            ImGui::TableNextColumn();
+            ImGui::Text("Cam Pan Order");
+            ImGui::TableNextColumn();
+            ImGui::SetNextItemWidth(-FLT_MIN);
+            if (ImGui::InputInt("##CameraPanOrder", &c.cameraPanOrder))
+            {
+                if (c.cameraPanOrder < 0)
+                    c.cameraPanOrder = 0;
+            }
             ImGui::EndTable();
         }
     }
