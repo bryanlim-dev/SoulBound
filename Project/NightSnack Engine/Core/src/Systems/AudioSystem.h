@@ -107,8 +107,10 @@ namespace NightSnack {
          */
         void StopBGM();
 
+        /**
+        * @brief stops specific background music by its key
+        */
         void StopBGM(const std::string& bgmKey);
-
 
         /**
          * @brief pauses the currently playing background music

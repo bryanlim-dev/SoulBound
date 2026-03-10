@@ -2,7 +2,7 @@
  * File:        PlayerController.cpp
  * Project:     NightSnack
  * Author(s):   Chewn Thing Kwan (Primary, 90%)
- *              Bryan Lim Jun Jie (Secondary, 10%)
+ *              Bryan Lim Jun Jie (Secondary, 10%) -  Added respective audio
  *              Clement Ang Yang Ying (Secondary, 10%) - Added coyote time, remapped controls and possession behaviour
  *
  * Description:
