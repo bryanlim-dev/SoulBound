@@ -12,11 +12,11 @@
                 },
                 "ButtonInfo": {
                     "action": "LoadLevel",
-                    "target": "Level1A",
-                    "type": "Clicker",
+                    "clickTex": "MainMenu-Play",
                     "defaultTex": "MainMenu-Play",
                     "hoverTex": "MainMenu-PlayHover",
-                    "clickTex": "MainMenu-Play"
+                    "target": "Level1A",
+                    "type": "Clicker"
                 },
                 "Collider": {
                     "height": 64.0,
@@ -74,11 +74,11 @@
                 },
                 "ButtonInfo": {
                     "action": "OpenMenu",
-                    "target": "SettingsMenu",
-                    "type": "Clicker",
+                    "clickTex": "MainMenu-Options",
                     "defaultTex": "MainMenu-Options",
                     "hoverTex": "MainMenu-OptionsHover",
-                    "clickTex": "MainMenu-Options"
+                    "target": "SettingsMenu",
+                    "type": "Clicker"
                 },
                 "Collider": {
                     "height": 64.0,
@@ -131,11 +131,11 @@
                 },
                 "ButtonInfo": {
                     "action": "ExitGame",
-                    "target": "",
-                    "type": "Clicker",
+                    "clickTex": "MainMenu-Quit",
                     "defaultTex": "MainMenu-Quit",
                     "hoverTex": "MainMenu-QuitHover",
-                    "clickTex": "MainMenu-Quit"
+                    "target": "",
+                    "type": "Clicker"
                 },
                 "Collider": {
                     "height": 64.0,
@@ -196,8 +196,8 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 1920.0,
-                    "y": 1080.0
+                    "x": 1600.0,
+                    "y": 900.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -345,11 +345,11 @@
                 },
                 "ButtonInfo": {
                     "action": "OpenMenu",
-                    "target": "SettingsMenu",
-                    "type": "Clicker",
+                    "clickTex": "MainMenu-Credits",
                     "defaultTex": "MainMenu-Credits",
                     "hoverTex": "MainMenu-CreditsHover",
-                    "clickTex": "MainMenu-Credits"
+                    "target": "SettingsMenu",
+                    "type": "Clicker"
                 },
                 "Collider": {
                     "height": 64.0,
@@ -418,7 +418,7 @@
         "offsetY": 0.0,
         "posX": 0.0,
         "posY": 0.0,
-        "posZ": 20.0,
+        "posZ": 10.0,
         "width": 1600.0,
         "zoom": 1.0
     },

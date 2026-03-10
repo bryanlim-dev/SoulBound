@@ -96,7 +96,7 @@ namespace NightSnack::Scene {
 			if (m_coord.GetComponent<Collider>(m_winCollider).colliding && !winScreenOn) {
 				if (physics->EntitiesAreColliding(m_winCollider, m_player)) {
 					CreateWinScreen();
-					m_coord.GetSystem<AudioSystem>()->PlaySFX("playerWin");
+					m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerWin", 0.85f);
 					m_coord.GetSystem<CollectibleSystem>()->ToggleCollectibleIcons(false);
 					winScreenOn = true;
 				}
@@ -178,6 +178,36 @@ namespace NightSnack::Scene {
 			});
 		m_buttons.emplace(ButtonAction::VOLUMESLIDER, sliderButton);
 
+		Button sfxSliderButton(ButtonAction::SFXSLIDER, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)s;
+			auto scene = c.GetSystem<Scene::SceneManager>();
+			Entity knob = scene->GetSFXKnob();
+			ButtonInfo const& b = c.GetComponent<ButtonInfo>(e);
+			float mx = c.GetSystem<InputSystem>()->GetMouseWorldPosX();
+			float clamped = std::clamp(mx, b.sliderMinX, b.sliderMaxX);
+			float t = (clamped - b.sliderMinX) / (b.sliderMaxX - b.sliderMinX);
+			c.GetSystem<AudioSystem>()->SetSFXVolume(t);
+			if (knob != INVALID_ENTITY) {
+				c.ModifyComponent<Transform>(knob).pos.x = clamped;
+			}
+			});
+		m_buttons.emplace(ButtonAction::SFXSLIDER, sfxSliderButton);
+
+		Button bgmSliderButton(ButtonAction::BGMSLIDER, [](Coordinator& c, std::string const& s, Entity e) {
+			(void)s;
+			auto scene = c.GetSystem<Scene::SceneManager>();
+			Entity knob = scene->GetBGMKnob();
+			ButtonInfo const& b = c.GetComponent<ButtonInfo>(e);
+			float mx = c.GetSystem<InputSystem>()->GetMouseWorldPosX();
+			float clamped = std::clamp(mx, b.sliderMinX, b.sliderMaxX);
+			float t = (clamped - b.sliderMinX) / (b.sliderMaxX - b.sliderMinX);
+			c.GetSystem<AudioSystem>()->SetBGMVolume(t);
+			if (knob != INVALID_ENTITY) {
+				c.ModifyComponent<Transform>(knob).pos.x = clamped;
+			}
+			});
+		m_buttons.emplace(ButtonAction::BGMSLIDER, bgmSliderButton);
+
 		// exit button
 		Button exitButton(ButtonAction::EXIT, [](Coordinator& c, std::string const& s, Entity e) {
 			(void)s;
@@ -236,11 +266,11 @@ namespace NightSnack::Scene {
 			if (m_hoveredEntity != e) 
 			{
 				m_hoveredEntity = e;
-				m_coord.GetSystem<AudioSystem>()->PlaySFX("buttonHover_1");
+				m_coord.GetSystem<AudioSystem>()->PlaySFX("buttonHover");
 			}
 
 			// add slider drag handling
-			if (b.action == ButtonAction::VOLUMESLIDER) {
+			if (b.action == ButtonAction::VOLUMESLIDER || b.action == ButtonAction::SFXSLIDER || b.action == ButtonAction::BGMSLIDER) {
 				// Sliders drag while mouse is held down
 				if (m_mouseHeld) {
 					auto& mat = m_coord.ModifyComponent<Renderable>(e).materialName;
@@ -530,7 +560,7 @@ namespace NightSnack::Scene {
 		}
 
 		// Fade BGM volume back in
-		audio->FadeToVolume(0.2f, 1.5f);
+		audio->FadeToVolume(0.2f, 0.5f);
 
 		// Refresh Scripts for loaded level
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();
@@ -951,41 +981,65 @@ namespace NightSnack::Scene {
 
 			// slider knob entities by name-matching
 			Entity sliderBar = INVALID_ENTITY, sliderKnob = INVALID_ENTITY;
+			Entity sfxBar = INVALID_ENTITY, sfxKnob = INVALID_ENTITY;
+			Entity bgmBar = INVALID_ENTITY, bgmKnob = INVALID_ENTITY;
 
 			for (Entity e : m_menuEntities) {
 				if (!m_coord.HasComponent<Transform>(e)) continue;
 				std::string const& name = m_coord.GetComponent<Transform>(e).name;
 				if (name == "AudioSlider") sliderBar = e;
 				if (name == "AudioKnob")   sliderKnob = e;
+				if (name == "SFXSlider")   sfxBar = e;
+				if (name == "SFXKnob")     sfxKnob = e;
+				if (name == "BGMSlider")   bgmBar = e;
+				if (name == "BGMKnob")     bgmKnob = e;
 			}
 
-			if (sliderBar != INVALID_ENTITY && sliderKnob != INVALID_ENTITY) 
+			// main audio
+			if (sliderBar != INVALID_ENTITY && sliderKnob != INVALID_ENTITY)
 			{
 				m_sliderBarEntity = sliderBar;
 				m_sliderKnobEntity = sliderKnob;
-
-				// Compute min/max from the bar's actual world position and scale
 				ButtonInfo& b = m_coord.ModifyComponent<ButtonInfo>(sliderBar);
 				Transform const& barT = m_coord.GetComponent<Transform>(sliderBar);
 				b.sliderMinX = barT.pos.x - (barT.scale.x * 0.5f);
 				b.sliderMaxX = barT.pos.x + (barT.scale.x * 0.5f);
-
 				float volume = m_coord.GetSystem<AudioSystem>()->GetMasterVolume();
 				float knobX = b.sliderMinX + volume * (b.sliderMaxX - b.sliderMinX);
 				m_coord.ModifyComponent<Transform>(sliderKnob).pos.x = knobX;
+			}
 
-				std::cerr << "[SceneManager] Wired VolumeKnob to VolumeSlider"
-					<< " range [" << b.sliderMinX << ", " << b.sliderMaxX << "]\n";
-			}
-			else 
+			// sfx
+			if (sfxBar != INVALID_ENTITY && sfxKnob != INVALID_ENTITY)
 			{
-				if (sliderBar == INVALID_ENTITY && sliderKnob == INVALID_ENTITY) 
-				{
-					std::cerr << "[SceneManager] No volume slider found in menu: " << menuname << "\n";
-				}
+				m_sfxBarEntity = sfxBar;
+				m_sfxKnobEntity = sfxKnob;
+				ButtonInfo& b = m_coord.ModifyComponent<ButtonInfo>(sfxBar);
+				Transform const& barT = m_coord.GetComponent<Transform>(sfxBar);
+				b.sliderMinX = barT.pos.x - (barT.scale.x * 0.5f);
+				b.sliderMaxX = barT.pos.x + (barT.scale.x * 0.5f);
+				float volume = m_coord.GetSystem<AudioSystem>()->GetSFXVolume();
+				float knobX = b.sliderMinX + volume * (b.sliderMaxX - b.sliderMinX);
+				m_coord.ModifyComponent<Transform>(sfxKnob).pos.x = knobX;
 			}
+
+			// bgm
+			if (bgmBar != INVALID_ENTITY && bgmKnob != INVALID_ENTITY)
+			{
+				m_bgmBarEntity = bgmBar;
+				m_bgmKnobEntity = bgmKnob;
+				ButtonInfo& b = m_coord.ModifyComponent<ButtonInfo>(bgmBar);
+				Transform const& barT = m_coord.GetComponent<Transform>(bgmBar);
+				b.sliderMinX = barT.pos.x - (barT.scale.x * 0.5f);
+				b.sliderMaxX = barT.pos.x + (barT.scale.x * 0.5f);
+				float volume = m_coord.GetSystem<AudioSystem>()->GetBGMVolume();
+				//std::cerr << "[SceneManager] BGM volume on open: " << volume << "\n";
+				float knobX = b.sliderMinX + volume * (b.sliderMaxX - b.sliderMinX);
+				m_coord.ModifyComponent<Transform>(bgmKnob).pos.x = knobX;
+			}
+
+			m_menuOpen = true;
 		}
-		m_menuOpen = true;
 
 		// pause for in game menus
 		if (m_dispatcher)

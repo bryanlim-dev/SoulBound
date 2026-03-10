@@ -2,7 +2,7 @@
  * File:        PlayerController.h
  * Project:     NightSnack
  * Author(s):   Chewn Thing Kwan (Primary, 70%)
- *              Bryan Lim Jun Jie (Secondary, 10%)    
+ *              Bryan Lim Jun Jie (Secondary, 10%) - Added respective audio  
  *              Goh Bei Lai (Secondary, 10%) - Added player possession mechanic 
  *              Clement Ang Yang Ying (Secondary, 10%) - Added coyote time, remapped controls and possession behaviour
  *
@@ -321,7 +321,7 @@ namespace NightSnack {
                 // if just started walking, play immediately
                 if (!m_flags.isWalking)
                 {
-                    m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("frogWalk", 3);
+                    m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("frogWalk", 3, 0.15f);
                     m_flags.walkStepTimer = 0.0f;
                     m_flags.isWalking = true;
                 }
@@ -332,7 +332,7 @@ namespace NightSnack {
                 // repeat every 0.355f
                 if (m_flags.walkStepTimer >= 0.355f)
                 {
-                    m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("frogWalk", 3);
+                    m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("frogWalk", 3, 0.15f);
                     m_flags.walkStepTimer = 0.f;
                 }
             }

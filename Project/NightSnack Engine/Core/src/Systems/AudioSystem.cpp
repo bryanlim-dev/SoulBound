@@ -509,6 +509,7 @@ namespace NightSnack {
     void AudioSystem::SetBGMVolume(float volume)
     {
         m_bgmVolume = std::clamp(volume, 0.0f, 1.0f);
+        m_userBGMVolume = m_bgmVolume;
 
         // Update all BGM channels
         for (auto& [key, channel] : m_bgmChannels)
@@ -533,7 +534,7 @@ namespace NightSnack {
     // gets the background music volume
     float AudioSystem::GetBGMVolume() const
     {
-        return m_bgmVolume;
+        return m_userBGMVolume;
     }
 
     // gets the sound effects volume
@@ -644,13 +645,17 @@ namespace NightSnack {
         if (t >= 1.0f) {
             m_isFading = false;
             m_bgmVolume = m_fadeTargetVolume;
+            if (m_fadeTargetVolume > 0.0f) 
+            {
+                m_userBGMVolume = m_fadeTargetVolume;
+            }
         }
     }
 
-    void AudioSystem::PlayRandomVariant(const std::string& baseKey, int numVariants)
+    void AudioSystem::PlayRandomVariant(const std::string& baseKey, int numVariants, float volume)
     {
         if (numVariants <= 0) {
-            PlaySFX(baseKey);
+            PlaySFXWithVolume(baseKey, volume);
             return;
         }
 
@@ -661,7 +666,7 @@ namespace NightSnack {
 
         int variant = dist(gen);
         std::string soundKey = baseKey + "_" + std::to_string(variant);
-        PlaySFX(soundKey);
+        PlaySFXWithVolume(soundKey, volume);
     }
 
     void AudioSystem::UpdateSpatialAudio(Vec2 const& playerPos, float maxDistance)

@@ -2,7 +2,7 @@
  * File:        PlayerController.cpp
  * Project:     NightSnack
  * Author(s):   Chewn Thing Kwan (Primary, 90%)
- *              Bryan Lim Jun Jie (Secondary, 10%)
+ *              Bryan Lim Jun Jie (Secondary, 10%) -  Added respective audio
  *              Clement Ang Yang Ying (Secondary, 10%) - Added coyote time, remapped controls and possession behaviour
  *
  * Description:
@@ -35,7 +35,7 @@ namespace NightSnack {
                 // play glide sound only once when starting to glide
                 if (!m_flags.isGliding) 
                 {
-                    c.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerGlide", 0.05f);
+                    c.GetSystem<AudioSystem>()->PlayRandomVariant("ghostGlide", 3, 0.1f);
                     m_flags.isGliding = true;
                 }
             }
@@ -52,7 +52,7 @@ namespace NightSnack {
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
             vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
 
-            c.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerJump", 0.4f);
+            c.GetSystem<AudioSystem>()->PlayRandomVariant("ghostJump", 3, 0.4f);
 
 
             // Start the emitter to spawn particles
@@ -89,7 +89,7 @@ namespace NightSnack {
                 //Do distance check to nearest grabbling spot/enemy
                 if (tongue.Start(c))
                 {
-                    c.GetSystem<AudioSystem>()->PlayRandomVariant("frogTongue", 7);
+                    c.GetSystem<AudioSystem>()->PlayRandomVariant("frogTongue", 7, 0.75f);
                     //Valid target
                     m_flags.grappling = true;
 
@@ -145,7 +145,7 @@ namespace NightSnack {
     void PlayerControllerSystem::RespawnPlayer()
     {
 
-        m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("PlayerHurt", 4);
+        m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("PlayerHurt", 4, 0.25f);
 
         if (m_prevCheckpoint == INVALID_ENTITY)
             return;
@@ -364,7 +364,7 @@ namespace NightSnack {
         trans.pos = pos;
 
         Collider& col = m_coord.ModifyComponent<Collider>(m_closeGroundedHitBox);
-        std::cout << "HitBox Colliding Count: " << col.collidedEntities.size() << std::endl;
+        //std::cout << "HitBox Colliding Count: " << col.collidedEntities.size() << std::endl;
     }   
 
     bool PlayerControllerSystem::CloseToGrounded()
@@ -551,7 +551,7 @@ namespace NightSnack {
             vel.y = pcont.jumpSpeed;
             t.pos.y += 0.5f;
             m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
-            m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerJump", 0.4f);
+            m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("ghostJump", 3, 0.4f);
 
             //m_storedJump = false;
             m_flags.justJumped = true;

@@ -107,8 +107,10 @@ namespace NightSnack {
          */
         void StopBGM();
 
+        /**
+        * @brief stops specific background music by its key
+        */
         void StopBGM(const std::string& bgmKey);
-
 
         /**
          * @brief pauses the currently playing background music
@@ -207,8 +209,9 @@ namespace NightSnack {
          * @brief plays a random variant of a sound effect
          * @param baseKey base name of the sound (e.g., "playerHurt")
          * @param numVariants number of variants available
+		 * @param volume volume level (0.0 to 1.0)
          */
-        void PlayRandomVariant(const std::string& baseKey, int numVariants);
+        void PlayRandomVariant(const std::string& baseKey, int numVariants, float volume);
 
         /**
 		 * @brief plays spatial audio based on player position and max distance
@@ -272,6 +275,9 @@ namespace NightSnack {
         float m_masterVolume;
         float m_bgmVolume;
         float m_sfxVolume;
+
+        // user-set bgmvolume
+        float m_userBGMVolume = 0.2f;
 
         // for transition audio
         bool m_isFading;

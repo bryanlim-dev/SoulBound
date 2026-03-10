@@ -956,7 +956,7 @@ namespace NightSnack
                 // Test button for variants
                 if (ImGui::Button("Test Random Variant")) {
                     if (audioSystem) {
-                        audioSystem->PlayRandomVariant(audioKey, numVariants);
+                        audioSystem->PlayRandomVariant(audioKey, numVariants, 1.0f);
                     }
                 }
 

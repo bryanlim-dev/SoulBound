@@ -546,7 +546,7 @@ namespace NightSnack {
 					{
 						//m_isPlaying = false;
 						//SetSimulationPaused(true);
-						m_coord.Pause();
+						m_coord.TogglePause();
 					}
 				}
 				else

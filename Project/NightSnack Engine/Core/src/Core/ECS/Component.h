@@ -307,13 +307,15 @@ namespace NightSnack {
         PLAYAUDIO,
         PLAYAUDIO2,
         PLAYAUDIO3,
+        VOLUMESLIDER,
+        SFXSLIDER,
+        BGMSLIDER,
 
         LOADLEVEL,
         OPENMENU,
         CLOSEMENU,
         NOACTION,
         TOGGLEFULLSCREEN,
-        VOLUMESLIDER,
         EXIT
     };
     struct ButtonInfo {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/ECS/Coordinator.h"
+#include "Systems/AudioSystem.h"
 
 namespace NightSnack {
 

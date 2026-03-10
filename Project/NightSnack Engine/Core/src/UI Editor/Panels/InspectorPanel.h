@@ -53,7 +53,7 @@ namespace NightSnack
                 //"Tilemap",
                 "PlayerController",
                 "Camera",
-                "Rigidbody",
+                "RigidBody",
                 "Collider",
                 "Renderer",
                 "Scripting",
@@ -97,7 +97,7 @@ namespace NightSnack
 					if (compName == "Tilemap")   { hasComponent = true; }
                     if (compName == "PlayerController") { hasComponent = m_coord.HasComponent<PlayerController>(*m_selectedEntity); }
 					if (compName == "Camera")    { hasComponent = m_coord.HasComponent<Camera>(*m_selectedEntity); }
-                    if (compName == "Rigidbody") { hasComponent = m_coord.HasComponent<RigidBody>(*m_selectedEntity); }
+                    if (compName == "RigidBody") { hasComponent = m_coord.HasComponent<RigidBody>(*m_selectedEntity); }
                     if (compName == "Collider")  { hasComponent = m_coord.HasComponent<Collider>(*m_selectedEntity); }
                     if (compName == "Renderer")  { hasComponent = m_coord.HasComponent<Renderable>(*m_selectedEntity); }
 					if (compName == "Scripting") { hasComponent = m_coord.HasComponent<Script>(*m_selectedEntity); }
@@ -151,7 +151,7 @@ namespace NightSnack
 							//if (compName == "Tilemap")   { TilemapComponent(); }
 							if (compName == "PlayerController") { PlayerControllerComponent(); }
 							if (compName == "Camera")    { CameraComponent(); }
-                            if (compName == "Rigidbody") { RigidBodyComponent(); }
+                            if (compName == "RigidBody") { RigidBodyComponent(); }
                             if (compName == "Collider")  { ColliderComponent(); }
                             if (compName == "Renderer")  { RendererComponent(); }
 							if (compName == "Scripting") { ScriptingComponent(); }
@@ -2162,7 +2162,7 @@ namespace NightSnack
         Entity e = *m_selectedEntity;
         if (!m_coord.HasComponent<Transform>(e))        missing.push_back({ "Transform", false, [this, e] { m_coord.AddComponent<Transform>(e, Transform{}); } });
 		if (!m_coord.HasComponent<PlayerController>(e)) missing.push_back({ "PlayerController", false, [this, e] { m_coord.AddComponent<PlayerController>(e, PlayerController{}); } });
-        if (!m_coord.HasComponent<RigidBody>(e))        missing.push_back({ "Rigidbody", false, [this, e] { m_coord.AddComponent<RigidBody>(e, RigidBody{}); } });
+        if (!m_coord.HasComponent<RigidBody>(e))        missing.push_back({ "RigidBody", false, [this, e] { m_coord.AddComponent<RigidBody>(e, RigidBody{}); } });
         if (!m_coord.HasComponent<Collider>(e))         missing.push_back({ "Collider", false, [this, e] { m_coord.AddComponent(e, Collider{}); } });
         if (!m_coord.HasComponent<Renderable>(e))       missing.push_back({ "Renderer", false, [this, e] { m_coord.AddComponent<Renderable>(e, Renderable{}); } });
 		if (!m_coord.HasComponent<Script>(e))           missing.push_back({ "Scripting", false, [this, e] { m_coord.AddComponent<Script>(e, Script{}); } });
@@ -2218,7 +2218,7 @@ namespace NightSnack
         {
             addMenuItem("Transform", [this, e] { m_coord.AddComponent<Transform>(e, Transform{}); }, m_coord.HasComponent<Transform>(e));
 			addMenuItem("PlayerController", [this, e] { m_coord.AddComponent<PlayerController>(e, PlayerController{}); }, m_coord.HasComponent<PlayerController>(e));
-            addMenuItem("Rigidbody", [this, e] { m_coord.AddComponent<RigidBody>(e, RigidBody{}); }, m_coord.HasComponent<RigidBody>(e));
+            addMenuItem("RigidBody", [this, e] { m_coord.AddComponent<RigidBody>(e, RigidBody{}); }, m_coord.HasComponent<RigidBody>(e));
             addMenuItem("Collider", [this, e] { m_coord.AddComponent(e, Collider{}); }, m_coord.HasComponent<Collider>(e));
             addMenuItem("Renderer", [this, e] { m_coord.AddComponent<Renderable>(e, Renderable{}); }, m_coord.HasComponent<Renderable>(e));
             addMenuItem("Scripting", [this, e] { m_coord.AddComponent<Script>(e, Script{}); }, m_coord.HasComponent<Script>(e));
@@ -2245,7 +2245,7 @@ namespace NightSnack
         std::vector<CompInfo> removable;
         Entity e = *m_selectedEntity;
 		if (m_coord.HasComponent<PlayerController>(e)) removable.push_back({ "PlayerController", true, [this, e] { m_coord.RemoveComponent<PlayerController>(e); } });
-        if (m_coord.HasComponent<RigidBody>(e))        removable.push_back({ "Rigidbody", true, [this, e] { m_coord.RemoveComponent<RigidBody>(e); } });
+        if (m_coord.HasComponent<RigidBody>(e))        removable.push_back({ "RigidBody", true, [this, e] { m_coord.RemoveComponent<RigidBody>(e); } });
         if (m_coord.HasComponent<Collider>(e))         removable.push_back({ "Collider", true, [this, e] { m_coord.RemoveComponent<Collider>(e); } });
         if (m_coord.HasComponent<Renderable>(e))       removable.push_back({ "Renderer", true, [this, e] { m_coord.RemoveComponent<Renderable>(e); } });
         if (m_coord.HasComponent<Script>(e))           removable.push_back({ "Scripting", true, [this, e] { m_coord.RemoveComponent<Script>(e); } });
@@ -2293,12 +2293,12 @@ namespace NightSnack
                     NightSnack::ComponentRemoveSnapshot snapshot{ *m_selectedEntity, name };
                     if (strcmp(name, "PlayerController") == 0)
                         snapshot.playercontroller = m_coord.GetComponent<PlayerController>(*m_selectedEntity);
-                    else if (strcmp(name, "Rigidbody") == 0)
+                    else if (strcmp(name, "RigidBody") == 0)
                         snapshot.rigidbody = m_coord.GetComponent<RigidBody>(*m_selectedEntity);
                     else if (strcmp(name, "Collider") == 0)
                         snapshot.collider = m_coord.GetComponent<Collider>(*m_selectedEntity);
                     else if (strcmp(name, "Renderer") == 0)
-                        snapshot.renderable = m_coord.GetComponent<Renderable>(*m_selectedEntity);
+                        snapshot.renderer = m_coord.GetComponent<Renderable>(*m_selectedEntity);
                     else if (strcmp(name, "Font") == 0)
                         snapshot.font = m_coord.GetComponent<Font>(*m_selectedEntity);
                     else if (strcmp(name, "Animator") == 0)
