@@ -29,6 +29,11 @@ namespace NightSnack {
 
     void CameraSystem::Update()
     {
+        if (m_coord.IsPaused()) {
+            ResetCameraPanProperties();
+            return;
+        }
+
         // Update target camera position
         Transform& t = m_coord.ModifyComponent<Transform>(m_mainCamera);
         Camera& c = m_coord.ModifyComponent<Camera>(m_mainCamera);
@@ -83,7 +88,13 @@ namespace NightSnack {
             }
 
             // Store the camera panning targets here first
-            StoreCameraPanningTargets();
+            if (!StoreCameraPanningTargets()) {
+                std::cerr << "[CameraSystem] Incomplete Camera Panning Targets\n";
+                m_currCamPanTimer = 0.f;
+                LimitWithinBounds(m_coord.ModifyComponent<Transform>(m_mainCamera));
+                m_cameraState = CAMERASTATE::FOLLOW_PLAYER;
+                return;
+            }
 
             // Countdown has finished, start to pan the camera across the room now
             m_originalCamPos = t.pos; // Store the original position for constant panning
@@ -100,9 +111,9 @@ namespace NightSnack {
 
         case CAMERASTATE::PAN_ROOM:
         {
-            static size_t panningTargetIndex = 0;
-            if (panningTargetIndex < m_panningTargets.size()) {
-                m_targetCamPos = m_panningTargets[panningTargetIndex];
+            //static size_t panningTargetIndex = 0;
+            if (m_panningTargetIndex < m_panningTargets.size()) {
+                m_targetCamPos = m_panningTargets[m_panningTargetIndex];
                 //m_originalCamPos = t.pos;
 
                 if (!m_panComplete) {
@@ -112,16 +123,18 @@ namespace NightSnack {
                     // Current panning target is completed, move to the next target
                     m_panComplete = false;
                     m_originalCamPos = t.pos;
-                    ++panningTargetIndex;
+                    ++m_panningTargetIndex;
                 }
 
                 // Camera has panned all of the targets already including the player
                 // Reset some variables first 
-                if (!m_panComplete && panningTargetIndex >= m_panningTargets.size()) {
-                    panningTargetIndex = 0;
+                if (!m_panComplete && m_panningTargetIndex >= m_panningTargets.size()) {
+                    ResetCameraPanProperties();
+
+                    /*m_panningTargetIndex = 0;
                     m_panComplete = false;
                     m_panningTargets.clear();
-                    m_cameraState = CAMERASTATE::FOLLOW_PLAYER;
+                    m_cameraState = CAMERASTATE::FOLLOW_PLAYER;*/
                 }
             } 
             return;
@@ -386,22 +399,23 @@ namespace NightSnack {
     void CameraSystem::StartCamPan(bool isPannningEnabled)
     {
         ResetCameraPanProperties();
+        //m_panEnabled = isPannningEnabled;
 
-        m_panEnabled = isPannningEnabled;
-        if (m_panEnabled)
+        //if (m_panEnabled)
+        if (isPannningEnabled)
             StartCamPan();
-        else
-            m_cameraState = CAMERASTATE::FOLLOW_PLAYER;
+        //else
+        //    m_cameraState = CAMERASTATE::FOLLOW_PLAYER;
     }
 
     void CameraSystem::StartCamPan() {
-        if (!m_panEnabled)
+        /*if (!m_panEnabled)
         {
             m_cameraState = CAMERASTATE::FOLLOW_PLAYER;
             return;
-        }
+        }*/
 
-        m_currCamPanTimer = 0.0f;
+        //m_currCamPanTimer = 0.0f;
         m_cameraState = CAMERASTATE::PAN_ROOM_COUNTDOWN;
 
         //const auto& entities = m_coord.GetLivingEntities();
@@ -514,7 +528,7 @@ namespace NightSnack {
         return INVALID_ENTITY;
     }
 
-    void CameraSystem::StoreCameraPanningTargets() {
+    bool CameraSystem::StoreCameraPanningTargets() {
         m_panningTargets.clear();
         const auto& entities = m_coord.GetLivingEntities();
 
@@ -529,9 +543,9 @@ namespace NightSnack {
         }
 
         if (winZone == INVALID_ENTITY) {
-            //std::cout << "Cannot find Win Zone Entity!!!\n";
+            std::cerr << "[CameraSystem] Cannot find Win Zone Entity!!!\n";
             m_panningTargets.clear();
-            return;
+            return false;
         }
         
         // Find all 3 key collectibles next 
@@ -543,9 +557,9 @@ namespace NightSnack {
         }
 
         if (keys.empty()) {
-            //std::cout << "Cannot find any keys in the level!!!\n";
+            std::cerr << "[CameraSystem] Cannot find any keys in the level!!!\n";
             m_panningTargets.clear();
-            return;
+            return false;
         }
 
         // Sort the keys starting from shortest distance from the end of level first 
@@ -564,6 +578,9 @@ namespace NightSnack {
         auto& cam = m_coord.GetComponent<Camera>(m_mainCamera);
         Vec2 startCamPos = Vec2((cam.minX + cam.maxX) * 0.5f, (cam.minY + cam.maxY) * 0.5f);
         m_panningTargets.push_back(startCamPos);
+
+        //std::cout << "Stored all targets of size: " << m_panningTargets.size() << std::endl;
+        return true;
     }
 
     // signature
@@ -598,7 +615,15 @@ namespace NightSnack {
     void CameraSystem::ResetCameraPanProperties() {
         m_cameraState = CAMERASTATE::FOLLOW_PLAYER;
         m_currCamPanTimer = 0.f;
+        m_panTimer = 0.f;
+        m_panningTargetIndex = 0;
+        m_panComplete = false;
+
+        auto& cam = m_coord.GetComponent<Camera>(m_mainCamera);
+        m_originalCamPos = Vec2((cam.minX + cam.maxX) * 0.5f, (cam.minY + cam.maxY) * 0.5f);
+
         LimitWithinBounds(m_coord.ModifyComponent<Transform>(m_mainCamera));
-        StoreCameraPanningTargets();
+        
+        m_panningTargets.clear();
     }
 }

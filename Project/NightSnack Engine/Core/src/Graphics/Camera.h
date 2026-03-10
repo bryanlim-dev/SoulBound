@@ -80,6 +80,7 @@ namespace NightSnack {
 		Entity GetMainCamera() const;
 
 		bool GetCameraIsPanning() const;
+		void ResetCameraPanProperties();
 
 	private:
 		Coordinator& m_coord;
@@ -116,6 +117,7 @@ namespace NightSnack {
 		float m_holdTimer = 0.0f;
 		float m_zoomTimer = 0.0f;
 		float m_panTimer = 0.0f;
+		size_t m_panningTargetIndex = 0;
 
 		std::vector<Vec2> m_panningTargets{};	  // Used to store all camera panning targets for the current scene
 
@@ -140,7 +142,6 @@ namespace NightSnack {
 		void LerpCameraPosition(Transform& camT);
 		bool ConstantPanCameraPosition(Transform& camT);
 		bool LerpZoom();
-		void StoreCameraPanningTargets();
-		void ResetCameraPanProperties();
+		bool StoreCameraPanningTargets();
 	};
 }

@@ -570,6 +570,7 @@ namespace NightSnack::Scene {
 		CacheLevel();
 
 		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
+		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 		// Start the camera panning at the very start of the level
 		if (levelname == "LevelTutorial")
 			m_coord.GetSystem<CameraSystem>()->StartCamPan(false);
@@ -686,6 +687,7 @@ namespace NightSnack::Scene {
 		winScreenOn = false;
 
 		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
+		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 		// Start the camera panning at the very start of the level
 		m_coord.GetSystem<CameraSystem>()->StartCamPan(true);
 	}
@@ -836,6 +838,7 @@ namespace NightSnack::Scene {
 		script->RefreshScripts(); //	
 
 		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
+		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 		// Do not pam the camera when entering the level editor
 		m_coord.GetSystem<CameraSystem>()->StartCamPan(false);
 
