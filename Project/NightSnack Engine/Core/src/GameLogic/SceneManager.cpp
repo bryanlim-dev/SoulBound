@@ -537,6 +537,7 @@ namespace NightSnack::Scene {
 
 		audio->StopBGM(); // stop previous bgm
 		audio->SetBGMVolume(0.0f); // start silent for fade-in
+		m_currentLevelBGMs.clear();
 
 		if (level.contains("BGM"))
 		{
@@ -545,13 +546,17 @@ namespace NightSnack::Scene {
 				// Multiple BGMs
 				for (const auto& bgm : level["BGM"])
 				{
-					audio->PlayBGM(bgm.get<std::string>());
+					std::string key = bgm.get<std::string>();
+					m_currentLevelBGMs.push_back(key);
+					audio->PlayBGM(key);
 				}
 			}
 			else
 			{
 				// Single BGM
-				audio->PlayBGM(level["BGM"].get<std::string>());
+				std::string key = level["BGM"].get<std::string>();
+				m_currentLevelBGMs.push_back(key);
+				audio->PlayBGM(key);
 			}
 		}
 		else
@@ -722,8 +727,7 @@ namespace NightSnack::Scene {
 
 		// Save Level data;
 		level["Entities"] = m_coord.GetSystem<EntityFactory>()->SaveLevelEntities();
-		level["BGM"] = m_coord.GetSystem<AudioSystem>()->GetBGM();
-		level["Name"] = levelname;
+		level["BGM"] = m_currentLevelBGMs;
 
 		// Write file -------------------------------------------------------
 		std::ofstream pfs(outPath);
@@ -802,6 +806,8 @@ namespace NightSnack::Scene {
 		m_levelCache["MainCamera"]["posZ"] = t.pos.z;
 
 		m_levelCache["Entities"] = m_coord.GetSystem<EntityFactory>()->CacheLevelEntities();
+		m_levelCache["BGM"] = m_currentLevelBGMs;
+
 	}
 
 	// Restore scene to cached level -> restore after Stopping simulation in Editor
@@ -830,8 +836,27 @@ namespace NightSnack::Scene {
 		
 		// Restart audio
 		auto const& audio = m_coord.GetSystem<AudioSystem>();
-		std::string bgmkey = audio->GetBGM();
-		audio->PlayBGM(bgmkey);  // handles continuation automatically
+		//audio->StopBGM();
+		m_currentLevelBGMs.clear();
+
+		if (m_levelCache.contains("BGM"))
+		{
+			if (m_levelCache["BGM"].is_array())
+			{
+				for (const auto& bgm : m_levelCache["BGM"])
+				{
+					std::string key = bgm.get<std::string>();
+					m_currentLevelBGMs.push_back(key);
+					audio->PlayBGM(key);
+				}
+			}
+			else
+			{
+				std::string key = m_levelCache["BGM"].get<std::string>();
+				m_currentLevelBGMs.push_back(key);
+				audio->PlayBGM(key);
+			}
+		}
 
 
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();

@@ -284,6 +284,11 @@ namespace NightSnack::Scene {
 
 		std::vector<Entity> m_overlayEntites;
 
+		std::vector<std::string> m_currentLevelBGMs; // tracks BGMs loaded for current level
+
+		std::vector<std::string> GetCurrentLevelBGMs() const { return m_currentLevelBGMs; }
+
+
 		// Overlay menu
 		bool m_gameLoaded = false;
 		bool overlayOn = false;

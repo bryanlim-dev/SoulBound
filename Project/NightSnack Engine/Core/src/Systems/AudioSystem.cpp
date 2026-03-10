@@ -373,7 +373,20 @@ namespace NightSnack {
         }
     }
 
-    std::string AudioSystem::GetBGM() const { return m_currentKeyBGM; }
+    std::vector<std::string> AudioSystem::GetBGM() const 
+    {
+        std::vector<std::string> playing;
+        for (const auto& [key, channel] : m_bgmChannels)
+        {
+            if (!channel) continue;
+            bool isPlaying = false;
+            channel->isPlaying(&isPlaying);
+
+            if (isPlaying && !m_bgmPaused)
+                playing.push_back(key);
+        }
+        return playing;
+    }
 
     // plays background music by string key
     void AudioSystem::PlayBGM(const std::string& bgmKey)

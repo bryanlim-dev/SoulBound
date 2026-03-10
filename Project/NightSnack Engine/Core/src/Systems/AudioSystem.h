@@ -190,7 +190,7 @@ namespace NightSnack {
          * @brief retrieves the audio key of current BGM
          * @return std::string key of current BGM
          */
-        std::string GetBGM() const;
+        std::vector<std::string> GetBGM() const;
 
         /**
          * @brief fades the current BGM to a target volume over a duration
@@ -233,7 +233,6 @@ namespace NightSnack {
          * @return system name
          */
         std::string GetName() const override;
-
 
     private:
         // Resource management
