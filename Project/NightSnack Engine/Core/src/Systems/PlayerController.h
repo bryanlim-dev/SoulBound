@@ -345,7 +345,11 @@ namespace NightSnack {
 
             HandlePossessUnpossess();
 
-            
+            if (curr_ability == "Grapple")
+            {
+                m_frogTongue.UpdateOwner(m_player);
+                m_frogTongue.UpdateIndicator(m_coord);
+            }
 
             // Special Abilities --------------------------
             if (curr_ability == "DoubleJump") {
