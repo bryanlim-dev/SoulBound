@@ -26,6 +26,7 @@ namespace NightSnack {
 		RegisterParticlePrefab("Particle-OrbitGlow", PARTICLE_TYPE::GLOW_ORBIT);
 		RegisterParticlePrefab("Particle-RisingGlow", PARTICLE_TYPE::GLOW_RISING);
 		RegisterParticlePrefab("Particle-KeyGlow", PARTICLE_TYPE::GLOW_KEY);
+		RegisterParticlePrefab("Particle-GreenOrbitGlow", PARTICLE_TYPE::GLOW_ORBIT);
 	}
 
 	void ParticleSystem::Update() {
