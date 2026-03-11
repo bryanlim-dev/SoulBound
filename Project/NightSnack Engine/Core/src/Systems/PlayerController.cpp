@@ -163,7 +163,21 @@ namespace NightSnack {
         m_coord.ModifyComponent<Transform>(m_player).pos = m_coord.GetComponent<Transform>(m_prevCheckpoint).pos;
 
 
+        bool isGliding = m_flags.isGliding;
+        bool isUsingGlide = m_flags.useAbility && m_flags.isGliding;
+        bool movingLeft = m_flags.movingLeft;
+        bool movingRight = m_flags.movingRight;
+
         ResetFlags();
+
+        //Preservse these flags
+        m_flags.isGliding   = isGliding;
+        m_flags.useAbility = isUsingGlide; //Only preserve if gldiing, reset others
+
+
+        m_flags.movingLeft  = movingLeft;
+        m_flags.movingRight = movingRight;
+
 
         //Reset velocity
         if (m_coord.HasComponent<RigidBody>(m_player))
@@ -205,12 +219,10 @@ namespace NightSnack {
         }
         else
         {
+            if (event.pressed == InputEvent::InputActionState::Pressed) {
             if (event.pressed == InputEvent::InputActionState::Pressed ||
-                event.pressed == InputEvent::InputActionState::Repeat) {
+                (event.pressed == InputEvent::InputActionState::Repeat && curr_ability == "Glide")) {
                 m_flags.useAbility = true;
-            }
-            else {
-                m_flags.useAbility = false;
             }
         }
     }
