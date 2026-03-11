@@ -2317,6 +2317,10 @@ namespace NightSnack
                         snapshot.animator = m_coord.GetComponent<Animator>(*m_selectedEntity);
                     else if (strcmp(name, "Scripting") == 0)
 						snapshot.script = m_coord.GetComponent<Script>(*m_selectedEntity);
+					else if (strcmp(name, "Audio") == 0)
+						snapshot.audio = m_coord.GetComponent<Audio>(*m_selectedEntity);
+                    else if (strcmp(name, "Button") == 0)
+						snapshot.button = m_coord.GetComponent<ButtonInfo>(*m_selectedEntity);
                     else if (strcmp(name, "Character") == 0)
 						snapshot.character = m_coord.GetComponent<Character>(*m_selectedEntity);
                     else if (strcmp(name, "Collectible") == 0)
