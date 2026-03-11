@@ -490,6 +490,9 @@ namespace ManagedScripts
         private static extern uint GetPlayerID_Internal();
         [MethodImpl(MethodImplOptions.InternalCall)]
         public static extern uint KillPlayer_Internal();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern string GetPlayerAbility_Internal();
         #endregion
 
 
@@ -1204,8 +1207,11 @@ namespace ManagedScripts
         // Player Controller API for Scripts
         // ----------------------------
         #region Player Controller
+        public static string GetPlayerAbility()
+        {
+            return GetPlayerAbility_Internal();
+        }
 
-        
         #endregion
 
         public static uint GetComponentInChildren(uint parentID, string componentName) => GetComponentInChildren_Internal(parentID, componentName);

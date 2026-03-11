@@ -527,7 +527,8 @@ namespace NightSnack::Scripting {
         return m_coord.GetComponent<Renderable>(e).materialName;
     }
     void ScriptInterface::SetMaterialName(Entity e, std::string name){
-        m_coord.GetSystem<GraphicsSystem>()->UpdateTextureOfMaterial(name, e);
+        //m_coord.GetSystem<GraphicsSystem>()->UpdateTextureOfMaterial(name, e);
+        m_coord.ModifyComponent<Renderable>(e).materialName = name;
     }
 
     bool ScriptInterface::GetIsWireframe(Entity e)
@@ -1064,6 +1065,11 @@ namespace NightSnack::Scripting {
     void ScriptInterface::KillPlayer()
     {
         m_coord.GetSystem<PlayerControllerSystem>()->RespawnPlayer();
+    }
+
+    std::string ScriptInterface::GetPlayerAbility()
+    {
+        return m_coord.GetSystem<PlayerControllerSystem>()->curr_ability;
     }
 
     void ScriptInterface::LoadLevel(std::string lvlName)
