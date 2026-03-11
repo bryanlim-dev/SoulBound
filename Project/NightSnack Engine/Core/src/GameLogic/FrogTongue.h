@@ -21,6 +21,7 @@ namespace NightSnack {
 		Entity m_owner = INVALID_ENTITY;
 		Entity m_anchor = INVALID_ENTITY;
 		Entity m_tongue = INVALID_ENTITY;
+		Entity m_indicator = INVALID_ENTITY;
 
 		DistanceJoint2D m_distanceJoint;
 
@@ -97,10 +98,15 @@ namespace NightSnack {
 
 		void UpdateOwner(Entity e);
 
+		void UpdateIndicator(Coordinator& coord);
+
 	private:
 
 		void UpdateTonguePos(Coordinator& coord);
 		float DistanceToAnchor(Vec3 ownerPos, Vec3 anchorPos);
+
+		void SpawnIndicator(Coordinator& coord);
+		void DestroyIndicator(Coordinator& coord);
 
 	};
 }
