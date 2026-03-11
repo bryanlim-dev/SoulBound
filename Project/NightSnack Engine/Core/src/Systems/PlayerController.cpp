@@ -219,7 +219,6 @@ namespace NightSnack {
         }
         else
         {
-            if (event.pressed == InputEvent::InputActionState::Pressed) {
             if (event.pressed == InputEvent::InputActionState::Pressed ||
                 (event.pressed == InputEvent::InputActionState::Repeat && curr_ability == "Glide")) {
                 m_flags.useAbility = true;
