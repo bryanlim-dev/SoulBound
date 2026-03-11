@@ -155,10 +155,31 @@ namespace NightSnack {
         for (Entity e : m_entities) {
             Audio& a = m_coord.ModifyComponent<Audio>(e);
             
-			/*std::cout << "[AudioSystem] Audio Component - Key: " << a.audioKey
-				<< ", isPlaying: " << a.isPlaying
-				<< ", volume: " << a.volume
-				<< ", loop: " << a.loop << "\n";*/
+            /*std::cout << "[AudioSystem] Entity " << e
+                << " key: " << a.audioKey
+                << " isPlaying: " << a.isPlaying
+                << " playOnStart: " << a.playOnStart << std::endl;*/
+
+            if (m_coord.HasComponent<Collider>(e) && m_coord.HasComponent<Transform>(e)) {
+                auto& col = m_coord.GetComponent<Collider>(e);
+                auto& t = m_coord.GetComponent<Transform>(e);
+
+                if (t.name.find("Sprite-PlatformTile1") != std::string::npos) {
+                    if (col.type == ColliderType::Trigger &&
+                        m_triggeredFallAudio.find(e) == m_triggeredFallAudio.end())
+                    {
+                        std::cout << "[AudioSystem] Playing fall sound for: " << t.name << std::endl;
+                        PlayRandomVariant("Rock_Hit", 4, 1.0f);
+                        m_triggeredFallAudio.insert(e);
+                    }
+
+                    if (col.type == ColliderType::Solid &&
+                        m_triggeredFallAudio.count(e))
+                    {
+                        m_triggeredFallAudio.erase(e);
+                    }
+                }
+            }
 
             if (a.playOnStart)
             {
