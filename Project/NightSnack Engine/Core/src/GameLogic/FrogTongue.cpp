@@ -25,6 +25,8 @@ namespace NightSnack
 		if (!coord.HasComponent<Transform>(m_owner))
 			return false;
 
+		DestroyIndicator(coord);
+
 		//If found
 		std::list<Entity> grappable = coord.GetSystem<CharacterSystem>()->FindEntityWithPropertities(GRAPPLEABLE);
 
@@ -68,7 +70,11 @@ namespace NightSnack
 
 		m_anchor = cloestGrappable;
 		m_distanceJoint.SetAutoConfigure(true);
-		m_distanceJoint.Initialize(coord, ownerPos, coord.GetComponent<Transform>(m_anchor).pos);
+
+		// Set anchor point to the bottom of the entity
+		Vec3 anchorBottomPos = coord.GetComponent<Transform>(m_anchor).pos;
+		anchorBottomPos.y -= coord.GetComponent<Transform>(m_anchor).scale.y / 2.f;
+		m_distanceJoint.Initialize(coord, ownerPos, anchorBottomPos);
 		m_distanceJoint.SetBodies(m_owner, m_anchor);
 
 		//std::cout << "[Frog Grappble] Closest Grappable: " + std::to_string(m_anchor) + ", distance: " + std::to_string(closestDist) + "!" << std::endl;
@@ -105,6 +111,7 @@ namespace NightSnack
 		float dt = coord.GetSystem<ApplicationSystem>()->GetDT();
 		Vec3 ownerPt = coord.GetComponent<Transform>(m_owner).pos;
 		Vec3 anchorPt = coord.GetComponent<Transform>(m_anchor).pos;
+		anchorPt.y -= coord.GetComponent<Transform>(m_anchor).scale.y / 2.f;
 
 		//Removed max dist check its messing with the extend/retract
 		//if (DistanceToAnchor(ownerPt, anchorPt) >= m_tongueLengthMax)
@@ -118,6 +125,7 @@ namespace NightSnack
 
 	void FrogTongue::End(Coordinator& coord)
 	{
+		DestroyIndicator(coord);
 
 		if (m_owner == coord.GetSystem<PlayerControllerSystem>()->GetPlayer())
 		{
@@ -181,6 +189,7 @@ namespace NightSnack
 
 		Vec3 ownerPt = coord.GetComponent<Transform>(m_owner).pos;
 		Vec3 anchorPt = coord.GetComponent<Transform>(m_anchor).pos;
+		anchorPt.y -= coord.GetComponent<Transform>(m_anchor).scale.y / 2.f;
 
 		Vec3 dirVec = (anchorPt - ownerPt);
 
@@ -208,5 +217,99 @@ namespace NightSnack
 		float distance = dirVec.magnitude();
 
 		return distance >= 0 ? distance : -distance;
+	}
+
+	void FrogTongue::UpdateIndicator(Coordinator& coord)
+	{
+		// Don't show indicator while tongue is already active
+		if (m_active)
+		{
+			DestroyIndicator(coord);
+			return;
+		}
+
+		if (!coord.HasComponent<Transform>(m_owner))
+		{
+			DestroyIndicator(coord);
+			return;
+		}
+
+		std::list<Entity> grappable = coord.GetSystem<CharacterSystem>()->FindEntityWithPropertities(GRAPPLEABLE);
+
+		Vec3 ownerPos = coord.GetComponent<Transform>(m_owner).pos;
+		Vec2 ownerScale = coord.GetComponent<Transform>(m_owner).scale;
+
+		Entity closestGrappable = INVALID_ENTITY;
+		float closestDist = FLT_MAX;
+
+		for (Entity enCheck : grappable)
+		{
+			if (!coord.HasComponent<Transform>(enCheck))
+				continue;
+
+			Vec3 enPos = coord.GetComponent<Transform>(enCheck).pos;
+			float distance = (enPos - ownerPos).magnitude();
+			if (distance < 0) distance = -distance;
+
+			if (distance <= m_tongueLengthMax && distance < closestDist)
+			{
+				if (enPos.y + (ownerScale.y / 2) >= ownerPos.y)
+				{
+					closestGrappable = enCheck;
+					closestDist = distance;
+				}
+			}
+		}
+
+		if (closestGrappable == INVALID_ENTITY)
+		{
+			DestroyIndicator(coord);
+			return;
+		}
+
+		// Spawn indicator circle if not alive
+		if (m_indicator == INVALID_ENTITY || !coord.EntityIsAlive(m_indicator))
+		{
+			m_indicator = coord.CreateEntity();
+
+			coord.AddComponent<Transform>(m_indicator, Transform{});
+
+			// Add Renderable with circle mesh
+			Renderable r{};
+			r.meshName = "circle";
+			coord.AddComponent<Renderable>(m_indicator, r);
+
+			Color col{};
+			col.r = 1.f; col.g = 0.f; col.b = 0.f; col.a = 0.1f;
+			coord.AddComponent<Color>(m_indicator, col);
+
+			Transform& t = coord.ModifyComponent<Transform>(m_indicator);
+			t.scale = Vec2{ 10.f, 10.f };
+			t.layer = LayerType::GAMELAYER;
+
+			Vec3 grapPos = coord.GetComponent<Transform>(closestGrappable).pos;
+			t.pos = grapPos;
+			t.pos.y -= coord.GetComponent<Transform>(closestGrappable).scale.y / 2.f;
+
+			coord.BufferEntitySignature(m_indicator);
+		}
+
+		// Update position to closest grapplable every frame
+		if (coord.HasComponent<Transform>(m_indicator))
+		{
+			Vec3 grapPos = coord.GetComponent<Transform>(closestGrappable).pos;
+			Transform& t = coord.ModifyComponent<Transform>(m_indicator);
+			t.pos = grapPos;
+			t.pos.y -= coord.GetComponent<Transform>(closestGrappable).scale.y / 2.f;
+		}
+	}
+
+	void FrogTongue::DestroyIndicator(Coordinator& coord)
+	{
+		if (m_indicator != INVALID_ENTITY && coord.EntityIsAlive(m_indicator))
+		{
+			coord.DestroyEntity(m_indicator);
+		}
+		m_indicator = INVALID_ENTITY;
 	}
 }
