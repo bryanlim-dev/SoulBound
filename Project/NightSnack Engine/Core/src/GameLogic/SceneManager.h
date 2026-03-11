@@ -199,6 +199,11 @@ namespace NightSnack::Scene {
 		// Sets up bgm and menus
 
 		/**
+		 * @brief Starts a new level
+		 */
+		void NewLevel();
+
+		/**
 		 * @brief Loads a level immediately.
 		 * @param filename Level file to load.
 		 */

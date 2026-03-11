@@ -460,7 +460,7 @@ namespace NightSnack {
             else if (n == "Collider")          addAndPush.template operator() <Collider> (act.collider);
             else if (n == "Renderer")          addAndPush.template operator() <Renderable> (act.renderer);
             else if (n == "Font")              addAndPush.template operator() <Font> (act.font);
-            else if (n == "Button")        addAndPush.template operator() <ButtonInfo> (act.button);
+            else if (n == "Button")            addAndPush.template operator() <ButtonInfo> (act.button);
             else if (n == "Audio")             addAndPush.template operator() <Audio> (act.audio);
             else if (n == "Character")         addAndPush.template operator() <Character> (act.character);
             else if (n == "Collectible")       addAndPush.template operator() <Collectible> (act.collectible);
