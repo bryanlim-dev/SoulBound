@@ -254,6 +254,9 @@ namespace NightSnack {
         std::unordered_set<Entity> m_triggeredSpikeOutAudio;
         std::unordered_set<Entity> m_triggeredSpikeInAudio;
         std::unordered_map<Entity, float> m_spikePrevPosY;
+        std::unordered_set<Entity> m_triggeredSpikeOutAudioX;
+        std::unordered_set<Entity> m_triggeredSpikeInAudioX;
+        std::unordered_map<Entity, float> m_spikePrevPosX;
 
         // Sound caches - maps string keys to sound pointers
         std::unordered_map<std::string, FMOD::Sound*> m_loadedSFX;
@@ -287,6 +290,8 @@ namespace NightSnack {
         float m_fadeTimer;
         float m_fadeDuration;
         float m_fadeTargetVolume;
+
+        float GetDistanceToPlayer(Entity e);
 
         /**
          * @brief loads a single sound file and assigns it a string key based on filename

@@ -155,7 +155,7 @@ namespace NightSnack {
         for (Entity e : m_entities) {
             Audio& a = m_coord.ModifyComponent<Audio>(e);
             
-            /*std::cout << "[AudioSystem] Entity " << e
+           /* std::cout << "[AudioSystem] Entity " << e
                 << " key: " << a.audioKey
                 << " isPlaying: " << a.isPlaying
                 << " playOnStart: " << a.playOnStart << std::endl;*/
@@ -168,16 +168,21 @@ namespace NightSnack {
                     if (col.type == ColliderType::Trigger &&
                         m_triggeredFallAudio.find(e) == m_triggeredFallAudio.end())
                     {
-                        std::cout << "[AudioSystem] Playing fall sound for: " << t.name << std::endl;
-                        PlayRandomVariant("Rock_Hit", 4, 1.0f);
+                        float dist = GetDistanceToPlayer(e);
+                        float maxDist = 1500.0f;
+
+                        if (dist < maxDist)
+                        {
+                            // Squared falloff
+                            float fallOff = 1.0f - (dist / maxDist);
+                            float volume = fallOff * fallOff;
+                            PlayRandomVariant("Rock_Hit", 4, volume);
+                        }
                         m_triggeredFallAudio.insert(e);
                     }
 
-                    if (col.type == ColliderType::Solid &&
-                        m_triggeredFallAudio.count(e))
-                    {
+                    if (col.type == ColliderType::Solid && m_triggeredFallAudio.count(e))
                         m_triggeredFallAudio.erase(e);
-                    }
                 }
             }
 
@@ -190,31 +195,69 @@ namespace NightSnack {
                     if (m_spikePrevPosY.count(e)) {
                         float prevY = m_spikePrevPosY[e];
                         float delta = currentY - prevY;
-                        bool isMoving = std::abs(delta) > 0.01f;
-                        bool movingUp = delta > 0.01f;    // spikes coming out
-                        bool movingDown = delta < -0.01f; // spikes going in
+                        bool movingUp = delta > 0.01f;
+                        bool movingDown = delta < -0.01f;
 
-                        if (isMoving) {
+                        float dist = GetDistanceToPlayer(e);
+                        float maxDist = 1500.0f;
+                        float fallOff = (dist < maxDist) ? (1.0f - (dist / maxDist)) : 0.0f;
+                        float volume = fallOff * fallOff;
+
+                        if (volume > 0.0f) // only play if within range
+                        {
                             if (movingUp && m_triggeredSpikeOutAudio.find(e) == m_triggeredSpikeOutAudio.end())
                             {
-                                std::cout << "[AudioSystem] Spikes out: " << t.name << std::endl;
-                                PlayRandomVariant("Spikes-Out SFX", 3, 1.0f);
+                                PlayRandomVariant("Spikes-Out SFX", 3, volume);
                                 m_triggeredSpikeOutAudio.insert(e);
-                                m_triggeredSpikeInAudio.erase(e); // reset in-audio so it can play again
+                                m_triggeredSpikeInAudio.erase(e);
                             }
                             else if (movingDown && m_triggeredSpikeInAudio.find(e) == m_triggeredSpikeInAudio.end())
                             {
-                                std::cout << "[AudioSystem] Spikes in: " << t.name << std::endl;
-                                PlayRandomVariant("Spikes-In SFX", 3, 1.0f);
+                                PlayRandomVariant("Spikes-In SFX", 3, volume);
                                 m_triggeredSpikeInAudio.insert(e);
-                                m_triggeredSpikeOutAudio.erase(e); // reset out-audio so it can play again
+                                m_triggeredSpikeOutAudio.erase(e);
                             }
                         }
                     }
 
                     m_spikePrevPosY[e] = currentY;
                 }
+                if (t.name.find("RetractableSprite-Spikes1") != std::string::npos) {
+                    float currentX = t.pos.x;
+
+                    if (m_spikePrevPosX.count(e)) {
+                        float prevX = m_spikePrevPosX[e];
+                        float delta = currentX - prevX;
+                        bool movingRight = delta > 0.01f;  // spikes coming out
+                        bool movingLeft = delta < -0.01f;  // spikes going in
+
+                        float dist = GetDistanceToPlayer(e);
+                        float maxDist = 500.0f;
+                        float fallOff = (dist < maxDist) ? (1.0f - (dist / maxDist)) : 0.0f;
+                        float volume = fallOff * fallOff;
+
+                        if (volume > 0.0f)
+                        {
+                            if (movingRight && m_triggeredSpikeOutAudioX.find(e) == m_triggeredSpikeOutAudioX.end())
+                            {
+                                PlayRandomVariant("Spikes-Out SFX", 3, volume);
+                                m_triggeredSpikeOutAudioX.insert(e);
+                                m_triggeredSpikeInAudioX.erase(e);
+                            }
+                            else if (movingLeft && m_triggeredSpikeInAudioX.find(e) == m_triggeredSpikeInAudioX.end())
+                            {
+                                PlayRandomVariant("Spikes-In SFX", 3, volume);
+                                m_triggeredSpikeInAudioX.insert(e);
+                                m_triggeredSpikeOutAudioX.erase(e);
+                            }
+                        }
+                    }
+
+                    m_spikePrevPosX[e] = currentX;
+                }
             }
+
+
 
             if (a.playOnStart)
             {
@@ -321,6 +364,21 @@ namespace NightSnack {
         fs::path p(filepath);
         std::string filename = p.stem().string();
         return filename;
+    }
+
+    float AudioSystem::GetDistanceToPlayer(Entity e)
+    {
+        Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+        if (player == INVALID_ENTITY) return FLT_MAX;
+        if (!m_coord.HasComponent<Transform>(e)) return FLT_MAX;
+        if (!m_coord.HasComponent<Transform>(player)) return FLT_MAX;
+
+        auto& entityPos = m_coord.GetComponent<Transform>(e).pos;
+        auto& playerPos = m_coord.GetComponent<Transform>(player).pos;
+
+        float dx = entityPos.x - playerPos.x;
+        float dy = entityPos.y - playerPos.y;
+        return std::sqrt(dx * dx + dy * dy);
     }
 
     // loads a single sound file and assigns it a string key based on filename
