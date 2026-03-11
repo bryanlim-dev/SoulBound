@@ -115,7 +115,7 @@ namespace NightSnack {
             if (m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, player))
             {
                 m_playedSequences.insert(sequenceID); // mark as played before starting
-                m_coord.GetSystem<DialogueSystem>()->StartDialogue(sequenceID);
+                StartDialogue(sequenceID);
             }
         }
        
