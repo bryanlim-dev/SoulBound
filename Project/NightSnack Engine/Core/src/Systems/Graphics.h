@@ -463,7 +463,7 @@ namespace NightSnack {
 			size_t ssboOffset{ 0 };
 			size_t instanceCount{ 0 };
 			int layerOrder{ 0 }; // explicit sort key
-			float zPos{ 0.f };
+			float zPos{ std::numeric_limits<float>::max() };
 		};
 
 		// Resource stores (owned by system);
