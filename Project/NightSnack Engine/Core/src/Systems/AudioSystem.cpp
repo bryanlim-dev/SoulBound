@@ -181,6 +181,41 @@ namespace NightSnack {
                 }
             }
 
+            if (m_coord.HasComponent<Transform>(e)) {
+                auto& t = m_coord.GetComponent<Transform>(e);
+
+                if (t.name.find("RetractableSprite-Spikes1") != std::string::npos) {
+                    float currentY = t.pos.y;
+
+                    if (m_spikePrevPosY.count(e)) {
+                        float prevY = m_spikePrevPosY[e];
+                        float delta = currentY - prevY;
+                        bool isMoving = std::abs(delta) > 0.01f;
+                        bool movingUp = delta > 0.01f;    // spikes coming out
+                        bool movingDown = delta < -0.01f; // spikes going in
+
+                        if (isMoving) {
+                            if (movingUp && m_triggeredSpikeOutAudio.find(e) == m_triggeredSpikeOutAudio.end())
+                            {
+                                std::cout << "[AudioSystem] Spikes out: " << t.name << std::endl;
+                                PlayRandomVariant("Spikes-Out SFX", 3, 1.0f);
+                                m_triggeredSpikeOutAudio.insert(e);
+                                m_triggeredSpikeInAudio.erase(e); // reset in-audio so it can play again
+                            }
+                            else if (movingDown && m_triggeredSpikeInAudio.find(e) == m_triggeredSpikeInAudio.end())
+                            {
+                                std::cout << "[AudioSystem] Spikes in: " << t.name << std::endl;
+                                PlayRandomVariant("Spikes-In SFX", 3, 1.0f);
+                                m_triggeredSpikeInAudio.insert(e);
+                                m_triggeredSpikeOutAudio.erase(e); // reset out-audio so it can play again
+                            }
+                        }
+                    }
+
+                    m_spikePrevPosY[e] = currentY;
+                }
+            }
+
             if (a.playOnStart)
             {
                 PlayAudio(a, e);

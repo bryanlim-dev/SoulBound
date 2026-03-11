@@ -251,6 +251,9 @@ namespace NightSnack {
         std::unordered_map<Entity, FMOD::Channel*> m_entityChannels;
 
         std::unordered_set<Entity> m_triggeredFallAudio;
+        std::unordered_set<Entity> m_triggeredSpikeOutAudio;
+        std::unordered_set<Entity> m_triggeredSpikeInAudio;
+        std::unordered_map<Entity, float> m_spikePrevPosY;
 
         // Sound caches - maps string keys to sound pointers
         std::unordered_map<std::string, FMOD::Sound*> m_loadedSFX;
