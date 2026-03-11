@@ -67,6 +67,13 @@ namespace NightSnack {
 							this->ExtendRetractTongue(coord, true);
 						}
 						break;
+					case InputEvent::InputAction::PlayerJumpAbility:
+						if (event.pressed == InputEvent::InputActionState::Released)
+						{
+
+							this->End(coord);
+						}
+						break;
 					}
 					
 

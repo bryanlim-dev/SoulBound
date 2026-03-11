@@ -205,12 +205,8 @@ namespace NightSnack {
         }
         else
         {
-            if (event.pressed == InputEvent::InputActionState::Pressed ||
-                event.pressed == InputEvent::InputActionState::Repeat) {
+            if (event.pressed == InputEvent::InputActionState::Pressed) {
                 m_flags.useAbility = true;
-            }
-            else {
-                m_flags.useAbility = false;
             }
         }
     }
