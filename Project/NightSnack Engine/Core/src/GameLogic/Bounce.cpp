@@ -328,6 +328,7 @@ namespace NightSnack
 					{
 						coord.ModifyComponent<Color>(m_guideDots[j]).a = 0;
 						coord.ModifyComponent<Transform>(m_guideDots[j]).pos.z = -1000;
+						coord.ModifyComponent<Transform>(m_guideDots[j]).isActive = false;
 					}
 
 				break;
