@@ -65,6 +65,18 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Get the number of flames collected so far, 
+		used for lighting up the correct flame icon in the UI.
+
+		\return
+		Number of flames collected so far
+		*/
+		/************************************************************************/
+		int GetNumFlamesCollected() const { return m_numFlamesCollected; }
+
+		/************************************************************************/
+		/*!
+		\brief
 		Get the system's signature.
 		Required by ISystem inheritance
 

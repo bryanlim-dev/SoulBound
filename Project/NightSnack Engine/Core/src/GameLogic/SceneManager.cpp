@@ -86,10 +86,12 @@ namespace NightSnack::Scene {
 		}
 		// Check if player is colliding with a CamTrigger -> if so, interpolate camera to new position;
 		m_player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
-
+		auto collectSystem = m_coord.GetSystem<CollectibleSystem>();
 		if (m_player != INVALID_ENTITY) {
 			auto const& physics = m_coord.GetSystem<PhysicsSystem>();
-			for (auto& [a, b] : m_camFrames) {
+
+			for (auto& [a, b] : m_camFrames)
+			{
 				if (a == m_camIndex) continue;
 				if (!m_coord.HasComponent<Collider>(a) || !m_coord.GetComponent<Collider>(a).colliding) continue;
 				if (physics->EntitiesAreColliding(a, m_player)) {
@@ -98,12 +100,27 @@ namespace NightSnack::Scene {
 					break;
 				}
 			}
-			if (m_coord.GetComponent<Collider>(m_winCollider).colliding && !winScreenOn) {
-				if (physics->EntitiesAreColliding(m_winCollider, m_player)) {
-					CreateWinScreen();
-					m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerWin", 0.85f);
-					m_coord.GetSystem<CollectibleSystem>()->ToggleCollectibleIcons(false);
-					winScreenOn = true;
+			std::cout << m_currentLevelKey << std::endl;
+			if (m_coord.GetComponent<Collider>(m_winCollider).colliding && !winScreenOn)
+			{
+				if (physics->EntitiesAreColliding(m_winCollider, m_player))
+				{
+					// if current level is tutorial || player has collected all 3 flames
+					if (m_currentLevelKey == 1 || (collectSystem->GetNumFlamesCollected() >= 3))
+					{
+						CreateWinScreen();
+						m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerWin", 0.85f);
+						collectSystem->ToggleCollectibleIcons(false);
+						winScreenOn = true;
+					}
+					// Knockback player if they try to exit without all flames
+					else
+					{
+						Vec2 playerVel = m_coord.GetComponent<RigidBody>(m_player).vel;
+						float knockbackDir = (m_coord.GetComponent<Transform>(m_winCollider).pos.x - m_coord.GetComponent<Transform>(m_player).pos.x);
+						knockbackDir = -knockbackDir * (1.0f / std::sqrt(knockbackDir * knockbackDir));
+						m_coord.ModifyComponent<RigidBody>(m_player).vel = playerVel.x + knockbackDir * 500.0f;
+					}
 				}
 			}
 		}
