@@ -289,6 +289,7 @@ namespace NightSnack
 			simPos += simVel * dt;
 
 			bool collided = false;
+			coord.ModifyComponent<Transform>(m_guideDots[i]).isActive = true;
 
 			for (Entity e : coord.GetLivingEntities())
 			{

@@ -62,7 +62,7 @@ namespace NightSnack {
 		const float m_angleChangeSpeed = 75.0f;
 		bool m_facingRight = true;
 
-		const float m_maxLaunchForce = 2500.0f;
+		const float m_maxLaunchForce = 2000.0f;
 		const float m_minLaunchForce = 500.0f;
 		//const float m_minVel = 20.0f;
 
