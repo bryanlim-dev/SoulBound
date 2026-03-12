@@ -5241,7 +5241,7 @@
         "zoom": 1.0
     },
     "WinZone": {
-        "ConfigFile": "WinScreen",
+        "ConfigFile": "LevelTutorialWinScreen",
         "Position": {
             "x": 7850.0,
             "y": 900.0
