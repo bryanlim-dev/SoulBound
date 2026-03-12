@@ -418,24 +418,28 @@ namespace NightSnack {
         void UndoComponentAdd(Coordinator& coord, Entity entity,
             const std::string& name, std::deque<UndoAction>& targetStack)
         {
-            auto removeAndSave = [&]<typename TComp>(auto snapCtor)
+            auto removeAndSave = [&]<typename TComp>(auto getField)
             {
-                if (coord.HasComponent<TComp>(entity))
-                {
-                    PushToStack(targetStack, snapCtor(coord.GetComponent<TComp>(entity)));
-                    coord.RemoveComponent<TComp>(entity);
-                }
+                if (!coord.HasComponent<TComp>(entity)) return;
+
+                ComponentRemoveSnapshot snap{ entity, name };
+                getField(snap) = coord.GetComponent<TComp>(entity);
+                PushToStack(targetStack, snap);
+
+                coord.RemoveComponent<TComp>(entity);
             };
 
-            if      (name == "PlayerController")  removeAndSave.template operator() < PlayerController > ([&](auto&& c) { return PlayerControllerSnapshot{ entity, c }; });
-            else if (name == "RigidBody")         removeAndSave.template operator() < RigidBody > ([&](auto&& c) { return RigidBodySnapshot{ entity, c }; });
-            else if (name == "Collider")          removeAndSave.template operator() < Collider > ([&](auto&& c) { return ColliderSnapshot{ entity, c }; });
-            else if (name == "Renderable")        removeAndSave.template operator() < Renderable > ([&](auto&& c) { return RenderableSnapshot{ entity, c }; });
-            else if (name == "Font")              removeAndSave.template operator() < Font > ([&](auto&& c) { return FontSnapshot{ entity, c }; });
-            else if (name == "ButtonInfo")        removeAndSave.template operator() < ButtonInfo > ([&](auto&& c) { return ButtonSnapshot{ entity, c }; });
-            else if (name == "Audio")             removeAndSave.template operator() < Audio > ([&](auto&& c) { return AudioSnapshot{ entity, c }; });
-            else if (name == "Scripting") { if (coord.HasComponent<Script>(entity)) coord.RemoveComponent<Script>(entity); }
-            else if (name == "Animator")  { if (coord.HasComponent<Animator>(entity)) coord.RemoveComponent<Animator>(entity); }
+            if (name == "PlayerController")       removeAndSave.template operator() <PlayerController> ([](auto& s) -> auto& { return s.playercontroller; });
+            else if (name == "RigidBody")         removeAndSave.template operator() <RigidBody> ([](auto& s) -> auto& { return s.rigidbody; });
+            else if (name == "Collider")          removeAndSave.template operator() <Collider> ([](auto& s) -> auto& { return s.collider; });
+            else if (name == "Renderable")        removeAndSave.template operator() <Renderable> ([](auto& s) -> auto& { return s.renderer; });
+            else if (name == "Font")              removeAndSave.template operator() <Font> ([](auto& s) -> auto& { return s.font; });
+            else if (name == "Button")            removeAndSave.template operator() <ButtonInfo> ([](auto& s) -> auto& { return s.button; });
+            else if (name == "Audio")             removeAndSave.template operator() <Audio> ([](auto& s) -> auto& { return s.audio; });
+            else if (name == "Character")         removeAndSave.template operator() <Character> ([](auto& s) -> auto& { return s.character; });
+            else if (name == "Collectible")       removeAndSave.template operator() <Collectible> ([](auto& s) -> auto& { return s.collectible; });
+            else if (name == "Scripting")   { if (coord.HasComponent<Script>(entity)) { coord.RemoveComponent<Script>(entity); PushToStack(targetStack, ComponentAddSnapshot{ entity, name }); } }
+            else if (name == "Animator")    { if (coord.HasComponent<Animator>(entity)) { coord.RemoveComponent<Animator>(entity); PushToStack(targetStack, ComponentAddSnapshot{ entity, name }); } }
         }
 
 		// Handle undo for component removal by re-adding the component with 
@@ -443,27 +447,25 @@ namespace NightSnack {
         void UndoComponentRemove(Coordinator& coord, const ComponentRemoveSnapshot& act,
             std::deque<UndoAction>& targetStack)
         {
-            auto addAndSave = [&]<typename TComp>(const std::optional<TComp>&saved, auto snapCtor)
+            auto addAndPush = [&]<typename TComp>(const std::optional<TComp>&saved)
             {
                 if (!saved) return;
-
-                if (coord.HasComponent<TComp>(act.entity))
-                {
-                    PushToStack(targetStack, snapCtor(coord.GetComponent<TComp>(act.entity)));
-                }
                 coord.AddComponent<TComp>(act.entity, *saved);
+                PushToStack(targetStack, ComponentAddSnapshot{ act.entity, act.componentName });
             };
 
             const auto& n = act.componentName;
-            if      (n == "PlayerController")  addAndSave(act.playercontroller, [&](auto&& c) { return PlayerControllerSnapshot{ act.entity, c }; });
-            else if (n == "RigidBody")         addAndSave(act.rigidbody, [&](auto&& c) { return RigidBodySnapshot{ act.entity, c }; });
-            else if (n == "Collider")          addAndSave(act.collider, [&](auto&& c) { return ColliderSnapshot{ act.entity, c }; });
-            else if (n == "Renderer")          addAndSave(act.renderer, [&](auto&& c) { return RenderableSnapshot{ act.entity, c }; });
-            else if (n == "Font")              addAndSave(act.font, [&](auto&& c) { return FontSnapshot{ act.entity, c }; });
-            else if (n == "ButtonInfo")        addAndSave(act.button, [&](auto&& c) { return ButtonSnapshot{ act.entity, c }; });
-            else if (n == "Audio")             addAndSave(act.audio, [&](auto&& c) { return AudioSnapshot{ act.entity, c }; });
-            else if (n == "Scripting" && act.script)   coord.AddComponent<Script>(act.entity, *act.script);
-            else if (n == "Animator" && act.animator)  coord.AddComponent<Animator>(act.entity, *act.animator);
+            if (n == "PlayerController")       addAndPush.template operator() <PlayerController> (act.playercontroller);
+            else if (n == "RigidBody")         addAndPush.template operator() <RigidBody> (act.rigidbody);
+            else if (n == "Collider")          addAndPush.template operator() <Collider> (act.collider);
+            else if (n == "Renderer")          addAndPush.template operator() <Renderable> (act.renderer);
+            else if (n == "Font")              addAndPush.template operator() <Font> (act.font);
+            else if (n == "Button")            addAndPush.template operator() <ButtonInfo> (act.button);
+            else if (n == "Audio")             addAndPush.template operator() <Audio> (act.audio);
+            else if (n == "Character")         addAndPush.template operator() <Character> (act.character);
+            else if (n == "Collectible")       addAndPush.template operator() <Collectible> (act.collectible);
+            else if (n == "Scripting" && act.script) { coord.AddComponent<Script>(act.entity, *act.script);   PushToStack(targetStack, ComponentAddSnapshot{ act.entity, n }); }
+            else if (n == "Animator" && act.animator) { coord.AddComponent<Animator>(act.entity, *act.animator); PushToStack(targetStack, ComponentAddSnapshot{ act.entity, n }); }
         }
 
     };

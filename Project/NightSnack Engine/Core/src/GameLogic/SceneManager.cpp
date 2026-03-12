@@ -214,7 +214,7 @@ namespace NightSnack::Scene {
 			(void)e;
 			// Fade out audio and schedule exit
 			auto audio = c.GetSystem<AudioSystem>();
-			audio->FadeToVolume(0.0f, 0.2f); // Fade out over 0.2s
+			audio->FadeToVolume(0.0f, 0.3f); // Fade out over 0.3s
 
 			c.GetSystem<Scene::SceneManager>()->ScheduleExit(0.3f); // Exit after fade
 			});
@@ -503,6 +503,63 @@ namespace NightSnack::Scene {
 		m_coord.GetSystem<EntityFactory>()->CreateLevelEntities(w, Vec2{camPos.x, camPos.y});
 		m_coord.GetSystem<PlayerControllerSystem>()->PauseInputs();
 	}
+
+	// Starts a new level
+	void SceneManager::NewLevel()
+	{
+		// Reset world state
+		auto const& factory = m_coord.GetSystem<EntityFactory>();
+		factory->DestroyLevelEntities();
+		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
+		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
+		m_coord.GetSystem<CollectibleSystem>()->SpawnCollectibleParticles();
+
+		// Reset scene-manager state
+		m_camFrames.clear();
+		m_camIndex = INVALID_ENTITY;
+		m_winCollider = INVALID_ENTITY;
+		m_winScreen = "";
+		m_currentLevelBGMs.clear();
+		m_currentLevelKey = 0;
+		m_previousLevelKey = 0;
+		winScreenOn = false;
+
+		// Build a minimal default camera JSON and create the scene camera
+		json defaultCam;
+		defaultCam["zoom"] = 1.f;
+		defaultCam["minX"] = -500.f;
+		defaultCam["maxX"] = 500.f;
+		defaultCam["minY"] = -500.f;
+		defaultCam["maxY"] = 500.f;
+		defaultCam["posX"] = 0.f;
+		defaultCam["posY"] = 0.f;
+		defaultCam["posZ"] = m_camDepth;
+		defaultCam["KeyFrames"] = json::array();
+
+		json levelStub;
+		levelStub["MainCamera"] = defaultCam;
+
+		CreateSceneCamera(levelStub);
+
+		// Stop audio
+		m_coord.GetSystem<AudioSystem>()->StopBGM();
+
+		// Refresh scripts against the now-empty world
+		m_coord.GetSystem<Scripting::ScriptManager>()->RefreshScripts();
+
+		// Build an empty cache
+		m_levelCache.clear();
+		m_levelCache["MainCamera"] = defaultCam;
+		m_levelCache["Entities"] = json::array();
+
+		m_gameLoaded = true;
+
+		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
+		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
+		m_coord.GetSystem<CameraSystem>()->StartCamPan(false);
+
+		std::cerr << "[SceneManager] New blank level created\n";
+	}
 	
 	// Creates all entities required for a level through the entity factory
 	// and sets up BGM for level, refreshes script manager.
@@ -565,7 +622,7 @@ namespace NightSnack::Scene {
 		}
 
 		// Fade BGM volume back in
-		audio->FadeToVolume(0.2f, 0.5f);
+		audio->FadeToVolume(0.2f, 0.6f);
 
 		// Refresh Scripts for loaded level
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();

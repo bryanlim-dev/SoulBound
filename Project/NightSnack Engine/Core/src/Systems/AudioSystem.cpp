@@ -232,7 +232,7 @@ namespace NightSnack {
                         bool movingLeft = delta < -0.01f;  // spikes going in
 
                         float dist = GetDistanceToPlayer(e);
-                        float maxDist = 500.0f;
+                        float maxDist = 1500.0f;
                         float fallOff = (dist < maxDist) ? (1.0f - (dist / maxDist)) : 0.0f;
                         float volume = fallOff * fallOff;
 
@@ -256,8 +256,6 @@ namespace NightSnack {
                     m_spikePrevPosX[e] = currentX;
                 }
             }
-
-
 
             if (a.playOnStart)
             {
