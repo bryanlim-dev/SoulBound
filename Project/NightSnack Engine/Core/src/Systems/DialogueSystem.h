@@ -64,7 +64,7 @@ namespace NightSnack {
                 if (event.pressed == InputEvent::InputActionState::Pressed) {
                     switch (event.inputAction) {
                         
-                    case InputEvent::InputAction::DisplayFPS:
+                    case InputEvent::InputAction::DefaultDialogue:
                         m_testDialogue = true;
                         break;
 
