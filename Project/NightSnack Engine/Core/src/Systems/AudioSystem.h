@@ -218,7 +218,7 @@ namespace NightSnack {
 		 * @param playerPos position of the player in the game world
 		 * @param maxDistance maximum distance at which audio can be heard
          */
-        void UpdateSpatialAudio(Vec2 const& playerPos, float maxDistance);
+        //void UpdateSpatialAudio(Vec2 const& playerPos, float maxDistance);
 
         // ISystem overrides
 
@@ -291,6 +291,11 @@ namespace NightSnack {
         float m_fadeDuration;
         float m_fadeTargetVolume;
 
+        /**
+         * @brief calculates the distance of the player to the entity
+		 * @param e the entity to calculate distance to
+         * @return distance from player to entity
+         */
         float GetDistanceToPlayer(Entity e);
 
         /**
