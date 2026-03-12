@@ -15,7 +15,7 @@
                     "clickTex": "MainMenu-Play",
                     "defaultTex": "MainMenu-Play",
                     "hoverTex": "MainMenu-PlayHover",
-                    "target": "Level1A",
+                    "target": "LevelTutorial",
                     "type": "Clicker"
                 },
                 "Collider": {

@@ -17911,7 +17911,7 @@
         "zoom": 1.0
     },
     "WinZone": {
-        "ConfigFile": "WinScreen",
+        "ConfigFile": "Level1WinScreen",
         "Position": {
             "x": 4275.0,
             "y": 2575.0
