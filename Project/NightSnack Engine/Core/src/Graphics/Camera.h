@@ -27,6 +27,7 @@ namespace NightSnack {
 	public:
 
 		enum class CAMERASTATE {
+			MENU, 
 			FOLLOW_PLAYER,
 			LERP_CHECKPOINT,
 			PAN_ROOM_COUNTDOWN, 
@@ -58,7 +59,7 @@ namespace NightSnack {
 		void CenterCameraWhenIdle();
 		void UpdateCamBounds(json const&);
 		//isPannningEnabled - Sets if start pan or not
-		void StartCamPan(bool isPannningEnabled);
+		void StartCamPan(bool isPannningEnabled, bool isMainMenu = 0);
 		void StartCamPan();
 
 		/**
