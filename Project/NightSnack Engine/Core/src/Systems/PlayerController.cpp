@@ -25,7 +25,9 @@ namespace NightSnack {
             //if (target == INVALID_ENTITY) return;
             if (!c.HasComponent<RigidBody>(target)) return;
 
+
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
+            c.ModifyComponent<Renderable>(target).materialName = "PlayerAbility_4_1";
 
             // only glide if not grounded
             if (!m_flags.isGrounded) 

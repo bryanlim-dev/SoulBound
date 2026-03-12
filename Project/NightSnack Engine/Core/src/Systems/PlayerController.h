@@ -53,7 +53,7 @@ struct PlayerFlags {
 
     bool possessUnposessActivated = false; //Player pressed possess/unpossess buttton
     bool tryPossess = false;               //Trying to ONLY possess
-    bool tryUnPossess = false;             //Trying to ONLY unpossess 
+    bool tryUnPossess = false;             //Trying to ONLY unpossess
     // add more flags if needed
 
     bool isGlideSoundPlaying = false;
@@ -308,6 +308,8 @@ namespace NightSnack {
             if (isGrounded && m_flags.isGliding) 
             {
                 m_flags.isGliding = false;
+                Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+                m_coord.ModifyComponent<Renderable>(player).materialName = "SpiritMove_4_1";
             }
 
             bool movingHorizontally = (m_flags.movingLeft ^ m_flags.movingRight);
@@ -376,6 +378,8 @@ namespace NightSnack {
                 if (curr_ability == "Glide" && m_flags.isGliding) 
                 {
                     m_flags.isGliding = false;
+                    Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+                    m_coord.ModifyComponent<Renderable>(player).materialName = "SpiritMove_4_1";
                 }
             }
 
@@ -383,6 +387,8 @@ namespace NightSnack {
             if (isGrounded && m_flags.isGliding) 
             {
                 m_flags.isGliding = false;
+                Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+                m_coord.ModifyComponent<Renderable>(player).materialName = "SpiritMove_4_1";
             }
 
             prev_ability = curr_ability;
