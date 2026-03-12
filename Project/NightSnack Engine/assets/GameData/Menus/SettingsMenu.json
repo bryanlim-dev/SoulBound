@@ -50,7 +50,7 @@
                 "Name": "Backdrop",
                 "Position": {
                     "x": 0.0,
-                    "y": -20.0,
+                    "y": -10.0,
                     "z": 0.20000000298023224
                 },
                 "Rotation": 0.0,
@@ -134,8 +134,8 @@
                 "Name": "AudioSlider",
                 "Position": {
                     "x": 100.0,
-                    "y": 62.5,
-                    "z": 0.6000000238418579
+                    "y": 150.0,
+                    "z": 0.6
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -156,14 +156,6 @@
         },
         {
             "Components": {
-                "ButtonInfo": {
-                    "action": "VolumeSlider",
-                    "type": "SliderKnob",
-                    "target": "",
-                    "defaultTex": "Menu-SliderKnob",
-                    "hoverTex": "Menu-SliderKnob",
-                    "clickTex": "Menu-SliderKnob"
-                },
                 "Renderable": {
                     "isWireframe": false,
                     "materialName": "Menu-SliderKnob",
@@ -176,8 +168,8 @@
                 "Name": "AudioKnob",
                 "Position": {
                     "x": 87.5,
-                    "y": 62.5,
-                    "z": 0.800000011920929
+                    "y": 150.0,
+                    "z": 0.8
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -412,8 +404,8 @@
                 "Name": "Frame-Mode",
                 "Position": {
                     "x": 100.0,
-                    "y": -87.5,
-                    "z": 0.6000000238418579
+                    "y": -150.0,
+                    "z": 0.6
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -446,8 +438,8 @@
                 "Name": "ModeArrowLeft",
                 "Position": {
                     "x": -137.5,
-                    "y": -87.5,
-                    "z": 0.800000011920929
+                    "y": -150.0,
+                    "z": 0.8
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -480,8 +472,8 @@
                 "Name": "ModeArrowRight",
                 "Position": {
                     "x": 337.5,
-                    "y": -87.5,
-                    "z": 0.800000011920929
+                    "y": -150.0,
+                    "z": 0.8
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -545,11 +537,12 @@
                 },
                 "ButtonInfo": {
                     "action": "ToggleFullscreen",
-                    "clickTex": "Menu-Fullscreen",
+                    "target": "",
+                    "type": "Clicker",
+
                     "defaultTex": "Menu-Fullscreen",
                     "hoverTex": "Menu-Fullscreen",
-                    "target": "",
-                    "type": "Clicker"
+                    "clickTex": "Menu-Fullscreen"
                 },
                 "Collider": {
                     "height": 88.0,
@@ -636,11 +629,12 @@
                 },
                 "ButtonInfo": {
                     "action": "CloseMenu",
-                    "clickTex": "Menu-Cross",
-                    "defaultTex": "Menu-Cross",
-                    "hoverTex": "Menu-Cross",
                     "target": "",
-                    "type": "Clicker"
+                    "type": "Clicker",
+
+                    "defaultTex": "UIMenu-Frame",
+                    "hoverTex": "UIMenu-Frame",
+                    "clickTex": "UIMenu-Frame"
                 },
                 "Collider": {
                     "height": 88.0,
@@ -652,7 +646,7 @@
                 },
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "Menu-Cross",
+                    "materialName": "UIMenu-Frame",
                     "meshName": "square"
                 },
                 "modified": true
@@ -661,14 +655,14 @@
                 "Layer": "Foreground",
                 "Name": "Frame-Close",
                 "Position": {
-                    "x": 450.0,
-                    "y": 199.13375854492188,
-                    "z": 0.800000011920929
+                    "x": 437.5,
+                    "y": 275.5,
+                    "z": 0.8
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 100.0,
-                    "y": 100.0
+                    "x": 88.0,
+                    "y": 88.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -686,222 +680,18 @@
             "Components": {
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "UIMenu-Frame",
+                    "materialName": "Menu-CrossWhite",
                     "meshName": "square"
                 },
                 "modified": true
             },
             "Transform": {
                 "Layer": "Foreground",
-                "Name": "AudioSlider",
+                "Name": "CloseCross",
                 "Position": {
-                    "x": 0.0,
-                    "y": 199.38101196289063,
-                    "z": 0.6000000238418579
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 900.0,
-                    "y": 5.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "isPrefab": false
-        },
-        {
-            "Components": {
-                "Renderable": {
-                    "isWireframe": false,
-                    "materialName": "UIMenu-Frame",
-                    "meshName": "square"
-                },
-                "modified": true
-            },
-            "Transform": {
-                "Layer": "Foreground",
-                "Name": "AudioSlider",
-                "Position": {
-                    "x": 0.0,
-                    "y": -242.67063903808594,
-                    "z": 0.6000000238418579
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 900.0,
-                    "y": 5.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "isPrefab": false
-        },
-        {
-            "Components": {
-                "Renderable": {
-                    "isWireframe": false,
-                    "materialName": "UIMenu-Frame",
-                    "meshName": "square"
-                },
-                "modified": true
-            },
-            "Transform": {
-                "Layer": "Foreground",
-                "Name": "AudioSlider",
-                "Position": {
-                    "x": 450.0,
-                    "y": -25.0,
-                    "z": 0.6000000238418579
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 5.0,
-                    "y": 435.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "isPrefab": false
-        },
-        {
-            "Components": {
-                "Renderable": {
-                    "isWireframe": false,
-                    "materialName": "UIMenu-Frame",
-                    "meshName": "square"
-                },
-                "modified": true
-            },
-            "Transform": {
-                "Layer": "Foreground",
-                "Name": "AudioSlider",
-                "Position": {
-                    "x": -450.0,
-                    "y": -25.0,
-                    "z": 0.6000000238418579
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 5.0,
-                    "y": 435.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "isPrefab": false
-        },
-        {
-            "Components": {
-                "Renderable": {
-                    "isWireframe": false,
-                    "materialName": "Menu-CornerKnob",
-                    "meshName": "square"
-                },
-                "modified": true
-            },
-            "Transform": {
-                "Layer": "Foreground",
-                "Name": "CornerKnob",
-                "Position": {
-                    "x": -450.0,
-                    "y": 200.0,
-                    "z": 0.800000011920929
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 100.0,
-                    "y": 100.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "isPrefab": false
-        },
-        {
-            "Components": {
-                "Renderable": {
-                    "isWireframe": false,
-                    "materialName": "Menu-CornerKnob",
-                    "meshName": "square"
-                },
-                "modified": true
-            },
-            "Transform": {
-                "Layer": "Foreground",
-                "Name": "CornerKnob",
-                "Position": {
-                    "x": -450.0,
-                    "y": -242.57630920410156,
-                    "z": 0.800000011920929
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 100.0,
-                    "y": 100.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "isPrefab": false
-        },
-        {
-            "Components": {
-                "Renderable": {
-                    "isWireframe": false,
-                    "materialName": "Menu-CornerKnob",
-                    "meshName": "square"
-                },
-                "modified": true
-            },
-            "Transform": {
-                "Layer": "Foreground",
-                "Name": "CornerKnob",
-                "Position": {
-                    "x": 450.0,
-                    "y": -240.8677978515625,
-                    "z": 0.800000011920929
+                    "x": 437.5,
+                    "y": 275.5,
+                    "z": 1.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
