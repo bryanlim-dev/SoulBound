@@ -255,6 +255,7 @@ namespace NightSnack
 		coord.ModifyComponent<Transform>(m_powerBar).scale.y = newScale;
 		coord.ModifyComponent<Transform>(m_powerBar).isActive = true;
 		coord.ModifyComponent<Transform>(m_powerBar).pos.y = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).y + (newScale/2);
+		coord.ModifyComponent<Transform>(m_powerBar).pos.x = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).x;
 
 
 		//Update dots
