@@ -54,6 +54,7 @@ namespace NightSnack {
 
             // Window events
 			DisplayFPS,         // F1
+			DefaultDialogue,    // F2
             ToggleFullscreen,   // F4
             PauseGame,          // Escape
             RestartGame,
