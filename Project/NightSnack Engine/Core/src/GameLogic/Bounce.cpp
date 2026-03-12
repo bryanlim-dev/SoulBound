@@ -36,7 +36,7 @@ namespace NightSnack
 		m_ownerInitalRestitution = 0;
 
 		m_currLaunchPower = m_currLaunchPower/2;
-		std::clamp(m_currLaunchPower, m_minLaunchForce, m_maxLaunchForce);
+		m_currLaunchPower = std::clamp(m_currLaunchPower, m_minLaunchForce, m_maxLaunchForce);
 
 		if (coord.HasComponent<RigidBody>(m_owner))
 		{

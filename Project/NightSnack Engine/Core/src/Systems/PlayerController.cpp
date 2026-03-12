@@ -291,7 +291,9 @@ namespace NightSnack {
             {
                 m_bounce.End(m_coord);
                 m_flags.bouncing = false;
+                m_flags.disableMovement = false;
             }
+
         };//End tryUnpossess lamda function
 
 
