@@ -100,13 +100,14 @@ namespace NightSnack::Scene {
 					break;
 				}
 			}
-			std::cout << m_currentLevelKey << std::endl;
 			if (m_coord.GetComponent<Collider>(m_winCollider).colliding && !winScreenOn)
 			{
 				if (physics->EntitiesAreColliding(m_winCollider, m_player))
 				{
+					size_t key = m_levelKeys["LevelTutorial"];
+
 					// if current level is tutorial || player has collected all 3 flames
-					if (m_currentLevelKey == 1 || (collectSystem->GetNumFlamesCollected() >= 3))
+					if (m_currentLevelKey == key || (collectSystem->GetNumFlamesCollected() >= 3))
 					{
 						CreateWinScreen();
 						m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerWin", 0.85f);
