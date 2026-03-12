@@ -34,9 +34,7 @@ namespace NightSnack {
             return;
         }
 
-        // Update target camera position
-        Transform& t = m_coord.ModifyComponent<Transform>(m_mainCamera);
-        Camera& c = m_coord.ModifyComponent<Camera>(m_mainCamera);
+        
 
         //if (m_isLerping) {
 
@@ -60,6 +58,11 @@ namespace NightSnack {
         if (!m_coord.EntityIsAlive(m_mainCamera)) {
             m_mainCamera = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
         }
+
+        // Update target camera position
+        Transform& t = m_coord.ModifyComponent<Transform>(m_mainCamera);
+        Camera& c = m_coord.ModifyComponent<Camera>(m_mainCamera);
+
         //// find player if we don't have one
         //if (!m_coord.EntityIsAlive(m_player)) {
         //    m_player = FindPlayer(m_coord);
@@ -71,8 +74,14 @@ namespace NightSnack {
         }
 
         switch (m_cameraState) {
+        case CAMERASTATE::MENU:
+            t.pos.x = 0.f;
+            t.pos.y = 0.f;
+            break;
         case CAMERASTATE::FOLLOW_PLAYER:
         {
+            if (m_player == INVALID_ENTITY) break;
+
             FollowEntity(m_player, t);
             if (c.lock)
                 LimitWithinBounds(t);
@@ -260,6 +269,7 @@ namespace NightSnack {
         // increment camera position
         ct.pos.x = pt.pos.x + cam.offset.x;
         ct.pos.y = pt.pos.y + cam.offset.y;
+        //std::cout << "following: " << e << ", [" << pt.pos.x << ", " << pt.pos.y << "]\n";
     }
 
     Transform CameraSystem::FollowPlayer() {
@@ -396,10 +406,15 @@ namespace NightSnack {
         }
     }
 
-    void CameraSystem::StartCamPan(bool isPannningEnabled)
+    void CameraSystem::StartCamPan(bool isPannningEnabled, bool isMainMenu)
     {
         ResetCameraPanProperties();
         //m_panEnabled = isPannningEnabled;
+
+        if (isMainMenu) {
+            m_cameraState = CAMERASTATE::MENU;
+            return;
+        }
 
         //if (m_panEnabled)
         if (isPannningEnabled)
@@ -611,6 +626,7 @@ namespace NightSnack {
 
     void CameraSystem::ResetCameraPanProperties() {
         m_cameraState = CAMERASTATE::FOLLOW_PLAYER;
+        //m_cameraState = CAMERASTATE::MENU;
         m_currCamPanTimer = 0.f;
         m_panTimer = 0.f;
         m_panningTargetIndex = 0;

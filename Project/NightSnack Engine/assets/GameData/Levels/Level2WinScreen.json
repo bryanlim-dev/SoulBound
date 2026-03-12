@@ -1,0 +1,303 @@
+{
+    "BGM": "MainMenu",
+    "Entities": [
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "LevelComplete-Overlay",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Overlay",
+                "Position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 2.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 1920.0,
+                    "y": 1080.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "LevelComplete",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "WinWords",
+                "Position": {
+                    "x": 0.0,
+                    "y": 185.0,
+                    "z": 6.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 568.0,
+                    "y": 192.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "LevelComplete-Banner",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Banner",
+                "Position": {
+                    "x": 0.0,
+                    "y": 37.5,
+                    "z": 6.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 616.0,
+                    "y": 40.0
+                },
+                "UIBasePosition": {
+                    "x": 800.0,
+                    "y": 390.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 616.0,
+                    "y": 64.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Animator": {
+                    "isLooping": true,
+                    "isPlaying": true,
+                    "playbackSpeed": 1.0,
+                    "spriteSheetName": "Sprites\\UI\\MainMenu\\TitleFireAnim_4_1.png"
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "TitleFireAnim_4_1",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Fire",
+                "Position": {
+                    "x": -5.0,
+                    "y": 300.0,
+                    "z": 6.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 192.0,
+                    "y": 192.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonSelect",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "LoadLevel",
+                    "clickTex": "WinScreen-Restart",
+                    "defaultTex": "WinScreen-Restart",
+                    "hoverTex": "WinScreen-RestartHover",
+                    "target": "Level1A",
+                    "type": "Clicker"
+                },
+                "Collider": {
+                    "height": 80.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "WinScreen-Restart",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "RestartButton",
+                "Position": {
+                    "x": 0.0,
+                    "y": -100.0,
+                    "z": 6.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonSelect",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "LoadLevel",
+                    "clickTex": "WinScreen-MainMenu",
+                    "defaultTex": "WinScreen-MainMenu",
+                    "hoverTex": "WinScreen-MainMenuHover",
+                    "target": "Level3",
+                    "type": "Clicker"
+                },
+                "Collider": {
+                    "height": 80.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "WinScreen-MainMenu",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "MainMenuButton",
+                "Position": {
+                    "x": 0.0,
+                    "y": -200.0,
+                    "z": 6.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        }
+    ],
+    "MainCamera": {
+        "KeyFrames": [
+            {
+                "maxX": 0.0,
+                "maxY": 0.0,
+                "minX": 0.0,
+                "minY": 0.0,
+                "pos": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0
+                },
+                "scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "zoom": 1.0
+            }
+        ],
+        "cameraLock": false,
+        "height": 900.0,
+        "isMainCam": true,
+        "offsetX": 0.0,
+        "offsetY": 0.0,
+        "posX": 0.0,
+        "posY": 0.0,
+        "posZ": 10.0,
+        "width": 1600.0,
+        "zoom": 1.0
+    },
+    "Name": "Level2WinScreen",
+    "WinZone": {
+        "ConfigFile": "WinScreen",
+        "Position": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "Scale": {
+            "x": 100.0,
+            "y": 100.0
+        }
+    }
+}

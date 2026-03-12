@@ -16,14 +16,14 @@
 #include "Systems/Physics/Physics.h"
 #include "Systems/PlayerController.h"
 #include "Graphics/Camera.h"
-#include "Systems/ParticleSystem.h"
-#include "Systems/CollectibleSystem.h"
+//#include "Systems/ParticleSystem.h"
+//#include "Systems/CollectibleSystem.h"
 #include "Systems/DialogueSystem.h"
 
 // Private helper function that checks mouse and button collision
 static bool ButtonCollisionCheck(float mx, float my, NightSnack::Transform const& t, NightSnack::Collider const& c) {
 	if (c.shape == NightSnack::ShapeType::Circle) {
-		float distsq = mx * mx + my + my;
+		float distsq = mx * mx + my * my;
 		if (c.radius * c.radius <= distsq) { return true; }
 	}
 	else {
@@ -47,11 +47,15 @@ namespace NightSnack::Scene {
 		// If somehow no level is loaded, return to default scene
 		if (!m_gameLoaded) LoadLevel("MainMenu");
 
+		//std::cout << "Current menu size: " << m_menus.size() << std::endl;
+
 		if (m_restart) {
 			RestartLevel();
 			CloseMenu();
 			m_restart = false;
 		}
+
+		//std::cout << "Update num: " << m_coord.GetLivingEntities().size() << std::endl;
 
 		CheckButtonCollisions();
 
@@ -59,6 +63,8 @@ namespace NightSnack::Scene {
 			m_levelLoadTimer -= (1.0f / 60.0f); // to use actual deltaTime if available
 
 			if (m_levelLoadTimer <= 0.0f) {
+				//std::cout << "going to load level: " << m_scheduledLevelName << std::endl;
+				// Load the new level
 				LoadLevel(m_scheduledLevelName);
 
 				// Fade in the new BGM
@@ -102,6 +108,16 @@ namespace NightSnack::Scene {
 			}
 		}
 		m_mouseClick = false;
+
+		if (m_sceneCam != INVALID_ENTITY) {
+			Transform ct = m_coord.GetComponent<Transform>(m_sceneCam);
+			static float lastX = 0, lastY = 0;
+			if (ct.pos.x != lastX || ct.pos.y != lastY) {
+				//std::cerr << "[Update] Camera moved to (" << ct.pos.x << ", " << ct.pos.y << ")\n";
+				lastX = ct.pos.x;
+				lastY = ct.pos.y;
+			}
+		}
 	}
 
 	// Register all button actions and stop buttons into m_buttons
@@ -571,7 +587,18 @@ namespace NightSnack::Scene {
 	// Creates all entities required for a level through the entity factory
 	// and sets up BGM for level, refreshes script manager.
 	void SceneManager::LoadLevel(std::string const& levelname) {
+		/*std::cerr << "[LoadLevel] === Loading: " << levelname << " ===\n";
+		std::cerr << "[LoadLevel] Living entities BEFORE any cleanup: "
+			<< m_coord.GetLivingEntities().size() << "\n";
+		for (Entity e : m_coord.GetLivingEntities()) {
+			std::cerr << "  [" << e << "] "
+				<< m_coord.GetComponent<Transform>(e).name << "\n";
+		}*/
 
+		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
+		m_coord.GetSystem<ParticleSystem>()->ClearAllEmitters();
+
+		
 		size_t key = m_levelKeys[levelname];
 		json const& level = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(key);
 
@@ -592,12 +619,21 @@ namespace NightSnack::Scene {
 		// Unload everything first
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
-		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
-		m_coord.GetSystem<CollectibleSystem>()->SpawnCollectibleParticles();
+
+		//std::cout << "Load Level, current living entities: " << m_coord.GetLivingEntities().size() << std::endl;
 
 		// Set up Camera
 		CreateSceneCamera(level);
+
+		// Explicitly reset camera position to origin after creation
+		// so OpenMenu offsets aren't contaminated by a prior level's camera state
+		if (m_sceneCam != INVALID_ENTITY) {
+			Transform& camT = m_coord.ModifyComponent<Transform>(m_sceneCam);
+			camT.pos.x = 0.f;
+			camT.pos.y = 0.f;
+		}
+
 		ReadCameraKeyframes(level["MainCamera"]["KeyFrames"]);
 		InitSceneCameraBounds();
 		CreateWinCollider(level);
@@ -605,8 +641,7 @@ namespace NightSnack::Scene {
 
 		// Create new level entities
 		factory->CreateLevelEntities(level);
-		m_player = m_coord.GetSystem<PlayerControllerSystem>()->FindPlayer(m_coord);
-		m_camIndex = 0;
+		m_coord.GetSystem<CollectibleSystem>()->SpawnCollectibleParticles();
 
 		// Play Background Music
 		auto audio = m_coord.GetSystem<AudioSystem>();
@@ -654,8 +689,8 @@ namespace NightSnack::Scene {
 		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
 		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 		// Start the camera panning at the very start of the level
-		if (levelname == "LevelTutorial")
-			m_coord.GetSystem<CameraSystem>()->StartCamPan(false);
+		if (levelname == "LevelTutorial" || levelname == "MainMenu")
+			m_coord.GetSystem<CameraSystem>()->StartCamPan(false, (levelname == "MainMenu"));
 		else
 			m_coord.GetSystem<CameraSystem>()->StartCamPan(true);
 
@@ -733,22 +768,18 @@ namespace NightSnack::Scene {
 
 	void SceneManager::RestartLevel() {
 
-		m_sliderBarEntity = INVALID_ENTITY;
-		m_sliderKnobEntity = INVALID_ENTITY;
-
-		// Reset menus
-		m_menuEntities.clear();
-		while (!m_menus.empty()) { m_menus.pop(); }
-		m_menuOpen = false;
-		//m_currentMenu.clear();
-		winScreenOn = false;
+		//// close all menus
+		//if (m_menuOpen) {
+		//	std::cerr << "[SceneManager] Closing menu before restart\n";
+		//	CloseMenu();
+		//}
+		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
+		m_coord.GetSystem<ParticleSystem>()->ClearAllEmitters();
 
 		json const& level = m_levelCache;
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
-		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
-		m_coord.GetSystem<CollectibleSystem>()->SpawnCollectibleParticles();
 
 		// Reset Camera
 		CreateSceneCamera(level);
@@ -758,9 +789,7 @@ namespace NightSnack::Scene {
 
 		// Create all Entities
 		factory->CreateLevelEntities(level);
-		m_player = m_coord.GetSystem<PlayerControllerSystem>()->FindPlayer(m_coord);
-		m_camIndex = 0;
-
+		m_coord.GetSystem<CollectibleSystem>()->SpawnCollectibleParticles();
 		// Play Background Music
 		//auto audio = m_coord.GetSystem<AudioSystem>();
 		//if (level.contains("BGM")) audio->PlayBGM(level["BGM"]);
@@ -867,6 +896,9 @@ namespace NightSnack::Scene {
 	// Restore scene to cached level -> restore after Stopping simulation in Editor
 	void SceneManager::RestoreLevel() {
 
+		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
+		m_coord.GetSystem<ParticleSystem>()->ClearAllEmitters();
+
 		if (m_levelCache.empty()) { return; }
 		// Reset menus
 		m_menuEntities.clear();
@@ -878,9 +910,7 @@ namespace NightSnack::Scene {
 		// Restore all entities to original
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
-		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
-		m_coord.GetSystem<CollectibleSystem>()->SpawnCollectibleParticles();
 
 		CreateSceneCamera(m_levelCache);
 		ReadCameraKeyframes(m_levelCache["MainCamera"]["KeyFrames"]);
@@ -888,7 +918,8 @@ namespace NightSnack::Scene {
 		CreateWinCollider(m_levelCache);
 
 		factory->CreateLevelEntities(m_levelCache);
-		
+		m_coord.GetSystem<CollectibleSystem>()->SpawnCollectibleParticles();
+
 		// Restart audio
 		auto const& audio = m_coord.GetSystem<AudioSystem>();
 		//audio->StopBGM();
@@ -922,7 +953,7 @@ namespace NightSnack::Scene {
 		// Do not pam the camera when entering the level editor
 		m_coord.GetSystem<CameraSystem>()->StartCamPan(false);
 
-		//std::cerr << "[SceneManager] Level restored\n";
+		std::cerr << "[SceneManager] Level restored\n";
 	}
 
 	// Reads all level files in assets folder -> "./assets/GameData/Levels/"
@@ -955,6 +986,12 @@ namespace NightSnack::Scene {
 	}
 
 	void SceneManager::OpenMenu(std::string const& menuname) {
+		/*Entity mainCam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
+		auto& camTransform = m_coord.GetComponent<Transform>(mainCam);
+		std::cerr << "[OpenMenu] Camera entity ID: " << mainCam << "\n";
+		std::cerr << "[OpenMenu] Camera pos before menu: ("
+			<< camTransform.pos.x << ", " << camTransform.pos.y << ")\n";
+		std::cerr << "[OpenMenu] m_sceneCam ID: " << m_sceneCam << "\n";*/
 
 		if (m_menuOpen) {
 			//std::cerr << "[SceneManager] Menu already open, closing first\n";
@@ -996,8 +1033,8 @@ namespace NightSnack::Scene {
 		float camY = camTransform.pos.y;
 		float zoom = camera.zoom;
 
-		//std::cerr << "[SceneManager] Centering menu on camera at (" << camX << ", " << camY
-		//	<< ") with zoom: " << zoom << "\n";``
+		std::cerr << "[SceneManager] Centering menu on camera at (" << camX << ", " << camY
+			<< ") with zoom: " << zoom << "\n";
 
 		// Create menu entities
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
@@ -1023,6 +1060,10 @@ namespace NightSnack::Scene {
 						transform.pos.x += camX;
 						transform.pos.y += camY;
 						transform.pos.z += (float)m_menus.size() * 2.f;
+
+						/*std::cerr << "[OpenMenu] Creating entity, name='" << transform.name
+							<< "' at world pos (" << transform.pos.x << ", " << transform.pos.y << ")"
+							<< " | camOffset applied: (" << camX << ", " << camY << ")\n";*/
 
 						/*std::cerr << "  Prefab: " << prefabName
 							<< " positioned at (" << transform.pos.x << ", " << transform.pos.y << ", " << transform.pos.z << ")"
@@ -1154,16 +1195,29 @@ namespace NightSnack::Scene {
 			return;
 		}
 
-		// destroy all menu entities ------------------------------------------------
+		//std::cerr << "[CloseMenu] Destroying " << m_menuEntities.size() << " menu entities\n";
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		for (Entity e : m_menuEntities) {
+			//std::cerr << "[CloseMenu] Removing entity " << e << " name='"
+			//	<< m_coord.GetComponent<Transform>(e).name << "'\n";
 			factory->RemoveEntity(e);
 		}
 		m_menuEntities.clear();
 
-		m_sliderBarEntity = INVALID_ENTITY;
-		m_sliderKnobEntity = INVALID_ENTITY;
+		/*std::cerr << "[CloseMenu] Living entities after close: "
+			<< m_coord.GetLivingEntities().size() << "\n";
+		for (Entity e : m_coord.GetLivingEntities()) {
+			std::cerr << "  alive: " << e << " name='"
+				<< m_coord.GetComponent<Transform>(e).name << "'\n";
+		}*/
 
+
+		// destroy all menu entities ------------------------------------------------
+		/*auto const& factory = m_coord.GetSystem<EntityFactory>();
+		for (Entity e : m_menuEntities) {
+			factory->RemoveEntity(e);
+		}
+		m_menuEntities.clear();*/
 		// --------------------------------------------------------------------------
 		if (!opening) {
 			if (!m_menus.empty()) {
@@ -1174,7 +1228,7 @@ namespace NightSnack::Scene {
 				}
 			}
 		}
-		
+
 		if (m_menuEntities.empty()) {
 			if (m_dispatcher)
 			{
@@ -1183,6 +1237,12 @@ namespace NightSnack::Scene {
 						InputEvent::InputActionState::Pressed));
 			}
 			//std::cerr << "[SceneManager] Game unpaused\n";
+			m_sliderBarEntity = INVALID_ENTITY;
+			m_sliderKnobEntity = INVALID_ENTITY;
+			m_sfxBarEntity = INVALID_ENTITY;
+			m_sfxKnobEntity = INVALID_ENTITY;
+			m_bgmBarEntity = INVALID_ENTITY;
+			m_bgmKnobEntity = INVALID_ENTITY;
 			m_menuOpen = false;
 		}
 	}

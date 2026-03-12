@@ -29,6 +29,9 @@
 #include <vector>
 #include <stack>
 
+#include "Systems/ParticleSystem.h"
+#include "Systems/CollectibleSystem.h"
+
 namespace NightSnack::Scene {
 
 	// Wrapper that contains a button's action as well as the callable to be invoked,
@@ -115,6 +118,12 @@ namespace NightSnack::Scene {
 					case InputEvent::InputAction::RestartGame:
 						m_restart = true;
 						std::cerr << "[SceneManager] Queuing restart\n";
+						break;
+					case InputEvent::InputAction::ChangeAnimation: // X
+						CreateWinScreen();
+						m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerWin", 0.85f);
+						m_coord.GetSystem<CollectibleSystem>()->ToggleCollectibleIcons(false);
+						winScreenOn = true;
 						break;
 					}
 				}

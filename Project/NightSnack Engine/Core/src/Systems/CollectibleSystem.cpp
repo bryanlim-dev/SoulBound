@@ -90,7 +90,7 @@ namespace NightSnack {
 			auto& t = m_coord.ModifyComponent<Transform>(e);
 			auto& c = m_coord.ModifyComponent<Collectible>(e);
 
-			if (!t.isActive) { continue; }
+			if (!t.isActive || !m_coord.EntityIsAlive(e)) { continue; }
 
 			if (c.type == COLLECTIBLE_TYPE::DOUBLE_JUMP) {
 				// Double jump collectibles will spawn orbiting particles
