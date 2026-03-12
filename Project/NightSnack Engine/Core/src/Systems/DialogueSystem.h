@@ -126,7 +126,14 @@ namespace NightSnack {
 
         const std::string& GetCurrentSpeaker() const { return m_currentSpeaker; }
 
-        void ResetUIEntities() { m_foundUIEntities = false; }
+        void ResetUIEntities() { 
+            m_foundUIEntities = false; 
+            m_dialogueBoxEntity = INVALID_ENTITY;
+            m_speakerNameEntity = INVALID_ENTITY;
+            m_dialogueTextEntity = INVALID_ENTITY;
+            m_portraitEntity = INVALID_ENTITY;
+            m_hintTextEntity = INVALID_ENTITY;
+        }
 
         // Required by ISystem
         std::string GetName() const override { return "DialogueSystem"; }

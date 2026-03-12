@@ -10,7 +10,7 @@
             "Prefab": "Player",
             "Transform": {
                 "Layer": "GameLayer",
-                "Name": "NoName",
+                "Name": "Player",
                 "Position": {
                     "x": -750.0,
                     "y": -160.00999450683594,

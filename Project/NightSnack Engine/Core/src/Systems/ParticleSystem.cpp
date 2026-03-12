@@ -37,7 +37,13 @@ namespace NightSnack {
 
 		// The particle system should only update the lifetime and transform of entities
 		// that have the particle component 
+		std::vector<Entity> expired;
+
 		for (Entity e : m_entities) {
+			if (!m_coord.GetComponent<Transform>(e).isActive) {
+				continue;
+			}
+
 			auto& t = m_coord.ModifyComponent<Transform>(e);
 			auto& p = m_coord.ModifyComponent<Particle>(e);
 
@@ -45,12 +51,17 @@ namespace NightSnack {
 
 			// Particle has reached its lifetime, destroy it
 			if (p.age >= p.lifeTime) {
-				m_coord.GetSystem<EntityFactory>()->RemoveEntity(e);
+				//m_coord.GetSystem<EntityFactory>()->RemoveEntity(e);
+				expired.push_back(e);
 				continue;
 			}
 
 			// Update the particles' transformations based on their own unique patterns
 			UpdateParticles(t, p, e);
+		}
+
+		for (Entity e : expired) {
+			m_coord.GetSystem<EntityFactory>()->RemoveEntity(e);
 		}
 	}
 
@@ -200,7 +211,7 @@ namespace NightSnack {
 
 						// If the followEntity is inactive (Double Jump collectible is collected), 
 						// stop this particular emitter
-						if (!m_coord.GetComponent<Transform>(em.followEntity).isActive) {
+						if (!m_coord.GetComponent<Transform>(em.followEntity).isActive || !m_coord.EntityIsAlive(em.followEntity)) {
 							em.isActive = false;
 							break;
 						}
@@ -270,8 +281,24 @@ namespace NightSnack {
 
 	void ParticleSystem::ClearAllEmitters() {
 		// This function should be called when loading a new level
-		StopAllEmitters();
+		
+		// Stop all emitters and clear the list first
 		m_emitters.clear();
+		m_nextEmitterID = 0;
+
+		// Collect all particle entities into a separate list
+		// to avoid iterator invalidation when destroying
+		std::vector<Entity> particleEntities;
+		for (Entity e : m_entities) {
+			particleEntities.push_back(e);
+		}
+
+		// Destroy all particle entities
+		for (Entity e : particleEntities) {
+			if (m_coord.EntityIsAlive(e)) {
+				m_coord.DestroyEntity(e); // use DestroyEntity directly, not RemoveEntity
+			}
+		}
 	}
 
 	void ParticleSystem::SpawnSingleSoilParticle(const std::string& prefabName, Vec3 leftEndPos, Vec3 rightEndPos) {
