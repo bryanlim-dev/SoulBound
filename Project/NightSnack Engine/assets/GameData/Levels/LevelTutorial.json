@@ -11,7 +11,7 @@
                 "Position": {
                     "x": -1800.0,
                     "y": 50.0,
-                    "z": 0.0
+                    "z": 5.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -771,7 +771,7 @@
                         },
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "FrogIdle_1_1",
+                            "materialName": "StatueFrog",
                             "meshName": "square"
                         },
                         "RigidBody": {
@@ -788,7 +788,7 @@
                         "Name": "Frog",
                         "Position": {
                             "x": 950.0,
-                            "y": 137.5,
+                            "y": 146.57522583007813,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
@@ -1635,7 +1635,7 @@
                         },
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "FrogIdle_1_1",
+                            "materialName": "StatueFrog",
                             "meshName": "square"
                         },
                         "RigidBody": {
@@ -1652,7 +1652,7 @@
                         "Name": "Frog",
                         "Position": {
                             "x": 4650.0,
-                            "y": -262.5,
+                            "y": -254.72999572753906,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
@@ -3534,7 +3534,7 @@
                         },
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "FrogIdle_1_1",
+                            "materialName": "StatueFrog",
                             "meshName": "square"
                         },
                         "RigidBody": {
@@ -3551,7 +3551,7 @@
                         "Name": "Frog",
                         "Position": {
                             "x": 5050.0,
-                            "y": 537.5,
+                            "y": 547.8599853515625,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
