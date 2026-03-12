@@ -36,7 +36,7 @@ namespace NightSnack {
 		Entity m_powerBar = INVALID_ENTITY;
 
 		std::string m_guideDotPrefab = "BounceGuideDot";
-		const int m_guideDotnum = 30;
+		const int m_guideDotnum = 50;
 		const float m_distBetweenDots = 0.25;
 		const float m_guideDotSize = 10;
 		float m_guideDotAlpha = 1; //Updates from prefab when making dots
@@ -62,7 +62,7 @@ namespace NightSnack {
 		const float m_angleChangeSpeed = 75.0f;
 		bool m_facingRight = true;
 
-		const float m_maxLaunchForce = 2500.0f;
+		const float m_maxLaunchForce = 2000.0f;
 		const float m_minLaunchForce = 500.0f;
 		//const float m_minVel = 20.0f;
 
@@ -71,6 +71,8 @@ namespace NightSnack {
 		const float m_maxGroundedDelayTime = 0.15f;
 
 		float m_ownerInitalRestitution = 0;
+
+		bool m_createdDisplays = false;
 
 
 	public:
@@ -140,6 +142,8 @@ namespace NightSnack {
 		bool Update(Coordinator& coord);
 		void End(Coordinator& coord);
 
+		void Reset(Coordinator& coord);
+
 		void UpdateOwner(Entity e);
 
 		void SetFacingDirection(bool isFacingRight);
@@ -153,14 +157,56 @@ namespace NightSnack {
 		}
 		
 	private:
+		/************************************************************************/
+		/*!
+		\brief
+		Calcluates the ratio of power stored to max power
+		*/
+		/************************************************************************/
 		float GetLaunchPowerRatio();
+
+		/************************************************************************/
+		/*!
+		\brief
+		Calcluates the power of launch using power ratio and min power
+		*/
+		/************************************************************************/
 		float GetLaunchPower();
 
+		/************************************************************************/
+		/*!
+		\brief
+		Creates the display guide dots and power bar entities
+
+		/param coord
+		Refrence to coordinator
+		*/
+		/************************************************************************/
 		void CreateDisplay(Coordinator& coord);
 
 		//Updates power bar and target line
 		void UpdateDisplays(Coordinator& coord);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Hides the power bar and guide dot entities by setting them to inactive
+
+		/param coord
+		Refrence to coordinator
+		*/
+		/************************************************************************/
+		void HideDisplay(Coordinator& coord);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Deletes the power bar and guide dot entities
+		
+		/param coord
+		Refrence to coordinator
+		*/
+		/************************************************************************/
 		void DeleteDisplay(Coordinator& coord);
 
 
