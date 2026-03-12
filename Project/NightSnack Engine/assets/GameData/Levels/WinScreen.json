@@ -1,5 +1,7 @@
 {
-    "BGM": "MainMenu",
+    "BGM": [
+        "MainMenu"
+    ],
     "Entities": [
         {
             "Components": {
@@ -14,7 +16,7 @@
                 "Layer": "Foreground",
                 "Name": "Overlay",
                 "Position": {
-                    "x": 0.0,
+                    "x": -1.671875,
                     "y": 0.0,
                     "z": 2.0
                 },
@@ -180,7 +182,7 @@
                 "Name": "RestartButton",
                 "Position": {
                     "x": 0.0,
-                    "y": -100.0,
+                    "y": -200.0,
                     "z": 6.0
                 },
                 "Rotation": 0.0,
@@ -237,7 +239,64 @@
                 "Name": "MainMenuButton",
                 "Position": {
                     "x": 0.0,
-                    "y": -200.0,
+                    "y": -300.0,
+                    "z": 6.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonSelect",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "LoadLevel",
+                    "clickTex": "WinScreen-Continue",
+                    "defaultTex": "WinScreen-Continue",
+                    "hoverTex": "WinScreen-ContinueHover",
+                    "target": "Level2",
+                    "type": "Clicker"
+                },
+                "Collider": {
+                    "height": 80.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "WinScreen-Continue",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "ContinueButton",
+                "Position": {
+                    "x": 0.0,
+                    "y": -100.0,
                     "z": 6.0
                 },
                 "Rotation": 0.0,
@@ -288,7 +347,6 @@
         "width": 1600.0,
         "zoom": 1.0
     },
-    "Name": "WinScreen",
     "WinZone": {
         "ConfigFile": "WinScreen",
         "Position": {

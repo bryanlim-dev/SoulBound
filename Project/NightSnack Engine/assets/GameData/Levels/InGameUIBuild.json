@@ -1,0 +1,337 @@
+{
+    "BGM": [
+        "MainMenu"
+    ],
+    "Entities": [
+        {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonSelect",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "RestartLevel",
+                    "clickTex": "Menu-Pause",
+                    "defaultTex": "Menu-Pause",
+                    "hoverTex": "Menu-Pause",
+                    "target": "PauseMenu",
+                    "type": "Clicker"
+                },
+                "Collider": {
+                    "height": 80.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 80.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Menu-Pause",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameUI",
+                "Name": "PauseButton",
+                "Position": {
+                    "x": 1530.0,
+                    "y": 70.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 80.0,
+                    "y": 80.0
+                },
+                "UIBasePosition": {
+                    "x": 1530.0,
+                    "y": 70.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 80.0,
+                    "y": 80.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Children": [
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "AbilityButton",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "AbilityKey",
+                        "Position": {
+                            "x": 170.0626983642578,
+                            "y": 843.7512817382813,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 86.0,
+                            "y": -36.0
+                        },
+                        "UIBasePosition": {
+                            "x": 170.0626983642578,
+                            "y": 843.7512817382813,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 86.0,
+                            "y": -36.0
+                        }
+                    },
+                    "isPrefab": false
+                }
+            ],
+            "Components": {
+                "Animator": {
+                    "isLooping": true,
+                    "isPlaying": true,
+                    "playbackSpeed": 2.0,
+                    "spriteSheetName": "Sprites\\UI\\InGame\\AbilityBox-Glide_4_1.png"
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "AbilityBox-Glide_4_1",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameUI",
+                "Name": "AbilityBox",
+                "Position": {
+                    "x": 125.0,
+                    "y": 775.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 150.0,
+                    "y": 150.0
+                },
+                "UIBasePosition": {
+                    "x": 125.0,
+                    "y": 775.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 150.0,
+                    "y": 150.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Children": [
+                {
+                    "Components": {
+                        "Animator": {
+                            "isLooping": true,
+                            "isPlaying": true,
+                            "playbackSpeed": 2.0,
+                            "spriteSheetName": "Sprites\\UI\\MainMenu\\TitleFireAnim_4_1.png"
+                        },
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "TitleFireAnim_4_1",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "KeyFire2",
+                        "Position": {
+                            "x": 138.65164184570313,
+                            "y": 170.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": -80.0,
+                            "y": 80.0
+                        },
+                        "UIBasePosition": {
+                            "x": 138.65164184570313,
+                            "y": 170.0,
+                            "z": 5.0
+                        },
+                        "UIBaseScale": {
+                            "x": -80.0,
+                            "y": 80.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Animator": {
+                            "isLooping": true,
+                            "isPlaying": true,
+                            "playbackSpeed": 2.0,
+                            "spriteSheetName": "Sprites\\UI\\MainMenu\\TitleFireAnim_4_1.png"
+                        },
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "TitleFireAnim_4_1",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "KeyFire3",
+                        "Position": {
+                            "x": 183.80502319335938,
+                            "y": 135.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": -80.0,
+                            "y": 80.0
+                        },
+                        "UIBasePosition": {
+                            "x": 183.80502319335938,
+                            "y": 135.0,
+                            "z": 5.0
+                        },
+                        "UIBaseScale": {
+                            "x": -80.0,
+                            "y": 80.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Animator": {
+                            "isLooping": true,
+                            "isPlaying": true,
+                            "playbackSpeed": 2.0,
+                            "spriteSheetName": "Sprites\\UI\\MainMenu\\TitleFireAnim_4_1.png"
+                        },
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "TitleFireAnim_4_1",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "KeyFire1",
+                        "Position": {
+                            "x": 79.75594329833984,
+                            "y": 185.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": -80.0,
+                            "y": 80.0
+                        },
+                        "UIBasePosition": {
+                            "x": 79.75594329833984,
+                            "y": 185.0,
+                            "z": 5.0
+                        },
+                        "UIBaseScale": {
+                            "x": -80.0,
+                            "y": 80.0
+                        }
+                    },
+                    "isPrefab": false
+                }
+            ],
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "GameUI-Key",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameUI",
+                "Name": "Key",
+                "Position": {
+                    "x": 215.00001525878906,
+                    "y": 110.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 372.0,
+                    "y": -152.0
+                },
+                "UIBasePosition": {
+                    "x": 215.0,
+                    "y": 110.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 372.0,
+                    "y": -152.0
+                }
+            },
+            "isPrefab": false
+        }
+    ],
+    "MainCamera": {
+        "KeyFrames": [
+            {
+                "maxX": 0.0,
+                "maxY": 0.0,
+                "minX": 0.0,
+                "minY": 0.0,
+                "pos": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 1.0
+                },
+                "scale": {
+                    "x": 0.0,
+                    "y": 0.0
+                },
+                "zoom": 1.0
+            }
+        ],
+        "cameraLock": false,
+        "height": 900.0,
+        "isMainCam": true,
+        "offsetX": 0.0,
+        "offsetY": 0.0,
+        "posX": 0.0,
+        "posY": 0.0,
+        "posZ": 10.0,
+        "width": 1600.0,
+        "zoom": 1.0
+    },
+    "WinZone": {
+        "ConfigFile": "",
+        "Position": {
+            "x": -239.08047485351563,
+            "y": 113.68861389160156
+        },
+        "Scale": {
+            "x": 200.0,
+            "y": 200.0
+        }
+    }
+}
