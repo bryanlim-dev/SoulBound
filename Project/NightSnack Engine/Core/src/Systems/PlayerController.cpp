@@ -52,7 +52,7 @@ namespace NightSnack {
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
             vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
 
-            c.GetSystem<AudioSystem>()->PlayRandomVariant("ghostJump", 3, 0.4f);
+            c.GetSystem<AudioSystem>()->PlayRandomVariant("Wings-Reverb", 4, 0.4f);
 
 
             // Start the emitter to spawn particles
@@ -562,7 +562,14 @@ namespace NightSnack {
             vel.y = pcont.jumpSpeed;
             t.pos.y += 0.5f;
             m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
-            m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("ghostJump", 3, 0.4f);
+
+            // Play different jump sound based on current ability/form
+            if (curr_ability == "DoubleJump") // EyeMove form
+                m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("Wings-Reverb", 4, 0.4f);
+            else if (curr_ability == "Grapple") // Frog form
+                m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("frogJump", 0.4f);
+            else // Default spirit form
+                m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("ghostJump", 3, 0.4f);
 
             //m_storedJump = false;
             m_flags.justJumped = true;
