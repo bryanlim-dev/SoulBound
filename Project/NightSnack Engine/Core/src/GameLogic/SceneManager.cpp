@@ -764,7 +764,7 @@ namespace NightSnack::Scene {
 
 		// Check if a level already exists with the same name
 		if (std::filesystem::exists(outPath) && !overwrite) {
-			std::cout << "There already exists a level named '" << levelname << "' at '" << "GameData/Levels" << '\n';
+			//std::cout << "There already exists a level named '" << levelname << "' at '" << "GameData/Levels" << '\n';
 			return false;
 		}
 
@@ -808,7 +808,7 @@ namespace NightSnack::Scene {
 			resource->LoadJson(loadPath, m_levelKeys[levelname]);
 			std::cerr << "[SceneManager] Saved new level\n";
 		}
-		std::cout << "Saved level to: " << outPath << "\n";
+		//std::cout << "Saved level to: " << outPath << "\n";
 		return true;
 	}
 
@@ -924,7 +924,7 @@ namespace NightSnack::Scene {
 		// Do not pam the camera when entering the level editor
 		m_coord.GetSystem<CameraSystem>()->StartCamPan(false);
 
-		std::cerr << "[SceneManager] Level restored\n";
+		//std::cerr << "[SceneManager] Level restored\n";
 	}
 
 	// Reads all level files in assets folder -> "./assets/GameData/Levels/"
@@ -959,11 +959,11 @@ namespace NightSnack::Scene {
 	void SceneManager::OpenMenu(std::string const& menuname) {
 
 		if (m_menuOpen) {
-			std::cerr << "[SceneManager] Menu already open, closing first\n";
+			//std::cerr << "[SceneManager] Menu already open, closing first\n";
 			CloseMenu(true);
 		}
 
-		std::cerr << "[SceneManager] Opening menu: " << menuname << "\n";
+		//std::cerr << "[SceneManager] Opening menu: " << menuname << "\n";
 
 		// Build the menu file path
 		std::string menuPath = "GameData/Menus/" + menuname + ".json";
@@ -1058,7 +1058,7 @@ namespace NightSnack::Scene {
 						m_coord.HasComponent<Transform>(e) &&
 						m_coord.HasComponent<Collider>(e)) {
 						//m_entities.insert(e);
-						std::cerr << "[SceneManager] Added button entity " << e << " to system\n";
+						//std::cerr << "[SceneManager] Added button entity " << e << " to system\n";
 					}
 				}
 			}
@@ -1135,8 +1135,8 @@ namespace NightSnack::Scene {
 		}
 		//std::cerr << "[SceneManager] Game paused\n";
 
-		std::cerr << "[SceneManager] Opened menu: " << menuname
-			<< " with " << m_menuEntities.size() << " entities\n";
+		//std::cerr << "[SceneManager] Opened menu: " << menuname
+			//<< " with " << m_menuEntities.size() << " entities\n";
 	}
 
 	void SceneManager::CloseMenu(bool opening) {
