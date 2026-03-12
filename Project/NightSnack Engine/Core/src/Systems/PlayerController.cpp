@@ -243,7 +243,7 @@ namespace NightSnack {
                 if (!et.isActive) { continue; }
 
                 if (et.name == "Frog" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                    r.materialName = "FrogIdle_1_1"; // depends on the texture name
+                    r.materialName = "FrogIdle_4_1"; // depends on the texture name
                     curr_ability = "Grapple";
                     //m_flags.tryPossess = false;
                     m_flags.isPossessing = true;
@@ -260,7 +260,7 @@ namespace NightSnack {
                     break;
                 }
                 else if (et.name == "Bouncer" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                    r.materialName = "FrogIdle_1_1"; // depends on the texture name
+                    r.materialName = "SnekIdle_4_1"; // depends on the texture name
                     curr_ability = "Bounce";
                     //m_flags.tryPossess = false;
                     m_flags.isPossessing = true;

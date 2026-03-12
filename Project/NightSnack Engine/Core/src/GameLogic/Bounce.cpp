@@ -47,6 +47,11 @@ namespace NightSnack
 			coord.ModifyComponent<RigidBody>(m_owner).vel = Vec2();
 		}
 
+		if (coord.HasComponent<Renderable>(m_owner))
+		{
+			coord.ModifyComponent<Renderable>(m_owner).materialName = "SnekAbility_4_1";
+		}
+
 		if (!m_createdDisplays)
 			CreateDisplay(coord);
 
@@ -169,6 +174,11 @@ namespace NightSnack
 		m_currState = BOUNCE_END;
 		
 		HideDisplay(coord);
+
+		if (coord.HasComponent<Renderable>(m_owner))
+		{
+			coord.ModifyComponent<Renderable>(m_owner).materialName = "SnekIdle_4_1";
+		}
 	}
 
 	void Bounce::Reset(Coordinator& coord)
@@ -213,6 +223,11 @@ namespace NightSnack
 			//std::cout << "Bounce Launch! X Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.x << ", " 
 			//	<< "Y Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.y << std::endl;
 
+		}
+
+		if (coord.HasComponent<Renderable>(m_owner))
+		{
+			coord.ModifyComponent<Renderable>(m_owner).materialName = "SnekFall_4_1";
 		}
 
 		//std::cout << "Launch! Player Pos: " << std::endl;
