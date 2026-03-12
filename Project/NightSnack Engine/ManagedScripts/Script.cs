@@ -654,8 +654,12 @@ namespace ManagedScripts
         public bool IsKeyReleased(KeyboardKeys key) => Engine.IsKeyReleased(key);
         public void PlaySound(string path) => Engine.PlaySound(path);
         public uint CreateEntityArchetype(string archetypeName, Vector3 pos) => Engine.CreateEntityArchetype(archetypeName, pos);
+
+        #region Player
         public uint GetPlayerID() => Engine.GetPlayerID();
         public void KillPlayer() => Engine.KillPlayer();
+        public string GetPlayerAbility() => Engine.GetPlayerAbility();
+        #endregion
 
     }
 }   // ManagedScripts

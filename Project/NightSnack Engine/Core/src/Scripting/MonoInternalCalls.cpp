@@ -791,6 +791,11 @@ extern "C" {
         g_scriptInterface->RestartLevel();
     }
 
+    static MonoString* NightSnack_GetPlayerAbility(uint32_t id) {
+        if (!g_scriptInterface) { return NULL; }
+        return NightSnack::Scripting::StringToMonoString(g_scriptInterface->GetPlayerAbility());
+    }
+
 
 
     // --------------------------------------------------------------
@@ -1044,6 +1049,7 @@ namespace NightSnack::Scripting {
 #pragma region Player
         mono_add_internal_call("ManagedScripts.Engine::GetPlayerID_Internal", (void*)NightSnack_GetPlayerID);
         mono_add_internal_call("ManagedScripts.Engine::KillPlayer_Internal", (void*)NightSnack_KillPlayer);
+        mono_add_internal_call("ManagedScripts.Engine::GetPlayerAbility_Internal", (void*)NightSnack_GetPlayerAbility);
 #pragma endregion
 
 
