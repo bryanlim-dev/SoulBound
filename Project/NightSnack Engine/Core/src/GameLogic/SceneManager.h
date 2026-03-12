@@ -29,6 +29,9 @@
 #include <vector>
 #include <stack>
 
+#include "Systems/ParticleSystem.h"
+#include "Systems/CollectibleSystem.h"
+
 namespace NightSnack::Scene {
 
 	// Wrapper that contains a button's action as well as the callable to be invoked,
@@ -116,6 +119,12 @@ namespace NightSnack::Scene {
 						m_restart = true;
 						std::cerr << "[SceneManager] Queuing restart\n";
 						break;
+					case InputEvent::InputAction::ChangeAnimation: // X
+						CreateWinScreen();
+						m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerWin", 0.85f);
+						m_coord.GetSystem<CollectibleSystem>()->ToggleCollectibleIcons(false);
+						winScreenOn = true;
+						break;
 					}
 				}
 			});
@@ -197,6 +206,11 @@ namespace NightSnack::Scene {
 		// Load Level - Sets up everything needed to spawn level
 		// Calls factory to create entities
 		// Sets up bgm and menus
+
+		/**
+		 * @brief Starts a new level
+		 */
+		void NewLevel();
 
 		/**
 		 * @brief Loads a level immediately.
@@ -289,6 +303,11 @@ namespace NightSnack::Scene {
 
 		std::vector<Entity> m_overlayEntites;
 
+		std::vector<std::string> m_currentLevelBGMs; // tracks BGMs loaded for current level
+
+		std::vector<std::string> GetCurrentLevelBGMs() const { return m_currentLevelBGMs; }
+
+
 		// Overlay menu
 		bool m_gameLoaded = false;
 		bool overlayOn = false;
@@ -320,10 +339,17 @@ namespace NightSnack::Scene {
 		json CacheWinCollider();
 		void CreateWinScreen();
 
+		// entity for menu sliders
 		Entity m_sliderBarEntity = INVALID_ENTITY;
 		Entity m_sliderKnobEntity = INVALID_ENTITY;
+		Entity m_sfxBarEntity = INVALID_ENTITY;
+		Entity m_sfxKnobEntity = INVALID_ENTITY;
+		Entity m_bgmBarEntity = INVALID_ENTITY;
+		Entity m_bgmKnobEntity = INVALID_ENTITY;
 
 		Entity GetSliderKnob() const { return m_sliderKnobEntity; }
+		Entity GetSFXKnob() const { return m_sfxKnobEntity; }
+		Entity GetBGMKnob() const { return m_bgmKnobEntity; }
 
 	};
 

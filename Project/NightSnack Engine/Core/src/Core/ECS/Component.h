@@ -263,6 +263,7 @@ namespace NightSnack {
     struct Collectible {
         COLLECTIBLE_TYPE type = COLLECTIBLE_TYPE::DOUBLE_JUMP;
         int currTime{};
+        int cameraPanOrder{};
         int respawnTimeSteps{};
         bool willRespawn{ false };
     };
@@ -308,6 +309,9 @@ namespace NightSnack {
         PLAYAUDIO,
         PLAYAUDIO2,
         PLAYAUDIO3,
+        VOLUMESLIDER,
+        SFXSLIDER,
+        BGMSLIDER,
 
         LOADLEVEL,
         RESTARTLEVEL,
@@ -315,7 +319,6 @@ namespace NightSnack {
         CLOSEMENU,
         NOACTION,
         TOGGLEFULLSCREEN,
-        VOLUMESLIDER,
         EXIT
     };
     struct ButtonInfo {

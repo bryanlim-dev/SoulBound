@@ -73,7 +73,11 @@ namespace NightSnack
                     // Add Prefab button at the bottom of list
                     if (ImGui::Button("Create"))
                     {
-                        factory->Create();
+                        Entity newEntity = factory->Create();
+
+                        NightSnack::UndoSystem::Instance().Push(
+                            NightSnack::EntityCreateSnapshot{ newEntity }
+                        );
                     }
 
 					// Add Collider button to Create collider entity
@@ -88,7 +92,11 @@ namespace NightSnack
                         Collider c;
                         c.width = c.height = 100.f;
                         c.radius = 50.f;
-                        factory->CreateCollider(c, t);
+                        Entity newCollider = factory->CreateCollider(c, t);
+                        
+                        NightSnack::UndoSystem::Instance().Push(
+                            NightSnack::EntityCreateSnapshot{ newCollider }
+                        );
                     }
 
                     // Delete button to remove selected entity
@@ -163,11 +171,9 @@ namespace NightSnack
                         Entity sceneCam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
                         Vec3 camPos = m_coord.GetComponent<Transform>(sceneCam).pos;
                         Vec2 scale = Vec2{ 100.f, 100.f };
-                        json bounds;
+                        json bounds = json::object();
                         if (!keyframesCopy.empty() && (selectedKeyframe >= 0 && selectedKeyframe < keyframesCopy.size()))
                         {
-							camPos = keyframesCopy[selectedKeyframe].second["pos"];
-							scale = keyframesCopy[selectedKeyframe].second["scale"];
                             bounds = keyframesCopy[selectedKeyframe].second;
                         }
                         else
@@ -181,6 +187,15 @@ namespace NightSnack
                             bounds["scale"] = { {"x", scale.x}, {"y", scale.y} };
                         }
                         sceneManager->CreateCamTrigger(camPos, scale, bounds);
+
+                        // Record for undo
+                        auto keyframes = sceneManager->GetCameraKeyframes();
+                        if (!keyframes.empty())
+                        {
+                            NightSnack::UndoSystem::Instance().Push(
+                                NightSnack::CamTriggerCreateSnapshot{ keyframes.back().first }
+                            );
+                        }
                     }
                     keyframesCopy = sceneManager->GetCameraKeyframes();
                     ImGui::Separator();
@@ -251,6 +266,25 @@ namespace NightSnack
                 auto sceneManager = m_coord.GetSystem<NightSnack::Scene::SceneManager>();
                 for (Entity e : camTriggerDeleteQueue)
                 {
+                    // Capture state before deleting for undo stack
+                    Vec3 pos{};
+                    Vec2 scale{};
+                    json bounds{};
+
+                    if (m_coord.HasComponent<Transform>(e))
+                    {
+                        auto& t = m_coord.GetComponent<Transform>(e);
+                        pos = t.pos;
+                        scale = Vec2{ t.scale.x, t.scale.y };
+                    }
+                    for (auto& [ke, kb] : sceneManager->GetCameraKeyframes())
+                    {
+                        if (ke == e) { bounds = kb; break; }
+                    }
+
+                    NightSnack::UndoSystem::Instance().Push(
+                        NightSnack::CamTriggerDeleteSnapshot{ e, pos, scale, bounds }
+                    );
                     sceneManager->DeleteCamTrigger(e);
                 }
             }
@@ -276,9 +310,13 @@ namespace NightSnack
 
             if (m_coord.HasComponent<Transform>(*m_selectedEntity) && m_coord.GetComponent<Transform>(*m_selectedEntity).name == "CamTrigger") {
                 auto sceneManager = m_coord.GetSystem<NightSnack::Scene::SceneManager>();
-                if (sceneManager) {
+                if (sceneManager)
+                {
                     NightSnack::UndoSystem::Instance().Push(
-                        NightSnack::EntityDeleteSnapshot{ *m_selectedEntity, prefabName, transform }
+                        NightSnack::EntityDeleteSnapshot{ *m_selectedEntity, prefabName, transform,
+                        m_coord.HasComponent<Collider>(*m_selectedEntity)
+                            ? std::optional<NightSnack::Collider>(m_coord.GetComponent<Collider>(*m_selectedEntity))
+                            : std::nullopt }
                     );
                     sceneManager->DeleteCamTrigger(*m_selectedEntity);
                 }
@@ -286,7 +324,10 @@ namespace NightSnack
             else {
                 // Record entity deletion for undo
                 NightSnack::UndoSystem::Instance().Push(
-                    NightSnack::EntityDeleteSnapshot{ *m_selectedEntity, prefabName, transform }
+                    NightSnack::EntityDeleteSnapshot{ *m_selectedEntity, prefabName, transform,
+                        m_coord.HasComponent<Collider>(*m_selectedEntity)
+                            ? std::optional<NightSnack::Collider>(m_coord.GetComponent<Collider>(*m_selectedEntity))
+                            : std::nullopt }
                 );
 
                 // Remove entity from ECS

@@ -14,11 +14,6 @@ add_executable(Game ${GAME_SOURCES})
 # Set warning level and fix runtime library conflicts
 if(MSVC)
     target_compile_options(Game PRIVATE /W4 /permissive-)
-    # Fix LIBCMT conflict by ensuring consistent runtime library usage
-    target_link_options(Game PRIVATE 
-        $<$<CONFIG:Debug>:/NODEFAULTLIB:LIBCMT>
-        #$<$<CONFIG:Release>:/NODEFAULTLIB:LIBCMTD>
-    )
 else()
     target_compile_options(Game PRIVATE -Wall -Wextra -Wpedantic)
 endif()
@@ -48,14 +43,10 @@ add_custom_target(copy_assets ALL
         "${CMAKE_SOURCE_DIR}/assets"
         "${GAME_OUTPUT_DIR}/assets"
 
-    # Copy fmod debug dll
+    # Copy correct FMOD dll depending on build type
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_SOURCE_DIR}/extern/fmod/lib/fmodL.dll"
-        "${GAME_OUTPUT_DIR}"
-
-    # Copy fmod release dll
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${CMAKE_SOURCE_DIR}/extern/fmod/lib/fmod.dll"
+        "$<$<CONFIG:Debug>:${CMAKE_SOURCE_DIR}/extern/fmod/lib/fmodL.dll>"
+        "$<$<CONFIG:Release>:${CMAKE_SOURCE_DIR}/extern/fmod/lib/fmod.dll>"
         "${GAME_OUTPUT_DIR}"
 
     # Copy freetype dll

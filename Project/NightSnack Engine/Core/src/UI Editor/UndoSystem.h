@@ -19,16 +19,28 @@
 #include <optional>
 #include "Core/ECS/Coordinator.h"
 #include "Core/ECS/Component.h"
+#include "GameLogic/SceneManager.h"
 
 namespace NightSnack {
 
-	// Snapshots for different undoable actions
-    struct TransformSnapshot
+    // Generic snapshot for any component type
+    template<typename TComp>
+    struct ComponentSnapshot
     {
-		// Required data to restore
-        Entity entity;
-        Transform transform;
+        Entity  entity;
+        TComp   component;
     };
+
+    // Component aliases
+    using TransformSnapshot         = ComponentSnapshot<Transform>;
+    using PlayerControllerSnapshot  = ComponentSnapshot<PlayerController>;
+    using CameraSnapshot            = ComponentSnapshot<Camera>;
+    using RigidBodySnapshot         = ComponentSnapshot<RigidBody>;
+    using ColliderSnapshot          = ComponentSnapshot<Collider>;
+    using RenderableSnapshot        = ComponentSnapshot<Renderable>;
+    using FontSnapshot              = ComponentSnapshot<Font>;
+    using ButtonSnapshot            = ComponentSnapshot<ButtonInfo>;
+    using AudioSnapshot             = ComponentSnapshot<Audio>;
 
     struct PhysicsSettingsSnapshot
     {
@@ -36,54 +48,6 @@ namespace NightSnack {
         float drag;
         float friction;
 	};
-
-    struct PlayerControllerSnapshot
-    {
-        Entity entity;
-        PlayerController playercontroller;
-	};
-
-    struct CameraSnapshot
-    {
-        Entity entity;
-        Camera camera;
-	};
-
-    struct RigidBodySnapshot
-    {
-        Entity entity;
-        RigidBody rigidbody;
-    };
-
-    struct ColliderSnapshot
-    {
-        Entity entity;
-        Collider collider;
-    };
-
-    struct RenderableSnapshot
-    {
-        Entity entity;
-        Renderable renderable;
-    };
-
-    struct FontSnapshot
-    {
-        Entity entity;
-        Font font;
-	};
-
-    struct ButtonSnapshot
-    {
-        Entity entity;
-        ButtonInfo button;
-	};
-
-    struct AudioSnapshot
-    {
-        Entity entity;
-        Audio audio;
-    };
 
     struct ComponentAddSnapshot
     {
@@ -96,16 +60,16 @@ namespace NightSnack {
         Entity entity;
         std::string componentName;
 		std::optional<PlayerController> playercontroller;
-        std::optional<RigidBody> rigidbody;
-        std::optional<Collider> collider;
-        std::optional<Renderable> renderable;
-		std::optional<Script> script;
-		std::optional<Animator> animator;
-		std::optional<Font> font;
-		std::optional<ButtonInfo> button;
-		std::optional<Audio> audio;
-		std::optional<Character> character;
-		std::optional<Collectible> collectible;
+        std::optional<RigidBody>        rigidbody;
+        std::optional<Collider>         collider;
+        std::optional<Renderable>       renderer;
+		std::optional<Script>           script;
+		std::optional<Animator>         animator;
+		std::optional<Font>             font;
+		std::optional<ButtonInfo>       button;
+		std::optional<Audio>            audio;
+		std::optional<Character>        character;
+		std::optional<Collectible>      collectible;
     };
 
     struct EntityCreateSnapshot
@@ -115,9 +79,23 @@ namespace NightSnack {
 
     struct EntityDeleteSnapshot
     {
-        Entity entity;
+        Entity      entity;
         std::string prefabName;
-        Transform transform;
+        Transform   transform;
+        std::optional<Collider> collider;
+    };
+
+    struct CamTriggerCreateSnapshot
+    {
+        Entity entity;
+    };
+
+    struct CamTriggerDeleteSnapshot
+    {
+        Entity    entity;
+        Vec3      pos;
+        Vec2      scale;
+        json      bounds;
     };
 
     using UndoAction = std::variant<
@@ -125,16 +103,18 @@ namespace NightSnack {
         EntityCreateSnapshot,
         EntityDeleteSnapshot,
         PhysicsSettingsSnapshot,
-		PlayerControllerSnapshot,
+        PlayerControllerSnapshot,
         CameraSnapshot,
         RigidBodySnapshot,
         ColliderSnapshot,
         RenderableSnapshot,
-		FontSnapshot,
-		ButtonSnapshot,
-		AudioSnapshot,
+        FontSnapshot,
+        ButtonSnapshot,
+        AudioSnapshot,
         ComponentAddSnapshot,
-        ComponentRemoveSnapshot
+        ComponentRemoveSnapshot,
+        CamTriggerCreateSnapshot,
+        CamTriggerDeleteSnapshot
     >;
 
     class UndoSystem {
@@ -181,256 +161,23 @@ namespace NightSnack {
 
             std::visit([&](auto&& act) {
                 using T = std::decay_t<decltype(act)>;
-                if constexpr (std::is_same_v<T, TransformSnapshot>)
-                {
-                    if (coord.HasComponent<Transform>(act.entity))
-                    {
-                        // Capture current state for redo
-                        TransformSnapshot redoSnap{ act.entity, coord.GetComponent<Transform>(act.entity) };
-                        if (redoStack.size() >= maxSteps) redoStack.pop_front();
-                        redoStack.push_back(redoSnap);
 
-                        // Apply undo snapshot
-                        coord.ModifyComponent<Transform>(act.entity) = act.transform;
-                    }
-                }
-                else if constexpr (std::is_same_v<T, PlayerControllerSnapshot>)
+                if constexpr (IsComponentSnapshot<T>::value)
                 {
-                    if (coord.HasComponent<PlayerController>(act.entity))
+                    using Comp = typename IsComponentSnapshot<T>::ComponentType;
+                    if (coord.HasComponent<Comp>(act.entity))
                     {
-                        PlayerControllerSnapshot redoSnap{ act.entity, coord.GetComponent<PlayerController>(act.entity) };
-                        if (redoStack.size() >= maxSteps) redoStack.pop_front();
-                        redoStack.push_back(redoSnap);
-
-                        coord.ModifyComponent<PlayerController>(act.entity) = act.playercontroller;
-                    }
-				}
-                else if constexpr (std::is_same_v<T, CameraSnapshot>)
-                {
-                    if (coord.HasComponent<Camera>(act.entity))
-                    {
-                        CameraSnapshot redoSnap{ act.entity, coord.GetComponent<Camera>(act.entity) };
-                        if (redoStack.size() >= maxSteps) redoStack.pop_front();
-                        redoStack.push_back(redoSnap);
-
-                        coord.ModifyComponent<Camera>(act.entity) = act.camera;
-                    }
-                }
-                else if constexpr (std::is_same_v<T, RigidBodySnapshot>)
-                {
-                    if (coord.HasComponent<RigidBody>(act.entity))
-                    {
-                        RigidBodySnapshot redoSnap{ act.entity, coord.GetComponent<RigidBody>(act.entity) };
-                        if (redoStack.size() >= maxSteps) redoStack.pop_front();
-						redoStack.push_back(redoSnap);
-
-						coord.ModifyComponent<RigidBody>(act.entity) = act.rigidbody;
-                    }
-                }
-                else if constexpr (std::is_same_v<T, ColliderSnapshot>)
-                {
-                    if (coord.HasComponent<Collider>(act.entity))
-                    {
-                        ColliderSnapshot redoSnap{ act.entity, coord.GetComponent<Collider>(act.entity) };
-                        if (redoStack.size() >= maxSteps) redoStack.pop_front();
-						redoStack.push_back(redoSnap);
-
-						coord.ModifyComponent<Collider>(act.entity) = act.collider;
-                    }
-                }
-                else if constexpr (std::is_same_v<T, RenderableSnapshot>)
-                {
-                    if (coord.HasComponent<Renderable>(act.entity))
-                    {
-                        RenderableSnapshot redoSnap{ act.entity, coord.GetComponent<Renderable>(act.entity) };
-						if (redoStack.size() >= maxSteps) redoStack.pop_front();
-						redoStack.push_back(redoSnap);
-
-						coord.ModifyComponent<Renderable>(act.entity) = act.renderable;
-                    }
-                }
-                else if constexpr (std::is_same_v<T, FontSnapshot>)
-                {
-                    if (coord.HasComponent<Font>(act.entity))
-                    {
-                        FontSnapshot redoSnap{ act.entity, coord.GetComponent<Font>(act.entity) };
-						if (redoStack.size() >= maxSteps) redoStack.pop_front();
-						redoStack.push_back(redoSnap);
-
-						coord.ModifyComponent<Font>(act.entity) = act.font;
-                    }
-                }
-                else if constexpr (std::is_same_v<T, ButtonSnapshot>)
-                {
-                    if (coord.HasComponent<ButtonInfo>(act.entity))
-                    {
-						ButtonSnapshot redoSnap{ act.entity, coord.GetComponent<ButtonInfo>(act.entity) };
-						if (redoStack.size() >= maxSteps) redoStack.pop_front();
-						redoStack.push_back(redoSnap);
-
-						coord.ModifyComponent<ButtonInfo>(act.entity) = act.button;
-                    }
-                }
-                else if constexpr (std::is_same_v<T, AudioSnapshot>)
-                {
-                    if (coord.HasComponent<Audio>(act.entity))
-                    {
-						AudioSnapshot redoSnap{ act.entity, coord.GetComponent<Audio>(act.entity) };
-						if (redoStack.size() >= maxSteps) redoStack.pop_front();
-						redoStack.push_back(redoSnap);
-
-						coord.ModifyComponent<Audio>(act.entity) = act.audio;
+                        PushToStack(redoStack, T{ act.entity, coord.GetComponent<Comp>(act.entity) });
+                        coord.ModifyComponent<Comp>(act.entity) = act.component;
                     }
                 }
                 else if constexpr (std::is_same_v<T, ComponentAddSnapshot>)
                 {
-                    if (act.componentName == "PlayerController" && coord.HasComponent<PlayerController>(act.entity))
-                    {
-                        PlayerControllerSnapshot redoSnap{ act.entity, coord.GetComponent<PlayerController>(act.entity) };
-                        if (redoStack.size() >= maxSteps) redoStack.pop_front();
-                        redoStack.push_back(redoSnap);
-                        coord.RemoveComponent<PlayerController>(act.entity);
-                    }
-                    else if (act.componentName == "RigidBody" && coord.HasComponent<RigidBody>(act.entity))
-                    {
-                        RigidBodySnapshot redoSnap{ act.entity, coord.GetComponent<RigidBody>(act.entity) };
-                        if (redoStack.size() >= maxSteps) redoStack.pop_front();
-                        redoStack.push_back(redoSnap);
-                        coord.RemoveComponent<RigidBody>(act.entity);
-                    }
-                    else if (act.componentName == "Collider")
-                    {
-						ColliderSnapshot redoSnap{ act.entity, coord.GetComponent<Collider>(act.entity) };
-						if (redoStack.size() >= maxSteps) redoStack.pop_front();
-                        redoStack.push_back(redoSnap);
-
-						coord.RemoveComponent<Collider>(act.entity);
-                    }
-                    else if (act.componentName == "Renderable")
-                    {
-						RenderableSnapshot redoSnap{ act.entity, coord.GetComponent<Renderable>(act.entity) };
-						if (redoStack.size() >= maxSteps) redoStack.pop_front();
-						redoStack.push_back(redoSnap);
-
-                        coord.RemoveComponent<Renderable>(act.entity);
-                    }
-					else if (act.componentName == "Scripting")
-					{
-                        // Doing later
-						coord.RemoveComponent<Script>(act.entity);
-					}
-					else if (act.componentName == "Animator")
-					{
-						// Doing later
-						coord.RemoveComponent<Animator>(act.entity);
-					}
-					else if (act.componentName == "Font")
-					{
-						FontSnapshot redoSnap{ act.entity, coord.GetComponent<Font>(act.entity) };
-						if (redoStack.size() >= maxSteps) redoStack.pop_front();
-						redoStack.push_back(redoSnap);
-
-						coord.RemoveComponent<Font>(act.entity);
-					}
-                    else if (act.componentName == "ButtonInfo")
-					{   
-						ButtonSnapshot redoSnap{ act.entity, coord.GetComponent<ButtonInfo>(act.entity) };
-						if (redoStack.size() >= maxSteps) redoStack.pop_front();
-						redoStack.push_back(redoSnap);
-
-						coord.RemoveComponent<ButtonInfo>(act.entity);
-					}
-					else if (act.componentName == "Audio")
-					{   
-						AudioSnapshot redoSnap{ act.entity, coord.GetComponent<Audio>(act.entity) };
-						if (redoStack.size() >= maxSteps) redoStack.pop_front();
-						redoStack.push_back(redoSnap);
-
-						coord.RemoveComponent<Audio>(act.entity);
-					}
+                    UndoComponentAdd(coord, act.entity, act.componentName, redoStack);
                 }
                 else if constexpr (std::is_same_v<T, ComponentRemoveSnapshot>)
                 {
-                    if (act.componentName == "PlayerController" && act.playercontroller)
-                    {
-                        if (coord.HasComponent<PlayerController>(act.entity))
-                        {
-                            PlayerControllerSnapshot redoSnap{ act.entity, coord.GetComponent<PlayerController>(act.entity) };
-                            if (redoStack.size() >= maxSteps) redoStack.pop_front();
-                            redoStack.push_back(redoSnap);
-                        }
-                        coord.AddComponent<PlayerController>(act.entity, *act.playercontroller);
-                    }
-                    else if (act.componentName == "RigidBody" && act.rigidbody)
-                    {
-                        if (coord.HasComponent<RigidBody>(act.entity))
-                        {
-                            RigidBodySnapshot redoSnap{ act.entity, coord.GetComponent<RigidBody>(act.entity) };
-                            if (redoStack.size() >= maxSteps) redoStack.pop_front();
-                            redoStack.push_back(redoSnap);
-                        }
-                        coord.AddComponent<RigidBody>(act.entity, *act.rigidbody);
-                    }
-                    else if (act.componentName == "Collider" && act.collider)
-                    {
-                        if (coord.HasComponent<Collider>(act.entity))
-                        {
-                            ColliderSnapshot redoSnap{ act.entity, coord.GetComponent<Collider>(act.entity) };
-                            if (redoStack.size() >= maxSteps) redoStack.pop_front();
-                            redoStack.push_back(redoSnap);
-                        }
-						coord.AddComponent<Collider>(act.entity, *act.collider);
-                    }
-                    else if (act.componentName == "Renderable" && act.renderable)
-                    {
-                        if (coord.HasComponent<Renderable>(act.entity))
-                        {
-                            RenderableSnapshot redoSnap{ act.entity, coord.GetComponent<Renderable>(act.entity) };
-                            if (redoStack.size() >= maxSteps) redoStack.pop_front();
-                            redoStack.push_back(redoSnap);
-                        }
-						coord.AddComponent<Renderable>(act.entity, *act.renderable);
-                    }
-                    else if (act.componentName == "Scripting" && act.script)
-                    {
-                        // Later
-                        coord.AddComponent<Script>(act.entity, *act.script);
-                    }
-                    else if (act.componentName == "Animator" && act.animator)
-                    {
-                        // Later
-                        coord.AddComponent<Animator>(act.entity, *act.animator);
-                    }
-                    else if (act.componentName == "Font" && act.font)
-                    {
-                        if (coord.HasComponent<Font>(act.entity))
-                        {
-                            FontSnapshot redoSnap{ act.entity, coord.GetComponent<Font>(act.entity) };
-                            if (redoStack.size() >= maxSteps) redoStack.pop_front();
-                            redoStack.push_back(redoSnap);
-                        }
-                        coord.AddComponent<Font>(act.entity, *act.font);
-                    }
-                    else if (act.componentName == "ButtonInfo" && act.button)
-                    {
-                        if (coord.HasComponent<ButtonInfo>(act.entity))
-                        {
-                            ButtonSnapshot redoSnap{ act.entity, coord.GetComponent<ButtonInfo>(act.entity) };
-                            if (redoStack.size() >= maxSteps) redoStack.pop_front();
-                            redoStack.push_back(redoSnap);
-                        }
-                        coord.AddComponent<ButtonInfo>(act.entity, *act.button);
-                    }
-                    else if (act.componentName == "Audio" && act.audio)
-                    {
-                        if (coord.HasComponent<Audio>(act.entity))
-                        {
-                            AudioSnapshot redoSnap{ act.entity, coord.GetComponent<Audio>(act.entity) };
-                            if (redoStack.size() >= maxSteps) redoStack.pop_front();
-                            redoStack.push_back(redoSnap);
-                        }
-                        coord.AddComponent<Audio>(act.entity, *act.audio);
-                    }
+                    UndoComponentRemove(coord, act, redoStack);
                 }
                 else if constexpr (std::is_same_v<T, PhysicsSettingsSnapshot>)
                 {
@@ -443,16 +190,74 @@ namespace NightSnack {
                 }
                 else if constexpr (std::is_same_v<T, EntityCreateSnapshot>)
                 {
-					factory.RemoveEntity(act.entity);
+                    // Capture prefab for redo
+                    std::string prefabName = factory.GetEntityPrefabName(act.entity);
+                    Transform   transform{};
+                    if (coord.HasComponent<Transform>(act.entity))
+                        transform = coord.GetComponent<Transform>(act.entity);
+
+                    std::optional<Collider> snapCollider;
+                    if (coord.HasComponent<Collider>(act.entity))
+                        snapCollider = coord.GetComponent<Collider>(act.entity);
+                    
+                    factory.RemoveEntity(act.entity);
+
+					// Redo stack for entity deletion
+                    PushToStack(redoStack, EntityDeleteSnapshot{ act.entity, prefabName, transform, snapCollider });
                 }
                 else if constexpr (std::is_same_v<T, EntityDeleteSnapshot>)
                 {
-                    RemapEntityId(act.entity, factory.Create(act.prefabName, act.transform));
-                }
-                }, action);
+                    // Create entity and capture new ID
+                    Entity newEntity = act.collider
+                        ? factory.CreateCollider(*act.collider, act.transform)
+                        : factory.Create(act.prefabName, act.transform);
+                    
+                    RemapEntityId(act.entity, newEntity);
 
-                if (redoStack.size() >= maxSteps) redoStack.pop_front();
-                redoStack.push_back(action);
+					// Redo stack for entity creation
+                    PushToStack(redoStack, EntityCreateSnapshot{ newEntity });
+                }
+                else if constexpr (std::is_same_v<T, CamTriggerCreateSnapshot>)
+                {
+                    // Undo a CamTrigger Create
+                    auto sceneManager = coord.GetSystem<NightSnack::Scene::SceneManager>();
+                    if (!sceneManager) return;
+
+                    Vec3 pos{};
+                    Vec2 scale{};
+                    json bounds{};
+
+                    if (coord.HasComponent<Transform>(act.entity))
+                    {
+                        auto& t = coord.GetComponent<Transform>(act.entity);
+                        pos = t.pos;
+                        scale = Vec2{ t.scale.x, t.scale.y };
+                    }
+                    for (auto& [e, b] : sceneManager->GetCameraKeyframes())
+                    {
+                        if (e == act.entity) { bounds = b; break; }
+                    }
+                        
+                    sceneManager->DeleteCamTrigger(act.entity);
+                    PushToStack(redoStack, CamTriggerDeleteSnapshot{ act.entity, pos, scale, bounds });
+                }
+                else if constexpr (std::is_same_v<T, CamTriggerDeleteSnapshot>)
+                {
+                    // Undo a CamTrigger Delete
+                    auto sceneManager = coord.GetSystem<NightSnack::Scene::SceneManager>();
+                    if (!sceneManager) return;
+
+                    sceneManager->CreateCamTrigger(act.pos, act.scale, act.bounds);
+                    auto keyframes = sceneManager->GetCameraKeyframes();
+
+                    if (!keyframes.empty())
+                    {
+                        Entity newEntity = keyframes.back().first;
+                        RemapEntityId(act.entity, newEntity);
+                        PushToStack(redoStack, CamTriggerCreateSnapshot{ newEntity });
+                    }
+                }
+            }, action);
         }
 
         // Redo operation
@@ -464,183 +269,105 @@ namespace NightSnack {
             redoStack.pop_back();
 
             // Redo the action
-            std::visit([&](auto&& act)
-            {
+            std::visit([&](auto&& act) {
                 using T = std::decay_t<decltype(act)>;
 
-                if constexpr (std::is_same_v<T, TransformSnapshot>)
+                if constexpr (IsComponentSnapshot<T>::value)
                 {
-                    if (coord.HasComponent<Transform>(act.entity))
+                    using Comp = typename IsComponentSnapshot<T>::ComponentType;
+                    if (coord.HasComponent<Comp>(act.entity))
                     {
-                        // Capture current state for undo
-                        TransformSnapshot undoSnap{ act.entity, coord.GetComponent<Transform>(act.entity) };
-                        if (undoStack.size() >= maxSteps) undoStack.pop_front();
-                        undoStack.push_back(undoSnap);
-
-                        // Apply redo snapshot
-                        coord.ModifyComponent<Transform>(act.entity) = act.transform;
+                        PushToStack(undoStack, T{ act.entity, coord.GetComponent<Comp>(act.entity) });
+                        coord.ModifyComponent<Comp>(act.entity) = act.component;
                     }
                 }
-                if constexpr (std::is_same_v<T, PlayerControllerSnapshot>)
+                else if constexpr (std::is_same_v<T, ComponentAddSnapshot>)
                 {
-                    if (coord.HasComponent<PlayerController>(act.entity))
-                    {
-                        PlayerControllerSnapshot undoSnap{ act.entity, coord.GetComponent<PlayerController>(act.entity) };
-                        if (undoStack.size() >= maxSteps) undoStack.pop_front();
-                        undoStack.push_back(undoSnap);
-
-						coord.ModifyComponent<PlayerController>(act.entity) = act.playercontroller;
-                    }
-                }
-                else if constexpr (std::is_same_v<T, CameraSnapshot>)
-                {
-                    if (coord.HasComponent<Camera>(act.entity))
-                    {
-                        CameraSnapshot undoSnap{ act.entity, coord.GetComponent<Camera>(act.entity) };
-                        if (undoStack.size() >= maxSteps) undoStack.pop_front();
-						undoStack.push_back(undoSnap);
-
-						coord.ModifyComponent<Camera>(act.entity) = act.camera;
-                    }
-                }
-                else if constexpr (std::is_same_v<T, RigidBodySnapshot>)
-                {
-                    if (coord.HasComponent<RigidBody>(act.entity))
-                    {
-                        RigidBodySnapshot undoSnap{ act.entity, coord.GetComponent<RigidBody>(act.entity) };
-						if (undoStack.size() >= maxSteps) undoStack.pop_front();
-						undoStack.push_back(undoSnap);
-
-						coord.ModifyComponent<RigidBody>(act.entity) = act.rigidbody;
-                    }
-                }
-                else if constexpr (std::is_same_v<T, ColliderSnapshot>)
-                {
-                    if (coord.HasComponent<Collider>(act.entity))
-                    {
-						ColliderSnapshot undoSnap{ act.entity, coord.GetComponent<Collider>(act.entity) };
-						if (undoStack.size() >= maxSteps) undoStack.pop_front();
-						undoStack.push_back(undoSnap);
-
-						coord.ModifyComponent<Collider>(act.entity) = act.collider;
-                    }
-                }
-                else if constexpr (std::is_same_v<T, RenderableSnapshot>)
-                {
-                    if (coord.HasComponent<Renderable>(act.entity))
-                    {
-						RenderableSnapshot undoSnap{ act.entity, coord.GetComponent<Renderable>(act.entity) };
-						if (undoStack.size() >= maxSteps) undoStack.pop_front();
-						undoStack.push_back(undoSnap);
-
-						coord.ModifyComponent<Renderable>(act.entity) = act.renderable;
-                    }
-                }
-                else if constexpr (std::is_same_v<T, FontSnapshot>)
-                {
-                    if (coord.HasComponent<Font>(act.entity))
-                    {
-						FontSnapshot undoSnap{ act.entity, coord.GetComponent<Font>(act.entity) };
-						if (undoStack.size() >= maxSteps) undoStack.pop_front();
-						undoStack.push_back(undoSnap);
-
-						coord.ModifyComponent<Font>(act.entity) = act.font;
-                    }
-                }
-                else if constexpr (std::is_same_v<T, ButtonSnapshot>)
-                {
-                    if (coord.HasComponent<ButtonInfo>(act.entity))
-                    {
-						ButtonSnapshot undoSnap{ act.entity, coord.GetComponent<ButtonInfo>(act.entity) };
-						if (undoStack.size() >= maxSteps) undoStack.pop_front();
-						undoStack.push_back(undoSnap);
-
-						coord.ModifyComponent<ButtonInfo>(act.entity) = act.button;
-                    }
-                }
-                else if constexpr (std::is_same_v<T, AudioSnapshot>)
-                {
-                    if (coord.HasComponent<Audio>(act.entity))
-                    {
-						AudioSnapshot undoSnap{ act.entity, coord.GetComponent<Audio>(act.entity) };
-						if (undoStack.size() >= maxSteps) undoStack.pop_front();
-						undoStack.push_back(undoSnap);
-
-						coord.ModifyComponent<Audio>(act.entity) = act.audio;
-                    }
+                    UndoComponentAdd(coord, act.entity, act.componentName, undoStack);
                 }
                 else if constexpr (std::is_same_v<T, ComponentRemoveSnapshot>)
                 {
-                    if (act.componentName == "PlayerController" && coord.HasComponent<PlayerController>(act.entity))
-                    {
-                        PlayerControllerSnapshot undoSnap{ act.entity, coord.GetComponent<PlayerController>(act.entity) };
-                        if (undoStack.size() >= maxSteps) undoStack.pop_front();
-                        undoStack.push_back(undoSnap);
-
-                        coord.RemoveComponent<PlayerController>(act.entity);
+                    UndoComponentRemove(coord, act, undoStack);
+                }
+                else if constexpr (std::is_same_v<T, PhysicsSettingsSnapshot>)
+                {
+                    auto ps = coord.GetSystem<PhysicsSystem>();
+                    if (ps) {
+                        ps->SetGravity(act.gravity);
+                        ps->SetDrag(act.drag);
+                        ps->SetFriction(act.friction);
                     }
-                    else if (act.componentName == "RigidBody" && coord.HasComponent<RigidBody>(act.entity))
-                    {
-                        RigidBodySnapshot undoSnap{ act.entity, coord.GetComponent<RigidBody>(act.entity) };
-                        if (undoStack.size() >= maxSteps) undoStack.pop_front();
-                        undoStack.push_back(undoSnap);
+                }
+                else if constexpr (std::is_same_v<T, EntityCreateSnapshot>)
+                {
+					// Capture prefab for undo
+                    std::string prefabName = factory.GetEntityPrefabName(act.entity);
+                    Transform   transform{};
+                    if (coord.HasComponent<Transform>(act.entity))
+                        transform = coord.GetComponent<Transform>(act.entity);
 
-                        coord.RemoveComponent<RigidBody>(act.entity);
-                    }
-                    else if (act.componentName == "Collider" && coord.HasComponent<Collider>(act.entity))
-					{
-						ColliderSnapshot undoSnap{ act.entity, coord.GetComponent<Collider>(act.entity) };
-						if (undoStack.size() >= maxSteps) undoStack.pop_front();
-						undoStack.push_back(undoSnap);
+                    std::optional<Collider> snapCollider;
+                    if (coord.HasComponent<Collider>(act.entity))
+                        snapCollider = coord.GetComponent<Collider>(act.entity);
 
-                        coord.RemoveComponent<Collider>(act.entity);
-                    }
-                    else if (act.componentName == "Renderable" && coord.HasComponent<Renderable>(act.entity))
-                    {
-                        RenderableSnapshot undoSnap{ act.entity, coord.GetComponent<Renderable>(act.entity) };
-                        if (undoStack.size() >= maxSteps) undoStack.pop_front();
-                        undoStack.push_back(undoSnap);
+                    factory.RemoveEntity(act.entity);
 
-                        coord.RemoveComponent<Renderable>(act.entity);
-                    }
-                    else if (act.componentName == "Scripting" && coord.HasComponent<Script>(act.entity))
-                    {
-                        coord.RemoveComponent<Script>(act.entity);
-                    }
-                    else if (act.componentName == "Animator" && coord.HasComponent<Animator>(act.entity))
-                    {
-                        coord.RemoveComponent<Animator>(act.entity);
-                    }
-                    else if (act.componentName == "Font" && coord.HasComponent<Font>(act.entity))
-                    {
-                        FontSnapshot undoSnap{ act.entity, coord.GetComponent<Font>(act.entity) };
-                        if (undoStack.size() >= maxSteps) undoStack.pop_front();
-                        undoStack.push_back(undoSnap);
+					// Undo stack for entity deletion
+                    PushToStack(undoStack, EntityDeleteSnapshot{ act.entity, prefabName, transform, snapCollider });
+                }
+                else if constexpr (std::is_same_v<T, EntityDeleteSnapshot>)
+                {
+					// Create entity and capture new ID
+                    Entity newEntity = act.collider
+                        ? factory.CreateCollider(*act.collider, act.transform)
+                        : factory.Create(act.prefabName, act.transform);
 
-                        coord.RemoveComponent<Font>(act.entity);
+                    RemapEntityId(act.entity, newEntity);
+
+					// Undo stack for entity creation
+                    PushToStack(undoStack, EntityCreateSnapshot{ newEntity });
+                }
+                else if constexpr (std::is_same_v<T, CamTriggerCreateSnapshot>)
+                {
+                    // Undo a CamTrigger Create
+                    auto sceneManager = coord.GetSystem<NightSnack::Scene::SceneManager>();
+                    if (!sceneManager) return;
+
+                    Vec3 pos{};
+                    Vec2 scale{};
+                    json bounds{};
+
+                    if (coord.HasComponent<Transform>(act.entity))
+                    {
+                        auto& t = coord.GetComponent<Transform>(act.entity);
+                        pos = t.pos;
+                        scale = Vec2{ t.scale.x, t.scale.y };
                     }
-                    else if (act.componentName == "ButtonInfo" && coord.HasComponent<ButtonInfo>(act.entity))
+                    for (auto& [e, b] : sceneManager->GetCameraKeyframes())
                     {
-                        ButtonSnapshot undoSnap{ act.entity, coord.GetComponent<ButtonInfo>(act.entity) };
-                        if (undoStack.size() >= maxSteps) undoStack.pop_front();
-                        undoStack.push_back(undoSnap);
+                        if (e == act.entity) { bounds = b; break; }
+                    }
+                    
+                    sceneManager->DeleteCamTrigger(act.entity);
+                    PushToStack(undoStack, CamTriggerDeleteSnapshot{ act.entity, pos, scale, bounds });
+                }
+                else if constexpr (std::is_same_v<T, CamTriggerDeleteSnapshot>)
+                {
+                    // Undo a CamTrigger Delete
+                    auto sceneManager = coord.GetSystem<NightSnack::Scene::SceneManager>();
+                    if (!sceneManager) return;
 
-                        coord.RemoveComponent<ButtonInfo>(act.entity);
-					}
-                    else if (act.componentName == "Audio" && coord.HasComponent<Audio>(act.entity))
+                    sceneManager->CreateCamTrigger(act.pos, act.scale, act.bounds);
+                    auto keyframes = sceneManager->GetCameraKeyframes();
+
+                    if (!keyframes.empty())
                     {
-                        AudioSnapshot undoSnap{ act.entity, coord.GetComponent<Audio>(act.entity) };
-                        if (undoStack.size() >= maxSteps) undoStack.pop_front();
-                        undoStack.push_back(undoSnap);
-
-                        coord.RemoveComponent<Audio>(act.entity);
+                        Entity newEntity = keyframes.back().first;
+                        RemapEntityId(act.entity, newEntity);
+                        PushToStack(undoStack, CamTriggerCreateSnapshot{ newEntity });
                     }
                 }
             }, action);
-
-            // Pushed to undoStack so it can be undone again
-            if (undoStack.size() >= maxSteps) undoStack.pop_front();
-            undoStack.push_back(action);
         }
 
         void RemapEntityId(Entity oldId, Entity newId)
@@ -649,17 +376,11 @@ namespace NightSnack {
             {
                 std::visit([&](auto&& act) {
                     using T = std::decay_t<decltype(act)>;
-                    if constexpr (std::is_same_v<T, TransformSnapshot>)
+                    if constexpr (std::is_same_v<T, TransformSnapshot> ||
+                        std::is_same_v<T, EntityCreateSnapshot>        ||
+                        std::is_same_v<T, EntityDeleteSnapshot>)
                     {
-                        if (act.entity == oldId) { act.entity = newId; }
-                    }
-                    else if constexpr (std::is_same_v<T, EntityCreateSnapshot>)
-                    {
-                        if (act.entity == oldId) { act.entity = newId; }
-                    }
-                    else if constexpr (std::is_same_v<T, EntityDeleteSnapshot>)
-                    {
-                        if (act.entity == oldId) { act.entity = newId; }
+                        if (act.entity == oldId) act.entity = newId;
                     }
                     }, action);
             }
@@ -675,6 +396,79 @@ namespace NightSnack {
         UndoSystem(const UndoSystem&) = delete;
         
         UndoSystem& operator=(const UndoSystem&) = delete;
+
+		// Helper trait to identify component snapshots
+        template<typename T>
+        struct IsComponentSnapshot : std::false_type {};
+
+        template<typename TComp>
+        struct IsComponentSnapshot<ComponentSnapshot<TComp>> : std::true_type
+        {
+            using ComponentType = TComp;
+        };
+
+		// Push action onto stack with max size limit
+        void PushToStack(std::deque<UndoAction>& stack, UndoAction action)
+        {
+            if (stack.size() >= maxSteps) stack.pop_front();
+            stack.push_back(std::move(action));
+        }
+
+		// Handle undo for component addition by removing the component and 
+        // saving its state if it existed
+        void UndoComponentAdd(Coordinator& coord, Entity entity,
+            const std::string& name, std::deque<UndoAction>& targetStack)
+        {
+            auto removeAndSave = [&]<typename TComp>(auto getField)
+            {
+                if (!coord.HasComponent<TComp>(entity)) return;
+
+                ComponentRemoveSnapshot snap{ entity, name };
+                getField(snap) = coord.GetComponent<TComp>(entity);
+                PushToStack(targetStack, snap);
+
+                coord.RemoveComponent<TComp>(entity);
+            };
+
+            if (name == "PlayerController")       removeAndSave.template operator() <PlayerController> ([](auto& s) -> auto& { return s.playercontroller; });
+            else if (name == "RigidBody")         removeAndSave.template operator() <RigidBody> ([](auto& s) -> auto& { return s.rigidbody; });
+            else if (name == "Collider")          removeAndSave.template operator() <Collider> ([](auto& s) -> auto& { return s.collider; });
+            else if (name == "Renderable")        removeAndSave.template operator() <Renderable> ([](auto& s) -> auto& { return s.renderer; });
+            else if (name == "Font")              removeAndSave.template operator() <Font> ([](auto& s) -> auto& { return s.font; });
+            else if (name == "Button")            removeAndSave.template operator() <ButtonInfo> ([](auto& s) -> auto& { return s.button; });
+            else if (name == "Audio")             removeAndSave.template operator() <Audio> ([](auto& s) -> auto& { return s.audio; });
+            else if (name == "Character")         removeAndSave.template operator() <Character> ([](auto& s) -> auto& { return s.character; });
+            else if (name == "Collectible")       removeAndSave.template operator() <Collectible> ([](auto& s) -> auto& { return s.collectible; });
+            else if (name == "Scripting")   { if (coord.HasComponent<Script>(entity)) { coord.RemoveComponent<Script>(entity); PushToStack(targetStack, ComponentAddSnapshot{ entity, name }); } }
+            else if (name == "Animator")    { if (coord.HasComponent<Animator>(entity)) { coord.RemoveComponent<Animator>(entity); PushToStack(targetStack, ComponentAddSnapshot{ entity, name }); } }
+        }
+
+		// Handle undo for component removal by re-adding the component with 
+        // its previous state if it existed, and saving current state if it exists
+        void UndoComponentRemove(Coordinator& coord, const ComponentRemoveSnapshot& act,
+            std::deque<UndoAction>& targetStack)
+        {
+            auto addAndPush = [&]<typename TComp>(const std::optional<TComp>&saved)
+            {
+                if (!saved) return;
+                coord.AddComponent<TComp>(act.entity, *saved);
+                PushToStack(targetStack, ComponentAddSnapshot{ act.entity, act.componentName });
+            };
+
+            const auto& n = act.componentName;
+            if (n == "PlayerController")       addAndPush.template operator() <PlayerController> (act.playercontroller);
+            else if (n == "RigidBody")         addAndPush.template operator() <RigidBody> (act.rigidbody);
+            else if (n == "Collider")          addAndPush.template operator() <Collider> (act.collider);
+            else if (n == "Renderer")          addAndPush.template operator() <Renderable> (act.renderer);
+            else if (n == "Font")              addAndPush.template operator() <Font> (act.font);
+            else if (n == "Button")            addAndPush.template operator() <ButtonInfo> (act.button);
+            else if (n == "Audio")             addAndPush.template operator() <Audio> (act.audio);
+            else if (n == "Character")         addAndPush.template operator() <Character> (act.character);
+            else if (n == "Collectible")       addAndPush.template operator() <Collectible> (act.collectible);
+            else if (n == "Scripting" && act.script) { coord.AddComponent<Script>(act.entity, *act.script);   PushToStack(targetStack, ComponentAddSnapshot{ act.entity, n }); }
+            else if (n == "Animator" && act.animator) { coord.AddComponent<Animator>(act.entity, *act.animator); PushToStack(targetStack, ComponentAddSnapshot{ act.entity, n }); }
+        }
+
     };
 
 }	// NightSnack

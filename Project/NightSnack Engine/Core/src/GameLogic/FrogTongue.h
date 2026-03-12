@@ -13,6 +13,7 @@
  ******************************************************************************/
 #pragma once
 #include <MathLibrary/DistanceJoint2D.h>
+#include <Systems/ParticleSystem.h>
 
 namespace NightSnack {
 	class FrogTongue
@@ -21,6 +22,10 @@ namespace NightSnack {
 		Entity m_owner = INVALID_ENTITY;
 		Entity m_anchor = INVALID_ENTITY;
 		Entity m_tongue = INVALID_ENTITY;
+		Entity m_indicator = INVALID_ENTITY;
+
+		EmitterID m_indicatorEmitter{};
+		bool m_emitterActive = false;
 
 		DistanceJoint2D m_distanceJoint;
 
@@ -67,6 +72,13 @@ namespace NightSnack {
 							this->ExtendRetractTongue(coord, true);
 						}
 						break;
+					case InputEvent::InputAction::PlayerJumpAbility:
+						if (event.pressed == InputEvent::InputActionState::Released)
+						{
+
+							this->End(coord);
+						}
+						break;
 					}
 					
 
@@ -88,12 +100,20 @@ namespace NightSnack {
 		//Extends the tongue
 		void ExtendRetractTongue(Coordinator& coord, bool isExtend);
 
+		// Updates the owner position to match the tongue anchor poin
 		void UpdateOwner(Entity e);
+
+		// Updates the indicator position and visibility
+		void UpdateIndicator(Coordinator& coord);
 
 	private:
 
 		void UpdateTonguePos(Coordinator& coord);
 		float DistanceToAnchor(Vec3 ownerPos, Vec3 anchorPos);
+
+		// Spawn and Destroy methods for indicator
+		void SpawnIndicator(Coordinator& coord);
+		void DestroyIndicator(Coordinator& coord);
 
 	};
 }

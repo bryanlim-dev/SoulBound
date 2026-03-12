@@ -393,13 +393,22 @@ namespace NightSnack {
 		if (ImGui::BeginMenuBar())
 		{
 			static bool showLevelLoadErrorPopup = false;
+			static bool showNewLevelConfirm = false;
 
 			if (ImGui::BeginMenu("File"))
 			{
 				auto factory = m_coord.GetSystem<EntityFactory>();
+				static char levelName[128] = "NewLevel";
+
+				// Create New Level
+				if (ImGui::MenuItem("Create New Level"))
+				{
+					showNewLevelConfirm = true;
+				}
+
+				ImGui::Separator();
 
 				// Save current level
-				static char levelName[128] = "NewLevel";
 				ImGui::InputText("Level Name", levelName, IM_ARRAYSIZE(levelName));
 				ImGui::SameLine();
 				static bool overwrite = true;
@@ -479,22 +488,6 @@ namespace NightSnack {
 					ImGui::EndPopup();
 				}
 
-				ImGui::Separator();
-				if (ImGui::MenuItem("Open Default Level")) {
-					auto scene = m_coord.GetSystem<Scene::SceneManager>();
-					if (scene)
-					{
-						DisableFPSDisplay();
-
-						// Loads Default level
-						m_scenePanel->DestroyEditorCamera();
-						scene->LoadLevel("DefaultLevel");
-						m_scenePanel->CreateEditorCamera();
-
-						// Clears Undo stack
-						NightSnack::UndoSystem::Instance().Clear();
-					}
-				}
 				ImGui::EndMenu();
 			}
 			if (ImGui::BeginMenu("View"))
@@ -546,7 +539,7 @@ namespace NightSnack {
 					{
 						//m_isPlaying = false;
 						//SetSimulationPaused(true);
-						m_coord.Pause();
+						m_coord.TogglePause();
 					}
 				}
 				else
@@ -575,6 +568,45 @@ namespace NightSnack {
 
 				ImGui::EndMenu();
 			}
+
+			// If New Level is clicked
+			if (showNewLevelConfirm)
+			{
+				ImGui::OpenPopup("Confirm New Level");
+				showNewLevelConfirm = false;
+			}
+			if (ImGui::BeginPopupModal("Confirm New Level", NULL, ImGuiWindowFlags_AlwaysAutoResize))
+			{
+				ImGui::Text("This will clear the current scene.");
+				ImGui::Text("Any unsaved changes will be lost.");
+				ImGui::Separator();
+
+				if (ImGui::Button("OK", ImVec2(120, 0)))
+				{
+					auto scene = m_coord.GetSystem<Scene::SceneManager>();
+					if (scene)
+					{
+						DisableFPSDisplay();
+						m_scenePanel->DestroyEditorCamera();
+						scene->NewLevel();
+						m_scenePanel->CreateEditorCamera();
+						NightSnack::UndoSystem::Instance().Clear();
+
+						// Reset the level name field so user doesn't accidentally
+						// overwrite an existing level on first Save
+						// (levelName is static inside BeginMenu so grab it via pointer trick,
+						//  or just declare it static at this outer scope too)
+					}
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Cancel", ImVec2(120, 0)))
+				{
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::EndPopup();
+			}
+
 			ImGui::EndMenuBar();
 		}
 	}

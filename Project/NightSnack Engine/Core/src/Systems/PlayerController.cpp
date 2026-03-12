@@ -2,7 +2,7 @@
  * File:        PlayerController.cpp
  * Project:     NightSnack
  * Author(s):   Chewn Thing Kwan (Primary, 90%)
- *              Bryan Lim Jun Jie (Secondary, 10%)
+ *              Bryan Lim Jun Jie (Secondary, 10%) -  Added respective audio
  *              Clement Ang Yang Ying (Secondary, 10%) - Added coyote time, remapped controls and possession behaviour
  *
  * Description:
@@ -25,7 +25,9 @@ namespace NightSnack {
             //if (target == INVALID_ENTITY) return;
             if (!c.HasComponent<RigidBody>(target)) return;
 
+
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
+            c.ModifyComponent<Renderable>(target).materialName = "PlayerAbility_4_1";
 
             // only glide if not grounded
             if (!m_flags.isGrounded) 
@@ -35,7 +37,7 @@ namespace NightSnack {
                 // play glide sound only once when starting to glide
                 if (!m_flags.isGliding) 
                 {
-                    c.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerGlide", 0.05f);
+                    c.GetSystem<AudioSystem>()->PlayRandomVariant("ghostGlide", 3, 0.1f);
                     m_flags.isGliding = true;
                 }
             }
@@ -52,7 +54,7 @@ namespace NightSnack {
             Vec2& vel = c.ModifyComponent<RigidBody>(target).vel;
             vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
 
-            c.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerJump", 0.4f);
+            c.GetSystem<AudioSystem>()->PlayRandomVariant("Wings-Reverb", 4, 0.4f);
 
 
             // Start the emitter to spawn particles
@@ -92,7 +94,7 @@ namespace NightSnack {
                 //Do distance check to nearest grabbling spot/enemy
                 if (tongue.Start(c))
                 {
-                    c.GetSystem<AudioSystem>()->PlayRandomVariant("frogTongue", 7);
+                    c.GetSystem<AudioSystem>()->PlayRandomVariant("frogTongue", 7, 0.75f);
                     //Valid target
                     m_flags.grappling = true;
 
@@ -148,7 +150,7 @@ namespace NightSnack {
     void PlayerControllerSystem::RespawnPlayer()
     {
 
-        m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("PlayerHurt", 4);
+        m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("PlayerHurt", 4, 0.25f);
 
         if (m_prevCheckpoint == INVALID_ENTITY)
             return;
@@ -166,7 +168,21 @@ namespace NightSnack {
         m_coord.ModifyComponent<Transform>(m_player).pos = m_coord.GetComponent<Transform>(m_prevCheckpoint).pos;
 
 
+        bool isGliding = m_flags.isGliding;
+        bool isUsingGlide = m_flags.useAbility && m_flags.isGliding;
+        bool movingLeft = m_flags.movingLeft;
+        bool movingRight = m_flags.movingRight;
+
         ResetFlags();
+
+        //Preservse these flags
+        m_flags.isGliding   = isGliding;
+        m_flags.useAbility = isUsingGlide; //Only preserve if gldiing, reset others
+
+
+        m_flags.movingLeft  = movingLeft;
+        m_flags.movingRight = movingRight;
+
 
         //Reset velocity
         if (m_coord.HasComponent<RigidBody>(m_player))
@@ -209,11 +225,8 @@ namespace NightSnack {
         else
         {
             if (event.pressed == InputEvent::InputActionState::Pressed ||
-                event.pressed == InputEvent::InputActionState::Repeat) {
+                (event.pressed == InputEvent::InputActionState::Repeat && curr_ability == "Glide")) {
                 m_flags.useAbility = true;
-            }
-            else {
-                m_flags.useAbility = false;
             }
         }
     }
@@ -230,7 +243,7 @@ namespace NightSnack {
                 if (!et.isActive) { continue; }
 
                 if (et.name == "Frog" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                    r.materialName = "FrogIdle_1_1"; // depends on the texture name
+                    r.materialName = "FrogIdle_4_1"; // depends on the texture name
                     curr_ability = "Grapple";
                     //m_flags.tryPossess = false;
                     m_flags.isPossessing = true;
@@ -247,7 +260,7 @@ namespace NightSnack {
                     break;
                 }
                 else if (et.name == "Bouncer" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                    r.materialName = "FrogIdle_1_1"; // depends on the texture name
+                    r.materialName = "SnekIdle_4_1"; // depends on the texture name
                     curr_ability = "Bounce";
                     //m_flags.tryPossess = false;
                     m_flags.isPossessing = true;
@@ -283,7 +296,9 @@ namespace NightSnack {
             {
                 m_bounce.End(m_coord);
                 m_flags.bouncing = false;
+                m_flags.disableMovement = false;
             }
+
         };//End tryUnpossess lamda function
 
 
@@ -366,7 +381,7 @@ namespace NightSnack {
         
         trans.pos = pos;
 
-        Collider& col = m_coord.ModifyComponent<Collider>(m_closeGroundedHitBox);
+        //Collider& col = m_coord.ModifyComponent<Collider>(m_closeGroundedHitBox);
         //std::cout << "HitBox Colliding Count: " << col.collidedEntities.size() << std::endl;
     }   
 
@@ -572,7 +587,14 @@ namespace NightSnack {
             vel.y = pcont.jumpSpeed;
             t.pos.y += 0.5f;
             m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
-            m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerJump", 0.4f);
+
+            // Play different jump sound based on current ability/form
+            if (curr_ability == "DoubleJump") // EyeMove form
+                m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("Wings-Reverb", 4, 0.4f);
+            else if (curr_ability == "Grapple") // Frog form
+                m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("frogJump", 0.4f);
+            else // Default spirit form
+                m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("ghostJump", 3, 0.4f);
 
             //m_storedJump = false;
             m_flags.justJumped = true;

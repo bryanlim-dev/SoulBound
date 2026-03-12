@@ -48,19 +48,19 @@ namespace NightSnack {
 						t.isActive = true;
 
 						// Create the particle emitters again here to spawn 
-						if (c.type == COLLECTIBLE_TYPE::DOUBLE_JUMP) {
-							// Double jump collectibles will spawn orbiting particles
-							m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
-								"Particle-OrbitGlow",      // Prefab name
-								t.pos,                         // Spawn position (center)
-								{},							// End position (unused)
-								{},                       // Spawn radius (override by orbit radius in json)
-								30,                          // Max particles per cycle
-								5,                          // Spawn delay (steps between particles)
-								true,                     // Should loop
-								e
-							);
-						}
+						//if (c.type == COLLECTIBLE_TYPE::DOUBLE_JUMP) {
+						//	// Double jump collectibles will spawn orbiting particles
+						//	m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
+						//		"Particle-OrbitGlow",      // Prefab name
+						//		t.pos,                         // Spawn position (center)
+						//		{},							// End position (unused)
+						//		{},                       // Spawn radius (override by orbit radius in json)
+						//		30,                          // Max particles per cycle
+						//		5,                          // Spawn delay (steps between particles)
+						//		true,                     // Should loop
+						//		e
+						//	);
+						//}
 					}
 				}
 				//std::cout << "dj collect not active!!\n";
@@ -70,7 +70,7 @@ namespace NightSnack {
 			// Currently active collectibles
 			if (m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(m_player, e)) {
 
-				m_coord.GetSystem<AudioSystem>()->PlaySFX("playerCollect");
+				m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerCollect", 0.2f);
 				// Let the player be able to jump one more time
 				if (m_coord.GetComponent<Collectible>(e).type == COLLECTIBLE_TYPE::DOUBLE_JUMP) {
 					m_coord.GetSystem<PlayerControllerSystem>()->EnableDoubleJumpFlag();
@@ -90,32 +90,32 @@ namespace NightSnack {
 			auto& t = m_coord.ModifyComponent<Transform>(e);
 			auto& c = m_coord.ModifyComponent<Collectible>(e);
 
-			if (!t.isActive) { continue; }
+			if (!t.isActive || !m_coord.EntityIsAlive(e)) { continue; }
 
 			if (c.type == COLLECTIBLE_TYPE::DOUBLE_JUMP) {
 				// Double jump collectibles will spawn orbiting particles
-				m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
-					"Particle-OrbitGlow",      // Prefab name
-					t.pos,                         // Spawn position (center)
-					{},							// End position (unused)
-					{},                       // Spawn radius (override by orbit radius in json)
-					30,                          // Max particles per cycle
-					5,                          // Spawn delay (steps between particles)
-					true,                     // Should loop
-					e
-				);
+				//m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
+				//	"Particle-OrbitGlow",      // Prefab name
+				//	t.pos,                         // Spawn position (center)
+				//	{},							// End position (unused)
+				//	{},                       // Spawn radius (override by orbit radius in json)
+				//	30,                          // Max particles per cycle
+				//	5,                          // Spawn delay (steps between particles)
+				//	true,                     // Should loop
+				//	e
+				//);
 			} else if (c.type == COLLECTIBLE_TYPE::KEY) {
 				// Key collectibles will spawn rising glow particles
-				m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
-					"Particle-KeyGlow",      // Prefab name
-					t.pos,                         // Spawn position (center)
-					{},							// End position (unused)
-					{},                       // Spawn radius (override by orbit radius in json)
-					20,                          // Max particles per cycle
-					15,                          // Spawn delay (steps between particles)
-					true,                     // Should loop
-					e
-				);
+				//m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
+				//	"Particle-KeyGlow",      // Prefab name
+				//	t.pos,                         // Spawn position (center)
+				//	{},							// End position (unused)
+				//	{},                       // Spawn radius (override by orbit radius in json)
+				//	20,                          // Max particles per cycle
+				//	15,                          // Spawn delay (steps between particles)
+				//	true,                     // Should loop
+				//	e
+				//);
 			}
 		}
 	}

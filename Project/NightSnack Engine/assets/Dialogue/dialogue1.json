@@ -1,0 +1,37 @@
+{
+    "lines": [
+        {
+            "ID": "player_01",
+            "charDelay": 0.03500000014901161,
+            "nextID": "line_1",
+            "speaker": "RainCharm",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": "RainCharm enters a fragile limestone cavern, unsure of how long they have been wandering in the dark. Every step feels careful and uncertain, as if the cave could collapse beneath them at any moment."
+        },
+        {
+            "ID": "line_1",
+            "charDelay": 0.05000000074505806,
+            "nextID": "line_2",
+            "speaker": "RainCharm",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": "The silence around them is heavy, but what unsettles RainCharm more is the strange feeling that this place is not entirely unfamiliar. "
+        },
+        {
+            "ID": "line_2",
+            "charDelay": 0.05000000074505806,
+            "nextID": "line_3",
+            "speaker": "RainCharm",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": "When the blue flames begin to appear, they do more than reveal a path forward - they stir something inside RainCharm, like a distant memory trying to surface."
+        },
+        {
+            "ID": "line_3",
+            "charDelay": 0.05000000074505806,
+            "nextID": "",
+            "speaker": "RainCharm",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": "For the first time, the journey stops feeling like aimless survival and starts feeling like a call toward something waiting ahead...\n"
+        }
+    ],
+    "startID": "player_01"
+}

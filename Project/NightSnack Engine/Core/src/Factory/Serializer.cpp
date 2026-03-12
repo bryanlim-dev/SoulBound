@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        Serializer.cpp
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan (Primary, 60%)
+ *				Bryan Lim Jun Jie (Secondary, 15%) - Audio and button info components
+ *				Goh Bei Lai (Secondary, 25%) - Font, Particle and Collectible components
+ *
+ * Description:
+ * This file defines functions to serialize and deserialize components to and from json format.
+ * Each component has a to_json and from_json function that converts the component to json and vice versa.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 
 #include "Serializer.h"
 #include "Factory/EntityFactory.h"
@@ -616,6 +630,7 @@ namespace NightSnack {
 		j = {
 			{ "type", typeStr },
 			{ "currTime", c.currTime },
+			{ "cameraPanOrder", c.cameraPanOrder },
 			{ "respawnTimeSteps", c.respawnTimeSteps },
 			{ "willRespawn", c.willRespawn }
 		};
@@ -637,6 +652,8 @@ namespace NightSnack {
 			// Timers
 			c.currTime = j.value("currTime", 0);
 			c.respawnTimeSteps = j.value("respawnTimeSteps", 0);
+
+			c.cameraPanOrder = j.value("cameraPanOrder", 0);
 
 			// Respawn flag
 			c.willRespawn = j.value("willRespawn", false);
@@ -696,9 +713,11 @@ namespace NightSnack {
 		if (ButtonAction::NOACTION == b.action) j["action"] = std::string{ "NoAction"};
 		if (ButtonAction::EXIT == b.action) j["action"] = std::string{ "ExitGame" };
 		if (ButtonAction::TOGGLEFULLSCREEN == b.action) j["action"] = std::string{ "ToggleFullscreen" };
-		if (ButtonAction::RESTARTLEVEL == b.action) j["action"] = std::string{ "RestartLevel" };
-		if (ButtonAction::VOLUMESLIDER == b.action) j["action"] = std::string{ "VolumeSlider" };
 
+		if (ButtonAction::VOLUMESLIDER == b.action) j["action"] = std::string{ "VolumeSlider" };
+		if (ButtonAction::SFXSLIDER == b.action) j["action"] = std::string{ "SFXSlider" };
+		if (ButtonAction::BGMSLIDER == b.action) j["action"] = std::string{ "BGMSlider" };
+		if (ButtonAction::RESTARTLEVEL == b.action) j["action"] = std::string{ "RestartLevel" };
 
 		if (ButtonType::SLIDER == b.type) j["type"] = std::string{ "Slider" };
 		if (ButtonType::CLICKER == b.type) j["type"] = std::string{ "Clicker" };
@@ -727,6 +746,9 @@ namespace NightSnack {
 			if (j["action"] == "ToggleFullscreen") { b.action = ButtonAction::TOGGLEFULLSCREEN; }
 			if (j["action"] == "RestartLevel") { b.action = ButtonAction::RESTARTLEVEL; }
 			if (j["action"] == "VolumeSlider") { b.action = ButtonAction::VOLUMESLIDER; }
+			if (j["action"] == "SFXSlider") b.action = ButtonAction::SFXSLIDER;
+			if (j["action"] == "BGMSlider") b.action = ButtonAction::BGMSLIDER;
+
 
 			// Button type
 			if (j["type"] == "Slider") { b.type = ButtonType::SLIDER; }

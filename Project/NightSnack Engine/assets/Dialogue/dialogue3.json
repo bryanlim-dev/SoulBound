@@ -1,0 +1,37 @@
+{
+    "lines": [
+        {
+            "ID": "line_0",
+            "charDelay": 0.05000000074505806,
+            "nextID": "line_1",
+            "speaker": "RainCharm",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": "RainCharm stands before the gate at last, with the darkness around them beginning to loosen its grip. The air feels different here, but heavier with meaning."
+        },
+        {
+            "ID": "line_2",
+            "charDelay": 0.05000000074505806,
+            "nextID": "line_3",
+            "speaker": "RainCharm",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": "RainCharm senses that stepping through may bring freedom, but also truth: about why the flames guided them, why this path felt familiar, and why they were able to endure what should have broken them."
+        },
+        {
+            "ID": "line_3",
+            "charDelay": 0.05000000074505806,
+            "nextID": "",
+            "speaker": "RainCharm",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": "In this final moment, RainCharm is no longer just someone trying to survive the dark. They have become someone ready to face what lies beyond it, even if that truth changes them forever."
+        },
+        {
+            "ID": "line_1",
+            "charDelay": 0.05000000074505806,
+            "nextID": "line_2",
+            "speaker": "RainCharm",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": " After everything they have crossed, the gate no longer feels like just an exit, but a turning point."
+        }
+    ],
+    "startID": "line_0"
+}

@@ -1,5 +1,7 @@
 {
-    "BGM": "GameLevelMusic",
+    "BGM": [
+        "GameLevelMusic"
+    ],
     "Entities": [
         {
             "Prefab": "Player",
@@ -7,9 +9,9 @@
                 "Layer": "GameLayer",
                 "Name": "Player",
                 "Position": {
-                    "x": -650.0,
-                    "y": 200.0,
-                    "z": 0.0
+                    "x": -1800.0,
+                    "y": 50.0,
+                    "z": 5.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -40,7 +42,7 @@
                                     "radius": 0.0,
                                     "shape": "AABB",
                                     "type": "Solid",
-                                    "width": 200.0
+                                    "width": 1500.0
                                 },
                                 "Renderable": {
                                     "isWireframe": false,
@@ -60,13 +62,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "ColliderLeft",
                                 "Position": {
-                                    "x": -600.0,
+                                    "x": -1250.0,
                                     "y": -275.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 200.0,
+                                    "x": 1500.0,
                                     "y": 550.0
                                 },
                                 "UIBasePosition": {
@@ -109,8 +111,8 @@
                                 "Layer": "GameLayer",
                                 "Name": "ColliderLeftWall",
                                 "Position": {
-                                    "x": -750.0,
-                                    "y": 0.0,
+                                    "x": -2050.0,
+                                    "y": -12.5,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -438,13 +440,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "GroundLeftSide",
                                 "Position": {
-                                    "x": -600.0,
-                                    "y": -275.0,
+                                    "x": -1250.0,
+                                    "y": -287.5,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 200.0,
+                                    "x": 1500.0,
                                     "y": 550.0
                                 },
                                 "UIBasePosition": {
@@ -574,13 +576,13 @@
                                 "Layer": "GameLayer",
                                 "Name": "PlatfromSpriteLeftBiggest",
                                 "Position": {
-                                    "x": -600.0,
+                                    "x": -1250.0,
                                     "y": -50.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
-                                    "x": 200.0,
+                                    "x": 1500.0,
                                     "y": 100.0
                                 },
                                 "UIBasePosition": {
@@ -676,8 +678,8 @@
                                 "Layer": "GameLayer",
                                 "Name": "GroundLeftWall",
                                 "Position": {
-                                    "x": -750.0,
-                                    "y": 0.0,
+                                    "x": -2050.0,
+                                    "y": -12.5,
                                     "z": 10.0
                                 },
                                 "Rotation": 0.0,
@@ -769,7 +771,7 @@
                         },
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "FrogIdle_1_1",
+                            "materialName": "StatueFrog",
                             "meshName": "square"
                         },
                         "RigidBody": {
@@ -786,7 +788,7 @@
                         "Name": "Frog",
                         "Position": {
                             "x": 950.0,
-                            "y": 137.5,
+                            "y": 146.57522583007813,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
@@ -1633,7 +1635,7 @@
                         },
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "FrogIdle_1_1",
+                            "materialName": "StatueFrog",
                             "meshName": "square"
                         },
                         "RigidBody": {
@@ -1650,7 +1652,7 @@
                         "Name": "Frog",
                         "Position": {
                             "x": 4650.0,
-                            "y": -262.5,
+                            "y": -254.72999572753906,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
@@ -2085,7 +2087,7 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 400.0,
+                                    "height": 500.0,
                                     "isStatic": true,
                                     "radius": 201.19638061523438,
                                     "shape": "AABB",
@@ -2111,13 +2113,13 @@
                                 "Name": "CollidarPillar1",
                                 "Position": {
                                     "x": 5800.0,
-                                    "y": 900.0,
+                                    "y": 950.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 200.0,
-                                    "y": 400.0
+                                    "y": 500.0
                                 },
                                 "UIBasePosition": {
                                     "x": 0.0,
@@ -2183,7 +2185,7 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 300.0,
+                                    "height": 400.0,
                                     "isStatic": true,
                                     "radius": 0.0,
                                     "shape": "AABB",
@@ -2209,13 +2211,13 @@
                                 "Name": "CollidarPillar2",
                                 "Position": {
                                     "x": 6600.0,
-                                    "y": 850.0,
+                                    "y": 900.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 200.0,
-                                    "y": 300.0
+                                    "y": 400.0
                                 },
                                 "UIBasePosition": {
                                     "x": 0.0,
@@ -3165,13 +3167,13 @@
                                 "Name": "GroundPillar1",
                                 "Position": {
                                     "x": 5800.0,
-                                    "y": 900.0,
+                                    "y": 950.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 200.0,
-                                    "y": 400.0
+                                    "y": 500.0
                                 },
                                 "UIBasePosition": {
                                     "x": 100.0,
@@ -3199,13 +3201,13 @@
                                 "Name": "GroundPillar2",
                                 "Position": {
                                     "x": 6600.0,
-                                    "y": 850.0,
+                                    "y": 900.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 200.0,
-                                    "y": 300.0
+                                    "y": 400.0
                                 },
                                 "UIBasePosition": {
                                     "x": 100.0,
@@ -3267,7 +3269,7 @@
                                 "Name": "SpritePillar1",
                                 "Position": {
                                     "x": 5800.0,
-                                    "y": 1050.0,
+                                    "y": 1150.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -3301,7 +3303,7 @@
                                 "Name": "SpritePillar2",
                                 "Position": {
                                     "x": 6600.0,
-                                    "y": 950.0,
+                                    "y": 1050.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -3532,7 +3534,7 @@
                         },
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "FrogIdle_1_1",
+                            "materialName": "StatueFrog",
                             "meshName": "square"
                         },
                         "RigidBody": {
@@ -3549,7 +3551,7 @@
                         "Name": "Frog",
                         "Position": {
                             "x": 5050.0,
-                            "y": 537.5,
+                            "y": 547.8599853515625,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
@@ -4540,6 +4542,933 @@
                 }
             },
             "isPrefab": false
+        },
+        {
+            "Children": [
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "Spacebar1",
+                            "meshName": "square"
+                        },
+                        "Script": {
+                            "name": [
+                                "WiggleScript"
+                            ]
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Background",
+                        "Name": "Button Jump",
+                        "Position": {
+                            "x": -100.0,
+                            "y": 287.5,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 382.0,
+                            "y": 75.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "AControl",
+                            "meshName": "square"
+                        },
+                        "Script": {
+                            "modifier": {
+                                "ScaleScript": [
+                                    {
+                                        "type": "float",
+                                        "value": 0.10000000149011612,
+                                        "varName": "scaleAmount"
+                                    }
+                                ]
+                            },
+                            "name": [
+                                "ScaleScript"
+                            ]
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Background",
+                        "Name": "Button Left",
+                        "Position": {
+                            "x": -1862.5,
+                            "y": 200.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 75.0,
+                            "y": 75.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "DControl",
+                            "meshName": "square"
+                        },
+                        "Script": {
+                            "modifier": {
+                                "ScaleScript": [
+                                    {
+                                        "type": "float",
+                                        "value": 0.10000000149011612,
+                                        "varName": "scaleAmount"
+                                    }
+                                ]
+                            },
+                            "name": [
+                                "ScaleScript"
+                            ]
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Background",
+                        "Name": "Button Right",
+                        "Position": {
+                            "x": -1737.5,
+                            "y": 200.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 75.0,
+                            "y": 75.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "JControl",
+                            "meshName": "square"
+                        },
+                        "Script": {
+                            "name": [
+                                "WiggleScript",
+                                "AbilityTextureChange"
+                            ]
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Background",
+                        "Name": "Button Possess",
+                        "Position": {
+                            "x": 950.0,
+                            "y": 250.0,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 75.0,
+                            "y": 75.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "Spacebar1",
+                            "meshName": "square"
+                        },
+                        "Script": {
+                            "modifier": {
+                                "AbilityTextureChange": [
+                                    {
+                                        "type": "bool",
+                                        "value": false,
+                                        "varName": "isDefaultTexture"
+                                    }
+                                ]
+                            },
+                            "name": [
+                                "WiggleScript",
+                                "AbilityTextureChange"
+                            ]
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Foreground",
+                        "Name": "Button Jump",
+                        "Position": {
+                            "x": 1300.0,
+                            "y": -112.5,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 382.0,
+                            "y": 75.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "JControl",
+                            "meshName": "square"
+                        },
+                        "Script": {
+                            "modifier": {
+                                "AbilityTextureChange": [
+                                    {
+                                        "type": "bool",
+                                        "value": false,
+                                        "varName": "isDefaultTexture"
+                                    }
+                                ]
+                            },
+                            "name": [
+                                "WiggleScript",
+                                "AbilityTextureChange"
+                            ]
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Background",
+                        "Name": "Button UnPossess",
+                        "Position": {
+                            "x": 2350.0,
+                            "y": 350.0,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 75.0,
+                            "y": 75.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "AControl",
+                            "meshName": "square"
+                        },
+                        "Script": {
+                            "modifier": {
+                                "AbilityTextureChange": [
+                                    {
+                                        "type": "bool",
+                                        "value": false,
+                                        "varName": "isDefaultTexture"
+                                    }
+                                ]
+                            },
+                            "name": [
+                                "WiggleScript",
+                                "AbilityTextureChange"
+                            ]
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Foreground",
+                        "Name": "Button Swing Left",
+                        "Position": {
+                            "x": 1237.5,
+                            "y": -212.5,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 75.0,
+                            "y": 75.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "DControl",
+                            "meshName": "square"
+                        },
+                        "Script": {
+                            "modifier": {
+                                "AbilityTextureChange": [
+                                    {
+                                        "type": "bool",
+                                        "value": false,
+                                        "varName": "isDefaultTexture"
+                                    }
+                                ]
+                            },
+                            "name": [
+                                "WiggleScript",
+                                "AbilityTextureChange"
+                            ]
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Foreground",
+                        "Name": "Button Swing Right",
+                        "Position": {
+                            "x": 1362.5,
+                            "y": -212.5,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 75.0,
+                            "y": 75.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "WControl",
+                            "meshName": "square"
+                        },
+                        "Script": {
+                            "modifier": {
+                                "AbilityTextureChange": [
+                                    {
+                                        "type": "bool",
+                                        "value": false,
+                                        "varName": "isDefaultTexture"
+                                    }
+                                ]
+                            },
+                            "name": [
+                                "WiggleScript",
+                                "AbilityTextureChange"
+                            ]
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Foreground",
+                        "Name": "Button Retract",
+                        "Position": {
+                            "x": 4750.0,
+                            "y": 75.0,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 75.0,
+                            "y": 75.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "SControl",
+                            "meshName": "square"
+                        },
+                        "Script": {
+                            "modifier": {
+                                "AbilityTextureChange": [
+                                    {
+                                        "type": "bool",
+                                        "value": false,
+                                        "varName": "isDefaultTexture"
+                                    }
+                                ]
+                            },
+                            "name": [
+                                "WiggleScript",
+                                "AbilityTextureChange"
+                            ]
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "Foreground",
+                        "Name": "Button Extend",
+                        "Position": {
+                            "x": 4850.0,
+                            "y": -12.5,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 75.0,
+                            "y": 75.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                }
+            ],
+            "Components": {
+                "modified": false
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "Tutorial Buttons",
+                "Position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 50.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Slash2",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "modifier": {
+                        "ScaleScript": [
+                            {
+                                "type": "float",
+                                "value": 0.10000000149011612,
+                                "varName": "scaleAmount"
+                            }
+                        ]
+                    },
+                    "name": [
+                        "ScaleScript"
+                    ]
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "/ Move",
+                "Position": {
+                    "x": -1800.0,
+                    "y": 200.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 75.0,
+                    "y": 75.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Slash2",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "modifier": {
+                        "AbilityTextureChange": [
+                            {
+                                "type": "bool",
+                                "value": false,
+                                "varName": "isDefaultTexture"
+                            }
+                        ]
+                    },
+                    "name": [
+                        "WiggleScript",
+                        "AbilityTextureChange"
+                    ]
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "/ Swing",
+                "Position": {
+                    "x": 1300.0,
+                    "y": -212.5,
+                    "z": 5.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 75.0,
+                    "y": 75.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "HoldNoFrame",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "modifier": {
+                        "AbilityTextureChange": [
+                            {
+                                "type": "bool",
+                                "value": false,
+                                "varName": "isDefaultTexture"
+                            }
+                        ]
+                    },
+                    "name": [
+                        "WiggleScript",
+                        "AbilityTextureChange"
+                    ]
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Hold Swing",
+                "Position": {
+                    "x": 1300.0,
+                    "y": -37.5,
+                    "z": 5.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 206.0,
+                    "y": 75.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "HoldNoFrame",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "modifier": {
+                        "AbilityTextureChange": [
+                            {
+                                "type": "string",
+                                "value": "Glide",
+                                "varName": "abilityNameToTrigger"
+                            },
+                            {
+                                "type": "bool",
+                                "value": false,
+                                "varName": "isDefaultTexture"
+                            }
+                        ],
+                        "ScaleScript": [
+                            {
+                                "type": "float",
+                                "value": 0.10000000149011612,
+                                "varName": "scaleAmount"
+                            }
+                        ]
+                    },
+                    "name": [
+                        "AbilityTextureChange",
+                        "ScaleScript"
+                    ]
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Hold Glide",
+                "Position": {
+                    "x": 2937.5,
+                    "y": -75.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 206.0,
+                    "y": 75.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "MidAirNoFrame",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "modifier": {
+                        "AbilityTextureChange": [
+                            {
+                                "type": "string",
+                                "value": "Glide",
+                                "varName": "abilityNameToTrigger"
+                            },
+                            {
+                                "type": "bool",
+                                "value": false,
+                                "varName": "isDefaultTexture"
+                            }
+                        ],
+                        "ScaleScript": [
+                            {
+                                "type": "float",
+                                "value": 0.10000000149011612,
+                                "varName": "scaleAmount"
+                            }
+                        ]
+                    },
+                    "name": [
+                        "AbilityTextureChange",
+                        "ScaleScript"
+                    ]
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Midarir Glide",
+                "Position": {
+                    "x": 3212.5,
+                    "y": -75.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 281.0,
+                    "y": 75.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Spacebar1",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "modifier": {
+                        "AbilityTextureChange": [
+                            {
+                                "type": "string",
+                                "value": "Glide",
+                                "varName": "abilityNameToTrigger"
+                            },
+                            {
+                                "type": "bool",
+                                "value": false,
+                                "varName": "isDefaultTexture"
+                            }
+                        ],
+                        "ScaleScript": [
+                            {
+                                "type": "float",
+                                "value": 0.10000000149011612,
+                                "varName": "scaleAmount"
+                            }
+                        ]
+                    },
+                    "name": [
+                        "AbilityTextureChange",
+                        "ScaleScript"
+                    ]
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Space Glide",
+                "Position": {
+                    "x": 3087.5,
+                    "y": -150.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 382.0,
+                    "y": 75.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "HoldNoFrame",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "modifier": {
+                        "AbilityTextureChange": [
+                            {
+                                "type": "bool",
+                                "value": false,
+                                "varName": "isDefaultTexture"
+                            }
+                        ]
+                    },
+                    "name": [
+                        "WiggleScript",
+                        "AbilityTextureChange"
+                    ]
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Hold Retract",
+                "Position": {
+                    "x": 4800.0,
+                    "y": 150.0,
+                    "z": 5.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 206.0,
+                    "y": 75.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Slash2",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "modifier": {
+                        "AbilityTextureChange": [
+                            {
+                                "type": "bool",
+                                "value": false,
+                                "varName": "isDefaultTexture"
+                            }
+                        ]
+                    },
+                    "name": [
+                        "WiggleScript",
+                        "AbilityTextureChange"
+                    ]
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Retract /",
+                "Position": {
+                    "x": 4800.0,
+                    "y": 37.5,
+                    "z": 5.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 75.0,
+                    "y": 75.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
         }
     ],
     "MainCamera": {
@@ -4547,7 +5476,7 @@
             {
                 "maxX": 0.0,
                 "maxY": 0.0,
-                "minX": 0.0,
+                "minX": -1300.0,
                 "minY": 0.0,
                 "pos": {
                     "x": 662.5,
@@ -4598,7 +5527,7 @@
                 "minX": 2900.0,
                 "minY": 50.0,
                 "pos": {
-                    "x": 2350.5,
+                    "x": 2350.0,
                     "y": 300.0,
                     "z": 1.0
                 },
@@ -4684,16 +5613,15 @@
         "width": 1600.0,
         "zoom": 1.0
     },
-    "Name": "LevelTutorial",
     "WinZone": {
-        "ConfigFile": "WinScreen",
+        "ConfigFile": "LevelTutorialWinScreen",
         "Position": {
-            "x": 7854.6279296875,
-            "y": 1143.5264892578125
+            "x": 7850.0,
+            "y": 950.0
         },
         "Scale": {
             "x": 100.0,
-            "y": 500.0
+            "y": 100.0
         }
     }
 }

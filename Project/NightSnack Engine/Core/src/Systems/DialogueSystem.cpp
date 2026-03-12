@@ -1,4 +1,6 @@
 #include "DialogueSystem.h"
+#include "Systems/PlayerController.h"
+#include "Systems/Physics/Physics.h"
 #include <fstream>
 #include <filesystem>
 
@@ -7,6 +9,16 @@ namespace NightSnack {
 	void DialogueSystem::Init() {
         m_dialogueState = DialogueState::INACTIVE;
         LoadAllSequences();
+
+        /*for (Entity e : m_entities)
+        {
+            auto& t = m_coord.GetComponent<Transform>(e);
+
+            if (t.name.find("DialogueCollider_") != std::string::npos)
+            {
+                m_dialogueTriggers[e] = false;
+            }
+        }*/
 	}
 
     void DialogueSystem::LoadAllSequences() {
@@ -74,6 +86,40 @@ namespace NightSnack {
             return;
         }
 
+        for (Entity e : m_entities)
+        {
+            if (!m_coord.GetComponent<Transform>(e).isActive) continue;
+
+            auto& transform = m_coord.GetComponent<Transform>(e);
+
+            // any DialogueCollider_ entity
+            if (!m_coord.HasComponent<Collider>(e)) continue;
+
+            const std::string& name = transform.name;
+            size_t prefixPos = name.find("DialogueCollider_");
+            if (prefixPos == std::string::npos) continue;
+
+            // Extract the sequence ID from the name after the prefix
+            std::string sequenceID = name.substr(prefixPos + std::strlen("DialogueCollider_"));
+
+            if (sequenceID.empty()) continue;
+
+            // skip if this sequence has already been played
+            if (m_playedSequences.count(sequenceID)) continue;
+
+            // collider must be trigger type
+            if (m_coord.GetComponent<Collider>(e).type != ColliderType::Trigger) continue;
+
+            Entity player = m_coord.GetSystem<PlayerControllerSystem>()->FindPlayer(m_coord);
+
+            if (m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, player))
+            {
+                m_playedSequences.insert(sequenceID); // mark as played before starting
+                StartDialogue(sequenceID);
+            }
+        }
+       
+
         // TESTING CODE TO START DIALOGUE 
         if (m_testDialogue && m_dialogueBoxEntity != INVALID_ENTITY) {
             StartDialogue("test_dialogue1");
@@ -94,6 +140,13 @@ namespace NightSnack {
             while (m_typingTimer >= m_charDelay && m_visibleCharCount < static_cast<int>(m_fullText.size())) {
                 ++m_visibleCharCount;
                 m_typingTimer -= m_charDelay;
+                
+                // play typewriter tick per character, skip spaces
+                char c = m_fullText[m_visibleCharCount - 1];
+                if (c != ' ' && c != '\n') 
+                {
+                    m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("typewriterClack", 0.15f);
+                }   
             }
 
             m_visibleText = m_fullText.substr(0, m_visibleCharCount);
@@ -127,9 +180,15 @@ namespace NightSnack {
             return;
         }
 
+        if (m_dialogueState != DialogueState::INACTIVE)
+        {
+            return;
+        }
+
         m_currentSequence = it->second;
         ToggleUIEntities(true);
         LoadLine(m_currentSequence.startID);
+
     }
 
     // Call this when the player presses the "advance" button
@@ -225,7 +284,7 @@ namespace NightSnack {
             result = j.get<DialogueSequence>();
         }
         catch (std::exception const& e) {
-            std::cerr << "[DialogueSystem] Failed to parse: " << filePath << " — " << e.what() << '\n';
+            std::cerr << "[DialogueSystem] Failed to parse: " << filePath << " ï¿½ " << e.what() << '\n';
         }
 
         return result;

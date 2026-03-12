@@ -107,8 +107,10 @@ namespace NightSnack {
          */
         void StopBGM();
 
+        /**
+        * @brief stops specific background music by its key
+        */
         void StopBGM(const std::string& bgmKey);
-
 
         /**
          * @brief pauses the currently playing background music
@@ -188,7 +190,7 @@ namespace NightSnack {
          * @brief retrieves the audio key of current BGM
          * @return std::string key of current BGM
          */
-        std::string GetBGM() const;
+        std::vector<std::string> GetBGM() const;
 
         /**
          * @brief fades the current BGM to a target volume over a duration
@@ -207,15 +209,16 @@ namespace NightSnack {
          * @brief plays a random variant of a sound effect
          * @param baseKey base name of the sound (e.g., "playerHurt")
          * @param numVariants number of variants available
+		 * @param volume volume level (0.0 to 1.0)
          */
-        void PlayRandomVariant(const std::string& baseKey, int numVariants);
+        void PlayRandomVariant(const std::string& baseKey, int numVariants, float volume);
 
         /**
 		 * @brief plays spatial audio based on player position and max distance
 		 * @param playerPos position of the player in the game world
 		 * @param maxDistance maximum distance at which audio can be heard
          */
-        void UpdateSpatialAudio(Vec2 const& playerPos, float maxDistance);
+        //void UpdateSpatialAudio(Vec2 const& playerPos, float maxDistance);
 
         // ISystem overrides
 
@@ -230,7 +233,6 @@ namespace NightSnack {
          * @return system name
          */
         std::string GetName() const override;
-
 
     private:
         // Resource management
@@ -248,6 +250,13 @@ namespace NightSnack {
 
         std::unordered_map<Entity, FMOD::Channel*> m_entityChannels;
 
+        std::unordered_set<Entity> m_triggeredFallAudio;
+        std::unordered_set<Entity> m_triggeredSpikeOutAudio;
+        std::unordered_set<Entity> m_triggeredSpikeInAudio;
+        std::unordered_map<Entity, float> m_spikePrevPosY;
+        std::unordered_set<Entity> m_triggeredSpikeOutAudioX;
+        std::unordered_set<Entity> m_triggeredSpikeInAudioX;
+        std::unordered_map<Entity, float> m_spikePrevPosX;
 
         // Sound caches - maps string keys to sound pointers
         std::unordered_map<std::string, FMOD::Sound*> m_loadedSFX;
@@ -273,11 +282,21 @@ namespace NightSnack {
         float m_bgmVolume;
         float m_sfxVolume;
 
+        // user-set bgmvolume
+        float m_userBGMVolume = 0.2f;
+
         // for transition audio
         bool m_isFading;
         float m_fadeTimer;
         float m_fadeDuration;
         float m_fadeTargetVolume;
+
+        /**
+         * @brief calculates the distance of the player to the entity
+		 * @param e the entity to calculate distance to
+         * @return distance from player to entity
+         */
+        float GetDistanceToPlayer(Entity e);
 
         /**
          * @brief loads a single sound file and assigns it a string key based on filename

@@ -102,7 +102,6 @@ namespace NightSnack {
 		AddSystem<MovementSystem>(m_coord, core_dispatcher);
 		AddSystem<GraphicsSystem>(m_coord, core_dispatcher);
 		AddSystem<AnimationSystem>(m_coord, core_dispatcher);
-		AddSystem<TextSystem>(m_coord, core_dispatcher);
 		AddSystem<ParticleSystem>(m_coord, core_dispatcher);
 		AddSystem<CollectibleSystem>(m_coord, core_dispatcher);
 
@@ -114,6 +113,7 @@ namespace NightSnack {
 		AddSystem<FiniteStateMachine>(m_coord);
 		AddSystem<CharacterSystem>(m_coord, core_dispatcher);
 		AddSystem<DialogueSystem>(m_coord, core_dispatcher);
+		AddSystem<TextSystem>(m_coord, core_dispatcher);
 
 #ifdef EDITOR
 		AddSystem<ImguiSystem>(m_coord, core_dispatcher);

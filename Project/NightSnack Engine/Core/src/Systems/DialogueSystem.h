@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Core/ECS/Coordinator.h"
+#include "Systems/AudioSystem.h"
+#include <unordered_map>
 
 namespace NightSnack {
 
@@ -62,7 +64,7 @@ namespace NightSnack {
                 if (event.pressed == InputEvent::InputActionState::Pressed) {
                     switch (event.inputAction) {
                         
-                    case InputEvent::InputAction::DisplayFPS:
+                    case InputEvent::InputAction::DefaultDialogue:
                         m_testDialogue = true;
                         break;
 
@@ -113,6 +115,9 @@ namespace NightSnack {
 
         std::unordered_map<std::string, DialogueSequence>& GetDialogueLibrary() { return m_dialogueLibrary; }
 
+        // for dialogue played
+        std::unordered_set<std::string> m_playedSequences;
+
         bool IsActive() const { return m_dialogueState != DialogueState::INACTIVE; }
 
         bool IsTypingDone() const { return m_dialogueState == DialogueState::WAITING_INPUT; }
@@ -121,7 +126,14 @@ namespace NightSnack {
 
         const std::string& GetCurrentSpeaker() const { return m_currentSpeaker; }
 
-        void ResetUIEntities() { m_foundUIEntities = false; }
+        void ResetUIEntities() { 
+            m_foundUIEntities = false; 
+            m_dialogueBoxEntity = INVALID_ENTITY;
+            m_speakerNameEntity = INVALID_ENTITY;
+            m_dialogueTextEntity = INVALID_ENTITY;
+            m_portraitEntity = INVALID_ENTITY;
+            m_hintTextEntity = INVALID_ENTITY;
+        }
 
         // Required by ISystem
         std::string GetName() const override { return "DialogueSystem"; }
