@@ -214,7 +214,7 @@ namespace NightSnack::Scene {
 			(void)e;
 			// Fade out audio and schedule exit
 			auto audio = c.GetSystem<AudioSystem>();
-			audio->FadeToVolume(0.0f, 0.2f); // Fade out over 0.2s
+			audio->FadeToVolume(0.0f, 0.3f); // Fade out over 0.3s
 
 			c.GetSystem<Scene::SceneManager>()->ScheduleExit(0.3f); // Exit after fade
 			});
@@ -622,7 +622,7 @@ namespace NightSnack::Scene {
 		}
 
 		// Fade BGM volume back in
-		audio->FadeToVolume(0.2f, 0.5f);
+		audio->FadeToVolume(0.2f, 0.6f);
 
 		// Refresh Scripts for loaded level
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();
