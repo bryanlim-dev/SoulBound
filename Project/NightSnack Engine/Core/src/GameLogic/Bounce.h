@@ -74,7 +74,6 @@ namespace NightSnack {
 
 		bool m_createdDisplays = false;
 
-
 	public:
 		Bounce(){}
 

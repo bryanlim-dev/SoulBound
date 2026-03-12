@@ -85,6 +85,7 @@ namespace NightSnack
 		}
 		case BOUNCE_RELEASED:
 		{
+			std::cout << coord.GetComponent<Transform>(m_owner).pos << std::endl;
 			m_bounceDelayTime += coord.GetSystem<ApplicationSystem>()->GetDT();
 			if (m_bounceDelayTime >= m_maxGroundedDelayTime)
 			{
@@ -104,6 +105,13 @@ namespace NightSnack
 					coord.ModifyComponent<RigidBody>(m_owner).force.isActive = false;
 					coord.ModifyComponent<RigidBody>(m_owner).restitution = m_ownerInitalRestitution;
 					//std::cout << "Grounded!" << std::endl;
+
+					std::cout << "Landed! Dots pos:" << std::endl;
+
+					for (Entity dot : m_guideDots)
+						std::cout << coord.GetComponent<Transform>(dot).pos << std::endl;
+
+
 					return false;
 				}
 				else if (col.colliding && (col.collidedGroundCount > 0 || col.collidedSolidCount > 0))
@@ -187,6 +195,8 @@ namespace NightSnack
 			//	<< "Y Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.y << std::endl;
 
 		}
+
+		std::cout << "Launch! Player Pos: " << std::endl;
 	}
 
 	void Bounce::ChangeAngle(Coordinator& coord, bool isAngleIncrease)
@@ -249,113 +259,96 @@ namespace NightSnack
 
 	void Bounce::UpdateDisplays(Coordinator& coord)
 	{
+		if (!coord.HasComponent<Transform>(m_owner) ||
+			!coord.HasComponent<RigidBody>(m_owner))
+			return;
+
 		//Update power bar
 		//Change scale to x if horziontal bar
-		float newScale = ((m_powerBarScale.y - m_minPowerBarScale) * GetLaunchPowerRatio()) + m_minPowerBarScale; 
+		float newScale = ((m_powerBarScale.y - m_minPowerBarScale) * GetLaunchPowerRatio()) + m_minPowerBarScale;
 		coord.ModifyComponent<Transform>(m_powerBar).scale.y = newScale;
 		coord.ModifyComponent<Transform>(m_powerBar).isActive = true;
-		coord.ModifyComponent<Transform>(m_powerBar).pos.y = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).y + (newScale/2);
+		coord.ModifyComponent<Transform>(m_powerBar).pos.y = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).y + (newScale / 2);
 		coord.ModifyComponent<Transform>(m_powerBar).pos.x = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).x;
 
+		Transform const& playerTrans = coord.GetComponent<Transform>(m_owner);
+		RigidBody const& rb = coord.GetComponent<RigidBody>(m_owner);
 
-		//Update dots
-		Vec3 playerPos = coord.GetComponent<Transform>(m_owner).pos;
-		RigidBody& rb = coord.ModifyComponent<RigidBody>(m_owner);
+		Vec2 pos = { playerTrans.pos.x, playerTrans.pos.y };
 
 		int dir = m_facingRight ? 1 : -1;
 
-		float rad = m_launchAngle * PI / 180.0f;
-
-		// Compute initial launch velocity (same as Launch())
 		float launchPower = GetLaunchPower();
-		//float launchPower = m_maxLaunchForce ;
 
-		Vec2 simVel;
-		simVel.x = launchPower * cos(rad) * dir;
-		simVel.y = launchPower * sin(rad);
+		Vec2 vel;
+		vel.x = launchPower * cos(m_launchAngle * PI / 180.f) * dir;
+		vel.y = launchPower * sin(m_launchAngle * PI / 180.f);
 
-		Vec2 simPos = { playerPos.x, playerPos.y };
+		float dt = coord.GetSystem<ApplicationSystem>()->GetDT();
+		float gravity = coord.GetSystem<PhysicsSystem>()->GetGravity();
+		float drag = coord.GetSystem<PhysicsSystem>()->GetDrag();
 
-		float dt = 0.016f; 
-		Vec2 gravity = { 0.0f, coord.GetSystem<PhysicsSystem>()->GetGravity() * rb.gravitymult };
-		
-		Collider c1;
-		c1 = coord.GetComponent<Collider>(m_owner);
-		c1.width = m_guideDotSize;
-		c1.height = m_guideDotSize;
-		c1.radius = m_guideDotSize;
+		Collider const& playerCol = coord.GetComponent<Collider>(m_owner);
 
-		for (int i = 0; i < m_guideDots.size(); ++i)
+		Transform simTransform = playerTrans;
+
+		bool bounced = false;
+
+		for (size_t i = 0; i < m_guideDots.size(); i++)
 		{
-			if (coord.HasComponent<Collider>(m_guideDots[i]))
-			{
-				c1 = coord.GetComponent<Collider>(m_guideDots[i]);
-			}
+			Vec2 accel{ 0.f, 0.f };
+			accel.y += gravity * rb.gravitymult;
 
-			// Apply gravity
-			simVel += gravity * dt;
+			vel += accel * dt;
+			vel.x *= (1.f - drag * dt);
 
-			// Move
-			simPos += simVel * dt;
+			Vec2 nextPos = pos + vel * dt;
 
-			bool collided = false;
-			coord.ModifyComponent<Transform>(m_guideDots[i]).isActive = true;
+			simTransform.pos.x = nextPos.x;
+			simTransform.pos.y = nextPos.y;
 
 			for (Entity e : coord.GetLivingEntities())
 			{
-				if (e == INVALID_ENTITY)
-					break;
+				if (e == m_owner || !coord.HasComponent<Collider>(e))
+					continue;
 
-				if (e == m_owner || !coord.HasComponent<Collider>(e) || coord.GetComponent<Collider>(e).type == ColliderType::Trigger) continue;
+				Collider const& otherCol = coord.GetComponent<Collider>(e);
+				if (otherCol.type == ColliderType::Trigger)
+					continue;
 
-				Transform& t2 = coord.ModifyComponent<Transform>(e);
-				Collider& c2 = coord.ModifyComponent<Collider>(e);
-
-
-				Transform fakeT1;
-				fakeT1.pos = Vec3(simPos.x, simPos.y, 0);
+				Transform const& otherTrans = coord.GetComponent<Transform>(e);
 
 				Vec2 normal;
 				float depth;
 
-
-				if (coord.GetSystem<PhysicsSystem>()->CheckCollision(fakeT1, t2, c1, c2, normal, depth))
+				if (coord.GetSystem<PhysicsSystem>()->CheckCollision(
+					simTransform, otherTrans, playerCol, otherCol, normal, depth))
 				{
-					collided = true;
+					bounced = true;
 					break;
-
-					//simPos += normal * (depth + 0.5f);
-					//
-					//Transform& dotTrans = coord.ModifyComponent<Transform>(m_guideDots[i]);
-					//dotTrans.pos = Vec3(simPos.x, simPos.y, 11);
 				}
 			}
 
-			if (collided)
-			{
-				// Hide remaining dots
-				for (int j = i; j < m_guideDots.size(); ++j)
-					if (coord.HasComponent<Color>(m_guideDots[j]))
-					{
-						coord.ModifyComponent<Color>(m_guideDots[j]).a = 0;
-						coord.ModifyComponent<Transform>(m_guideDots[j]).pos.z = -1000;
-						coord.ModifyComponent<Transform>(m_guideDots[j]).isActive = false;
-					}
+			pos += vel * dt;
 
+			// show dot
+			Transform& dotTrans = coord.ModifyComponent<Transform>(m_guideDots[i]);
+			dotTrans.pos.x = pos.x;
+			dotTrans.pos.y = pos.y;
+			dotTrans.pos.z = 11.f;
+			dotTrans.isActive = true;
+
+			// limit dots after bounce
+			if (bounced)
+			{
+				for (size_t j = i; j < m_guideDots.size(); j++)
+				{
+					coord.ModifyComponent<Transform>(m_guideDots[j]).isActive = false;
+				}
 				break;
 			}
-
-			// Place normal dot
-			Transform& dotTrans = coord.ModifyComponent<Transform>(m_guideDots[i]);
-			dotTrans.pos = Vec3(simPos.x, simPos.y, 11);
-
-			if (coord.HasComponent<Color>(m_guideDots[i]))
-			{
-				coord.ModifyComponent<Color>(m_guideDots[i]).a = m_guideDotAlpha;
-				coord.ModifyComponent<Transform>(m_guideDots[i]).pos.z = 11;
-
-			}
 		}
+		
 	}
 
 	void Bounce::HideDisplay(Coordinator& coord)
