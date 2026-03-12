@@ -1,0 +1,45 @@
+{
+    "lines": [
+        {
+            "ID": "line_0",
+            "charDelay": 0.05000000074505806,
+            "nextID": "line_1",
+            "speaker": "RainCharm",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": "RainCharm reaches the ancient carved ruins where the path feels less accidental and more deliberate, as if someone once meant for this journey to be taken."
+        },
+        {
+            "ID": "line_1",
+            "charDelay": 0.05000000074505806,
+            "nextID": "line_2",
+            "speaker": "RainCharm",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": "The statues that line the way make RainCharm feel observed, but not entirely threatened more like judged, or perhaps recognized."
+        },
+        {
+            "ID": "line_2",
+            "charDelay": 0.05000000074505806,
+            "nextID": "line_3",
+            "speaker": "RainCharm",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": "This begins to unsettle them more deeply, because it suggests that their presence here may not be random. When RainCharm finally sees the gate in the distance, it no longer represents only a way out."
+        },
+        {
+            "ID": "line_3",
+            "charDelay": 0.05000000074505806,
+            "nextID": "line_4",
+            "speaker": "RainCharm",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": "It becomes something personal: a destination that seems to have been waiting for them long before they arrived."
+        },
+        {
+            "ID": "line_4",
+            "charDelay": 0.05000000074505806,
+            "nextID": "",
+            "speaker": "RainCharm",
+            "speakerMaterial": "SpiritMove_4_1",
+            "text": "The deeper RainCharm goes, the harder it becomes to tell whether they are escaping the darkness, or returning to something they once lost."
+        }
+    ],
+    "startID": "line_0"
+}
