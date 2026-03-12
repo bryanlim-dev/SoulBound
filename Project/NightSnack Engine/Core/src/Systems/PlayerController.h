@@ -252,6 +252,9 @@ namespace NightSnack {
             if (reset) {
                 AttachAbility();
                 m_flags = PlayerFlags{};
+
+                m_bounce.Reset(m_coord);
+
                 reset = false;
                 m_pauseInputs = false;
 
