@@ -1,6 +1,9 @@
 {
     "BGM": [
-        "GameLevelMusic"
+        "GameLevelMusic",
+        "NightForest",
+        "FrogAmbience",
+        "WindBlow"
     ],
     "Entities": [
         {
