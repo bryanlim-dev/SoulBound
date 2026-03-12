@@ -1,3 +1,17 @@
+/******************************************************************************
+ * File:        Serializer.cpp
+ * Project:     NightSnack
+ * Author(s):	Chewn Thing Kwan (Primary, 60%)
+ *				Bryan Lim Jun Jie (Secondary, 15%) - Audio and button info components
+ *				Goh Bei Lai (Secondary, 25%) - Font, Particle and Collectible components
+ *
+ * Description:
+ * This file defines functions to serialize and deserialize components to and from json format.
+ * Each component has a to_json and from_json function that converts the component to json and vice versa.
+ *
+ * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 
 #include "Serializer.h"
 #include "Factory/EntityFactory.h"
