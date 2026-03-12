@@ -17,6 +17,7 @@ Left Click: Interact with Editor
 ## --------------------------
 O: Activate debug-drawing
 F1: Display FPS
+F2: Default Dialogue display
 Escape: Pauses Game Scene
 
 
