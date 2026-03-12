@@ -5,7 +5,7 @@
  *
  * Description:
  * This file defines the class Bounce and its functions
- * When triggered it begins targeting power and when released it send the
+ * When triggered it begins charging power + shows an indicator and when released it send the
  * entity flying and allows them to bounce off walls
  *
  * Copyright � 2025 DigiPen Institute of Technology Singapore.
@@ -34,6 +34,9 @@ namespace NightSnack
 		m_active = true;
 		m_bounceDelayTime = 0;
 		m_ownerInitalRestitution = 0;
+
+		m_currLaunchPower = m_currLaunchPower/2;
+		std::clamp(m_currLaunchPower, m_minLaunchForce, m_maxLaunchForce);
 
 		if (coord.HasComponent<RigidBody>(m_owner))
 		{
@@ -85,7 +88,7 @@ namespace NightSnack
 		}
 		case BOUNCE_RELEASED:
 		{
-			std::cout << coord.GetComponent<Transform>(m_owner).pos << std::endl;
+			//std::cout << coord.GetComponent<Transform>(m_owner).pos << std::endl;
 			m_bounceDelayTime += coord.GetSystem<ApplicationSystem>()->GetDT();
 			if (m_bounceDelayTime >= m_maxGroundedDelayTime)
 			{
@@ -106,10 +109,10 @@ namespace NightSnack
 					coord.ModifyComponent<RigidBody>(m_owner).restitution = m_ownerInitalRestitution;
 					//std::cout << "Grounded!" << std::endl;
 
-					std::cout << "Landed! Dots pos:" << std::endl;
-
-					for (Entity dot : m_guideDots)
-						std::cout << coord.GetComponent<Transform>(dot).pos << std::endl;
+					//std::cout << "Landed! Dots pos:" << std::endl;
+					//
+					//for (Entity dot : m_guideDots)
+					//	std::cout << coord.GetComponent<Transform>(dot).pos << std::endl;
 
 
 					return false;
@@ -196,7 +199,7 @@ namespace NightSnack
 
 		}
 
-		std::cout << "Launch! Player Pos: " << std::endl;
+		//std::cout << "Launch! Player Pos: " << std::endl;
 	}
 
 	void Bounce::ChangeAngle(Coordinator& coord, bool isAngleIncrease)
@@ -212,14 +215,28 @@ namespace NightSnack
 		m_launchAngle = std::clamp(m_launchAngle, 0.0f, m_maxLaunchAngle);
 	}
 
+	void Bounce::ChangePower(Coordinator& coord, bool isPowerIncrease)
+	{
+		if (m_currState != BOUNCE_CHARGING)
+			return;
+
+		if (isPowerIncrease)
+			m_currLaunchPower += m_launchChangeSpeed * coord.GetSystem<ApplicationSystem>()->GetDT();
+		else
+			m_currLaunchPower -= m_launchChangeSpeed * coord.GetSystem<ApplicationSystem>()->GetDT();
+
+		m_currLaunchPower = std::clamp(m_currLaunchPower, m_minLaunchForce, m_maxLaunchForce);
+	}
+
 	float Bounce::GetLaunchPowerRatio()
 	{
-		return m_chargeTime/m_maxChargeTime;
+		return 1 / (m_maxLaunchForce - m_minLaunchForce) * (m_currLaunchPower - m_minLaunchForce);
 	}
 
 	float Bounce::GetLaunchPower()
 	{
-		return ((m_maxLaunchForce - m_minLaunchForce) * GetLaunchPowerRatio()) + m_minLaunchForce;
+		return m_currLaunchPower;
+		//return ((m_maxLaunchForce - m_minLaunchForce) * GetLaunchPowerRatio()) + m_minLaunchForce;
 	}
 
 	void Bounce::CreateDisplay(Coordinator& coord)
@@ -281,8 +298,8 @@ namespace NightSnack
 		float launchPower = GetLaunchPower();
 
 		Vec2 vel;
-		vel.x = launchPower * cos(m_launchAngle * PI / 180.f) * dir;
-		vel.y = launchPower * sin(m_launchAngle * PI / 180.f);
+		vel.x = launchPower * (float)cos(m_launchAngle * PI / 180.f) * dir;
+		vel.y = launchPower * (float)sin(m_launchAngle * PI / 180.f);
 
 		float dt = coord.GetSystem<ApplicationSystem>()->GetDT();
 		float gravity = coord.GetSystem<PhysicsSystem>()->GetGravity();
@@ -372,7 +389,8 @@ namespace NightSnack
 		{
 			for (Entity dot : m_guideDots)
 			{
-				coord.DestroyEntity(dot);
+				if (coord.EntityIsAlive(dot))
+					coord.DestroyEntity(dot);
 			}
 
 			m_guideDots.clear();

@@ -374,7 +374,7 @@ namespace NightSnack {
         
         trans.pos = pos;
 
-        Collider& col = m_coord.ModifyComponent<Collider>(m_closeGroundedHitBox);
+        //Collider& col = m_coord.ModifyComponent<Collider>(m_closeGroundedHitBox);
         //std::cout << "HitBox Colliding Count: " << col.collidedEntities.size() << std::endl;
     }   
 

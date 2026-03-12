@@ -5,7 +5,7 @@
  *
  * Description:
  * This file declares the class Bounce and its functions
- * When triggered it begins targeting power and when released it send the
+ * When triggered it begins charging power + shows an indicator and when released it send the
  * entity flying and allows them to bounce off walls
  *
  * Copyright © 2025 DigiPen Institute of Technology Singapore.
@@ -59,11 +59,13 @@ namespace NightSnack {
 		//In degrees
 		const float m_maxLaunchAngle = 90.0f;
 		//Also in degrees
-		const float m_angleChangeSpeed = 75.0f;
+		const float m_angleChangeSpeed = 150.0f;
 		bool m_facingRight = true;
 
 		const float m_maxLaunchForce = 2000.0f;
 		const float m_minLaunchForce = 500.0f;
+		const float m_launchChangeSpeed = 1500.0f;
+		float m_currLaunchPower = m_maxLaunchForce / 2;
 		//const float m_minVel = 20.0f;
 
 		//How long until start checking for grounded during launch state
@@ -102,12 +104,17 @@ namespace NightSnack {
 					//Flip launch direction to left
 					switch (event.inputAction) {
 						case InputEvent::InputAction::PlayerMoveLeft:
-							
-							m_facingRight = false;
+							if (m_facingRight)
+								this->ChangePower(coord, false);
+							else
+								this->ChangePower(coord, true);
 							break;
 					//Flip launch direction to right
 						case InputEvent::InputAction::PlayerMoveRight:
-							m_facingRight = true;
+							if (m_facingRight)
+								this->ChangePower(coord, true);
+							else
+								this->ChangePower(coord, false);
 							break;
 					case InputEvent::InputAction::PlayerUp:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
@@ -134,21 +141,116 @@ namespace NightSnack {
 
 				});
 		}
-		
+
+		/************************************************************************/
+		/*!
+		\brief
+		Called before bounce ability starts
+		Sets trackers to their default values
+
+		/param coord
+		Refernece to the coordinator
+		*/
+		/************************************************************************/
 		bool Start(Coordinator& coord);
-		//Update function for bounce
-		//Returns false if bounce stopped
+
+		/************************************************************************/
+		/*!
+		\brief
+		Update function for bounce
+		Returns false if bounce stopped
+
+		/param coord
+		Refernece to the coordinator
+		*/
+		/************************************************************************/
 		bool Update(Coordinator& coord);
+		/************************************************************************/
+		/*!
+		\brief
+		Function that handles the end of the entire bounce sequence (i.e entity landed)
+		Hides the indicator display
+
+		/param coord
+		Refernece to the coordinator
+		*/
+		/************************************************************************/
 		void End(Coordinator& coord);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Deletes the display entities
+
+		/param coord
+		Refernece to the coordinator
+		*/
+		/************************************************************************/
 		void Reset(Coordinator& coord);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Updates the entity id
+
+		/param e
+		ID of the owner
+		*/
+		/************************************************************************/
 		void UpdateOwner(Entity e);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Sets where the launch direction is
+
+		/param isFacingRight
+		True, Launch to the right
+		False, Launch to the left
+		*/
+		/************************************************************************/
 		void SetFacingDirection(bool isFacingRight);
 
+		/************************************************************************/
+		/*!
+		\brief
+		Launches the entity owner with the current angle and power
+
+		/param coord
+		Refrence to coordinator
+		*/
+		/************************************************************************/
 		void Launch(Coordinator& coord);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Changes the angle of the launch up to the limit
+
+		/param coord
+		Refrence to coordinator
+
+		/param isAngleIncrease
+		Is the angle change increasing or decreasing
+		True for increasing, false for decreasing
+		*/
+		/************************************************************************/
 		void ChangeAngle(Coordinator& coord, bool isAngleIncrease);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Changes the power of the launch up to the limit
+
+		/param coord
+		Refrence to coordinator
+
+		/param isPowerIncrease
+		Is the pwoer change increasing or decreasing
+		True for increasing, false for decreasing
+		*/
+		/************************************************************************/
+		void ChangePower(Coordinator& coord, bool isPowerIncrease);
 
 
 		bool IsActive() const {
@@ -160,6 +262,10 @@ namespace NightSnack {
 		/*!
 		\brief
 		Calcluates the ratio of power stored to max power
+		Ratio is from 0.0f - 1.0f
+
+		\return
+		Ratio of current launch power to max power from 0.0 - 1.0
 		*/
 		/************************************************************************/
 		float GetLaunchPowerRatio();
@@ -167,7 +273,10 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Calcluates the power of launch using power ratio and min power
+		Returns the launch power
+
+		\return
+		Current Launch Power
 		*/
 		/************************************************************************/
 		float GetLaunchPower();
@@ -183,7 +292,15 @@ namespace NightSnack {
 		/************************************************************************/
 		void CreateDisplay(Coordinator& coord);
 
-		//Updates power bar and target line
+		/************************************************************************/
+		/*!
+		\brief
+		Updates the display guide dots and power bar entities
+
+		/param coord
+		Refrence to coordinator
+		*/
+		/************************************************************************/
 		void UpdateDisplays(Coordinator& coord);
 
 		/************************************************************************/
