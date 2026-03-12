@@ -38,6 +38,8 @@ namespace NightSnack
 		m_currLaunchPower = m_currLaunchPower/2;
 		m_currLaunchPower = std::clamp(m_currLaunchPower, m_minLaunchForce, m_maxLaunchForce);
 
+		m_currVel0Time = 0;
+
 		if (coord.HasComponent<RigidBody>(m_owner))
 		{
 			m_ownerInitalRestitution = coord.GetComponent<RigidBody>(m_owner).restitution;
@@ -88,6 +90,20 @@ namespace NightSnack
 		}
 		case BOUNCE_RELEASED:
 		{
+			//Failsafe incase player is stuck, if Y vel == 0 for too long ocnsidered grounded
+			if (coord.GetComponent<RigidBody>(m_owner).vel.y == 0)
+			{
+				m_currVel0Time += coord.GetSystem<ApplicationSystem>()->GetDT();
+				if (m_currVel0Time >= m_maxVel0Time)
+				{
+					//Reset vel
+					coord.ModifyComponent<RigidBody>(m_owner).vel = Vec2();
+					coord.ModifyComponent<RigidBody>(m_owner).force.isActive = false;
+					coord.ModifyComponent<RigidBody>(m_owner).restitution = m_ownerInitalRestitution;
+					return false;
+				}
+			}
+
 			//std::cout << coord.GetComponent<Transform>(m_owner).pos << std::endl;
 			m_bounceDelayTime += coord.GetSystem<ApplicationSystem>()->GetDT();
 			if (m_bounceDelayTime >= m_maxGroundedDelayTime)

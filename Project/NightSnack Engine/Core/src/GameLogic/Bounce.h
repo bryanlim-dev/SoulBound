@@ -76,6 +76,9 @@ namespace NightSnack {
 
 		bool m_createdDisplays = false;
 
+		const float m_maxVel0Time = 0.5f; //Failsafe incase player is stuck, if Y vel == 0 for too long ocnsidered grounded
+		float m_currVel0Time = 0; //Failsafe incase player is stuck, if Y vel == 0 for too long ocnsidered grounded
+
 	public:
 		Bounce(){}
 
