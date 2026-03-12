@@ -211,7 +211,7 @@ namespace NightSnack {
 
 						// If the followEntity is inactive (Double Jump collectible is collected), 
 						// stop this particular emitter
-						if (!m_coord.GetComponent<Transform>(em.followEntity).isActive || !m_coord.EntityIsAlive(em.followEntity)) {
+						if (!m_coord.EntityIsAlive(em.followEntity) || !m_coord.GetComponent<Transform>(em.followEntity).isActive) {
 							em.isActive = false;
 							break;
 						}
@@ -241,7 +241,7 @@ namespace NightSnack {
 
 						// If the followEntity is inactive (Key collectible is collected), 
 						// stop this particular emitter
-						if (!m_coord.GetComponent<Transform>(em.followEntity).isActive) {
+						if (!m_coord.EntityIsAlive(em.followEntity) || !m_coord.GetComponent<Transform>(em.followEntity).isActive) {
 							em.isActive = false;
 							break;
 						}
