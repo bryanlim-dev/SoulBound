@@ -406,7 +406,7 @@ namespace NightSnack {
         void Jump(Transform& t, Vec2& vel, PlayerController pcont, bool isGrounded);
 
         PlayerFlags& GetPlayerFlags();
-        void ResetFlags() { m_flags = PlayerFlags{}; }
+        void ResetFlags() { m_flags = PlayerFlags{}; UnpauseInputs(); }
         void EnableDoubleJumpFlag() { m_flags.canDoubleJump = true; }
 
         // Store movement abilities as void pointers
@@ -497,6 +497,7 @@ namespace NightSnack {
 
         void Reset() { reset = true; }
         void PauseInputs() { m_pauseInputs = true; }
+        void UnpauseInputs() { m_pauseInputs = false; }
 
         /************************************************************************/
         /*!

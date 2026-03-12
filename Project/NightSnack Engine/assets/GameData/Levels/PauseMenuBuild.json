@@ -1,0 +1,740 @@
+{
+    "BGM": "MainMenu",
+    "Entities": [
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "UIMenu-Overlay",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "MenuOverlay",
+                "Position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 1600.0,
+                    "y": 900.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "UIMenu-Backdrop",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Backdrop",
+                "Position": {
+                    "x": 0.0,
+                    "y": -25.0,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 500.0,
+                    "y": 600.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "PausedHeader",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Paused",
+                "Position": {
+                    "x": 0.0,
+                    "y": 275.0,
+                    "z": 0.550000011920929
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonQuit",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "CloseMenu",
+                    "clickTex": "Paused-Resume",
+                    "defaultTex": "Paused-Resume",
+                    "hoverTex": "Paused-ResumeSelected",
+                    "target": "",
+                    "type": "Clicker"
+                },
+                "Collider": {
+                    "height": 88.0,
+                    "isStatic": true,
+                    "radius": 44.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 88.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Paused-Resume",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "audio",
+                "Position": {
+                    "x": 0.0,
+                    "y": 162.5,
+                    "z": 0.550000011920929
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "UIMenu-Frame",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "AudioSlider",
+                "Position": {
+                    "x": 0.0,
+                    "y": -325.0,
+                    "z": 0.25
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 500.0,
+                    "y": 5.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "UIMenu-Frame",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "AudioSlider",
+                "Position": {
+                    "x": 250.0,
+                    "y": -25.0,
+                    "z": 0.25
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 5.0,
+                    "y": 600.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "UIMenu-Frame",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "AudioSlider",
+                "Position": {
+                    "x": -250.0,
+                    "y": -25.0,
+                    "z": 0.25
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 5.0,
+                    "y": 600.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "UIMenu-Frame",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "AudioSlider",
+                "Position": {
+                    "x": 0.0,
+                    "y": 275.0,
+                    "z": 0.25
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 500.0,
+                    "y": 5.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "UIMenu-Frame",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Frame-Header",
+                "Position": {
+                    "x": 0.0,
+                    "y": 275.0,
+                    "z": 0.5
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 340.0,
+                    "y": 88.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Menu-CornerKnob",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "cornerKnob",
+                "Position": {
+                    "x": -250.0,
+                    "y": 275.0,
+                    "z": 0.550000011920929
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 88.0,
+                    "y": 88.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Menu-CornerKnob",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "cornerKnob",
+                "Position": {
+                    "x": 250.0,
+                    "y": 275.0,
+                    "z": 0.550000011920929
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 88.0,
+                    "y": 88.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Menu-CornerKnob",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "cornerKnob",
+                "Position": {
+                    "x": 250.0,
+                    "y": -325.0,
+                    "z": 0.550000011920929
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 88.0,
+                    "y": 88.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Menu-CornerKnob",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "cornerKnob",
+                "Position": {
+                    "x": -250.0,
+                    "y": -325.0,
+                    "z": 0.550000011920929
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 88.0,
+                    "y": 88.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonSelect",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "OpenMenu",
+                    "target": "SettingsMenu",
+                    "type": "Clicker",
+                    "defaultTex": "Paused-Guide",
+                    "hoverTex": "Paused-GuideSelected",
+                    "clickTex": "Paused-Guide"
+                },
+                "Collider": {
+                    "height": 64.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Paused-Guide",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "guide",
+                "Position": {
+                    "x": 0.0,
+                    "y": 75.0,
+                    "z": 0.550000011920929
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonSelect",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "OpenMenu",
+                    "target": "SettingsMenu",
+                    "type": "Clicker",
+                    "defaultTex": "Paused-Options",
+                    "hoverTex": "Paused-OptionsSelected",
+                    "clickTex": "Paused-Options"
+                },
+                "Collider": {
+                    "height": 64.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Paused-Options",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "options",
+                "Position": {
+                    "x": 0.0,
+                    "y": -12.5,
+                    "z": 0.550000011920929
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonSelect",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "OpenMenu",
+                    "target": "RestartLevel",
+                    "type": "Clicker",
+                    "defaultTex": "Paused-Restart",
+                    "hoverTex": "Paused-RestartSelected",
+                    "clickTex": "Paused-Restart"
+                },
+                "Collider": {
+                    "height": 64.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Paused-Restart",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "restart",
+                "Position": {
+                    "x": 0.0,
+                    "y": -100.0,
+                    "z": 0.550000011920929
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "Audio": {
+                    "audioKey": "buttonSelect",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "OpenMenu",
+                    "target": "SettingsMenu",
+                    "type": "Clicker",
+                    "defaultTex": "Paused-Quit",
+                    "hoverTex": "Paused-QuitSelected",
+                    "clickTex": "Paused-Quit"
+                },
+                "Collider": {
+                    "height": 64.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                    "isWireframe": false,
+                    "materialName": "Paused-Quit",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "quit",
+                "Position": {
+                    "x": 0.0,
+                    "y": -187.5,
+                    "z": 0.550000011920929
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        }
+    ],
+    "MainCamera": {
+        "KeyFrames": [
+            {
+                "maxX": 0.0,
+                "maxY": 0.0,
+                "minX": 0.0,
+                "minY": 0.0,
+                "pos": {
+                    "x": -812.5,
+                    "y": 500.0,
+                    "z": 1.0
+                },
+                "scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "zoom": 1.0
+            }
+        ],
+        "cameraLock": false,
+        "height": 900.0,
+        "isMainCam": true,
+        "offsetX": 0.0,
+        "offsetY": 0.0,
+        "posX": 0.0,
+        "posY": 0.0,
+        "posZ": 10.0,
+        "width": 1600.0,
+        "zoom": 1.0
+    },
+    "Name": "PauseMenuBuild",
+    "WinZone": {
+        "ConfigFile": "",
+        "Position": {
+            "x": 0.0,
+            "y": 0.0
+        },
+        "Scale": {
+            "x": 100.0,
+            "y": 100.0
+        }
+    }
+}

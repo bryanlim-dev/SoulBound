@@ -301,6 +301,7 @@ namespace NightSnack {
     enum ButtonType {
         CLICKER,
         SLIDER,
+        SLIDERKNOB,
 
         INVALID_BUTTON
     };
@@ -313,6 +314,7 @@ namespace NightSnack {
         BGMSLIDER,
 
         LOADLEVEL,
+        RESTARTLEVEL,
         OPENMENU,
         CLOSEMENU,
         NOACTION,

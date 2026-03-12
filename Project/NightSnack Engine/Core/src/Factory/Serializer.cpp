@@ -699,12 +699,15 @@ namespace NightSnack {
 		if (ButtonAction::NOACTION == b.action) j["action"] = std::string{ "NoAction"};
 		if (ButtonAction::EXIT == b.action) j["action"] = std::string{ "ExitGame" };
 		if (ButtonAction::TOGGLEFULLSCREEN == b.action) j["action"] = std::string{ "ToggleFullscreen" };
+
 		if (ButtonAction::VOLUMESLIDER == b.action) j["action"] = std::string{ "VolumeSlider" };
 		if (ButtonAction::SFXSLIDER == b.action) j["action"] = std::string{ "SFXSlider" };
 		if (ButtonAction::BGMSLIDER == b.action) j["action"] = std::string{ "BGMSlider" };
+		if (ButtonAction::RESTARTLEVEL == b.action) j["action"] = std::string{ "RestartLevel" };
 
 		if (ButtonType::SLIDER == b.type) j["type"] = std::string{ "Slider" };
 		if (ButtonType::CLICKER == b.type) j["type"] = std::string{ "Clicker" };
+		if (ButtonType::SLIDERKNOB == b.type) j["type"] = std::string{ "SliderKnob" };
 
 		j["target"] = b.target;
 		j["defaultTex"] = b.defaultTex;
@@ -727,6 +730,7 @@ namespace NightSnack {
 			if (j["action"] == "NoAction") { b.action = ButtonAction::NOACTION; }
 			if (j["action"] == "ExitGame") { b.action = ButtonAction::EXIT; }
 			if (j["action"] == "ToggleFullscreen") { b.action = ButtonAction::TOGGLEFULLSCREEN; }
+			if (j["action"] == "RestartLevel") { b.action = ButtonAction::RESTARTLEVEL; }
 			if (j["action"] == "VolumeSlider") { b.action = ButtonAction::VOLUMESLIDER; }
 			if (j["action"] == "SFXSlider") b.action = ButtonAction::SFXSLIDER;
 			if (j["action"] == "BGMSlider") b.action = ButtonAction::BGMSLIDER;
@@ -734,6 +738,7 @@ namespace NightSnack {
 
 			// Button type
 			if (j["type"] == "Slider") { b.type = ButtonType::SLIDER; }
+			if (j["type"] == "SliderKnob") { b.type = ButtonType::SLIDERKNOB; }
 			if (j["type"] == "Clicker") { b.type = ButtonType::CLICKER; }
 
 			b.target = j["target"];
