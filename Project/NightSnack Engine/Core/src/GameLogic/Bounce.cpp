@@ -24,7 +24,6 @@ namespace NightSnack
 		if (!coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().isGrounded)
 			return false;
 
-
 		m_currState = BOUNCE_CHARGING;
 		m_chargeTime = 0.0f;
 		m_powerIncreasing = true;
@@ -43,8 +42,8 @@ namespace NightSnack
 			coord.ModifyComponent<RigidBody>(m_owner).vel = Vec2();
 		}
 
-
-		CreateDisplay(coord);
+		if (!m_createdDisplays)
+			CreateDisplay(coord);
 
 		return true;
 	}
@@ -53,8 +52,6 @@ namespace NightSnack
 	{
 		if (!m_active)
 			return false;
-
-
 
 		switch (m_currState)
 		{
@@ -144,8 +141,17 @@ namespace NightSnack
 		m_chargeTime = 0.0f;
 		m_currState = BOUNCE_END;
 		
-		DeleteDisplay(coord);
+		HideDisplay(coord);
 	}
+
+	void Bounce::Reset(Coordinator& coord)
+	{
+		if (m_createdDisplays)
+			DeleteDisplay(coord);
+
+		m_createdDisplays = false;
+	}
+
 
 	void Bounce::UpdateOwner(Entity e) {
 		m_owner = e;
@@ -165,8 +171,7 @@ namespace NightSnack
 
 		m_currState = BOUNCE_RELEASED;
 
-		DeleteDisplay(coord);
-
+		HideDisplay(coord);
 		
 		if (coord.HasComponent<RigidBody>(m_owner))
 		{
@@ -209,19 +214,23 @@ namespace NightSnack
 
 	void Bounce::CreateDisplay(Coordinator& coord)
 	{
+		m_createdDisplays = true;
+
+		Collider col = coord.GetComponent<Collider>(m_owner);
+
 		for (int x = 0; x < m_guideDotnum; ++x)
 		{
 			Entity dot = coord.GetSystem<EntityFactory>()->Create(m_guideDotPrefab);
 			Transform& dotTrans = coord.ModifyComponent<Transform>(dot);
 			dotTrans.scale = Vec2(m_guideDotSize, m_guideDotSize);
-
 			if (coord.HasComponent<Collider>(dot))
 			{
-				coord.ModifyComponent<Collider>(dot).width = m_guideDotSize;
-				coord.ModifyComponent<Collider>(dot).height = m_guideDotSize;
-				coord.ModifyComponent<Collider>(dot).radius = m_guideDotSize;
+				coord.ModifyComponent<Collider>(dot).width = col.width;
+				coord.ModifyComponent<Collider>(dot).height = col.height;
+				coord.ModifyComponent<Collider>(dot).radius = col.radius;
 			}
 
+			dotTrans.isActive = false;
 			m_guideDots.push_back(dot);
 		}
 
@@ -234,8 +243,8 @@ namespace NightSnack
 		Transform& powerTrans = coord.ModifyComponent<Transform>(m_powerBar);
 		powerTrans.scale = m_powerBarScale;
 		powerTrans.pos = coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos;
+		powerTrans.isActive = false;
 
-		UpdateDisplays(coord);
 	}
 
 	void Bounce::UpdateDisplays(Coordinator& coord)
@@ -244,8 +253,8 @@ namespace NightSnack
 		//Change scale to x if horziontal bar
 		float newScale = ((m_powerBarScale.y - m_minPowerBarScale) * GetLaunchPowerRatio()) + m_minPowerBarScale; 
 		coord.ModifyComponent<Transform>(m_powerBar).scale.y = newScale;
+		coord.ModifyComponent<Transform>(m_powerBar).isActive = true;
 		coord.ModifyComponent<Transform>(m_powerBar).pos.y = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).y + (newScale/2);
-		;
 
 
 		//Update dots
@@ -348,6 +357,21 @@ namespace NightSnack
 		}
 	}
 
+	void Bounce::HideDisplay(Coordinator& coord)
+	{
+		if (!m_guideDots.empty())
+		{
+			for (Entity dot : m_guideDots)
+			{
+				if (dot != INVALID_ENTITY && coord.EntityIsAlive(dot))
+					coord.ModifyComponent<Transform>(dot).isActive = false;
+			}
+		}
+
+		if (m_powerBar != INVALID_ENTITY && coord.EntityIsAlive(m_powerBar))
+			coord.ModifyComponent<Transform>(m_powerBar).isActive = false;
+	}
+
 	void Bounce::DeleteDisplay(Coordinator& coord)
 	{
 		if (!m_guideDots.empty())
@@ -360,11 +384,12 @@ namespace NightSnack
 			m_guideDots.clear();
 		}
 
-		if (m_powerBar != INVALID_ENTITY)
+		if (m_powerBar != INVALID_ENTITY && coord.EntityIsAlive(m_powerBar))
 			coord.DestroyEntity(m_powerBar);
 
 		m_powerBar = INVALID_ENTITY;
 	}
+
 	void Bounce::Collided(Coordinator& coord, Entity other)
 	{
 		if (!m_active || other == INVALID_ENTITY)
