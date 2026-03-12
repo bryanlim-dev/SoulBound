@@ -1,16 +1,65 @@
 {
     "BGM": [
-        "GameLevelMusic"
+        "GameLevelMusic",
+        "NightForest",
+        "FrogAmbience",
+        "WindBlow"
     ],
     "Entities": [
         {
+            "Children": [
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -2450.0,
+                            "y": 1677.489990234375,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                }
+            ],
             "Prefab": "Player",
             "Transform": {
                 "Layer": "GameLayer",
                 "Name": "NoName",
                 "Position": {
-                    "x": -462.5,
-                    "y": -75.0,
+                    "x": -436.4549255371094,
+                    "y": -69.64785766601563,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
@@ -81,55 +130,6 @@
                         "Position": {
                             "x": -125.0,
                             "y": 3925.0,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Components": {
-                        "Collider": {
-                            "height": 80.0,
-                            "isStatic": true,
-                            "radius": 50.0,
-                            "shape": "AABB",
-                            "type": "Trigger",
-                            "width": 100.0
-                        },
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "FrogIdle_1_1",
-                            "meshName": "square"
-                        },
-                        "RigidBody": {
-                            "gravityMult": 1.0,
-                            "mass": 1.0,
-                            "restitution": 0.0,
-                            "useGravity": true,
-                            "useRotate": false
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "Frog",
-                        "Position": {
-                            "x": -1037.5,
-                            "y": 3737.5,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
@@ -292,33 +292,6 @@
                         }
                     },
                     "isPrefab": false
-                },
-                {
-                    "Prefab": "Collectible-Key",
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "NoName",
-                        "Position": {
-                            "x": -687.5,
-                            "y": 3937.5,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": true
                 },
                 {
                     "Prefab": "Checkpoint",
@@ -537,7 +510,7 @@
                         "Name": "RetarctableSprite-Spikes1",
                         "Position": {
                             "x": -762.5,
-                            "y": 4212.5,
+                            "y": 4337.4990234375,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
@@ -565,33 +538,6 @@
                         "Position": {
                             "x": 387.5,
                             "y": 4875.0,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": true
-                },
-                {
-                    "Prefab": "Collectible-DoubleJump",
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "NoName",
-                        "Position": {
-                            "x": -850.0,
-                            "y": 3925.0,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
@@ -2557,6 +2503,61 @@
                         "Layer": "GameLayer",
                         "Name": "Collider",
                         "Position": {
+                            "x": 1325.0,
+                            "y": 1037.5,
+                            "z": 1.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 250.0,
+                            "y": 50.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 50.0,
+                            "isStatic": true,
+                            "radius": 351.89520263671875,
+                            "shape": "AABB",
+                            "type": "Solid",
+                            "width": 350.0
+                        },
+                        "Color": {
+                            "a": 0.0,
+                            "b": 0.0,
+                            "g": 0.0,
+                            "r": 0.0
+                        },
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "InvisMat",
+                            "meshName": "square"
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": true,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "Collider",
+                        "Position": {
                             "x": 1950.0,
                             "y": 1187.5,
                             "z": 1.0
@@ -2632,33 +2633,6 @@
                         }
                     },
                     "isPrefab": false
-                },
-                {
-                    "Prefab": "Collectible-Key",
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "NoName",
-                        "Position": {
-                            "x": 975.0,
-                            "y": 887.5,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": true
                 },
                 {
                     "Children": [
@@ -3143,7 +3117,7 @@
                                 "Name": "RetractableSprite-Spikes1",
                                 "Position": {
                                     "x": 1575.0,
-                                    "y": 1550.0,
+                                    "y": 1674.999755859375,
                                     "z": 0.0
                                 },
                                 "Rotation": 180.0,
@@ -3234,7 +3208,7 @@
                                 "Name": "RetractableSprite-Spikes1",
                                 "Position": {
                                     "x": 1675.0,
-                                    "y": 1550.0,
+                                    "y": 1674.999755859375,
                                     "z": 0.0
                                 },
                                 "Rotation": 180.0,
@@ -3269,61 +3243,6 @@
                         "Rotation": 0.0,
                         "Scale": {
                             "x": 50.0,
-                            "y": 50.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Components": {
-                        "Collider": {
-                            "height": 50.0,
-                            "isStatic": true,
-                            "radius": 351.89520263671875,
-                            "shape": "AABB",
-                            "type": "Solid",
-                            "width": 350.0
-                        },
-                        "Color": {
-                            "a": 0.0,
-                            "b": 0.0,
-                            "g": 0.0,
-                            "r": 0.0
-                        },
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "InvisMat",
-                            "meshName": "square"
-                        },
-                        "RigidBody": {
-                            "gravityMult": 1.0,
-                            "mass": 1.0,
-                            "restitution": 0.0,
-                            "useGravity": true,
-                            "useRotate": false
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "Collider",
-                        "Position": {
-                            "x": 1325.0,
-                            "y": 1037.5,
-                            "z": 1.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 250.0,
                             "y": 50.0
                         },
                         "UIBasePosition": {
@@ -3446,6 +3365,68 @@
                         }
                     },
                     "isPrefab": true
+                },
+                {
+                    "Components": {
+                        "Animator": {
+                            "isLooping": true,
+                            "isPlaying": true,
+                            "playbackSpeed": 1.0,
+                            "spriteSheetName": "Sprites\\UI\\MainMenu\\TitleFireAnim_4_1.png"
+                        },
+                        "Collectible": {
+                            "cameraPanOrder": 3,
+                            "currTime": 0,
+                            "respawnTimeSteps": 0,
+                            "type": "KEY",
+                            "willRespawn": false
+                        },
+                        "Collider": {
+                            "height": 100.0,
+                            "isStatic": true,
+                            "radius": 50.0,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 100.0
+                        },
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "TitleFireAnim_4_1",
+                            "meshName": "square"
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "Collectible-Key",
+                        "Position": {
+                            "x": 949.804443359375,
+                            "y": 892.95556640625,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
                 }
             ],
             "Components": {
@@ -3924,7 +3905,7 @@
                         "Name": "NoName",
                         "Position": {
                             "x": 170.71923828125,
-                            "y": 1192.194091796875,
+                            "y": 1192.466796875,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
@@ -4410,33 +4391,6 @@
                     "isPrefab": false
                 },
                 {
-                    "Prefab": "Collectible-Key",
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "NoName",
-                        "Position": {
-                            "x": 650.0,
-                            "y": 1150.0,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": true
-                },
-                {
                     "Prefab": "Checkpoint",
                     "Transform": {
                         "Layer": "GameLayer",
@@ -4858,6 +4812,68 @@
                         }
                     },
                     "isPrefab": true
+                },
+                {
+                    "Components": {
+                        "Animator": {
+                            "isLooping": true,
+                            "isPlaying": true,
+                            "playbackSpeed": 1.0,
+                            "spriteSheetName": "Sprites\\UI\\MainMenu\\TitleFireAnim_4_1.png"
+                        },
+                        "Collectible": {
+                            "cameraPanOrder": 2,
+                            "currTime": 0,
+                            "respawnTimeSteps": 0,
+                            "type": "KEY",
+                            "willRespawn": false
+                        },
+                        "Collider": {
+                            "height": 100.0,
+                            "isStatic": true,
+                            "radius": 100.0,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 100.0
+                        },
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "TitleFireAnim_4_1",
+                            "meshName": "square"
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "Collectible-Key",
+                        "Position": {
+                            "x": 643.0477905273438,
+                            "y": 1153.7711181640625,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
                 }
             ],
             "Components": {
@@ -4897,7 +4913,7 @@
                         "Name": "NoName",
                         "Position": {
                             "x": -1750.0,
-                            "y": 1650.0,
+                            "y": 1650.272705078125,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
@@ -4916,6 +4932,228 @@
                         }
                     },
                     "isPrefab": true
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 100.0,
+                            "isStatic": true,
+                            "radius": 374.97381591796875,
+                            "shape": "AABB",
+                            "type": "Solid",
+                            "width": 400.0
+                        },
+                        "Color": {
+                            "a": 0.0,
+                            "b": 0.0,
+                            "g": 0.0,
+                            "r": 0.0
+                        },
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "InvisMat",
+                            "meshName": "square"
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": true,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "Collider",
+                        "Position": {
+                            "x": -900.0,
+                            "y": 1250.0,
+                            "z": 1.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 400.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Children": [
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "GroundTile",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Sprite-GroundTile",
+                                "Position": {
+                                    "x": -750.0,
+                                    "y": 1850.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 100.0,
+                                    "y": 300.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "GroundTile",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Sprite-GroundTile",
+                                "Position": {
+                                    "x": -1350.0,
+                                    "y": 2050.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 1300.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "GroundTile",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Sprite-GroundTile",
+                                "Position": {
+                                    "x": -1450.0,
+                                    "y": 1150.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 1100.0,
+                                    "y": 100.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        },
+                        {
+                            "Components": {
+                                "Renderable": {
+                                    "isWireframe": false,
+                                    "materialName": "GroundTile",
+                                    "meshName": "square"
+                                },
+                                "modified": true
+                            },
+                            "Transform": {
+                                "Layer": "GameLayer",
+                                "Name": "Sprite-GroundTile",
+                                "Position": {
+                                    "x": -2100.0,
+                                    "y": 1350.0,
+                                    "z": 0.0
+                                },
+                                "Rotation": 0.0,
+                                "Scale": {
+                                    "x": 200.0,
+                                    "y": 500.0
+                                },
+                                "UIBasePosition": {
+                                    "x": 0.0,
+                                    "y": 0.0,
+                                    "z": 0.0
+                                },
+                                "UIBaseScale": {
+                                    "x": 0.0,
+                                    "y": 0.0
+                                }
+                            },
+                            "isPrefab": false
+                        }
+                    ],
+                    "Components": {
+                        "modified": false
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "wall",
+                        "Position": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 50.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
                 },
                 {
                     "Children": [
@@ -5284,12 +5522,12 @@
                 {
                     "Components": {
                         "Collider": {
-                            "height": 100.0,
+                            "height": 600.0,
                             "isStatic": true,
-                            "radius": 374.97381591796875,
+                            "radius": 468.0427551269531,
                             "shape": "AABB",
                             "type": "Solid",
-                            "width": 400.0
+                            "width": 200.0
                         },
                         "Color": {
                             "a": 0.0,
@@ -5315,14 +5553,14 @@
                         "Layer": "GameLayer",
                         "Name": "Collider",
                         "Position": {
-                            "x": -900.0,
-                            "y": 1250.0,
+                            "x": -2100.0,
+                            "y": 1400.0,
                             "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 400.0,
-                            "y": 100.0
+                            "x": 200.0,
+                            "y": 600.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5436,235 +5674,13 @@
                     "isPrefab": false
                 },
                 {
-                    "Components": {
-                        "Collider": {
-                            "height": 600.0,
-                            "isStatic": true,
-                            "radius": 468.0427551269531,
-                            "shape": "AABB",
-                            "type": "Solid",
-                            "width": 200.0
-                        },
-                        "Color": {
-                            "a": 0.0,
-                            "b": 0.0,
-                            "g": 0.0,
-                            "r": 0.0
-                        },
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "InvisMat",
-                            "meshName": "square"
-                        },
-                        "RigidBody": {
-                            "gravityMult": 1.0,
-                            "mass": 1.0,
-                            "restitution": 0.0,
-                            "useGravity": true,
-                            "useRotate": false
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "Collider",
-                        "Position": {
-                            "x": -2100.0,
-                            "y": 1400.0,
-                            "z": 1.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 200.0,
-                            "y": 600.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Children": [
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "GroundTile",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Sprite-GroundTile",
-                                "Position": {
-                                    "x": -750.0,
-                                    "y": 1850.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 100.0,
-                                    "y": 300.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "GroundTile",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Sprite-GroundTile",
-                                "Position": {
-                                    "x": -1350.0,
-                                    "y": 2050.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 1300.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "GroundTile",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Sprite-GroundTile",
-                                "Position": {
-                                    "x": -1450.0,
-                                    "y": 1150.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 1100.0,
-                                    "y": 100.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        },
-                        {
-                            "Components": {
-                                "Renderable": {
-                                    "isWireframe": false,
-                                    "materialName": "GroundTile",
-                                    "meshName": "square"
-                                },
-                                "modified": true
-                            },
-                            "Transform": {
-                                "Layer": "GameLayer",
-                                "Name": "Sprite-GroundTile",
-                                "Position": {
-                                    "x": -2100.0,
-                                    "y": 1350.0,
-                                    "z": 0.0
-                                },
-                                "Rotation": 0.0,
-                                "Scale": {
-                                    "x": 200.0,
-                                    "y": 500.0
-                                },
-                                "UIBasePosition": {
-                                    "x": 0.0,
-                                    "y": 0.0,
-                                    "z": 0.0
-                                },
-                                "UIBaseScale": {
-                                    "x": 0.0,
-                                    "y": 0.0
-                                }
-                            },
-                            "isPrefab": false
-                        }
-                    ],
-                    "Components": {
-                        "modified": false
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "wall",
-                        "Position": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 50.0,
-                            "y": 50.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
                     "Prefab": "Collectible-DoubleJump",
                     "Transform": {
                         "Layer": "GameLayer",
                         "Name": "NoName",
                         "Position": {
                             "x": -1500.0,
-                            "y": 1450.0,
+                            "y": 1450.272705078125,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
@@ -6218,115 +6234,6 @@
                     "isPrefab": false
                 },
                 {
-                    "Components": {
-                        "Collider": {
-                            "height": 200.0,
-                            "isStatic": true,
-                            "radius": 349.1253662109375,
-                            "shape": "AABB",
-                            "type": "Solid",
-                            "width": 300.0
-                        },
-                        "Color": {
-                            "a": 0.0,
-                            "b": 0.0,
-                            "g": 0.0,
-                            "r": 0.0
-                        },
-                        "Renderable": {
-                            "isWireframe": false,
-                            "materialName": "InvisMat",
-                            "meshName": "square"
-                        },
-                        "RigidBody": {
-                            "gravityMult": 1.0,
-                            "mass": 1.0,
-                            "restitution": 0.0,
-                            "useGravity": true,
-                            "useRotate": false
-                        },
-                        "modified": true
-                    },
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "Collider",
-                        "Position": {
-                            "x": -2350.0,
-                            "y": 1600.0,
-                            "z": 1.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 300.0,
-                            "y": 200.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": false
-                },
-                {
-                    "Prefab": "Collectible-DoubleJump",
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "NoName",
-                        "Position": {
-                            "x": -3062.5,
-                            "y": 1925.0,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": true
-                },
-                {
-                    "Prefab": "Collectible-Key",
-                    "Transform": {
-                        "Layer": "GameLayer",
-                        "Name": "NoName",
-                        "Position": {
-                            "x": -3475.0,
-                            "y": 2175.0,
-                            "z": 0.0
-                        },
-                        "Rotation": 0.0,
-                        "Scale": {
-                            "x": 100.0,
-                            "y": 100.0
-                        },
-                        "UIBasePosition": {
-                            "x": 0.0,
-                            "y": 0.0,
-                            "z": 0.0
-                        },
-                        "UIBaseScale": {
-                            "x": 0.0,
-                            "y": 0.0
-                        }
-                    },
-                    "isPrefab": true
-                },
-                {
                     "Children": [
                         {
                             "Components": {
@@ -6767,6 +6674,13 @@
                 },
                 {
                     "Components": {
+                        "Audio": {
+                            "audioKey": "",
+                            "isPlaying": false,
+                            "loop": false,
+                            "playOnStart": false,
+                            "volume": 1.0
+                        },
                         "Collider": {
                             "height": 100.0,
                             "isStatic": false,
@@ -6826,7 +6740,7 @@
                     },
                     "Transform": {
                         "Layer": "Background",
-                        "Name": "RetarctableSprite-Spikes1",
+                        "Name": "RetractableSprite-Spikes1",
                         "Position": {
                             "x": -3537.5,
                             "y": 2025.0,
@@ -6851,6 +6765,13 @@
                 },
                 {
                     "Components": {
+                        "Audio": {
+                            "audioKey": "",
+                            "isPlaying": false,
+                            "loop": false,
+                            "playOnStart": false,
+                            "volume": 1.0
+                        },
                         "Collider": {
                             "height": 100.0,
                             "isStatic": false,
@@ -6910,7 +6831,7 @@
                     },
                     "Transform": {
                         "Layer": "Background",
-                        "Name": "RetarctableSprite-Spikes1",
+                        "Name": "RetractableSprite-Spikes1",
                         "Position": {
                             "x": -3412.5,
                             "y": 2025.0,
@@ -6932,6 +6853,95 @@
                         }
                     },
                     "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Animator": {
+                            "isLooping": true,
+                            "isPlaying": true,
+                            "playbackSpeed": 1.0,
+                            "spriteSheetName": "Sprites\\UI\\MainMenu\\TitleFireAnim_4_1.png"
+                        },
+                        "Collectible": {
+                            "cameraPanOrder": 1,
+                            "currTime": 0,
+                            "respawnTimeSteps": 0,
+                            "type": "KEY",
+                            "willRespawn": false
+                        },
+                        "Collider": {
+                            "height": 100.0,
+                            "isStatic": true,
+                            "radius": 50.0,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 100.0
+                        },
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "TitleFireAnim_4_1",
+                            "meshName": "square"
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "Collectible-Key",
+                        "Position": {
+                            "x": -3475.06689453125,
+                            "y": 2174.680908203125,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Prefab": "Collectible-DoubleJump",
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "NoName",
+                        "Position": {
+                            "x": -3062.5,
+                            "y": 1925.272705078125,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": true
                 },
                 {
                     "Children": [
@@ -7114,6 +7124,61 @@
                         "Scale": {
                             "x": 50.0,
                             "y": 50.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 200.0,
+                            "isStatic": true,
+                            "radius": 349.1253662109375,
+                            "shape": "AABB",
+                            "type": "Solid",
+                            "width": 300.0
+                        },
+                        "Color": {
+                            "a": 0.0,
+                            "b": 0.0,
+                            "g": 0.0,
+                            "r": 0.0
+                        },
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "InvisMat",
+                            "meshName": "square"
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": true,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "Collider",
+                        "Position": {
+                            "x": -2350.0,
+                            "y": 1600.0,
+                            "z": 1.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 300.0,
+                            "y": 200.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -8641,6 +8706,2542 @@
                 "Scale": {
                     "x": 200.0,
                     "y": 200.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Collider": {
+                    "height": 100.0,
+                    "isStatic": true,
+                    "radius": 50.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 100.0
+                },
+                "Color": {
+                    "a": 0.0,
+                    "b": 0.0,
+                    "g": 0.0,
+                    "r": 0.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "ColorMat",
+                    "meshName": "square"
+                },
+                "RigidBody": {
+                    "gravityMult": 1.0,
+                    "mass": 1.0,
+                    "restitution": 0.0,
+                    "useGravity": true,
+                    "useRotate": false
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "Collider",
+                "Position": {
+                    "x": -687.5,
+                    "y": 3937.5,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 100.0,
+                    "y": 100.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Collider": {
+                    "height": 25.0,
+                    "isStatic": false,
+                    "radius": 37.5,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 40.0
+                },
+                "RigidBody": {
+                    "gravityMult": 1.0,
+                    "mass": 1.0,
+                    "restitution": 0.0,
+                    "useGravity": false,
+                    "useRotate": false
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "CloseToGroundedHitbox",
+                "Position": {
+                    "x": -2450.0,
+                    "y": 1677.489990234375,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 25.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3506.53076171875,
+                    "y": 2231.542724609375,
+                    "z": 0.0
+                },
+                "Rotation": 96.1084213256836,
+                "Scale": {
+                    "x": 2.793912172317505,
+                    "y": 2.6493778228759766
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 906.315673828125,
+                    "y": 954.59716796875,
+                    "z": 0.0
+                },
+                "Rotation": -119.08203887939453,
+                "Scale": {
+                    "x": 3.501769542694092,
+                    "y": 2.7386600971221924
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 953.6585083007813,
+                    "y": 972.655517578125,
+                    "z": 0.0
+                },
+                "Rotation": 45.06941604614258,
+                "Scale": {
+                    "x": 3.789207935333252,
+                    "y": 3.9234893321990967
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 641.4744873046875,
+                    "y": 1193.5999755859375,
+                    "z": 0.0
+                },
+                "Rotation": -99.28144836425781,
+                "Scale": {
+                    "x": 3.0569729804992676,
+                    "y": 3.0583856105804443
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3515.402587890625,
+                    "y": 2280.3984375,
+                    "z": 0.0
+                },
+                "Rotation": 97.13170623779297,
+                "Scale": {
+                    "x": 3.2844345569610596,
+                    "y": 3.4784469604492188
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 936.0816650390625,
+                    "y": 945.7733154296875,
+                    "z": 0.0
+                },
+                "Rotation": -98.93933868408203,
+                "Scale": {
+                    "x": 3.249509811401367,
+                    "y": 2.904963254928589
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 612.7670288085938,
+                    "y": 1182.5667724609375,
+                    "z": 0.0
+                },
+                "Rotation": 110.7511215209961,
+                "Scale": {
+                    "x": 4.069039344787598,
+                    "y": 3.7363641262054443
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3442.12451171875,
+                    "y": 2252.523681640625,
+                    "z": 0.0
+                },
+                "Rotation": 28.71607780456543,
+                "Scale": {
+                    "x": 3.4911537170410156,
+                    "y": 3.434056043624878
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 915.6778564453125,
+                    "y": 952.829833984375,
+                    "z": 0.0
+                },
+                "Rotation": 8.795892715454102,
+                "Scale": {
+                    "x": 4.904047966003418,
+                    "y": 4.564937114715576
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 635.2449340820313,
+                    "y": 1191.5634765625,
+                    "z": 0.0
+                },
+                "Rotation": 69.4004135131836,
+                "Scale": {
+                    "x": 4.238562107086182,
+                    "y": 4.596342086791992
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3505.265869140625,
+                    "y": 2221.463134765625,
+                    "z": 0.0
+                },
+                "Rotation": 68.9780044555664,
+                "Scale": {
+                    "x": 3.873117446899414,
+                    "y": 4.615142345428467
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 980.070068359375,
+                    "y": 960.10400390625,
+                    "z": 0.0
+                },
+                "Rotation": -94.48731231689453,
+                "Scale": {
+                    "x": 5.20003604888916,
+                    "y": 4.005298614501953
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 647.8915405273438,
+                    "y": 1201.7398681640625,
+                    "z": 0.0
+                },
+                "Rotation": -34.997562408447266,
+                "Scale": {
+                    "x": 5.430719375610352,
+                    "y": 4.734683036804199
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3504.25439453125,
+                    "y": 2237.993408203125,
+                    "z": 0.0
+                },
+                "Rotation": -38.89335632324219,
+                "Scale": {
+                    "x": 5.408639907836914,
+                    "y": 4.913702011108398
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 922.85107421875,
+                    "y": 957.3526000976563,
+                    "z": 0.0
+                },
+                "Rotation": 41.154502868652344,
+                "Scale": {
+                    "x": 4.312453269958496,
+                    "y": 5.000911235809326
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 657.5107421875,
+                    "y": 1205.95361328125,
+                    "z": 0.0
+                },
+                "Rotation": -74.1282958984375,
+                "Scale": {
+                    "x": 5.6885480880737305,
+                    "y": 4.330380916595459
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3461.576416015625,
+                    "y": 2231.04296875,
+                    "z": 0.0
+                },
+                "Rotation": 84.70658111572266,
+                "Scale": {
+                    "x": 4.411673545837402,
+                    "y": 4.105264663696289
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 974.113037109375,
+                    "y": 957.638916015625,
+                    "z": 0.0
+                },
+                "Rotation": 32.50752258300781,
+                "Scale": {
+                    "x": 5.040281295776367,
+                    "y": 6.579457759857178
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 654.9269409179688,
+                    "y": 1181.3096923828125,
+                    "z": 0.0
+                },
+                "Rotation": -4.036126136779785,
+                "Scale": {
+                    "x": 6.605086803436279,
+                    "y": 5.325728416442871
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3460.87890625,
+                    "y": 2219.637451171875,
+                    "z": 0.0
+                },
+                "Rotation": -37.578678131103516,
+                "Scale": {
+                    "x": 6.363190174102783,
+                    "y": 5.462820053100586
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 950.2350463867188,
+                    "y": 946.0717163085938,
+                    "z": 0.0
+                },
+                "Rotation": 14.119906425476074,
+                "Scale": {
+                    "x": 5.1164960861206055,
+                    "y": 6.17966890335083
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 646.83203125,
+                    "y": 1187.074462890625,
+                    "z": 0.0
+                },
+                "Rotation": 0.27655670046806335,
+                "Scale": {
+                    "x": 6.664485454559326,
+                    "y": 7.150103569030762
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3488.339599609375,
+                    "y": 2191.986083984375,
+                    "z": 0.0
+                },
+                "Rotation": 27.8092098236084,
+                "Scale": {
+                    "x": 6.252448081970215,
+                    "y": 5.843850135803223
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 952.39013671875,
+                    "y": 913.636962890625,
+                    "z": 0.0
+                },
+                "Rotation": 8.234269142150879,
+                "Scale": {
+                    "x": 8.663975715637207,
+                    "y": 7.088721752166748
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 630.2272338867188,
+                    "y": 1197.2423095703125,
+                    "z": 0.0
+                },
+                "Rotation": 14.011541366577148,
+                "Scale": {
+                    "x": 8.459344863891602,
+                    "y": 5.80665397644043
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3467.76220703125,
+                    "y": 2203.368408203125,
+                    "z": 0.0
+                },
+                "Rotation": -6.989816188812256,
+                "Scale": {
+                    "x": 5.9074883460998535,
+                    "y": 7.464784622192383
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 945.612060546875,
+                    "y": 908.728759765625,
+                    "z": 0.0
+                },
+                "Rotation": -18.50160026550293,
+                "Scale": {
+                    "x": 7.911843299865723,
+                    "y": 7.803348064422607
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 630.9332275390625,
+                    "y": 1179.915283203125,
+                    "z": 0.0
+                },
+                "Rotation": 16.33479118347168,
+                "Scale": {
+                    "x": 7.346376895904541,
+                    "y": 8.324111938476563
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3483.102294921875,
+                    "y": 2193.63720703125,
+                    "z": 0.0
+                },
+                "Rotation": -24.12035369873047,
+                "Scale": {
+                    "x": 6.479482650756836,
+                    "y": 5.938136577606201
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1490.13232421875,
+                    "y": 1479.1248779296875,
+                    "z": 0.0
+                },
+                "Rotation": 82.71320343017578,
+                "Scale": {
+                    "x": 3.526376247406006,
+                    "y": 3.254490852355957
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 150.87286376953125,
+                    "y": 1215.93798828125,
+                    "z": 0.0
+                },
+                "Rotation": 186.28768920898438,
+                "Scale": {
+                    "x": 3.858093500137329,
+                    "y": 3.317444324493408
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1505.4210205078125,
+                    "y": 1422.327880859375,
+                    "z": 0.0
+                },
+                "Rotation": 99.9915542602539,
+                "Scale": {
+                    "x": 2.968639850616455,
+                    "y": 3.4380886554718018
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3088.09912109375,
+                    "y": 1949.0133056640625,
+                    "z": 0.0
+                },
+                "Rotation": 345.1230773925781,
+                "Scale": {
+                    "x": 3.1316287517547607,
+                    "y": 3.3351223468780518
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3072.973388671875,
+                    "y": 1903.1544189453125,
+                    "z": 0.0
+                },
+                "Rotation": 324.4971618652344,
+                "Scale": {
+                    "x": 2.8247969150543213,
+                    "y": 2.986201524734497
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 184.90179443359375,
+                    "y": 1165.859375,
+                    "z": 0.0
+                },
+                "Rotation": 120.59506225585938,
+                "Scale": {
+                    "x": 2.8469409942626953,
+                    "y": 2.444408655166626
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 950.7970581054688,
+                    "y": 913.3196411132813,
+                    "z": 0.0
+                },
+                "Rotation": 5.2728376388549805,
+                "Scale": {
+                    "x": 6.476789951324463,
+                    "y": 7.374027729034424
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 648.5892944335938,
+                    "y": 1164.2923583984375,
+                    "z": 0.0
+                },
+                "Rotation": -6.54361629486084,
+                "Scale": {
+                    "x": 6.7244744300842285,
+                    "y": 9.844589233398438
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3469.706298828125,
+                    "y": 2189.401123046875,
+                    "z": 0.0
+                },
+                "Rotation": 24.566862106323242,
+                "Scale": {
+                    "x": 9.28294849395752,
+                    "y": 8.478657722473145
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1535.293212890625,
+                    "y": 1447.6871337890625,
+                    "z": 0.0
+                },
+                "Rotation": 415.5272216796875,
+                "Scale": {
+                    "x": 2.5635628700256348,
+                    "y": 2.389492988586426
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1759.6922607421875,
+                    "y": 1631.63232421875,
+                    "z": 0.0
+                },
+                "Rotation": 264.7086181640625,
+                "Scale": {
+                    "x": 2.4236230850219727,
+                    "y": 2.4353487491607666
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3061.68798828125,
+                    "y": 1951.4190673828125,
+                    "z": 0.0
+                },
+                "Rotation": 379.6680603027344,
+                "Scale": {
+                    "x": 2.5267746448516846,
+                    "y": 2.4363231658935547
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 143.60910034179688,
+                    "y": 1190.01953125,
+                    "z": 0.0
+                },
+                "Rotation": 38.76538848876953,
+                "Scale": {
+                    "x": 2.213998556137085,
+                    "y": 2.386469841003418
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1475.3154296875,
+                    "y": 1477.50390625,
+                    "z": 0.0
+                },
+                "Rotation": 112.1363296508789,
+                "Scale": {
+                    "x": 2.112318515777588,
+                    "y": 2.1410183906555176
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1725.9749755859375,
+                    "y": 1679.37451171875,
+                    "z": 0.0
+                },
+                "Rotation": 18.33734703063965,
+                "Scale": {
+                    "x": 2.1674177646636963,
+                    "y": 2.1231377124786377
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3055.335693359375,
+                    "y": 1908.2431640625,
+                    "z": 0.0
+                },
+                "Rotation": 138.38197326660156,
+                "Scale": {
+                    "x": 2.2075648307800293,
+                    "y": 2.140153169631958
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 150.3341064453125,
+                    "y": 1198.893310546875,
+                    "z": 0.0
+                },
+                "Rotation": 292.877685546875,
+                "Scale": {
+                    "x": 2.0723564624786377,
+                    "y": 2.084956645965576
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1475.556884765625,
+                    "y": 1482.341064453125,
+                    "z": 0.0
+                },
+                "Rotation": 156.943115234375,
+                "Scale": {
+                    "x": 2.0207347869873047,
+                    "y": 2.0161309242248535
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1774.0057373046875,
+                    "y": 1629.8944091796875,
+                    "z": 0.0
+                },
+                "Rotation": 302.2935485839844,
+                "Scale": {
+                    "x": 2.020803928375244,
+                    "y": 2.0159225463867188
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3028.37890625,
+                    "y": 1937.675048828125,
+                    "z": 0.0
+                },
+                "Rotation": 297.3445739746094,
+                "Scale": {
+                    "x": 2.0164763927459717,
+                    "y": 2.0136771202087402
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 179.01707458496094,
+                    "y": 1158.938232421875,
+                    "z": 0.0
+                },
+                "Rotation": 282.30950927734375,
+                "Scale": {
+                    "x": 2.000715970993042,
+                    "y": 2.001176118850708
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 953.5337524414063,
+                    "y": 909.48779296875,
+                    "z": 0.0
+                },
+                "Rotation": 9.118361473083496,
+                "Scale": {
+                    "x": 9.567525863647461,
+                    "y": 7.719359874725342
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 644.2623291015625,
+                    "y": 1160.399169921875,
+                    "z": 0.0
+                },
+                "Rotation": 10.124906539916992,
+                "Scale": {
+                    "x": 8.529841423034668,
+                    "y": 9.268310546875
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3471.96875,
+                    "y": 2191.977783203125,
+                    "z": 0.0
+                },
+                "Rotation": 6.381515026092529,
+                "Scale": {
+                    "x": 9.1817626953125,
+                    "y": 9.74472713470459
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1483.4688720703125,
+                    "y": 1419.5040283203125,
+                    "z": 0.0
+                },
+                "Rotation": 261.5768737792969,
+                "Scale": {
+                    "x": 2.000365972518921,
+                    "y": 2.000638484954834
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1758.206298828125,
+                    "y": 1681.1358642578125,
+                    "z": 0.0
+                },
+                "Rotation": 65.1817626953125,
+                "Scale": {
+                    "x": 2.0004994869232178,
+                    "y": 2.0004470348358154
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3092.3662109375,
+                    "y": 1907.0101318359375,
+                    "z": 0.0
+                },
+                "Rotation": 364.3340759277344,
+                "Scale": {
+                    "x": 2.0003738403320313,
+                    "y": 2.000595808029175
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 194.45077514648438,
+                    "y": 1195.5823974609375,
+                    "z": 0.0
+                },
+                "Rotation": 54.72496032714844,
+                "Scale": {
+                    "x": 2.0516867637634277,
+                    "y": 2.060504674911499
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1480.373779296875,
+                    "y": 1441.0548095703125,
+                    "z": 0.0
+                },
+                "Rotation": 367.2499084472656,
+                "Scale": {
+                    "x": 2.1426310539245605,
+                    "y": 2.169830799102783
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1784.2353515625,
+                    "y": 1635.364990234375,
+                    "z": 0.0
+                },
+                "Rotation": 201.58615112304688,
+                "Scale": {
+                    "x": 2.1065609455108643,
+                    "y": 2.1110622882843018
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3090.45068359375,
+                    "y": 1939.7625732421875,
+                    "z": 0.0
+                },
+                "Rotation": 161.24884033203125,
+                "Scale": {
+                    "x": 2.1785497665405273,
+                    "y": 2.1555168628692627
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 196.93167114257813,
+                    "y": 1206.8616943359375,
+                    "z": 0.0
+                },
+                "Rotation": 360.92828369140625,
+                "Scale": {
+                    "x": 2.293532609939575,
+                    "y": 2.2670581340789795
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1475.710693359375,
+                    "y": 1444.578857421875,
+                    "z": 0.0
+                },
+                "Rotation": 53.297889709472656,
+                "Scale": {
+                    "x": 2.3685147762298584,
+                    "y": 2.3144102096557617
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1723.9124755859375,
+                    "y": 1659.017333984375,
+                    "z": 0.0
+                },
+                "Rotation": 320.62591552734375,
+                "Scale": {
+                    "x": 2.2873027324676514,
+                    "y": 2.447435140609741
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3051.55322265625,
+                    "y": 1908.074951171875,
+                    "z": 0.0
+                },
+                "Rotation": 203.3795166015625,
+                "Scale": {
+                    "x": 2.3475394248962402,
+                    "y": 2.4740495681762695
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 188.87879943847656,
+                    "y": 1215.7327880859375,
+                    "z": 0.0
+                },
+                "Rotation": 104.08845520019531,
+                "Scale": {
+                    "x": 2.7135355472564697,
+                    "y": 2.5973100662231445
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 948.6539306640625,
+                    "y": 898.6573486328125,
+                    "z": 0.0
+                },
+                "Rotation": 3.0425925254821777,
+                "Scale": {
+                    "x": 9.846367835998535,
+                    "y": 7.635828495025635
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 642.4344482421875,
+                    "y": 1158.6842041015625,
+                    "z": 0.0
+                },
+                "Rotation": 3.2058238983154297,
+                "Scale": {
+                    "x": 10.62225341796875,
+                    "y": 10.398913383483887
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-KeyGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3477.244140625,
+                    "y": 2177.645263671875,
+                    "z": 0.0
+                },
+                "Rotation": 6.373245716094971,
+                "Scale": {
+                    "x": 7.385641098022461,
+                    "y": 7.611785411834717
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1525.2109375,
+                    "y": 1472.5308837890625,
+                    "z": 0.0
+                },
+                "Rotation": 187.0011444091797,
+                "Scale": {
+                    "x": 2.671938419342041,
+                    "y": 2.8226871490478516
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1775.9014892578125,
+                    "y": 1644.0478515625,
+                    "z": 0.0
+                },
+                "Rotation": 304.7509460449219,
+                "Scale": {
+                    "x": 2.9077508449554443,
+                    "y": 2.874478340148926
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3040.87939453125,
+                    "y": 1919.75439453125,
+                    "z": 0.0
+                },
+                "Rotation": 332.2388610839844,
+                "Scale": {
+                    "x": 2.7643649578094482,
+                    "y": 2.7089710235595703
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 137.0765838623047,
+                    "y": 1193.224365234375,
+                    "z": 0.0
+                },
+                "Rotation": 310.5315246582031,
+                "Scale": {
+                    "x": 3.1228020191192627,
+                    "y": 2.700547695159912
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1471.9920654296875,
+                    "y": 1479.2640380859375,
+                    "z": 0.0
+                },
+                "Rotation": 126.14375305175781,
+                "Scale": {
+                    "x": 2.783280372619629,
+                    "y": 3.4351727962493896
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1779.5850830078125,
+                    "y": 1644.518798828125,
+                    "z": 0.0
+                },
+                "Rotation": 17.332921981811523,
+                "Scale": {
+                    "x": 3.295830249786377,
+                    "y": 2.8410658836364746
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3089.9345703125,
+                    "y": 1921.67822265625,
+                    "z": 0.0
+                },
+                "Rotation": 299.1778869628906,
+                "Scale": {
+                    "x": 3.4899988174438477,
+                    "y": 3.2871463298797607
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 156.7472381591797,
+                    "y": 1223.8394775390625,
+                    "z": 0.0
+                },
+                "Rotation": 113.51191711425781,
+                "Scale": {
+                    "x": 3.5477824211120605,
+                    "y": 3.003249168395996
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1507.7218017578125,
+                    "y": 1418.0771484375,
+                    "z": 0.0
+                },
+                "Rotation": 334.1344909667969,
+                "Scale": {
+                    "x": 3.964500904083252,
+                    "y": 4.168176174163818
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -1758.1094970703125,
+                    "y": 1619.393310546875,
+                    "z": 0.0
+                },
+                "Rotation": 23.84345245361328,
+                "Scale": {
+                    "x": 3.2044215202331543,
+                    "y": 3.2124886512756348
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": -3086.799560546875,
+                    "y": 1907.27783203125,
+                    "z": 0.0
+                },
+                "Rotation": 275.7395935058594,
+                "Scale": {
+                    "x": 3.9331140518188477,
+                    "y": 4.402413368225098
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Prefab": "Particle-OrbitGlow",
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "NoName",
+                "Position": {
+                    "x": 160.9547882080078,
+                    "y": 1216.18505859375,
+                    "z": 0.0
+                },
+                "Rotation": -1.450839638710022,
+                "Scale": {
+                    "x": 3.781886100769043,
+                    "y": 4.29728364944458
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": true
+        },
+        {
+            "Children": [
+                {
+                    "Components": {
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "UIMenu-Backdrop",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "DialogueBox",
+                        "Position": {
+                            "x": 1600.0,
+                            "y": 1549.1666259765625,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 3200.0,
+                            "y": 619.6666870117188
+                        },
+                        "UIBasePosition": {
+                            "x": 800.0,
+                            "y": 750.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 1600.0,
+                            "y": 300.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Animator": {
+                            "isLooping": true,
+                            "isPlaying": true,
+                            "playbackSpeed": 1.0,
+                            "spriteSheetName": "Sprites\\FrogMove_4_1.png"
+                        },
+                        "Renderable": {
+                            "isWireframe": false,
+                            "materialName": "FrogMove_4_1",
+                            "meshName": "square"
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "DialoguePortrait",
+                        "Position": {
+                            "x": 400.0,
+                            "y": 1445.888916015625,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 400.0,
+                            "y": 413.1111145019531
+                        },
+                        "UIBasePosition": {
+                            "x": 200.0,
+                            "y": 700.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 200.0,
+                            "y": 200.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Font": {
+                            "fontSize": 0.800000011920929,
+                            "fontType": "CaveatBrush-Regular",
+                            "offsetPosition": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0
+                            },
+                            "text": "",
+                            "textColor": {
+                                "b": 0.18623483180999756,
+                                "g": 0.18623483180999756,
+                                "r": 1.0
+                            },
+                            "textWrapRatio": 0.800000011920929
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "DialogueText",
+                        "Position": {
+                            "x": 500.0,
+                            "y": 680.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 1000.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 500.0,
+                            "y": 680.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 1000.0,
+                            "y": 100.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Font": {
+                            "fontSize": 0.6000000238418579,
+                            "fontType": "CaveatBrush-Regular",
+                            "offsetPosition": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0
+                            },
+                            "text": "Press [ENTER] or LMB to continue ...",
+                            "textColor": {
+                                "b": 1.0,
+                                "g": 1.0,
+                                "r": 1.0
+                            },
+                            "textWrapRatio": 0.0
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "DialogueHintText",
+                        "Position": {
+                            "x": 1000.0,
+                            "y": 830.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 1000.0,
+                            "y": 830.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Font": {
+                            "fontSize": 1.0,
+                            "fontType": "CaveatBrush-Regular",
+                            "offsetPosition": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0
+                            },
+                            "text": "",
+                            "textColor": {
+                                "b": 1.0,
+                                "g": 1.0,
+                                "r": 1.0
+                            },
+                            "textWrapRatio": 0.0
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "DialogueSpeakerName",
+                        "Position": {
+                            "x": 200.0,
+                            "y": 840.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 200.0,
+                            "y": 100.0
+                        },
+                        "UIBasePosition": {
+                            "x": 200.0,
+                            "y": 840.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 200.0,
+                            "y": 100.0
+                        }
+                    },
+                    "isPrefab": false
+                }
+            ],
+            "Components": {
+                "modified": false
+            },
+            "Transform": {
+                "Layer": "GameUI",
+                "Name": "DialogueUIEntities",
+                "Position": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 50.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 50.0,
+                    "y": 50.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Collider": {
+                    "height": 50.0,
+                    "isStatic": true,
+                    "radius": 50.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 50.0
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "DialogueCollider_dialogue2",
+                "Position": {
+                    "x": -338.0281677246094,
+                    "y": -88.47156524658203,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 50.0
                 },
                 "UIBasePosition": {
                     "x": 0.0,
