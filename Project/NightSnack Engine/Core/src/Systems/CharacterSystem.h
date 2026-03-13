@@ -18,21 +18,71 @@
 namespace NightSnack {
 	class CharacterSystem : public ISystem {
 	public:
+
+		/************************************************************************/
+		/*!
+		\brief
+			Constructor for CharacterSystem
+
+		\param coord
+			Coordinator reference to access components and entities
+
+		\param disp
+			EventDispatcher reference to subscribe to events
+		*/
+		/************************************************************************/
 		CharacterSystem(Coordinator& coord, EventDispatcher& disp) : m_coord(coord), m_dispatcher(&disp) {
 			m_systemSignature.set(GetComponentTypeID<Character>());
 		}
 
+		/************************************************************************/
+		/*!
+		\brief
+			Updates the CharacterSystem.
+
+		\param coord
+			Coordinator reference to access components and entities
+
+		\param disp
+			EventDispatcher reference to subscribe to events
+		*/
+		/************************************************************************/
 		void Update() override;
 
 		// Required by ISystem base class;
 		Signature GetSignature() const override { return m_systemSignature; }
 		std::string GetName() const { return "CharacterSystem"; }
-
+		
+		/************************************************************************/
+		/*!
+		\brief
+			Updates the entity property map to reflect the current 
+			CharacterProperties of all entities.
+		*/
+		/************************************************************************/
 		void UpdateEntityPropertyMap();
 
+		/************************************************************************/
+		/*!
+		\brief
+			Finds entities with the specified CharacterProperties.
+
+		\param propertities
+			The CharacterProperties to search for.
+		*/
+		/************************************************************************/
 		std::list<Entity> FindEntityWithPropertities(CharacterProperties propertities);
 
-		//Returns if CharacterProperties can be turned into string
+		/************************************************************************/
+		/*!
+		\brief
+			Converts a CharacterProperties enum value to its 
+			corresponding string representation.
+
+		\param prop
+			The CharacterProperties enum value to convert.
+		*/
+		/************************************************************************/
 		inline static std::string CharacterPropertiesToString(CharacterProperties prop)
 		{
 			switch (prop)
@@ -45,8 +95,16 @@ namespace NightSnack {
 			}
 		}
 
-		//Returns if CharacterProperties enum can be turned into a string
-		//out returns the property
+		/************************************************************************/
+		/*!
+		\brief
+			Converts a CharacterProperties enum value to its 
+			corresponding string representation.
+
+		\param prop
+			The CharacterProperties enum value to convert.
+		*/
+		/************************************************************************/
 		inline static bool StringToCharacterProperties(
 			std::string_view str,
 			CharacterProperties& out)

@@ -345,6 +345,13 @@ namespace NightSnack
         /************************************************************************/
         void CharacterComponent();
 
+        /************************************************************************/
+        /*!
+        \brief
+            Draws Collectible component details which includes collectible type, 
+            respawn properties, and other collectible-related attributes.
+        */
+        /************************************************************************/
         void CollectibleComponent();
 
         /************************************************************************/
@@ -1668,6 +1675,7 @@ namespace NightSnack
         }
     }
 
+	// Draws Hierarchy component details which includes parent-child relationships and other hierarchy-related properties.
     inline void InspectorPanel::HierarchyComponent()
     {
         if (!m_coord.HasComponent<Hierarchy>(*m_selectedEntity))
@@ -1969,6 +1977,7 @@ namespace NightSnack
         } //End entire script table
     }
 
+	// Draws Character component details which includes character properties and other character-related attributes.
     inline void InspectorPanel::CharacterComponent()
     {
         if (!m_coord.HasComponent<Character>(*m_selectedEntity))
@@ -2088,6 +2097,7 @@ namespace NightSnack
         }
     }
 
+	// Draws Collectible component details which includes collectible type, respawn properties, and other collectible-related attributes.
     inline void InspectorPanel::CollectibleComponent() {
         if (!m_coord.HasComponent<Collectible>(*m_selectedEntity))
             return;

@@ -42,6 +42,7 @@ namespace NightSnack {
     using ButtonSnapshot            = ComponentSnapshot<ButtonInfo>;
     using AudioSnapshot             = ComponentSnapshot<Audio>;
 
+	// Snapshot for Physics Settings (not tied to an entity)
     struct PhysicsSettingsSnapshot
     {
         float gravity;
@@ -49,12 +50,14 @@ namespace NightSnack {
         float friction;
 	};
 
+	// Snapshots for adding/removing components
     struct ComponentAddSnapshot
     {
         Entity entity;
         std::string componentName;
     };
 
+	// Snapshot for removing a component
     struct ComponentRemoveSnapshot
     {
         Entity entity;
@@ -72,11 +75,13 @@ namespace NightSnack {
 		std::optional<Collectible>      collectible;
     };
 
+	// Snapshots for entity creation/deletion
     struct EntityCreateSnapshot
     {
         Entity entity;
     };
 
+	// When deleting an entity
     struct EntityDeleteSnapshot
     {
         Entity      entity;
@@ -85,11 +90,11 @@ namespace NightSnack {
         std::optional<Collider> collider;
     };
 
+	// Snapshots for camera trigger creation/deletion
     struct CamTriggerCreateSnapshot
     {
         Entity entity;
     };
-
     struct CamTriggerDeleteSnapshot
     {
         Entity    entity;
@@ -98,6 +103,7 @@ namespace NightSnack {
         json      bounds;
     };
 
+	// Variant type to hold any undo action
     using UndoAction = std::variant<
         TransformSnapshot,
         EntityCreateSnapshot,
@@ -119,14 +125,42 @@ namespace NightSnack {
 
     class UndoSystem {
     public:
-		// Instance access
+
+        /************************************************************************/
+        /*!
+        \brief
+            Updates the UndoSystem.
+
+        \param coord
+            - Coordinator reference to access components and entities
+
+        \param disp
+            - EventDispatcher reference to subscribe to events
+        */
+        /************************************************************************/
+        void Update(Coordinator& coord, EventDispatcher& disp);
+
+        /************************************************************************/
+        /*!
+        \brief
+		    Singleton access method for UndoSystem instance.
+        */
+        /************************************************************************/
         static UndoSystem& Instance()
         {
             static UndoSystem instance;
             return instance;
         }
 
-		// Push new action onto the undo stack
+        /************************************************************************/
+        /*!
+        \brief
+            Pushes a new action onto the undo stack.
+
+        \param action
+			- The action to be added to the undo stack.
+        */
+        /************************************************************************/
         void Push(const UndoAction& action)
         {
             if (undoStack.size() >= maxSteps) undoStack.pop_front();
@@ -134,7 +168,12 @@ namespace NightSnack {
             redoStack.clear();
         }
 
-		// Pop action from the undo stack
+        /************************************************************************/
+        /*!
+        \brief
+            Pops an action from the undo stack.
+        */
+        /************************************************************************/
         std::optional<UndoAction> Pop()
         {
             if (undoStack.empty()) { return std::nullopt; }
@@ -145,13 +184,30 @@ namespace NightSnack {
             return action;
         }
 
-		// Clear the undo stack
+        /************************************************************************/
+        /*!
+        \brief
+		    Clears the undo & redo stack.
+        */
+        /************************************************************************/
         void Clear() { undoStack.clear(); }
-
-        // Clear the redo stack
 		void ClearRedo() { redoStack.clear(); }
 
-		// Perform the undo operation
+        /************************************************************************/
+        /*!
+        \brief
+			Performs the undo operation. This will revert the last action 
+            taken in the editor, such as modifying a component, 
+            adding/removing a component, creating/deleting an entity, 
+            or creating/deleting a camera trigger.
+
+        \param coord
+			- Coordinator reference to access components and entities
+
+        \param factory
+			- EntityFactory reference to create/remove entities as needed for undo operations.
+        */
+        /************************************************************************/
         void PerformUndo(Coordinator& coord, EntityFactory& factory)
         {
 			// Get the last action, return if none
@@ -162,6 +218,7 @@ namespace NightSnack {
             std::visit([&](auto&& act) {
                 using T = std::decay_t<decltype(act)>;
 
+				// For component modifications, capture current state for redo and revert to old state
                 if constexpr (IsComponentSnapshot<T>::value)
                 {
                     using Comp = typename IsComponentSnapshot<T>::ComponentType;
@@ -260,7 +317,18 @@ namespace NightSnack {
             }, action);
         }
 
-        // Redo operation
+        /************************************************************************/
+        /*!
+        \brief
+            Performs a redo operation by reapplying the last undone action.
+
+		\param coord
+		    - Coordinator reference to access components and entities
+
+        \param factory
+			- EntityFactory reference to create/remove entities as needed for redo operations.
+        */
+        /************************************************************************/
         void PerformRedo(Coordinator& coord, EntityFactory& factory)
         {
             (void)factory;
@@ -370,6 +438,18 @@ namespace NightSnack {
             }, action);
         }
 
+        /************************************************************************/
+        /*!
+        \brief
+            Remaps the entity ID in the undo stack.
+
+        \param oldId
+			- The old entity ID to be replaced.
+
+		\param newId
+		    - The new entity ID to replace with.
+        */
+        /************************************************************************/
         void RemapEntityId(Entity oldId, Entity newId)
         {
             for (auto& action : undoStack)
@@ -407,15 +487,43 @@ namespace NightSnack {
             using ComponentType = TComp;
         };
 
-		// Push action onto stack with max size limit
+        /************************************************************************/
+        /*!
+        \brief
+			Pushes a new action onto the specified stack.
+
+		\param stack
+		    - The stack to push the action onto (undo or redo).
+
+		\param action
+            - The action to be added to the stack.
+        */
+        /************************************************************************/
         void PushToStack(std::deque<UndoAction>& stack, UndoAction action)
         {
             if (stack.size() >= maxSteps) stack.pop_front();
             stack.push_back(std::move(action));
         }
 
-		// Handle undo for component addition by removing the component and 
-        // saving its state if it existed
+        /************************************************************************/
+        /*!
+        \brief
+            Undoes the addition of a component by removing it 
+            and restoring its previous state if it existed.
+
+		\param coord
+		    - Coordinator reference to access components and entities
+
+        \param entity
+			- The entity from which the component was added.
+
+		\param name
+			- The name of the component to be removed.
+
+        \param targetStack
+			- The stack to push the undo action onto (undo or redo).
+        */
+        /************************************************************************/
         void UndoComponentAdd(Coordinator& coord, Entity entity,
             const std::string& name, std::deque<UndoAction>& targetStack)
         {
@@ -443,8 +551,22 @@ namespace NightSnack {
             else if (name == "Animator")    { if (coord.HasComponent<Animator>(entity)) { coord.RemoveComponent<Animator>(entity); PushToStack(targetStack, ComponentAddSnapshot{ entity, name }); } }
         }
 
-		// Handle undo for component removal by re-adding the component with 
-        // its previous state if it existed, and saving current state if it exists
+        /************************************************************************/
+        /*!
+        \brief
+            Undoes a component removal action by re-adding the component 
+            with its previous state.
+
+		\param coord
+			- Coordinator reference to access components and entities.
+
+        \param act
+			- The action to be undone.
+
+        \param targetStack
+			- The stack to push the redo action onto.
+        */
+        /************************************************************************/
         void UndoComponentRemove(Coordinator& coord, const ComponentRemoveSnapshot& act,
             std::deque<UndoAction>& targetStack)
         {

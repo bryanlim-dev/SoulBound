@@ -2,7 +2,8 @@
  * File:        SceneManager.cpp
  * Project:     NightSnack
  * Author(s):	Chewn Thing Kwan (Primary, 60%)
- *				Bryan Lim Jun Jie (Secondary, 40%)
+ *				Bryan Lim Jun Jie (Secondary, 30%)
+ *				Wei Jie Lim (Secondary, 10%)
  *
  * Description:
  * This file defines functions that assist in scene managment such as level
@@ -379,6 +380,7 @@ namespace NightSnack::Scene {
 		}
 	}
 
+	// Read camera keyframes from JSON and create trigger colliders for each keyframe
 	void SceneManager::ReadCameraKeyframes(json const& j) {
 		m_camFrames.clear();
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
