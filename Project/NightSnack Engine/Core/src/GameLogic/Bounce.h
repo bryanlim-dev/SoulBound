@@ -82,6 +82,22 @@ namespace NightSnack {
 	public:
 		Bounce(){}
 
+		/************************************************************************/
+		/*!
+		\brief
+		Called when creating the ability class
+		Initalizes the owner and event calls/functions/subscriptions
+
+		/param owner
+		Entity ID of the owner
+
+		/param coord
+		Refernece to the coordinator
+		
+		/param disp
+		Reference to the EventDispatcher to subscribe to
+		*/
+		/************************************************************************/
 		void Initalize(Entity owner, Coordinator& coord, EventDispatcher& disp) { 
 			m_owner = owner; 
 			disp.Subscribe<CollisionEvent>([this, &coord](const CollisionEvent& event)
