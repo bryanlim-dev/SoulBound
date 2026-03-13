@@ -310,8 +310,11 @@ namespace NightSnack {
                 if (m_flags.isGliding)
                     m_flags.isGliding = false;
 
-                Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
-                m_coord.ModifyComponent<Renderable>(player).materialName = "SpiritMove_4_1";
+                if (curr_ability == "Glide")
+                {
+                    Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+                    m_coord.ModifyComponent<Renderable>(player).materialName = "SpiritMove_4_1";
+                }
             }
 
             bool movingHorizontally = (m_flags.movingLeft ^ m_flags.movingRight);
@@ -386,13 +389,16 @@ namespace NightSnack {
             }
 
             // reset glide flag when grounded
-            if (isGrounded) 
+            if (isGrounded)
             {
                 if (m_flags.isGliding)
                     m_flags.isGliding = false;
 
-                Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
-                m_coord.ModifyComponent<Renderable>(player).materialName = "SpiritMove_4_1";
+                if (curr_ability == "Glide")
+                {
+                    Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
+                    m_coord.ModifyComponent<Renderable>(player).materialName = "SpiritMove_4_1";
+                }
             }
 
             prev_ability = curr_ability;
