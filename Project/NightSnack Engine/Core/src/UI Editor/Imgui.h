@@ -591,11 +591,6 @@ namespace NightSnack {
 						scene->NewLevel();
 						m_scenePanel->CreateEditorCamera();
 						NightSnack::UndoSystem::Instance().Clear();
-
-						// Reset the level name field so user doesn't accidentally
-						// overwrite an existing level on first Save
-						// (levelName is static inside BeginMenu so grab it via pointer trick,
-						//  or just declare it static at this outer scope too)
 					}
 					ImGui::CloseCurrentPopup();
 				}

@@ -17099,7 +17099,7 @@
                 },
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "ghost_4_1",
+                    "materialName": "InvisMat",
                     "meshName": "square"
                 },
                 "modified": true
@@ -17146,7 +17146,7 @@
                 },
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "ghost_4_1",
+                    "materialName": "InvisMat",
                     "meshName": "square"
                 },
                 "modified": true
@@ -17193,7 +17193,7 @@
                 },
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "ghost_4_1",
+                    "materialName": "InvisMat",
                     "meshName": "square"
                 },
                 "modified": true
