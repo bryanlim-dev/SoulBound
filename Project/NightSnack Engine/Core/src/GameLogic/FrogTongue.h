@@ -1,7 +1,8 @@
 /******************************************************************************
  * File:        FrogTongue.h
  * Project:     NightSnack
- * Author(s):	Clement Ang Yang Ying (Primary, 100%)
+ * Author(s):	Clement Ang Yang Ying (Primary, 80%)
+ *				Wei Jie Lim	(Secondary, 20%) - Added indicator functions for grappable points
  *
  * Description:
  * This file declares the the class FrogTongue and its functions
@@ -86,33 +87,138 @@ namespace NightSnack {
 				});
 		}
 		
-		//Finds thed cloest attachtable surface/entity
-		//Returns false if too far to attach or cant find
+
+		/************************************************************************/
+		/*!
+		\brief
+		Called before grapple ability starts
+		Finds thed cloest attachtable surface/entity
+		Creates the tongue entity object if not created
+		Returns false if too far to attach or cant find
+
+		/param coord
+		Refernece to the coordinator
+
+		/return
+		True - Grapple actiavted
+		False - Grapple not activated (usually due to no attach points)
+		*/
+		/************************************************************************/
 		bool Start(Coordinator& coord);
 		//Update function for tongue
 		//Returns false if ability stopped
+
+		/************************************************************************/
+		/*!
+		\brief
+		Called during update when grappling ability is active
+
+		/param coord
+		Refernece to the coordinator
+
+		/return
+		True - Grapple is still active
+		False - Grapple deactivated
+		*/
+		/************************************************************************/
 		bool Update(Coordinator& coord);
 		void End(Coordinator& coord);
 
 		//Only supports player
+		/************************************************************************/
+		/*!
+		\brief
+		Applies a swing for to the entity
+		Currently only works for the main player entity
+
+		/param coord
+		Refernece to the coordinator
+
+		/param isRight
+		True - Swinging to the right
+		False - Swinging to the left
+		*/
+		/************************************************************************/
 		void SwingActivated(Coordinator& coord, bool isRight);
 
-		//Extends the tongue
+		/************************************************************************/
+		/*!
+		\brief
+		Extends or retracts the tongue/distance between the entity and the anchor
+
+		/param coord
+		Refernece to the coordinator
+
+		/param isExtend
+		True - Extending distance
+		False - Retracting distance
+		*/
+		/************************************************************************/
 		void ExtendRetractTongue(Coordinator& coord, bool isExtend);
 
-		// Updates the owner position to match the tongue anchor poin
+		/************************************************************************/
+		/*!
+		\brief
+		Updates the owner position to match the tongue anchor poin
+
+		/param coord
+		Refernece to the coordinator
+		*/
+		/************************************************************************/
 		void UpdateOwner(Entity e);
 
-		// Updates the indicator position and visibility
+		/************************************************************************/
+		/*!
+		\brief
+		Updates the indicator particles position and visibility
+
+		/param coord
+		Refernece to the coordinator
+		*/
+		/************************************************************************/
 		void UpdateIndicator(Coordinator& coord);
 
 	private:
 
+		/************************************************************************/
+		/*!
+		\brief
+		Updates the tongue entity that is between the anchor and entity
+
+		/param coord
+		Refernece to the coordinator
+		*/
+		/************************************************************************/
 		void UpdateTonguePos(Coordinator& coord);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Calculates and returns the distance between the 2 vectors, returns distance oonly in positive numbers
+		Usually for the owner and anchor
+
+		/param ownerPos
+		Vec3 of the owner pos
+
+		/param anchorPos
+		Vec3 of the anchor pos
+
+		/return
+		Magnitude distance of the vectors, but only in positive numbers
+		*/
+		/************************************************************************/
 		float DistanceToAnchor(Vec3 ownerPos, Vec3 anchorPos);
 
-		// Spawn and Destroy methods for indicator
-		void SpawnIndicator(Coordinator& coord);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Destroy methods for indicator
+
+		/param coord
+		Refernece to the coordinator
+		*/
+		/************************************************************************/
 		void DestroyIndicator(Coordinator& coord);
 
 	};
