@@ -776,6 +776,10 @@ extern "C" {
         return g_scriptInterface->KillPlayer();
     }
 
+    static MonoString* NightSnack_GetPlayerAbility(uint32_t id) {
+        if (!g_scriptInterface) { return NULL; }
+        return NightSnack::Scripting::StringToMonoString(g_scriptInterface->GetPlayerAbility());
+    }
 #pragma endregion
 
     static void NightSnack_LoadLevel(MonoString* lvl)
@@ -791,10 +795,6 @@ extern "C" {
         g_scriptInterface->RestartLevel();
     }
 
-    static MonoString* NightSnack_GetPlayerAbility(uint32_t id) {
-        if (!g_scriptInterface) { return NULL; }
-        return NightSnack::Scripting::StringToMonoString(g_scriptInterface->GetPlayerAbility());
-    }
 
 
 
