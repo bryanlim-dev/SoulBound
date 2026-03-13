@@ -4750,7 +4750,7 @@
                         "Position": {
                             "x": 1300.0,
                             "y": -112.5,
-                            "z": 5.0
+                            "z": 0.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
@@ -4848,7 +4848,7 @@
                         "Position": {
                             "x": 1237.5,
                             "y": -212.5,
-                            "z": 5.0
+                            "z": 0.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
@@ -4897,7 +4897,7 @@
                         "Position": {
                             "x": 1362.5,
                             "y": -212.5,
-                            "z": 5.0
+                            "z": 0.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
@@ -4946,7 +4946,7 @@
                         "Position": {
                             "x": 4750.0,
                             "y": 75.0,
-                            "z": 5.0
+                            "z": 0.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
@@ -4995,7 +4995,7 @@
                         "Position": {
                             "x": 4850.0,
                             "y": -12.5,
-                            "z": 5.0
+                            "z": 0.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
@@ -5121,7 +5121,7 @@
                 "Position": {
                     "x": 1300.0,
                     "y": -212.5,
-                    "z": 5.0
+                    "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -5170,7 +5170,7 @@
                 "Position": {
                     "x": 1300.0,
                     "y": -37.5,
-                    "z": 5.0
+                    "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -5402,7 +5402,7 @@
                 "Position": {
                     "x": 4800.0,
                     "y": 150.0,
-                    "z": 5.0
+                    "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -5451,7 +5451,7 @@
                 "Position": {
                     "x": 4800.0,
                     "y": 37.5,
-                    "z": 5.0
+                    "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
@@ -5466,6 +5466,56 @@
                 "UIBaseScale": {
                     "x": 0.0,
                     "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "ButtonInfo": {
+                    "action": "OpenMenu",
+                    "clickTex": "Menu-Pause",
+                    "defaultTex": "Menu-Pause",
+                    "hoverTex": "Menu-Pause",
+                    "target": "PauseMenu",
+                    "type": "Clicker"
+                },
+                "Collider": {
+                    "height": 120.0,
+                    "isStatic": true,
+                    "radius": 100.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 120.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Menu-Pause",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameUI",
+                "Name": "PauseButton",
+                "Position": {
+                    "x": 1830.0,
+                    "y": 90.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 120.0,
+                    "y": 120.0
+                },
+                "UIBasePosition": {
+                    "x": 1525.0,
+                    "y": 75.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 100.0,
+                    "y": 100.0
                 }
             },
             "isPrefab": false

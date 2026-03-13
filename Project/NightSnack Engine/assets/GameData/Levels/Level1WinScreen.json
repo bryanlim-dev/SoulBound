@@ -157,7 +157,7 @@
                     "clickTex": "WinScreen-Restart",
                     "defaultTex": "WinScreen-Restart",
                     "hoverTex": "WinScreen-RestartHover",
-                    "target": "Level1A",
+                    "target": "Level1",
                     "type": "Clicker"
                 },
                 "Collider": {
