@@ -312,23 +312,14 @@ namespace NightSnack
                 auto sceneManager = m_coord.GetSystem<NightSnack::Scene::SceneManager>();
                 if (sceneManager)
                 {
-                    NightSnack::UndoSystem::Instance().Push(
-                        NightSnack::EntityDeleteSnapshot{ *m_selectedEntity, prefabName, transform,
-                        m_coord.HasComponent<Collider>(*m_selectedEntity)
-                            ? std::optional<NightSnack::Collider>(m_coord.GetComponent<Collider>(*m_selectedEntity))
-                            : std::nullopt }
-                    );
+                    NightSnack::UndoSystem::Instance().PushEntityDelete(m_coord, *factory, *m_selectedEntity);
+                    
                     sceneManager->DeleteCamTrigger(*m_selectedEntity);
                 }
             }
             else {
                 // Record entity deletion for undo
-                NightSnack::UndoSystem::Instance().Push(
-                    NightSnack::EntityDeleteSnapshot{ *m_selectedEntity, prefabName, transform,
-                        m_coord.HasComponent<Collider>(*m_selectedEntity)
-                            ? std::optional<NightSnack::Collider>(m_coord.GetComponent<Collider>(*m_selectedEntity))
-                            : std::nullopt }
-                );
+                NightSnack::UndoSystem::Instance().PushEntityDelete(m_coord, *factory, *m_selectedEntity);
 
                 // Remove entity from ECS
                 factory->RemoveEntity(*m_selectedEntity);
