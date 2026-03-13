@@ -271,7 +271,7 @@
                     "clickTex": "WinScreen-Continue",
                     "defaultTex": "WinScreen-Continue",
                     "hoverTex": "WinScreen-ContinueHover",
-                    "target": "Level1A",
+                    "target": "Level1",
                     "type": "Clicker"
                 },
                 "Collider": {
