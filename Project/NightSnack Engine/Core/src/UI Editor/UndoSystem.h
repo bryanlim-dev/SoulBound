@@ -81,13 +81,24 @@ namespace NightSnack {
         Entity entity;
     };
 
-	// When deleting an entity
+	// Snapshot for components of a deleted entity
     struct EntityDeleteSnapshot
     {
         Entity      entity;
         std::string prefabName;
         Transform   transform;
-        std::optional<Collider> collider;
+        std::optional<PlayerController> playercontroller;
+        std::optional<Camera>           camera;
+        std::optional<RigidBody>        rigidbody;
+        std::optional<Collider>         collider;
+        std::optional<Renderable>       renderer;
+        std::optional<Script>           script;
+        std::optional<Animator>         animator;
+        std::optional<Audio>            audio;
+        std::optional<Font>             font;
+        std::optional<ButtonInfo>       button;
+        std::optional<Character>        character;
+        std::optional<Collectible>      collectible;
     };
 
 	// Snapshots for camera trigger creation/deletion
@@ -191,7 +202,27 @@ namespace NightSnack {
         */
         /************************************************************************/
         void Clear() { undoStack.clear(); }
-		void ClearRedo() { redoStack.clear(); }
+        void ClearRedo() { redoStack.clear(); }
+
+        /************************************************************************/
+        /*!
+        \brief
+            Records an entity deletion for undo purposes.
+
+		\param coord
+		    - Coordinator reference to access components and entities
+		
+        \param factory
+            - EntityFactory reference to create/remove entities as needed for undo operations.
+
+		\param e
+            - The entity to be deleted.
+        */
+        /************************************************************************/
+        void PushEntityDelete(Coordinator& coord, EntityFactory& factory, Entity e)
+        {
+            Push(CaptureEntity(coord, factory, e));
+        }
 
         /************************************************************************/
         /*!
@@ -247,31 +278,22 @@ namespace NightSnack {
                 }
                 else if constexpr (std::is_same_v<T, EntityCreateSnapshot>)
                 {
-                    // Capture prefab for redo
-                    std::string prefabName = factory.GetEntityPrefabName(act.entity);
-                    Transform   transform{};
-                    if (coord.HasComponent<Transform>(act.entity))
-                        transform = coord.GetComponent<Transform>(act.entity);
-
-                    std::optional<Collider> snapCollider;
-                    if (coord.HasComponent<Collider>(act.entity))
-                        snapCollider = coord.GetComponent<Collider>(act.entity);
-                    
+                    // Capture all components before removing
+                    auto snap = CaptureEntity(coord, factory, act.entity);
                     factory.RemoveEntity(act.entity);
-
-					// Redo stack for entity deletion
-                    PushToStack(redoStack, EntityDeleteSnapshot{ act.entity, prefabName, transform, snapCollider });
+                    // Redo stack for entity deletion
+                    PushToStack(redoStack, snap);
                 }
                 else if constexpr (std::is_same_v<T, EntityDeleteSnapshot>)
                 {
-                    // Create entity and capture new ID
-                    Entity newEntity = act.collider
-                        ? factory.CreateCollider(*act.collider, act.transform)
-                        : factory.Create(act.prefabName, act.transform);
-                    
+                    // Create base entity, restore all captured components
+                    Entity newEntity = factory.Create(act.prefabName, act.transform);
+                    RestoreEntity(coord, newEntity, act);
+                    if (coord.HasComponent<Transform>(newEntity))
+                        coord.ModifyComponent<Transform>(newEntity) = act.transform;
                     RemapEntityId(act.entity, newEntity);
 
-					// Redo stack for entity creation
+                    // Redo stack for entity creation
                     PushToStack(redoStack, EntityCreateSnapshot{ newEntity });
                 }
                 else if constexpr (std::is_same_v<T, CamTriggerCreateSnapshot>)
@@ -368,31 +390,22 @@ namespace NightSnack {
                 }
                 else if constexpr (std::is_same_v<T, EntityCreateSnapshot>)
                 {
-					// Capture prefab for undo
-                    std::string prefabName = factory.GetEntityPrefabName(act.entity);
-                    Transform   transform{};
-                    if (coord.HasComponent<Transform>(act.entity))
-                        transform = coord.GetComponent<Transform>(act.entity);
-
-                    std::optional<Collider> snapCollider;
-                    if (coord.HasComponent<Collider>(act.entity))
-                        snapCollider = coord.GetComponent<Collider>(act.entity);
-
+                    // Capture all components before removing
+                    auto snap = CaptureEntity(coord, factory, act.entity);
                     factory.RemoveEntity(act.entity);
-
-					// Undo stack for entity deletion
-                    PushToStack(undoStack, EntityDeleteSnapshot{ act.entity, prefabName, transform, snapCollider });
+                    // Undo stack for entity deletion
+                    PushToStack(undoStack, snap);
                 }
                 else if constexpr (std::is_same_v<T, EntityDeleteSnapshot>)
                 {
-					// Create entity and capture new ID
-                    Entity newEntity = act.collider
-                        ? factory.CreateCollider(*act.collider, act.transform)
-                        : factory.Create(act.prefabName, act.transform);
-
+                    // Create base entity, restore all captured components
+                    Entity newEntity = factory.Create(act.prefabName, act.transform);
+                    RestoreEntity(coord, newEntity, act);
+                    if (coord.HasComponent<Transform>(newEntity))
+                        coord.ModifyComponent<Transform>(newEntity) = act.transform;
                     RemapEntityId(act.entity, newEntity);
 
-					// Undo stack for entity creation
+                    // Undo stack for entity creation
                     PushToStack(undoStack, EntityCreateSnapshot{ newEntity });
                 }
                 else if constexpr (std::is_same_v<T, CamTriggerCreateSnapshot>)
@@ -499,6 +512,45 @@ namespace NightSnack {
             - The action to be added to the stack.
         */
         /************************************************************************/
+        // Captures all components from an entity into an EntityDeleteSnapshot
+        EntityDeleteSnapshot CaptureEntity(Coordinator& coord, EntityFactory& factory, Entity e)
+        {
+            EntityDeleteSnapshot snap;
+            snap.entity    = e;
+            snap.prefabName = factory.GetEntityPrefabName(e);
+            if (coord.HasComponent<Transform>        (e)) snap.transform        = coord.GetComponent<Transform>        (e);
+            if (coord.HasComponent<PlayerController> (e)) snap.playercontroller = coord.GetComponent<PlayerController> (e);
+            if (coord.HasComponent<Camera>           (e)) snap.camera           = coord.GetComponent<Camera>           (e);
+            if (coord.HasComponent<RigidBody>        (e)) snap.rigidbody        = coord.GetComponent<RigidBody>        (e);
+            if (coord.HasComponent<Collider>         (e)) snap.collider         = coord.GetComponent<Collider>         (e);
+            if (coord.HasComponent<Renderable>       (e)) snap.renderer         = coord.GetComponent<Renderable>       (e);
+            if (coord.HasComponent<Script>           (e)) snap.script           = coord.GetComponent<Script>           (e);
+            if (coord.HasComponent<Animator>         (e)) snap.animator         = coord.GetComponent<Animator>         (e);
+            if (coord.HasComponent<Audio>            (e)) snap.audio            = coord.GetComponent<Audio>            (e);
+            if (coord.HasComponent<Font>             (e)) snap.font             = coord.GetComponent<Font>             (e);
+            if (coord.HasComponent<ButtonInfo>       (e)) snap.button           = coord.GetComponent<ButtonInfo>       (e);
+            if (coord.HasComponent<Character>        (e)) snap.character        = coord.GetComponent<Character>        (e);
+            if (coord.HasComponent<Collectible>      (e)) snap.collectible      = coord.GetComponent<Collectible>      (e);
+            return snap;
+        }
+
+        // Restores all components from an EntityDeleteSnapshot onto a freshly created entity
+        void RestoreEntity(Coordinator& coord, Entity newEntity, const EntityDeleteSnapshot& snap)
+        {
+            if (snap.playercontroller) coord.AddComponent<PlayerController>(newEntity, *snap.playercontroller);
+            if (snap.camera)           coord.AddComponent<Camera>          (newEntity, *snap.camera);
+            if (snap.rigidbody)        coord.AddComponent<RigidBody>       (newEntity, *snap.rigidbody);
+            if (snap.collider)         coord.AddComponent<Collider>        (newEntity, *snap.collider);
+            if (snap.renderer)         coord.AddComponent<Renderable>      (newEntity, *snap.renderer);
+            if (snap.script)           coord.AddComponent<Script>          (newEntity, *snap.script);
+            if (snap.animator)         coord.AddComponent<Animator>        (newEntity, *snap.animator);
+            if (snap.audio)            coord.AddComponent<Audio>           (newEntity, *snap.audio);
+            if (snap.font)             coord.AddComponent<Font>            (newEntity, *snap.font);
+            if (snap.button)           coord.AddComponent<ButtonInfo>      (newEntity, *snap.button);
+            if (snap.character)        coord.AddComponent<Character>       (newEntity, *snap.character);
+            if (snap.collectible)      coord.AddComponent<Collectible>     (newEntity, *snap.collectible);
+        }
+
         void PushToStack(std::deque<UndoAction>& stack, UndoAction action)
         {
             if (stack.size() >= maxSteps) stack.pop_front();
