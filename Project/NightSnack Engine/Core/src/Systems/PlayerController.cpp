@@ -465,6 +465,17 @@ namespace NightSnack {
                     vel.x += pcont.moveSpeed * m_coord.GetSystem<ApplicationSystem>()->GetDT();
             }
 
+            if (curr_ability == "Bounce" && !m_flags.bouncing) {
+                if (m_flags.isGrounded) {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekMove_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
+                else {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekFall_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
+            }
+
             if (curr_ability == "Grapple" && !m_flags.grappling) {
                 if (m_flags.isGrounded) {
                     m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogMove_4_1";
@@ -499,6 +510,16 @@ namespace NightSnack {
                     vel.x -= pcont.moveSpeed * m_coord.GetSystem<ApplicationSystem>()->GetDT();
             }
 
+            if (curr_ability == "Bounce" && !m_flags.bouncing) {
+                if (m_flags.isGrounded) {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekMove_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
+                else {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekFall_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
+            }
 
             if (curr_ability == "Grapple" && !m_flags.grappling) {
                 if (m_flags.isGrounded) {
