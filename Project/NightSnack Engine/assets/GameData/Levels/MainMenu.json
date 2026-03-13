@@ -130,11 +130,11 @@
                     "volume": 1.0
                 },
                 "ButtonInfo": {
-                    "action": "ExitGame",
+                    "action": "OpenMenu",
                     "clickTex": "MainMenu-Quit",
                     "defaultTex": "MainMenu-Quit",
                     "hoverTex": "MainMenu-QuitHover",
-                    "target": "",
+                    "target": "ExitMenu",
                     "type": "Clicker"
                 },
                 "Collider": {

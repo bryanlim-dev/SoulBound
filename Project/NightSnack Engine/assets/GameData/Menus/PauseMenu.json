@@ -648,8 +648,8 @@
                     "volume": 1.0
                 },
                 "ButtonInfo": {
-                    "action": "LoadLevel",
-                    "target": "MainMenu",
+                    "action": "OpenMenu",
+                    "target": "ReturnMenu",
                     "type": "Clicker",
                     "defaultTex": "Paused-Quit",
                     "hoverTex": "Paused-QuitSelected",
