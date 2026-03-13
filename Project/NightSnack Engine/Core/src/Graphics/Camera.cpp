@@ -1,7 +1,8 @@
 /******************************************************************************
  * File:        Camera.cpp
  * Project:     NightSnack
- * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Camera System
+ * Author(s):	Bryan Lim Jun Jie (Primary, 40%) - Created Camera System
+ *              Goh Bei Lai (Secondary, 60%) - Created Camera panning behaviour, storing of camera panning targets, camera states
  *
  * Description:
  * This file defines the CameraSystem class, which manages the camera entity.
@@ -72,13 +73,14 @@ namespace NightSnack {
         if (m_centerOfLevel == INVALID_ENTITY) {
             m_centerOfLevel = FindCenterOfLevel();
         }
-
+        
+        // Different behaviours for different camera states
         switch (m_cameraState) {
-        case CAMERASTATE::MENU:
+        case CAMERASTATE::MENU: // not used currently
             t.pos.x = 0.f;
             t.pos.y = 0.f;
             break;
-        case CAMERASTATE::FOLLOW_PLAYER:
+        case CAMERASTATE::FOLLOW_PLAYER: // follow the player in the game
         {
             if (m_player == INVALID_ENTITY) break;
 
@@ -88,7 +90,7 @@ namespace NightSnack {
             break;
         }
 
-        case CAMERASTATE::PAN_ROOM_COUNTDOWN:
+        case CAMERASTATE::PAN_ROOM_COUNTDOWN: // short countdown before start to pan the camera
         {
             // Have a short countdown first before panning the camera
             if (m_currCamPanTimer < m_camPanCountdown) {
@@ -114,11 +116,11 @@ namespace NightSnack {
             return;
         }
 
-        case CAMERASTATE::LERP_CHECKPOINT:
+        case CAMERASTATE::LERP_CHECKPOINT: // going to the next room
             LerpCameraPosition(t);
             return;
 
-        case CAMERASTATE::PAN_ROOM:
+        case CAMERASTATE::PAN_ROOM: // pan to all panning targets 
         {
             //static size_t panningTargetIndex = 0;
             if (m_panningTargetIndex < m_panningTargets.size()) {
@@ -149,7 +151,7 @@ namespace NightSnack {
             return;
         }
 
-        case CAMERASTATE::PAN_ROOM_TO_KEY:
+        case CAMERASTATE::PAN_ROOM_TO_KEY: // unused, pan to the key
         {
             if (!m_panComplete) m_panComplete = ConstantPanCameraPosition(t);
             else {
@@ -172,14 +174,14 @@ namespace NightSnack {
             }
             return;
         }
-        case CAMERASTATE::PAN_ROOM_TO_PLAYER:
+        case CAMERASTATE::PAN_ROOM_TO_PLAYER: // unused, pan to the player
         {
             bool done = ConstantPanCameraPosition(t);
             if (done) m_cameraState = CAMERASTATE::FOLLOW_PLAYER;
             return;
         }
 
-        case CAMERASTATE::PAN_ROOM_ZOOM_OUT:
+        case CAMERASTATE::PAN_ROOM_ZOOM_OUT: // unused, pan to the center of the screen while zooming out
         {
             if (!m_panComplete) m_panComplete = ConstantPanCameraPosition(t);
             if (!m_zoomComplete) m_zoomComplete = LerpZoom();
@@ -213,7 +215,7 @@ namespace NightSnack {
             return;
         }
 
-        case CAMERASTATE::PAN_ROOM_ZOOM_IN:
+        case CAMERASTATE::PAN_ROOM_ZOOM_IN: // unused, pan back to the player while zooming in
         {
             if (!m_panComplete) m_panComplete = ConstantPanCameraPosition(t);
             if (!m_zoomComplete) m_zoomComplete = LerpZoom();
@@ -409,42 +411,18 @@ namespace NightSnack {
     void CameraSystem::StartCamPan(bool isPannningEnabled, bool isMainMenu)
     {
         ResetCameraPanProperties();
-        //m_panEnabled = isPannningEnabled;
 
         if (isMainMenu) {
             m_cameraState = CAMERASTATE::MENU;
             return;
         }
 
-        //if (m_panEnabled)
         if (isPannningEnabled)
             StartCamPan();
-        //else
-        //    m_cameraState = CAMERASTATE::FOLLOW_PLAYER;
     }
 
     void CameraSystem::StartCamPan() {
-        /*if (!m_panEnabled)
-        {
-            m_cameraState = CAMERASTATE::FOLLOW_PLAYER;
-            return;
-        }*/
-
-        //m_currCamPanTimer = 0.0f;
         m_cameraState = CAMERASTATE::PAN_ROOM_COUNTDOWN;
-
-        //const auto& entities = m_coord.GetLivingEntities();
-
-        //for (Entity e : entities)
-        //{
-        //    if (m_coord.HasComponent<Collectible>(e) && m_coord.GetComponent<Collectible>(e).type == COLLECTIBLE_TYPE::KEY) {
-        //        m_targetCamPos = m_coord.GetComponent<Transform>(e).pos;
-        //        m_currCamPanTimer = 0.0f; // Reset the countdown timer
-        //        //m_lerpSpeed = m_camPanLerpSpeed; // Reset the speed here if it was changed
-        //        m_cameraState = CAMERASTATE::PAN_ROOM_COUNTDOWN;
-        //        break;
-        //    }
-        //}
     }
 
     void CameraSystem::CenterCameraWhenIdle() {

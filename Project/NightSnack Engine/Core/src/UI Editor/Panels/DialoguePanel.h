@@ -1,4 +1,20 @@
-
+/******************************************************************************
+ * File:        DialoguePanel.h
+ * Project:     NightSnack
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Dialogue Panel
+ *
+ * Description:
+ * This file contains the definitions of the Dialogue Panel.
+ * - Dropdown of all loaded Dialogue Sequences
+ * - Creating and deleting a Dialogue Sequence
+ * - Renaming a Dialogue Sequence
+ * - Creating and deleting a Dialogue Line
+ * - Updating a Dialogue Line's properties (Line ID, Speaker name, Renderable material, Char delay time, Next Line ID, Text)
+ * - Apply changes to local session, and save sequence to local disk
+ *
+ * Copyright © 2026 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
 
 #pragma once
 #include "AllPanels.h"
@@ -49,6 +65,12 @@ namespace NightSnack
 
 	private:
 
+        /************************************************************************/
+        /*!
+        \brief
+        Draw the current dialogue sequence and its sequence ID
+        */
+        /************************************************************************/
 		void DrawSequenceSelector()
 		{
             // Draw the current dialogue sequence and its sequence ID
@@ -159,6 +181,12 @@ namespace NightSnack
             }
 		}
 
+        /************************************************************************/
+        /*!
+        \brief
+        Draw all the lines belonging to the selected dialogue sequence
+        */
+        /************************************************************************/
 		void DrawLineList()
 		{
             auto dialogueSystem = m_coord.GetSystem<DialogueSystem>();
@@ -266,6 +294,12 @@ namespace NightSnack
             }
 		}
 
+        /************************************************************************/
+        /*!
+        \brief
+        Draw all the line properties belonging to the selected dialogue line
+        */
+        /************************************************************************/
 		void DrawLineProperties()
 		{
             // No line currently selected
@@ -440,6 +474,12 @@ namespace NightSnack
             }
 		}
 
+        /************************************************************************/
+        /*!
+        \brief
+        Draw the new sequence modal
+        */
+        /************************************************************************/
 		void DrawNewSequenceModal()
 		{
             // If user pressed 'New' button to create a new dialogue sequence

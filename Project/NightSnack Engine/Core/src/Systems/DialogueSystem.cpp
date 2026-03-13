@@ -1,3 +1,20 @@
+/******************************************************************************
+ * File:        DialogueSystem.cpp
+ * Project:     NightSnack
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Dialogue System
+ *
+ * Description:
+ * This file contains the definitions of the Dialogue System.
+ * - Loading and storing all existing Dialogue Sequences from the disk using JSON files
+ * - Render any Dialogue Sequence line by line, using a typewriter effect
+ * - Ability to reveal the whole line or continue to the next line upon key press input
+ * - When whole line is revealed, hint instruction text is shown
+ * - Ability to update and render the corresponding material and speaker name for every dialogue line
+ *
+ * Copyright © 2026 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #include "DialogueSystem.h"
 #include "Systems/PlayerController.h"
 #include "Systems/Physics/Physics.h"

@@ -10,7 +10,7 @@
  * Preparing the glyph textures for ASCII characters.
  * Rendering of text belonging to entities in in-game and UI layers.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2026 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -143,6 +143,12 @@ namespace NightSnack {
         /************************************************************************/
         void Draw(Entity camera, bool isGameCamera);
 
+        /************************************************************************/
+        /*!
+        \brief
+        Wrap the text given onto multiple lines
+        */
+        /************************************************************************/
         std::vector<std::string> WrapText(const std::string& text, const std::string& fontName, float maxWidth, float scale);
 
         /************************************************************************/

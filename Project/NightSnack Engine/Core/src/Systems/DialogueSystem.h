@@ -1,3 +1,20 @@
+/******************************************************************************
+ * File:        DialogueSystem.h
+ * Project:     NightSnack
+ * Author(s):	Goh Bei Lai (Primary, 100%) - Created Dialogue System
+ *
+ * Description:
+ * This file contains the declarations of the Dialogue System.
+ * - Loading and storing all existing Dialogue Sequences from the disk using JSON files
+ * - Render any Dialogue Sequence line by line, using a typewriter effect
+ * - Ability to reveal the whole line or continue to the next line upon key press input
+ * - When whole line is revealed, hint instruction text is shown
+ * - Ability to update and render the corresponding material and speaker name for every dialogue line
+ * 
+ * Copyright © 2026 DigiPen Institute of Technology Singapore.
+ * All rights reserved.
+ ******************************************************************************/
+
 #pragma once
 
 #include "Core/ECS/Coordinator.h"
@@ -10,9 +27,9 @@ namespace NightSnack {
 	public:
 
         enum class DialogueState {
-            INACTIVE,
-            TYPING,
-            WAITING_INPUT
+            INACTIVE,       // No dialogues sequences currently being displayed
+            TYPING,         // In the midst of revealing a Dialogue Line 
+            WAITING_INPUT   // Successfully revealed a whole Dialogue Line
         };
 
         struct DialogueLine {
@@ -70,6 +87,7 @@ namespace NightSnack {
 
                     case InputEvent::InputAction::SkipDialogue:
                     case InputEvent::InputAction::ClickLMB:
+                        // Either complete the whole line or move on to the next line
                         Advance();
                         break;
                     }
@@ -93,24 +111,92 @@ namespace NightSnack {
         /************************************************************************/
         void Update() override;
 
+        /************************************************************************/
+        /*!
+        \brief
+        Set up all Dialogue related UI entities in the level
+        */
+        /************************************************************************/
         void SetupUIEntities();
 
-        // Search and start playing a dialogue sequence
+        /************************************************************************/
+        /*!
+        \brief
+        Search and start playing a dialogue sequence
+        */
+        /************************************************************************/
         void StartDialogue(const std::string& sequenceID);
 
-        // Call this when the player presses the "advance" button
+        /************************************************************************/
+        /*!
+        \brief
+        Either reveal the whole line immediately or move on to the next line
+        */
+        /************************************************************************/
         void Advance();
 
-        // Stop dialogue immediately
+        /************************************************************************/
+        /*!
+        \brief
+        Stop the dialogue sequence immediatetly
+        */
+        /************************************************************************/
         void StopDialogue();
 
+        /************************************************************************/
+        /*!
+        \brief
+        Create a dialogue sequence
+        */
+        /************************************************************************/
         bool CreateSequence(const std::string& sequenceID); 
+
+        /************************************************************************/
+        /*!
+        \brief
+        Delete a dialogue sequence
+        */
+        /************************************************************************/
         bool DeleteSequence(const std::string& sequenceID);
+
+        /************************************************************************/
+        /*!
+        \brief
+        Rename a dialogue sequence
+        */
+        /************************************************************************/
         bool RenameSequence(const std::string& oldID, const std::string& newID);
+
+        /************************************************************************/
+        /*!
+        \brief
+        Save this dialogue sequence
+        */
+        /************************************************************************/
         void SaveSequence(const std::string& sequenceID);
 
+        /************************************************************************/
+        /*!
+        \brief
+        Create a dialogue line in this sequence
+        */
+        /************************************************************************/
         void AddLine(const std::string& sequenceID, const DialogueLine& line);
+
+        /************************************************************************/
+        /*!
+        \brief
+        Delete this dialogue line in this sequence
+        */
+        /************************************************************************/
         void DeleteLine(const std::string& sequenceID, const std::string& lineID);
+
+        /************************************************************************/
+        /*!
+        \brief
+        Update this dialogue line in this sequence
+        */
+        /************************************************************************/
         void UpdateLine(const std::string& sequenceID, const std::string& oldLineID, const DialogueLine& updated);
 
         std::unordered_map<std::string, DialogueSequence>& GetDialogueLibrary() { return m_dialogueLibrary; }
@@ -141,13 +227,60 @@ namespace NightSnack {
 
     private:
 
+        /************************************************************************/
+        /*!
+        \brief
+        Load all dialogue sequences from the disk
+        */
+        /************************************************************************/
         void LoadAllSequences();
+
+        /************************************************************************/
+        /*!
+        \brief
+        Switch to a new dialogue ID and reset typewriter state
+        */
+        /************************************************************************/
         void LoadLine(const std::string& lineID);
+
+        /************************************************************************/
+        /*!
+        \brief
+        Load this particular dialogue sequence from the disk
+        */
+        /************************************************************************/
         DialogueSequence LoadDialogueSequence(const std::string& filePath);
+
+        /************************************************************************/
+        /*!
+        \brief
+        Reveal the whole dialogue line immediately
+        */
+        /************************************************************************/
         void FinishTyping();
 
+        /************************************************************************/
+        /*!
+        \brief
+        Toggle visibility of dialogue related UI entities
+        */
+        /************************************************************************/
         void ToggleUIEntities(bool active);
+
+        /************************************************************************/
+        /*!
+        \brief
+        Update the necessary revealed text to the TextSystem to render
+        */
+        /************************************************************************/
         void UpdateUIText();
+
+        /************************************************************************/
+        /*!
+        \brief
+        Update the current renderable material of the speaker entity
+        */
+        /************************************************************************/
         void UpdateSpeakerPortrait();
 
         std::unordered_map<std::string, DialogueSequence> m_dialogueLibrary;

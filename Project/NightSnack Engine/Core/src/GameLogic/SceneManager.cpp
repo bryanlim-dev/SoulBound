@@ -1,9 +1,10 @@
 /******************************************************************************
  * File:        SceneManager.cpp
  * Project:     NightSnack
- * Author(s):	Chewn Thing Kwan (Primary, 60%)
- *				Bryan Lim Jun Jie (Secondary, 30%)
+ * Author(s):	Chewn Thing Kwan (Primary, 55%)
+ *				Bryan Lim Jun Jie (Secondary, 25%)
  *				Wei Jie Lim (Secondary, 10%)
+ *				Goh Bei Lai (Secondary, 10%)
  *
  * Description:
  * This file defines functions that assist in scene managment such as level
@@ -31,6 +32,7 @@ static bool ButtonCollisionCheck(float mx, float my, float sx, float sy, NightSn
 	float left = t.pos.x - halfWidth;
 	float right = t.pos.x + halfWidth;
 
+	// Assign the correct coordinates based on the layer of the entity
 	if (t.layer == NightSnack::LayerType::GAMELAYER || t.layer == NightSnack::LayerType::FOREGROUND) {
 		checkX = mx; checkY = my;
 		bottom = t.pos.y - halfHeight;

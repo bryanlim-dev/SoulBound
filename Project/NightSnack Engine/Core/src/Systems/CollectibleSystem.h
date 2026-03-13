@@ -60,6 +60,12 @@ namespace NightSnack {
 		/************************************************************************/
 		void SpawnCollectibleParticles();
 
+		/************************************************************************/
+		/*!
+		\brief
+		Toggle visibility of collectible icons in the scene
+		*/
+		/************************************************************************/
 		void ToggleCollectibleIcons(bool enable);
 
 		/************************************************************************/
@@ -108,8 +114,20 @@ namespace NightSnack {
 		/************************************************************************/
 		void CreateParticleEmitters();
 
+		/************************************************************************/
+		/*!
+		\brief
+		Populate the collectible icon entities vector
+		*/
+		/************************************************************************/
 		bool GetFlameCollectibleIcons();
 
+		/************************************************************************/
+		/*!
+		\brief
+		Change the material of the collectible icon
+		*/
+		/************************************************************************/
 		void LightUpFlameCollectibleIcon();
 
 		Signature m_systemSignature{};

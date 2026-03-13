@@ -10,7 +10,7 @@
  * Preparing the glyph textures for ASCII characters.
  * Rendering of text belonging to entities in in-game and UI layers.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright © 2026 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -269,6 +269,7 @@ namespace NightSnack {
 			return result;
 		}
 
+		// Get the space width and helper function to measure the words
 		auto& chars = m_fontCharacters[fontName];
 		float spaceWidth = (chars[' '].advance >> 6) * scale;
 

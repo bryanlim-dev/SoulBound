@@ -1,7 +1,8 @@
 /******************************************************************************
  * File:        Camera.h
  * Project:     NightSnack
- * Author(s):	Bryan Lim Jun Jie (Primary, 100%) - Camera System
+ * Author(s):	Bryan Lim Jun Jie (Primary, 40%) - Created Camera System
+ *				Goh Bei Lai (Secondary, 60%) - Created Camera panning behaviour, storing of camera panning targets, camera states
  *
  * Description:
  * This file declares the CameraSystem class, which manages the camera entity.
@@ -58,7 +59,10 @@ namespace NightSnack {
 		Transform FollowPlayer();
 		void CenterCameraWhenIdle();
 		void UpdateCamBounds(json const&);
-		//isPannningEnabled - Sets if start pan or not
+
+		/**
+		* @brief Reset and start to pan the camera across the level
+		*/
 		void StartCamPan(bool isPannningEnabled, bool isMainMenu = 0);
 		void StartCamPan();
 
@@ -80,7 +84,14 @@ namespace NightSnack {
 		 */
 		Entity GetMainCamera() const;
 
+		/**
+		* @brief Returns true if the camera is in any panning related state
+		*/
 		bool GetCameraIsPanning() const;
+
+		/**
+		* @brief Reset the camera properties
+		*/
 		void ResetCameraPanProperties();
 
 	private:
@@ -136,13 +147,40 @@ namespace NightSnack {
 		 */
 		Entity FindPlayer(Coordinator& coord);
 
+		/**
+		* @brief Find the entity that is at the center of the level
+		*/
 		Entity FindCenterOfLevel();
 
+		/**
+		* @brief Make the camera follow this particular entity
+		*/
 		void FollowEntity(Entity e, Transform& t);
+
+		/**
+		* @brief Limit the camera position to stay within its bounds
+		*/
 		void LimitWithinBounds(Transform& t);
+
+		/**
+		* @brief Lerp camera position to target position
+		*/
 		void LerpCameraPosition(Transform& camT);
+
+		/**
+		* @brief Pan camera position to target position at constant speed
+		*/
 		bool ConstantPanCameraPosition(Transform& camT);
+
+		/**
+		* @brief Lerp the zoom factor of the camera
+		*/
 		bool LerpZoom();
+
+		/**
+		* @brief Store all camera panning targets for the camera. 
+		* @return Returns true if the winzone, player, and at least 1 collectible entity exists
+		*/
 		bool StoreCameraPanningTargets();
 	};
 }
