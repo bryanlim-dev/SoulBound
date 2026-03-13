@@ -317,8 +317,9 @@ namespace NightSnack::Scene {
 				// skip if not a menu button
 				if (it == m_menuEntities.end()) { continue; }
 				if (b.action == ButtonAction::TOGGLEFULLSCREEN) {
+					bool isFull = m_coord.GetSystem<ApplicationSystem>()->m_appIsFullscreen;
 					b.defaultTex = b.hoverTex = b.clickTex =
-						(m_coord.GetSystem<ApplicationSystem>()->m_appIsFullscreen ? "Menu-Fullscreen" : "Menu-Windowed");
+						(isFull ? "Menu-Fullscreen" : "Menu-Windowed");
 				}
 			}
 
