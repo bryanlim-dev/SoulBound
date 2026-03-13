@@ -102,19 +102,18 @@ namespace NightSnack::Scene {
 
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
-					case InputEvent::InputAction::PauseGame:
-						if (!overlayOn) {
-							//CreateOverlayMenu();
-							overlayOn = true;
-							m_coord.Pause();
-						}
-						else if (overlayOn) {
-							//RemoveOverlayMenu();
-							overlayOn = false;
-							m_coord.Unpause();
-						}
-						break;
-						break;
+					//case InputEvent::InputAction::PauseGame:
+					//	if (!overlayOn) {
+					//		//CreateOverlayMenu();
+					//		overlayOn = true;
+					//		m_coord.Pause();
+					//	}
+					//	else if (overlayOn) {
+					//		//RemoveOverlayMenu();
+					//		overlayOn = false;
+					//		m_coord.Unpause();
+					//	}
+					//	break;
 					case InputEvent::InputAction::RestartGame:
 						m_restart = true;
 						std::cerr << "[SceneManager] Queuing restart\n";

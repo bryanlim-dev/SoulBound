@@ -587,8 +587,12 @@ namespace NightSnack {
         }
 
         // Find the camera bounds of the first area where the player is 
+        LimitWithinBounds(m_coord.ModifyComponent<Transform>(m_mainCamera));
+
         auto& cam = m_coord.GetComponent<Camera>(m_mainCamera);
-        Vec2 startCamPos = Vec2((cam.minX + cam.maxX) * 0.5f, (cam.minY + cam.maxY) * 0.5f);
+        //Vec2 startCamPos = Vec2((cam.minX + cam.maxX) * 0.5f, (cam.minY + cam.maxY) * 0.5f);
+        auto& t = m_coord.GetComponent<Transform>(m_mainCamera);
+        Vec2 startCamPos = { t.pos.x, t.pos.y };
         m_panningTargets.push_back(startCamPos);
 
         //std::cout << "Stored all targets of size: " << m_panningTargets.size() << std::endl;
