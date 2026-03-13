@@ -157,7 +157,7 @@
                     "clickTex": "WinScreen-Restart",
                     "defaultTex": "WinScreen-Restart",
                     "hoverTex": "WinScreen-RestartHover",
-                    "target": "Level1A",
+                    "target": "Level2",
                     "type": "Clicker"
                 },
                 "Collider": {
@@ -180,7 +180,64 @@
                 "Name": "RestartButton",
                 "Position": {
                     "x": 0.0,
-                    "y": -100.0,
+                    "y": -200.0,
+                    "z": 6.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 512.0,
+                    "y": 64.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Audio": {
+                    "audioKey": "buttonQuit",
+                    "isPlaying": false,
+                    "loop": false,
+                    "playOnStart": false,
+                    "volume": 1.0
+                },
+                "ButtonInfo": {
+                    "action": "LoadLevel",
+                    "clickTex": "WinScreen-MainMenu",
+                    "defaultTex": "WinScreen-MainMenu",
+                    "hoverTex": "WinScreen-MainMenuHover",
+                    "target": "MainMenu",
+                    "type": "Clicker"
+                },
+                "Collider": {
+                    "height": 80.0,
+                    "isStatic": true,
+                    "radius": 0.0,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 320.0
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "WinScreen-MainMenu",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "MainMenuButton",
+                "Position": {
+                    "x": 0.0,
+                    "y": -300.0,
                     "z": 6.0
                 },
                 "Rotation": 0.0,
@@ -211,9 +268,9 @@
                 },
                 "ButtonInfo": {
                     "action": "LoadLevel",
-                    "clickTex": "WinScreen-MainMenu",
-                    "defaultTex": "WinScreen-MainMenu",
-                    "hoverTex": "WinScreen-MainMenuHover",
+                    "clickTex": "WinScreen-Continue",
+                    "defaultTex": "WinScreen-Continue",
+                    "hoverTex": "WinScreen-ContinueHover",
                     "target": "Level3",
                     "type": "Clicker"
                 },
@@ -227,17 +284,17 @@
                 },
                 "Renderable": {
                     "isWireframe": false,
-                    "materialName": "WinScreen-MainMenu",
+                    "materialName": "WinScreen-Continue",
                     "meshName": "square"
                 },
                 "modified": true
             },
             "Transform": {
                 "Layer": "Foreground",
-                "Name": "MainMenuButton",
+                "Name": "ContinueButton",
                 "Position": {
                     "x": 0.0,
-                    "y": -200.0,
+                    "y": -100.0,
                     "z": 6.0
                 },
                 "Rotation": 0.0,
