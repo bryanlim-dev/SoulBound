@@ -21,21 +21,44 @@
 #include "Systems/DialogueSystem.h"
 
 // Private helper function that checks mouse and button collision
-static bool ButtonCollisionCheck(float mx, float my, NightSnack::Transform const& t, NightSnack::Collider const& c) {
+static bool ButtonCollisionCheck(float mx, float my, float sx, float sy, NightSnack::Transform const& t, NightSnack::Collider const& c) {
+	float checkX{}, checkY{};
+	float top{}, bottom{};
+
+	float halfWidth = c.width * 0.5f;
+	float halfHeight = c.height * 0.5f;
+	float left = t.pos.x - halfWidth;
+	float right = t.pos.x + halfWidth;
+
+	if (t.layer == NightSnack::LayerType::GAMELAYER || t.layer == NightSnack::LayerType::FOREGROUND) {
+		checkX = mx; checkY = my;
+		bottom = t.pos.y - halfHeight;
+		top = t.pos.y + halfHeight;
+		
+	} else if (t.layer == NightSnack::LayerType::GAMEUI) {
+		checkX = sx; checkY = sy;
+		bottom = t.pos.y + halfHeight;
+		top = t.pos.y - halfHeight;
+	}
+
+
 	if (c.shape == NightSnack::ShapeType::Circle) {
-		float distsq = mx * mx + my * my;
-		if (c.radius * c.radius <= distsq) { return true; }
+		float dx = checkX - t.pos.x;   // distance from circle center, not from origin
+		float dy = checkY - t.pos.y;
+		float distSq = dx * dx + dy * dy;
+		return (distSq <= c.radius * c.radius);  // inside = true
 	}
 	else {
-		float halfWidth = c.width * 0.5f;
-		float halfHeight = c.height * 0.5f;
-
-		float left = t.pos.x - halfWidth;
-		float right = t.pos.x + halfWidth;
-		float bottom = t.pos.y - halfHeight;
-		float top = t.pos.y + halfHeight;
-
-		return (mx >= left && mx <= right && my >= bottom && my <= top);
+		
+		if (t.layer == NightSnack::LayerType::GAMEUI) {
+			// Screen space: Y increases downward
+			return (checkX >= left && checkX <= right &&
+				checkY >= top && checkY <= bottom);
+		} else { // GAMELAYER and FOREGROUND
+			// World space: Y increases upward
+			return (checkX >= left && checkX <= right &&
+				checkY >= bottom && checkY <= top);
+		}
 	}
 	return false;
 }
@@ -268,6 +291,9 @@ namespace NightSnack::Scene {
 		float mx = m_coord.GetSystem<InputSystem>()->GetMouseWorldPosX();
 		float my = m_coord.GetSystem<InputSystem>()->GetMouseWorldPosY();
 
+		float sx = m_coord.GetSystem<InputSystem>()->GetMousePosX();
+		float sy = m_coord.GetSystem<InputSystem>()->GetMousePosY();
+
 		for (Entity e : m_entities) {
 			// Get button info
 			ButtonInfo& b = m_coord.ModifyComponent<ButtonInfo>(e);
@@ -290,7 +316,7 @@ namespace NightSnack::Scene {
 			Collider const& c = m_coord.GetComponent<Collider>(e);
 
 			// Check collision with mouse
-			if (!ButtonCollisionCheck(mx, my, t, c)) {
+			if (!ButtonCollisionCheck(mx, my, sx, sy, t, c)) {
 				m_coord.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
 
 				// clear hover state if mouse left this button
@@ -326,6 +352,14 @@ namespace NightSnack::Scene {
 			}
 
 			if (m_mouseClick) {
+				if (m_coord.GetComponent<Transform>(e).name == "PauseButton") {
+					//m_coord.Pause();
+					m_coord.GetSystem<PlayerControllerSystem>()->PauseInputs();
+				} else if (b.clickTex.find("Resume") != std::string::npos) {
+					//m_coord.Unpause();
+					m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
+				}
+
 				m = b.clickTex;
 
 				std::unordered_map<ButtonAction, Button>::iterator it = m_buttons.find(b.action);
@@ -1051,8 +1085,8 @@ namespace NightSnack::Scene {
 		float camY = camTransform.pos.y;
 		float zoom = camera.zoom;
 
-		std::cerr << "[SceneManager] Centering menu on camera at (" << camX << ", " << camY
-			<< ") with zoom: " << zoom << "\n";
+		//std::cerr << "[SceneManager] Centering menu on camera at (" << camX << ", " << camY
+		//	<< ") with zoom: " << zoom << "\n";
 
 		// Create menu entities
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
@@ -1097,7 +1131,7 @@ namespace NightSnack::Scene {
 					Transform t = entityData["Transform"];
 					//if (t.name == "AudioSlider") continue;
 
-					std::cerr << "[Open Menu] Creating " << t.name << '\n';
+					//std::cerr << "[Open Menu] Creating " << t.name << '\n';
 					e = factory->Create();
 					t.pos += { camX, camY, 0.f };
 					t.pos.z += (float)m_menus.size() * 2.f;
@@ -1112,7 +1146,7 @@ namespace NightSnack::Scene {
 				}
 
 				m_menuEntities.insert(e);
-				std::cerr << "[SceneManager] Added button entity " << e << " to system\n";
+				//std::cerr << "[SceneManager] Added button entity " << e << " to system\n";
 
 				if (e != INVALID_ENTITY) {
 					m_menuEntities.insert(e);
@@ -1150,7 +1184,7 @@ namespace NightSnack::Scene {
 				m_sliderBarEntity = sliderBar;
 				m_sliderKnobEntity = sliderKnob;
 
-				std::cout << "[SceneManager] SliderBar: " << m_sliderBarEntity << ", SliderKnob: " << m_sliderKnobEntity << '\n';
+				//std::cout << "[SceneManager] SliderBar: " << m_sliderBarEntity << ", SliderKnob: " << m_sliderKnobEntity << '\n';
 
 				// Compute min/max from the bar's actual world position and scale
 				ButtonInfo& b = m_coord.ModifyComponent<ButtonInfo>(sliderBar);
