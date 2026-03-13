@@ -565,7 +565,7 @@ namespace NightSnack {
         //std::cout << "Player Vel: " << vel << std::endl;
     }
 
-    void PlayerControllerSystem::Jump(Transform& t, Vec2& vel, PlayerController pcont, bool isGrounded) {
+    void PlayerControllerSystem::Jump(Transform& t, Vec2& vel, PlayerController pcont, bool grounded) {
 
         bool jump = false;
 
@@ -574,7 +574,7 @@ namespace NightSnack {
         if (m_timeSinceGrounded < m_groundedThreshhold)
             m_flags.justJumped = false;
 
-        if (isGrounded)
+        if (grounded)
         {
             m_timeSinceGrounded = 0;
         }
@@ -584,7 +584,7 @@ namespace NightSnack {
 
         if (m_flags.jumpRequested) {
             // allow jump if pressed right after being off ground
-            if (isGrounded || m_timeSinceGrounded < m_groundedThreshhold)
+            if (grounded || m_timeSinceGrounded < m_groundedThreshhold)
             {
                 jump = true;
                 m_flags.jumpRequested = false;
@@ -601,7 +601,7 @@ namespace NightSnack {
         //        m_storedJumpTimer = 0.f;
         //    }
         //}
-        //if (m_storedJump && isGrounded)
+        //if (m_storedJump && grounded)
         //    jump = true;
 
         if (jump && !m_flags.justJumped) {

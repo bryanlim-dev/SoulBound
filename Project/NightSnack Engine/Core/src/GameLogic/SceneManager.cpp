@@ -9,7 +9,7 @@
  * This file defines functions that assist in scene managment such as level
  * loading/saving, level caching when Play/Stop in Editor and GameUI interactions
  * like button clicks.
- * 
+ *
  * Copyright � 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
@@ -17,8 +17,8 @@
 #include "Systems/Physics/Physics.h"
 #include "Systems/PlayerController.h"
 #include "Graphics/Camera.h"
-//#include "Systems/ParticleSystem.h"
-//#include "Systems/CollectibleSystem.h"
+ //#include "Systems/ParticleSystem.h"
+ //#include "Systems/CollectibleSystem.h"
 #include "Systems/DialogueSystem.h"
 
 // Private helper function that checks mouse and button collision
@@ -35,7 +35,7 @@ static bool ButtonCollisionCheck(float mx, float my, float sx, float sy, NightSn
 		checkX = mx; checkY = my;
 		bottom = t.pos.y - halfHeight;
 		top = t.pos.y + halfHeight;
-		
+
 	} else if (t.layer == NightSnack::LayerType::GAMEUI) {
 		checkX = sx; checkY = sy;
 		bottom = t.pos.y + halfHeight;
@@ -48,9 +48,8 @@ static bool ButtonCollisionCheck(float mx, float my, float sx, float sy, NightSn
 		float dy = checkY - t.pos.y;
 		float distSq = dx * dx + dy * dy;
 		return (distSq <= c.radius * c.radius);  // inside = true
-	}
-	else {
-		
+	} else {
+
 		if (t.layer == NightSnack::LayerType::GAMEUI) {
 			// Screen space: Y increases downward
 			return (checkX >= left && checkX <= right &&
@@ -61,7 +60,7 @@ static bool ButtonCollisionCheck(float mx, float my, float sx, float sy, NightSn
 				checkY >= bottom && checkY <= top);
 		}
 	}
-	return false;
+	//return false;
 }
 
 namespace NightSnack::Scene {
@@ -137,6 +136,15 @@ namespace NightSnack::Scene {
 						m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerWin", 0.85f);
 						collectSystem->ToggleCollectibleIcons(false);
 						winScreenOn = true;
+
+						// Make pause button inactive
+						for (Entity e : m_entities) {
+							if (m_coord.EntityIsAlive(e) && m_coord.GetComponent<Transform>(e).isActive && 
+								m_coord.GetComponent<Transform>(e).name == "PauseButton") {
+								m_coord.ModifyComponent<Transform>(e).isActive = false;
+								break;
+							}
+						}
 					}
 					// Knockback player if they try to exit without all flames
 					else
@@ -172,14 +180,14 @@ namespace NightSnack::Scene {
 			// loads level with fade, 1.5s fade out, 1.0s fade in
 			c.Unpause();
 			c.GetSystem<Scene::SceneManager>()->LoadLevelWithFade(s, 1.1f, 1.0f);
-		});
+			});
 		m_buttons.emplace(ButtonAction::LOADLEVEL, loadButton);
 
 		Button NoAction(ButtonAction::NOACTION, [](Coordinator& c, std::string const& s, Entity e) {
 			(void)e;
 			(void)c;
 			if (s.empty()) { return; }
-		});
+			});
 		m_buttons.emplace(ButtonAction::NOACTION, NoAction);
 
 		// open menu button
@@ -212,13 +220,12 @@ namespace NightSnack::Scene {
 			auto const& a = c.GetSystem<ApplicationSystem>();
 			auto& b = c.ModifyComponent<ButtonInfo>(e);
 
-			if (a->m_appIsFullscreen) { 
+			if (a->m_appIsFullscreen) {
 				a->ExitFullscreen();
 				b.defaultTex = b.clickTex = b.hoverTex = "Menu-Windowed";
 				c.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
-			}
-			else { 
-				a->EnterFullscreen(); 
+			} else {
+				a->EnterFullscreen();
 				b.defaultTex = b.clickTex = b.hoverTex = "Menu-Fullscreen";
 				c.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
 			}
@@ -308,7 +315,7 @@ namespace NightSnack::Scene {
 				// skip if not a menu button
 				if (it == m_menuEntities.end()) { continue; }
 				if (b.action == ButtonAction::TOGGLEFULLSCREEN) {
-					b.defaultTex = b.hoverTex = b.clickTex = 
+					b.defaultTex = b.hoverTex = b.clickTex =
 						(m_coord.GetSystem<ApplicationSystem>()->m_appIsFullscreen ? "Menu-Fullscreen" : "Menu-Windowed");
 				}
 			}
@@ -321,7 +328,7 @@ namespace NightSnack::Scene {
 				m_coord.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
 
 				// clear hover state if mouse left this button
-				if (m_hoveredEntity == e) 
+				if (m_hoveredEntity == e)
 				{
 					m_hoveredEntity = INVALID_ENTITY;
 				}
@@ -331,7 +338,7 @@ namespace NightSnack::Scene {
 			m = b.hoverTex;
 			//std::cout << "changed texture of button: " << e << " to " << b.hoverTex << '\n';
 			// only play hover sound when first entering the button
-			if (m_hoveredEntity != e) 
+			if (m_hoveredEntity != e)
 			{
 				m_hoveredEntity = e;
 				m_coord.GetSystem<AudioSystem>()->PlaySFX("buttonHover");
@@ -354,8 +361,18 @@ namespace NightSnack::Scene {
 
 			if (m_mouseClick) {
 				if (m_coord.GetComponent<Transform>(e).name == "PauseButton") {
+					
+					// Currently, only display the pause menu if the camera is not panning
+					// since the pause menu is in world coordinates
+					// Dont allow when dialogue system is active too
+					if (winScreenOn || m_coord.GetSystem<CameraSystem>()->GetCameraIsPanning() || 
+						m_coord.GetSystem<DialogueSystem>()->IsActive()) {
+						m_mouseClick = false;
+						return;
+					}
 					//m_coord.Pause();
 					m_coord.GetSystem<PlayerControllerSystem>()->PauseInputs();
+
 				} else if (b.clickTex.find("Resume") != std::string::npos) {
 					//m_coord.Unpause();
 					m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
@@ -371,8 +388,7 @@ namespace NightSnack::Scene {
 					it->second(m_coord, b.target, e);
 					// Only interact with 1 button
 					return;
-				}
-				else {
+				} else {
 					std::cerr << "[SceneManager] Button action of Entity: " << e << " not registered\n";
 				}
 				m_mouseClick = false;
@@ -428,8 +444,8 @@ namespace NightSnack::Scene {
 			// Required for Physics system
 			m_coord.AddComponent<RigidBody>(e, RigidBody{});
 
-			m_camFrames.insert({e, c});
-			
+			m_camFrames.insert({ e, c });
+
 			//// Create Triggers colliders for Cam Data
 			//for (auto const& trig : item["triggers"]) {
 			//	if (!trig.contains("pos")) continue;
@@ -468,7 +484,7 @@ namespace NightSnack::Scene {
 
 		for (auto& [a, b] : m_camFrames) {
 			json j;
-			
+
 			j["minX"] = b["minX"]; j["maxX"] = b["maxX"];
 			j["minY"] = b["minY"]; j["maxY"] = b["maxY"];
 			j["zoom"] = b["zoom"];
@@ -527,7 +543,7 @@ namespace NightSnack::Scene {
 		factory->RemoveEntity(camTriggerEntity);
 	}
 
-	
+
 	void SceneManager::CreateWinCollider(json const& level) {
 
 		if (!level.contains("WinZone")) return;
@@ -577,7 +593,7 @@ namespace NightSnack::Scene {
 		Entity cam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
 		Vec3 const& camPos = m_coord.GetComponent<Transform>(cam).pos;
 
-		m_coord.GetSystem<EntityFactory>()->CreateLevelEntities(w, Vec2{camPos.x, camPos.y});
+		m_coord.GetSystem<EntityFactory>()->CreateLevelEntities(w, Vec2{ camPos.x, camPos.y });
 		m_coord.GetSystem<PlayerControllerSystem>()->PauseInputs();
 	}
 
@@ -637,7 +653,7 @@ namespace NightSnack::Scene {
 
 		std::cerr << "[SceneManager] New blank level created\n";
 	}
-	
+
 	// Creates all entities required for a level through the entity factory
 	// and sets up BGM for level, refreshes script manager.
 	void SceneManager::LoadLevel(std::string const& levelname) {
@@ -652,7 +668,7 @@ namespace NightSnack::Scene {
 		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
 		m_coord.GetSystem<ParticleSystem>()->ClearAllEmitters();
 
-		
+
 		size_t key = m_levelKeys[levelname];
 		json const& level = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(key);
 
@@ -706,25 +722,24 @@ namespace NightSnack::Scene {
 
 		if (level.contains("BGM"))
 		{
+			std::string keyBGM{};
 			if (level["BGM"].is_array())
 			{
 				// Multiple BGMs
 				for (const auto& bgm : level["BGM"])
 				{
-					std::string key = bgm.get<std::string>();
-					m_currentLevelBGMs.push_back(key);
-					audio->PlayBGM(key);
+					keyBGM = bgm.get<std::string>();
+					m_currentLevelBGMs.push_back(keyBGM);
+					audio->PlayBGM(keyBGM);
 				}
-			}
-			else
+			} else
 			{
 				// Single BGM
-				std::string key = level["BGM"].get<std::string>();
-				m_currentLevelBGMs.push_back(key);
-				audio->PlayBGM(key);
+				keyBGM = level["BGM"].get<std::string>();
+				m_currentLevelBGMs.push_back(keyBGM);
+				audio->PlayBGM(keyBGM);
 			}
-		}
-		else
+		} else
 		{
 			audio->StopBGM();
 		}
@@ -784,10 +799,9 @@ namespace NightSnack::Scene {
 			cam.maxX = (m_camFrames.begin()->second)["maxX"];
 			cam.minY = (m_camFrames.begin()->second)["minY"];
 			cam.maxY = (m_camFrames.begin()->second)["maxY"];
-			
+
 			m_camIndex = m_camFrames.begin()->first;
-		}
-		else {
+		} else {
 			cam.maxX = cam.minX = 0.f;
 			cam.minY = cam.maxY = 0.f;
 		}
@@ -813,8 +827,7 @@ namespace NightSnack::Scene {
 			cam.maxY = (m_camFrames.begin()->second)["maxY"];
 
 			m_camIndex = m_camFrames.begin()->first;
-		}
-		else {
+		} else {
 			cam.maxX = cam.minX = 0.f;
 			cam.minY = cam.maxY = 0.f;
 		}
@@ -916,8 +929,7 @@ namespace NightSnack::Scene {
 			// Level exists and was overwritten
 			resource->UpdateJson(m_levelKeys[levelname], level);
 			std::cerr << "[SceneManager] Updated existing level\n";
-		}
-		else {
+		} else {
 			// New Level has been saved
 			std::string loadPath = "GameData/Levels/" + levelname + ".json";
 			resource->LoadJson(loadPath, m_levelKeys[levelname]);
@@ -989,8 +1001,7 @@ namespace NightSnack::Scene {
 					m_currentLevelBGMs.push_back(key);
 					audio->PlayBGM(key);
 				}
-			}
-			else
+			} else
 			{
 				std::string key = m_levelCache["BGM"].get<std::string>();
 				m_currentLevelBGMs.push_back(key);
@@ -1063,8 +1074,7 @@ namespace NightSnack::Scene {
 
 		if (it != m_menuKeys.end()) {
 			menuKey = it->second;
-		}
-		else {
+		} else {
 			LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(menuPath, menuKey);
 
 			if (result == LOAD_FAIL_BADPATH) {
@@ -1119,16 +1129,15 @@ namespace NightSnack::Scene {
 							<< "' at world pos (" << transform.pos.x << ", " << transform.pos.y << ")"
 							<< " | camOffset applied: (" << camX << ", " << camY << ")\n";*/
 
-						/*std::cerr << "  Prefab: " << prefabName
-							<< " positioned at (" << transform.pos.x << ", " << transform.pos.y << ", " << transform.pos.z << ")"
-							<< " scaled to (" << transform.scale.x << ", " << transform.scale.y << ")\n";*/
+							/*std::cerr << "  Prefab: " << prefabName
+								<< " positioned at (" << transform.pos.x << ", " << transform.pos.y << ", " << transform.pos.z << ")"
+								<< " scaled to (" << transform.scale.x << ", " << transform.scale.y << ")\n";*/
 					}
 
 					//std::cerr << "[Open Menu] Check 2 - Creating: " << prefabName << "\n";
 
 					e = factory->Create(prefabName, transform);
-				}
-				else if (entityData.contains("Components")) {
+				} else if (entityData.contains("Components")) {
 					//std::cerr << "[Open Menu] Check 3\n";
 					Transform t = entityData["Transform"];
 					//if (t.name == "AudioSlider") continue;
@@ -1235,8 +1244,8 @@ namespace NightSnack::Scene {
 		if (m_dispatcher)
 		{
 			m_dispatcher->QueueEvent(
-				std::make_unique<InputEvent>(InputEvent::InputAction::PhysicsDebugMode, 
-											InputEvent::InputActionState::Pressed));
+				std::make_unique<InputEvent>(InputEvent::InputAction::PhysicsDebugMode,
+					InputEvent::InputActionState::Pressed));
 		}
 		//std::cerr << "[SceneManager] Game paused\n";
 

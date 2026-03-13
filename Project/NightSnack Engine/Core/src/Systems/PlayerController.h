@@ -435,7 +435,7 @@ namespace NightSnack {
         Entity GetPlayer() const noexcept { return m_player; }
 
         void LeftAndRightMovement(Vec2& vel, PlayerController const&) const;
-        void Jump(Transform& t, Vec2& vel, PlayerController pcont, bool isGrounded);
+        void Jump(Transform& t, Vec2& vel, PlayerController pcont, bool grounded);
 
         PlayerFlags& GetPlayerFlags();
         void ResetFlags() { m_flags = PlayerFlags{}; UnpauseInputs(); }

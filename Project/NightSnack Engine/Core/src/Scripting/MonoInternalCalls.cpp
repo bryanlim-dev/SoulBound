@@ -777,6 +777,7 @@ extern "C" {
     }
 
     static MonoString* NightSnack_GetPlayerAbility(uint32_t id) {
+        (void)id;
         if (!g_scriptInterface) { return NULL; }
         return NightSnack::Scripting::StringToMonoString(g_scriptInterface->GetPlayerAbility());
     }
