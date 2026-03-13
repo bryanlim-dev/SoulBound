@@ -302,7 +302,7 @@ namespace NightSnack {
                 c.isGrounded = true;
                 time = 0.f;
             }
-            bool isGrounded = m_flags.isGrounded = c.isGrounded || m_timeSinceGrounded < m_groundedThreshhold;
+            isGrounded = m_flags.isGrounded = c.isGrounded || m_timeSinceGrounded < m_groundedThreshhold;
 
 			// reset glide when grounded
             if (isGrounded)
@@ -312,8 +312,7 @@ namespace NightSnack {
 
                 if (curr_ability == "Glide")
                 {
-                    Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
-                    m_coord.ModifyComponent<Renderable>(player).materialName = "SpiritMove_4_1";
+                    r.materialName = "SpiritMove_4_1";
                 }
             }
 
@@ -380,11 +379,21 @@ namespace NightSnack {
                 }
 
                 // reset glide flag when not gliding
-                if (curr_ability == "Glide" && m_flags.isGliding) 
+                if (curr_ability == "Glide") 
                 {
-                    m_flags.isGliding = false;
-                    Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
-                    m_coord.ModifyComponent<Renderable>(player).materialName = "SpiritMove_4_1";
+                    if (m_flags.isGliding)
+                    {
+                        m_flags.isGliding = false;
+                        r.materialName = "SpiritMove_4_1";
+                    }
+                    else if (curr_ability == "Glide")
+                    {
+                        auto body = m_coord.GetComponent<RigidBody>(m_player);
+                        if (body.vel.y < 0.f)
+                            r.materialName = "PlayerFall_4_1";
+                        else
+                            r.materialName = "SpiritMove_4_1";
+                    }
                 }
             }
 
@@ -396,8 +405,12 @@ namespace NightSnack {
 
                 if (curr_ability == "Glide")
                 {
-                    Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
-                    m_coord.ModifyComponent<Renderable>(player).materialName = "SpiritMove_4_1";
+                    r.materialName = "SpiritMove_4_1";
+                }
+
+                if (curr_ability == "Grapple" && !m_flags.isWalking)
+                {
+                    r.materialName = "FrogIdle_4_1";
                 }
             }
 
@@ -574,6 +587,7 @@ namespace NightSnack {
         Entity m_player;
         bool reset;
         bool m_pauseInputs = false;
+		bool isGrounded = false;
 
         // Accumulates states
         PlayerFlags m_flags{};
