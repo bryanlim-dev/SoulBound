@@ -60,7 +60,7 @@ namespace NightSnack {
 	// Snapshot for removing a component
     struct ComponentRemoveSnapshot
     {
-        Entity entity;
+        Entity entity = INVALID_ENTITY;
         std::string componentName;
 		std::optional<PlayerController> playercontroller;
         std::optional<RigidBody>        rigidbody;
@@ -84,7 +84,7 @@ namespace NightSnack {
 	// Snapshot for components of a deleted entity
     struct EntityDeleteSnapshot
     {
-        Entity      entity;
+        Entity entity  = INVALID_ENTITY;
         std::string prefabName;
         Transform   transform;
         std::optional<PlayerController> playercontroller;
@@ -136,20 +136,6 @@ namespace NightSnack {
 
     class UndoSystem {
     public:
-
-        /************************************************************************/
-        /*!
-        \brief
-            Updates the UndoSystem.
-
-        \param coord
-            - Coordinator reference to access components and entities
-
-        \param disp
-            - EventDispatcher reference to subscribe to events
-        */
-        /************************************************************************/
-        void Update(Coordinator& coord, EventDispatcher& disp);
 
         /************************************************************************/
         /*!

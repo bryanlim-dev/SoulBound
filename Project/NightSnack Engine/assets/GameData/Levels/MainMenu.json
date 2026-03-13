@@ -1,5 +1,7 @@
 {
-    "BGM": "MainMenu",
+    "BGM": [
+        "MainMenu"
+    ],
     "Entities": [
         {
             "Components": {
@@ -157,7 +159,7 @@
                 "Name": "Quit-Button",
                 "Position": {
                     "x": 0.0,
-                    "y": -312.5,
+                    "y": -237.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
@@ -333,63 +335,6 @@
                 }
             },
             "isPrefab": false
-        },
-        {
-            "Components": {
-                "Audio": {
-                    "audioKey": "buttonSelect",
-                    "isPlaying": false,
-                    "loop": false,
-                    "playOnStart": false,
-                    "volume": 1.0
-                },
-                "ButtonInfo": {
-                    "action": "OpenMenu",
-                    "target": "PauseMenu",
-                    "type": "Clicker",
-                    "clickTex": "MainMenu-Credits",
-                    "defaultTex": "MainMenu-Credits",
-                    "hoverTex": "MainMenu-CreditsHover"
-                },
-                "Collider": {
-                    "height": 64.0,
-                    "isStatic": true,
-                    "radius": 0.0,
-                    "shape": "AABB",
-                    "type": "Trigger",
-                    "width": 320.0
-                },
-                "Renderable": {
-                    "isWireframe": false,
-                    "materialName": "MainMenu-Credits",
-                    "meshName": "square"
-                },
-                "modified": true
-            },
-            "Transform": {
-                "Layer": "GameLayer",
-                "Name": "Settings-Button",
-                "Position": {
-                    "x": 0.0,
-                    "y": -237.5,
-                    "z": 0.0
-                },
-                "Rotation": 0.0,
-                "Scale": {
-                    "x": 512.0,
-                    "y": 64.0
-                },
-                "UIBasePosition": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0
-                },
-                "UIBaseScale": {
-                    "x": 0.0,
-                    "y": 0.0
-                }
-            },
-            "isPrefab": false
         }
     ],
     "MainCamera": {
@@ -418,11 +363,10 @@
         "offsetY": 0.0,
         "posX": 0.0,
         "posY": 0.0,
-        "posZ": 20.0,
+        "posZ": 10.0,
         "width": 1600.0,
         "zoom": 1.0
     },
-    "Name": "MainMenu",
     "WinZone": {
         "ConfigFile": "",
         "Position": {

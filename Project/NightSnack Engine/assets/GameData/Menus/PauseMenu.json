@@ -478,7 +478,7 @@
                 },
                 "ButtonInfo": {
                     "action": "OpenMenu",
-                    "target": "SettingsMenu",
+                    "target": "GuideMenu",
                     "type": "Clicker",
                     "defaultTex": "Paused-Guide",
                     "hoverTex": "Paused-GuideSelected",
