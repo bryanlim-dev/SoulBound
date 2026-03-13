@@ -62,6 +62,7 @@ namespace ManagedScripts
 
         public override void OnUpdate()
         {
+            // Current state of the platform
             switch (currentState)
             {
                 case State.Idle:
@@ -121,6 +122,7 @@ namespace ManagedScripts
 
         private void PlayWiggle(int times)
         {
+            // Trigger wiggle effect in the WiggleScript
             if (wiggleScript != null)
             {
                 wiggleScript.TriggerWiggle(times);
@@ -129,6 +131,7 @@ namespace ManagedScripts
 
         private void StartFalling()
         {
+            // Disable player collision and start falling
             fallVelocity = 0f;
             if (collider != null)
             {
@@ -138,6 +141,7 @@ namespace ManagedScripts
 
         private void UpdateFall()
         {
+            // Apply gravity to the platform's fall velocity and update its position
             fallVelocity += fallGravityMultiplier * DeltaTime;
             Vector3 pos = transform.Position;
             pos.Y -= fallVelocity * DeltaTime;
@@ -146,6 +150,7 @@ namespace ManagedScripts
 
         private void ResetPlatform()
         {
+            // Reset platform to initial state and position
             transform.Position = initialPosition;
 
             if (collider != null)
@@ -160,6 +165,7 @@ namespace ManagedScripts
 
         private bool IsPlayerOnPlatform()
         {
+            // Check if the player is currently colliding with the platform
             return collider != null && collider.CheckPlayerCollision();
         }
     }
