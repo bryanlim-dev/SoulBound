@@ -305,9 +305,11 @@ namespace NightSnack {
             bool isGrounded = m_flags.isGrounded = c.isGrounded || m_timeSinceGrounded < m_groundedThreshhold;
 
 			// reset glide when grounded
-            if (isGrounded && m_flags.isGliding) 
+            if (isGrounded)
             {
-                m_flags.isGliding = false;
+                if (m_flags.isGliding)
+                    m_flags.isGliding = false;
+
                 Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
                 m_coord.ModifyComponent<Renderable>(player).materialName = "SpiritMove_4_1";
             }
@@ -384,9 +386,11 @@ namespace NightSnack {
             }
 
             // reset glide flag when grounded
-            if (isGrounded && m_flags.isGliding) 
+            if (isGrounded) 
             {
-                m_flags.isGliding = false;
+                if (m_flags.isGliding)
+                    m_flags.isGliding = false;
+
                 Entity player = m_coord.GetSystem<PlayerControllerSystem>()->GetPlayer();
                 m_coord.ModifyComponent<Renderable>(player).materialName = "SpiritMove_4_1";
             }
