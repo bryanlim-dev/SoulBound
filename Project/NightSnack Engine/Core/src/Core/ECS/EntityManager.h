@@ -91,6 +91,7 @@ namespace NightSnack {
 		std::set<Entity> const& GetLivingEntities() const { return m_livingEntities; }
 
 		size_t GetLivingEntityCount() const { return m_livingEntityCount; }
+		void UpdateLivingEntityCount(size_t c) { m_livingEntityCount = c; }
 
 		bool EntityIsAlive(Entity e) const;
 

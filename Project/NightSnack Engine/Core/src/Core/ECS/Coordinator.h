@@ -252,6 +252,7 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		size_t GetLivingEntityCount() const { return m_entityManager->GetLivingEntityCount(); }
+		void UpdateLivingEntityCount() { m_entityManager->UpdateLivingEntityCount(GetLivingEntities().size()); }
 
 		/************************************************************************/
 		/*!
