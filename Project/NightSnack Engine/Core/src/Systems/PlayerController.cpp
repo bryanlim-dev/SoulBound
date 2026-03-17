@@ -329,12 +329,6 @@ namespace NightSnack {
 
     void PlayerControllerSystem::CreateGroundedHitbox()
     {
-        if (m_closeGroundedHitBox != INVALID_ENTITY)
-        {
-            m_coord.DestroyEntity(m_closeGroundedHitBox);
-            m_closeGroundedHitBox = INVALID_ENTITY;
-        }
-
         m_closeGroundedHitBox = m_coord.CreateEntity();
 
         if (!m_coord.HasComponent<Transform>(m_closeGroundedHitBox))
