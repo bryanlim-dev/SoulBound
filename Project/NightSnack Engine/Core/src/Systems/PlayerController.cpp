@@ -147,6 +147,20 @@ namespace NightSnack {
         return true;
     }
 
+    int PlayerControllerSystem::GetAbilityNumber() const
+    {
+        if (curr_ability == "Glide")
+            return 0;
+        else if (curr_ability == "Grapple")
+            return 1;
+        else if (curr_ability == "DoubleJump")
+            return 2;
+        else if (curr_ability == "Bounce")
+            return 3;
+
+        return -1;
+    }
+
     void PlayerControllerSystem::RespawnPlayer()
     {
 

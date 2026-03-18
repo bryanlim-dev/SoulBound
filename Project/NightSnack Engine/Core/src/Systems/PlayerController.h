@@ -484,6 +484,7 @@ namespace NightSnack {
         void RegisterAbilities();
         bool UseSpecialAbility();
         bool AttachAbility();
+        int GetAbilityNumber() const;
         std::string curr_ability = "Glide";
         std::string prev_ability;
 

@@ -492,7 +492,7 @@ namespace ManagedScripts
         public static extern uint KillPlayer_Internal();
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern string GetPlayerAbility_Internal();
+        private static extern int GetPlayerAbility_Internal();
         #endregion
 
 
@@ -1209,7 +1209,21 @@ namespace ManagedScripts
         #region Player Controller
         public static string GetPlayerAbility()
         {
-            return GetPlayerAbility_Internal();
+            int abilityNum = GetPlayerAbility_Internal();
+
+            switch (abilityNum)
+            {
+                case 0:
+                    return "Glide";
+                case 1:
+                    return "Grapple";
+                case 2:
+                    return "DoubleJump";
+                case 3:
+                    return "Bounce";
+                default:
+                    return "None";
+            }
         }
 
         #endregion

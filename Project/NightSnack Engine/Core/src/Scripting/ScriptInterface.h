@@ -442,7 +442,7 @@ namespace NightSnack::Scripting {
         //Respawns Player
         void KillPlayer();
 
-        std::string GetPlayerAbility();
+        int GetPlayerAbility();
 
 #pragma endregion
         //Loads level based on a name
