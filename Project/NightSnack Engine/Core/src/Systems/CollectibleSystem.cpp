@@ -48,19 +48,19 @@ namespace NightSnack {
 						t.isActive = true;
 
 						// Create the particle emitters again here to spawn 
-						//if (c.type == COLLECTIBLE_TYPE::DOUBLE_JUMP) {
-						//	// Double jump collectibles will spawn orbiting particles
-						//	m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
-						//		"Particle-OrbitGlow",      // Prefab name
-						//		t.pos,                         // Spawn position (center)
-						//		{},							// End position (unused)
-						//		{},                       // Spawn radius (override by orbit radius in json)
-						//		30,                          // Max particles per cycle
-						//		5,                          // Spawn delay (steps between particles)
-						//		true,                     // Should loop
-						//		e
-						//	);
-						//}
+						if (c.type == COLLECTIBLE_TYPE::DOUBLE_JUMP) {
+							// Double jump collectibles will spawn orbiting particles
+							m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
+								"Particle-OrbitGlow",      // Prefab name
+								t.pos,                         // Spawn position (center)
+								{},							// End position (unused)
+								{},                       // Spawn radius (override by orbit radius in json)
+								30,                          // Max particles per cycle
+								5,                          // Spawn delay (steps between particles)
+								true,                     // Should loop
+								e
+							);
+						}
 					}
 				}
 				//std::cout << "dj collect not active!!\n";
@@ -94,28 +94,28 @@ namespace NightSnack {
 
 			if (c.type == COLLECTIBLE_TYPE::DOUBLE_JUMP) {
 				// Double jump collectibles will spawn orbiting particles
-				//m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
-				//	"Particle-OrbitGlow",      // Prefab name
-				//	t.pos,                         // Spawn position (center)
-				//	{},							// End position (unused)
-				//	{},                       // Spawn radius (override by orbit radius in json)
-				//	30,                          // Max particles per cycle
-				//	5,                          // Spawn delay (steps between particles)
-				//	true,                     // Should loop
-				//	e
-				//);
+				m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
+					"Particle-OrbitGlow",      // Prefab name
+					t.pos,                         // Spawn position (center)
+					{},							// End position (unused)
+					{},                       // Spawn radius (override by orbit radius in json)
+					30,                          // Max particles per cycle
+					5,                          // Spawn delay (steps between particles)
+					true,                     // Should loop
+					e
+				);
 			} else if (c.type == COLLECTIBLE_TYPE::KEY) {
 				// Key collectibles will spawn rising glow particles
-				//m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
-				//	"Particle-KeyGlow",      // Prefab name
-				//	t.pos,                         // Spawn position (center)
-				//	{},							// End position (unused)
-				//	{},                       // Spawn radius (override by orbit radius in json)
-				//	20,                          // Max particles per cycle
-				//	15,                          // Spawn delay (steps between particles)
-				//	true,                     // Should loop
-				//	e
-				//);
+				m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
+					"Particle-KeyGlow",      // Prefab name
+					t.pos,                         // Spawn position (center)
+					{},							// End position (unused)
+					{},                       // Spawn radius (override by orbit radius in json)
+					20,                          // Max particles per cycle
+					15,                          // Spawn delay (steps between particles)
+					true,                     // Should loop
+					e
+				);
 			}
 		}
 	}

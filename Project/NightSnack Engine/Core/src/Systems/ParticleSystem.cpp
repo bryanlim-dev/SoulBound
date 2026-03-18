@@ -288,17 +288,17 @@ namespace NightSnack {
 
 		// Collect all particle entities into a separate list
 		// to avoid iterator invalidation when destroying
-		std::vector<Entity> particleEntities;
-		for (Entity e : m_entities) {
-			particleEntities.push_back(e);
-		}
+		//std::vector<Entity> particleEntities;
+		//for (Entity e : m_entities) {
+		//	particleEntities.push_back(e);
+		//}
 
-		// Destroy all particle entities
-		for (Entity e : particleEntities) {
-			if (m_coord.EntityIsAlive(e)) {
-				m_coord.DestroyEntity(e); // use DestroyEntity directly, not RemoveEntity
-			}
-		}
+		//// Destroy all particle entities
+		//for (Entity e : particleEntities) {
+		//	if (m_coord.EntityIsAlive(e)) {
+		//		m_coord.DestroyEntity(e); // use DestroyEntity directly, not RemoveEntity
+		//	}
+		//}
 	}
 
 	void ParticleSystem::SpawnSingleSoilParticle(const std::string& prefabName, Vec3 leftEndPos, Vec3 rightEndPos) {

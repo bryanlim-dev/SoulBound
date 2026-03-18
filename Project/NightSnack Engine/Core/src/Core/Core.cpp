@@ -110,7 +110,7 @@ namespace NightSnack {
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
 		AddSystem<Scene::SceneManager>(m_coord, core_dispatcher);
 		AddSystem<Scripting::ScriptManager>(m_coord, core_dispatcher);
-		AddSystem<FiniteStateMachine>(m_coord);
+		//AddSystem<FiniteStateMachine>(m_coord);
 		AddSystem<CharacterSystem>(m_coord, core_dispatcher);
 		AddSystem<DialogueSystem>(m_coord, core_dispatcher);
 		AddSystem<TextSystem>(m_coord, core_dispatcher);

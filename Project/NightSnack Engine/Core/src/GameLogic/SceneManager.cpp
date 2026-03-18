@@ -688,11 +688,22 @@ namespace NightSnack::Scene {
 
 		m_sliderBarEntity = INVALID_ENTITY;
 		m_sliderKnobEntity = INVALID_ENTITY;
+		m_sfxBarEntity = INVALID_ENTITY;
+		m_sfxKnobEntity = INVALID_ENTITY;
+		m_bgmBarEntity = INVALID_ENTITY;
+		m_bgmKnobEntity = INVALID_ENTITY;
+
+		m_camIndex = INVALID_ENTITY;
+		m_hoveredEntity = INVALID_ENTITY;
+		m_player = INVALID_ENTITY;
+
+		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 
 		// Unload everything first
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
+		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
 
 		//std::cout << "Load Level, current living entities: " << m_coord.GetLivingEntities().size() << std::endl;
 
@@ -756,10 +767,10 @@ namespace NightSnack::Scene {
 
 		m_gameLoaded = true;
 		CacheLevel();
-		RestoreLevel();
+		//RestoreLevel();
 
-		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
-		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
+		//m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
+		//m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 		// Start the camera panning at the very start of the level
 		if (levelname == "LevelTutorial" || levelname == "MainMenu")
 			m_coord.GetSystem<CameraSystem>()->StartCamPan(false, (levelname == "MainMenu"));
@@ -843,13 +854,35 @@ namespace NightSnack::Scene {
 		//	std::cerr << "[SceneManager] Closing menu before restart\n";
 		//	CloseMenu();
 		//}
+		
+		// Reset menus
+		m_menuEntities.clear();
+		while (!m_menus.empty()) { m_menus.pop(); }
+		m_menuOpen = false;
+		//m_currentMenu.clear();
+		winScreenOn = false;
+
+		m_sliderBarEntity = INVALID_ENTITY;
+		m_sliderKnobEntity = INVALID_ENTITY;
+		m_sfxBarEntity = INVALID_ENTITY;
+		m_sfxKnobEntity = INVALID_ENTITY;
+		m_bgmBarEntity = INVALID_ENTITY;
+		m_bgmKnobEntity = INVALID_ENTITY;
+
+		m_camIndex = INVALID_ENTITY;
+		m_hoveredEntity = INVALID_ENTITY;
+		m_player = INVALID_ENTITY;
+
 		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
 		m_coord.GetSystem<ParticleSystem>()->ClearAllEmitters();
+
+		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 
 		json const& level = m_levelCache;
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
+		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
 
 		// Reset Camera
 		CreateSceneCamera(level);
@@ -874,8 +907,8 @@ namespace NightSnack::Scene {
 		m_gameLoaded = true;
 		winScreenOn = false;
 
-		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
-		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
+		//m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
+		//m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 		// Start the camera panning at the very start of the level
 		m_coord.GetSystem<CameraSystem>()->StartCamPan(true);
 	}
@@ -976,10 +1009,24 @@ namespace NightSnack::Scene {
 		//m_currentMenu.clear();
 		winScreenOn = false;
 
+		m_sliderBarEntity = INVALID_ENTITY;
+		m_sliderKnobEntity = INVALID_ENTITY;
+		m_sfxBarEntity = INVALID_ENTITY;
+		m_sfxKnobEntity = INVALID_ENTITY;
+		m_bgmBarEntity = INVALID_ENTITY;
+		m_bgmKnobEntity = INVALID_ENTITY;
+
+		m_camIndex = INVALID_ENTITY;
+		m_hoveredEntity = INVALID_ENTITY;
+		m_player = INVALID_ENTITY;
+
+		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
+
 		// Restore all entities to original
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
+		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
 
 		CreateSceneCamera(m_levelCache);
 		ReadCameraKeyframes(m_levelCache["MainCamera"]["KeyFrames"]);
@@ -1016,8 +1063,8 @@ namespace NightSnack::Scene {
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();
 		script->RefreshScripts(); //	
 
-		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
-		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
+		//m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
+		//m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 		// Do not pam the camera when entering the level editor
 		m_coord.GetSystem<CameraSystem>()->StartCamPan(false);
 

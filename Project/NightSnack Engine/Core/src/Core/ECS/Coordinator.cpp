@@ -36,6 +36,11 @@ namespace NightSnack {
 	void Coordinator::DestroyEntity(Entity e) {
 		if (e == INVALID_ENTITY) { return; }
 
+		if (GetLivingEntities().find(e) == GetLivingEntities().end()) { 
+			std::cerr << "Entity: " << e << " is not alive!!!\n";
+			return; 
+		}
+
 		if (HasComponent<Renderable>(e)) {
 			GetSystem<GraphicsSystem>()->RemoveCache(e);
 		}

@@ -339,4 +339,14 @@ namespace NightSnack
 		}
 		m_indicator = INVALID_ENTITY;
 	}
+
+	void FrogTongue::Reset() {
+		m_tongue = INVALID_ENTITY;
+		m_anchor = INVALID_ENTITY;
+		m_indicator = INVALID_ENTITY;
+		m_owner = INVALID_ENTITY;
+		m_active = false;
+		m_emitterActive = false;
+		m_indicatorEmitter = 0;
+	}
 }

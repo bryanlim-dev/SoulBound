@@ -250,9 +250,16 @@ namespace NightSnack {
             }
 
             if (reset) {
+                // Reset stored entities
+                m_closeGroundedHitBox = INVALID_ENTITY;
+                //m_player = INVALID_ENTITY;
+                //m_prevCheckpoint = INVALID_ENTITY;
+
                 AttachAbility();
                 m_flags = PlayerFlags{};
 
+                // Dont let these destroy stale entities - just clear handles
+                m_frogTongue.Reset();
                 m_bounce.Reset(m_coord);
 
                 reset = false;
