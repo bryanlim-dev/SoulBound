@@ -382,8 +382,15 @@ namespace NightSnack {
 	template <typename T>
 	T& ComponentArray<T>::Get(Entity e) {
 
-		return m_components[m_entityToIndex[e]];
+		//return m_components[m_entityToIndex[e]];
 
+		auto it = m_entityToIndex.find(e);
+		if (it == m_entityToIndex.end()) {
+			std::cerr << "[ComponentArray::Get] Entity " << e << " not found! Returning default.\n";
+			static T dummy{};
+			return dummy;
+		}
+		return m_components[it->second];
 	}
 
 	template <typename T>
