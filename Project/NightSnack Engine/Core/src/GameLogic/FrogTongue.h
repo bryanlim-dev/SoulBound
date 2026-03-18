@@ -122,7 +122,33 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		bool Update(Coordinator& coord);
+		/************************************************************************/
+		/*!
+		\brief
+		Function that handles the end of the grapple ability
+		Hides the tongue entity
+
+		/param coord
+		Refernece to the coordinator
+		*/
+		/************************************************************************/
 		void End(Coordinator& coord);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Handles reseting of the ability to default state (i.e delete tongue entity)
+
+		/param coord
+		Refernece to the coordinator
+
+		/param deleteEntities
+		False if do not destory attached entities
+		Defaulted to true
+		(e.g for scene transition all objects are destoryed anyway)
+		*/
+		/************************************************************************/
+		void Reset(Coordinator& coord, bool deleteEntities = true);
 
 		//Only supports player
 		/************************************************************************/
@@ -211,6 +237,28 @@ namespace NightSnack {
 		/************************************************************************/
 		float DistanceToAnchor(Vec3 ownerPos, Vec3 anchorPos);
 
+
+		/************************************************************************/
+		/*!
+		\brief
+		Hides the tongue entity by setting them to inactive
+
+		/param coord
+		Refrence to coordinator
+		*/
+		/************************************************************************/
+		void HideDisplay(Coordinator& coord);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Deletes the tongue entity
+
+		/param coord
+		Refrence to coordinator
+		*/
+		/************************************************************************/
+		void DeleteDisplay(Coordinator& coord);
 
 		/************************************************************************/
 		/*!

@@ -199,13 +199,18 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Deletes the display entities
+		Handles reseting of the ability to default state (i.e delete guiide entities)
 
 		/param coord
 		Refernece to the coordinator
+
+		/param deleteEntities
+		False if do not destory attached entities
+		Defaulted to true
+		(e.g for scene transition all objects are destoryed anyway)
 		*/
 		/************************************************************************/
-		void Reset(Coordinator& coord);
+		void Reset(Coordinator& coord, bool deleteEntities = true);
 
 		/************************************************************************/
 		/*!

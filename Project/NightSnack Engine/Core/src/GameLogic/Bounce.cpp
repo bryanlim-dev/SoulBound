@@ -181,23 +181,20 @@ namespace NightSnack
 		}
 	}
 
-	void Bounce::Reset(Coordinator& coord)
+	void Bounce::Reset(Coordinator& coord, bool deleteEntities)
 	{
-		/*if (m_createdDisplays)
+		if (m_createdDisplays && deleteEntities)
 			DeleteDisplay(coord);
 
-		m_createdDisplays = false;*/
+		m_createdDisplays = false;
 
-		(void)coord;
-		// Don't call DeleteDisplay — those entities were already destroyed 
-		// by DestroyLevelEntities. Just clear the handles.
 		m_guideDots.clear();
 		m_powerBar = INVALID_ENTITY;
+
 		m_createdDisplays = false;
 		m_active = false;
 		m_currState = BOUNCE_END;
 	}
-
 
 	void Bounce::UpdateOwner(Entity e) {
 		m_owner = e;

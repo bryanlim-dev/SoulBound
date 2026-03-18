@@ -225,7 +225,7 @@ namespace NightSnack {
         */
         /************************************************************************/
         void Update() override {
-
+                  
             static bool emitted = false;
             if (m_coord.IsPaused()) {
                 //emitted = false;
@@ -258,9 +258,9 @@ namespace NightSnack {
                 AttachAbility();
                 m_flags = PlayerFlags{};
 
-                // Dont let these destroy stale entities - just clear handles
-                m_frogTongue.Reset();
-                m_bounce.Reset(m_coord);
+                //False as the scene manager should handle cleanup deletion anyways
+                m_bounce.Reset(m_coord, false);
+                m_frogTongue.Reset(m_coord, false);
 
                 reset = false;
                 m_pauseInputs = false;
