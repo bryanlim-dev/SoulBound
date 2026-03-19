@@ -224,10 +224,12 @@ namespace NightSnack::Scene {
 
 			if (a->m_appIsFullscreen) {
 				a->ExitFullscreen();
+				a->SaveFullscreenToConfig();
 				b.defaultTex = b.clickTex = b.hoverTex = "Menu-Windowed";
 				c.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
 			} else {
 				a->EnterFullscreen();
+				a->SaveFullscreenToConfig();
 				b.defaultTex = b.clickTex = b.hoverTex = "Menu-Fullscreen";
 				c.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
 			}
