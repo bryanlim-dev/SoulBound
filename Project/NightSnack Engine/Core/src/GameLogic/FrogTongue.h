@@ -40,11 +40,11 @@ namespace NightSnack {
 
 		const float m_tongueLengthMax = 550.0f;
 		const float m_tongueWidth = 5.f;
-		const float m_swingForce = 750.0f;
+		const float m_swingForce = 250.0f;
 
 		bool m_active = false;
 
-		float m_extendRate = 500.0f;
+		float m_extendRate = 150.0f;
 
 		FrogFlags m_frogFlag{};
 

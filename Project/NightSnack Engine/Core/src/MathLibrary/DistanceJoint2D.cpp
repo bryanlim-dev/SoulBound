@@ -138,6 +138,9 @@ namespace NightSnack
         const float targetDist = m_minDistance;
         float error = dist - targetDist;
 
+        if (error < 0.f)
+            return;
+
         //Relative velocity along constraint axis
         float relVel = -bodyA.vel.dot(n);
 
