@@ -42,9 +42,9 @@ namespace NightSnack {
 		float m_guideDotAlpha = 1; //Updates from prefab when making dots
 
 		std::string m_powerBarPrefab = "BouncePowerBar";
-		const Vec2 m_powerBarScale = Vec2{ 25, 75 };
-		const Vec3 m_powerBarOffsetPos = Vec3{ 25, 25, 12 };
-		const float m_minPowerBarScale = 5;
+		const Vec2 m_powerBarScale = Vec2{ 75, 25 };
+		const Vec3 m_powerBarOffsetPos = Vec3{ -25, -75, 12 };
+		const float m_minPowerBarScale = 50;
 
 
 		//Charge

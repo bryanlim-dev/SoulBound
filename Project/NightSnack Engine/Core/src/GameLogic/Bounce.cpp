@@ -319,11 +319,11 @@ namespace NightSnack
 
 		//Update power bar
 		//Change scale to x if horziontal bar
-		float newScale = ((m_powerBarScale.y - m_minPowerBarScale) * GetLaunchPowerRatio()) + m_minPowerBarScale;
-		coord.ModifyComponent<Transform>(m_powerBar).scale.y = newScale;
+		float newScale = ((m_powerBarScale.y - m_minPowerBarScale) * (1 - GetLaunchPowerRatio())) + m_minPowerBarScale;
+		coord.ModifyComponent<Transform>(m_powerBar).scale.x = newScale;
 		coord.ModifyComponent<Transform>(m_powerBar).isActive = true;
-		coord.ModifyComponent<Transform>(m_powerBar).pos.y = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).y + (newScale / 2);
-		coord.ModifyComponent<Transform>(m_powerBar).pos.x = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).x;
+		coord.ModifyComponent<Transform>(m_powerBar).pos.y = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).y ;
+		coord.ModifyComponent<Transform>(m_powerBar).pos.x = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).x + (newScale / 2);
 
 		Transform const& playerTrans = coord.GetComponent<Transform>(m_owner);
 		RigidBody const& rb = coord.GetComponent<RigidBody>(m_owner);
