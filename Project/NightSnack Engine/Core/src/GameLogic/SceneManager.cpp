@@ -779,6 +779,7 @@ namespace NightSnack::Scene {
 		else
 			m_coord.GetSystem<CameraSystem>()->StartCamPan(true);
 
+		m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
 	}
 
 	void SceneManager::LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration) {
@@ -851,12 +852,6 @@ namespace NightSnack::Scene {
 
 	void SceneManager::RestartLevel() {
 
-		//// close all menus
-		//if (m_menuOpen) {
-		//	std::cerr << "[SceneManager] Closing menu before restart\n";
-		//	CloseMenu();
-		//}
-		
 		// Reset menus
 		m_menuEntities.clear();
 		while (!m_menus.empty()) { m_menus.pop(); }
@@ -913,6 +908,8 @@ namespace NightSnack::Scene {
 		//m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 		// Start the camera panning at the very start of the level
 		m_coord.GetSystem<CameraSystem>()->StartCamPan(true);
+
+		m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
 	}
 
 	// Saves information required for levels, including entity information, BGM and name
@@ -1291,6 +1288,7 @@ namespace NightSnack::Scene {
 			m_menuOpen = true;
 		}
 		m_menuOpen = true;
+		m_coord.GetSystem<PlayerControllerSystem>()->PauseInputs();
 		//camTransform = tCache;
 		// pause for in game menus
 		if (m_dispatcher)
@@ -1359,6 +1357,8 @@ namespace NightSnack::Scene {
 			m_bgmBarEntity = INVALID_ENTITY;
 			m_bgmKnobEntity = INVALID_ENTITY;
 			m_menuOpen = false;
+
+			m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
 		}
 	}
 
@@ -1367,6 +1367,7 @@ namespace NightSnack::Scene {
 		while (!m_menus.empty()) {
 			CloseMenu();
 		}
+		m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
 	}
 
 }	// NightSnack
