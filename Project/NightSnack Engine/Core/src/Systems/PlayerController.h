@@ -154,6 +154,8 @@ namespace NightSnack {
                 reset = false;
                 m_pauseInputs = false;
 
+                m_player = FindPlayer(m_coord);
+
                 CreateGroundedHitbox();
             }
 
@@ -329,6 +331,7 @@ namespace NightSnack {
         Entity FindPlayer(Coordinator& coord);
 
         Entity GetPlayer() const noexcept { return m_player; }
+		void PrintPause() const noexcept { std::cout << (m_pauseInputs ? "Paused\n" : "Unpaused\n"); }
 
         void LeftAndRightMovement(Vec2& vel, PlayerController const&) const;
         void Jump(Transform& t, Vec2& vel, PlayerController pcont, bool grounded);

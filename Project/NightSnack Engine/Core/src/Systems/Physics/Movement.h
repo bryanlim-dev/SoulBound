@@ -54,6 +54,10 @@ namespace NightSnack {
                     case InputEvent::InputAction::PhysicsDebugStep:
                         stepRequest = true;
                         break;
+                    case InputEvent::InputAction::PhysicsDebugOff:
+						debugMode = false;
+						stepRequest = false;
+						break;
                     }
                 }
 

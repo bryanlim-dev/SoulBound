@@ -57,6 +57,7 @@ namespace NightSnack {
             // Debug tests
             ToggleDebugDraw,    // O
             PhysicsDebugStep,   // P
+            PhysicsDebugOff,
 
             // Window events
 			DisplayFPS,         // F1

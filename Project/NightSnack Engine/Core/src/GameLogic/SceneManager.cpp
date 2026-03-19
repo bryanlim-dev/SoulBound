@@ -76,7 +76,10 @@ namespace NightSnack::Scene {
 
 		if (m_restart) {
 			RestartLevel();
-			CloseMenu();
+			CloseAllMenus();
+			m_dispatcher->QueueEvent(
+				std::make_unique<InputEvent>(InputEvent::InputAction::PhysicsDebugOff,
+					InputEvent::InputActionState::Pressed));
 			m_restart = false;
 		}
 
@@ -91,6 +94,9 @@ namespace NightSnack::Scene {
 				//std::cout << "going to load level: " << m_scheduledLevelName << std::endl;
 				// Load the new level
 				LoadLevel(m_scheduledLevelName);
+				m_dispatcher->QueueEvent(
+					std::make_unique<InputEvent>(InputEvent::InputAction::PhysicsDebugOff,
+						InputEvent::InputActionState::Pressed));
 
 				// Fade in the new BGM
 				//m_coord.GetSystem<AudioSystem>()->FadeToVolume(0.2f, 1.0f); // 0.2f is bgm volume
@@ -780,6 +786,7 @@ namespace NightSnack::Scene {
 			m_coord.GetSystem<CameraSystem>()->StartCamPan(true);
 
 		m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
+		m_coord.Unpause();
 	}
 
 	void SceneManager::LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration) {
@@ -910,6 +917,7 @@ namespace NightSnack::Scene {
 		m_coord.GetSystem<CameraSystem>()->StartCamPan(true);
 
 		m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
+		m_coord.Unpause();
 	}
 
 	// Saves information required for levels, including entity information, BGM and name
@@ -1068,6 +1076,9 @@ namespace NightSnack::Scene {
 		m_coord.GetSystem<CameraSystem>()->StartCamPan(false);
 
 		std::cerr << "[SceneManager] Level restored\n";
+
+		m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
+		m_coord.Unpause();
 	}
 
 	// Reads all level files in assets folder -> "./assets/GameData/Levels/"
