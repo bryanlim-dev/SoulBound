@@ -715,7 +715,7 @@ namespace NightSnack {
 
         if (m_flags.jumpRequested) {
             // allow jump if pressed right after being off ground
-            if (grounded || m_timeSinceGrounded < m_groundedThreshhold)
+            if (grounded)
             {
                 jump = true;
                 m_flags.jumpRequested = false;
