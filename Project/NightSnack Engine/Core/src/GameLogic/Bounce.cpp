@@ -338,7 +338,7 @@ namespace NightSnack
 		vel.x = launchPower * (float)cos(m_launchAngle * PI / 180.f) * dir;
 		vel.y = launchPower * (float)sin(m_launchAngle * PI / 180.f);
 
-		float dt = coord.GetSystem<ApplicationSystem>()->GetDT();
+		float dt = 0.016f; //Use fixed dt for no jitter, if used normal when the dt blips the dots will wiggle alot
 		float gravity = coord.GetSystem<PhysicsSystem>()->GetGravity();
 		float drag = coord.GetSystem<PhysicsSystem>()->GetDrag();
 
