@@ -111,6 +111,31 @@ namespace NightSnack
 
 	bool FrogTongue::Update(Coordinator& coord)
 	{
+		//Update via flags
+		// 
+		//Movement flags
+		if ((m_frogFlag.m_movingLeft && m_frogFlag.m_movingRight))
+		{ 
+			//Empty by Design
+		}
+		else if (m_frogFlag.m_movingLeft)
+			this->SwingActivated(coord, false);
+		else if (m_frogFlag.m_movingRight)
+			this->SwingActivated(coord, true);
+
+		//Extend retract flags
+		if ((m_frogFlag.m_extending && m_frogFlag.m_retracting))
+		{ 
+			//Empty by Design
+		}
+		else if (m_frogFlag.m_extending)
+			this->ExtendRetractTongue(coord, true);
+		else if (m_frogFlag.m_retracting)
+			this->ExtendRetractTongue(coord, false);
+
+
+
+		//Update Pos
 		float dt = coord.GetSystem<ApplicationSystem>()->GetDT();
 		Vec3 ownerPt = coord.GetComponent<Transform>(m_owner).pos;
 		Vec3 anchorPt = coord.GetComponent<Transform>(m_anchor).pos;
@@ -139,6 +164,8 @@ namespace NightSnack
 
 		coord.ModifyComponent<Renderable>(player).materialName = "FrogIdle_4_1";
 
+		//Reset Frog Flags
+		m_frogFlag = FrogFlags{};
 
 		m_distanceJoint.SetActive(false);
 

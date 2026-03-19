@@ -17,6 +17,14 @@
 #include <Systems/ParticleSystem.h>
 
 namespace NightSnack {
+
+	struct FrogFlags {
+		bool m_extending = false;
+		bool m_retracting = false;
+		bool m_movingLeft = false;
+		bool m_movingRight = false;
+	};
+
 	class FrogTongue
 	{
 	private:
@@ -38,6 +46,8 @@ namespace NightSnack {
 
 		float m_extendRate = 500.0f;
 
+		FrogFlags m_frogFlag{};
+
 	public:
 		FrogTongue(){}
 
@@ -52,25 +62,45 @@ namespace NightSnack {
 					case InputEvent::InputAction::PlayerMoveLeft:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
-							this->SwingActivated(coord, false);
+							//this->SwingActivated(coord, false);
+							m_frogFlag.m_movingLeft = true;
+						}
+						else if (event.pressed == InputEvent::InputActionState::Released)
+						{
+							m_frogFlag.m_movingLeft = false;
 						}
 						break;
 					case InputEvent::InputAction::PlayerMoveRight:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
-							this->SwingActivated(coord, true);
+							//this->SwingActivated(coord, true);
+							m_frogFlag.m_movingRight = true;
+						}
+						else if (event.pressed == InputEvent::InputActionState::Released)
+						{
+							m_frogFlag.m_movingRight = false;
 						}
 						break;
 					case InputEvent::InputAction::PlayerUp:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
 							this->ExtendRetractTongue(coord, false);
+							m_frogFlag.m_retracting = true;
+						}
+						else if (event.pressed == InputEvent::InputActionState::Released)
+						{
+							m_frogFlag.m_retracting = false;
 						}
 						break;
 					case InputEvent::InputAction::PlayerDown:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
 							this->ExtendRetractTongue(coord, true);
+							m_frogFlag.m_extending = true;
+						}
+						else if (event.pressed == InputEvent::InputActionState::Released)
+						{
+							m_frogFlag.m_extending = false;
 						}
 						break;
 					case InputEvent::InputAction::PlayerJumpAbility:
@@ -79,6 +109,7 @@ namespace NightSnack {
 
 							this->End(coord);
 						}
+
 						break;
 					}
 					
