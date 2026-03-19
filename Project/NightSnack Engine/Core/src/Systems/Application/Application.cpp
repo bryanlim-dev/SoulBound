@@ -39,7 +39,7 @@ namespace NightSnack {
 	static constexpr int REQUIRED_GL_MINOR = 5;
 
 	// Default constructor to create a window with given width, height and title.
-	ApplicationSystem::ApplicationSystem(std::string const& title, Coordinator& coord, EventDispatcher& dispatcher)
+	ApplicationSystem::ApplicationSystem(std::string const& title, bool const& isFullscreen, Coordinator& coord, EventDispatcher& dispatcher)
 		: m_coord{ coord }, m_appTitle{ title } {
 		// Initialize GLFW;
 		if (!glfwInit())
@@ -98,6 +98,10 @@ namespace NightSnack {
 
 		// Store the event dispatcher
 		m_dispatcher = &dispatcher;
+		m_appIsFullscreen = isFullscreen;
+		if(m_appIsFullscreen) 
+			EnterFullscreen();
+
 		Init(coord);
 	}
 

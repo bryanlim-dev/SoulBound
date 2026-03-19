@@ -3,6 +3,7 @@
   {
     "Width": 1600,
     "Height": 900,
-    "WindowTitle": "Nightsnack Engine"
+    "WindowTitle": "Nightsnack Engine",
+    "Fullscreen" : true
   }
 }

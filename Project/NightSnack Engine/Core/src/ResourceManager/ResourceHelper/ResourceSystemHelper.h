@@ -20,7 +20,7 @@ using namespace NightSnack;
 
 namespace ResourceSystemHelper
 {
-	static bool GetResourceSystemWindowData(std::shared_ptr<ResourceManager> rm, std::string configFilePath, int& winHeight, int& winWidth, std::string& windowTitle)
+	static bool GetResourceSystemWindowData(std::shared_ptr<ResourceManager> rm, std::string configFilePath, int& winHeight, int& winWidth, std::string& windowTitle, bool& fullscreen)
 	{
 		size_t configKey = 0;
 		rm->LoadJson(configFilePath, configKey);
@@ -30,6 +30,7 @@ namespace ResourceSystemHelper
 			windowTitle = (rm->GetJson(configKey)["WindowConfig"].m_componentMap["WindowTitle"]);
 			winWidth = std::stoi(rm->GetJson(configKey)["WindowConfig"].m_componentMap["Width"]);
 			winHeight = std::stoi(rm->GetJson(configKey)["WindowConfig"].m_componentMap["Height"]);
+			fullscreen = (rm->GetJsonRaw(configKey)["WindowConfig"]["Fullscreen"]);
 			rm->UnloadJson(configKey);
 			return true;
 		}

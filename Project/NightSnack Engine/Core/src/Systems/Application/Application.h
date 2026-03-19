@@ -48,7 +48,7 @@ namespace NightSnack {
 		Reference to the EventDispatcher used for system events
 		*/
 		/************************************************************************/
-		ApplicationSystem(std::string const& title, Coordinator& coord, EventDispatcher& dispatcher);
+		ApplicationSystem(std::string const& title, bool const& isFullscreen, Coordinator& coord, EventDispatcher& dispatcher);
 
 		/************************************************************************/
 		/*!
