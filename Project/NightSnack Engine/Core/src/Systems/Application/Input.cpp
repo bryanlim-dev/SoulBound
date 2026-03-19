@@ -101,6 +101,7 @@ namespace NightSnack {
 		case GLFW_KEY_LEFT: return KeyboardKeys::LEFT_ARROW;
 		case GLFW_KEY_UP: return KeyboardKeys::UP_ARROW;
 		case GLFW_KEY_DOWN: return KeyboardKeys::DOWN_ARROW;
+		case GLFW_MOD_SHIFT: return KeyboardKeys::SHIFT;
 		default: return KeyboardKeys::NUM_TOTAL_KEYBOARD_KEY;
 		}
 	}
@@ -139,6 +140,11 @@ namespace NightSnack {
 		case GLFW_KEY_2: return InputEvent::InputAction::Ability2;
 		case GLFW_KEY_3: return InputEvent::InputAction::Ability3;
 
+		case GLFW_KEY_0: return InputEvent::InputAction::LevelTutorial;
+		case GLFW_KEY_9: return InputEvent::InputAction::Level1;
+		case GLFW_KEY_8: return InputEvent::InputAction::Level2;
+		case GLFW_KEY_7: return InputEvent::InputAction::Level3;
+
 			// Window tests
 		case GLFW_KEY_F1: return InputEvent::InputAction::DisplayFPS;
 		case GLFW_KEY_F2: return InputEvent::InputAction::DefaultDialogue;
@@ -165,6 +171,8 @@ namespace NightSnack {
 			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::UndoStep : InputEvent::InputAction::NumTotalInputAction;
 		case GLFW_KEY_Y: // (CTRL+Y)
 			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::RedoStep : InputEvent::InputAction::NumTotalInputAction;
+		case GLFW_MOD_SHIFT: // (CTRL+SHIFT)
+			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::ToggleCheat : InputEvent::InputAction::NumTotalInputAction;
 
 		default: return InputEvent::InputAction::NumTotalInputAction;
 		}

@@ -100,6 +100,41 @@ namespace NightSnack::Scene {
 					return;
 				}
 
+				if (event.inputAction == InputEvent::InputAction::ToggleCheat) {
+					if (m_coord.IsPaused()) return;
+					if (event.pressed == InputEvent::InputActionState::Pressed) {
+						m_cheatcodeEnabled = !m_cheatcodeEnabled;
+					}
+				}
+				else if (event.inputAction == InputEvent::InputAction::LevelTutorial) {
+					if (m_coord.IsPaused()) return;
+					if (event.pressed == InputEvent::InputActionState::Pressed) {
+						LoadLevel("LevelTutorial");
+					}
+				}
+				else if (event.inputAction == InputEvent::InputAction::Level1) {
+					if (m_coord.IsPaused()) return;
+					if (event.pressed == InputEvent::InputActionState::Pressed) {
+						LoadLevel("Level1");
+					}
+				}
+				else if (event.inputAction == InputEvent::InputAction::Level2) {
+					if (m_coord.IsPaused()) return;
+					if (event.pressed == InputEvent::InputActionState::Pressed) {
+						LoadLevel("Level2");
+					}
+				}
+				else if (event.inputAction == InputEvent::InputAction::Level3) {
+					if (m_coord.IsPaused()) return;
+					if (event.pressed == InputEvent::InputActionState::Pressed) {
+						LoadLevel("Level3");
+					}
+				}
+				
+
+
+
+
 				if (event.pressed == InputEvent::InputActionState::Pressed) {
 					switch (event.inputAction) {
 					//case InputEvent::InputAction::PauseGame:
@@ -337,6 +372,9 @@ namespace NightSnack::Scene {
 		void CreateWinCollider(json const& level);
 		json CacheWinCollider();
 		void CreateWinScreen();
+
+		//Cheatcodes
+		bool m_cheatcodeEnabled = false;
 
 		// entity for menu sliders
 		Entity m_sliderBarEntity = INVALID_ENTITY;

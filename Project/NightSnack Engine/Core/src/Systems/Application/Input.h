@@ -47,6 +47,12 @@ namespace NightSnack {
 			UP_ARROW,
 			DOWN_ARROW,
 
+			SHIFT,
+			NUM_0,
+			NUM_9,
+			NUM_8,
+			NUM_7,
+
 			NUM_TOTAL_KEYBOARD_KEY	// MUST BE THE LAST
 		};
 
