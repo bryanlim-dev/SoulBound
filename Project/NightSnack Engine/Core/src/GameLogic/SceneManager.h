@@ -316,6 +316,8 @@ namespace NightSnack::Scene {
 		// Getters
 		const std::unordered_map<std::string, size_t>& GetAvailableLevels() const { return m_levelKeys; }
 
+		bool GetCheatToggleActive() const { return m_cheatcodeEnabled; }
+
 		// Required by ISystem base class;
 		Signature GetSignature() const override { return m_systemSignature; }
 		std::string GetName() const override { return "SceneManager"; }
