@@ -126,6 +126,7 @@ namespace NightSnack {
 
 		// Set to 60 to disable frame cap
 		m_coord.GetSystem<ApplicationSystem>()->SetFrameCap(60.f);
+		m_coord.ResetEverything();
 	}
 
 	// Function should be called upon termination of program;
@@ -204,6 +205,7 @@ namespace NightSnack {
 		// Destroy all entities scheduled to be removed;
 		m_coord.GetSystem<ApplicationSystem>()->StartSystemTimer("EntityFactory");
 		m_coord.GetSystem<EntityFactory>()->PostUpdate();
+		m_coord.UpdateLivingEntityCount();
 		lastSystem = "EntityFactory PostUpdate";
 		m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer("EntityFactory");
 
@@ -212,6 +214,14 @@ namespace NightSnack {
 		m_coord.GetSystem<ApplicationSystem>()->FrameCapUpdate();
 		lastSystem = "Application Buffer-Swap";
 		m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer("ApplicationSystem");
+
+		static float time = 0.f;
+		time += FixedDT;
+		if (time > 2.0f) {
+			std::cout << "Number of Living entities: " << m_coord.GetLivingEntities().size() << " | Count: "
+				<< m_coord.GetLivingEntityCount() << "\n";
+			time = 0.f;
+		}
 
 		// End frame timing;
 		lastSystem = "Frame Complete";
