@@ -331,6 +331,7 @@ namespace NightSnack {
 			glfwSetWindowMonitor(m_windowHandle, NULL, m_appWindowedPosX, m_appWindowedPosY, m_appWindowedWidth, m_appWindowedHeight, GLFW_DONT_CARE);
 
 			m_appIsFullscreenViaButton = false;
+			m_appIsFullscreenViaButton = false;
 		}
 	}
 

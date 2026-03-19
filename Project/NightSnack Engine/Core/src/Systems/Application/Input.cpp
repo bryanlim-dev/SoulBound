@@ -171,7 +171,7 @@ namespace NightSnack {
 			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::UndoStep : InputEvent::InputAction::NumTotalInputAction;
 		case GLFW_KEY_Y: // (CTRL+Y)
 			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::RedoStep : InputEvent::InputAction::NumTotalInputAction;
-		case GLFW_MOD_SHIFT: // (CTRL+SHIFT)
+		case GLFW_KEY_GRAVE_ACCENT: // (`+SHIFT)
 			return ((modifier & GLFW_MOD_CONTROL) > 0) ? InputEvent::InputAction::ToggleCheat : InputEvent::InputAction::NumTotalInputAction;
 
 		default: return InputEvent::InputAction::NumTotalInputAction;

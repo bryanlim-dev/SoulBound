@@ -109,25 +109,29 @@ namespace NightSnack::Scene {
 				else if (event.inputAction == InputEvent::InputAction::LevelTutorial) {
 					if (m_coord.IsPaused()) return;
 					if (event.pressed == InputEvent::InputActionState::Pressed) {
-						LoadLevel("LevelTutorial");
+						if (m_cheatcodeEnabled)
+							LoadLevel("LevelTutorial");
 					}
 				}
 				else if (event.inputAction == InputEvent::InputAction::Level1) {
 					if (m_coord.IsPaused()) return;
 					if (event.pressed == InputEvent::InputActionState::Pressed) {
-						LoadLevel("Level1");
+						if (m_cheatcodeEnabled)
+							LoadLevel("Level1");
 					}
 				}
 				else if (event.inputAction == InputEvent::InputAction::Level2) {
 					if (m_coord.IsPaused()) return;
 					if (event.pressed == InputEvent::InputActionState::Pressed) {
-						LoadLevel("Level2");
+						if (m_cheatcodeEnabled)
+							LoadLevel("Level2");
 					}
 				}
 				else if (event.inputAction == InputEvent::InputAction::Level3) {
 					if (m_coord.IsPaused()) return;
 					if (event.pressed == InputEvent::InputActionState::Pressed) {
-						LoadLevel("Level3");
+						if (m_cheatcodeEnabled)
+							LoadLevel("Level3");
 					}
 				}
 				

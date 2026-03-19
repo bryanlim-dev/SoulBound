@@ -46,7 +46,7 @@ namespace NightSnack {
             Ability2,
             Ability3,
 
-            ToggleCheat,        //Shift + Ctrl
+            ToggleCheat,        //` + Ctrl
             LevelTutorial,      //0
             Level1,             //9
             Level2,             //8
