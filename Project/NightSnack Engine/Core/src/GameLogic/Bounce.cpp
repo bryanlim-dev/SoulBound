@@ -287,6 +287,8 @@ namespace NightSnack
 			Entity dot = coord.GetSystem<EntityFactory>()->Create(m_guideDotPrefab);
 			Transform& dotTrans = coord.ModifyComponent<Transform>(dot);
 			dotTrans.scale = Vec2(m_guideDotSize, m_guideDotSize);
+			dotTrans.layer = LayerType::FOREGROUND;
+
 			if (coord.HasComponent<Collider>(dot))
 			{
 				coord.ModifyComponent<Collider>(dot).width = col.width;
@@ -308,6 +310,7 @@ namespace NightSnack
 		powerTrans.scale = m_powerBarScale;
 		powerTrans.pos = coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos;
 		powerTrans.isActive = false;
+		powerTrans.layer = LayerType::FOREGROUND;
 
 	}
 
