@@ -703,15 +703,8 @@ namespace NightSnack {
 
         bool jump = false;
 
-        m_timeSinceGrounded += FixedDT;
 
-        if (m_timeSinceGrounded < m_groundedThreshhold)
-            m_flags.justJumped = false;
 
-        if (grounded)
-        {
-            m_timeSinceGrounded = 0;
-        }
 
         //std::cout << "Player Just Jumped : " << m_flags.justJumped << std::endl;
         //std::cout << "Player Time since Grounded : " << m_timeSinceGrounded << "/" << m_groundedThreshhold << std::endl;

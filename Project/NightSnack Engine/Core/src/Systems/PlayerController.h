@@ -169,6 +169,32 @@ namespace NightSnack {
             Collider& c = m_coord.ModifyComponent<Collider>(m_player);
             Renderable& r = m_coord.ModifyComponent<Renderable>(m_player);
 
+            //
+            static float time = 0.f;
+            if (vel.y == 0.f) {
+                time += FixedDT;
+            }
+            else {
+                time = 0.f;
+            }
+            if (time >= 0.3f) {
+                c.isGrounded = true;
+                time = 0.f;
+            }
+
+            m_timeSinceGrounded += FixedDT;
+
+            if (m_timeSinceGrounded < m_groundedThreshhold)
+                m_flags.justJumped = false;
+
+            if (c.isGrounded)
+            {
+                m_timeSinceGrounded = 0;
+            }
+
+
+            isGrounded = m_flags.isGrounded = c.isGrounded || m_timeSinceGrounded < m_groundedThreshhold;
+
             // Basic movement -----------------------------
             if (!m_flags.disableMovement)
             {
@@ -188,19 +214,7 @@ namespace NightSnack {
                 }
             }
 
-            //
-            static float time = 0.f;
-            if (vel.y == 0.f) {
-                time += FixedDT;
-            }
-            else {
-                time = 0.f;
-            }
-            if (time >= 0.3f) {
-                c.isGrounded = true;
-                time = 0.f;
-            }
-            isGrounded = m_flags.isGrounded = c.isGrounded || m_timeSinceGrounded < m_groundedThreshhold;
+
 
 			// reset glide when grounded
             if (isGrounded)
