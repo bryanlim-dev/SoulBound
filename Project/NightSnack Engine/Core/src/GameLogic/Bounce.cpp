@@ -24,12 +24,18 @@ namespace NightSnack
 		if (!coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().isGrounded)
 			return false;
 
+		m_bounceFLags = BounceFlags();
+
 		m_currState = BOUNCE_CHARGING;
 		m_chargeTime = 0.0f;
 		m_powerIncreasing = true;
 		
 		m_facingRight = coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().facingRight;
-		m_launchAngle = 45.0f;
+
+		if (m_facingRight)
+			m_launchAngle = 45.0f;
+		else
+			m_launchAngle = 135.0f;
 
 		m_active = true;
 		m_bounceDelayTime = 0;
@@ -222,9 +228,7 @@ namespace NightSnack
 			float launchPower = GetLaunchPower();
 			//float launchPower = m_maxLaunchForce; //For testing
 
-			int dir = m_facingRight ? 1 : -1;
-
-			coord.ModifyComponent<RigidBody>(m_owner).vel.x = launchPower * (float)cos(m_launchAngle * PI/180) * dir;
+			coord.ModifyComponent<RigidBody>(m_owner).vel.x = launchPower * (float)cos(m_launchAngle * PI/180);
 			coord.ModifyComponent<RigidBody>(m_owner).vel.y = launchPower * (float)sin(m_launchAngle * PI/180);
 			//std::cout << "Bounce Launch! X Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.x << ", " 
 			//	<< "Y Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.y << std::endl;
@@ -248,6 +252,16 @@ namespace NightSnack
 			m_launchAngle += m_angleChangeSpeed * coord.GetSystem<ApplicationSystem>()->GetDT();
 		else
 			m_launchAngle -= m_angleChangeSpeed * coord.GetSystem<ApplicationSystem>()->GetDT();
+
+		if (coord.HasComponent<Animator>(m_owner))
+		{
+			if (m_launchAngle < 90)
+				coord.ModifyComponent<Animator>(m_owner).playbackSpeed = 1.0f;
+			else if(m_launchAngle > 90)
+				coord.ModifyComponent<Animator>(m_owner).playbackSpeed = 2.0f;
+		}
+
+
 
 		m_launchAngle = std::clamp(m_launchAngle, 0.0f, m_maxLaunchAngle);
 	}
@@ -296,6 +310,14 @@ namespace NightSnack
 				coord.ModifyComponent<Collider>(dot).radius = col.radius;
 			}
 
+			if (!coord.HasComponent<Color>(dot))
+				coord.AddComponent(dot, Color());
+
+			coord.ModifyComponent<Color>(dot).a = 0.5f;
+
+			coord.ModifyComponent<Renderable>(dot).materialName = "ColorMat";
+
+
 			dotTrans.isActive = false;
 			m_guideDots.push_back(dot);
 		}
@@ -333,12 +355,10 @@ namespace NightSnack
 
 		Vec2 pos = { playerTrans.pos.x, playerTrans.pos.y };
 
-		int dir = m_facingRight ? 1 : -1;
-
 		float launchPower = GetLaunchPower();
 
 		Vec2 vel;
-		vel.x = launchPower * (float)cos(m_launchAngle * PI / 180.f) * dir;
+		vel.x = launchPower * (float)cos(m_launchAngle * PI / 180.f);
 		vel.y = launchPower * (float)sin(m_launchAngle * PI / 180.f);
 
 		float dt = 0.016f; //Use fixed dt for no jitter, if used normal when the dt blips the dots will wiggle alot
@@ -351,8 +371,13 @@ namespace NightSnack
 
 		bool bounced = false;
 
+
+
 		for (size_t i = 0; i < m_guideDots.size(); i++)
 		{
+			if (coord.HasComponent<Color>(m_guideDots[i]))
+				coord.ModifyComponent<Color>(m_guideDots[i]).a = 0.5f;
+
 			Vec2 accel{ 0.f, 0.f };
 			accel.y += gravity * rb.gravitymult;
 
