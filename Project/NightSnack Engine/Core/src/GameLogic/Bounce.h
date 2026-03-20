@@ -16,6 +16,17 @@
 #include "../Systems/Physics/Physics.h"
 
 namespace NightSnack {
+
+
+	struct BounceFlags
+	{
+		bool m_holdingLeft = false;
+		bool m_holdingRight = false;
+
+		bool m_angleIncreasing = false;
+		bool m_angleDecreasing = false;
+	};
+
 	class Bounce
 	{
 	private:
@@ -56,8 +67,8 @@ namespace NightSnack {
 
 		//In degrees
 		float m_launchAngle = 45.0f;
-		//In degrees
-		const float m_maxLaunchAngle = 90.0f;
+		//In degree
+		const float m_maxLaunchAngle = 180.0f;
 		//Also in degrees
 		const float m_angleChangeSpeed = 150.0f;
 		bool m_facingRight = true;
@@ -78,6 +89,8 @@ namespace NightSnack {
 
 		const float m_maxVel0Time = 0.5f; //Failsafe incase player is stuck, if Y vel == 0 for too long ocnsidered grounded
 		float m_currVel0Time = 0; //Failsafe incase player is stuck, if Y vel == 0 for too long ocnsidered grounded
+
+		BounceFlags m_bounceFLags;
 
 	public:
 		Bounce(){}
@@ -120,28 +133,20 @@ namespace NightSnack {
 					if (!m_active)
 						return;
 
-					//Flip launch direction to left
 					switch (event.inputAction) {
-						case InputEvent::InputAction::PlayerMoveLeft:
-							if (m_facingRight)
-								this->ChangePower(coord, false);
-							else
+						case InputEvent::InputAction::PlayerUp:
 								this->ChangePower(coord, true);
 							break;
-					//Flip launch direction to right
-						case InputEvent::InputAction::PlayerMoveRight:
-							if (m_facingRight)
-								this->ChangePower(coord, true);
-							else
+						case InputEvent::InputAction::PlayerDown:
 								this->ChangePower(coord, false);
 							break;
-					case InputEvent::InputAction::PlayerUp:
+					case InputEvent::InputAction::PlayerMoveLeft:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
 							this->ChangeAngle(coord, true);
 						}
 						break;
-					case InputEvent::InputAction::PlayerDown:
+					case InputEvent::InputAction::PlayerMoveRight:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
 							this->ChangeAngle(coord, false);

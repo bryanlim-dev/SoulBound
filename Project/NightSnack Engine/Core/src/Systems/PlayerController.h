@@ -333,7 +333,7 @@ namespace NightSnack {
         Entity GetPlayer() const noexcept { return m_player; }
 		void PrintPause() const noexcept { std::cout << (m_pauseInputs ? "Paused\n" : "Unpaused\n"); }
 
-        void LeftAndRightMovement(Vec2& vel, PlayerController const&) const;
+        void LeftAndRightMovement(Vec2& vel, PlayerController const&);
         void Jump(Transform& t, Vec2& vel, PlayerController pcont, bool grounded);
 
         PlayerFlags& GetPlayerFlags();

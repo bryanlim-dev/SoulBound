@@ -26,7 +26,6 @@ namespace NightSnack {
                     if (event.pressed == InputEvent::InputActionState::Pressed ||
                         event.pressed == InputEvent::InputActionState::Repeat) {
                         m_flags.movingLeft = true;
-                        m_flags.facingRight = false;
                     }
                     else if (event.pressed == InputEvent::InputActionState::Released) {
                         m_flags.movingLeft = false;
@@ -36,7 +35,6 @@ namespace NightSnack {
                     if (event.pressed == InputEvent::InputActionState::Pressed ||
                         event.pressed == InputEvent::InputActionState::Repeat) {
                         m_flags.movingRight = true;
-                        m_flags.facingRight = true;
                     }
                     else if (event.pressed == InputEvent::InputActionState::Released) {
                         m_flags.movingRight = false;
@@ -569,10 +567,12 @@ namespace NightSnack {
         return INVALID_ENTITY;
     }
 
-    void PlayerControllerSystem::LeftAndRightMovement(Vec2& vel, PlayerController const& pcont) const {
+    void PlayerControllerSystem::LeftAndRightMovement(Vec2& vel, PlayerController const& pcont)  {
         m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
 
         if (m_flags.movingRight && !m_flags.movingLeft) {
+
+            m_flags.facingRight = true;
 
             if (vel.x >= 0)
             {
@@ -619,6 +619,9 @@ namespace NightSnack {
             }
         }
         else if (m_flags.movingLeft && !m_flags.movingRight) {
+
+            m_flags.facingRight = false;
+
             if (vel.x <= 0)
             {
                 //Moving left but within move speed
