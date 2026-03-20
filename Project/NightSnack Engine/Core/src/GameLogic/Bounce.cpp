@@ -24,7 +24,7 @@ namespace NightSnack
 		if (!coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().isGrounded)
 			return false;
 
-		m_bounceFLags = BounceFlags();
+		m_bounceFlags = BounceFlags();
 
 		m_currState = BOUNCE_CHARGING;
 		m_chargeTime = 0.0f;
@@ -73,29 +73,7 @@ namespace NightSnack
 		{
 		case BOUNCE_CHARGING:
 		{
-			if (m_powerIncreasing)
-			{
-				m_chargeTime += coord.GetSystem<ApplicationSystem>()->GetDT();
-				if (m_chargeTime >= m_maxChargeTime)
-				{
-					m_powerIncreasing = false;
-					m_chargeTime = m_maxChargeTime;
-				}
-			}
-			else
-			{
-				m_chargeTime -= coord.GetSystem<ApplicationSystem>()->GetDT();
-				if (m_chargeTime <= 0)
-				{
-					m_powerIncreasing = true;
-					m_chargeTime = 0;
-				}
-			}
-
-			UpdateDisplays(coord);
-
-			//std::cout << "Bounce! Charge Time = " << m_chargeTime << "/" << m_maxChargeTime << std::endl;
-			//std::cout << "Bounce! Angle = " << m_launchAngle << std::endl;
+			UpdateCharging(coord);
 
 			break;
 		}
@@ -253,13 +231,13 @@ namespace NightSnack
 		else
 			m_launchAngle -= m_angleChangeSpeed * coord.GetSystem<ApplicationSystem>()->GetDT();
 
-		if (coord.HasComponent<Animator>(m_owner))
-		{
-			if (m_launchAngle < 90)
-				coord.ModifyComponent<Animator>(m_owner).playbackSpeed = 1.0f;
-			else if(m_launchAngle > 90)
-				coord.ModifyComponent<Animator>(m_owner).playbackSpeed = 2.0f;
-		}
+		//if (coord.HasComponent<Animator>(m_owner))
+		//{
+		//	if (m_launchAngle < 90)
+		//		coord.ModifyComponent<Animator>(m_owner).playbackSpeed = 1.0f;
+		//	else if(m_launchAngle > 90)
+		//		coord.ModifyComponent<Animator>(m_owner).playbackSpeed = 2.0f;
+		//}
 
 
 
@@ -277,6 +255,54 @@ namespace NightSnack
 			m_currLaunchPower -= m_launchChangeSpeed * coord.GetSystem<ApplicationSystem>()->GetDT();
 
 		m_currLaunchPower = std::clamp(m_currLaunchPower, m_minLaunchForce, m_maxLaunchForce);
+	}
+
+	void Bounce::UpdateCharging(Coordinator& coord)
+	{
+
+		if (m_bounceFlags.m_powerIncreasing && m_bounceFlags.m_powerDecreasing)
+		{ 
+			//Empty by design
+		}
+		else if (m_bounceFlags.m_powerIncreasing)
+			this->ChangePower(coord, true);
+		else if (m_bounceFlags.m_powerDecreasing)
+			this->ChangePower(coord, false);
+
+		if (m_bounceFlags.m_angleIncreasing && m_bounceFlags.m_angleDecreasing)
+		{ 
+			//Empty by design
+		}
+		else if (m_bounceFlags.m_angleIncreasing)
+			this->ChangeAngle(coord, true);
+		else if (m_bounceFlags.m_angleDecreasing)
+			this->ChangeAngle(coord, false);
+
+		//Remnant of when charging was based on time
+		/*if (m_powerIncreasing)
+		{
+			m_chargeTime += coord.GetSystem<ApplicationSystem>()->GetDT();
+			if (m_chargeTime >= m_maxChargeTime)
+			{
+				m_powerIncreasing = false;
+				m_chargeTime = m_maxChargeTime;
+			}
+		}
+		else
+		{
+			m_chargeTime -= coord.GetSystem<ApplicationSystem>()->GetDT();
+			if (m_chargeTime <= 0)
+			{
+				m_powerIncreasing = true;
+				m_chargeTime = 0;
+			}
+		}*/
+
+		UpdateDisplays(coord);
+
+		//std::cout << "Bounce! Charge Time = " << m_chargeTime << "/" << m_maxChargeTime << std::endl;
+		//std::cout << "Bounce! Angle = " << m_launchAngle << std::endl;
+		//std::cout << "Bounce! Angle = " << m_launchAngle << std::endl;
 	}
 
 	float Bounce::GetLaunchPowerRatio()
@@ -410,6 +436,7 @@ namespace NightSnack
 		float drag = coord.GetSystem<PhysicsSystem>()->GetDrag();
 
 		Collider const& playerCol = coord.GetComponent<Collider>(m_owner);
+		
 
 		Transform simTransform = playerTrans;
 

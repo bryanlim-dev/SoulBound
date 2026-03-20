@@ -20,8 +20,8 @@ namespace NightSnack {
 
 	struct BounceFlags
 	{
-		bool m_holdingLeft = false;
-		bool m_holdingRight = false;
+		bool m_powerIncreasing = false;
+		bool m_powerDecreasing = false;
 
 		bool m_angleIncreasing = false;
 		bool m_angleDecreasing = false;
@@ -74,12 +74,12 @@ namespace NightSnack {
 		//In degree
 		const float m_maxLaunchAngle = 180.0f;
 		//Also in degrees
-		const float m_angleChangeSpeed = 150.0f;
+		const float m_angleChangeSpeed = 50.0f;
 		bool m_facingRight = true;
 
 		const float m_maxLaunchForce = 2000.0f;
 		const float m_minLaunchForce = 500.0f;
-		const float m_launchChangeSpeed = 1500.0f;
+		const float m_launchChangeSpeed = 750.0f;
 		float m_currLaunchPower = m_maxLaunchForce / 2;
 		//const float m_minVel = 20.0f;
 
@@ -94,7 +94,7 @@ namespace NightSnack {
 		const float m_maxVel0Time = 0.5f; //Failsafe incase player is stuck, if Y vel == 0 for too long ocnsidered grounded
 		float m_currVel0Time = 0; //Failsafe incase player is stuck, if Y vel == 0 for too long ocnsidered grounded
 
-		BounceFlags m_bounceFLags;
+		BounceFlags m_bounceFlags;
 
 	public:
 		Bounce(){}
@@ -139,23 +139,39 @@ namespace NightSnack {
 
 					switch (event.inputAction) {
 						case InputEvent::InputAction::PlayerUp:
-								this->ChangePower(coord, true);
+								//this->ChangePower(coord, true);
+								if (event.pressed == InputEvent::InputActionState::Pressed ||
+									event.pressed == InputEvent::InputActionState::Repeat)
+									m_bounceFlags.m_powerIncreasing = true;
+								else if (event.pressed == InputEvent::InputActionState::Released)
+									m_bounceFlags.m_powerIncreasing = false;
+
 							break;
 						case InputEvent::InputAction::PlayerDown:
-								this->ChangePower(coord, false);
+								//this->ChangePower(coord, false);
+							if (event.pressed == InputEvent::InputActionState::Pressed ||
+								event.pressed == InputEvent::InputActionState::Repeat)
+								m_bounceFlags.m_powerDecreasing = true;
+							else if (event.pressed == InputEvent::InputActionState::Released)
+								m_bounceFlags.m_powerDecreasing = false;
 							break;
 					case InputEvent::InputAction::PlayerMoveLeft:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
-							this->ChangeAngle(coord, true);
+							//this->ChangeAngle(coord, true)
+							m_bounceFlags.m_angleIncreasing = true;
 						}
+						else if (event.pressed == InputEvent::InputActionState::Released)
+							m_bounceFlags.m_angleIncreasing = false;
 						break;
 					case InputEvent::InputAction::PlayerMoveRight:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
-							this->ChangeAngle(coord, false);
-							//this->ExtendRetractTongue(coord, true);
+							//this->ChangeAngle(coord, false);
+							m_bounceFlags.m_angleDecreasing = true;
 						}
+						else if (event.pressed == InputEvent::InputActionState::Released)
+							m_bounceFlags.m_angleDecreasing = false;
 						break;
 					case InputEvent::InputAction::PlayerJumpAbility:
 						if (event.pressed == InputEvent::InputActionState::Released)
@@ -193,6 +209,7 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		bool Update(Coordinator& coord);
+
 		/************************************************************************/
 		/*!
 		\brief
@@ -291,6 +308,14 @@ namespace NightSnack {
 		}
 		
 	private:
+		/************************************************************************/
+		/*!
+		\brief
+		Function to handle charging state
+		*/
+		/************************************************************************/
+		void UpdateCharging(Coordinator& coord);
+
 		/************************************************************************/
 		/*!
 		\brief
