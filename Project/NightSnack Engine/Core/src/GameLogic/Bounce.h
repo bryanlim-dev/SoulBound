@@ -45,6 +45,7 @@ namespace NightSnack {
 		Entity m_owner = INVALID_ENTITY;
 		std::vector<Entity> m_guideDots;
 		Entity m_powerBar = INVALID_ENTITY;
+		Entity m_angleIndicator = INVALID_ENTITY;
 
 		std::string m_guideDotPrefab = "BounceGuideDot";
 		const int m_guideDotnum = 50;
@@ -57,6 +58,9 @@ namespace NightSnack {
 		const Vec3 m_powerBarOffsetPos = Vec3{ -25, -75, 12 };
 		const float m_minPowerBarScale = 50;
 
+		std::string m_angleIndicatorPrefab = "BounceAngleIndicator";
+		const Vec2 m_angleIndicatorScale = Vec2{ 100, 10 };
+		const float m_angleIndicatorOffset = 30.0f;
 
 		//Charge
 		float m_chargeTime = 0.0f;

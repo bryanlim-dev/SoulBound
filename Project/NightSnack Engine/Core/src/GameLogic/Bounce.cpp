@@ -334,6 +334,17 @@ namespace NightSnack
 		powerTrans.isActive = false;
 		powerTrans.layer = LayerType::FOREGROUND;
 
+		//Create angle indicator
+		m_angleIndicator = coord.GetSystem<EntityFactory>()->Create(m_angleIndicatorPrefab);
+		Transform& angleTrans = coord.ModifyComponent<Transform>(m_angleIndicator);
+		angleTrans.scale = m_angleIndicatorScale;
+		angleTrans.pos = coord.GetComponent<Transform>(m_owner).pos;
+		angleTrans.pos.z = powerTrans.pos.z - 0.1f;
+
+		if (!coord.HasComponent<Color>(m_angleIndicator))
+			coord.AddComponent(m_angleIndicator, Color());
+
+		coord.ModifyComponent<Color>(m_angleIndicator).a = 0.5f;
 	}
 
 	void Bounce::UpdateDisplays(Coordinator& coord)
@@ -341,6 +352,39 @@ namespace NightSnack
 		if (!coord.HasComponent<Transform>(m_owner) ||
 			!coord.HasComponent<RigidBody>(m_owner))
 			return;
+
+		Transform& ownerTrans = coord.ModifyComponent<Transform>(m_owner);
+		Transform& angleTrans = coord.ModifyComponent<Transform>(m_angleIndicator);
+
+		//Convert to radians
+		float rad = (m_launchAngle) * PI / 180.f;
+
+		//Forward direction
+		Vec2 forward;
+		forward.x = cos(rad);
+		forward.y = sin(rad);
+
+		//Normalize
+		if (forward.magnitude() > 0.f)
+			forward.normalize();
+
+		//Pos
+		//Offset in FRONT of player
+		float offsetDist = m_angleIndicatorOffset;
+
+		angleTrans.pos.x = ownerTrans.pos.x + forward.x * offsetDist;
+		angleTrans.pos.y = ownerTrans.pos.y + forward.y * offsetDist;
+		angleTrans.pos.z = ownerTrans.pos.x - 0.1f;
+
+		//Rotation
+		//Face same direction as launch
+		angleTrans.rot = atan2(forward.y, forward.x) * (180.f / PI);
+
+		// If your sprite points UP by default, add +90
+		//angleTrans.rot += 90.f;
+
+		// --- ACTIVATE ---
+		angleTrans.isActive = true;
 
 		//Update power bar
 		//Change scale to x if horziontal bar
@@ -446,6 +490,9 @@ namespace NightSnack
 
 		if (m_powerBar != INVALID_ENTITY && coord.EntityIsAlive(m_powerBar))
 			coord.ModifyComponent<Transform>(m_powerBar).isActive = false;
+
+		if (m_angleIndicator != INVALID_ENTITY && coord.EntityIsAlive(m_angleIndicator))
+			coord.ModifyComponent<Transform>(m_angleIndicator).isActive = false;
 	}
 
 	void Bounce::DeleteDisplay(Coordinator& coord)
@@ -465,6 +512,11 @@ namespace NightSnack
 			coord.DestroyEntity(m_powerBar);
 
 		m_powerBar = INVALID_ENTITY;
+
+		if (m_angleIndicator != INVALID_ENTITY && coord.EntityIsAlive(m_angleIndicator))
+			coord.DestroyEntity(m_angleIndicator);
+		m_angleIndicator = INVALID_ENTITY;
+
 	}
 
 	void Bounce::Collided(Coordinator& coord, Entity other)
