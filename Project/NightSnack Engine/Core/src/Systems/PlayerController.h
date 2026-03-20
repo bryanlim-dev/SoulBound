@@ -173,7 +173,7 @@ namespace NightSnack {
             if (!m_flags.disableMovement)
             {
                 LeftAndRightMovement(vel, pcont);
-                Jump(t, vel, pcont, c.isGrounded);
+                Jump(t, vel, pcont, isGrounded);
             }
 
 
