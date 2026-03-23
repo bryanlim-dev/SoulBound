@@ -8,7 +8,7 @@
  * Description: This file contains the definitions of the Application System,
  *				which manages the application window, OpenGL context, and timing.
  *
- * Copyright © 2025 DigiPen Institute of Technology Singapore.
+ * Copyright ï¿½ 2025 DigiPen Institute of Technology Singapore.
  * All rights reserved.
  ******************************************************************************/
 
@@ -39,7 +39,7 @@ namespace NightSnack {
 	static constexpr int REQUIRED_GL_MINOR = 5;
 
 	// Default constructor to create a window with given width, height and title.
-	ApplicationSystem::ApplicationSystem(std::string const& title, Coordinator& coord, EventDispatcher& dispatcher)
+	ApplicationSystem::ApplicationSystem(std::string const& title, bool const& isFullscreen, Coordinator& coord, EventDispatcher& dispatcher, std::string const& configFilePath)
 		: m_coord{ coord }, m_appTitle{ title } {
 		// Initialize GLFW;
 		if (!glfwInit())
@@ -98,6 +98,14 @@ namespace NightSnack {
 
 		// Store the event dispatcher
 		m_dispatcher = &dispatcher;
+		m_appIsFullscreen = isFullscreen;
+		m_configFilePath = configFilePath;
+
+
+		if(m_appIsFullscreen) 
+			EnterFullscreen();
+
+
 		Init(coord);
 	}
 
@@ -123,6 +131,8 @@ namespace NightSnack {
 					} else {
 						// Toggled full screen using F11 key press
 						m_appIsFullscreen ? ExitFullscreen() : EnterFullscreen();
+						SaveFullscreenToConfig();
+
 					}
 					break;
 
@@ -321,6 +331,7 @@ namespace NightSnack {
 			glfwSetWindowMonitor(m_windowHandle, NULL, m_appWindowedPosX, m_appWindowedPosY, m_appWindowedWidth, m_appWindowedHeight, GLFW_DONT_CARE);
 
 			m_appIsFullscreenViaButton = false;
+			m_appIsFullscreenViaButton = false;
 		}
 	}
 
@@ -336,6 +347,28 @@ namespace NightSnack {
 		{
 			s_droppedFiles.push_back(std::string(paths[i]));
 			////std::cout << "[FileDrop]   [" << i << "] " << paths[i] << "\n";
+		}
+	}
+
+	void ApplicationSystem::SaveFullscreenToConfig()
+	{
+		size_t key = 0;
+
+		std::ofstream ofs(RESOURCE_PATH + m_configFilePath);
+		if (!ofs.is_open()) {
+			std::cerr << "[Application] Failed to write to config file path: " << m_configFilePath << '\n';
+			return;
+		}
+
+		LOAD_RESULT res = m_coord.GetSystem<ResourceManager>()->LoadJson(m_configFilePath, key, false);
+		if (res == LOAD_SUCCESS || res == LOAD_FAIL_PREEXIST || res == LOAD_SUCCESS_STOPPED_UNLOAD)
+		{
+			json js = m_coord.GetSystem<ResourceManager>()->GetJsonRaw(key);
+			if (js.empty())
+				return;
+			js["WindowConfig"]["Fullscreen"] = m_appIsFullscreen;
+			ofs << js;
+			ofs.close();
 		}
 	}
 

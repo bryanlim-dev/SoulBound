@@ -89,11 +89,11 @@ namespace NightSnack {
 		// Add the systems you want to the Core engine, Must be in specific order taught in GIT lessons
 		// i.e: Input-> Movement -> Collision -> Graphics;
 		AddSystem<ResourceManager>(); //RM first, so app can load values from it
-		std::string windowTitle = ""; int winWidth = 0, winHeight = 0;
+		std::string windowTitle = ""; int winWidth = 0, winHeight = 0; bool fullscreen = false;
 		//Get window data
-		ResourceSystemHelper::GetResourceSystemWindowData(m_coord.GetSystem<ResourceManager>(), configFilePath, winHeight, winWidth, windowTitle);
+		ResourceSystemHelper::GetResourceSystemWindowData(m_coord.GetSystem<ResourceManager>(), configFilePath, winHeight, winWidth, windowTitle, fullscreen);
 
-		AddSystem<ApplicationSystem>(std::move(windowTitle), m_coord, core_dispatcher);
+		AddSystem<ApplicationSystem>(std::move(windowTitle), fullscreen, m_coord, core_dispatcher, configFilePath);
 		AddSystem<InputSystem>(m_coord, core_dispatcher);
 		AddSystem<AudioSystem>(m_coord, core_dispatcher);
 
@@ -110,7 +110,7 @@ namespace NightSnack {
 		AddSystem<PlayerControllerSystem>(m_coord, core_dispatcher);
 		AddSystem<Scene::SceneManager>(m_coord, core_dispatcher);
 		AddSystem<Scripting::ScriptManager>(m_coord, core_dispatcher);
-		AddSystem<FiniteStateMachine>(m_coord);
+		//AddSystem<FiniteStateMachine>(m_coord);
 		AddSystem<CharacterSystem>(m_coord, core_dispatcher);
 		AddSystem<DialogueSystem>(m_coord, core_dispatcher);
 		AddSystem<TextSystem>(m_coord, core_dispatcher);

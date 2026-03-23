@@ -24,12 +24,18 @@ namespace NightSnack
 		if (!coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().isGrounded)
 			return false;
 
+		m_bounceFlags = BounceFlags();
+
 		m_currState = BOUNCE_CHARGING;
 		m_chargeTime = 0.0f;
 		m_powerIncreasing = true;
 		
 		m_facingRight = coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().facingRight;
-		m_launchAngle = 45.0f;
+
+		if (m_facingRight)
+			m_launchAngle = 45.0f;
+		else
+			m_launchAngle = 135.0f;
 
 		m_active = true;
 		m_bounceDelayTime = 0;
@@ -67,29 +73,7 @@ namespace NightSnack
 		{
 		case BOUNCE_CHARGING:
 		{
-			if (m_powerIncreasing)
-			{
-				m_chargeTime += coord.GetSystem<ApplicationSystem>()->GetDT();
-				if (m_chargeTime >= m_maxChargeTime)
-				{
-					m_powerIncreasing = false;
-					m_chargeTime = m_maxChargeTime;
-				}
-			}
-			else
-			{
-				m_chargeTime -= coord.GetSystem<ApplicationSystem>()->GetDT();
-				if (m_chargeTime <= 0)
-				{
-					m_powerIncreasing = true;
-					m_chargeTime = 0;
-				}
-			}
-
-			UpdateDisplays(coord);
-
-			//std::cout << "Bounce! Charge Time = " << m_chargeTime << "/" << m_maxChargeTime << std::endl;
-			//std::cout << "Bounce! Angle = " << m_launchAngle << std::endl;
+			UpdateCharging(coord);
 
 			break;
 		}
@@ -181,14 +165,20 @@ namespace NightSnack
 		}
 	}
 
-	void Bounce::Reset(Coordinator& coord)
+	void Bounce::Reset(Coordinator& coord, bool deleteEntities)
 	{
-		if (m_createdDisplays)
+		if (m_createdDisplays && deleteEntities)
 			DeleteDisplay(coord);
 
 		m_createdDisplays = false;
-	}
 
+		m_guideDots.clear();
+		m_powerBar = INVALID_ENTITY;
+
+		m_createdDisplays = false;
+		m_active = false;
+		m_currState = BOUNCE_END;
+	}
 
 	void Bounce::UpdateOwner(Entity e) {
 		m_owner = e;
@@ -216,9 +206,7 @@ namespace NightSnack
 			float launchPower = GetLaunchPower();
 			//float launchPower = m_maxLaunchForce; //For testing
 
-			int dir = m_facingRight ? 1 : -1;
-
-			coord.ModifyComponent<RigidBody>(m_owner).vel.x = launchPower * (float)cos(m_launchAngle * PI/180) * dir;
+			coord.ModifyComponent<RigidBody>(m_owner).vel.x = launchPower * (float)cos(m_launchAngle * PI/180);
 			coord.ModifyComponent<RigidBody>(m_owner).vel.y = launchPower * (float)sin(m_launchAngle * PI/180);
 			//std::cout << "Bounce Launch! X Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.x << ", " 
 			//	<< "Y Vel = " << coord.ModifyComponent<RigidBody>(m_owner).vel.y << std::endl;
@@ -243,6 +231,16 @@ namespace NightSnack
 		else
 			m_launchAngle -= m_angleChangeSpeed * coord.GetSystem<ApplicationSystem>()->GetDT();
 
+		//if (coord.HasComponent<Animator>(m_owner))
+		//{
+		//	if (m_launchAngle < 90)
+		//		coord.ModifyComponent<Animator>(m_owner).playbackSpeed = 1.0f;
+		//	else if(m_launchAngle > 90)
+		//		coord.ModifyComponent<Animator>(m_owner).playbackSpeed = 2.0f;
+		//}
+
+
+
 		m_launchAngle = std::clamp(m_launchAngle, 0.0f, m_maxLaunchAngle);
 	}
 
@@ -257,6 +255,54 @@ namespace NightSnack
 			m_currLaunchPower -= m_launchChangeSpeed * coord.GetSystem<ApplicationSystem>()->GetDT();
 
 		m_currLaunchPower = std::clamp(m_currLaunchPower, m_minLaunchForce, m_maxLaunchForce);
+	}
+
+	void Bounce::UpdateCharging(Coordinator& coord)
+	{
+
+		if (m_bounceFlags.m_powerIncreasing && m_bounceFlags.m_powerDecreasing)
+		{ 
+			//Empty by design
+		}
+		else if (m_bounceFlags.m_powerIncreasing)
+			this->ChangePower(coord, true);
+		else if (m_bounceFlags.m_powerDecreasing)
+			this->ChangePower(coord, false);
+
+		if (m_bounceFlags.m_angleIncreasing && m_bounceFlags.m_angleDecreasing)
+		{ 
+			//Empty by design
+		}
+		else if (m_bounceFlags.m_angleIncreasing)
+			this->ChangeAngle(coord, true);
+		else if (m_bounceFlags.m_angleDecreasing)
+			this->ChangeAngle(coord, false);
+
+		//Remnant of when charging was based on time
+		/*if (m_powerIncreasing)
+		{
+			m_chargeTime += coord.GetSystem<ApplicationSystem>()->GetDT();
+			if (m_chargeTime >= m_maxChargeTime)
+			{
+				m_powerIncreasing = false;
+				m_chargeTime = m_maxChargeTime;
+			}
+		}
+		else
+		{
+			m_chargeTime -= coord.GetSystem<ApplicationSystem>()->GetDT();
+			if (m_chargeTime <= 0)
+			{
+				m_powerIncreasing = true;
+				m_chargeTime = 0;
+			}
+		}*/
+
+		UpdateDisplays(coord);
+
+		//std::cout << "Bounce! Charge Time = " << m_chargeTime << "/" << m_maxChargeTime << std::endl;
+		//std::cout << "Bounce! Angle = " << m_launchAngle << std::endl;
+		//std::cout << "Bounce! Angle = " << m_launchAngle << std::endl;
 	}
 
 	float Bounce::GetLaunchPowerRatio()
@@ -281,12 +327,22 @@ namespace NightSnack
 			Entity dot = coord.GetSystem<EntityFactory>()->Create(m_guideDotPrefab);
 			Transform& dotTrans = coord.ModifyComponent<Transform>(dot);
 			dotTrans.scale = Vec2(m_guideDotSize, m_guideDotSize);
+			dotTrans.layer = LayerType::FOREGROUND;
+
 			if (coord.HasComponent<Collider>(dot))
 			{
 				coord.ModifyComponent<Collider>(dot).width = col.width;
 				coord.ModifyComponent<Collider>(dot).height = col.height;
 				coord.ModifyComponent<Collider>(dot).radius = col.radius;
 			}
+
+			if (!coord.HasComponent<Color>(dot))
+				coord.AddComponent(dot, Color());
+
+			coord.ModifyComponent<Color>(dot).a = 0.5f;
+
+			coord.ModifyComponent<Renderable>(dot).materialName = "ColorMat";
+
 
 			dotTrans.isActive = false;
 			m_guideDots.push_back(dot);
@@ -302,7 +358,19 @@ namespace NightSnack
 		powerTrans.scale = m_powerBarScale;
 		powerTrans.pos = coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos;
 		powerTrans.isActive = false;
+		powerTrans.layer = LayerType::FOREGROUND;
 
+		//Create angle indicator
+		m_angleIndicator = coord.GetSystem<EntityFactory>()->Create(m_angleIndicatorPrefab);
+		Transform& angleTrans = coord.ModifyComponent<Transform>(m_angleIndicator);
+		angleTrans.scale = m_angleIndicatorScale;
+		angleTrans.pos = coord.GetComponent<Transform>(m_owner).pos;
+		angleTrans.pos.z = powerTrans.pos.z - 0.1f;
+
+		if (!coord.HasComponent<Color>(m_angleIndicator))
+			coord.AddComponent(m_angleIndicator, Color());
+
+		coord.ModifyComponent<Color>(m_angleIndicator).a = 0.5f;
 	}
 
 	void Bounce::UpdateDisplays(Coordinator& coord)
@@ -311,39 +379,76 @@ namespace NightSnack
 			!coord.HasComponent<RigidBody>(m_owner))
 			return;
 
+		Transform& ownerTrans = coord.ModifyComponent<Transform>(m_owner);
+		Transform& angleTrans = coord.ModifyComponent<Transform>(m_angleIndicator);
+
+		//Convert to radians
+		float rad = (m_launchAngle) * PI / 180.f;
+
+		//Forward direction
+		Vec2 forward;
+		forward.x = cos(rad);
+		forward.y = sin(rad);
+
+		//Normalize
+		if (forward.magnitude() > 0.f)
+			forward.normalize();
+
+		//Pos
+		//Offset in FRONT of player
+		float offsetDist = m_angleIndicatorOffset;
+
+		angleTrans.pos.x = ownerTrans.pos.x + forward.x * offsetDist;
+		angleTrans.pos.y = ownerTrans.pos.y + forward.y * offsetDist;
+		angleTrans.pos.z = ownerTrans.pos.x - 0.1f;
+
+		//Rotation
+		//Face same direction as launch
+		angleTrans.rot = atan2(forward.y, forward.x) * (180.f / PI);
+
+		// If your sprite points UP by default, add +90
+		//angleTrans.rot += 90.f;
+
+		// --- ACTIVATE ---
+		angleTrans.isActive = true;
+
 		//Update power bar
 		//Change scale to x if horziontal bar
-		float newScale = ((m_powerBarScale.y - m_minPowerBarScale) * GetLaunchPowerRatio()) + m_minPowerBarScale;
-		coord.ModifyComponent<Transform>(m_powerBar).scale.y = newScale;
+		float newScale = ((m_powerBarScale.y - m_minPowerBarScale) * (1 - GetLaunchPowerRatio())) + m_minPowerBarScale;
+		coord.ModifyComponent<Transform>(m_powerBar).scale.x = newScale;
 		coord.ModifyComponent<Transform>(m_powerBar).isActive = true;
-		coord.ModifyComponent<Transform>(m_powerBar).pos.y = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).y + (newScale / 2);
-		coord.ModifyComponent<Transform>(m_powerBar).pos.x = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).x;
+		coord.ModifyComponent<Transform>(m_powerBar).pos.y = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).y ;
+		coord.ModifyComponent<Transform>(m_powerBar).pos.x = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).x + (newScale / 2);
 
 		Transform const& playerTrans = coord.GetComponent<Transform>(m_owner);
 		RigidBody const& rb = coord.GetComponent<RigidBody>(m_owner);
 
 		Vec2 pos = { playerTrans.pos.x, playerTrans.pos.y };
 
-		int dir = m_facingRight ? 1 : -1;
-
 		float launchPower = GetLaunchPower();
 
 		Vec2 vel;
-		vel.x = launchPower * (float)cos(m_launchAngle * PI / 180.f) * dir;
+		vel.x = launchPower * (float)cos(m_launchAngle * PI / 180.f);
 		vel.y = launchPower * (float)sin(m_launchAngle * PI / 180.f);
 
-		float dt = coord.GetSystem<ApplicationSystem>()->GetDT();
+		float dt = 0.016f; //Use fixed dt for no jitter, if used normal when the dt blips the dots will wiggle alot
 		float gravity = coord.GetSystem<PhysicsSystem>()->GetGravity();
 		float drag = coord.GetSystem<PhysicsSystem>()->GetDrag();
 
 		Collider const& playerCol = coord.GetComponent<Collider>(m_owner);
+		
 
 		Transform simTransform = playerTrans;
 
 		bool bounced = false;
 
+
+
 		for (size_t i = 0; i < m_guideDots.size(); i++)
 		{
+			if (coord.HasComponent<Color>(m_guideDots[i]))
+				coord.ModifyComponent<Color>(m_guideDots[i]).a = 0.5f;
+
 			Vec2 accel{ 0.f, 0.f };
 			accel.y += gravity * rb.gravitymult;
 
@@ -412,6 +517,9 @@ namespace NightSnack
 
 		if (m_powerBar != INVALID_ENTITY && coord.EntityIsAlive(m_powerBar))
 			coord.ModifyComponent<Transform>(m_powerBar).isActive = false;
+
+		if (m_angleIndicator != INVALID_ENTITY && coord.EntityIsAlive(m_angleIndicator))
+			coord.ModifyComponent<Transform>(m_angleIndicator).isActive = false;
 	}
 
 	void Bounce::DeleteDisplay(Coordinator& coord)
@@ -431,6 +539,11 @@ namespace NightSnack
 			coord.DestroyEntity(m_powerBar);
 
 		m_powerBar = INVALID_ENTITY;
+
+		if (m_angleIndicator != INVALID_ENTITY && coord.EntityIsAlive(m_angleIndicator))
+			coord.DestroyEntity(m_angleIndicator);
+		m_angleIndicator = INVALID_ENTITY;
+
 	}
 
 	void Bounce::Collided(Coordinator& coord, Entity other)

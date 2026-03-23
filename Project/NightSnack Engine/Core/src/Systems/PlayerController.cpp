@@ -14,12 +14,130 @@
  ******************************************************************************/
 
 #include "PlayerController.h"
+#include <GameLogic/SceneManager.h>
 
 namespace NightSnack {
+    PlayerControllerSystem::PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord }, m_dispatcher{ &disp } {
+
+        m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
+            {
+                switch (event.inputAction) {
+                case InputEvent::InputAction::PlayerMoveLeft:
+                    if (event.pressed == InputEvent::InputActionState::Pressed ||
+                        event.pressed == InputEvent::InputActionState::Repeat) {
+                        m_flags.movingLeft = true;
+                    }
+                    else if (event.pressed == InputEvent::InputActionState::Released) {
+                        m_flags.movingLeft = false;
+                    }
+                    break;
+                case InputEvent::InputAction::PlayerMoveRight:
+                    if (event.pressed == InputEvent::InputActionState::Pressed ||
+                        event.pressed == InputEvent::InputActionState::Repeat) {
+                        m_flags.movingRight = true;
+                    }
+                    else if (event.pressed == InputEvent::InputActionState::Released) {
+                        m_flags.movingRight = false;
+                    }
+                    break;
+                case InputEvent::InputAction::PlayerJumpAbility:
+                    HandleJumpAbilityInput(event);
+                    break;
+                    //case InputEvent::InputAction::PlayerSpecialAbility:
+                    //    if (event.pressed == InputEvent::InputActionState::Pressed ||
+                    //        event.pressed == InputEvent::InputActionState::Repeat) {
+                    //        m_flags.useAbility = true;
+                    //    }
+                    //    else if (event.pressed == InputEvent::InputActionState::Released) {
+                    //        m_flags.abilityKeyRelease = true;
+                    //        m_flags.useAbility = false;
+                    //    }
+                    //    else {
+                    //        m_flags.useAbility = false;
+                    //    }
+                    //    break;
+                    //case InputEvent::InputAction::PlayerUnPossess:
+                    //    if (event.pressed == InputEvent::InputActionState::Pressed) {
+                    //        m_flags.tryUnPossess = true;
+                    //        curr_ability = "Glide";
+                    //    }
+                case InputEvent::InputAction::Ability1:
+                    if (event.pressed == InputEvent::InputActionState::Pressed && m_coord.GetSystem<NightSnack::Scene::SceneManager>()->GetCheatToggleActive()) {
+                        curr_ability = "Grapple";
+                        Renderable& r = m_coord.ModifyComponent<Renderable>(m_player);
+                        r.materialName = m_abilityDefaultTextures[curr_ability]; // depends on the texture name
+                    }
+                    break;
+                case InputEvent::InputAction::Ability2:
+                    if (event.pressed == InputEvent::InputActionState::Pressed && m_coord.GetSystem<NightSnack::Scene::SceneManager>()->GetCheatToggleActive()) {
+                        curr_ability = "DoubleJump";
+                        Renderable& r = m_coord.ModifyComponent<Renderable>(m_player);
+                        r.materialName = m_abilityDefaultTextures[curr_ability]; // depends on the texture name
+                    }
+                    break;
+                case InputEvent::InputAction::Ability3:
+                    if (event.pressed == InputEvent::InputActionState::Pressed && m_coord.GetSystem<NightSnack::Scene::SceneManager>()->GetCheatToggleActive()) {
+                        curr_ability = "Bounce";
+                        Renderable& r = m_coord.ModifyComponent<Renderable>(m_player);
+                        r.materialName = m_abilityDefaultTextures[curr_ability]; // depends on the texture name
+                        //loadBackMainMenu = true;
+                    }
+                    break;
+                case InputEvent::InputAction::PlayerPossess:
+                    if (event.pressed == InputEvent::InputActionState::Pressed) {
+                        m_flags.possessUnposessActivated = true;
+                        /*if (!m_flags.isPossessing)
+                            m_flags.tryPossess = true;
+                        else
+                            m_flags.tryUnPossess = true;*/
+                    }
+                    break;
+                }
+            });
+
+        //Collision event for checkpoint
+        m_dispatcher->Subscribe<CollisionEvent>([this, &coord](const CollisionEvent& event)
+            {
+                //std::cout << "Checkpoint col check" << std::endl;
+
+                if (!(m_player == (size_t)event.entityA || m_player == (size_t)event.entityB))
+                    return;
+
+                Entity checkPoint = INVALID_ENTITY;
+
+                //Check which entity is the checkpoint
+                if (coord.HasComponent<Character>(event.entityA) &&
+                    std::find(coord.GetComponent<Character>(event.entityA).m_properties.cbegin(), coord.GetComponent<Character>(event.entityA).m_properties.cend(), CHECKPOINT) != coord.GetComponent<Character>(event.entityA).m_properties.cend())
+                {
+                    checkPoint = event.entityA;
+                }
+                else if (coord.HasComponent<Character>(event.entityB) &&
+                    std::find(coord.GetComponent<Character>(event.entityB).m_properties.cbegin(), coord.GetComponent<Character>(event.entityB).m_properties.cend(), CHECKPOINT) != coord.GetComponent<Character>(event.entityB).m_properties.cend())
+                {
+                    checkPoint = event.entityB;
+                }
+
+                if (checkPoint == INVALID_ENTITY)
+                    return;
+
+                //RespawnPlayer();
+                m_prevCheckpoint = checkPoint;
+                //std::cout << "Checkpoint found Entity: " << checkPoint << std::endl;
+
+            });
+
+        RegisterAbilities();
+        AttachAbility();
+        prev_ability = curr_ability;
+
+        m_frogTongue.Initalize(m_player, coord, *m_dispatcher);
+        m_bounce.Initalize(m_player, coord, *m_dispatcher);
+    }
 
     void PlayerControllerSystem::RegisterAbilities() {
 
         std::string abilityName = "Glide";
+        m_abilityDefaultTextures.insert({ abilityName, "PlayerAbility_4_1" });
         Gameplay::Ability GlideAbility(abilityName, [](Coordinator& c, Entity target, PlayerFlags& m_flags) {
             (void)m_flags;
             //if (target == INVALID_ENTITY) return;
@@ -45,6 +163,7 @@ namespace NightSnack {
         m_abilities.insert({ abilityName, GlideAbility });
 
         abilityName = "DoubleJump";
+        m_abilityDefaultTextures.insert({ abilityName, "EyeMove_4_1" });
         Gameplay::Ability DoubleJumpAbility(abilityName, [](Coordinator& c, Entity target, PlayerFlags& m_flags) {
             //if (target == INVALID_ENTITY) return;
             if (!c.HasComponent<RigidBody>(target)) return;
@@ -78,6 +197,7 @@ namespace NightSnack {
         m_abilities.insert({ abilityName, DoubleJumpAbility });
 
         abilityName = "Grapple";
+        m_abilityDefaultTextures.insert({ abilityName, "FrogIdle_4_1" });
         Gameplay::Ability GrapplingTongue(abilityName, [](Coordinator& c, Entity target, PlayerFlags& m_flags) {
             //if (target == INVALID_ENTITY) return;
             if (!c.HasComponent<RigidBody>(target)) return;
@@ -120,6 +240,7 @@ namespace NightSnack {
         m_abilities.insert({ abilityName, GrapplingTongue });
 
         abilityName = "Bounce";
+        m_abilityDefaultTextures.insert({ abilityName, "SnekIdle_4_1" });
         //abilityName = "Grapple";
         Gameplay::Ability Bounce(abilityName, [](Coordinator& c, Entity target, PlayerFlags& m_flags) {
             //if (target == INVALID_ENTITY) return;
@@ -145,6 +266,20 @@ namespace NightSnack {
     bool PlayerControllerSystem::AttachAbility() {
         curr_ability = "Glide";
         return true;
+    }
+
+    int PlayerControllerSystem::GetAbilityNumber() const
+    {
+        if (curr_ability == "Glide")
+            return 0;
+        else if (curr_ability == "Grapple")
+            return 1;
+        else if (curr_ability == "DoubleJump")
+            return 2;
+        else if (curr_ability == "Bounce")
+            return 3;
+
+        return -1;
     }
 
     void PlayerControllerSystem::RespawnPlayer()
@@ -243,8 +378,8 @@ namespace NightSnack {
                 if (!et.isActive) { continue; }
 
                 if (et.name == "Frog" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                    r.materialName = "FrogIdle_4_1"; // depends on the texture name
                     curr_ability = "Grapple";
+                    r.materialName = m_abilityDefaultTextures[curr_ability]; // depends on the texture name
                     //m_flags.tryPossess = false;
                     m_flags.isPossessing = true;
                     m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
@@ -252,16 +387,16 @@ namespace NightSnack {
 
                 }
                 else if (et.name == "Ghost" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                    r.materialName = "EyeMove_4_1"; // depends on the texture name
                     curr_ability = "DoubleJump";
+                    r.materialName = m_abilityDefaultTextures[curr_ability]; // depends on the texture name
                     //m_flags.tryPossess = false;
                     m_flags.isPossessing = true;
                     m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
                     break;
                 }
                 else if (et.name == "Bouncer" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
-                    r.materialName = "SnekIdle_4_1"; // depends on the texture name
                     curr_ability = "Bounce";
+                    r.materialName = m_abilityDefaultTextures[curr_ability]; // depends on the texture name
                     //m_flags.tryPossess = false;
                     m_flags.isPossessing = true;
                     break;
@@ -278,8 +413,8 @@ namespace NightSnack {
         auto tryUnpossess = [&]() {
             // Switch back to the Rain Charm (original player) if it is not in the first place
             if (r.materialName != "SpiritMove_4_1") {
-                r.materialName = "SpiritMove_4_1";
                 curr_ability = "Glide";
+                r.materialName = m_abilityDefaultTextures[curr_ability];
                 m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
             }
             //// Reset it back anyways
@@ -329,12 +464,6 @@ namespace NightSnack {
 
     void PlayerControllerSystem::CreateGroundedHitbox()
     {
-        if (m_closeGroundedHitBox != INVALID_ENTITY)
-        {
-            m_coord.DestroyEntity(m_closeGroundedHitBox);
-            m_closeGroundedHitBox = INVALID_ENTITY;
-        }
-
         m_closeGroundedHitBox = m_coord.CreateEntity();
 
         if (!m_coord.HasComponent<Transform>(m_closeGroundedHitBox))
@@ -438,10 +567,12 @@ namespace NightSnack {
         return INVALID_ENTITY;
     }
 
-    void PlayerControllerSystem::LeftAndRightMovement(Vec2& vel, PlayerController const& pcont) const {
+    void PlayerControllerSystem::LeftAndRightMovement(Vec2& vel, PlayerController const& pcont)  {
         m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
 
         if (m_flags.movingRight && !m_flags.movingLeft) {
+
+            m_flags.facingRight = true;
 
             if (vel.x >= 0)
             {
@@ -488,6 +619,9 @@ namespace NightSnack {
             }
         }
         else if (m_flags.movingLeft && !m_flags.movingRight) {
+
+            m_flags.facingRight = false;
+
             if (vel.x <= 0)
             {
                 //Moving left but within move speed
@@ -569,22 +703,15 @@ namespace NightSnack {
 
         bool jump = false;
 
-        m_timeSinceGrounded += FixedDT;
 
-        if (m_timeSinceGrounded < m_groundedThreshhold)
-            m_flags.justJumped = false;
 
-        if (grounded)
-        {
-            m_timeSinceGrounded = 0;
-        }
 
         //std::cout << "Player Just Jumped : " << m_flags.justJumped << std::endl;
         //std::cout << "Player Time since Grounded : " << m_timeSinceGrounded << "/" << m_groundedThreshhold << std::endl;
 
         if (m_flags.jumpRequested) {
             // allow jump if pressed right after being off ground
-            if (grounded || m_timeSinceGrounded < m_groundedThreshhold)
+            if (grounded)
             {
                 jump = true;
                 m_flags.jumpRequested = false;

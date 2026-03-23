@@ -48,6 +48,8 @@ namespace NightSnack {
                 entityToPrefab.erase(e);
                 prefabToEntities.erase(it);
             }
+            //std::cerr << "[PostUpdate] Destroying queued entity " << e << "\n";
+
             m_coord.DestroyEntity(e);
         }
         m_toBeDestroyed.clear();
@@ -201,6 +203,8 @@ namespace NightSnack {
 
     // Queue entity to be destroyed at end of Core loop
     void EntityFactory::RemoveEntity(Entity e) { 
+        //std::cerr << "[RemoveEntity] Queuing entity " << e
+        //    << " name='" << m_coord.GetComponent<Transform>(e).name << "'\n";
 
         // Update Hierarchy chain
         Hierarchy const& h = m_coord.GetComponent<Hierarchy>(e);
@@ -739,6 +743,10 @@ namespace NightSnack {
         entityToPrefab.clear();
         prefabToEntities.clear();
         m_prefabKeys["++Default"] = 0;
+
+        m_toBeDestroyed.clear();
+        m_toBeUnloaded.clear();
+        m_prefabCache.clear();
     }
 
     // Helper function to split Monolithic Json file (containing all archetypes)

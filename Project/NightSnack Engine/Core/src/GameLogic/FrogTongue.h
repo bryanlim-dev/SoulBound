@@ -17,6 +17,14 @@
 #include <Systems/ParticleSystem.h>
 
 namespace NightSnack {
+
+	struct FrogFlags {
+		bool m_extending = false;
+		bool m_retracting = false;
+		bool m_movingLeft = false;
+		bool m_movingRight = false;
+	};
+
 	class FrogTongue
 	{
 	private:
@@ -32,11 +40,13 @@ namespace NightSnack {
 
 		const float m_tongueLengthMax = 550.0f;
 		const float m_tongueWidth = 5.f;
-		const float m_swingForce = 750.0f;
+		const float m_swingForce = 250.0f;
 
 		bool m_active = false;
 
-		float m_extendRate = 500.0f;
+		float m_extendRate = 150.0f;
+
+		FrogFlags m_frogFlag{};
 
 	public:
 		FrogTongue(){}
@@ -52,25 +62,45 @@ namespace NightSnack {
 					case InputEvent::InputAction::PlayerMoveLeft:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
-							this->SwingActivated(coord, false);
+							//this->SwingActivated(coord, false);
+							m_frogFlag.m_movingLeft = true;
+						}
+						else if (event.pressed == InputEvent::InputActionState::Released)
+						{
+							m_frogFlag.m_movingLeft = false;
 						}
 						break;
 					case InputEvent::InputAction::PlayerMoveRight:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
-							this->SwingActivated(coord, true);
+							//this->SwingActivated(coord, true);
+							m_frogFlag.m_movingRight = true;
+						}
+						else if (event.pressed == InputEvent::InputActionState::Released)
+						{
+							m_frogFlag.m_movingRight = false;
 						}
 						break;
 					case InputEvent::InputAction::PlayerUp:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
 							this->ExtendRetractTongue(coord, false);
+							m_frogFlag.m_retracting = true;
+						}
+						else if (event.pressed == InputEvent::InputActionState::Released)
+						{
+							m_frogFlag.m_retracting = false;
 						}
 						break;
 					case InputEvent::InputAction::PlayerDown:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
 							this->ExtendRetractTongue(coord, true);
+							m_frogFlag.m_extending = true;
+						}
+						else if (event.pressed == InputEvent::InputActionState::Released)
+						{
+							m_frogFlag.m_extending = false;
 						}
 						break;
 					case InputEvent::InputAction::PlayerJumpAbility:
@@ -79,6 +109,7 @@ namespace NightSnack {
 
 							this->End(coord);
 						}
+
 						break;
 					}
 					
@@ -122,7 +153,33 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		bool Update(Coordinator& coord);
+		/************************************************************************/
+		/*!
+		\brief
+		Function that handles the end of the grapple ability
+		Hides the tongue entity
+
+		/param coord
+		Refernece to the coordinator
+		*/
+		/************************************************************************/
 		void End(Coordinator& coord);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Handles reseting of the ability to default state (i.e delete tongue entity)
+
+		/param coord
+		Refernece to the coordinator
+
+		/param deleteEntities
+		False if do not destory attached entities
+		Defaulted to true
+		(e.g for scene transition all objects are destoryed anyway)
+		*/
+		/************************************************************************/
+		void Reset(Coordinator& coord, bool deleteEntities = true);
 
 		//Only supports player
 		/************************************************************************/
@@ -178,6 +235,8 @@ namespace NightSnack {
 		/************************************************************************/
 		void UpdateIndicator(Coordinator& coord);
 
+		void Reset();
+
 	private:
 
 		/************************************************************************/
@@ -209,6 +268,28 @@ namespace NightSnack {
 		/************************************************************************/
 		float DistanceToAnchor(Vec3 ownerPos, Vec3 anchorPos);
 
+
+		/************************************************************************/
+		/*!
+		\brief
+		Hides the tongue entity by setting them to inactive
+
+		/param coord
+		Refrence to coordinator
+		*/
+		/************************************************************************/
+		void HideDisplay(Coordinator& coord);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Deletes the tongue entity
+
+		/param coord
+		Refrence to coordinator
+		*/
+		/************************************************************************/
+		void DeleteDisplay(Coordinator& coord);
 
 		/************************************************************************/
 		/*!

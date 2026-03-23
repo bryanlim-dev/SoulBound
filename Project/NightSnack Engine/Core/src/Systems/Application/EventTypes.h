@@ -46,11 +46,18 @@ namespace NightSnack {
             Ability2,
             Ability3,
 
+            ToggleCheat,        //` + Ctrl
+            LevelTutorial,      //0
+            Level1,             //9
+            Level2,             //8
+            Level3,             //7
+
             ChangeAnimation,    // X
 
             // Debug tests
             ToggleDebugDraw,    // O
             PhysicsDebugStep,   // P
+            PhysicsDebugOff,
 
             // Window events
 			DisplayFPS,         // F1

@@ -101,6 +101,41 @@ namespace NightSnack::Scene {
 					return;
 				}
 
+				if (event.inputAction == InputEvent::InputAction::ToggleCheat) {
+					if (m_coord.IsPaused()) return;
+					if (event.pressed == InputEvent::InputActionState::Pressed) {
+						m_cheatcodeEnabled = !m_cheatcodeEnabled;
+					}
+				}
+				else if (event.inputAction == InputEvent::InputAction::LevelTutorial) {
+					if (m_coord.IsPaused()) return;
+					if (event.pressed == InputEvent::InputActionState::Pressed) {
+						if (m_cheatcodeEnabled)
+							LoadLevel("LevelTutorial");
+					}
+				}
+				else if (event.inputAction == InputEvent::InputAction::Level1) {
+					if (m_coord.IsPaused()) return;
+					if (event.pressed == InputEvent::InputActionState::Pressed) {
+						if (m_cheatcodeEnabled)
+							LoadLevel("Level1");
+					}
+				}
+				else if (event.inputAction == InputEvent::InputAction::Level2) {
+					if (m_coord.IsPaused()) return;
+					if (event.pressed == InputEvent::InputActionState::Pressed) {
+						if (m_cheatcodeEnabled)
+							LoadLevel("Level2");
+					}
+				}
+				else if (event.inputAction == InputEvent::InputAction::Level3) {
+					if (m_coord.IsPaused()) return;
+					if (event.pressed == InputEvent::InputActionState::Pressed) {
+						if (m_cheatcodeEnabled)
+							LoadLevel("Level3");
+					}
+				}
+				
 				if (event.pressed == InputEvent::InputActionState::Pressed ||
 					event.pressed == InputEvent::InputActionState::Repeat)
 				{
@@ -414,6 +449,8 @@ namespace NightSnack::Scene {
 		// Getters
 		const std::unordered_map<std::string, size_t>& GetAvailableLevels() const { return m_levelKeys; }
 
+		bool GetCheatToggleActive() const { return m_cheatcodeEnabled; }
+
 		// Required by ISystem base class;
 		Signature GetSignature() const override { return m_systemSignature; }
 		std::string GetName() const override { return "SceneManager"; }
@@ -478,6 +515,9 @@ namespace NightSnack::Scene {
 		void CreateWinCollider(json const& level);
 		json CacheWinCollider();
 		void CreateWinScreen();
+
+		//Cheatcodes
+		bool m_cheatcodeEnabled = false;
 
 		// entity for menu sliders
 		Entity m_sliderBarEntity = INVALID_ENTITY;

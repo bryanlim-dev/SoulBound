@@ -99,118 +99,7 @@ namespace NightSnack {
         Reference to the Event Dispatcher.
         */
         /************************************************************************/
-        PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord }, m_dispatcher { &disp } {
-
-            m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
-                {
-                    switch (event.inputAction) {
-                    case InputEvent::InputAction::PlayerMoveLeft:
-                        if (event.pressed == InputEvent::InputActionState::Pressed ||
-                            event.pressed == InputEvent::InputActionState::Repeat) {
-                            m_flags.movingLeft = true;
-                            m_flags.facingRight = false;
-                        }
-                        else if (event.pressed == InputEvent::InputActionState::Released) {
-                            m_flags.movingLeft = false;
-                        }
-                        break;
-                    case InputEvent::InputAction::PlayerMoveRight:
-                        if (event.pressed == InputEvent::InputActionState::Pressed ||
-                            event.pressed == InputEvent::InputActionState::Repeat) {
-                            m_flags.movingRight = true;
-                            m_flags.facingRight = true;
-                        }
-                        else if (event.pressed == InputEvent::InputActionState::Released) {
-                            m_flags.movingRight = false;
-                        }
-                        break;
-                    case InputEvent::InputAction::PlayerJumpAbility:
-                         HandleJumpAbilityInput(event);
-                        break;
-                    //case InputEvent::InputAction::PlayerSpecialAbility:
-                    //    if (event.pressed == InputEvent::InputActionState::Pressed ||
-                    //        event.pressed == InputEvent::InputActionState::Repeat) {
-                    //        m_flags.useAbility = true;
-                    //    }
-                    //    else if (event.pressed == InputEvent::InputActionState::Released) {
-                    //        m_flags.abilityKeyRelease = true;
-                    //        m_flags.useAbility = false;
-                    //    }
-                    //    else {
-                    //        m_flags.useAbility = false;
-                    //    }
-                    //    break;
-                    //case InputEvent::InputAction::PlayerUnPossess:
-                    //    if (event.pressed == InputEvent::InputActionState::Pressed) {
-                    //        m_flags.tryUnPossess = true;
-                    //        curr_ability = "Glide";
-                    //    }
-                    /*case InputEvent::InputAction::Ability1:
-                        if (event.pressed == InputEvent::InputActionState::Pressed) {
-                            curr_ability = "Glide";
-                        }
-                        break;*/
-                    case InputEvent::InputAction::Ability2:
-                        if (event.pressed == InputEvent::InputActionState::Pressed) {
-                            curr_ability = "Grapple";
-                        }
-                        break;
-                    case InputEvent::InputAction::Ability3:
-                        if (event.pressed == InputEvent::InputActionState::Pressed) {
-                            curr_ability = "DoubleJump";
-                            loadBackMainMenu = true;
-                        }
-                        break;
-                    case InputEvent::InputAction::PlayerPossess:
-                        if (event.pressed == InputEvent::InputActionState::Pressed) {
-                            m_flags.possessUnposessActivated = true;
-                            /*if (!m_flags.isPossessing)
-                                m_flags.tryPossess = true;
-                            else
-                                m_flags.tryUnPossess = true;*/
-                        }
-                        break;
-                    }
-                });
-
-            //Collision event for checkpoint
-            m_dispatcher->Subscribe<CollisionEvent>([this, &coord](const CollisionEvent& event)
-                {
-                    //std::cout << "Checkpoint col check" << std::endl;
-
-                    if (!(m_player == (size_t)event.entityA || m_player == (size_t)event.entityB))
-                        return;
-
-                    Entity checkPoint = INVALID_ENTITY;
-
-                    //Check which entity is the checkpoint
-                    if (coord.HasComponent<Character>(event.entityA) && 
-                        std::find(coord.GetComponent<Character>(event.entityA).m_properties.cbegin(), coord.GetComponent<Character>(event.entityA).m_properties.cend(), CHECKPOINT) != coord.GetComponent<Character>(event.entityA).m_properties.cend())
-                    {
-                        checkPoint = event.entityA;
-                    }
-                    else if (coord.HasComponent<Character>(event.entityB) &&
-                        std::find(coord.GetComponent<Character>(event.entityB).m_properties.cbegin(), coord.GetComponent<Character>(event.entityB).m_properties.cend(), CHECKPOINT) != coord.GetComponent<Character>(event.entityB).m_properties.cend())
-                    {
-                        checkPoint = event.entityB;
-                    }
-
-                    if (checkPoint == INVALID_ENTITY)
-                        return;
-
-                    //RespawnPlayer();
-                    m_prevCheckpoint = checkPoint;
-                    //std::cout << "Checkpoint found Entity: " << checkPoint << std::endl;
-
-                });
-
-            RegisterAbilities();
-            AttachAbility();
-            prev_ability = curr_ability;
-
-            m_frogTongue.Initalize(m_player, coord, *m_dispatcher);
-            m_bounce.Initalize(m_player, coord, *m_dispatcher);
-        }
+        PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp);
 
         /************************************************************************/
         /*!
@@ -225,7 +114,7 @@ namespace NightSnack {
         */
         /************************************************************************/
         void Update() override {
-
+                  
             static bool emitted = false;
             if (m_coord.IsPaused()) {
                 //emitted = false;
@@ -250,13 +139,22 @@ namespace NightSnack {
             }
 
             if (reset) {
+                // Reset stored entities
+                m_closeGroundedHitBox = INVALID_ENTITY;
+                //m_player = INVALID_ENTITY;
+                //m_prevCheckpoint = INVALID_ENTITY;
+
                 AttachAbility();
                 m_flags = PlayerFlags{};
 
-                m_bounce.Reset(m_coord);
+                //False as the scene manager should handle cleanup deletion anyways
+                m_bounce.Reset(m_coord, false);
+                m_frogTongue.Reset(m_coord, false);
 
                 reset = false;
                 m_pauseInputs = false;
+
+                m_player = FindPlayer(m_coord);
 
                 CreateGroundedHitbox();
             }
@@ -271,11 +169,37 @@ namespace NightSnack {
             Collider& c = m_coord.ModifyComponent<Collider>(m_player);
             Renderable& r = m_coord.ModifyComponent<Renderable>(m_player);
 
+            //
+            static float time = 0.f;
+            if (vel.y == 0.f) {
+                time += FixedDT;
+            }
+            else {
+                time = 0.f;
+            }
+            if (time >= 0.3f) {
+                c.isGrounded = true;
+                time = 0.f;
+            }
+
+            m_timeSinceGrounded += FixedDT;
+
+            if (m_timeSinceGrounded < m_groundedThreshhold)
+                m_flags.justJumped = false;
+
+            if (c.isGrounded)
+            {
+                m_timeSinceGrounded = 0;
+            }
+
+
+            isGrounded = m_flags.isGrounded = c.isGrounded || m_timeSinceGrounded < m_groundedThreshhold;
+
             // Basic movement -----------------------------
             if (!m_flags.disableMovement)
             {
                 LeftAndRightMovement(vel, pcont);
-                Jump(t, vel, pcont, c.isGrounded);
+                Jump(t, vel, pcont, isGrounded);
             }
 
 
@@ -290,19 +214,7 @@ namespace NightSnack {
                 }
             }
 
-            //
-            static float time = 0.f;
-            if (vel.y == 0.f) {
-                time += FixedDT;
-            }
-            else {
-                time = 0.f;
-            }
-            if (time >= 0.3f) {
-                c.isGrounded = true;
-                time = 0.f;
-            }
-            isGrounded = m_flags.isGrounded = c.isGrounded || m_timeSinceGrounded < m_groundedThreshhold;
+
 
 			// reset glide when grounded
             if (isGrounded)
@@ -433,8 +345,9 @@ namespace NightSnack {
         Entity FindPlayer(Coordinator& coord);
 
         Entity GetPlayer() const noexcept { return m_player; }
+		void PrintPause() const noexcept { std::cout << (m_pauseInputs ? "Paused\n" : "Unpaused\n"); }
 
-        void LeftAndRightMovement(Vec2& vel, PlayerController const&) const;
+        void LeftAndRightMovement(Vec2& vel, PlayerController const&);
         void Jump(Transform& t, Vec2& vel, PlayerController pcont, bool grounded);
 
         PlayerFlags& GetPlayerFlags();
@@ -477,10 +390,12 @@ namespace NightSnack {
         void RegisterAbilities();
         bool UseSpecialAbility();
         bool AttachAbility();
+        int GetAbilityNumber() const;
         std::string curr_ability = "Glide";
         std::string prev_ability;
 
         std::unordered_map<std::string, Gameplay::Ability> m_abilities;
+        std::unordered_map<std::string, std::string> m_abilityDefaultTextures; //map of textures for each ability, key is the ability name
 
         // Required by ISystem base class.
         std::string GetName() const override { return "PlayerController"; }

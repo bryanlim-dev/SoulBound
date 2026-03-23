@@ -91,6 +91,8 @@ namespace NightSnack
 
 			coord.ParentEntity(m_tongue, m_owner);
 		}
+		
+		coord.ModifyComponent<Transform>(m_tongue).isActive = true;
 
 		m_distanceJoint.SetActive(true);
 		m_distanceJoint.EnableSpring(true);
@@ -109,6 +111,31 @@ namespace NightSnack
 
 	bool FrogTongue::Update(Coordinator& coord)
 	{
+		//Update via flags
+		// 
+		//Movement flags
+		if ((m_frogFlag.m_movingLeft && m_frogFlag.m_movingRight))
+		{ 
+			//Empty by Design
+		}
+		else if (m_frogFlag.m_movingLeft)
+			this->SwingActivated(coord, false);
+		else if (m_frogFlag.m_movingRight)
+			this->SwingActivated(coord, true);
+
+		//Extend retract flags
+		if ((m_frogFlag.m_extending && m_frogFlag.m_retracting))
+		{ 
+			//Empty by Design
+		}
+		else if (m_frogFlag.m_extending)
+			this->ExtendRetractTongue(coord, true);
+		else if (m_frogFlag.m_retracting)
+			this->ExtendRetractTongue(coord, false);
+
+
+
+		//Update Pos
 		float dt = coord.GetSystem<ApplicationSystem>()->GetDT();
 		Vec3 ownerPt = coord.GetComponent<Transform>(m_owner).pos;
 		Vec3 anchorPt = coord.GetComponent<Transform>(m_anchor).pos;
@@ -137,14 +164,29 @@ namespace NightSnack
 
 		coord.ModifyComponent<Renderable>(player).materialName = "FrogIdle_4_1";
 
+		//Reset Frog Flags
+		m_frogFlag = FrogFlags{};
 
 		m_distanceJoint.SetActive(false);
-		coord.DestroyEntity(m_tongue);
+
+		HideDisplay(coord);
+		//coord.DestroyEntity(m_tongue);
+		//m_tongue = INVALID_ENTITY;
+
+		m_active = false;
+	}
+
+
+	void FrogTongue::Reset(Coordinator& coord, bool deleteEntities)
+	{
+		if (deleteEntities)
+			DeleteDisplay(coord);
+
 		m_tongue = INVALID_ENTITY;
 		m_active = false;
-
-
 	}
+
+
 	void FrogTongue::SwingActivated(Coordinator& coord, bool isRight)
 	{
 		if (!m_active || m_owner != coord.GetSystem<PlayerControllerSystem>()->GetPlayer() || !coord.HasComponent<RigidBody>(m_owner))
@@ -322,6 +364,20 @@ namespace NightSnack
 		}
 	}
 
+	void FrogTongue::HideDisplay(Coordinator& coord)
+	{
+		if (m_tongue != INVALID_ENTITY && coord.EntityIsAlive(m_tongue))
+			coord.ModifyComponent<Transform>(m_tongue).isActive = false;
+	}
+
+	void FrogTongue::DeleteDisplay(Coordinator& coord)
+	{
+		if (m_tongue != INVALID_ENTITY && coord.EntityIsAlive(m_tongue))
+			coord.DestroyEntity(m_tongue);
+
+		m_tongue = INVALID_ENTITY;
+	}
+
 	// Destroy indicator entity if exists
 	void FrogTongue::DestroyIndicator(Coordinator& coord)
 	{
@@ -333,10 +389,20 @@ namespace NightSnack
 			m_emitterActive = false;
 		}
 
-		if (m_indicator != INVALID_ENTITY && coord.EntityIsAlive(m_indicator))
-		{
-			coord.DestroyEntity(m_indicator);
-		}
+		//if (m_indicator != INVALID_ENTITY && coord.EntityIsAlive(m_indicator))
+		//{
+		//	coord.DestroyEntity(m_indicator);
+		//}
 		m_indicator = INVALID_ENTITY;
+	}
+
+	void FrogTongue::Reset() {
+		m_tongue = INVALID_ENTITY;
+		m_anchor = INVALID_ENTITY;
+		m_indicator = INVALID_ENTITY;
+		m_owner = INVALID_ENTITY;
+		m_active = false;
+		m_emitterActive = false;
+		m_indicatorEmitter = 0;
 	}
 }

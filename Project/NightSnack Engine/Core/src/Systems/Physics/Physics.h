@@ -74,6 +74,10 @@ namespace NightSnack {
                         //    std::cout << "\n";
                         //}
                         break;
+                    case InputEvent::InputAction::PhysicsDebugOff:
+                        debugMode = false;
+                        stepRequest = false;
+                        break;
                     }
                 }
             });

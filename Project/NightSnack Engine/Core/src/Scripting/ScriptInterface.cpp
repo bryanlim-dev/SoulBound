@@ -1067,9 +1067,9 @@ namespace NightSnack::Scripting {
         m_coord.GetSystem<PlayerControllerSystem>()->RespawnPlayer();
     }
 
-    std::string ScriptInterface::GetPlayerAbility()
+    int ScriptInterface::GetPlayerAbility()
     {
-        return m_coord.GetSystem<PlayerControllerSystem>()->curr_ability;
+        return m_coord.GetSystem<PlayerControllerSystem>()->GetAbilityNumber();
     }
 
     void ScriptInterface::LoadLevel(std::string lvlName)

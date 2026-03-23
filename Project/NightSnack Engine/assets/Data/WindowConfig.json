@@ -1,8 +1,1 @@
-{
-  "WindowConfig" :
-  {
-    "Width": 1600,
-    "Height": 900,
-    "WindowTitle": "Nightsnack Engine"
-  }
-}
+{"WindowConfig":{"Fullscreen":false,"Height":900,"Width":1600,"WindowTitle":"Nightsnack Engine"}}

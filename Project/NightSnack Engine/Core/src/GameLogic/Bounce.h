@@ -16,6 +16,17 @@
 #include "../Systems/Physics/Physics.h"
 
 namespace NightSnack {
+
+
+	struct BounceFlags
+	{
+		bool m_powerIncreasing = false;
+		bool m_powerDecreasing = false;
+
+		bool m_angleIncreasing = false;
+		bool m_angleDecreasing = false;
+	};
+
 	class Bounce
 	{
 	private:
@@ -34,6 +45,7 @@ namespace NightSnack {
 		Entity m_owner = INVALID_ENTITY;
 		std::vector<Entity> m_guideDots;
 		Entity m_powerBar = INVALID_ENTITY;
+		Entity m_angleIndicator = INVALID_ENTITY;
 
 		std::string m_guideDotPrefab = "BounceGuideDot";
 		const int m_guideDotnum = 50;
@@ -42,10 +54,13 @@ namespace NightSnack {
 		float m_guideDotAlpha = 1; //Updates from prefab when making dots
 
 		std::string m_powerBarPrefab = "BouncePowerBar";
-		const Vec2 m_powerBarScale = Vec2{ 25, 75 };
-		const Vec3 m_powerBarOffsetPos = Vec3{ 25, 25, 12 };
-		const float m_minPowerBarScale = 5;
+		const Vec2 m_powerBarScale = Vec2{ 75, 25 };
+		const Vec3 m_powerBarOffsetPos = Vec3{ -25, -75, 12 };
+		const float m_minPowerBarScale = 50;
 
+		std::string m_angleIndicatorPrefab = "BounceAngleIndicator";
+		const Vec2 m_angleIndicatorScale = Vec2{ 100, 10 };
+		const float m_angleIndicatorOffset = 30.0f;
 
 		//Charge
 		float m_chargeTime = 0.0f;
@@ -56,15 +71,15 @@ namespace NightSnack {
 
 		//In degrees
 		float m_launchAngle = 45.0f;
-		//In degrees
-		const float m_maxLaunchAngle = 90.0f;
+		//In degree
+		const float m_maxLaunchAngle = 180.0f;
 		//Also in degrees
-		const float m_angleChangeSpeed = 150.0f;
+		const float m_angleChangeSpeed = 50.0f;
 		bool m_facingRight = true;
 
 		const float m_maxLaunchForce = 2000.0f;
 		const float m_minLaunchForce = 500.0f;
-		const float m_launchChangeSpeed = 1500.0f;
+		const float m_launchChangeSpeed = 750.0f;
 		float m_currLaunchPower = m_maxLaunchForce / 2;
 		//const float m_minVel = 20.0f;
 
@@ -78,6 +93,8 @@ namespace NightSnack {
 
 		const float m_maxVel0Time = 0.5f; //Failsafe incase player is stuck, if Y vel == 0 for too long ocnsidered grounded
 		float m_currVel0Time = 0; //Failsafe incase player is stuck, if Y vel == 0 for too long ocnsidered grounded
+
+		BounceFlags m_bounceFlags;
 
 	public:
 		Bounce(){}
@@ -120,33 +137,41 @@ namespace NightSnack {
 					if (!m_active)
 						return;
 
-					//Flip launch direction to left
 					switch (event.inputAction) {
-						case InputEvent::InputAction::PlayerMoveLeft:
-							if (m_facingRight)
-								this->ChangePower(coord, false);
-							else
-								this->ChangePower(coord, true);
+						case InputEvent::InputAction::PlayerUp:
+								//this->ChangePower(coord, true);
+								if (event.pressed == InputEvent::InputActionState::Pressed ||
+									event.pressed == InputEvent::InputActionState::Repeat)
+									m_bounceFlags.m_powerIncreasing = true;
+								else if (event.pressed == InputEvent::InputActionState::Released)
+									m_bounceFlags.m_powerIncreasing = false;
+
 							break;
-					//Flip launch direction to right
-						case InputEvent::InputAction::PlayerMoveRight:
-							if (m_facingRight)
-								this->ChangePower(coord, true);
-							else
-								this->ChangePower(coord, false);
+						case InputEvent::InputAction::PlayerDown:
+								//this->ChangePower(coord, false);
+							if (event.pressed == InputEvent::InputActionState::Pressed ||
+								event.pressed == InputEvent::InputActionState::Repeat)
+								m_bounceFlags.m_powerDecreasing = true;
+							else if (event.pressed == InputEvent::InputActionState::Released)
+								m_bounceFlags.m_powerDecreasing = false;
 							break;
-					case InputEvent::InputAction::PlayerUp:
+					case InputEvent::InputAction::PlayerMoveLeft:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
-							this->ChangeAngle(coord, true);
+							//this->ChangeAngle(coord, true)
+							m_bounceFlags.m_angleIncreasing = true;
 						}
+						else if (event.pressed == InputEvent::InputActionState::Released)
+							m_bounceFlags.m_angleIncreasing = false;
 						break;
-					case InputEvent::InputAction::PlayerDown:
+					case InputEvent::InputAction::PlayerMoveRight:
 						if (event.pressed == InputEvent::InputActionState::Pressed ||
 							event.pressed == InputEvent::InputActionState::Repeat) {
-							this->ChangeAngle(coord, false);
-							//this->ExtendRetractTongue(coord, true);
+							//this->ChangeAngle(coord, false);
+							m_bounceFlags.m_angleDecreasing = true;
 						}
+						else if (event.pressed == InputEvent::InputActionState::Released)
+							m_bounceFlags.m_angleDecreasing = false;
 						break;
 					case InputEvent::InputAction::PlayerJumpAbility:
 						if (event.pressed == InputEvent::InputActionState::Released)
@@ -184,6 +209,7 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		bool Update(Coordinator& coord);
+
 		/************************************************************************/
 		/*!
 		\brief
@@ -199,13 +225,18 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
-		Deletes the display entities
+		Handles reseting of the ability to default state (i.e delete guiide entities)
 
 		/param coord
 		Refernece to the coordinator
+
+		/param deleteEntities
+		False if do not destory attached entities
+		Defaulted to true
+		(e.g for scene transition all objects are destoryed anyway)
 		*/
 		/************************************************************************/
-		void Reset(Coordinator& coord);
+		void Reset(Coordinator& coord, bool deleteEntities = true);
 
 		/************************************************************************/
 		/*!
@@ -277,6 +308,14 @@ namespace NightSnack {
 		}
 		
 	private:
+		/************************************************************************/
+		/*!
+		\brief
+		Function to handle charging state
+		*/
+		/************************************************************************/
+		void UpdateCharging(Coordinator& coord);
+
 		/************************************************************************/
 		/*!
 		\brief

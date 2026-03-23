@@ -128,6 +128,8 @@ namespace NightSnack
                                 appSystem->EnterFullscreen();
                             else
                                 appSystem->ExitFullscreen();
+
+                            appSystem->SaveFullscreenToConfig();
                         }
                     }
                     ImGui::Separator();

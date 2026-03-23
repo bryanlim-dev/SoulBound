@@ -76,7 +76,10 @@ namespace NightSnack::Scene {
 
 		if (m_restart) {
 			RestartLevel();
-			CloseMenu();
+			CloseAllMenus();
+			m_dispatcher->QueueEvent(
+				std::make_unique<InputEvent>(InputEvent::InputAction::PhysicsDebugOff,
+					InputEvent::InputActionState::Pressed));
 			m_restart = false;
 		}
 
@@ -95,6 +98,9 @@ namespace NightSnack::Scene {
 				//std::cout << "going to load level: " << m_scheduledLevelName << std::endl;
 				// Load the new level
 				LoadLevel(m_scheduledLevelName);
+				m_dispatcher->QueueEvent(
+					std::make_unique<InputEvent>(InputEvent::InputAction::PhysicsDebugOff,
+						InputEvent::InputActionState::Pressed));
 
 				// Fade in the new BGM
 				//m_coord.GetSystem<AudioSystem>()->FadeToVolume(0.2f, 1.0f); // 0.2f is bgm volume
@@ -228,10 +234,12 @@ namespace NightSnack::Scene {
 
 			if (a->m_appIsFullscreen) {
 				a->ExitFullscreen();
+				a->SaveFullscreenToConfig();
 				b.defaultTex = b.clickTex = b.hoverTex = "Menu-Windowed";
 				c.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
 			} else {
 				a->EnterFullscreen();
+				a->SaveFullscreenToConfig();
 				b.defaultTex = b.clickTex = b.hoverTex = "Menu-Fullscreen";
 				c.ModifyComponent<Renderable>(e).materialName = b.defaultTex;
 			}
@@ -733,11 +741,22 @@ namespace NightSnack::Scene {
 
 		m_sliderBarEntity = INVALID_ENTITY;
 		m_sliderKnobEntity = INVALID_ENTITY;
+		m_sfxBarEntity = INVALID_ENTITY;
+		m_sfxKnobEntity = INVALID_ENTITY;
+		m_bgmBarEntity = INVALID_ENTITY;
+		m_bgmKnobEntity = INVALID_ENTITY;
+
+		m_camIndex = INVALID_ENTITY;
+		m_hoveredEntity = INVALID_ENTITY;
+		m_player = INVALID_ENTITY;
+
+		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 
 		// Unload everything first
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
+		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
 
 		//std::cout << "Load Level, current living entities: " << m_coord.GetLivingEntities().size() << std::endl;
 
@@ -801,10 +820,10 @@ namespace NightSnack::Scene {
 
 		m_gameLoaded = true;
 		CacheLevel();
-		RestoreLevel();
+		//RestoreLevel();
 
-		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
-		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
+		//m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
+		//m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 		// Start the camera panning at the very start of the level
 		if (levelname == "LevelTutorial" || levelname == "MainMenu")
 			m_coord.GetSystem<CameraSystem>()->StartCamPan(false, (levelname == "MainMenu"));
@@ -814,6 +833,7 @@ namespace NightSnack::Scene {
 		m_mainMenuOpen = (levelname == "MainMenu");
 
 		m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
+		m_coord.Unpause();
 	}
 
 	void SceneManager::LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration) {
@@ -895,14 +915,25 @@ namespace NightSnack::Scene {
 
 		m_sliderBarEntity = INVALID_ENTITY;
 		m_sliderKnobEntity = INVALID_ENTITY;
+		m_sfxBarEntity = INVALID_ENTITY;
+		m_sfxKnobEntity = INVALID_ENTITY;
+		m_bgmBarEntity = INVALID_ENTITY;
+		m_bgmKnobEntity = INVALID_ENTITY;
+
+		m_camIndex = INVALID_ENTITY;
+		m_hoveredEntity = INVALID_ENTITY;
+		m_player = INVALID_ENTITY;
 
 		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
 		m_coord.GetSystem<ParticleSystem>()->ClearAllEmitters();
+
+		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 
 		json const& level = m_levelCache;
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
+		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
 
 		// Reset Camera
 		CreateSceneCamera(level);
@@ -927,12 +958,13 @@ namespace NightSnack::Scene {
 		m_gameLoaded = true;
 		winScreenOn = false;
 
-		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
-		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
+		//m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
+		//m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 		// Start the camera panning at the very start of the level
 		m_coord.GetSystem<CameraSystem>()->StartCamPan(true);
 
 		m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
+		m_coord.Unpause();
 	}
 
 	// Saves information required for levels, including entity information, BGM and name
@@ -1033,11 +1065,22 @@ namespace NightSnack::Scene {
 
 		m_sliderBarEntity = INVALID_ENTITY;
 		m_sliderKnobEntity = INVALID_ENTITY;
+		m_sfxBarEntity = INVALID_ENTITY;
+		m_sfxKnobEntity = INVALID_ENTITY;
+		m_bgmBarEntity = INVALID_ENTITY;
+		m_bgmKnobEntity = INVALID_ENTITY;
+
+		m_camIndex = INVALID_ENTITY;
+		m_hoveredEntity = INVALID_ENTITY;
+		m_player = INVALID_ENTITY;
+
+		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 
 		// Restore all entities to original
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
+		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
 
 		CreateSceneCamera(m_levelCache);
 		ReadCameraKeyframes(m_levelCache["MainCamera"]["KeyFrames"]);
@@ -1074,12 +1117,15 @@ namespace NightSnack::Scene {
 		auto const& script = m_coord.GetSystem<Scripting::ScriptManager>();
 		script->RefreshScripts(); //	
 
-		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
-		m_coord.GetSystem<DialogueSystem>()->StopDialogue();
+		//m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
+		//m_coord.GetSystem<DialogueSystem>()->StopDialogue();
 		// Do not pam the camera when entering the level editor
 		m_coord.GetSystem<CameraSystem>()->StartCamPan(false);
 
 		std::cerr << "[SceneManager] Level restored\n";
+
+		m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
+		m_coord.Unpause();
 	}
 
 	// Reads all level files in assets folder -> "./assets/GameData/Levels/"

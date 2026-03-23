@@ -48,7 +48,7 @@ namespace NightSnack {
 		Reference to the EventDispatcher used for system events
 		*/
 		/************************************************************************/
-		ApplicationSystem(std::string const& title, Coordinator& coord, EventDispatcher& dispatcher);
+		ApplicationSystem(std::string const& title, bool const& isFullscreen, Coordinator& coord, EventDispatcher& dispatcher, std::string const& configFilePath);
 
 		/************************************************************************/
 		/*!
@@ -209,6 +209,14 @@ namespace NightSnack {
 		/************************************************************************/
 		void ExitFullscreen();
 
+		/************************************************************************/
+		/*!
+		\brief
+		Saves fullscreen state to config file
+		*/
+		/************************************************************************/
+		void SaveFullscreenToConfig();
+
 		void ToggleFPSDisplay();
 
 		Signature GetSignature() const override { return m_systemSignature; }
@@ -279,6 +287,8 @@ namespace NightSnack {
 		static void FileDropCallback(GLFWwindow* window, int count, const char** paths);
 		// Reference to ECS coordinator
 		Coordinator& m_coord;
+
+		std::string m_configFilePath = "";
 	};
 
 }	// NightSnack
