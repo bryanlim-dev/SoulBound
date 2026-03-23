@@ -82,6 +82,10 @@ namespace NightSnack::Scene {
 
 		//std::cout << "Update num: " << m_coord.GetLivingEntities().size() << std::endl;
 
+		// Tick nav cooldown
+		if (m_navCooldown > 0.f)
+			m_navCooldown -= (1.f / 60.f);
+
 		CheckButtonCollisions();
 
 		if (m_scheduledLevelLoad) {
@@ -303,6 +307,47 @@ namespace NightSnack::Scene {
 
 		float sx = m_coord.GetSystem<InputSystem>()->GetMousePosX();
 		float sy = m_coord.GetSystem<InputSystem>()->GetMousePosY();
+
+		// Controller/keyboard confirm -- fire directly on m_hoveredEntity,
+		// bypassing mouse position check so it works without a cursor
+		if (m_controllerClick && m_hoveredEntity != INVALID_ENTITY)
+		{
+			m_controllerClick = false;
+			Entity e = m_hoveredEntity;
+			if (m_coord.HasComponent<ButtonInfo>(e) &&
+				m_coord.HasComponent<Transform>(e) &&
+				m_coord.HasComponent<Collider>(e))
+			{
+				ButtonInfo& b = m_coord.ModifyComponent<ButtonInfo>(e);
+				if (b.type != INVALID_BUTTON &&
+					b.action != ButtonAction::VOLUMESLIDER &&
+					b.action != ButtonAction::SFXSLIDER    &&
+					b.action != ButtonAction::BGMSLIDER)
+				{
+					if (m_coord.GetComponent<Transform>(e).name == "PauseButton")
+					{
+						if (winScreenOn || m_coord.GetSystem<CameraSystem>()->GetCameraIsPanning() ||
+							m_coord.GetSystem<DialogueSystem>()->IsActive())
+							return;
+
+						m_coord.GetSystem<PlayerControllerSystem>()->PauseInputs();
+					}
+					else if (b.clickTex.find("Resume") != std::string::npos)
+					{
+						m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
+					}
+					m_coord.ModifyComponent<Renderable>(e).materialName = b.clickTex;
+					auto it = m_buttons.find(b.action);
+					if (it != m_buttons.end())
+					{
+						m_coord.GetSystem<AudioSystem>()->PlayEntityAudio(e);
+						m_focusedButtonIndex = 0;
+						it->second(m_coord, b.target, e);
+					}
+				}
+			}
+			return;
+		}
 
 		for (Entity e : m_entities) {
 			// Get button info
@@ -765,6 +810,8 @@ namespace NightSnack::Scene {
 			m_coord.GetSystem<CameraSystem>()->StartCamPan(false, (levelname == "MainMenu"));
 		else
 			m_coord.GetSystem<CameraSystem>()->StartCamPan(true);
+
+		m_mainMenuOpen = (levelname == "MainMenu");
 
 		m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
 	}
@@ -1253,6 +1300,7 @@ namespace NightSnack::Scene {
 			m_menuOpen = true;
 		}
 		m_menuOpen = true;
+		m_focusedButtonIndex = 0;
 		m_coord.GetSystem<PlayerControllerSystem>()->PauseInputs();
 		//camTransform = tCache;
 		// pause for in game menus

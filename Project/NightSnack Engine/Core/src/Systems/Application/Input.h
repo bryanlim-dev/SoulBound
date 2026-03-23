@@ -57,6 +57,40 @@ namespace NightSnack {
 			NUM_TOTAL_MOUSE_BUTTON
 		};
 
+		// GLFW gamepad button indices (GLFW_GAMEPAD_BUTTON_*)
+		enum ControllerButtons {
+			CTRL_FACE_DOWN = 0,     // A / Cross
+			CTRL_FACE_RIGHT,        // B / Circle
+			CTRL_FACE_LEFT,         // X / Square
+			CTRL_FACE_UP,           // Y / Triangle
+			CTRL_L_BUMPER,          // LB / L1
+			CTRL_R_BUMPER,          // RB / R1
+			CTRL_SELECT,            // Back / Share
+			CTRL_START,             // Start / Options
+			CTRL_L_STICK_CLICK,     // L3
+			CTRL_R_STICK_CLICK,     // R3
+			CTRL_DPAD_UP,
+			CTRL_DPAD_RIGHT,
+			CTRL_DPAD_DOWN,
+			CTRL_DPAD_LEFT,
+			NUM_TOTAL_CONTROLLER_BUTTON  // MUST BE LAST
+		};
+
+		// Logical axis directions (each axis gives two directional booleans)
+		enum ControllerAxes {
+			CTRL_LSTICK_LEFT = 0,
+			CTRL_LSTICK_RIGHT,
+			CTRL_LSTICK_UP,
+			CTRL_LSTICK_DOWN,
+			CTRL_RSTICK_LEFT,
+			CTRL_RSTICK_RIGHT,
+			CTRL_RSTICK_UP,
+			CTRL_RSTICK_DOWN,
+			CTRL_L_TRIGGER,         // LT / L2
+			CTRL_R_TRIGGER,         // RT / R2
+			NUM_TOTAL_CONTROLLER_AXIS  // MUST BE LAST
+		};
+
 		/************************************************************************/
 		/*!
 		\brief
@@ -304,6 +338,42 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Checks whether a controller is connected
+
+		\return
+		True if a controller is connected
+		*/
+		/************************************************************************/
+		bool IsControllerConnected(int joystickId = GLFW_JOYSTICK_1) const;
+
+		/************************************************************************/
+		/*!
+		\brief
+		Checks whether this specific controller button is being pressed/released
+
+		\return
+		True if this specific controller button is being pressed/released
+		*/
+		/************************************************************************/
+		bool IsControllerButtonDown    (int button, int joystickId = GLFW_JOYSTICK_1) const;
+		bool IsControllerButtonPressed (int button, int joystickId = GLFW_JOYSTICK_1) const;
+		bool IsControllerButtonReleased(int button, int joystickId = GLFW_JOYSTICK_1) const;
+		
+		/************************************************************************/
+		/*!
+		\brief
+		Checks whether this specific controller axis is active or not
+
+		\return
+		True if this specific controller axis is active
+		*/
+		/************************************************************************/
+		float GetControllerAxis(int axisIndex, int joystickId = GLFW_JOYSTICK_1) const;
+		bool IsControllerAxisActive(int axisDir, int joystickId = GLFW_JOYSTICK_1) const;
+
+		/************************************************************************/
+		/*!
+		\brief
 		Get the system's signature.
 		Required by ISystem inheritance
 
@@ -454,6 +524,9 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		static void CursorPosCallback(GLFWwindow* window, double xPos, double yPos);
+		static void JoystickCallback(int joystickId, int event);
+		static InputEvent::InputAction TranslateControllerButtonToAction(int button);
+		static InputEvent::InputAction TranslateControllerAxisToAction(int axisDir);
 
 		// State tracking
 		static std::array<bool, static_cast<size_t>(NUM_TOTAL_KEYBOARD_KEY)> m_keysDown;		// Represents the keys that are being held down
@@ -463,6 +536,19 @@ namespace NightSnack {
 		static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mouseDown;		// Represents the mouse that is being held down
 		static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mousePressed;	// Represents the mouse that is pressed once
 		static std::array<bool, static_cast<size_t>(NUM_TOTAL_MOUSE_BUTTON)> m_mouseReleased;	// Represents the mouse that is released
+
+		// Controller state
+		static constexpr int MAX_CONTROLLERS = GLFW_JOYSTICK_LAST + 1;
+		static std::array<bool, NUM_TOTAL_CONTROLLER_BUTTON> m_controllerDown    [MAX_CONTROLLERS];
+		static std::array<bool, NUM_TOTAL_CONTROLLER_BUTTON> m_controllerPressed [MAX_CONTROLLERS];
+		static std::array<bool, NUM_TOTAL_CONTROLLER_BUTTON> m_controllerReleased[MAX_CONTROLLERS];
+		// Directional axis flags
+		static std::array<bool, NUM_TOTAL_CONTROLLER_AXIS>   m_controllerAxisActive  [MAX_CONTROLLERS];
+		static std::array<bool, NUM_TOTAL_CONTROLLER_AXIS>   m_controllerAxisPressed [MAX_CONTROLLERS];
+		static std::array<bool, NUM_TOTAL_CONTROLLER_AXIS>   m_controllerAxisReleased[MAX_CONTROLLERS];
+		static std::array<float, GLFW_GAMEPAD_AXIS_LAST + 1> m_controllerRawAxes     [MAX_CONTROLLERS];
+		static bool m_controllerConnected[MAX_CONTROLLERS];
+		static constexpr float AXIS_DEAD_ZONE = 0.2f;
 
 		static int m_currentModifiers;							// Represents the bitfield of modifier keys
 		static float m_mousePosX, m_mousePosY;					// Represents the current position in the current frame

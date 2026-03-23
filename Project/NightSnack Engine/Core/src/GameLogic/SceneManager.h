@@ -28,6 +28,7 @@
 #include <iostream>
 #include <vector>
 #include <stack>
+#include <algorithm>
 
 #include "Systems/ParticleSystem.h"
 #include "Systems/CollectibleSystem.h"
@@ -100,20 +101,156 @@ namespace NightSnack::Scene {
 					return;
 				}
 
-				if (event.pressed == InputEvent::InputActionState::Pressed) {
-					switch (event.inputAction) {
-					//case InputEvent::InputAction::PauseGame:
-					//	if (!overlayOn) {
-					//		//CreateOverlayMenu();
-					//		overlayOn = true;
-					//		m_coord.Pause();
-					//	}
-					//	else if (overlayOn) {
-					//		//RemoveOverlayMenu();
-					//		overlayOn = false;
-					//		m_coord.Unpause();
-					//	}
-					//	break;
+				if (event.pressed == InputEvent::InputActionState::Pressed ||
+					event.pressed == InputEvent::InputActionState::Repeat)
+				{
+					// Menu keyboard / controller navigation
+					// Fires for both m_menuOpen (pause/overlay menus) and main menu
+					const bool anyMenuActive = m_menuOpen || m_mainMenuOpen;
+					if (anyMenuActive)
+					{
+						const bool navUp   = (event.inputAction == InputEvent::InputAction::PlayerUp);
+						const bool navDown = (event.inputAction == InputEvent::InputAction::PlayerDown);
+						const bool navLeft = (event.inputAction == InputEvent::InputAction::PlayerMoveLeft);
+						const bool navRight= (event.inputAction == InputEvent::InputAction::PlayerMoveRight);
+						const bool confirm = (event.inputAction == InputEvent::InputAction::SkipDialogue);
+						// B = back only when a menu overlay is open (NOT on main menu - nothing to go back to,
+						// and B must still reach PlayerController as jump during main menu loading)
+						const bool navBack = m_menuOpen &&
+							(event.inputAction == InputEvent::InputAction::PlayerJumpAbility) &&
+							(event.pressed    == InputEvent::InputActionState::Pressed);
+						if (navBack)
+						{
+							// Find a Close/Back button and trigger via m_controllerClick so
+							// CheckButtonCollisions handles physics unpause correctly
+							for (Entity be : m_menuEntities)
+							{
+								if (!m_coord.HasComponent<ButtonInfo>(be)) continue;
+								const ButtonInfo& bi = m_coord.GetComponent<ButtonInfo>(be);
+								if (bi.action == ButtonAction::CLOSEMENU)
+								{
+									m_hoveredEntity = be;
+									m_controllerClick = true;
+									return;
+								}
+							}
+							// No explicit close button found, call CloseMenu directly
+							m_coord.GetSystem<Scene::SceneManager>()->CloseMenu();
+							return;
+						}
+
+						if (navUp || navDown || navLeft || navRight || confirm)
+						{
+							// Buttons from menu entities (pause/overlay/mainmenu)
+							const auto& sourceEntities = m_menuOpen ? m_menuEntities : m_entities;
+							std::vector<Entity> navButtons;
+							for (Entity e : sourceEntities)
+							{
+								if (!m_coord.HasComponent<ButtonInfo>(e) ||
+									!m_coord.HasComponent<Transform>(e)  ||
+									!m_coord.HasComponent<Collider>(e))   continue;
+								const ButtonInfo& b = m_coord.GetComponent<ButtonInfo>(e);
+								if (b.type == INVALID_BUTTON) continue;
+								if (b.action == ButtonAction::VOLUMESLIDER ||
+									b.action == ButtonAction::SFXSLIDER    ||
+									b.action == ButtonAction::BGMSLIDER)   continue;
+								navButtons.push_back(e);
+							}
+							// Sort top-to-bottom by Y
+							std::sort(navButtons.begin(), navButtons.end(), [&](Entity a, Entity b) {
+								return m_coord.GetComponent<Transform>(a).pos.y >
+									   m_coord.GetComponent<Transform>(b).pos.y;
+							});
+
+							if (!navButtons.empty())
+							{
+								if (m_focusedButtonIndex < 0 || m_focusedButtonIndex >= (int)navButtons.size())
+									m_focusedButtonIndex = 0;
+
+								// Cooldown prevents joystick Repeat from moving too fast
+								// Pressed always allowed; Repeat only when cooldown elapsed
+								const bool isRepeat = (event.pressed == InputEvent::InputActionState::Repeat);
+								const bool canNav = !isRepeat || (m_navCooldown <= 0.f);
+
+								if (navUp && canNav)
+								{
+									m_focusedButtonIndex = (m_focusedButtonIndex - 1 + (int)navButtons.size()) % (int)navButtons.size();
+									m_coord.GetSystem<AudioSystem>()->PlaySFX("buttonHover");
+									m_navCooldown = 0.2f;
+								}
+								else if (navDown && canNav)
+								{
+									m_focusedButtonIndex = (m_focusedButtonIndex + 1) % (int)navButtons.size();
+									m_coord.GetSystem<AudioSystem>()->PlaySFX("buttonHover");
+									m_navCooldown = 0.2f;
+								}
+
+								// Highlight selected button
+								Entity focused = navButtons[m_focusedButtonIndex];
+								m_hoveredEntity = focused;
+								m_coord.ModifyComponent<Renderable>(focused).materialName =
+									m_coord.GetComponent<ButtonInfo>(focused).hoverTex;
+
+								if (confirm)
+								{
+									m_hoveredEntity = focused;
+									m_controllerClick = true;
+									return;
+								}
+							}
+						}
+
+						// Slider navigation (left/right)
+						if (navLeft || navRight)
+						{
+							auto adjustSlider = [&](Entity barEntity, Entity knobEntity)
+							{
+								if (barEntity == INVALID_ENTITY || knobEntity == INVALID_ENTITY) return;
+
+								ButtonInfo& b = m_coord.ModifyComponent<ButtonInfo>(barEntity);
+								constexpr float STEP = 0.05f;
+								Transform const& barT = m_coord.GetComponent<Transform>(barEntity);
+								float currentX = m_coord.GetComponent<Transform>(knobEntity).pos.x;
+								float newX = std::clamp(currentX + (navRight ? STEP : -STEP) * barT.scale.x,
+									b.sliderMinX, b.sliderMaxX);
+								float t = (newX - b.sliderMinX) / (b.sliderMaxX - b.sliderMinX);
+
+								m_coord.ModifyComponent<Transform>(knobEntity).pos.x = newX;
+
+								if (b.action == ButtonAction::VOLUMESLIDER)
+									m_coord.GetSystem<AudioSystem>()->SetMasterVolume(t);
+								else if (b.action == ButtonAction::SFXSLIDER)
+									m_coord.GetSystem<AudioSystem>()->SetSFXVolume(t);
+								else if (b.action == ButtonAction::BGMSLIDER)
+									m_coord.GetSystem<AudioSystem>()->SetBGMVolume(t);
+							};
+
+							adjustSlider(m_sliderBarEntity, m_sliderKnobEntity);
+							adjustSlider(m_sfxBarEntity,    m_sfxKnobEntity);
+							adjustSlider(m_bgmBarEntity,    m_bgmKnobEntity);
+						}
+						return;
+					}
+
+					switch (event.inputAction)
+					{
+					case InputEvent::InputAction::PauseGame:
+						if (winScreenOn || m_coord.GetSystem<CameraSystem>()->GetCameraIsPanning() ||
+							m_coord.GetSystem<DialogueSystem>()->IsActive()) {
+							m_mouseClick = false;
+							return;
+						}
+						// Find the PauseButton entity and trigger via m_controllerClick
+						for (Entity pe : m_entities)
+						{
+							if (m_coord.HasComponent<Transform>(pe) &&
+								m_coord.GetComponent<Transform>(pe).name == "PauseButton") {
+								m_hoveredEntity = pe;
+								m_controllerClick = true;
+								break;
+							}
+						}
+						break;
 					case InputEvent::InputAction::RestartGame:
 						m_restart = true;
 						std::cerr << "[SceneManager] Queuing restart\n";
@@ -311,6 +448,7 @@ namespace NightSnack::Scene {
 		bool m_gameLoaded = false;
 		bool overlayOn = false;
 		bool m_mouseClick = false;
+		bool m_controllerClick = false;  // bypasses mouse position check in CheckButtonCollisions
 		bool m_restart = false;
 		bool m_mouseHeld = false;
 
@@ -328,6 +466,9 @@ namespace NightSnack::Scene {
 		Entity m_player = INVALID_ENTITY;
 		Entity m_camIndex = INVALID_ENTITY;
 		Entity m_hoveredEntity = INVALID_ENTITY;
+		int m_focusedButtonIndex{ 0 };  // keyboard/controller focused menu button index
+		bool m_mainMenuOpen{ false };   // true when MainMenu level is active
+		float m_navCooldown{ 0.f };     // seconds remaining before next nav move is allowed
 
 		// Winzone
 		Entity m_winCollider;
