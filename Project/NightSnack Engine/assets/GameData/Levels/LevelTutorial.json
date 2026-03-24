@@ -4,13 +4,59 @@
     ],
     "Entities": [
         {
+            "Children": [
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1800.0,
+                            "y": -134.99996948242188,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                }
+            ],
             "Prefab": "Player",
             "Transform": {
                 "Layer": "GameLayer",
                 "Name": "Player",
                 "Position": {
                     "x": -1800.0,
-                    "y": 50.0,
+                    "y": -72.4999771118164,
                     "z": 5.0
                 },
                 "Rotation": 0.0,
@@ -4502,8 +4548,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 75.0,
-                            "y": 75.0
+                            "x": 76.85552215576172,
+                            "y": 76.85552215576172
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4550,8 +4596,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 382.0,
-                            "y": 75.0
+                            "x": 400.3140563964844,
+                            "y": 78.59568786621094
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4603,8 +4649,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 75.0,
-                            "y": 75.0
+                            "x": 76.85552215576172,
+                            "y": 76.85552215576172
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4622,7 +4668,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "AControl",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -4664,8 +4710,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 75.0,
-                            "y": 75.0
+                            "x": 76.85552215576172,
+                            "y": 76.85552215576172
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4717,8 +4763,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 75.0,
-                            "y": 75.0
+                            "x": 76.85552215576172,
+                            "y": 76.85552215576172
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4778,8 +4824,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 154.5,
-                            "y": 56.25
+                            "x": 158.3223876953125,
+                            "y": 57.64164352416992
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4839,8 +4885,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 210.75,
-                            "y": 56.25
+                            "x": 215.96401977539063,
+                            "y": 57.64164352416992
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4895,8 +4941,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 382.0,
-                            "y": 75.0
+                            "x": 400.3140563964844,
+                            "y": 78.59568786621094
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4914,7 +4960,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "DControl",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -4956,8 +5002,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 75.0,
-                            "y": 75.0
+                            "x": 76.85552215576172,
+                            "y": 76.85552215576172
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4975,7 +5021,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "Slash2",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5012,8 +5058,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 75.0,
-                            "y": 75.0
+                            "x": 78.59568786621094,
+                            "y": 78.59568786621094
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5031,7 +5077,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "Spacebar1",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5068,8 +5114,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 406.0,
-                            "y": 75.0
+                            "x": 425.46466064453125,
+                            "y": 78.59568786621094
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5087,7 +5133,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "HoldNoFrame",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5129,8 +5175,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 206.0,
-                            "y": 75.0
+                            "x": 215.87615966796875,
+                            "y": 78.59568786621094
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5178,8 +5224,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 75.0,
-                            "y": 75.0
+                            "x": 78.59568786621094,
+                            "y": 78.59568786621094
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5197,7 +5243,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "JControl",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5234,8 +5280,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 75.0,
-                            "y": 75.0
+                            "x": 78.59568786621094,
+                            "y": 78.59568786621094
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5258,13 +5304,6 @@
                         },
                         "Script": {
                             "modifier": {
-                                "AbilityTextureChange": [
-                                    {
-                                        "type": "bool",
-                                        "value": false,
-                                        "varName": "isDefaultTexture"
-                                    }
-                                ],
                                 "ScaleScript": [
                                     {
                                         "type": "float",
@@ -5275,7 +5314,7 @@
                             },
                             "name": [
                                 "ScaleScript",
-                                "AbilityTextureChange"
+                                "EnableOnAbilityUse"
                             ]
                         },
                         "modified": true
@@ -5290,8 +5329,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 75.0,
-                            "y": 75.0
+                            "x": 78.59568786621094,
+                            "y": 78.59568786621094
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5314,13 +5353,6 @@
                         },
                         "Script": {
                             "modifier": {
-                                "AbilityTextureChange": [
-                                    {
-                                        "type": "bool",
-                                        "value": false,
-                                        "varName": "isDefaultTexture"
-                                    }
-                                ],
                                 "ScaleScript": [
                                     {
                                         "type": "float",
@@ -5331,7 +5363,7 @@
                             },
                             "name": [
                                 "ScaleScript",
-                                "AbilityTextureChange"
+                                "EnableOnAbilityUse"
                             ]
                         },
                         "modified": true
@@ -5340,14 +5372,14 @@
                         "Layer": "Foreground",
                         "Name": "Button Deccend",
                         "Position": {
-                            "x": 4850.0,
+                            "x": 4850.7607421875,
                             "y": -12.5,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 75.0,
-                            "y": 75.0
+                            "x": 78.59568786621094,
+                            "y": 78.59568786621094
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5370,13 +5402,6 @@
                         },
                         "Script": {
                             "modifier": {
-                                "AbilityTextureChange": [
-                                    {
-                                        "type": "bool",
-                                        "value": false,
-                                        "varName": "isDefaultTexture"
-                                    }
-                                ],
                                 "ScaleScript": [
                                     {
                                         "type": "float",
@@ -5387,7 +5412,7 @@
                             },
                             "name": [
                                 "ScaleScript",
-                                "AbilityTextureChange"
+                                "EnableOnAbilityUse"
                             ]
                         },
                         "modified": true
@@ -5402,8 +5427,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 75.0,
-                            "y": 75.0
+                            "x": 78.59568786621094,
+                            "y": 78.59568786621094
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5426,13 +5451,6 @@
                         },
                         "Script": {
                             "modifier": {
-                                "AbilityTextureChange": [
-                                    {
-                                        "type": "bool",
-                                        "value": false,
-                                        "varName": "isDefaultTexture"
-                                    }
-                                ],
                                 "ScaleScript": [
                                     {
                                         "type": "float",
@@ -5448,7 +5466,7 @@
                             },
                             "name": [
                                 "ScaleScript",
-                                "AbilityTextureChange"
+                                "EnableOnAbilityUse"
                             ]
                         },
                         "modified": true
@@ -5463,8 +5481,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 206.0,
-                            "y": 75.0
+                            "x": 211.0965118408203,
+                            "y": 76.85552215576172
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5673,6 +5691,50 @@
                 }
             },
             "isPrefab": false
+        },
+        {
+            "Components": {
+                "Collider": {
+                    "height": 25.0,
+                    "isStatic": false,
+                    "radius": 37.5,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 40.0
+                },
+                "RigidBody": {
+                    "gravityMult": 1.0,
+                    "mass": 1.0,
+                    "restitution": 0.0,
+                    "useGravity": false,
+                    "useRotate": false
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "CloseToGroundedHitbox",
+                "Position": {
+                    "x": -1800.0,
+                    "y": -134.99996948242188,
+                    "z": 5.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 25.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
         }
     ],
     "MainCamera": {
@@ -5811,7 +5873,7 @@
         "isMainCam": true,
         "offsetX": 0.0,
         "offsetY": 0.0,
-        "posX": 0.0,
+        "posX": -1300.0,
         "posY": 0.0,
         "posZ": 10.0,
         "width": 1600.0,
