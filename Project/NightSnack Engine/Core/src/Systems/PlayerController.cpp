@@ -535,6 +535,52 @@ namespace NightSnack {
         return false;
     }
 
+    void PlayerControllerSystem::DeactivateAbilityBox() {
+        if (m_coord.HasComponent<Renderable>(m_abilityBox)) {
+            auto& rb = m_coord.ModifyComponent<Renderable>(m_abilityBox);
+
+            if (curr_ability == "DoubleJump") {
+                rb.materialName = "AbilityBox-Double_4_1";
+            }
+            else if (curr_ability == "Grapple") {
+                rb.materialName = "AbilityBox-Grapple_4_1";
+            }
+            else if (curr_ability == "Bounce") {
+                rb.materialName = "AbilityBox-Charge_4_1";
+            }
+            else {
+                rb.materialName = "AbilityBox-Glide_4_1";
+            }
+
+        }
+        if (m_coord.HasComponent<Renderable>(m_abilityKey)) {
+            m_coord.ModifyComponent<Renderable>(m_abilityKey).materialName = "AbilityButton";
+        }
+    }
+
+    void PlayerControllerSystem::ActivateAbilityBox() {
+
+        if (m_coord.HasComponent<Renderable>(m_abilityBox)) {
+            auto& rb = m_coord.ModifyComponent<Renderable>(m_abilityBox);
+
+            if (curr_ability == "DoubleJump") {
+                rb.materialName = "AbilityBox-DoubleActivated_4_1";
+            }
+            else if (curr_ability == "Grapple") {
+                rb.materialName = "AbilityBox-GrappleActivated_4_1";
+            }
+            else if (curr_ability == "Bounce") {
+                rb.materialName = "AbilityBox-ChargeActivated_4_1";
+            }
+            else {
+                rb.materialName = "AbilityBox-GlideActivated_4_1";
+            }
+
+        }
+        if (m_coord.HasComponent<Renderable>(m_abilityKey)) {
+            m_coord.ModifyComponent<Renderable>(m_abilityKey).materialName = "AbilityButtonActivated";
+        }
+    }
 
     bool PlayerControllerSystem::UseSpecialAbility() {
 
@@ -545,6 +591,15 @@ namespace NightSnack {
         }
         it->second(m_coord, m_player, m_flags);
         return true;
+    }
+
+    void PlayerControllerSystem::FindAbilityBox(Coordinator& coord) {
+        for (Entity e : coord.GetLivingEntities()) {
+            if (coord.GetComponent<Transform>(e).name == "UI-AbilityBox")
+                m_abilityBox = e;
+            else if (coord.GetComponent<Transform>(e).name == "UI-AbilityKey")
+                m_abilityKey = e;
+        }
     }
 
     Entity PlayerControllerSystem::FindPlayer(Coordinator& coord) {

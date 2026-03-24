@@ -13146,6 +13146,80 @@
                 }
             },
             "isPrefab": false
+        },
+        {
+            "Components": {
+                "Animator": {
+                    "isLooping": true,
+                    "isPlaying": true,
+                    "playbackSpeed": 4.0,
+                    "spriteSheetName": "Sprites\\UI\\InGame\\AbilityBox-Glide_4_1.png"
+                },
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "AbilityBox-Glide_4_1",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameUI",
+                "Name": "UI-AbilityBox",
+                "Position": {
+                    "x": 240.0,
+                    "y": 1245.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 320.0,
+                    "y": 332.0
+                },
+                "UIBasePosition": {
+                    "x": 150.0,
+                    "y": 750.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 200.0,
+                    "y": 200.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "AbilityButton",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameUI",
+                "Name": "UI-AbilityKey",
+                "Position": {
+                    "x": 346.56231689453125,
+                    "y": 1397.626708984375,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 137.60000610351563,
+                    "y": -59.7599983215332
+                },
+                "UIBasePosition": {
+                    "x": 216.6014404296875,
+                    "y": 841.9437866210938,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 86.0,
+                    "y": -36.0
+                }
+            },
+            "isPrefab": false
         }
     ],
     "MainCamera": {

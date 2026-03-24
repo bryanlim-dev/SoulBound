@@ -123,6 +123,12 @@ namespace NightSnack {
             }
 
             m_player = FindPlayer(m_coord);
+            if (m_abilityBox == INVALID_ENTITY || m_abilityKey == INVALID_ENTITY
+                || m_coord.GetComponent<Transform>(m_abilityBox).name != "UI-AbilityBox"
+                || m_coord.GetComponent<Transform>(m_abilityKey).name != "UI-AbilityKey") {
+                FindAbilityBox(m_coord);
+            }
+
             m_flags.m_playerID = m_player;
             if (m_player == INVALID_ENTITY) { return; }
 
@@ -141,6 +147,8 @@ namespace NightSnack {
             if (reset) {
                 // Reset stored entities
                 m_closeGroundedHitBox = INVALID_ENTITY;
+                m_abilityBox = INVALID_ENTITY;
+                m_abilityKey = INVALID_ENTITY;
                 //m_player = INVALID_ENTITY;
                 //m_prevCheckpoint = INVALID_ENTITY;
 
@@ -280,10 +288,13 @@ namespace NightSnack {
                 }
             }
 
-            if (m_flags.useAbility)
+            if (m_flags.useAbility) {
                 UseSpecialAbility();
+                ActivateAbilityBox();
+            }
             else
             {
+                DeactivateAbilityBox();
                 if (m_flags.grappling)
                 {
                     m_frogTongue.End(m_coord);
@@ -343,6 +354,7 @@ namespace NightSnack {
         */
         /************************************************************************/
         Entity FindPlayer(Coordinator& coord);
+        void FindAbilityBox(Coordinator& coord);
 
         Entity GetPlayer() const noexcept { return m_player; }
 		void PrintPause() const noexcept { std::cout << (m_pauseInputs ? "Paused\n" : "Unpaused\n"); }
@@ -493,13 +505,16 @@ namespace NightSnack {
         /************************************************************************/
         void UpdateCloseGroundedHitBox();
 
-
+        void ActivateAbilityBox();
+        void DeactivateAbilityBox();
 
         Signature m_systemSignature{};
         EventDispatcher* m_dispatcher = nullptr;
         Coordinator& m_coord;
 
-        Entity m_player;
+        Entity m_player = INVALID_ENTITY;
+        Entity m_abilityBox = INVALID_ENTITY;
+        Entity m_abilityKey = INVALID_ENTITY;
         bool reset;
         bool m_pauseInputs = false;
 		bool isGrounded = false;
