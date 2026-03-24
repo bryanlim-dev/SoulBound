@@ -106,6 +106,12 @@ namespace ManagedScripts
                 get => Engine.GetLayer(EntityId);
                 set => Engine.SetLayer(EntityId, value);
             }
+
+            public bool IsActive
+            {
+                get => Engine.GetIsActive(EntityId);
+                set => Engine.SetIsActive(EntityId, value);
+            }
             public new static string GetName() { return "Transform"; }
 
         }
@@ -659,6 +665,8 @@ namespace ManagedScripts
         public uint GetPlayerID() => Engine.GetPlayerID();
         public void KillPlayer() => Engine.KillPlayer();
         public string GetPlayerAbility() => Engine.GetPlayerAbility();
+
+        public bool GetPlayerUsingAbility() => Engine.GetPlayerIsUsingAbility();
         #endregion
 
     }

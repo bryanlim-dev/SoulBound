@@ -161,6 +161,16 @@ namespace NightSnack::Scripting {
         LayerType& layer = m_coord.ModifyComponent<Transform>(e).layer;
         layer = lay;
     }
+
+    // isActive -------
+    bool ScriptInterface::GetIsActive(Entity e) {
+        bool active = m_coord.GetComponent<Transform>(e).isActive;
+        return active;
+    }
+    void ScriptInterface::SetIsActive(Entity e, bool act) {
+        bool& active = m_coord.ModifyComponent<Transform>(e).isActive;
+        active = act;
+    }
 #pragma endregion
 
     // --------------------------------------------------------------
@@ -1070,6 +1080,11 @@ namespace NightSnack::Scripting {
     int ScriptInterface::GetPlayerAbility()
     {
         return m_coord.GetSystem<PlayerControllerSystem>()->GetAbilityNumber();
+    }
+
+    bool ScriptInterface::GetPlayerUsingAbility()
+    {
+        return m_coord.GetSystem<PlayerControllerSystem>()->GetPlayerFlags().useAbility;
     }
 
     void ScriptInterface::LoadLevel(std::string lvlName)

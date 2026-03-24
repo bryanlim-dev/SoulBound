@@ -70,6 +70,12 @@ namespace NightSnack::Scripting {
         LayerType GetLayer(Entity e);
         //Sets Transform layer of entity
         void SetLayer(Entity e, LayerType lay);
+
+        //Gets isActive of entity
+        bool GetIsActive(Entity e);
+        //Sets isActive of entity
+        void SetIsActive(Entity e, bool act);
+
 #pragma endregion
 
 #pragma region Rigidbody
@@ -443,6 +449,8 @@ namespace NightSnack::Scripting {
         void KillPlayer();
 
         int GetPlayerAbility();
+
+        bool GetPlayerUsingAbility();
 
 #pragma endregion
         //Loads level based on a name

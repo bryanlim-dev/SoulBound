@@ -71,6 +71,12 @@ namespace ManagedScripts
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void SetLayer_Internal(uint entityId, ref LayerType layer);
 
+        // ----------------------
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void GetIsActive_Internal(uint entityId, out bool active);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void SetIsActive_Internal(uint entityId, ref bool active);
+
         #endregion
 
         // ----------------------------
@@ -493,6 +499,10 @@ namespace ManagedScripts
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern int GetPlayerAbility_Internal();
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern bool GetPlayerUsingAbility_Internal();
+
         #endregion
 
 
@@ -580,6 +590,17 @@ namespace ManagedScripts
         public static void SetLayer(uint entityId, LayerType layer)
         {
             SetLayer_Internal(entityId, ref layer);
+        }
+
+        //isActive Type
+        public static bool GetIsActive(uint entityId)
+        {
+            GetIsActive_Internal(entityId, out bool active);
+            return active;
+        }
+        public static void SetIsActive(uint entityId, bool active)
+        {
+            SetIsActive_Internal(entityId, ref active);
         }
         #endregion
 
@@ -1225,7 +1246,20 @@ namespace ManagedScripts
                     return "None";
             }
         }
+        public static uint GetPlayerID()
+        {
+            return GetPlayerID_Internal();
+        }
 
+        public static void KillPlayer()
+        {
+            KillPlayer_Internal();
+        }
+
+        public static bool GetPlayerIsUsingAbility()
+        {
+            return GetPlayerUsingAbility_Internal();
+        }
         #endregion
 
         public static uint GetComponentInChildren(uint parentID, string componentName) => GetComponentInChildren_Internal(parentID, componentName);
@@ -1244,15 +1278,7 @@ namespace ManagedScripts
 
         public static uint CreateEntityArchetype(string archetypeName, Vector3 pos) => CreateEntityArchetype_Internal(archetypeName, pos);
 
-        public static uint GetPlayerID()
-        {
-            return GetPlayerID_Internal();
-        }
 
-        public static void KillPlayer()
-        {
-            KillPlayer_Internal();
-        }
 
         public static float DeltaTime => GetDeltaTime_Internal();
 

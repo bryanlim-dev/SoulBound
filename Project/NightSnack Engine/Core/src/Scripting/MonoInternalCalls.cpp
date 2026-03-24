@@ -97,6 +97,16 @@ extern "C" {
         if (!g_scriptInterface || !layer) { return; }
         g_scriptInterface->SetLayer(id, static_cast<NightSnack::LayerType>(*layer));
     }
+
+    // isActive -----------------
+    static void NightSnack_GetIsActive(uint32_t id, bool* active) {
+        if (!g_scriptInterface || !active) { return; }
+        *active = (g_scriptInterface->GetIsActive(id));
+    }
+    static void NightSnack_SetIsActive(uint32_t id, bool* active) {
+        if (!g_scriptInterface || !active) { return; }
+        g_scriptInterface->SetIsActive(id, (*active));
+    }
 #pragma endregion //Transform
 
     // --------------------------------------------------------------
@@ -781,6 +791,13 @@ extern "C" {
         if (!g_scriptInterface) { return NULL; }
         return (g_scriptInterface->GetPlayerAbility());
     }
+
+    static bool NightSnack_GetPlayerUsingAbility()
+    {
+        if (!g_scriptInterface) { return false; }
+        return (g_scriptInterface->GetPlayerUsingAbility());
+    }
+
 #pragma endregion
 
     static void NightSnack_LoadLevel(MonoString* lvl)
@@ -832,6 +849,9 @@ namespace NightSnack::Scripting {
 
         mono_add_internal_call("ManagedScripts.Engine::GetLayer_Internal", (void*)NightSnack_GetLayer);
         mono_add_internal_call("ManagedScripts.Engine::SetLayer_Internal", (void*)NightSnack_SetLayer);
+
+        mono_add_internal_call("ManagedScripts.Engine::GetIsActive_Internal", (void*)NightSnack_GetIsActive);
+        mono_add_internal_call("ManagedScripts.Engine::SetIsActive_Internal", (void*)NightSnack_SetIsActive);
 #pragma endregion
 
 #pragma region Rigidbody
@@ -1051,6 +1071,7 @@ namespace NightSnack::Scripting {
         mono_add_internal_call("ManagedScripts.Engine::GetPlayerID_Internal", (void*)NightSnack_GetPlayerID);
         mono_add_internal_call("ManagedScripts.Engine::KillPlayer_Internal", (void*)NightSnack_KillPlayer);
         mono_add_internal_call("ManagedScripts.Engine::GetPlayerAbility_Internal", (void*)NightSnack_GetPlayerAbility);
+        mono_add_internal_call("ManagedScripts.Engine::GetPlayerUsingAbility_Internal", (void*)NightSnack_GetPlayerUsingAbility);
 #pragma endregion
 
 
