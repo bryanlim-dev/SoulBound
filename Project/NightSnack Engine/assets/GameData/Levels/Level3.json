@@ -20525,6 +20525,51 @@
                         }
                     },
                     "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Font": {
+                            "fontSize": 0.699999988079071,
+                            "fontType": "CaveatBrush-Regular",
+                            "offsetPosition": {
+                                "x": 0.0,
+                                "y": 0.0,
+                                "z": 0.0
+                            },
+                            "text": "Press [ENTER] or LMB to skip ...",
+                            "textColor": {
+                                "b": 1.0,
+                                "g": 1.0,
+                                "r": 1.0
+                            },
+                            "textWrapRatio": 0.0
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameUI",
+                        "Name": "CameraPanSkipText",
+                        "Position": {
+                            "x": 960.0,
+                            "y": 960.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 120.0,
+                            "y": 120.0
+                        },
+                        "UIBasePosition": {
+                            "x": 800.0,
+                            "y": 800.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 100.0,
+                            "y": 100.0
+                        }
+                    },
+                    "isPrefab": false
                 }
             ],
             "Components": {
