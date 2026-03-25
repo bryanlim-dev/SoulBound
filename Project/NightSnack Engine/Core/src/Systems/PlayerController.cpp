@@ -655,7 +655,7 @@ namespace NightSnack {
             }
 
             if (curr_ability == "Bounce" && !m_flags.bouncing) {
-                if (m_flags.isGrounded) {
+                if (CloseToGrounded()) {
                     m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekMove_4_1";
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
                 }
@@ -666,7 +666,7 @@ namespace NightSnack {
             }
 
             if (curr_ability == "Grapple" && !m_flags.grappling) {
-                if (m_flags.isGrounded) {
+                if (CloseToGrounded()) {
                     m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogMove_4_1";
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
                 }
@@ -703,7 +703,7 @@ namespace NightSnack {
             }
 
             if (curr_ability == "Bounce" && !m_flags.bouncing) {
-                if (m_flags.isGrounded) {
+                if (CloseToGrounded()) {
                     m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekMove_4_1";
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
                 }
@@ -714,7 +714,7 @@ namespace NightSnack {
             }
 
             if (curr_ability == "Grapple" && !m_flags.grappling) {
-                if (m_flags.isGrounded) {
+                if (CloseToGrounded()) {
                     m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogMove_4_1";
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
                 }
@@ -733,8 +733,20 @@ namespace NightSnack {
                 vel.x = 0.f; // Stop moving when no keys and within speed
             }
 
+            if (curr_ability == "Bounce" && !m_flags.bouncing) {
+                if (CloseToGrounded()) {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekMove_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
+                else {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekFall_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
+            }
+
+
             if (curr_ability == "Grapple") {
-                if (m_flags.isGrounded) {
+                if (CloseToGrounded()) {
                     m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogIdle_4_1";
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
                 }
