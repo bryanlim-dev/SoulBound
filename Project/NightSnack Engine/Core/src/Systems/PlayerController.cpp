@@ -15,6 +15,7 @@
 
 #include "PlayerController.h"
 #include <GameLogic/SceneManager.h>
+#include "CollectibleSystem.h"
 
 namespace NightSnack {
     PlayerControllerSystem::PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord }, m_dispatcher{ &disp } {
@@ -302,6 +303,8 @@ namespace NightSnack {
 
         m_coord.ModifyComponent<Transform>(m_player).pos = m_coord.GetComponent<Transform>(m_prevCheckpoint).pos;
 
+        // Force collectibles to respawn immediately
+        m_coord.GetSystem<CollectibleSystem>()->ForceRespawnCollectibles();
 
         bool isGliding = m_flags.isGliding;
         bool isUsingGlide = m_flags.useAbility && m_flags.isGliding;

@@ -1,7 +1,8 @@
 /******************************************************************************
  * File:        CollectibleSystem.h
  * Project:     NightSnack
- * Author(s):	Goh Bei Lai (Primary, 100%) - Created Collectible System
+ * Author(s):	Goh Bei Lai (Primary, 90%) - Created Collectible System
+ *				Bryan Lim Jun Jie (Secondary, 10%) - Added force collectible respawn functionality
  *
  * Description:
  * This file contains the declarations of the Collectible System.
@@ -67,6 +68,14 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		void ToggleCollectibleIcons(bool enable);
+
+		/************************************************************************/
+		/*!
+		\brief
+		Force respawn all collectibles in the scene when the player respawns from dying
+		*/
+		/************************************************************************/
+		void ForceRespawnCollectibles();
 
 		/************************************************************************/
 		/*!

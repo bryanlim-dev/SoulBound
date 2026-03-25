@@ -1,7 +1,9 @@
 /******************************************************************************
  * File:        CollectibleSystem.cpp
  * Project:     NightSnack
- * Author(s):	Goh Bei Lai (Primary, 100%) - Created Collectible System
+ * Author(s):	Goh Bei Lai (Primary, 90%) - Created Collectible System
+ *				Bryan Lim Jun Jie (Secondary, 10%) - Added force collectible respawn functionality
+ *
  *
  * Description:
  * This file contains the definitions of the Collectible System.
@@ -165,6 +167,38 @@ namespace NightSnack {
 		for (Entity e : m_flameCollectibleIcons) {
 			auto& t = m_coord.ModifyComponent<Transform>(e);
 			t.isActive = enable;
+		}
+	}
+
+	void CollectibleSystem::ForceRespawnCollectibles()
+	{
+		for (Entity e : m_entities) {
+			auto& t = m_coord.ModifyComponent<Transform>(e);
+			auto& c = m_coord.ModifyComponent<Collectible>(e);
+
+			// Skip UI icons, already-active collectibles, and keys
+			if (t.layer == LayerType::GAMEUI || t.isActive || c.type == COLLECTIBLE_TYPE::KEY) continue;
+
+			if (c.willRespawn) 
+			{
+				c.currTime = 0;
+				t.isActive = true;
+
+				if (c.type == COLLECTIBLE_TYPE::DOUBLE_JUMP) 
+				{
+					m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
+						"Particle-OrbitGlow",      // Prefab name
+						t.pos,                         // Spawn position (center)
+						{},							// End position (unused)
+						{},                       // Spawn radius (override by orbit radius in json)
+						30,                          // Max particles per cycle
+						5,                          // Spawn delay (steps between particles)
+						true,                     // Should loop
+						e
+					);
+				}
+				// add other collectibles here to respawn if needed
+			}
 		}
 	}
 
