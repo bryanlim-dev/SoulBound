@@ -5258,13 +5258,6 @@
                         },
                         "Script": {
                             "modifier": {
-                                "AbilityTextureChange": [
-                                    {
-                                        "type": "bool",
-                                        "value": false,
-                                        "varName": "isDefaultTexture"
-                                    }
-                                ],
                                 "ScaleScript": [
                                     {
                                         "type": "float",
@@ -5274,8 +5267,7 @@
                                 ]
                             },
                             "name": [
-                                "ScaleScript",
-                                "AbilityTextureChange"
+                                "ScaleScript"
                             ]
                         },
                         "modified": true
@@ -5314,13 +5306,6 @@
                         },
                         "Script": {
                             "modifier": {
-                                "AbilityTextureChange": [
-                                    {
-                                        "type": "bool",
-                                        "value": false,
-                                        "varName": "isDefaultTexture"
-                                    }
-                                ],
                                 "ScaleScript": [
                                     {
                                         "type": "float",
@@ -5330,8 +5315,7 @@
                                 ]
                             },
                             "name": [
-                                "ScaleScript",
-                                "AbilityTextureChange"
+                                "ScaleScript"
                             ]
                         },
                         "modified": true
@@ -5370,13 +5354,6 @@
                         },
                         "Script": {
                             "modifier": {
-                                "AbilityTextureChange": [
-                                    {
-                                        "type": "bool",
-                                        "value": false,
-                                        "varName": "isDefaultTexture"
-                                    }
-                                ],
                                 "ScaleScript": [
                                     {
                                         "type": "float",
@@ -5386,8 +5363,7 @@
                                 ]
                             },
                             "name": [
-                                "ScaleScript",
-                                "AbilityTextureChange"
+                                "ScaleScript"
                             ]
                         },
                         "modified": true
@@ -5426,13 +5402,6 @@
                         },
                         "Script": {
                             "modifier": {
-                                "AbilityTextureChange": [
-                                    {
-                                        "type": "bool",
-                                        "value": false,
-                                        "varName": "isDefaultTexture"
-                                    }
-                                ],
                                 "ScaleScript": [
                                     {
                                         "type": "float",
@@ -5447,8 +5416,7 @@
                                 ]
                             },
                             "name": [
-                                "ScaleScript",
-                                "AbilityTextureChange"
+                                "ScaleScript"
                             ]
                         },
                         "modified": true
