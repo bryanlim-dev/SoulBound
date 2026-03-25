@@ -1,7 +1,7 @@
 {
     "Collectible": {
         "currTime": 0,
-        "respawnTimeSteps": 300,
+        "respawnTimeSteps": 150,
         "type": "DOUBLE_JUMP",
         "willRespawn": true
     },
