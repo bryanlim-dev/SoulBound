@@ -332,6 +332,15 @@ namespace NightSnack {
 			return;
 		}
 
+		// Load into ResourceManager just for the BuildSizeAnalyser
+		size_t key = 0;
+		std::string filePath = (std::filesystem::path("GameData/Animations/") / (spritesheet + ".json")).string();
+		LOAD_RESULT rmResult = m_coord.GetSystem<ResourceManager>()->LoadJson(filePath, key);
+		if (rmResult == LOAD_FAIL_BADPATH) {
+			//std::cerr << "Failed to read json file via ResourceManager: " << filePath << std::endl;
+			return;
+		}
+
 		// Load data from the file
 		std::ifstream ifs(path);
 		json j;

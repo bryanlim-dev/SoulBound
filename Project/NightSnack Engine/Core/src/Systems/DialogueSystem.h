@@ -85,7 +85,7 @@ namespace NightSnack {
                         m_testDialogue = true;
                         break;
 
-                    case InputEvent::InputAction::SkipDialogue:
+                    case InputEvent::InputAction::SkipDialogueOrCameraPan:
                     case InputEvent::InputAction::ClickLMB:
                         // Either complete the whole line or move on to the next line
                         Advance();

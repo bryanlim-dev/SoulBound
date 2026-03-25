@@ -311,7 +311,7 @@ namespace NightSnack {
 		//case GLFW_KEY_S: return InputEvent::InputAction::PlayerPossess;
 		//case GLFW_KEY_D: return InputEvent::InputAction::PlayerUnPossess;
 
-		case GLFW_KEY_ENTER: return InputEvent::InputAction::SkipDialogue;
+		case GLFW_KEY_ENTER: return InputEvent::InputAction::SkipDialogueOrCameraPan;
 		case GLFW_KEY_1: return InputEvent::InputAction::Ability1;
 		case GLFW_KEY_2: return InputEvent::InputAction::Ability2;
 		case GLFW_KEY_3: return InputEvent::InputAction::Ability3;
@@ -475,7 +475,7 @@ namespace NightSnack {
 		switch (button)
 		{
 		case CTRL_FACE_DOWN:    return InputEvent::InputAction::PlayerJumpAbility;
-		case CTRL_FACE_RIGHT:   return InputEvent::InputAction::SkipDialogue;
+		case CTRL_FACE_RIGHT:   return InputEvent::InputAction::SkipDialogueOrCameraPan;
 		case CTRL_FACE_UP:      return InputEvent::InputAction::PauseGame;
 		case CTRL_FACE_LEFT:    return InputEvent::InputAction::PlayerPossess;
 		case CTRL_DPAD_UP:      return InputEvent::InputAction::PlayerUp;

@@ -26,12 +26,34 @@ namespace NightSnack {
         m_dispatcher(&dispatcher),
         m_mainCamera(INVALID_ENTITY),
         m_player(INVALID_ENTITY) {
+
+        // Dispatcher lambda
+        m_dispatcher->Subscribe<InputEvent>([this, &coordinator](const InputEvent& event) {
+            if (event.pressed == InputEvent::InputActionState::Pressed) {
+                switch (event.inputAction) {
+
+                case InputEvent::InputAction::SkipDialogueOrCameraPan:
+                case InputEvent::InputAction::ClickLMB:
+                    // Skip the camera panning at the start of the level,
+                    // if it is currently panning
+                    if (GetCameraIsPanning() && !m_skipCameraPan) {
+                        m_skipCameraPan = true;
+                    }
+                    break;
+                }
+            }
+            });
     }
 
     void CameraSystem::Update()
     {
         if (m_coord.IsPaused()) {
             ResetCameraPanProperties();
+
+            if (m_cameraPanSkipText != INVALID_ENTITY) {
+                m_coord.ModifyComponent<Transform>(m_cameraPanSkipText).isActive = false;
+            }
+
             return;
         }
 
@@ -72,6 +94,36 @@ namespace NightSnack {
         
         if (m_centerOfLevel == INVALID_ENTITY) {
             m_centerOfLevel = FindCenterOfLevel();
+        }
+
+        // Assign the text entity accordingly
+        if (m_cameraPanSkipText == INVALID_ENTITY) {
+            const auto& entities = m_coord.GetLivingEntities();
+            for (Entity entity : entities)
+            {
+                // By default, put it as inactive
+                if (m_coord.GetComponent<Transform>(entity).name == "CameraPanSkipText") {
+                    m_cameraPanSkipText = entity;
+                    m_coord.ModifyComponent<Transform>(m_cameraPanSkipText).isActive = false; 
+                    break;
+                }
+            }
+        }
+        
+        // If the camera is panning, make the skip text entity active
+        if (GetCameraIsPanning() && m_cameraPanSkipText != INVALID_ENTITY) {
+            if (!m_coord.GetComponent<Transform>(m_cameraPanSkipText).isActive) {
+                m_coord.ModifyComponent<Transform>(m_cameraPanSkipText).isActive = true;
+            }
+        }
+
+        // Skip the camera panning at the start of the level if needed
+        if (m_skipCameraPan) {
+            ResetCameraPanProperties();
+            if (m_cameraPanSkipText != INVALID_ENTITY) {
+                m_coord.ModifyComponent<Transform>(m_cameraPanSkipText).isActive = false;
+            }
+            m_skipCameraPan = false;
         }
         
         // Different behaviours for different camera states
@@ -141,6 +193,10 @@ namespace NightSnack {
                 // Reset some variables first 
                 if (!m_panComplete && m_panningTargetIndex >= m_panningTargets.size()) {
                     ResetCameraPanProperties();
+
+                    if (m_cameraPanSkipText != INVALID_ENTITY) {
+                        m_coord.ModifyComponent<Transform>(m_cameraPanSkipText).isActive = false;
+                    }
 
                     /*m_panningTargetIndex = 0;
                     m_panComplete = false;
@@ -419,6 +475,8 @@ namespace NightSnack {
 
         if (isPannningEnabled)
             StartCamPan();
+
+        m_cameraPanSkipText = INVALID_ENTITY; // Reset
     }
 
     void CameraSystem::StartCamPan() {

@@ -37,7 +37,7 @@ namespace NightSnack {
 		if (e == INVALID_ENTITY) { return; }
 
 		if (GetLivingEntities().find(e) == GetLivingEntities().end()) { 
-			std::cerr << "Entity: " << e << " is not alive!!!\n";
+			//std::cerr << "Entity: " << e << " is not alive!!!\n";
 			return; 
 		}
 

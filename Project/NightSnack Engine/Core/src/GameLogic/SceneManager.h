@@ -148,7 +148,7 @@ namespace NightSnack::Scene {
 						const bool navDown = (event.inputAction == InputEvent::InputAction::PlayerDown);
 						const bool navLeft = (event.inputAction == InputEvent::InputAction::PlayerMoveLeft);
 						const bool navRight= (event.inputAction == InputEvent::InputAction::PlayerMoveRight);
-						const bool confirm = (event.inputAction == InputEvent::InputAction::SkipDialogue);
+						const bool confirm = (event.inputAction == InputEvent::InputAction::SkipDialogueOrCameraPan);
 						// B = back only when a menu overlay is open (NOT on main menu - nothing to go back to,
 						// and B must still reach PlayerController as jump during main menu loading)
 						const bool navBack = m_menuOpen &&
@@ -302,6 +302,8 @@ namespace NightSnack::Scene {
 
 			// Reads level files
 			ReloadLevels();
+			// Reads menus
+			ReloadMenus();
 			// Register buttons
 			RegisterButtons();
 		}
@@ -314,6 +316,10 @@ namespace NightSnack::Scene {
 		 * @brief Resets m_levelKeys and loads all json files in "GameData/Levels"
 		 */
 		void ReloadLevels();
+		/**
+		 * @brief Loads all json files in "GameData/Menus"
+		 */
+		void ReloadMenus();
 		/**
 		 * @brief Creates the scene camera from level data.
 		 * @param levelJson JSON describing the camera configuration.

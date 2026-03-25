@@ -128,6 +128,11 @@ namespace NightSnack {
 		*/
 		/************************************************************************/
 		bool& FlaggedForDeletion();
+
+		// This allows GetAllLoadedResources() (a const method) to check the deletion flag
+		// without needing a non-const reference
+		bool FlaggedForDeletion() const { return m_flaggedForDeletion; }
+
 		/************************************************************************/
 		/*!
 		\brief

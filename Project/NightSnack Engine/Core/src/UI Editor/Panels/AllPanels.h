@@ -30,6 +30,7 @@
 #include "PrefabsPanel.h"
 #include "FilesPanel.h"
 #include "ScriptsPanel.h"
+#include "BuildSizeAnalyserPanel.h"
 
 #endif // ALLPANEL_HPP
 

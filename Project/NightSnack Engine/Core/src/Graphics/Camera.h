@@ -101,6 +101,7 @@ namespace NightSnack {
 		Entity m_mainCamera = INVALID_ENTITY;
 		Entity m_player = INVALID_ENTITY;
 		Entity m_centerOfLevel = INVALID_ENTITY;
+		Entity m_cameraPanSkipText = INVALID_ENTITY;
 
 		CAMERASTATE m_cameraState = CAMERASTATE::FOLLOW_PLAYER;
 
@@ -112,6 +113,7 @@ namespace NightSnack {
 		bool m_panEnabled = false;
 		bool m_panComplete = false;
 		bool m_zoomComplete = false;
+		bool m_skipCameraPan = false;
 		const float m_camTriggerLerpSpeed = 8.0f; // Used for moving to a new area
 		const float m_camPanLerpSpeed = 0.2f;	  // Used for camera panning
 		const float m_camPanCountdown = 1.0f;	  // Used for countdown before camera panning

@@ -215,13 +215,13 @@ namespace NightSnack {
 		lastSystem = "Application Buffer-Swap";
 		m_coord.GetSystem<ApplicationSystem>()->EndSystemTimer("ApplicationSystem");
 
-		static float time = 0.f;
+		/*static float time = 0.f;
 		time += FixedDT;
 		if (time > 2.0f) {
 			std::cout << "Number of Living entities: " << m_coord.GetLivingEntities().size() << " | Count: "
 				<< m_coord.GetLivingEntityCount() << "\n";
 			time = 0.f;
-		}
+		}*/
 
 		// End frame timing;
 		lastSystem = "Frame Complete";

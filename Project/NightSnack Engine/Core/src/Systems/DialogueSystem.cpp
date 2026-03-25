@@ -174,16 +174,16 @@ namespace NightSnack {
             }
         }
 
-        if (m_hintTextEntity != INVALID_ENTITY) {
-            if (m_dialogueState == DialogueState::WAITING_INPUT) {
-                // Dialogue System is currently waiting for user key press to advance to the next line
-                // Show the Hint Text for player to advance
-                m_coord.ModifyComponent<Transform>(m_hintTextEntity).isActive = true;
-            } else {
-                // Hide the Hint Text 
-                m_coord.ModifyComponent<Transform>(m_hintTextEntity).isActive = false;
-            }
-        }
+        //if (m_hintTextEntity != INVALID_ENTITY) {
+        //    if (m_dialogueState == DialogueState::WAITING_INPUT) {
+        //        // Dialogue System is currently waiting for user key press to advance to the next line
+        //        // Show the Hint Text for player to advance
+        //        m_coord.ModifyComponent<Transform>(m_hintTextEntity).isActive = true;
+        //    } else {
+        //        // Hide the Hint Text 
+        //        m_coord.ModifyComponent<Transform>(m_hintTextEntity).isActive = false;
+        //    }
+        //}
 
         // Push the current visible text to the font component
         UpdateUIText();
@@ -290,8 +290,16 @@ namespace NightSnack {
         DialogueSequence result{};
         std::ifstream file(RESOURCE_PATH + filePath);
 
+        // Load into ResourceManager just for the BuildSizeAnalyser
+        size_t key = 0;
+        LOAD_RESULT rmResult = m_coord.GetSystem<ResourceManager>()->LoadJson(filePath, key);
+        if (rmResult == LOAD_FAIL_BADPATH) {
+            //std::cerr << "Failed to read json file via ResourceManager: " << filePath << std::endl;
+            return result;
+        }
+
         if (!file.is_open()) {
-            std::cerr << "[DialogueSystem] Could not open file: " << filePath << '\n';
+            //std::cerr << "[DialogueSystem] Could not open file: " << filePath << '\n';
             return result;
         }
 
@@ -325,12 +333,14 @@ namespace NightSnack {
             m_coord.ModifyComponent<Transform>(m_dialogueTextEntity).isActive = active;
         if (m_portraitEntity != INVALID_ENTITY)
             m_coord.ModifyComponent<Transform>(m_portraitEntity).isActive = active;
+        if (m_hintTextEntity != INVALID_ENTITY)
+            m_coord.ModifyComponent<Transform>(m_hintTextEntity).isActive = active;
 
         // Only toggle the hint text entity off here since its visibility is determined by
         // whether the current dialogue line is complete or not
-        if (!active && m_hintTextEntity != INVALID_ENTITY) {
+        /*if (!active && m_hintTextEntity != INVALID_ENTITY) {
             m_coord.ModifyComponent<Transform>(m_hintTextEntity).isActive = active;
-        }
+        }*/
     }
 
     void DialogueSystem::UpdateUIText() {

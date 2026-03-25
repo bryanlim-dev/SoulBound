@@ -695,6 +695,54 @@ void ResourceManager::UpdateJson(size_t key, nlohmann::json const& newJson)
 		return nullptr;
 	}
 
+	std::vector<std::tuple<std::string, RESOURCE_TYPE, std::size_t>> ResourceManager::GetAllLoadedResources() const {
+		std::vector<std::tuple<std::string, RESOURCE_TYPE, std::size_t>> allResources;
+
+		// Reserve approximate space first
+		allResources.reserve(
+			m_resourceImageMap.size() +
+			m_resourceTxtFileMap.size() +
+			m_resourceJsonMap.size() +
+			m_resourceSoundMap.size() +
+			m_resourceFontMap.size()
+		);
+
+		// Collect resources from each map
+
+		// Image map
+		for (const auto& [key, resource] : m_resourceImageMap) {
+			if (resource && resource->Loaded() && !resource->FlaggedForDeletion()) {
+				allResources.emplace_back(resource->Path(), resource->FileType(), key);
+			}
+		}
+		// TxtFile map
+		for (const auto& [key, resource] : m_resourceTxtFileMap) {
+			if (resource && resource->Loaded() && !resource->FlaggedForDeletion()) {
+				allResources.emplace_back(resource->Path(), resource->FileType(), key);
+			}
+		}
+		// Json map
+		for (const auto& [key, resource] : m_resourceJsonMap) {
+			if (resource && resource->Loaded() && !resource->FlaggedForDeletion()) {
+				allResources.emplace_back(resource->Path(), resource->FileType(), key);
+			}
+		}
+		// Sound map
+		for (const auto& [key, resource] : m_resourceSoundMap) {
+			if (resource && resource->Loaded() && !resource->FlaggedForDeletion()) {
+				allResources.emplace_back(resource->Path(), resource->FileType(), key);
+			}
+		}
+		// Font map
+		for (const auto& [key, resource] : m_resourceFontMap) {
+			if (resource && resource->Loaded() && !resource->FlaggedForDeletion()) {
+				allResources.emplace_back(resource->Path(), resource->FileType(), key);
+			}
+		}
+
+		return allResources;
+	}
+
 	bool ResourceManager::ResourceLoaded(RESOURCE_TYPE type, size_t resourceKey)
 	{
 		Resource* resourceChecked = nullptr;

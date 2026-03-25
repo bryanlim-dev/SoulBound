@@ -1157,6 +1157,44 @@ namespace NightSnack::Scene {
 		}
 	}
 
+	void SceneManager::ReloadMenus() {
+		// Clear existing menu keys
+		for (auto [n, key] : m_menuKeys) {
+			m_coord.GetSystem<ResourceManager>()->UnloadJson(key);
+		}
+		m_menuKeys.clear();
+
+		std::string fullpath = RESOURCE_PATH + std::string{ "GameData/Menus/" };
+
+		// Check if the menus directory exists
+		if (!std::filesystem::exists(fullpath)) {
+			//std::cerr << "[SceneManager] Menus directory not found: " << fullpath << std::endl;
+			return;
+		}
+
+		// Iterate through entries in directory.
+		for (auto const& entry : std::filesystem::directory_iterator(fullpath))
+		{
+			// Only process .json files
+			if (entry.path().extension() != ".json") {
+				continue;
+			}
+
+			size_t key = 0;
+
+			std::string entrypath = "GameData/Menus/" + entry.path().filename().string();
+			//std::cout << "[Scene Manager] Attempting to read: " << entrypath << '\n';
+
+			LOAD_RESULT result = m_coord.GetSystem<ResourceManager>()->LoadJson(entrypath, key);
+			//std::cout << "[Scene Manager] entry.path: " << entry.path() << '\n';
+			if (result == LOAD_FAIL_BADPATH) {
+				//std::cerr << "Failed to preload menu: " << entry.path() << '\n';
+				continue;
+			}
+			m_levelKeys[entry.path().stem().string()] = key;
+		}
+	}
+
 	void SceneManager::OpenMenu(std::string const& menuname) {
 		/*Entity mainCam = m_coord.GetSystem<GraphicsSystem>()->GetCamera();
 		auto& camTransform = m_coord.GetComponent<Transform>(mainCam);

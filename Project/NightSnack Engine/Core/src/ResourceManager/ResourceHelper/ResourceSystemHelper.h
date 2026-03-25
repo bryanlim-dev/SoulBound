@@ -31,7 +31,7 @@ namespace ResourceSystemHelper
 			winWidth = std::stoi(rm->GetJson(configKey)["WindowConfig"].m_componentMap["Width"]);
 			winHeight = std::stoi(rm->GetJson(configKey)["WindowConfig"].m_componentMap["Height"]);
 			fullscreen = (rm->GetJsonRaw(configKey)["WindowConfig"]["Fullscreen"]);
-			rm->UnloadJson(configKey);
+			//rm->UnloadJson(configKey);
 			return true;
 		}
 		else

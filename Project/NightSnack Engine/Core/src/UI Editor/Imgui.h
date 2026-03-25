@@ -110,6 +110,7 @@ namespace NightSnack {
 		std::unique_ptr<AssetsPanel> m_assetsPanel;
 		std::unique_ptr<AnimationPanel> m_animationPanel;
 		std::unique_ptr<DialoguePanel> m_dialoguePanel;
+		std::unique_ptr<BuildSizeAnalyserPanel> m_buildSizePanel;
 
 		// Panel visibility toggles
 		bool m_showHierarchy = true;
@@ -119,6 +120,7 @@ namespace NightSnack {
 		bool m_showAssets = true;
 		bool m_showAnimation = true;
 		bool m_showDialogue = true;
+		bool m_showBuildSizeAnalyser = false;
 
 		/************************************************************************/
 		/*!
@@ -250,7 +252,8 @@ namespace NightSnack {
 		m_optionsPanel	 = std::make_unique<OptionsPanel>(m_coord);
 		m_assetsPanel	 = std::make_unique<AssetsPanel>(m_coord);
 		m_animationPanel = std::make_unique<AnimationPanel>(m_coord, m_selectedEntity);
-		m_dialoguePanel = std::make_unique<DialoguePanel>(m_coord);
+		m_dialoguePanel  = std::make_unique<DialoguePanel>(m_coord);
+		m_buildSizePanel = std::make_unique<BuildSizeAnalyserPanel>(m_coord);
 	}	
 
 	// Sets up and draws UI panels
@@ -275,6 +278,7 @@ namespace NightSnack {
 		if (m_showAssets && m_assetsPanel)		 m_assetsPanel->Draw();
 		if (m_showAnimation && m_animationPanel) m_animationPanel->Draw();
 		if (m_showDialogue && m_dialoguePanel)	 m_dialoguePanel->Draw();
+		if (m_showBuildSizeAnalyser && m_buildSizePanel) m_buildSizePanel->Draw(&m_showBuildSizeAnalyser);
 
 		// render
 		ImGui::Render();
@@ -305,6 +309,7 @@ namespace NightSnack {
 		m_assetsPanel.reset();
 		m_animationPanel.reset();
 		m_dialoguePanel.reset();
+		m_buildSizePanel.reset();
 		m_selectedEntity.reset();
 		m_uiNames.reset();
 
@@ -375,6 +380,7 @@ namespace NightSnack {
 			ImGui::DockBuilderDockWindow("Assets", dock_id_bottom);
 			ImGui::DockBuilderDockWindow("Animation", dock_id_bottom);
 			ImGui::DockBuilderDockWindow("Dialogue", dock_id_bottom);
+			ImGui::DockBuilderDockWindow("Export Assets", dock_id_bottom);
 			ImGui::DockBuilderDockWindow("Asset Properties", dock_id_right_top);
 			ImGui::DockBuilderDockWindow("Tile Editor", dock_id_right_bottom);
 			ImGui::DockBuilderDockWindow("Properties:", dock_id_bottom_right);
@@ -404,6 +410,14 @@ namespace NightSnack {
 				if (ImGui::MenuItem("Create New Level"))
 				{
 					showNewLevelConfirm = true;
+				}
+
+				if (ImGui::MenuItem("Export Assets"))
+				{
+					m_showBuildSizeAnalyser = true;
+					if (m_buildSizePanel) {
+						m_buildSizePanel->RequestRefresh();
+					}
 				}
 
 				ImGui::Separator();

@@ -386,7 +386,7 @@ namespace NightSnack {
 
 		auto it = m_entityToIndex.find(e);
 		if (it == m_entityToIndex.end()) {
-			std::cerr << "[ComponentArray::Get] Entity " << e << " not found! Returning default.\n";
+			//std::cerr << "[ComponentArray::Get] Entity " << e << " not found! Returning default.\n";
 			static T dummy{};
 			return dummy;
 		}

@@ -558,6 +558,14 @@ namespace NightSnack {
 		/************************************************************************/
 		void DebugRenderableInformation();
 
+		/************************************************************************/
+		/*!
+		\brief
+		Load all shader files into the ResourceManager
+		*/
+		/************************************************************************/
+		void LoadShaders();
+
 		bool m_enableDebugDraw{ false };
 		bool m_enableInstancedRendering{ true };
 		GLuint m_globalInstanceSSBO = 0;

@@ -21,6 +21,9 @@
 namespace NightSnack {
 
 	void GraphicsSystem::Init() {
+		// Load all the shaders into the ResourceManager
+		LoadShaders();
+
 		// Default Shader;
 		auto debugShader = std::make_unique<Shader>("shaders/debug_vs.vert", "shaders/debug_fs.frag");
 		AddShader("debug", std::move(debugShader));
@@ -935,6 +938,43 @@ namespace NightSnack {
 		std::cout << "===== TEXTURES IN STORE =====\n";
 		for (auto& [texName, texture] : m_textures) {
 			std::cout << texName << std::endl;
+		}
+	}
+
+	void GraphicsSystem::LoadShaders() {
+		std::string fullpath = RESOURCE_PATH + std::string{ "shaders/" };
+
+		if (!std::filesystem::exists(fullpath)) {
+			//std::cerr << "[SceneManager] Shaders directory not found: " << fullpath << '\n';
+			return;
+		}
+
+		int count = 0;
+		auto rm = m_coord.GetSystem<ResourceManager>();
+
+		for (auto const& entry : std::filesystem::recursive_directory_iterator(fullpath))
+		{
+			if (!entry.is_regular_file()) continue;
+
+			std::string ext = entry.path().extension().string();
+			std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+			// Only load vertex and fragment shader files that have .vert and .frag extensions
+			if (ext != ".vert" && ext != ".frag") continue;
+
+			size_t key = 0;
+			std::string entrypath = std::filesystem::relative(entry.path(),
+				std::filesystem::path(RESOURCE_PATH)).string();
+
+			LOAD_RESULT result = rm->LoadTxtFile(entrypath, key);
+
+			if (result == LOAD_FAIL_BADPATH) {
+				//std::cerr << "[SceneManager] Failed to preload shader: " << entry.path() << '\n';
+				continue;
+			}
+
+			if (result == LOAD_SUCCESS || result == LOAD_SUCCESS_STOPPED_UNLOAD)
+				count++;
 		}
 	}
 

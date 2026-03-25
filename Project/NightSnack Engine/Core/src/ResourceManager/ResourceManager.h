@@ -25,6 +25,7 @@
 #include <vector>
 #include <fmod.hpp>
 #include <filesystem>
+#include <tuple>
 
 #include "ResourceManager/Resource.h"
 #include "Core/ECS/ISystem.h"
@@ -564,6 +565,18 @@ namespace NightSnack {
 		ResourceFont* GetFontResource(const std::size_t fontKey);
 #pragma endregion
 
+		/************************************************************************/
+		/*!
+		\brief
+		Returns a vector of all currently loaded resources across all maps.
+		Each entry is a tuple of (filePath, resourceType, mapKey).
+		Used by the Build Size Analyser panel.
+
+		\return
+		std::vector of tuples containing file path, resource type, map key for each resource
+		*/
+		/************************************************************************/
+		std::vector<std::tuple<std::string, RESOURCE_TYPE, std::size_t>> GetAllLoadedResources() const;
 
 		/************************************************************************/
 		/*!
