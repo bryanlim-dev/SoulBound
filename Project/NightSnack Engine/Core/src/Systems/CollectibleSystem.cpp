@@ -79,6 +79,11 @@ namespace NightSnack {
 				} else if (m_coord.GetComponent<Collectible>(e).type == COLLECTIBLE_TYPE::KEY) {
 					++m_numFlamesCollected;
 					LightUpFlameCollectibleIcon();
+
+
+					if (GetNumFlamesCollected() >= 3) {
+						DestroyEndzoneWall();
+					}
 				}
 				//std::cout << "double jump +1\n";
 				// Make the collectible inactive
@@ -153,6 +158,15 @@ namespace NightSnack {
 		} else {
 			//std::cout << "Current Flame Icon does not have a Renderable component!!!\n";
 			return;
+		}
+	}
+
+	void CollectibleSystem::DestroyEndzoneWall() {
+		for (Entity e : m_coord.GetLivingEntities()) {
+			if (m_coord.GetComponent<Transform>(e).name == "EndzoneWall") {
+				m_coord.DestroyEntity(e);
+				return;
+			}
 		}
 	}
 

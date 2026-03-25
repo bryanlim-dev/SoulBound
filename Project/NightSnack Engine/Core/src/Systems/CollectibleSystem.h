@@ -139,6 +139,15 @@ namespace NightSnack {
 		/************************************************************************/
 		void LightUpFlameCollectibleIcon();
 
+		/************************************************************************/
+		/*!
+		\brief
+		Destroys the wall blocking Player from completing level without collecting
+		all Keys
+		*/
+		/************************************************************************/
+		void DestroyEndzoneWall();
+
 		Signature m_systemSignature{};
 		// Reference to Coordinator;
 		Coordinator& m_coord;
