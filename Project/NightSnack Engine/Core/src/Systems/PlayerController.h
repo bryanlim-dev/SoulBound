@@ -179,26 +179,25 @@ namespace NightSnack {
 
             //
             static float time = 0.f;
+            //Only sure time y == 0 when landed
+            //Other is maybe peak of jump but that wont trigger consistantly and more importantly 
+            //dosnt long enough to trigger grounded and just jumped dosnt matter in midair
             if (vel.y == 0.f) {
                 time += FixedDT;
+                
+                if (CloseToGrounded())
+                    m_flags.justJumped = false;
             }
             else {
                 time = 0.f;
             }
             if (time >= 0.3f) {
                 c.isGrounded = true;
+                m_timeSinceGrounded = 0;
                 time = 0.f;
             }
 
             m_timeSinceGrounded += FixedDT;
-
-            if (m_timeSinceGrounded < m_groundedThreshhold)
-                m_flags.justJumped = false;
-
-            if (c.isGrounded)
-            {
-                m_timeSinceGrounded = 0;
-            }
 
 
             isGrounded = m_flags.isGrounded = c.isGrounded || m_timeSinceGrounded < m_groundedThreshhold;
