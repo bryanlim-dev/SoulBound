@@ -174,6 +174,29 @@ namespace NightSnack {
 				if (e == INVALID_ENTITY) { break; }
 				if (!m_coord.GetComponent<Transform>(e).isActive) { continue; }
 
+				// Displaying of player's text
+				if (m_coord.HasComponent<PlayerController>(e)) {
+					std::string playerText = m_coord.GetComponent<Font>(e).text;
+
+					// Player font component's text is currently displaying a text, start the timer countdown
+					if (!playerText.empty() && !m_startDisplayPlayerTimer) {
+						m_startDisplayPlayerTimer = true;
+
+					} 
+
+					// Currently displaying the player text until the timer is done
+					if (m_startDisplayPlayerTimer) {
+						m_currDisplayPlayerTextTimer += FixedDT;
+
+						// Timer is done, reset
+						if (m_currDisplayPlayerTextTimer >= m_displayPlayerTextDuration) {
+							m_coord.ModifyComponent<Font>(e).text = "";
+							m_startDisplayPlayerTimer = false;
+							m_currDisplayPlayerTextTimer = 0.f;
+						}
+					}
+				}
+
 				// Check whether the player is colliding with a Signboard entity (it has collider + font components)
 				if (m_coord.HasComponent<Collider>(e) && m_coord.GetComponent<Transform>(e).name.find("Signboard") != std::string::npos) {
 					//std::cout << "This entity is: " << m_coord.GetComponent<Transform>(e).name << std::endl;

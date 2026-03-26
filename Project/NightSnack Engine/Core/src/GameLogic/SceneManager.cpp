@@ -171,7 +171,7 @@ namespace NightSnack::Scene {
 						Vec3 playerPos = m_coord.GetComponent<Transform>(m_player).pos;
 						Vec3 winColliderPos = m_coord.GetComponent<Transform>(m_winCollider).pos;
 						Vec3 spawnPos = { winColliderPos.x - 120.f, playerPos.y, 3.f };
-
+						
 						m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
 							"Particle-WallDust",      // Prefab name
 							spawnPos,					// Spawn position (center)
@@ -181,6 +181,10 @@ namespace NightSnack::Scene {
 							1,                          // Spawn delay (steps between particles)
 							false                     // Should loop
 						);
+
+						if (m_coord.HasComponent<Font>(m_player)) {
+							m_coord.ModifyComponent<Font>(m_player).text = "Collect all 3 flames!";
+						}
 					}
 				}
 			}

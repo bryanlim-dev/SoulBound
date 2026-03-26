@@ -196,6 +196,10 @@ namespace NightSnack {
         float m_windowWidth{}, m_windowHeight{};
         unsigned int m_vao{}, m_vbo{};
 
+        float m_displayPlayerTextDuration{ 3.f };
+        float m_currDisplayPlayerTextTimer{};
+        bool m_startDisplayPlayerTimer{ false };
+
         Coordinator& m_coord;
         EventDispatcher* m_dispatcher = nullptr;
         Signature m_systemSignature{};
