@@ -29,7 +29,7 @@ namespace NightSnack {
 
 	class Bounce
 	{
-	private:
+	public:
 
 		enum BounceState
 		{
@@ -37,6 +37,8 @@ namespace NightSnack {
 			BOUNCE_RELEASED,
 			BOUNCE_END
 		};
+
+	private:
 
 		bool m_active = false;
 
@@ -174,9 +176,15 @@ namespace NightSnack {
 							m_bounceFlags.m_angleDecreasing = false;
 						break;
 					case InputEvent::InputAction::PlayerJumpAbility:
-						if (event.pressed == InputEvent::InputActionState::Released)
+						if (event.pressed == InputEvent::InputActionState::Pressed)
 						{
-							this->Launch(coord);
+							if (m_currState == BOUNCE_CHARGING)
+							{
+								this->Launch(coord);
+							}
+							//Launch now on second press 
+							//Handled by player controller
+							//this->Launch(coord);
 						}
 						break;
 					}
@@ -306,6 +314,21 @@ namespace NightSnack {
 		bool IsActive() const {
 			return m_active;
 		}
+
+		/************************************************************************/
+		/*!
+		\brief
+		Getter for curr getter of bounce
+
+		\return
+		Returns enum of the current state
+		*/
+		/************************************************************************/
+		BounceState GetBounceState() const {
+			return m_currState;
+		}
+
+
 		
 	private:
 		/************************************************************************/

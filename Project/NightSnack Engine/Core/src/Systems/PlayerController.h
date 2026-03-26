@@ -216,12 +216,11 @@ namespace NightSnack {
                 {
                     m_flags.disableMovement = false;
                     m_flags.bouncing = false;
+                    m_flags.useAbility = false;
 
                     m_bounce.End(m_coord);
                 }
             }
-
-
 
 			// reset glide when grounded
             if (isGrounded)
@@ -310,7 +309,7 @@ namespace NightSnack {
                     }
                     else if (curr_ability == "Glide")
                     {
-                        auto& body = m_coord.GetComponent<RigidBody>(m_player);
+                        //auto& body = m_coord.GetComponent<RigidBody>(m_player);
                         if (/*body.vel.y < 0.f*/ !CloseToGrounded())
                             r.materialName = "PlayerFall_4_1";
                         else

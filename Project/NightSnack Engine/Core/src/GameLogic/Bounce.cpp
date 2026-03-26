@@ -383,7 +383,7 @@ namespace NightSnack
 		Transform& angleTrans = coord.ModifyComponent<Transform>(m_angleIndicator);
 
 		//Convert to radians
-		float rad = (m_launchAngle) * PI / 180.f;
+		float rad = (float)((m_launchAngle) * PI / 180.f);
 
 		//Forward direction
 		Vec2 forward;
@@ -404,7 +404,7 @@ namespace NightSnack
 
 		//Rotation
 		//Face same direction as launch
-		angleTrans.rot = atan2(forward.y, forward.x) * (180.f / PI);
+		angleTrans.rot = atan2(forward.y, forward.x) * (float)(180.f / PI);
 
 		// If your sprite points UP by default, add +90
 		//angleTrans.rot += 90.f;

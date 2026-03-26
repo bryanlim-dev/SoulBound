@@ -249,9 +249,7 @@ namespace NightSnack {
             if (!c.HasComponent<PlayerController>(target)) return;
             c.GetSystem<PlayerControllerSystem>()->GetBounce().UpdateOwner(c.GetSystem<PlayerControllerSystem>()->GetPlayer());
 
-            //c.GetSystem<AudioSystem>()->PlayRandomVariant("frogTongue", 7);
-                    //c.GetSystem<AudioSystem>()->PlaySFX("frogAttach");
-            if (!m_flags.bouncing)
+            if (!m_flags.bouncing) //Have not started
             {
                 if (c.GetSystem<PlayerControllerSystem>()->GetBounce().Start(c))
                 {
@@ -259,6 +257,7 @@ namespace NightSnack {
                     m_flags.disableMovement = true;
                 }
             }
+
         });
         m_abilities.insert({ abilityName, Bounce });
 
@@ -345,10 +344,18 @@ namespace NightSnack {
         //Only when groundedd0d 
 
         if (event.pressed == InputEvent::InputActionState::Released) {
-            m_flags.jumpRequested = false;
 
-            m_flags.abilityKeyRelease = true;
-            m_flags.useAbility = false;
+            if (curr_ability != "Bounce")
+            {
+                m_flags.jumpRequested = false;
+
+                m_flags.abilityKeyRelease = true;
+                m_flags.useAbility = false;
+            }
+            else
+            {
+                //Let bounce handle stuff by itself
+            }
             return;
         }
 
