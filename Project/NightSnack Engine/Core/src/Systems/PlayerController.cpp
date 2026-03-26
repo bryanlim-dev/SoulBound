@@ -627,6 +627,9 @@ namespace NightSnack {
 
     void PlayerControllerSystem::LeftAndRightMovement(Vec2& vel, PlayerController const& pcont)  {
         m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
+        auto& body = m_coord.GetComponent<RigidBody>(m_player);
+
+        bool changeAnim = false;
 
         if (m_flags.movingRight && !m_flags.movingLeft) {
 
@@ -653,28 +656,7 @@ namespace NightSnack {
                 else 
                     vel.x += pcont.moveSpeed * m_coord.GetSystem<ApplicationSystem>()->GetDT();
             }
-
-            if (curr_ability == "Bounce" && !m_flags.bouncing) {
-                if (CloseToGrounded()) {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekMove_4_1";
-                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
-                }
-                else {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekFall_4_1";
-                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
-                }
-            }
-
-            if (curr_ability == "Grapple" && !m_flags.grappling) {
-                if (CloseToGrounded()) {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogMove_4_1";
-                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
-                }
-                else {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogFall_4_1";
-                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
-                }
-            }
+            changeAnim = true;
         }
         else if (m_flags.movingLeft && !m_flags.movingRight) {
 
@@ -697,32 +679,11 @@ namespace NightSnack {
                 //Char is moving within move speed, set to 0
                 if (vel.x <= pcont.moveSpeed)
                     vel.x = -pcont.moveSpeed;
-                //Char is moving beyond the move speed, slow it down
+                //Char is moving beyond the move speed, slow it down    
                 else
                     vel.x -= pcont.moveSpeed * m_coord.GetSystem<ApplicationSystem>()->GetDT();
             }
-
-            if (curr_ability == "Bounce" && !m_flags.bouncing) {
-                if (CloseToGrounded()) {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekMove_4_1";
-                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
-                }
-                else {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekFall_4_1";
-                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
-                }
-            }
-
-            if (curr_ability == "Grapple" && !m_flags.grappling) {
-                if (CloseToGrounded()) {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogMove_4_1";
-                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
-                }
-                else {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogFall_4_1";
-                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
-                }
-            }
+            changeAnim = true;
         }
         else if (!m_flags.movingLeft && !m_flags.movingRight) {
 
@@ -732,29 +693,8 @@ namespace NightSnack {
             {
                 vel.x = 0.f; // Stop moving when no keys and within speed
             }
+            changeAnim = true;
 
-            if (curr_ability == "Bounce" && !m_flags.bouncing) {
-                if (CloseToGrounded()) {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekMove_4_1";
-                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
-                }
-                else {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekFall_4_1";
-                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
-                }
-            }
-
-
-            if (curr_ability == "Grapple") {
-                if (CloseToGrounded()) {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogIdle_4_1";
-                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
-                }
-                else {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogFall_4_1";
-                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
-                }
-            }
         }
         else if (m_flags.movingLeft && m_flags.movingRight) {
 
@@ -766,6 +706,44 @@ namespace NightSnack {
                 m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
             }
         }
+
+        if (changeAnim)
+        {
+
+            if (curr_ability == "Bounce" && !m_flags.bouncing) {
+                if (!CloseToGrounded() && body.vel.y < 0.f) {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekFall_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
+                else {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekMove_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
+            }
+
+            if (curr_ability == "Grapple") {
+                if (!CloseToGrounded() && body.vel.y < 0.f) {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogFall_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
+                }
+                else {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogIdle_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
+            }
+
+            if (curr_ability == "DoubleJump" && !m_flags.bouncing) {
+                if (!CloseToGrounded() && body.vel.y < 0.f) {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "EyeFall_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
+                else {
+                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "EyeMove_4_1";
+                    m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
+                }
+            }
+        }
+
         //std::cout << "Player Vel: " << vel << std::endl;
     }
 
