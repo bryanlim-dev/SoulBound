@@ -86,7 +86,17 @@ namespace NightSnack {
                     break;
                 case InputEvent::InputAction::PlayerPossess:
                     if (event.pressed == InputEvent::InputActionState::Pressed) {
-                        m_flags.possessUnposessActivated = true;
+                        if (curr_ability == "Bounce" && m_flags.bouncing && m_bounce.GetBounceState() == Bounce::BOUNCE_CHARGING)
+                        {
+                            m_bounce.End(m_coord);
+                            m_flags.bouncing = false;
+                            m_flags.disableMovement = false;
+                            m_flags.useAbility = false;
+                        }
+                        else
+                        {
+                            m_flags.possessUnposessActivated = true;
+                        }
                         /*if (!m_flags.isPossessing)
                             m_flags.tryPossess = true;
                         else
