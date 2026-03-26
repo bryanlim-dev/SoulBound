@@ -188,7 +188,7 @@ namespace NightSnack {
             else {
                 time = 0.f;
             }
-            if (time >= 0.15f) {
+            if (time >= 0.10f) {
                 c.isGrounded = true;
                 m_timeSinceGrounded = 0;
                 time = 0.f;
