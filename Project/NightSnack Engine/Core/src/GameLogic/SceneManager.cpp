@@ -165,6 +165,22 @@ namespace NightSnack::Scene {
 						float knockbackDir = (m_coord.GetComponent<Transform>(m_winCollider).pos.x - m_coord.GetComponent<Transform>(m_player).pos.x);
 						knockbackDir = -knockbackDir * (1.0f / std::sqrt(knockbackDir * knockbackDir));
 						m_coord.ModifyComponent<RigidBody>(m_player).vel = playerVel.x + knockbackDir * 500.0f;
+						
+						// Spawn some particles upon collision between player and the win zone
+						// Use the winCollider x position and player y position to get the point of collision
+						Vec3 playerPos = m_coord.GetComponent<Transform>(m_player).pos;
+						Vec3 winColliderPos = m_coord.GetComponent<Transform>(m_winCollider).pos;
+						Vec3 spawnPos = { winColliderPos.x - 120.f, playerPos.y, 3.f };
+
+						m_coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
+							"Particle-WallDust",      // Prefab name
+							spawnPos,					// Spawn position (center)
+							{},							// End position (unused)
+							25.f,                       // Spawn radius
+							10,                          // Max particles per cycle
+							1,                          // Spawn delay (steps between particles)
+							false                     // Should loop
+						);
 					}
 				}
 			}

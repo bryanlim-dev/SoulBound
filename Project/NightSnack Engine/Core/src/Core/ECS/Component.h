@@ -227,7 +227,8 @@ namespace NightSnack {
         GLOW_RISING,
         GLOW_ORBIT,
         GLOW_KEY, 
-        SOIL
+        SOIL,
+        WALL_DUST
     };
 
     struct Particle {

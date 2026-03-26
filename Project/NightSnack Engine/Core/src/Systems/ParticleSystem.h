@@ -287,6 +287,26 @@ namespace NightSnack {
 		/************************************************************************/
 		/*!
 		\brief
+		Spawn a single rising glow particle with its unique properties from its json file
+
+		\param[in] prefabName
+		Prefab name of the particle prefab
+
+		\param[in] centerPos
+		Spawning position
+
+		\param[in] spawnRadius
+		Spawning radius
+
+		\param[in] goRight
+		Whether this particular particle is going to the right
+		*/
+		/************************************************************************/
+		void SpawnSingleWallDustParticle(const std::string& prefabName, Vec3 centerPos, float spawnRadius, bool goRight);
+
+		/************************************************************************/
+		/*!
+		\brief
 		Register in the particle map, which particle prefab name is tied to which PARTICLE_TYPE enum type 
 
 		\param[in] prefabName

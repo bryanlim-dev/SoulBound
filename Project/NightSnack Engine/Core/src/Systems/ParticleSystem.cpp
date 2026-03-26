@@ -27,6 +27,7 @@ namespace NightSnack {
 		RegisterParticlePrefab("Particle-RisingGlow", PARTICLE_TYPE::GLOW_RISING);
 		RegisterParticlePrefab("Particle-KeyGlow", PARTICLE_TYPE::GLOW_KEY);
 		RegisterParticlePrefab("Particle-GreenOrbitGlow", PARTICLE_TYPE::GLOW_ORBIT);
+		RegisterParticlePrefab("Particle-WallDust", PARTICLE_TYPE::WALL_DUST);
 	}
 
 	void ParticleSystem::Update() {
@@ -148,6 +149,34 @@ namespace NightSnack {
 		}
 		break;
 
+		case PARTICLE_TYPE::WALL_DUST:
+		{
+			// Move horizontally, slow down over time
+			float timeRatio = static_cast<float>(p.age) / p.lifeTime;
+
+			// Decelerate horizontally using lerp toward zero
+			float speedFactor = 1.0f - timeRatio;  // starts at 1, ends at 0
+			t.pos.x += p.velocity.x * speedFactor * FixedDT;
+			// Slight upward drift so particles don't just slide on the floor
+			t.pos.y += p.velocity.y * FixedDT;
+
+			t.rot += p.angularVelocity * FixedDT;
+
+			// Shrink over lifetime
+			t.scale = {
+				std::lerp(p.startSize.x, p.endSize.x, timeRatio),
+				std::lerp(p.startSize.y, p.endSize.y, timeRatio)
+			};
+
+			// Fade out
+			if (m_coord.HasComponent<Color>(e)) {
+				auto& c = m_coord.ModifyComponent<Color>(e);
+				c.a = std::lerp(1.0f, 0.0f, timeRatio);
+				c.a = std::clamp(c.a, 0.f, 1.f);
+			}
+		}
+		break;
+
 		case PARTICLE_TYPE::GLOW_RISING:
 		case PARTICLE_TYPE::GLOW_KEY:
 		{
@@ -229,6 +258,33 @@ namespace NightSnack {
 		}
 			break;
 
+		case PARTICLE_TYPE::WALL_DUST:
+		{
+			EmitterID currentID = emitter.id;
+			emitter.spawnFunction = [this, prefabName, currentID, spawnRadius]() {
+				for (auto& em : m_emitters) {
+					if (em.id == currentID) {
+						Vec3 finalSpawnPos = em.spawnPos;
+
+						if (em.followEntity != INVALID_ENTITY) {
+							if (!m_coord.EntityIsAlive(em.followEntity) ||
+								!m_coord.GetComponent<Transform>(em.followEntity).isActive) {
+								em.isActive = false;
+								break;
+							}
+							finalSpawnPos = m_coord.GetComponent<Transform>(em.followEntity).pos + em.followOffset;
+						}
+
+						// Spawn two particles every step, one going each direction left and right
+						SpawnSingleWallDustParticle(prefabName, finalSpawnPos, spawnRadius, true);
+						SpawnSingleWallDustParticle(prefabName, finalSpawnPos, spawnRadius, false);
+						break;
+					}
+				}
+				};
+		}
+		break;
+
 		case PARTICLE_TYPE::GLOW_RISING:
 		case PARTICLE_TYPE::GLOW_KEY:
 		default:
@@ -239,18 +295,20 @@ namespace NightSnack {
 				for (auto& em : m_emitters) {
 					if (em.id == currentID) {
 
+						Vec3 finalSpawnPos = em.spawnPos;
+
 						// If the followEntity is inactive (Key collectible is collected), 
 						// stop this particular emitter
-						if (!m_coord.EntityIsAlive(em.followEntity) || !m_coord.GetComponent<Transform>(em.followEntity).isActive) {
-							em.isActive = false;
-							break;
-						}
+						if (em.followEntity != INVALID_ENTITY) {
+							if (!m_coord.EntityIsAlive(em.followEntity) || !m_coord.GetComponent<Transform>(em.followEntity).isActive) {
+								em.isActive = false;
+								break;
+							}
 
-						Vec3 finalSpawnPos = em.spawnPos;
-						// Final spawn position follows the entity that the emitter is following
-						if (em.followEntity != INVALID_ENTITY && m_coord.EntityIsAlive(em.followEntity)) {
+							// Final spawn position follows the entity that the emitter is following
 							finalSpawnPos = m_coord.GetComponent<Transform>(em.followEntity).pos + em.followOffset;
 						}
+
 						SpawnSingleRisingGlowParticle(prefabName, finalSpawnPos, spawnRadius);
 						break;
 					}
@@ -439,6 +497,56 @@ namespace NightSnack {
 		t.pos = spawnPos;
 		t.scale = p.startSize;
 		t.rot = 0.f; //RandomRange(0.f, 360.f);
+		t.isActive = true;
+	}
+
+	void ParticleSystem::SpawnSingleWallDustParticle(const std::string& prefabName, Vec3 centerPos, float spawnRadius, bool goRight) {
+		Entity e = m_coord.GetSystem<EntityFactory>()->Create(prefabName);
+
+		auto& p = m_coord.ModifyComponent<Particle>(e);
+
+		// Randomize size
+		Vec2 startSize = p.startSize;
+		p.startSize = {
+			RandomRange(startSize.x, startSize.x + 3.f),
+			RandomRange(startSize.y, startSize.y + 3.f)
+		};
+		p.startSize.x = std::max(0.f, p.startSize.x);
+		p.startSize.y = std::max(0.f, p.startSize.y);
+
+		Vec2 endSize = p.endSize;
+		p.endSize = {
+			RandomRange(endSize.x, endSize.x + 1.f),
+			RandomRange(endSize.y, endSize.y + 1.f)
+		};
+		p.endSize.x = std::max(0.f, p.endSize.x);
+		p.endSize.y = std::max(0.f, p.endSize.y);
+
+		// x velocity based on its direction
+		float baseSpeedX = RandomRange(80.f, 200.f);
+		p.velocity.x = goRight ? baseSpeedX : -baseSpeedX;
+
+		// Slight upward drift
+		p.velocity.y = RandomRange(5.f, 30.f);
+
+		float rotationAngle = p.angularVelocity;
+		p.angularVelocity = RandomRange(-rotationAngle, rotationAngle);
+
+		int lifeTime = p.lifeTime;
+		p.lifeTime = RandomRange(lifeTime - 10, lifeTime + 10);
+
+		// Slight vertical scatter around the contact point
+		Vec3 spawnPos = {
+			centerPos.x + RandomRange(-spawnRadius * 0.3f, spawnRadius * 0.3f),
+			centerPos.y + RandomRange(-spawnRadius, spawnRadius),
+			centerPos.z
+		};
+
+		auto& t = m_coord.ModifyComponent<Transform>(e);
+		t.layer = LayerType::GAMELAYER;
+		t.pos = spawnPos;
+		t.scale = p.startSize;
+		t.rot = RandomRange(0.f, 360.f);
 		t.isActive = true;
 	}
 
