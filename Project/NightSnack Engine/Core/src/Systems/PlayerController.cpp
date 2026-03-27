@@ -647,6 +647,7 @@ namespace NightSnack {
         auto& body = m_coord.GetComponent<RigidBody>(m_player);
 
         bool changeAnim = false;
+        bool animIdle = false;
 
         if (m_flags.movingRight && !m_flags.movingLeft) {
 
@@ -711,6 +712,7 @@ namespace NightSnack {
                 vel.x = 0.f; // Stop moving when no keys and within speed
             }
             changeAnim = true;
+            animIdle = true;
 
         }
         else if (m_flags.movingLeft && m_flags.movingRight) {
@@ -733,7 +735,10 @@ namespace NightSnack {
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
                 }
                 else {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekMove_4_1";
+                    if (animIdle)
+                        m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekIdle_4_1";
+                    else
+                        m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekMove_4_1";
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
                 }
             }
@@ -744,7 +749,10 @@ namespace NightSnack {
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
                 }
                 else {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogIdle_4_1";
+                    if (animIdle)
+                        m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogIdle_4_1";
+                    else
+                        m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogMove_4_1";
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
                 }
             }
@@ -755,7 +763,10 @@ namespace NightSnack {
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
                 }
                 else {
-                    m_coord.ModifyComponent<Renderable>(m_player).materialName = "EyeMove_4_1";
+                    if (animIdle)
+                        m_coord.ModifyComponent<Renderable>(m_player).materialName = "EyeMove_4_1";
+                    else
+                        m_coord.ModifyComponent<Renderable>(m_player).materialName = "EyeMove_4_1";
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
                 }
             }
