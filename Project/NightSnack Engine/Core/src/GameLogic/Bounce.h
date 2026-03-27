@@ -57,7 +57,7 @@ namespace NightSnack {
 
 		std::string m_powerBarPrefab = "BouncePowerBar";
 		const Vec2 m_powerBarScale = Vec2{ 75, 25 };
-		const Vec3 m_powerBarOffsetPos = Vec3{ -25, -75, 12 };
+		const Vec3 m_powerBarOffsetPos = Vec3{ -25, -75, 0.5f };
 		const float m_minPowerBarScale = 50;
 
 		std::string m_angleIndicatorPrefab = "BounceAngleIndicator";

@@ -353,7 +353,7 @@ namespace NightSnack
 				m_guideDotAlpha = coord.GetComponent<Color>(m_guideDots[0]).a;
 
 		//Create Power Bar
-		m_powerBar = coord.GetSystem<EntityFactory>()->Create(m_guideDotPrefab);
+		m_powerBar = coord.GetSystem<EntityFactory>()->Create(m_powerBarPrefab);
 		Transform& powerTrans = coord.ModifyComponent<Transform>(m_powerBar);
 		powerTrans.scale = m_powerBarScale;
 		powerTrans.pos = coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos;
@@ -488,7 +488,7 @@ namespace NightSnack
 			Transform& dotTrans = coord.ModifyComponent<Transform>(m_guideDots[i]);
 			dotTrans.pos.x = pos.x;
 			dotTrans.pos.y = pos.y;
-			dotTrans.pos.z = 11.f;
+			dotTrans.pos.z = 0.5f;
 			dotTrans.isActive = true;
 
 			// limit dots after bounce
