@@ -164,7 +164,7 @@ namespace NightSnack {
                 auto& col = m_coord.GetComponent<Collider>(e);
                 auto& t = m_coord.GetComponent<Transform>(e);
 
-                if (t.name.find("Sprite-PlatformTile1") != std::string::npos) {
+                if (t.name.find("Sprite-PlatformTile") != std::string::npos) {
                     if (col.type == ColliderType::Trigger &&
                         m_triggeredFallAudio.find(e) == m_triggeredFallAudio.end())
                     {
