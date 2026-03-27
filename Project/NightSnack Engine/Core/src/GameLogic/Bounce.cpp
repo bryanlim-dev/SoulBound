@@ -341,7 +341,7 @@ namespace NightSnack
 
 			coord.ModifyComponent<Color>(dot).a = 0.5f;
 
-			coord.ModifyComponent<Renderable>(dot).materialName = "ColorMat";
+			//coord.ModifyComponent<Renderable>(dot).materialName = "ColorMat";
 
 
 			dotTrans.isActive = false;

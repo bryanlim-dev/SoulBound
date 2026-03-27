@@ -1,7 +1,7 @@
 {
     "Renderable": {
         "isWireframe": false,
-        "materialName": "ColorMat",
+        "materialName": "Guide_Dot",
         "meshName": "square"
     },
     "Color": {
