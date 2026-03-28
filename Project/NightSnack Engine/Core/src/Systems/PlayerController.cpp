@@ -790,7 +790,7 @@ namespace NightSnack {
             if (curr_ability == "Bounce")
                 m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("SnekLand", 0.55f);
             else if (curr_ability == "Grapple")
-                //m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("FrogLand", 2, 1.0f);
+                m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("FrogLand", 2, 1.0f);
 
             m_flags.m_wasInAir = false;
         }
