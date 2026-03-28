@@ -18,6 +18,7 @@
 #include "CollectibleSystem.h"
 
 namespace NightSnack {
+
     PlayerControllerSystem::PlayerControllerSystem(Coordinator& coord, EventDispatcher& disp) : m_coord{ coord }, m_dispatcher{ &disp } {
 
         m_dispatcher->Subscribe<InputEvent>([this, &coord](const InputEvent& event)
@@ -174,7 +175,7 @@ namespace NightSnack {
         m_abilities.insert({ abilityName, GlideAbility });
 
         abilityName = "DoubleJump";
-        m_abilityDefaultTextures.insert({ abilityName, "EyeMove_4_1" });
+        m_abilityDefaultTextures.insert({ abilityName, "EyeAbility_4_1" });
         Gameplay::Ability DoubleJumpAbility(abilityName, [](Coordinator& c, Entity target, PlayerFlags& m_flags) {
             //if (target == INVALID_ENTITY) return;
             if (!c.HasComponent<RigidBody>(target)) return;
@@ -185,7 +186,7 @@ namespace NightSnack {
             vel.y = c.GetComponent<PlayerController>(target).jumpSpeed;
 
             c.GetSystem<AudioSystem>()->PlayRandomVariant("Wings-Reverb", 4, 0.4f);
-
+            c.ModifyComponent<Renderable>(target).materialName = "EyeAbility_4_1";
 
             // Start the emitter to spawn particles
             // These particles spawn position will be based on the updated player position
@@ -217,9 +218,19 @@ namespace NightSnack {
             FrogTongue& tongue = c.GetSystem<PlayerControllerSystem>()->GetFrogTongue();
             Entity player = c.GetSystem<PlayerControllerSystem>()->GetPlayer();
             tongue.UpdateOwner(player);
-            c.ModifyComponent<Renderable>(player).materialName = "FrogAbility_4_1";
 
-            if (m_flags.grappling == false)
+            if (m_flags.grappling)
+            {
+                c.ModifyComponent<Renderable>(player).materialName = "FrogAbility_4_1";
+
+                if (!tongue.Update(c) || m_flags.isGrounded)
+                {
+                    m_flags.grappling = false;
+                    m_flags.grappleCancel = true;
+                    tongue.End(c);
+                }
+            }
+            else if (m_flags.grappling == false && !m_flags.grappleCancel)
             {
                 //std::cout << "[Frog Grapple] Grappble Looking!" << std::endl;
                 //Do distance check to nearest grabbling spot/enemy
@@ -236,15 +247,6 @@ namespace NightSnack {
                 //else
                 //    std::cout << "[Frog Grapple] Grappble NONE!" << std::endl;
 
-            }
-
-            if (m_flags.grappling)
-            {
-                if (!tongue.Update(c))
-                {
-                    m_flags.grappling = false;
-                    tongue.End(c);
-                }
             }
 
         });
@@ -760,14 +762,12 @@ namespace NightSnack {
             }
 
             if (curr_ability == "DoubleJump" && !m_flags.bouncing) {
-                if (!CloseToGrounded() && body.vel.y < 0.f) {
+                if (!CloseToGrounded() && body.vel.y < 0.f && !m_flags.useAbility) {
                     m_coord.ModifyComponent<Renderable>(m_player).materialName = "EyeFall_4_1";
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
                 }
                 else {
-                    if (animIdle)
-                        m_coord.ModifyComponent<Renderable>(m_player).materialName = "EyeMove_4_1";
-                    else
+                    if (CloseToGrounded())
                         m_coord.ModifyComponent<Renderable>(m_player).materialName = "EyeMove_4_1";
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
                 }

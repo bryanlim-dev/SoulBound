@@ -43,6 +43,7 @@ struct PlayerFlags {
     bool useAbility = false;
 
     bool grappling = false;
+    bool grappleCancel = false;
     bool bouncing = false;
 
     bool canDoubleJump = true;
@@ -328,6 +329,7 @@ namespace NightSnack {
             else
             {
                 DeactivateAbilityBox();
+                m_flags.grappleCancel = false;
                 if (m_flags.grappling)
                 {
                     m_frogTongue.End(m_coord);
