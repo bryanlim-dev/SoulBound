@@ -388,6 +388,89 @@ namespace NightSnack {
         }
     }
 
+    void PlayerControllerSystem::HandlePossessAnimations() {
+
+        if (m_unpossessAnim != INVALID_ENTITY) {
+            static bool switched = false;
+            if (!switched) {
+                switched = true;
+                m_coord.ModifyComponent<Renderable>(m_unpossessAnim).materialName = "UnpossessAnim_6_1";
+            }
+
+            // Possession animation delete after complete
+            if (!m_coord.GetComponent<Animator>(m_unpossessAnim).isPlaying) {
+                m_coord.DestroyEntity(m_unpossessAnim);
+                m_unpossessAnim = INVALID_ENTITY;
+                switched = false;
+            }
+            else {
+                m_coord.ModifyComponent<Transform>(m_unpossessAnim).pos
+                    = m_coord.GetComponent<Transform>(m_player).pos;
+            }
+        }
+
+        if (m_possessAnim != INVALID_ENTITY) {
+            static bool switched = false;
+            if (!switched) {
+                switched = true;
+                m_coord.ModifyComponent<Renderable>(m_possessAnim).materialName = "PossessAnim_6_1";
+            }
+
+            // Possession animation delete after complete
+            if (!m_coord.GetComponent<Animator>(m_possessAnim).isPlaying) {
+                m_coord.DestroyEntity(m_possessAnim);
+                m_possessAnim = INVALID_ENTITY;
+                switched = false;
+            }
+            else {
+                m_coord.ModifyComponent<Transform>(m_possessAnim).pos
+                    = m_coord.GetComponent<Transform>(m_player).pos;
+            }
+        }
+    }
+
+    void PlayerControllerSystem::CreatePossessAnim(bool possess) {
+
+        if (possess) {
+            if (m_possessAnim != INVALID_ENTITY) return;
+
+            m_possessAnim = m_coord.CreateEntity();
+
+            Transform t = m_coord.GetComponent<Transform>(m_player);
+            t.layer = LayerType::FOREGROUND;
+            m_coord.AddComponent<Transform>(m_possessAnim, t);
+
+            Renderable r;
+            r.materialName = "PossessInvis_6_1";
+            m_coord.AddComponent<Renderable>(m_possessAnim, r);
+
+            Animator a;
+            a.spriteSheetName = "Sprites\\PossessInvis_6_1.png";
+            a.isLooping = false;
+            a.playbackSpeed = 6.0f;
+            m_coord.AddComponent<Animator>(m_possessAnim, a);
+        }
+        else {
+            if (m_unpossessAnim != INVALID_ENTITY) return;
+
+            m_unpossessAnim = m_coord.CreateEntity();
+
+            Transform t = m_coord.GetComponent<Transform>(m_player);
+            t.layer = LayerType::FOREGROUND;
+            m_coord.AddComponent<Transform>(m_unpossessAnim, t);
+
+            Renderable r;
+            r.materialName = "PossessInvis_6_1";
+            m_coord.AddComponent<Renderable>(m_unpossessAnim, r);
+
+            Animator a;
+            a.spriteSheetName = "Sprites\\PossessInvis_6_1.png";
+            a.isLooping = false;
+            a.playbackSpeed = 6.0f;
+            m_coord.AddComponent<Animator>(m_unpossessAnim, a);
+        }
+    }
+
     void PlayerControllerSystem::HandlePossessUnpossess()
     {
         Renderable& r = m_coord.ModifyComponent<Renderable>(m_player);
@@ -400,6 +483,9 @@ namespace NightSnack {
                 if (!et.isActive) { continue; }
 
                 if (et.name == "Frog" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
+
+                    CreatePossessAnim();
+
                     curr_ability = "Grapple";
                     r.materialName = m_abilityDefaultTextures[curr_ability]; // depends on the texture name
                     //m_flags.tryPossess = false;
@@ -409,6 +495,9 @@ namespace NightSnack {
 
                 }
                 else if (et.name == "Ghost" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
+                    
+                    CreatePossessAnim();
+                    
                     curr_ability = "DoubleJump";
                     r.materialName = m_abilityDefaultTextures[curr_ability]; // depends on the texture name
                     //m_flags.tryPossess = false;
@@ -417,6 +506,9 @@ namespace NightSnack {
                     break;
                 }
                 else if (et.name == "Bouncer" && m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player)) {
+                    
+                    CreatePossessAnim();
+
                     curr_ability = "Bounce";
                     r.materialName = m_abilityDefaultTextures[curr_ability]; // depends on the texture name
                     //m_flags.tryPossess = false;
@@ -434,8 +526,13 @@ namespace NightSnack {
         }; //End tryPossess lamda function
 
         auto tryUnpossess = [&]() {
+
             // Switch back to the Rain Charm (original player) if it is not in the first place
-            if (r.materialName != "SpiritMove_4_1") {
+            if (curr_ability != "Glide") {
+
+                // Create unpossess animation entity
+                CreatePossessAnim(false);
+
                 curr_ability = "Glide";
                 r.materialName = m_abilityDefaultTextures[curr_ability];
                 m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
@@ -470,19 +567,19 @@ namespace NightSnack {
             m_flags.possessUnposessActivated = false;
         }
 
-        //Trying to ONLY possess
-        // Player tries to possess an enemy entity
-        if (m_flags.tryPossess) {
-            tryPossess();
-            m_flags.tryPossess = false;
-        }
+        ////Trying to ONLY possess
+        //// Player tries to possess an enemy entity
+        //if (m_flags.tryPossess) {
+        //    tryPossess();
+        //    m_flags.tryPossess = false;
+        //}
 
-        //Trying to ONLY unpossess
-        // Player tries to unpossess and go back to its original form
-        if (m_flags.tryUnPossess) {
-            tryUnpossess();
-            m_flags.tryUnPossess = false;
-        }
+        ////Trying to ONLY unpossess
+        //// Player tries to unpossess and go back to its original form
+        //if (m_flags.tryUnPossess) {
+        //    tryUnpossess();
+        //    m_flags.tryUnPossess = false;
+        //}
     }
 
     void PlayerControllerSystem::CreateGroundedHitbox()
@@ -855,6 +952,7 @@ namespace NightSnack {
             m_flags.canDoubleJump = true;
         }
     }
+
     PlayerFlags& PlayerControllerSystem::GetPlayerFlags()
     {
         return m_flags;

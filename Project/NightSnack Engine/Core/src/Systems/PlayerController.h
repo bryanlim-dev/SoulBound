@@ -155,8 +155,8 @@ namespace NightSnack {
                 m_closeGroundedHitBox = INVALID_ENTITY;
                 m_abilityBox = INVALID_ENTITY;
                 m_abilityKey = INVALID_ENTITY;
-                //m_player = INVALID_ENTITY;
-                //m_prevCheckpoint = INVALID_ENTITY;
+                m_possessAnim = INVALID_ENTITY;
+                m_unpossessAnim = INVALID_ENTITY;
 
                 AttachAbility();
                 m_flags = PlayerFlags{};
@@ -172,6 +172,8 @@ namespace NightSnack {
 
                 CreateGroundedHitbox();
             }
+
+            HandlePossessAnimations();
 
             if (m_pauseInputs) return;
 
@@ -522,6 +524,9 @@ namespace NightSnack {
         */
         /************************************************************************/
         void HandlePossessUnpossess();
+        void CreatePossessAnim(bool possess = true);
+
+        void HandlePossessAnimations();
 
         /************************************************************************/
         /*!
@@ -550,6 +555,9 @@ namespace NightSnack {
         Entity m_player = INVALID_ENTITY;
         Entity m_abilityBox = INVALID_ENTITY;
         Entity m_abilityKey = INVALID_ENTITY;
+        Entity m_possessAnim = INVALID_ENTITY;
+        Entity m_unpossessAnim = INVALID_ENTITY;
+
         bool reset;
         bool m_pauseInputs = false;
 		bool isGrounded = false;
