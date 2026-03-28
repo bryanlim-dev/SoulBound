@@ -345,7 +345,7 @@ namespace NightSnack {
                     else if (curr_ability == "Glide")
                     {
                         //auto& body = m_coord.GetComponent<RigidBody>(m_player);
-                        if (/*body.vel.y < 0.f*/ !CloseToGrounded())
+                        if (m_coord.GetComponent<RigidBody>(m_player).vel.y < 10.f && !CloseToGrounded())
                             r.materialName = "PlayerFall_4_1";
                         else
                             r.materialName = "SpiritMove_4_1";

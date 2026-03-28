@@ -746,7 +746,7 @@ namespace NightSnack {
             }
 
             if (curr_ability == "Grapple") {
-                if (!CloseToGrounded() && body.vel.y < 0.f) {
+                if (!CloseToGrounded()/* && body.vel.y < 0.f*/) {
                     m_coord.ModifyComponent<Renderable>(m_player).materialName = "FrogFall_4_1";
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 1.0f;
                 }
@@ -781,11 +781,8 @@ namespace NightSnack {
 
         bool jump = false;
 
-
-        bool isGrounded = m_flags.isGrounded;
-
         // just landed
-        if (isGrounded && m_flags.m_wasInAir)
+        if (m_flags.isGrounded && m_flags.m_wasInAir)
         {
             if (curr_ability == "Bounce")
                 m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("SnekLand", 0.55f);
@@ -796,7 +793,7 @@ namespace NightSnack {
         }
 
         // track when player leaves ground
-        if (!isGrounded)
+        if (!m_flags.isGrounded)
             m_flags.m_wasInAir = true;
 
 
@@ -828,7 +825,7 @@ namespace NightSnack {
         if (jump && !m_flags.justJumped) {
             vel.y = pcont.jumpSpeed;
             t.pos.y += 0.5f;
-            m_coord.ModifyComponent<Collider>(m_player).isGrounded = false;
+            m_coord.ModifyComponent<Collider>(m_player).isGrounded = m_flags.isGrounded = false;
 
             // Play different jump sound based on current ability/form
             if (curr_ability == "DoubleJump") // EyeMove form
