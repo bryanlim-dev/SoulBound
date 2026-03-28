@@ -16,6 +16,7 @@
 #include <Factory/EntityFactory.h>
 #include <Systems/CharacterSystem.h>
 #include <Systems/PlayerController.h>
+#include <Systems/AudioSystem.h>
 
 namespace NightSnack
 {
@@ -119,6 +120,9 @@ namespace NightSnack
 					//for (Entity dot : m_guideDots)
 					//	std::cout << coord.GetComponent<Transform>(dot).pos << std::endl;
 
+					// Snek land sound
+					coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("SnekLand", 0.55f);
+
 
 					return false;
 				}
@@ -213,6 +217,10 @@ namespace NightSnack
 
 		}
 
+		// play Snek launch sound
+		coord.GetSystem<AudioSystem>()->PlayRandomVariant("SnekLaunch", 2, 0.6f);
+
+
 		if (coord.HasComponent<Renderable>(m_owner))
 		{
 			coord.ModifyComponent<Renderable>(m_owner).materialName = "SnekFall_4_1";
@@ -259,6 +267,12 @@ namespace NightSnack
 
 	void Bounce::UpdateCharging(Coordinator& coord)
 	{
+		// Play charge sound once when charging begins
+		if (!m_bounceFlags.m_chargeSoundPlayed)
+		{
+			//coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("SnekChargeUp", 0.6f);
+			m_bounceFlags.m_chargeSoundPlayed = true;
+		}
 
 		if (m_bounceFlags.m_powerIncreasing && m_bounceFlags.m_powerDecreasing)
 		{ 
@@ -566,6 +580,9 @@ namespace NightSnack
 				coord.ModifyComponent<Collider>(m_owner),
 				coord.ModifyComponent<Collider>(other)
 			);
+			// Snek bounce sound
+			coord.GetSystem<AudioSystem>()->PlayRandomVariant("SnekBounce", 2, 0.6f);
+
 			//Transform& tra = coord.ModifyComponent<Transform>(m_owner);
 			//Transform& traWall = coord.ModifyComponent<Transform>(other);
 			//RigidBody& bod = coord.ModifyComponent<RigidBody>(m_owner);

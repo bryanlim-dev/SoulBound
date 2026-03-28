@@ -419,6 +419,7 @@ namespace NightSnack {
                     r.materialName = m_abilityDefaultTextures[curr_ability]; // depends on the texture name
                     //m_flags.tryPossess = false;
                     m_flags.isPossessing = true;
+                    m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerPossess", 0.25f);
                     break;
                 }
                 else
@@ -739,6 +740,7 @@ namespace NightSnack {
                         m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekIdle_4_1";
                     else
                         m_coord.ModifyComponent<Renderable>(m_player).materialName = "SnekMove_4_1";
+
                     m_coord.ModifyComponent<Animator>(m_player).playbackSpeed = 2.0f;
                 }
             }
@@ -780,6 +782,22 @@ namespace NightSnack {
         bool jump = false;
 
 
+        bool isGrounded = m_flags.isGrounded;
+
+        // just landed
+        if (isGrounded && m_flags.m_wasInAir)
+        {
+            if (curr_ability == "Bounce")
+                m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("SnekLand", 0.55f);
+            else if (curr_ability == "Grapple")
+                //m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("FrogLand", 2, 1.0f);
+
+            m_flags.m_wasInAir = false;
+        }
+
+        // track when player leaves ground
+        if (!isGrounded)
+            m_flags.m_wasInAir = true;
 
 
         //std::cout << "Player Just Jumped : " << m_flags.justJumped << std::endl;

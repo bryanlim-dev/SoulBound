@@ -25,6 +25,8 @@ namespace NightSnack {
 
 		bool m_angleIncreasing = false;
 		bool m_angleDecreasing = false;
+
+		bool m_chargeSoundPlayed = false;
 	};
 
 	class Bounce

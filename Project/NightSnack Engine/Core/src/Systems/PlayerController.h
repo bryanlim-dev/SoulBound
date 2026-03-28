@@ -61,6 +61,11 @@ struct PlayerFlags {
 
     bool isWalking = false;
     float walkStepTimer = 0.f;
+
+    float m_slitherSoundTimer = 0.0f;
+    bool isSnekWalking = false;
+
+    bool m_wasInAir = false;
 };
 
 namespace NightSnack::Gameplay {
@@ -256,7 +261,7 @@ namespace NightSnack {
                 // accumulate time
                 m_flags.walkStepTimer += FixedDT;
 
-                // repeat every 0.355f
+                // repeat
                 if (m_flags.walkStepTimer >= 0.355f)
                 {
                     m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("frogWalk", 3, 0.15f);
@@ -268,6 +273,36 @@ namespace NightSnack {
                 // Reset when stopping / airborne / unpossess
                 m_flags.walkStepTimer = 0.f;
                 m_flags.isWalking = false;
+            }
+
+            bool isSnekWalking =
+                (curr_ability == "Bounce") &&
+                !m_flags.bouncing &&
+                isGrounded &&
+                movingHorizontally &&
+                !m_flags.disableMovement;
+
+            if (isSnekWalking)
+            {
+                if (!m_flags.isSnekWalking)
+                {
+                    m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("SnekWalk", 2, 0.4f);
+                    m_flags.m_slitherSoundTimer = 0.0f;
+                    m_flags.isSnekWalking = true;
+                }
+
+                m_flags.m_slitherSoundTimer += FixedDT;
+
+                if (m_flags.m_slitherSoundTimer >= 0.4f) // adjust accordingly
+                {
+                    m_coord.GetSystem<AudioSystem>()->PlayRandomVariant("SnekWalk", 2, 0.4f);
+                    m_flags.m_slitherSoundTimer = 0.f;
+                }
+            }
+            else
+            {
+                m_flags.m_slitherSoundTimer = 0.f;
+                m_flags.isSnekWalking = false;
             }
 
             HandlePossessUnpossess();
