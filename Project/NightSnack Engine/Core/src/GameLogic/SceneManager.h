@@ -141,7 +141,7 @@ namespace NightSnack::Scene {
 				{
 					// Menu keyboard / controller navigation
 					// Fires for both m_menuOpen (pause/overlay menus) and main menu
-					const bool anyMenuActive = m_menuOpen || m_mainMenuOpen;
+					const bool anyMenuActive = m_menuOpen || m_mainMenuOpen || winScreenOn;
 					if (anyMenuActive)
 					{
 						const bool navUp   = (event.inputAction == InputEvent::InputAction::PlayerUp);
