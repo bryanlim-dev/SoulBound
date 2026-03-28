@@ -89,6 +89,18 @@ namespace NightSnack::Scene {
 		if (m_navCooldown > 0.f)
 			m_navCooldown -= (1.f / 60.f);
 
+		// Tick controller popup timer and destroy entity when expired
+		if (m_controllerPopupTimer > 0.f)
+		{
+			m_controllerPopupTimer -= (1.f / 60.f);
+			if (m_controllerPopupTimer <= 0.f && m_controllerPopupEntity != INVALID_ENTITY)
+			{
+				if (m_coord.EntityIsAlive(m_controllerPopupEntity))
+					m_coord.DestroyEntity(m_controllerPopupEntity);
+				m_controllerPopupEntity = INVALID_ENTITY;
+			}
+		}
+
 		CheckButtonCollisions();
 
 		if (m_scheduledLevelLoad) {
@@ -200,6 +212,36 @@ namespace NightSnack::Scene {
 				lastY = ct.pos.y;
 			}
 		}
+	}
+
+	// Spawns a timed on-screen popup
+	void SceneManager::ShowControllerPopup(const std::string& message)
+	{
+		// Destroy any existing popup
+		if (m_controllerPopupEntity != INVALID_ENTITY)
+		{
+			if (m_coord.EntityIsAlive(m_controllerPopupEntity))
+				m_coord.DestroyEntity(m_controllerPopupEntity);
+			m_controllerPopupEntity = INVALID_ENTITY;
+		}
+
+		m_controllerPopupEntity = m_coord.CreateEntity();
+
+		Transform t{};
+		t.UIbasePos = Vec3{ 835.f, 385.f, 0.f };
+		t.layer = LayerType::GAMEUI;
+		t.isActive = true;
+		t.name = "ControllerPopup";
+		m_coord.AddComponent<Transform>(m_controllerPopupEntity, t);
+
+		Font f{};
+		f.text = message;
+		f.fontSize = 0.4f;
+		f.fontType = "buggy-font";
+		f.textColor = Vec3{ 1.f, 1.f, 1.f };
+		m_coord.AddComponent<Font>(m_controllerPopupEntity, f);
+
+		m_controllerPopupTimer = CONTROLLER_POPUP_DURATION;
 	}
 
 	// Register all button actions and stop buttons into m_buttons

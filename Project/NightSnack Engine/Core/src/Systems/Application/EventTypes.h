@@ -78,6 +78,10 @@ namespace NightSnack {
 			RedoStep,           // CTRL + Y
 			ToggleUIEditor,     // Backslash ( \ )
 
+            // Controller connection notifs
+            ControllerConnected,
+            ControllerDisconnected,
+
             NumTotalInputAction
         };
 

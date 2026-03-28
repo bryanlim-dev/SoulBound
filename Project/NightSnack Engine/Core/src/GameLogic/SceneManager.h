@@ -290,6 +290,12 @@ namespace NightSnack::Scene {
 						m_restart = true;
 						std::cerr << "[SceneManager] Queuing restart\n";
 						break;
+					case InputEvent::InputAction::ControllerConnected:
+						ShowControllerPopup("Controller Connected");
+						break;
+					case InputEvent::InputAction::ControllerDisconnected:
+						ShowControllerPopup("Controller Disconnected");
+						break;
 						//case InputEvent::InputAction::ChangeAnimation: // X
 						//	CreateWinScreen();
 						//	m_coord.GetSystem<AudioSystem>()->PlaySFXWithVolume("playerWin", 0.85f);
@@ -513,10 +519,18 @@ namespace NightSnack::Scene {
 		bool m_mainMenuOpen{ false };   // true when MainMenu level is active
 		float m_navCooldown{ 0.f };     // seconds remaining before next nav move is allowed
 
+		// Controller connection popup
+		Entity m_controllerPopupEntity{ INVALID_ENTITY };
+		float  m_controllerPopupTimer{ 0.f };
+		static constexpr float CONTROLLER_POPUP_DURATION = 3.f;
+
 		// Winzone
 		Entity m_winCollider;
 		std::string m_winScreen;
 		bool winScreenOn = false;
+
+		// Spawns a timed on-screen popup
+		void ShowControllerPopup(const std::string& message);
 
 		void CreateWinCollider(json const& level);
 		json CacheWinCollider();

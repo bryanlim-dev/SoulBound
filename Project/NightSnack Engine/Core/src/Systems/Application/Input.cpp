@@ -455,12 +455,46 @@ namespace NightSnack {
 		if (event == GLFW_CONNECTED)
 		{
 			m_controllerConnected[joystickId] = glfwJoystickPresent(joystickId) == GLFW_TRUE;
+			if (m_dispatcher)
+				m_dispatcher->QueueEvent(std::make_unique<InputEvent>(
+					InputEvent::InputAction::ControllerConnected,
+					InputEvent::InputActionState::Pressed));
 		}
 		else if (event == GLFW_DISCONNECTED)
 		{
 			m_controllerConnected[joystickId] = false;
 
-			// Clear state so no random inputs remain
+			// Fire Released for every active button/axis BEFORE clearing state,
+			// so subscriber flags (e.g. PlayerController movingLeft) get cleared
+			if (m_dispatcher)
+			{
+				for (int b = 0; b < NUM_TOTAL_CONTROLLER_BUTTON; ++b)
+				{
+					if (m_controllerDown[joystickId][b])
+					{
+						auto action = TranslateControllerButtonToAction(b);
+						if (action != InputEvent::InputAction::NumTotalInputAction)
+							m_dispatcher->QueueEvent(std::make_unique<InputEvent>(
+								action, InputEvent::InputActionState::Released));
+					}
+				}
+				for (int a = 0; a < NUM_TOTAL_CONTROLLER_AXIS; ++a)
+				{
+					if (m_controllerAxisActive[joystickId][a])
+					{
+						auto action = TranslateControllerAxisToAction(a);
+						if (action != InputEvent::InputAction::NumTotalInputAction)
+							m_dispatcher->QueueEvent(std::make_unique<InputEvent>(
+								action, InputEvent::InputActionState::Released));
+					}
+				}
+				// Notify game of disconnection
+				m_dispatcher->QueueEvent(std::make_unique<InputEvent>(
+					InputEvent::InputAction::ControllerDisconnected,
+					InputEvent::InputActionState::Pressed));
+			}
+
+			// Clear all state after dispatching
 			m_controllerDown[joystickId].fill(false);
 			m_controllerPressed[joystickId].fill(false);
 			m_controllerReleased[joystickId].fill(false);

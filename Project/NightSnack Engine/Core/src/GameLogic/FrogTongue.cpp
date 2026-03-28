@@ -345,7 +345,7 @@ namespace NightSnack
 			coord.BufferEntitySignature(m_indicator);
 
 			m_indicatorEmitter = coord.GetSystem<ParticleSystem>()->StartContinuousEmitter(
-				"Particle-GreenOrbitGlow",
+				"Particle-RedOrbitGlow",
 				{}, {},
 				40.f, 8, 3,
 				true,
