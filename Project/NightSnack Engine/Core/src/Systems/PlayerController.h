@@ -157,6 +157,7 @@ namespace NightSnack {
                 m_abilityKey = INVALID_ENTITY;
                 m_possessAnim = INVALID_ENTITY;
                 m_unpossessAnim = INVALID_ENTITY;
+                m_possessIndicator = INVALID_ENTITY;
 
                 AttachAbility();
                 m_flags = PlayerFlags{};
@@ -174,6 +175,7 @@ namespace NightSnack {
             }
 
             HandlePossessAnimations();
+            UpdatePossessIndicator();
 
             if (m_pauseInputs) return;
 
@@ -547,6 +549,7 @@ namespace NightSnack {
 
         void ActivateAbilityBox();
         void DeactivateAbilityBox();
+        void UpdatePossessIndicator();
 
         Signature m_systemSignature{};
         EventDispatcher* m_dispatcher = nullptr;
@@ -557,6 +560,10 @@ namespace NightSnack {
         Entity m_abilityKey = INVALID_ENTITY;
         Entity m_possessAnim = INVALID_ENTITY;
         Entity m_unpossessAnim = INVALID_ENTITY;
+        Entity m_possessIndicator = INVALID_ENTITY;
+
+        float m_indicatorBobTime = 0.0f;
+        float m_indicatorBobSpeed = 22.0f;
 
         bool reset;
         bool m_pauseInputs = false;

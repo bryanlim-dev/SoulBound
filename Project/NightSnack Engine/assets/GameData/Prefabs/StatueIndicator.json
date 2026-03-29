@@ -1,0 +1,14 @@
+{
+    "Renderable": {
+        "isWireframe": false,
+        "materialName": "Menu-FrameArrowDown",
+        "meshName": "square"
+    },
+    "RigidBody": {
+        "gravityMult": 1.0,
+        "mass": 1.0,
+        "restitution": 0.0,
+        "useGravity": false,
+        "useRotate": false
+    }
+}

@@ -957,4 +957,66 @@ namespace NightSnack {
     {
         return m_flags;
     }
+
+    void PlayerControllerSystem::UpdatePossessIndicator()
+    {
+        // Search for a nearby possessable entity colliding with the player
+        auto livingSnapshot = m_coord.GetLivingEntities();
+
+        Entity nearbyTarget = INVALID_ENTITY;
+        for (Entity e : livingSnapshot)
+        {
+            if (e == m_possessIndicator) continue;
+            if (!m_coord.HasComponent<Transform>(e)) continue;
+            const auto& et = m_coord.GetComponent<Transform>(e);
+            if (!et.isActive) continue;
+
+            if ((et.name == "Frog" || et.name == "Ghost" || et.name == "Bouncer") &&
+                m_coord.GetSystem<PhysicsSystem>()->EntitiesAreColliding(e, m_player))
+            {
+                nearbyTarget = e;
+                break;
+            }
+        }
+
+        if (nearbyTarget == INVALID_ENTITY)
+        {
+			// Destroy indicator if out of range
+            if (m_possessIndicator != INVALID_ENTITY)
+            {
+                if (m_coord.EntityIsAlive(m_possessIndicator))
+                    m_coord.DestroyEntity(m_possessIndicator);
+                m_possessIndicator = INVALID_ENTITY;
+            }
+            return;
+        }
+
+        // Bobble indicator above statue's head
+        const Transform& targetT = m_coord.GetComponent<Transform>(nearbyTarget);
+        Vec3 indicatorPos = targetT.pos;
+        float baseY = targetT.pos.y + targetT.scale.y * 0.5f + 40.f;
+        float bobOffset = sinf(m_indicatorBobTime * 2.0f) * m_indicatorBobSpeed;
+
+        indicatorPos.y = baseY + bobOffset;
+        m_indicatorBobTime += FixedDT / 2.0f;
+        indicatorPos.z  = targetT.pos.z + 1.f;
+
+        if (m_possessIndicator == INVALID_ENTITY)
+        {
+            auto factory = m_coord.GetSystem<EntityFactory>();
+            m_possessIndicator = factory->Create("StatueIndicator");
+            if (m_coord.HasComponent<Transform>(m_possessIndicator))
+            {
+                Transform& t = m_coord.ModifyComponent<Transform>(m_possessIndicator);
+                t.pos   = indicatorPos;
+                t.scale = Vec2{ 60.f, 60.f };
+            }
+        }
+        else
+        {
+			// Moves existing indicator to above the new target if already exists
+            if (m_coord.HasComponent<Transform>(m_possessIndicator))
+                m_coord.ModifyComponent<Transform>(m_possessIndicator).pos = indicatorPos;
+        }
+    }
 }
