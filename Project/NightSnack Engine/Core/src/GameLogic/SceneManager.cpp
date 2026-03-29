@@ -723,6 +723,7 @@ namespace NightSnack::Scene {
 		factory->DestroyLevelEntities();
 		m_coord.GetSystem<ParticleSystem>()->StopAllEmitters();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
+		m_coord.GetSystem<ApplicationSystem>()->m_fpsEntity = INVALID_ENTITY;
 		m_coord.GetSystem<CollectibleSystem>()->SpawnCollectibleParticles();
 
 		// Reset scene-manager state
@@ -818,6 +819,7 @@ namespace NightSnack::Scene {
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
+		m_coord.GetSystem<ApplicationSystem>()->m_fpsEntity = INVALID_ENTITY;
 		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
 
 		//std::cout << "Load Level, current living entities: " << m_coord.GetLivingEntities().size() << std::endl;
@@ -995,6 +997,7 @@ namespace NightSnack::Scene {
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
+		m_coord.GetSystem<ApplicationSystem>()->m_fpsEntity = INVALID_ENTITY;
 		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
 
 		// Reset Camera
@@ -1142,6 +1145,7 @@ namespace NightSnack::Scene {
 		auto const& factory = m_coord.GetSystem<EntityFactory>();
 		factory->DestroyLevelEntities();
 		m_coord.GetSystem<PlayerControllerSystem>()->Reset();
+		m_coord.GetSystem<ApplicationSystem>()->m_fpsEntity = INVALID_ENTITY;
 		m_coord.GetSystem<DialogueSystem>()->ResetUIEntities();
 
 		CreateSceneCamera(m_levelCache);

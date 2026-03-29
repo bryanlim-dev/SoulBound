@@ -48,6 +48,827 @@
                         }
                     },
                     "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1800.0,
+                            "y": -16.311115264892578,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1800.0,
+                            "y": -13.588890075683594,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1800.0,
+                            "y": -13.044445037841797,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1800.0,
+                            "y": -14.13333511352539,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1800.0,
+                            "y": -14.677780151367188,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1800.0,
+                            "y": -15.222225189208984,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1800.0,
+                            "y": -15.766670227050781,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1712.5,
+                            "y": -13.044445037841797,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1712.5,
+                            "y": -13.588890075683594,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1712.5,
+                            "y": -14.13333511352539,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1712.5,
+                            "y": -14.677780151367188,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "modified": false
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "NoName",
+                        "Position": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1712.5,
+                            "y": -16.855560302734375,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1712.5,
+                            "y": -15.766670227050781,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1712.5,
+                            "y": -17.400005340576172,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1712.5,
+                            "y": -16.311115264892578,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1712.5,
+                            "y": -17.94445037841797,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1712.5,
+                            "y": -18.488895416259766,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1712.5,
+                            "y": -19.033340454101563,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
                 }
             ],
             "Prefab": "Player",
@@ -55,8 +876,8 @@
                 "Layer": "GameLayer",
                 "Name": "Player",
                 "Position": {
-                    "x": -1800.0,
-                    "y": 50,
+                    "x": -1712.5,
+                    "y": 43.46665954589844,
                     "z": 5.0
                 },
                 "Rotation": 0.0,
@@ -834,7 +1655,7 @@
                         "Name": "Frog",
                         "Position": {
                             "x": 950.0,
-                            "y": 150.0,
+                            "y": 147.2307891845703,
                             "z": 3.0
                         },
                         "Rotation": 0.0,
@@ -1314,7 +2135,7 @@
                                 "Name": "PlatfromSprite4",
                                 "Position": {
                                     "x": 4950.0,
-                                    "y": 450.0,
+                                    "y": 550.0,
                                     "z": 1.0
                                 },
                                 "Rotation": 0.0,
@@ -1348,7 +2169,7 @@
                                 "Name": "Floor1",
                                 "Position": {
                                     "x": 4500.0,
-                                    "y": 150.0,
+                                    "y": 250.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -1382,7 +2203,7 @@
                                 "Name": "GroundPlatform4",
                                 "Position": {
                                     "x": 4950.0,
-                                    "y": 400.0,
+                                    "y": 500.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -1416,7 +2237,7 @@
                                 "Name": "GroundFloor",
                                 "Position": {
                                     "x": 4450.0,
-                                    "y": -400.0,
+                                    "y": -300.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -1450,7 +2271,7 @@
                                 "Name": "PlatfromSpriteFloor",
                                 "Position": {
                                     "x": 4450.0,
-                                    "y": -350.0,
+                                    "y": -250.0,
                                     "z": 1.0
                                 },
                                 "Rotation": 0.0,
@@ -1484,7 +2305,7 @@
                                 "Name": "WallRight",
                                 "Position": {
                                     "x": 5050.0,
-                                    "y": -100.0,
+                                    "y": 0.0,
                                     "z": 10.0
                                 },
                                 "Rotation": 0.0,
@@ -1518,7 +2339,7 @@
                                 "Name": "GroundPlatform1",
                                 "Position": {
                                     "x": 4800.0,
-                                    "y": 50.0,
+                                    "y": 150.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -1552,7 +2373,7 @@
                                 "Name": "PlatfromSprite1",
                                 "Position": {
                                     "x": 4800.0,
-                                    "y": 150.0,
+                                    "y": 250.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -1586,7 +2407,7 @@
                                 "Name": "GroundPlatform2",
                                 "Position": {
                                     "x": 4650.0,
-                                    "y": 100.0,
+                                    "y": 200.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -1620,7 +2441,7 @@
                                 "Name": "PlatfromSprite2",
                                 "Position": {
                                     "x": 4650.0,
-                                    "y": 250.0,
+                                    "y": 350.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -1698,7 +2519,7 @@
                         "Name": "Frog",
                         "Position": {
                             "x": 4650.0,
-                            "y": -250.0,
+                            "y": -153.3231964111328,
                             "z": 0.0
                         },
                         "Rotation": 0.0,
@@ -1749,7 +2570,7 @@
                                 "Name": "ColliderWallRight",
                                 "Position": {
                                     "x": 5050.0,
-                                    "y": -100.0,
+                                    "y": 0.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -1798,7 +2619,7 @@
                                 "Name": "ColliderFloor",
                                 "Position": {
                                     "x": 4450.0,
-                                    "y": -400.0,
+                                    "y": -300.0,
                                     "z": -1.0
                                 },
                                 "Rotation": 0.0,
@@ -1847,7 +2668,7 @@
                                 "Name": "ColliderWallMiddle",
                                 "Position": {
                                     "x": 4500.0,
-                                    "y": 150.0,
+                                    "y": 250.0,
                                     "z": -1.0
                                 },
                                 "Rotation": 0.0,
@@ -1896,7 +2717,7 @@
                                 "Name": "ColliderPlatform4",
                                 "Position": {
                                     "x": 4950.0,
-                                    "y": 400.0,
+                                    "y": 500.0,
                                     "z": -1.0
                                 },
                                 "Rotation": 0.0,
@@ -1945,7 +2766,7 @@
                                 "Name": "ColliderPlatform2",
                                 "Position": {
                                     "x": 4650.0,
-                                    "y": 100.0,
+                                    "y": 200.0,
                                     "z": -1.0
                                 },
                                 "Rotation": 0.0,
@@ -1994,7 +2815,7 @@
                                 "Name": "ColliderPlatform1",
                                 "Position": {
                                     "x": 4800.0,
-                                    "y": 50.0,
+                                    "y": 150.0,
                                     "z": -1.0
                                 },
                                 "Rotation": 0.0,
@@ -2079,7 +2900,7 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 500.0,
+                                    "height": 400.0,
                                     "isStatic": true,
                                     "radius": 201.19638061523438,
                                     "shape": "AABB",
@@ -2105,13 +2926,13 @@
                                 "Name": "CollidarPillar1",
                                 "Position": {
                                     "x": 5800.0,
-                                    "y": 950.0,
+                                    "y": 1000.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 200.0,
-                                    "y": 500.0
+                                    "y": 400.0
                                 },
                                 "UIBasePosition": {
                                     "x": 0.0,
@@ -2154,7 +2975,7 @@
                                 "Name": "ColliderFloorBig",
                                 "Position": {
                                     "x": 7100.0,
-                                    "y": 400.0,
+                                    "y": 500.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -2177,7 +2998,7 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 400.0,
+                                    "height": 300.0,
                                     "isStatic": true,
                                     "radius": 0.0,
                                     "shape": "AABB",
@@ -2203,13 +3024,13 @@
                                 "Name": "CollidarPillar2",
                                 "Position": {
                                     "x": 6600.0,
-                                    "y": 900.0,
+                                    "y": 950.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 200.0,
-                                    "y": 400.0
+                                    "y": 300.0
                                 },
                                 "UIBasePosition": {
                                     "x": 0.0,
@@ -2471,7 +3292,7 @@
                         {
                             "Components": {
                                 "Collider": {
-                                    "height": 400.0,
+                                    "height": 300.0,
                                     "isStatic": true,
                                     "radius": 0.0,
                                     "shape": "AABB",
@@ -2497,13 +3318,13 @@
                                 "Name": "CollidarPillar3",
                                 "Position": {
                                     "x": 7700.0,
-                                    "y": 700.0,
+                                    "y": 750.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 600.0,
-                                    "y": 400.0
+                                    "y": 300.0
                                 },
                                 "UIBasePosition": {
                                     "x": 0.0,
@@ -2792,7 +3613,7 @@
                                 "Name": "FloorSpite1",
                                 "Position": {
                                     "x": 4500.0,
-                                    "y": 350.0,
+                                    "y": 450.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -2928,7 +3749,7 @@
                                 "Name": "FloorLarge",
                                 "Position": {
                                     "x": 7100.0,
-                                    "y": 250.0,
+                                    "y": 350.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -2996,7 +3817,7 @@
                                 "Name": "FloorSpriteLarge",
                                 "Position": {
                                     "x": 6250.0,
-                                    "y": 450.0,
+                                    "y": 550.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
@@ -3132,13 +3953,13 @@
                                 "Name": "GroundPillar1",
                                 "Position": {
                                     "x": 5800.0,
-                                    "y": 950.0,
+                                    "y": 1000.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 200.0,
-                                    "y": 500.0
+                                    "y": 400.0
                                 },
                                 "UIBasePosition": {
                                     "x": 100.0,
@@ -3166,13 +3987,13 @@
                                 "Name": "GroundPillar2",
                                 "Position": {
                                     "x": 6600.0,
-                                    "y": 900.0,
+                                    "y": 950.0,
                                     "z": 0.0
                                 },
                                 "Rotation": 0.0,
                                 "Scale": {
                                     "x": 200.0,
-                                    "y": 400.0
+                                    "y": 300.0
                                 },
                                 "UIBasePosition": {
                                     "x": 100.0,
@@ -3516,7 +4337,7 @@
                         "Name": "Frog",
                         "Position": {
                             "x": 5050.0,
-                            "y": 550.0,
+                            "y": 647.3052978515625,
                             "z": 3.0
                         },
                         "Rotation": 0.0,
@@ -4542,14 +5363,14 @@
                         "Layer": "Background",
                         "Name": "/ Move",
                         "Position": {
-                            "x": -1800.0,
+                            "x": -1425.0,
                             "y": 200.0,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 76.85552215576172,
-                            "y": 76.85552215576172
+                            "x": 79.32594299316406,
+                            "y": 79.32594299316406
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4592,12 +5413,12 @@
                         "Position": {
                             "x": -100.0,
                             "y": 300.0,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 400.3140563964844,
-                            "y": 78.59568786621094
+                            "x": 426.4375915527344,
+                            "y": 83.72465515136719
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4643,14 +5464,14 @@
                         "Layer": "Background",
                         "Name": "Button Left",
                         "Position": {
-                            "x": -1862.5,
+                            "x": -1500.0,
                             "y": 200.0,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 76.85552215576172,
-                            "y": 76.85552215576172
+                            "x": 79.32594299316406,
+                            "y": 79.32594299316406
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4668,7 +5489,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "AControl",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -4707,12 +5528,12 @@
                         "Position": {
                             "x": 1237.5,
                             "y": -212.5,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 76.85552215576172,
-                            "y": 76.85552215576172
+                            "x": 79.32594299316406,
+                            "y": 79.32594299316406
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4758,14 +5579,14 @@
                         "Layer": "Background",
                         "Name": "Button Right",
                         "Position": {
-                            "x": -1737.5,
+                            "x": -1350.0,
                             "y": 200.0,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 76.85552215576172,
-                            "y": 76.85552215576172
+                            "x": 79.32594299316406,
+                            "y": 79.32594299316406
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4821,12 +5642,12 @@
                         "Position": {
                             "x": 2975.0,
                             "y": -75.0,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 158.3223876953125,
-                            "y": 57.64164352416992
+                            "x": 163.41146850585938,
+                            "y": 59.49445343017578
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4882,12 +5703,12 @@
                         "Position": {
                             "x": 3187.5,
                             "y": -75.0,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 215.96401977539063,
-                            "y": 57.64164352416992
+                            "x": 222.90591430664063,
+                            "y": 59.49445343017578
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4938,12 +5759,12 @@
                         "Position": {
                             "x": 3087.5,
                             "y": -150.0,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 400.3140563964844,
-                            "y": 78.59568786621094
+                            "x": 426.4375915527344,
+                            "y": 83.72465515136719
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -4961,7 +5782,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "DControl",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5000,12 +5821,12 @@
                         "Position": {
                             "x": 1362.5,
                             "y": -212.5,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 76.85552215576172,
-                            "y": 76.85552215576172
+                            "x": 79.32594299316406,
+                            "y": 79.32594299316406
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5023,7 +5844,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "Slash2",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5057,12 +5878,12 @@
                         "Position": {
                             "x": 1300.0,
                             "y": -212.5,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 78.59568786621094,
-                            "y": 78.59568786621094
+                            "x": 83.72465515136719,
+                            "y": 83.72465515136719
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5080,7 +5901,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "Spacebar1",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5113,12 +5934,12 @@
                         "Position": {
                             "x": 1300.0,
                             "y": -112.5,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 425.46466064453125,
-                            "y": 78.59568786621094
+                            "x": 453.2294921875,
+                            "y": 83.72465515136719
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5136,7 +5957,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "HoldNoFrame",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5174,12 +5995,12 @@
                         "Position": {
                             "x": 1300.0,
                             "y": -37.5,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 215.87615966796875,
-                            "y": 78.59568786621094
+                            "x": 229.9636993408203,
+                            "y": 83.72465515136719
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5223,12 +6044,12 @@
                         "Position": {
                             "x": 950.0,
                             "y": 250.0,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 78.59568786621094,
-                            "y": 78.59568786621094
+                            "x": 83.72465515136719,
+                            "y": 83.72465515136719
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5246,7 +6067,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "JControl",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5278,13 +6099,13 @@
                         "Name": "Button Unpossess",
                         "Position": {
                             "x": 2350.0,
-                            "y": 353.14599609375,
-                            "z": 0.0
+                            "y": 300.0,
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 78.59568786621094,
-                            "y": 78.59568786621094
+                            "x": 83.72465515136719,
+                            "y": 83.72465515136719
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5302,7 +6123,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "WControl",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5336,12 +6157,12 @@
                         "Position": {
                             "x": 4750.0,
                             "y": 75.0,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 78.59568786621094,
-                            "y": 78.59568786621094
+                            "x": 83.72465515136719,
+                            "y": 83.72465515136719
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5359,7 +6180,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "SControl",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5393,12 +6214,12 @@
                         "Position": {
                             "x": 4850.0,
                             "y": -12.5,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 78.59568786621094,
-                            "y": 78.59568786621094
+                            "x": 83.72465515136719,
+                            "y": 83.72465515136719
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5416,7 +6237,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "Slash2",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5450,12 +6271,12 @@
                         "Position": {
                             "x": 4800.0,
                             "y": 37.5,
-                            "z": 0.0
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 78.59568786621094,
-                            "y": 78.59568786621094
+                            "x": 83.72465515136719,
+                            "y": 83.72465515136719
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5473,7 +6294,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "HoldNoFrame",
+                            "materialName": "blank",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5510,14 +6331,14 @@
                         "Layer": "Foreground",
                         "Name": "Hold Glide",
                         "Position": {
-                            "x": 4800.0,
-                            "y": 150.0,
-                            "z": 0.0
+                            "x": 4762.5,
+                            "y": 162.5,
+                            "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 211.0965118408203,
-                            "y": 76.85552215576172
+                            "x": 217.8819580078125,
+                            "y": 79.32594299316406
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5571,12 +6392,12 @@
                     "type": "Clicker"
                 },
                 "Collider": {
-                    "height": 100.0,
+                    "height": 112.11111450195313,
                     "isStatic": true,
                     "radius": 100.0,
                     "shape": "AABB",
                     "type": "Trigger",
-                    "width": 100.0
+                    "width": 120.0
                 },
                 "Renderable": {
                     "isWireframe": false,
@@ -5589,14 +6410,14 @@
                 "Layer": "GameUI",
                 "Name": "PauseButton",
                 "Position": {
-                    "x": 1525.0,
-                    "y": 75.0,
+                    "x": 1830.0,
+                    "y": 84.08333587646484,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 100.0,
-                    "y": 100.0
+                    "x": 120.0,
+                    "y": 112.11111450195313
                 },
                 "UIBasePosition": {
                     "x": 1525.0,
@@ -5668,7 +6489,7 @@
                 "Name": "NoNameGrapplePoint",
                 "Position": {
                     "x": 4950.0,
-                    "y": 300.0,
+                    "y": 400.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
@@ -5746,14 +6567,14 @@
                 "Layer": "GameUI",
                 "Name": "UI-AbilityBox",
                 "Position": {
-                    "x": 1500.0,
-                    "y": 800.0,
+                    "x": 1800.0,
+                    "y": 896.888916015625,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 150.0,
-                    "y": 150.0
+                    "x": 180.0,
+                    "y": 168.1666717529297
                 },
                 "UIBasePosition": {
                     "x": 1500.0,
@@ -5780,14 +6601,14 @@
                 "Layer": "GameUI",
                 "Name": "UI-AbilityKey",
                 "Position": {
-                    "x": 1538.9759521484375,
-                    "y": 862.81787109375,
+                    "x": 1846.7711181640625,
+                    "y": 967.314697265625,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 86.0,
-                    "y": -36.0
+                    "x": 103.20000457763672,
+                    "y": -40.36000061035156
                 },
                 "UIBasePosition": {
                     "x": 1538.9759521484375,
@@ -5797,6 +6618,565 @@
                 "UIBaseScale": {
                     "x": 86.0,
                     "y": -36.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Background Color3",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-Background Color",
+                "Position": {
+                    "x": 350.0,
+                    "y": -475.0,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 7603.05615234375,
+                    "y": 2085.498046875
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Background Color3",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-Background Color",
+                "Position": {
+                    "x": 6062.5,
+                    "y": 1012.5,
+                    "z": 0.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 4649.447265625,
+                    "y": 2692.23876953125
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "DeadTree6",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-DeadTree4",
+                "Position": {
+                    "x": -1804.3037109375,
+                    "y": 213.99290466308594,
+                    "z": 0.10000000149011612
+                },
+                "Rotation": -15.0,
+                "Scale": {
+                    "x": -453.55999755859375,
+                    "y": 561.3615112304688
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass7",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": -1925.0,
+                    "y": 0.0,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 77.63961791992188,
+                    "y": 56.65339660644531
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass9",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": -1575.0,
+                    "y": -1.7916871309280396,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 186.45103454589844,
+                    "y": 100.17797088623047
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Lamppost",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-lamppost",
+                "Position": {
+                    "x": -737.5,
+                    "y": 162.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 60.0,
+                    "y": 366.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Lightglow",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "name": [
+                        "ScaleScript"
+                    ]
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-lantern",
+                "Position": {
+                    "x": -737.5,
+                    "y": 287.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 217.3024139404297,
+                    "y": 217.3024139404297
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass7",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": -750.0,
+                    "y": -4.287482261657715,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 77.63961791992188,
+                    "y": 60.22629928588867
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "vines2",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-vines",
+                "Position": {
+                    "x": 562.5,
+                    "y": 362.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 188.2540740966797,
+                    "y": 104.19560241699219
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Lantern",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-lamppost",
+                "Position": {
+                    "x": 3450.0,
+                    "y": 362.5,
+                    "z": 0.10000000149011612
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 66.0,
+                    "y": 222.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Lightglow",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "name": [
+                        "ScaleScript"
+                    ]
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-lantern",
+                "Position": {
+                    "x": 3450.0,
+                    "y": 287.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 156.3538360595703,
+                    "y": 156.3538360595703
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Lamppost",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-lamppost",
+                "Position": {
+                    "x": 5262.5,
+                    "y": 762.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 60.0,
+                    "y": 366.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Lightglow",
+                    "meshName": "square"
+                },
+                "Script": {
+                    "name": [
+                        "ScaleScript"
+                    ]
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-lantern",
+                "Position": {
+                    "x": 5262.5,
+                    "y": 887.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 217.3024139404297,
+                    "y": 217.3024139404297
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass2",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 75.0,
+                    "y": 82.14580535888672,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 151.35618591308594,
+                    "y": 125.56234741210938
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass4",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": -275.0,
+                    "y": 50.0,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 151.35618591308594,
+                    "y": 157.21377563476563
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass7",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 312.5,
+                    "y": 100.0,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 93.59434509277344,
+                    "y": 62.210655212402344
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
                 }
             },
             "isPrefab": false
@@ -5824,8 +7204,1326 @@
                 "Layer": "GameLayer",
                 "Name": "CloseToGroundedHitbox",
                 "Position": {
-                    "x": -1800.0,
-                    "y": -134.99996948242188,
+                    "x": -1712.5,
+                    "y": -15.766670227050781,
+                    "z": 5.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 25.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "DeadTree1",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-DeadTree4",
+                "Position": {
+                    "x": 200.0,
+                    "y": -125.0,
+                    "z": 0.10000000149011612
+                },
+                "Rotation": 5.0,
+                "Scale": {
+                    "x": 406.3952941894531,
+                    "y": 261.86541748046875
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass10",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": -212.5,
+                    "y": -250.0,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 93.59434509277344,
+                    "y": 120.43733215332031
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "longgrass2png",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 675.0,
+                    "y": 37.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 198.3057403564453,
+                    "y": 138.6038818359375
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass3",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 1662.5,
+                    "y": 181.06536865234375,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 178.45513916015625,
+                    "y": 134.416748046875
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "chain2",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-vines",
+                "Position": {
+                    "x": 450.0,
+                    "y": 362.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 16.80463218688965,
+                    "y": 106.02140045166016
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "chain1",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-vines",
+                "Position": {
+                    "x": 425.0,
+                    "y": 387.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 16.80463218688965,
+                    "y": 99.63006591796875
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "vine1",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-vines",
+                "Position": {
+                    "x": 4387.5,
+                    "y": 900.0,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 387.59478759765625,
+                    "y": 277.5972900390625
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "DeadTree4",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-DeadTree4",
+                "Position": {
+                    "x": 5550.0,
+                    "y": 750.0,
+                    "z": 0.10000000149011612
+                },
+                "Rotation": 5.0,
+                "Scale": {
+                    "x": 459.6770935058594,
+                    "y": 362.5088195800781
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass7",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 3425.0,
+                    "y": 100.0,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 103.46273040771484,
+                    "y": 81.37333679199219
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass7",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 4825.0,
+                    "y": 600.0,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 103.46273040771484,
+                    "y": 81.37333679199219
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass8",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 4850.0,
+                    "y": 262.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 166.68246459960938,
+                    "y": 159.01890563964844
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "vines2",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-vines",
+                "Position": {
+                    "x": 3900.0,
+                    "y": 350.0,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 285.38189697265625,
+                    "y": 144.01043701171875
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "DeadTree3",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-DeadTree4",
+                "Position": {
+                    "x": 4600.0,
+                    "y": 1400.0,
+                    "z": 0.10000000149011612
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 403.342529296875,
+                    "y": 463.34759521484375
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass2",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 4675.0,
+                    "y": 1183.2200927734375,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 160.17132568359375,
+                    "y": 125.24225616455078
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Collider": {
+                    "height": 25.0,
+                    "isStatic": false,
+                    "radius": 37.5,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 40.0
+                },
+                "RigidBody": {
+                    "gravityMult": 1.0,
+                    "mass": 1.0,
+                    "restitution": 0.0,
+                    "useGravity": false,
+                    "useRotate": false
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "CloseToGroundedHitbox",
+                "Position": {
+                    "x": -1712.5,
+                    "y": -16.311115264892578,
+                    "z": 5.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 25.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "DeadTree2",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-DeadTree4",
+                "Position": {
+                    "x": 2537.5,
+                    "y": 175.0,
+                    "z": 0.10000000149011612
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 270.66876220703125,
+                    "y": 261.86541748046875
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "DeadTree4",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-DeadTree4",
+                "Position": {
+                    "x": 3287.5,
+                    "y": -187.5,
+                    "z": 0.10000000149011612
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 369.2079162597656,
+                    "y": 261.86541748046875
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass10",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 2854.95751953125,
+                    "y": -362.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 97.18314361572266,
+                    "y": 155.7368621826172
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass10",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 5062.5,
+                    "y": 1237.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 97.18314361572266,
+                    "y": 155.7368621826172
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass7",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 5725.0,
+                    "y": 1191.74169921875,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 97.18314361572266,
+                    "y": 87.12297058105469
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass1",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 6637.5,
+                    "y": 1062.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 157.81866455078125,
+                    "y": 146.162841796875
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass1",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 7450.0,
+                    "y": 862.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 157.81866455078125,
+                    "y": 146.162841796875
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass10",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 7687.5,
+                    "y": 842.1201171875,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 110.53948974609375,
+                    "y": 146.162841796875
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "DeadTree6",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-DeadTree4",
+                "Position": {
+                    "x": 6987.5,
+                    "y": 850.0,
+                    "z": 0.10000000149011612
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 452.9095458984375,
+                    "y": 565.5355224609375
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "DeadTree2",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Background",
+                "Name": "Sprite-DeadTree4",
+                "Position": {
+                    "x": 6075.0,
+                    "y": 712.5,
+                    "z": 0.10000000149011612
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 254.39459228515625,
+                    "y": 263.2513427734375
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass4",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 6962.5,
+                    "y": 537.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 219.31900024414063,
+                    "y": 199.12294006347656
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass8",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 6025.0,
+                    "y": 562.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 161.11187744140625,
+                    "y": 147.76370239257813
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass9",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 5625.0,
+                    "y": 600.0,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 161.11187744140625,
+                    "y": 147.76370239257813
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass9",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 3975.0,
+                    "y": -207.0743408203125,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 161.11187744140625,
+                    "y": 147.76370239257813
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass10",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 4950.0,
+                    "y": -262.5,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 107.5731201171875,
+                    "y": 147.76370239257813
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "longgrass2png",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 1487.819091796875,
+                    "y": -58.858802795410156,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 198.3057403564453,
+                    "y": 138.6038818359375
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Renderable": {
+                    "isWireframe": false,
+                    "materialName": "Grass7",
+                    "meshName": "square"
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "Foreground",
+                "Name": "Sprite-grass",
+                "Position": {
+                    "x": 1050.0,
+                    "y": -1.9637361764907837,
+                    "z": 0.20000000298023224
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 88.5261001586914,
+                    "y": 67.6749038696289
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Collider": {
+                    "height": 25.0,
+                    "isStatic": false,
+                    "radius": 37.5,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 40.0
+                },
+                "RigidBody": {
+                    "gravityMult": 1.0,
+                    "mass": 1.0,
+                    "restitution": 0.0,
+                    "useGravity": false,
+                    "useRotate": false
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "CloseToGroundedHitbox",
+                "Position": {
+                    "x": -1712.5,
+                    "y": -16.855560302734375,
+                    "z": 5.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 25.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Collider": {
+                    "height": 25.0,
+                    "isStatic": false,
+                    "radius": 37.5,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 40.0
+                },
+                "RigidBody": {
+                    "gravityMult": 1.0,
+                    "mass": 1.0,
+                    "restitution": 0.0,
+                    "useGravity": false,
+                    "useRotate": false
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "CloseToGroundedHitbox",
+                "Position": {
+                    "x": -1712.5,
+                    "y": -17.400005340576172,
+                    "z": 5.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 25.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Collider": {
+                    "height": 25.0,
+                    "isStatic": false,
+                    "radius": 37.5,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 40.0
+                },
+                "RigidBody": {
+                    "gravityMult": 1.0,
+                    "mass": 1.0,
+                    "restitution": 0.0,
+                    "useGravity": false,
+                    "useRotate": false
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "CloseToGroundedHitbox",
+                "Position": {
+                    "x": -1712.5,
+                    "y": -17.94445037841797,
+                    "z": 5.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 25.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Collider": {
+                    "height": 25.0,
+                    "isStatic": false,
+                    "radius": 37.5,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 40.0
+                },
+                "RigidBody": {
+                    "gravityMult": 1.0,
+                    "mass": 1.0,
+                    "restitution": 0.0,
+                    "useGravity": false,
+                    "useRotate": false
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "CloseToGroundedHitbox",
+                "Position": {
+                    "x": -1712.5,
+                    "y": -18.488895416259766,
+                    "z": 5.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 25.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Collider": {
+                    "height": 25.0,
+                    "isStatic": false,
+                    "radius": 37.5,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 40.0
+                },
+                "RigidBody": {
+                    "gravityMult": 1.0,
+                    "mass": 1.0,
+                    "restitution": 0.0,
+                    "useGravity": false,
+                    "useRotate": false
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "CloseToGroundedHitbox",
+                "Position": {
+                    "x": -1712.5,
+                    "y": -19.033340454101563,
                     "z": 5.0
                 },
                 "Rotation": 0.0,
@@ -5886,7 +8584,7 @@
                 "minX": 1500.0,
                 "minY": 50.0,
                 "pos": {
-                    "x": 2150.5,
+                    "x": 2050.0,
                     "y": 300.0,
                     "z": 1.0
                 },
@@ -5902,7 +8600,7 @@
                 "minX": 2900.0,
                 "minY": 50.0,
                 "pos": {
-                    "x": 2350.0,
+                    "x": 2250.0,
                     "y": 300.0,
                     "z": 1.0
                 },
@@ -5951,7 +8649,7 @@
                 "minY": 50.0,
                 "pos": {
                     "x": 4700.0,
-                    "y": 350.0,
+                    "y": 425.0,
                     "z": 1.0
                 },
                 "scale": {
@@ -5967,7 +8665,7 @@
                 "minY": 835.0,
                 "pos": {
                     "x": 4650.0,
-                    "y": 462.5,
+                    "y": 550.0,
                     "z": 1.0
                 },
                 "scale": {
@@ -5982,7 +8680,7 @@
         "isMainCam": true,
         "offsetX": 0.0,
         "offsetY": 0.0,
-        "posX": 0.0,
+        "posX": -1300.0,
         "posY": 0.0,
         "posZ": 10.0,
         "width": 1600.0,

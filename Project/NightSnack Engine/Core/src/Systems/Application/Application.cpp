@@ -142,7 +142,7 @@ namespace NightSnack {
 
 				case InputEvent::InputAction::DisplayFPS:
 					m_showFPS = !m_showFPS;
-					ToggleFPSDisplay();
+					//ToggleFPSDisplay();
 					break;
 				}
 			}
@@ -207,6 +207,8 @@ namespace NightSnack {
 		//
 		//	m_pressedMaximizeButton = false;
 		//}
+
+		ToggleFPSDisplay();
 		
 		// Display FPS object in game if toggled on
 		if (m_showFPS && m_fpsEntity != INVALID_ENTITY && m_coord.HasComponent<Font>(m_fpsEntity))
