@@ -1,7 +1,13 @@
 {
+    "Animator": {
+        "isLooping": true,
+        "isPlaying": true,
+        "playbackSpeed": 2.0,
+        "spriteSheetName": ""
+    },
     "Renderable": {
         "isWireframe": false,
-        "materialName": "Menu-FrameArrowDown",
+        "materialName": "PossessInvis_6_1",
         "meshName": "square"
     },
     "RigidBody": {

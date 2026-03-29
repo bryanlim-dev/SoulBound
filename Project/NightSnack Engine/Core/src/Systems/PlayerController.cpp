@@ -961,7 +961,7 @@ namespace NightSnack {
     void PlayerControllerSystem::UpdatePossessIndicator()
     {
         // Search for a nearby possessable entity colliding with the player
-        auto livingSnapshot = m_coord.GetLivingEntities();
+        auto& livingSnapshot = m_coord.GetLivingEntities();
 
         Entity nearbyTarget = INVALID_ENTITY;
         for (Entity e : livingSnapshot)
@@ -1017,6 +1017,7 @@ namespace NightSnack {
 			// Moves existing indicator to above the new target if already exists
             if (m_coord.HasComponent<Transform>(m_possessIndicator))
                 m_coord.ModifyComponent<Transform>(m_possessIndicator).pos = indicatorPos;
+            m_coord.ModifyComponent<Renderable>(m_possessIndicator).materialName = "Possess-Indicator_6_1";
         }
     }
 }
