@@ -354,6 +354,7 @@ namespace NightSnack
 				coord.AddComponent(dot, Color());
 
 			coord.ModifyComponent<Color>(dot).a = 0.5f;
+			dotTrans.isActive = false;
 
 			//coord.ModifyComponent<Renderable>(dot).materialName = "ColorMat";
 
@@ -380,6 +381,7 @@ namespace NightSnack
 		angleTrans.scale = m_angleIndicatorScale;
 		angleTrans.pos = coord.GetComponent<Transform>(m_owner).pos;
 		angleTrans.pos.z = powerTrans.pos.z - 0.1f;
+		angleTrans.isActive = false;
 
 		if (!coord.HasComponent<Color>(m_angleIndicator))
 			coord.AddComponent(m_angleIndicator, Color());
@@ -430,7 +432,7 @@ namespace NightSnack
 		//Change scale to x if horziontal bar
 		float newScale = ((m_powerBarScale.y - m_minPowerBarScale) * (1 - GetLaunchPowerRatio())) + m_minPowerBarScale;
 		coord.ModifyComponent<Transform>(m_powerBar).scale.x = newScale;
-		coord.ModifyComponent<Transform>(m_powerBar).isActive = true;
+		coord.ModifyComponent<Transform>(m_powerBar).isActive = m_enablePowerBar;
 		coord.ModifyComponent<Transform>(m_powerBar).pos.y = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).y ;
 		coord.ModifyComponent<Transform>(m_powerBar).pos.x = (coord.GetComponent<Transform>(m_owner).pos + m_powerBarOffsetPos).x + (newScale / 2);
 
