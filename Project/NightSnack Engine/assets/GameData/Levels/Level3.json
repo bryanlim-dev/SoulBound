@@ -1,9 +1,9 @@
 {
     "BGM": [
         "GameLevelMusic",
-        "NightForest",
+        "CreakingKnocking",
         "FrogAmbience",
-        "WindBlow"
+        "EerieWindBlow"
     ],
     "Entities": [
         {

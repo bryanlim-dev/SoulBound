@@ -619,7 +619,7 @@ namespace NightSnack
 			case RESOURCE_IMAGE:	return "Image";
 			case RESOURCE_TXTFILE:	return "Text";
 			case RESOURCE_JSON:		return "JSON";
-			case RESOURCE_SOUND:	return "Sound";
+			case RESOURCE_SOUND:	return "Audio";
 			case RESOURCE_FONT:		return "Font";
 			case RESOURCE_NONE:		return "Other";
 			default:				return "Unknown";
