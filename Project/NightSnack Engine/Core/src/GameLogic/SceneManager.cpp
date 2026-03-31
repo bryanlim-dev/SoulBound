@@ -897,7 +897,7 @@ namespace NightSnack::Scene {
 		m_mainMenuOpen = (levelname == "MainMenu");
 
 		m_coord.GetSystem<PlayerControllerSystem>()->UnpauseInputs();
-		m_coord.Unpause();
+		//m_coord.Unpause();
 	}
 
 	void SceneManager::LoadLevelWithFade(std::string const& levelname, float fadeOutDuration, float fadeInDuration) {

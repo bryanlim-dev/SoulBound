@@ -869,6 +869,94 @@
                         }
                     },
                     "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1712.5,
+                            "y": -23.933345794677734,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
+                },
+                {
+                    "Components": {
+                        "Collider": {
+                            "height": 25.0,
+                            "isStatic": false,
+                            "radius": 37.5,
+                            "shape": "AABB",
+                            "type": "Trigger",
+                            "width": 40.0
+                        },
+                        "RigidBody": {
+                            "gravityMult": 1.0,
+                            "mass": 1.0,
+                            "restitution": 0.0,
+                            "useGravity": false,
+                            "useRotate": false
+                        },
+                        "modified": true
+                    },
+                    "Transform": {
+                        "Layer": "GameLayer",
+                        "Name": "CloseToGroundedHitbox",
+                        "Position": {
+                            "x": -1712.5,
+                            "y": -28.833351135253906,
+                            "z": 5.0
+                        },
+                        "Rotation": 0.0,
+                        "Scale": {
+                            "x": 50.0,
+                            "y": 25.0
+                        },
+                        "UIBasePosition": {
+                            "x": 0.0,
+                            "y": 0.0,
+                            "z": 0.0
+                        },
+                        "UIBaseScale": {
+                            "x": 0.0,
+                            "y": 0.0
+                        }
+                    },
+                    "isPrefab": false
                 }
             ],
             "Prefab": "Player",
@@ -877,7 +965,7 @@
                 "Name": "Player",
                 "Position": {
                     "x": -1712.5,
-                    "y": 43.46665954589844,
+                    "y": 33.666648864746094,
                     "z": 5.0
                 },
                 "Rotation": 0.0,
@@ -5369,8 +5457,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 79.32594299316406,
-                            "y": 79.32594299316406
+                            "x": 80.0,
+                            "y": 80.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5417,8 +5505,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 426.4375915527344,
-                            "y": 83.72465515136719
+                            "x": 400.0,
+                            "y": 80.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5470,8 +5558,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 79.32594299316406,
-                            "y": 79.32594299316406
+                            "x": 80.0,
+                            "y": 80.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5489,7 +5577,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "blank",
+                            "materialName": "AControl",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5532,8 +5620,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 79.32594299316406,
-                            "y": 79.32594299316406
+                            "x": 80.0,
+                            "y": 80.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5585,8 +5673,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 79.32594299316406,
-                            "y": 79.32594299316406
+                            "x": 80.0,
+                            "y": 80.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5646,8 +5734,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 163.41146850585938,
-                            "y": 59.49445343017578
+                            "x": 165.0489959716797,
+                            "y": 60.090641021728516
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5707,8 +5795,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 222.90591430664063,
-                            "y": 59.49445343017578
+                            "x": 225.13963317871094,
+                            "y": 60.090641021728516
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5763,8 +5851,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 426.4375915527344,
-                            "y": 83.72465515136719
+                            "x": 400.0,
+                            "y": 80.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5782,7 +5870,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "blank",
+                            "materialName": "DControl",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5825,8 +5913,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 79.32594299316406,
-                            "y": 79.32594299316406
+                            "x": 80.0,
+                            "y": 80.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5844,7 +5932,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "blank",
+                            "materialName": "Slash2",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5882,8 +5970,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 83.72465515136719,
-                            "y": 83.72465515136719
+                            "x": 80.0,
+                            "y": 80.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5901,7 +5989,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "blank",
+                            "materialName": "Spacebar1",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5938,8 +6026,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 453.2294921875,
-                            "y": 83.72465515136719
+                            "x": 462.3240966796875,
+                            "y": 85.40469360351563
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -5957,7 +6045,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "blank",
+                            "materialName": "MidAirNoFrame",
                             "meshName": "square"
                         },
                         "Script": {
@@ -5999,8 +6087,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 229.9636993408203,
-                            "y": 83.72465515136719
+                            "x": 226.23626708984375,
+                            "y": 60.56869888305664
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -6043,13 +6131,13 @@
                         "Name": "Button Possess",
                         "Position": {
                             "x": 950.0,
-                            "y": 250.0,
+                            "y": 300.0,
                             "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 83.72465515136719,
-                            "y": 83.72465515136719
+                            "x": 80.0,
+                            "y": 80.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -6067,7 +6155,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "blank",
+                            "materialName": "JControl",
                             "meshName": "square"
                         },
                         "Script": {
@@ -6104,8 +6192,8 @@
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 83.72465515136719,
-                            "y": 83.72465515136719
+                            "x": 80.0,
+                            "y": 80.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -6123,7 +6211,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "blank",
+                            "materialName": "WControl",
                             "meshName": "square"
                         },
                         "Script": {
@@ -6156,13 +6244,13 @@
                         "Name": "Button Accend",
                         "Position": {
                             "x": 4750.0,
-                            "y": 75.0,
+                            "y": 150.0,
                             "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 83.72465515136719,
-                            "y": 83.72465515136719
+                            "x": 80.0,
+                            "y": 80.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -6180,7 +6268,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "blank",
+                            "materialName": "SControl",
                             "meshName": "square"
                         },
                         "Script": {
@@ -6213,13 +6301,13 @@
                         "Name": "Button Deccend",
                         "Position": {
                             "x": 4850.0,
-                            "y": -12.5,
+                            "y": 50.0,
                             "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 83.72465515136719,
-                            "y": 83.72465515136719
+                            "x": 80.0,
+                            "y": 80.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -6237,7 +6325,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "blank",
+                            "materialName": "Slash2",
                             "meshName": "square"
                         },
                         "Script": {
@@ -6270,13 +6358,13 @@
                         "Name": "Button / Accend",
                         "Position": {
                             "x": 4800.0,
-                            "y": 37.5,
+                            "y": 100.0,
                             "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 83.72465515136719,
-                            "y": 83.72465515136719
+                            "x": 80.0,
+                            "y": 80.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -6294,7 +6382,7 @@
                     "Components": {
                         "Renderable": {
                             "isWireframe": false,
-                            "materialName": "blank",
+                            "materialName": "HoldNoFrame",
                             "meshName": "square"
                         },
                         "Script": {
@@ -6331,14 +6419,14 @@
                         "Layer": "Foreground",
                         "Name": "Hold Glide",
                         "Position": {
-                            "x": 4762.5,
-                            "y": 162.5,
+                            "x": 4800.0,
+                            "y": 237.5,
                             "z": 1.0
                         },
                         "Rotation": 0.0,
                         "Scale": {
-                            "x": 217.8819580078125,
-                            "y": 79.32594299316406
+                            "x": 220.06533813476563,
+                            "y": 80.0
                         },
                         "UIBasePosition": {
                             "x": 0.0,
@@ -6392,12 +6480,12 @@
                     "type": "Clicker"
                 },
                 "Collider": {
-                    "height": 112.11111450195313,
+                    "height": 100.0,
                     "isStatic": true,
                     "radius": 100.0,
                     "shape": "AABB",
                     "type": "Trigger",
-                    "width": 120.0
+                    "width": 100.0
                 },
                 "Renderable": {
                     "isWireframe": false,
@@ -6410,14 +6498,14 @@
                 "Layer": "GameUI",
                 "Name": "PauseButton",
                 "Position": {
-                    "x": 1830.0,
-                    "y": 84.08333587646484,
+                    "x": 1525.0,
+                    "y": 75.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 120.0,
-                    "y": 112.11111450195313
+                    "x": 100.0,
+                    "y": 100.0
                 },
                 "UIBasePosition": {
                     "x": 1525.0,
@@ -6567,14 +6655,14 @@
                 "Layer": "GameUI",
                 "Name": "UI-AbilityBox",
                 "Position": {
-                    "x": 1800.0,
-                    "y": 896.888916015625,
+                    "x": 1500.0,
+                    "y": 800.0,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 180.0,
-                    "y": 168.1666717529297
+                    "x": 150.0,
+                    "y": 150.0
                 },
                 "UIBasePosition": {
                     "x": 1500.0,
@@ -6601,14 +6689,14 @@
                 "Layer": "GameUI",
                 "Name": "UI-AbilityKey",
                 "Position": {
-                    "x": 1846.7711181640625,
-                    "y": 967.314697265625,
+                    "x": 1538.9759521484375,
+                    "y": 862.81787109375,
                     "z": 0.0
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 103.20000457763672,
-                    "y": -40.36000061035156
+                    "x": 86.0,
+                    "y": -36.0
                 },
                 "UIBasePosition": {
                     "x": 1538.9759521484375,
@@ -6850,8 +6938,8 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 217.3024139404297,
-                    "y": 217.3024139404297
+                    "x": 228.28480529785156,
+                    "y": 228.28480529785156
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -6991,8 +7079,8 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 156.3538360595703,
-                    "y": 156.3538360595703
+                    "x": 164.25592041015625,
+                    "y": 164.25592041015625
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -7064,8 +7152,8 @@
                 },
                 "Rotation": 0.0,
                 "Scale": {
-                    "x": 217.3024139404297,
-                    "y": 217.3024139404297
+                    "x": 228.28480529785156,
+                    "y": 228.28480529785156
                 },
                 "UIBasePosition": {
                     "x": 0.0,
@@ -8542,6 +8630,94 @@
                 }
             },
             "isPrefab": false
+        },
+        {
+            "Components": {
+                "Collider": {
+                    "height": 25.0,
+                    "isStatic": false,
+                    "radius": 37.5,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 40.0
+                },
+                "RigidBody": {
+                    "gravityMult": 1.0,
+                    "mass": 1.0,
+                    "restitution": 0.0,
+                    "useGravity": false,
+                    "useRotate": false
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "CloseToGroundedHitbox",
+                "Position": {
+                    "x": -1712.5,
+                    "y": -23.933345794677734,
+                    "z": 5.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 25.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
+        },
+        {
+            "Components": {
+                "Collider": {
+                    "height": 25.0,
+                    "isStatic": false,
+                    "radius": 37.5,
+                    "shape": "AABB",
+                    "type": "Trigger",
+                    "width": 40.0
+                },
+                "RigidBody": {
+                    "gravityMult": 1.0,
+                    "mass": 1.0,
+                    "restitution": 0.0,
+                    "useGravity": false,
+                    "useRotate": false
+                },
+                "modified": true
+            },
+            "Transform": {
+                "Layer": "GameLayer",
+                "Name": "CloseToGroundedHitbox",
+                "Position": {
+                    "x": -1712.5,
+                    "y": -28.833351135253906,
+                    "z": 5.0
+                },
+                "Rotation": 0.0,
+                "Scale": {
+                    "x": 50.0,
+                    "y": 25.0
+                },
+                "UIBasePosition": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0
+                },
+                "UIBaseScale": {
+                    "x": 0.0,
+                    "y": 0.0
+                }
+            },
+            "isPrefab": false
         }
     ],
     "MainCamera": {
@@ -8680,7 +8856,7 @@
         "isMainCam": true,
         "offsetX": 0.0,
         "offsetY": 0.0,
-        "posX": -1300.0,
+        "posX": 0.0,
         "posY": 0.0,
         "posZ": 10.0,
         "width": 1600.0,
