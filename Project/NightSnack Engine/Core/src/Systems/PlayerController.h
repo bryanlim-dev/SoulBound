@@ -398,7 +398,38 @@ namespace NightSnack {
         Entity GetPlayer() const noexcept { return m_player; }
 		void PrintPause() const noexcept { std::cout << (m_pauseInputs ? "Paused\n" : "Unpaused\n"); }
 
-        void LeftAndRightMovement(Vec2& vel, PlayerController const&);
+        /************************************************************************/
+        /*!
+        \brief
+        Handles logic for Left and Right movemnt
+
+        \param vel
+        Reference to velocity of player
+
+        \param pconst
+        Reference to player controller
+        */
+        /************************************************************************/
+        void LeftAndRightMovement(Vec2& vel, PlayerController const& pconst);
+
+        /************************************************************************/
+        /*!
+        \brief
+        Handles logic for player jumping
+
+        \param t
+        Reference to transform of player entity
+
+        \param vel
+        Reference to velocity of player
+
+        \param pcont
+        PlayerControler of player
+
+        \param grounded
+        bool of if the player is grounded
+        */
+        /************************************************************************/
         void Jump(Transform& t, Vec2& vel, PlayerController pcont, bool grounded);
 
         PlayerFlags& GetPlayerFlags();
@@ -441,6 +472,16 @@ namespace NightSnack {
         void RegisterAbilities();
         bool UseSpecialAbility();
         bool AttachAbility();
+
+
+        /************************************************************************/
+        /*!
+        \brief
+        Return the current ability as a number
+
+        \return
+        integer of the current ability
+        /************************************************************************/
         int GetAbilityNumber() const;
         std::string curr_ability = "Glide";
         std::string prev_ability;

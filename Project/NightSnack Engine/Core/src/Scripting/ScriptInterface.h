@@ -448,8 +448,10 @@ namespace NightSnack::Scripting {
         //Respawns Player
         void KillPlayer();
 
+        //Gets the current player ability as a int
         int GetPlayerAbility();
 
+        //Return if the player is using their ability
         bool GetPlayerUsingAbility();
 
 #pragma endregion
